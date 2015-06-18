@@ -16,12 +16,12 @@ package com.liferay.dynamic.data.lists.web.configuration;
 
 import com.liferay.portal.kernel.util.GetterUtil;
 
-/**
- * @author Rafael Praxedes
- */
 public class DynamicDataListWebConfigurationValues {
 
 	public static final boolean DYNAMIC_DATA_LISTS_RECORD_SET_FORCE_AUTOGENERATE_KEY = GetterUtil.getBoolean(
 		DynamicDataListWebConfigurationUtil.get("dynamic.data.lists.record.set.force.autogenerate.key"));
+
+	public static final String DYNAMIC_DATA_LISTS_STORAGE_TYPE = GetterUtil.getString(
+			DynamicDataListWebConfigurationUtil.get("dynamic.data.lists.storage.type"));
 
 }

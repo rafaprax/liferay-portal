@@ -77,7 +77,7 @@ public interface DDMStructureLocalService extends BaseLocalService,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
 		com.liferay.portlet.dynamicdatamapping.model.DDMForm ddmForm,
 		com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout ddmFormLayout,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		java.lang.String storageType, com.liferay.portal.service.ServiceContext serviceContext)
 		throws PortalException;
 
 	/**

@@ -27,7 +27,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleWiring;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Carlos Sierra Andres
  */
 public class CXFJaxRsBundleActivator implements BundleActivator {
 
