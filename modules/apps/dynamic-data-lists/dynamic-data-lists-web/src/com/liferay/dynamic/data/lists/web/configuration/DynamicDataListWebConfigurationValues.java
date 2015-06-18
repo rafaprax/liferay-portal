@@ -21,4 +21,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
  */
 public class DynamicDataListWebConfigurationValues {
 
+	public static final boolean DYNAMIC_DATA_LISTS_RECORD_SET_FORCE_AUTOGENERATE_KEY = GetterUtil.getBoolean(
+		DynamicDataListWebConfigurationUtil.get("dynamic.data.lists.record.set.force.autogenerate.key"));
+
 }
