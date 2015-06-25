@@ -194,6 +194,7 @@
 			<var name="entryContent2" value="Blogs Entry2 Content" />
 			<var name="entryTitle" value="Blogs Entry1 Title" />
 			<var name="entryTitle2" value="Blogs Entry2 Title" />
+			<var name="pageName" value="${pageName}" />
 		</execute>
 
 		<execute macro="BlogsEntry#gotoPG">
@@ -262,6 +263,7 @@
 			<var name="entryContent2" value="Blogs Entry4 Content" />
 			<var name="entryTitle" value="Blogs Entry3 Title" />
 			<var name="entryTitle2" value="Blogs Entry4 Title" />
+			<var name="pageName" value="${pageName}" />
 			<var name="virtualHosts" value="true" />
 			<var name="virtualHostsURL" value="www.able.com:8080" />
 		</execute>
@@ -319,6 +321,7 @@
 			<var name="entryContent2" value="Blogs Entry6 Content" />
 			<var name="entryTitle" value="Blogs Entry5 Title" />
 			<var name="entryTitle2" value="Blogs Entry6 Title" />
+			<var name="pageName" value="${pageName}" />
 			<var name="virtualHosts" value="true" />
 			<var name="virtualHostsURL" value="http://${ipAddress}:8080" />
 		</execute>
@@ -381,9 +384,13 @@
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
-		<execute macro="BlogsEntryComment#addPG">
-			<var name="entryComment" value="Blogs Entry Comment" />
+		<execute macro="BlogsNavigator#gotoEntryPG">
+			<var name="entryContent" value="Blogs Entry Content" />
 			<var name="entryTitle" value="Blogs Entry Title" />
+		</execute>
+
+		<execute macro="BlogsEntryComment#add">
+			<var name="entryComment" value="Blogs Entry Comment" />
 		</execute>
 
 		<execute macro="Page#gotoPG">
@@ -734,6 +741,7 @@
 		<execute macro="BlogsEntry#viewFriendlyURLPG">
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryTitle" value="${entryTitle}" />
+			<var name="pageName" value="${pageName}" />
 		</execute>
 
 		<execute macro="Page#addPG">
@@ -752,6 +760,7 @@
 			<var name="entryAuthor" value="Test Test" />
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryTitle" value="${entryTitle}" />
+			<var name="pageName" value="${pageName}" />
 		</execute>
 	</command>
 
@@ -817,6 +826,7 @@
 
 		<execute macro="BlogsEntry#viewCP">
 			<var name="entryAuthor" value="${entryAuthor}" />
+			<var name="entryContent" value="${entryContent}" />
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
@@ -867,7 +877,7 @@
 		</execute>
 	</command>
 
-	<command name="ViewBlogsEntryWithFutureDisplayDateViaBlogsAggregator" priority="3">
+	<command known-issues="LPS-56528" name="ViewBlogsEntryWithFutureDisplayDateViaBlogsAggregator" priority="3">
 		<var name="entryAbstractDescription" value="Blogs Entry Abstract Description" />
 		<var name="entryContent" value="Blogs Entry Content" />
 		<var name="entryTitle" value="Blogs Entry Title" />
@@ -957,7 +967,7 @@
 		</execute>
 	</command>
 
-	<command name="ViewParentOrganizationViaSelectOrganizationInBlogsConfiguration" priority="4">
+	<command known-issues="LPS-56543" name="ViewParentOrganizationViaSelectOrganizationInBlogsConfiguration" priority="4">
 		<var name="orgName1" value="Organization1 Name" />
 		<var name="orgName2" value="Organization2 Name" />
 		<var name="orgName3" value="Organization3 Name" />
@@ -1020,6 +1030,8 @@
 		<execute macro="Organization#viewParentOrganizationCP">
 			<var name="orgName" value="${orgName2}" />
 			<var name="parentOrgExist" value="false" />
+			<var name="parentOrgName" value="${parentOrgName}" />
+			<var name="subOrgName" value="${subOrgName}" />
 		</execute>
 
 		<execute macro="Page#gotoPG">
