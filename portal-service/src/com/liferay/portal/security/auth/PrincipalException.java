@@ -15,11 +15,18 @@
 package com.liferay.portal.security.auth;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.security.permission.PermissionChecker;
 
 /**
  * @author Brian Wing Shun Chan
  */
 public class PrincipalException extends PortalException {
+
+	public static Class<?>[] getNestedClasses() {
+		return _NESTED_CLASSES;
+	}
 
 	public PrincipalException() {
 	}
@@ -35,5 +42,63 @@ public class PrincipalException extends PortalException {
 	public PrincipalException(Throwable cause) {
 		super(cause);
 	}
+
+	public static class MustHavePermission extends PrincipalException {
+
+		public MustHavePermission(long userId, String... actionIds) {
+			super(
+				String.format(
+					"User %s must have permission to perform action %s",
+					GetterUtil.getString(userId),
+					StringUtil.merge(actionIds, ",")));
+
+			this.actionId = actionIds;
+			this.resourceId = 0;
+			this.resourceName = null;
+			this.userId = userId;
+		}
+
+		public MustHavePermission(
+			long userId, String resourceName, long resourceId,
+			String... actionIds) {
+
+			super(
+				String.format(
+					"User %s must have %s permission for %s %s",
+					GetterUtil.getString(userId),
+					StringUtil.merge(actionIds, ","), resourceName,
+					GetterUtil.getString(resourceId)));
+
+			this.actionId = actionIds;
+			this.resourceName = resourceName;
+			this.resourceId = resourceId;
+			this.userId = userId;
+		}
+
+		public MustHavePermission(
+			PermissionChecker permissionChecker, String... actionIds) {
+
+			this(permissionChecker.getUserId(), actionIds);
+		}
+
+		public MustHavePermission(
+			PermissionChecker permissionChecker, String resourceName,
+			long resourceId, String... actionIds) {
+
+			this(
+				permissionChecker.getUserId(), resourceName, resourceId,
+				actionIds);
+		}
+
+		public final String[] actionId;
+		public final long resourceId;
+		public final String resourceName;
+		public final long userId;
+
+	}
+
+	private static final Class<?>[] _NESTED_CLASSES = {
+		PrincipalException.class, PrincipalException.MustHavePermission.class
+	};
 
 }

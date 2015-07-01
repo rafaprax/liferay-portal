@@ -15,6 +15,7 @@
 			<isset var="smallImageURL" />
 			<then>
 				<execute macro="BlogsEntry#addAbstractSmallImagePG">
+					<var name="smallImageFile" value="${smallImageFile}" />
 					<var name="smallImageURL" value="${smallImageURL}" />
 				</execute>
 			</then>
@@ -323,6 +324,7 @@
 				<execute macro="BlogsEntry#addTagPG">
 					<var name="entryTitle" value="${entryTitle}" />
 					<var name="tagName" value="${tagName}" />
+					<var name="tagNameList" value="${tagNameList}" />
 				</execute>
 			</then>
 		</if>
@@ -403,6 +405,7 @@
 				<execute macro="BlogsEntry#viewTagPG">
 					<var name="entryTitle" value="${entryTitle}" />
 					<var name="tagName" value="${tagName}" />
+					<var name="tagNameList" value="${tagNameList}" />
 				</execute>
 			</then>
 		</if>
@@ -413,6 +416,7 @@
 				<execute macro="BlogsEntry#viewRelatedAssetPG">
 					<var name="assetTitle" value="${assetTitle}" />
 					<var name="assetType" value="${assetType}" />
+					<var name="entryTitle" value="${entryTitle}" />
 				</execute>
 			</then>
 		</if>
@@ -442,10 +446,22 @@
 		</if>
 
 		<execute function="SelectFrame" locator1="PGAssetpublisherAddnewblogsentry#BLOGS_ENTRY_IFRAME" />
-		<execute function="Type" locator1="PGAssetpublisherAddnewblogsentry#TITLE_FIELD" value1="${entryTitle}" />
-		<execute function="Type" locator1="PGAssetpublisherAddnewblogsentry#CONTENT_FIELD" value1="${entryContent}" />
-		<execute function="AssertClick" locator1="PGAssetpublisherAddnewblogsentry#PUBLISH_BUTTON" value1="Publish" />
+
+		<execute function="Type#typeCKEditor" locator1="AlloyEditor#TITLE_FIELD" value1="${entryTitle}" />
+
+		<if>
+			<isset var="entrySubtitle" />
+			<then>
+				<execute function="Type#typeCKEditor" locator1="AlloyEditor#SUBTITLE_FIELD" value1="${entrySubtitle}" />
+			</then>
+		</if>
+
+		<execute function="Type#typeCKEditor" locator1="AlloyEditor#CONTENT_FIELD" value1="${entryContent}" />
+
+		<execute function="AssertClick" locator1="Button#PUBLISH" value1="Publish" />
+
 		<execute function="Pause" locator1="5000" />
+
 		<execute function="SelectFrame" value1="relative=top" />
 
 		<var name="key_assetTitle" value="${entryTitle}" />
@@ -619,7 +635,11 @@
 
 	<command name="addWithTrackbackURLPG">
 		<execute macro="BlogsEntry#gotoPG">
+			<var name="entryContent" value="${entryContent}" />
+			<var name="entrySubtitle" value="${entrySubtitle}" />
 			<var name="entryTitle" value="${entryTitle}" />
+			<var name="entryTitleSpecialCharacter" value="${entryTitleSpecialCharacter}" />
+			<var name="viewSpecificEntry" value="${viewSpecificEntry}" />
 		</execute>
 
 		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_TITLE" value1="${entryTitle}" />
@@ -631,13 +651,21 @@
 			<equals arg1="virtualHosts" arg2="true" />
 			<then>
 				<execute macro="Page#gotoPG">
+					<var name="defaultURL" value="${defaultURL}" />
+					<var name="nodePort" value="${nodePort}" />
 					<var name="pageName" value="${pageName}" />
+					<var name="soDashboard" value="${soDashboard}" />
+					<var name="soPage" value="${soPage}" />
 					<var name="virtualHostsURL" value="${virtualHost1}" />
 				</execute>
 			</then>
 			<else>
 				<execute macro="Page#gotoPG">
+					<var name="defaultURL" value="${defaultURL}" />
+					<var name="nodePort" value="${nodePort}" />
 					<var name="pageName" value="${pageName}" />
+					<var name="soDashboard" value="${soDashboard}" />
+					<var name="soPage" value="${soPage}" />
 				</execute>
 			</else>
 		</if>
@@ -848,7 +876,7 @@
 	<command name="editSubtitle">
 		<execute function="AssertTextEquals" locator1="AlloyEditor#SUBTITLE_FIELD" value1="${entrySubtitle}" />
 
-		<execute function="Type#typeCKEditor" locator1="AlloyEditor#SUBTITLE_FIELD" value1="${entryEditSubtitle}" />
+		<execute function="Type#typeCKEditor" locator1="AlloyEditor#SUBTITLE_FIELD" value1="${entrySubtitleEdit}" />
 	</command>
 
 	<command name="editTitle">
@@ -1494,6 +1522,16 @@
 		<execute function="AssertTextEquals#assertTextWaitForInlineCKEditor" locator1="PGBlogsEntry#COMMENTS" value1="Comments" />
 	</command>
 
+	<command name="viewDisabledSocialBookmarkSites">
+		<execute function="AssertClick" locator1="Button#SHARE" value1="Share" />
+
+		<for list="${socialBookmarkSites}" param="socialBookmarkSite">
+			<var name="key_socialBookmarkSite" value="${socialBookmarkSite}" />
+
+			<execute function="AssertElementNotPresent" locator1="SocialBookmarks#SOCIAL_BOOKMARKS_SITE_LINK" />
+		</for>
+	</command>
+
 	<command name="viewDraft">
 		<execute function="AssertTextEquals" locator1="BlogsEntry#DRAFT_ENTRY_STATUS" value1="Draft" />
 
@@ -1549,6 +1587,16 @@
 		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_TITLE" value1="${entryTitle}" />
 		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_CONTENT" value1="${entryContent}" />
 		<execute function="AssertElementPresent" locator1="PGBlogs#ENTRY_EDIT" />
+	</command>
+
+	<command name="viewEnabledSocialBookmarkSites">
+		<execute function="AssertClick" locator1="Button#SHARE" value1="Share" />
+
+		<for list="${socialBookmarkSites}" param="socialBookmarkSite">
+			<var name="key_socialBookmarkSite" value="${socialBookmarkSite}" />
+
+			<execute function="AssertElementPresent" locator1="SocialBookmarks#SOCIAL_BOOKMARKS_SITE_LINK" />
+		</for>
 	</command>
 
 	<command name="viewEntry">
@@ -1856,6 +1904,7 @@
 			<then>
 				<for list="${tagNameList}" param="tagName">
 					<var method="StringUtil#lowerCase('${tagName}')" name="tagName" />
+
 					<var name="key_tagName" value="tagName" />
 
 					<execute function="AssertTextEquals" locator1="BlogsEntry#TAG" value1="${tagName}" />
@@ -1868,6 +1917,7 @@
 			</then>
 			<else>
 				<var method="StringUtil#lowerCase('${tagName}')" name="tagName" />
+
 				<var name="key_tagName" value="tagName" />
 
 				<execute function="AssertTextEquals" locator1="BlogsEntry#TAG" value1="${tagName}" />
@@ -1887,8 +1937,9 @@
 			<isset var="tagNameList" />
 			<then>
 				<for list="${tagNameList}" param="tagName">
-					<var method="StringUtil#lowerCase('${tagName}')" name="tagName" />
-					<var name="key_tagName" value="tagName" />
+					<var method="StringUtil#lowerCase('${tagName}')" name="${tagName}" />
+
+					<var name="key_tagName" value="${tagName}" />
 
 					<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_TAG" value1="${tagName}" />
 					<execute function="AssertClick" locator1="PGBlogs#ENTRY_TAG" value1="${tagName}" />
@@ -1898,6 +1949,7 @@
 			</then>
 			<else>
 				<var method="StringUtil#lowerCase('${tagName}')" name="tagName" />
+
 				<var name="key_tagName" value="tagName" />
 
 				<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_TAG" value1="${tagName}" />

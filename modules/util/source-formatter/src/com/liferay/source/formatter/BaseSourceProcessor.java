@@ -47,7 +47,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
 
 /**
@@ -91,7 +90,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return errorMessages;
 	}
 
-	public final List<String> getFileNames() {
+	public final List<String> getFileNames() throws Exception {
 		List<String> fileNames = sourceFormatterArgs.getFileNames();
 
 		if (fileNames != null) {
@@ -378,7 +377,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 			_portalLanguageProperties = new Properties();
 
 			File portalLanguagePropertiesFile = new File(
-				getFile("portal-impl", 4), "src/content/Language.properties");
+				getFile("portal-impl", 5), "src/content/Language.properties");
 
 			InputStream inputStream = new FileInputStream(
 				portalLanguagePropertiesFile);
@@ -419,6 +418,23 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 				}
 			}
 		}
+	}
+
+	protected String checkPrincipalException(String content) {
+		String newContent = content;
+
+		Matcher matcher = principalExceptionPattern.matcher(content);
+
+		while (matcher.find()) {
+			String match = matcher.group();
+
+			String replacement = StringUtil.replace(
+				match, "class.getName", "getNestedClasses");
+
+			newContent = StringUtil.replace(newContent, match, replacement);
+		}
+
+		return newContent;
 	}
 
 	protected void checkStringBundler(
@@ -464,10 +480,10 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 			File file, String fileName, String absolutePath, String content)
 		throws Exception;
 
-	protected abstract List<String> doGetFileNames();
+	protected abstract List<String> doGetFileNames() throws Exception;
 
 	protected String fixCompatClassImports(String absolutePath, String content)
-		throws IOException {
+		throws Exception {
 
 		if (portalSource || !_usePortalCompatImport ||
 			absolutePath.contains("/ext-") ||
@@ -724,7 +740,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 			return;
 		}
 
-		File file = new File(sourceFormatterArgs.getBaseDirName() + fileName);
+		File file = new File(fileName);
 
 		fileName = StringUtil.replace(
 			fileName, StringPool.BACK_SLASH, StringPool.SLASH);
@@ -784,8 +800,8 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return line;
 	}
 
-	protected String getAbsolutePath(File file) {
-		String absolutePath = file.getAbsolutePath();
+	protected String getAbsolutePath(File file) throws Exception {
+		String absolutePath = file.getCanonicalPath();
 
 		absolutePath = StringUtil.replace(
 			absolutePath, CharPool.BACK_SLASH, CharPool.SLASH);
@@ -807,7 +823,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return _annotationsExclusions;
 	}
 
-	protected Map<String, String> getCompatClassNamesMap() throws IOException {
+	protected Map<String, String> getCompatClassNamesMap() throws Exception {
 		if (_compatClassNamesMap != null) {
 			return _compatClassNamesMap;
 		}
@@ -815,7 +831,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		Map<String, String> compatClassNamesMap = new HashMap<>();
 
 		String[] includes = new String[] {
-			"**\\portal-compat-shared\\src\\com\\liferay\\compat\\**\\*.java"
+			"**/portal-compat-shared/src/com/liferay/compat/**/*.java"
 		};
 
 		String basedir = sourceFormatterArgs.getBaseDirName();
@@ -833,7 +849,9 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		}
 
 		for (String fileName : fileNames) {
-			if (!fileName.startsWith("shared")) {
+			if (!fileName.startsWith(
+					sourceFormatterArgs.getBaseDirName() + "shared")) {
+
 				break;
 			}
 
@@ -919,24 +937,19 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	}
 
 	protected List<String> getFileNames(
-		String basedir, String[] excludes, String[] includes) {
-
-		DirectoryScanner directoryScanner = new DirectoryScanner();
-
-		directoryScanner.setBasedir(basedir);
+			String basedir, String[] excludes, String[] includes)
+		throws Exception {
 
 		if (_excludes != null) {
 			excludes = ArrayUtil.append(excludes, _excludes);
 		}
 
-		directoryScanner.setExcludes(excludes);
-
-		directoryScanner.setIncludes(includes);
-
-		return _sourceFormatterHelper.scanForFiles(directoryScanner);
+		return _sourceFormatterHelper.scanForFiles(basedir, excludes, includes);
 	}
 
-	protected List<String> getFileNames(String[] excludes, String[] includes) {
+	protected List<String> getFileNames(String[] excludes, String[] includes)
+		throws Exception {
+
 		return getFileNames(
 			sourceFormatterArgs.getBaseDirName(), excludes, includes);
 	}
@@ -1030,11 +1043,9 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	}
 
 	protected Properties getLanguageProperties(String fileName) {
-		StringBundler sb = new StringBundler(4);
+		StringBundler sb = new StringBundler(3);
 
 		int pos = fileName.indexOf("/docroot/");
-
-		sb.append(sourceFormatterArgs.getBaseDirName());
 
 		if (pos != -1) {
 			sb.append(fileName.substring(0, pos + 9));
@@ -1246,30 +1257,18 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		}
 	}
 
-	protected String replacePrimitiveWrapperInstantiation(
-		String fileName, String line, int lineCount) {
-
-		if (true) {
-			return line;
-		}
-
-		String newLine = StringUtil.replace(
+	protected String replacePrimitiveWrapperInstantiation(String line) {
+		return StringUtil.replace(
 			line,
 			new String[] {
-				"new Boolean(", "new Byte(", "new Character(", "new Integer(",
-				"new Long(", "new Short("
+				"new Boolean(", "new Byte(", "new Character(", "new Double(",
+				"new Float(", "new Integer(", "new Long(", "new Short("
 			},
 			new String[] {
 				"Boolean.valueOf(", "Byte.valueOf(", "Character.valueOf(",
-				"Integer.valueOf(", "Long.valueOf(", "Short.valueOf("
+				"Double.valueOf(", "Float.valueOf(", "Integer.valueOf(",
+				"Long.valueOf(", "Short.valueOf("
 			});
-
-		if (!line.equals(newLine)) {
-			processErrorMessage(
-				fileName, "> new Primitive(: " + fileName + " " + lineCount);
-		}
-
-		return newLine;
 	}
 
 	protected String sortAttributes(
@@ -1555,6 +1554,9 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	protected static Pattern languageKeyPattern = Pattern.compile(
 		"LanguageUtil.(?:get|format)\\([^;%]+|Liferay.Language.get\\('([^']+)");
 	protected static boolean portalSource;
+	protected static Pattern principalExceptionPattern = Pattern.compile(
+		"SessionErrors\\.contains\\(\n?\t*(renderR|r)equest, " +
+			"PrincipalException\\.class\\.getName\\(\\)");
 	protected static Pattern sessionKeyPattern = Pattern.compile(
 		"SessionErrors.(?:add|contains|get)\\([^;%&|!]+|".concat(
 			"SessionMessages.(?:add|contains|get)\\([^;%&|!]+"),
@@ -1575,16 +1577,6 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 				System.getProperty("source.formatter.excludes")));
 
 		excludesList.addAll(getPropertyList("source.formatter.excludes"));
-
-		String[] includes = new String[] {"**\\source_formatter.ignore"};
-
-		List<String> ignoreFileNames = getFileNames(new String[0], includes);
-
-		for (String ignoreFileName : ignoreFileNames) {
-			excludesList.add(
-				ignoreFileName.substring(0, ignoreFileName.length() - 23) +
-					"**");
-		}
 
 		return excludesList.toArray(new String[excludesList.size()]);
 	}
@@ -1691,7 +1683,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	}
 
 	private boolean _isPortalSource() {
-		if (getFile("portal-impl", 4) != null) {
+		if (getFile("portal-impl", 5) != null) {
 			return true;
 		}
 		else {

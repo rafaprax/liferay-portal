@@ -14,6 +14,7 @@
 
 package com.liferay.poshi.runner.selenium;
 
+import com.liferay.poshi.runner.PoshiRunnerGetterUtil;
 import com.liferay.poshi.runner.util.AntCommands;
 import com.liferay.poshi.runner.util.DateUtil;
 import com.liferay.poshi.runner.util.EmailCommands;
@@ -24,7 +25,6 @@ import com.liferay.poshi.runner.util.LocaleUtil;
 import com.liferay.poshi.runner.util.OSDetector;
 import com.liferay.poshi.runner.util.PropsValues;
 import com.liferay.poshi.runner.util.RuntimeVariables;
-import com.liferay.poshi.runner.util.StringPool;
 import com.liferay.poshi.runner.util.StringUtil;
 import com.liferay.poshi.runner.util.Validator;
 
@@ -568,6 +568,10 @@ public class LiferaySeleniumHelper {
 	}
 
 	public static void captureScreen(String fileName) throws Exception {
+		if (!PropsValues.SAVE_SCREENSHOT) {
+			return;
+		}
+
 		File file = new File(fileName);
 
 		file.mkdirs();
@@ -615,8 +619,8 @@ public class LiferaySeleniumHelper {
 		throws Exception {
 
 		File file = new File(
-			getPortalRootDirName() + liferaySelenium.getSikuliImagesDirName() +
-				image);
+			_TEST_BASE_DIR_NAME + "/" +
+				liferaySelenium.getSikuliImagesDirName() + image);
 
 		return new ImageTarget(file);
 	}
@@ -627,14 +631,6 @@ public class LiferaySeleniumHelper {
 
 	public static String getNumberIncrement(String value) {
 		return StringUtil.valueOf(GetterUtil.getInteger(value) + 1);
-	}
-
-	public static String getPortalRootDirName() throws Exception {
-		File file = new File("../../../" + StringPool.PERIOD);
-
-		String absolutePath = file.getAbsolutePath();
-
-		return absolutePath.substring(0, absolutePath.length() - 1);
 	}
 
 	public static boolean isConfirmation(
@@ -827,12 +823,6 @@ public class LiferaySeleniumHelper {
 			return true;
 		}
 
-		// LPS-39742
-
-		if (line.contains("java.lang.IllegalStateException")) {
-			return true;
-		}
-
 		// LPS-41257
 
 		if (line.matches(
@@ -991,7 +981,7 @@ public class LiferaySeleniumHelper {
 
 		// LPS-50936
 
-		if (line.matches(
+		if (line.contains(
 				"Liferay does not have the Xuggler native libraries " +
 					"installed.")) {
 
@@ -1009,6 +999,105 @@ public class LiferaySeleniumHelper {
 
 				return true;
 			}
+		}
+
+		// LPS-52346
+
+		if (line.matches(
+				".*The web application \\[\\] created a ThreadLocal with key " +
+					"of type.*")) {
+
+			if (line.contains(
+					"[org.apache.jasper.runtime.JspWriterImpl." +
+						"CharBufferThreadLocalPool]")) {
+
+				return true;
+			}
+		}
+
+		// LPS-52699
+
+		if (line.matches(
+				".*The web application \\[/saml-portlet\\] created a " +
+					"ThreadLocal with key of type.*")) {
+
+			if (line.matches(
+					".*\\[org.apache.xml.security.algorithms." +
+						"MessageDigestAlgorithm\\$[0-9]+\\].*")) {
+
+				return true;
+			}
+
+			if (line.matches(
+					".*\\[org.apache.xml.security.algorithms." +
+						"SignatureAlgorithm\\$[0-9]+\\].*")) {
+
+				return true;
+			}
+
+			if (line.matches(
+					".*\\[org.apache.xml.security.utils." +
+						"UnsyncBufferedOutputStream\\$[0-9]+\\].*")) {
+
+				return true;
+			}
+
+			if (line.matches(
+					".*\\[org.apache.xml.security.utils." +
+						"UnsyncByteArrayOutputStream\\$[0-9]+\\].*")) {
+
+				return true;
+			}
+		}
+
+		// LPS-54539
+
+		if (line.matches(
+				".*The web application \\[/agent\\] appears to have started " +
+					"a thread.*")) {
+
+			if (line.matches(".*\\[http-bio.*\\].*")) {
+				return true;
+			}
+
+			if (line.matches(".*\\[scheduler_Worker-[0-9]+\\].*")) {
+				return true;
+			}
+
+			if (line.matches(".*\\[SocketListener.*\\].*")) {
+				return true;
+			}
+		}
+
+		// LPS-54680
+
+		if (line.contains(
+				"The web application [/reports-portlet] appears to have " +
+					"started a thread named [C3P0PooledConnectionPool")) {
+
+			return true;
+		}
+
+		// LPS-55835, temporary workaround while Brian Wulbern investigates it
+
+		if (line.matches(
+				"Current URL.*add_panel generates exception:[\\s\\S]*")) {
+
+			return true;
+		}
+
+		// LRQA-14442, temporary workaround until Kiyoshi Lee fixes it
+
+		if (line.contains("Framework Event Dispatcher: Equinox Container:")) {
+			if (line.contains("[org_eclipse_equinox_http_servlet")) {
+				return true;
+			}
+		}
+
+		// WCM-202
+
+		if (line.contains("No score point assigners available")) {
+			return true;
 		}
 
 		if (Validator.equals(PropsValues.LIFERAY_PORTAL_BUNDLE, "6.2.10.1") ||
@@ -1121,6 +1210,10 @@ public class LiferaySeleniumHelper {
 	public static void saveScreenshot(LiferaySelenium liferaySelenium)
 		throws Exception {
 
+		if (!PropsValues.SAVE_SCREENSHOT) {
+			return;
+		}
+
 		_screenshotCount++;
 
 		captureScreen(
@@ -1132,6 +1225,10 @@ public class LiferaySeleniumHelper {
 	public static void saveScreenshotBeforeAction(
 			LiferaySelenium liferaySelenium, boolean actionFailed)
 		throws Exception {
+
+		if (!PropsValues.SAVE_SCREENSHOT) {
+			return;
+		}
 
 		if (actionFailed) {
 			_screenshotErrorCount++;
@@ -1343,8 +1440,7 @@ public class LiferaySeleniumHelper {
 
 		sikuliType(
 			liferaySelenium, image,
-			getPortalRootDirName() + liferaySelenium.getDependenciesDirName() +
-				value);
+			_TEST_BASE_DIR_NAME + "/" + _TEST_DEPENDENCIES_DIR_NAME + value);
 
 		keyboard.type(Key.ENTER);
 	}
@@ -1794,6 +1890,12 @@ public class LiferaySeleniumHelper {
 			Thread.sleep(1000);
 		}
 	}
+
+	private static final String _TEST_BASE_DIR_NAME =
+		PoshiRunnerGetterUtil.getCanonicalPath(PropsValues.TEST_BASE_DIR_NAME);
+
+	private static final String _TEST_DEPENDENCIES_DIR_NAME =
+		PropsValues.TEST_DEPENDENCIES_DIR_NAME;
 
 	private static final Pattern _aceEditorPattern = Pattern.compile(
 		"\\(|\\$\\{line\\.separator\\}");
