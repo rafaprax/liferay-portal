@@ -20,8 +20,25 @@
 	<c:if test="<%= ddmForm != null %>">
 
 		<%
-		pageContext.setAttribute("checkRequired", checkRequired);
+		
+		long ddmStructureId = classPK;
 
+		if (classNameId == PortalUtil.getClassNameId(DDMTemplate.class)) {
+			DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(classPK);
+
+			ddmStructureId = ddmTemplate.getClassPK();
+		}
+
+		DDMStructure ddmStructure = DDMStructureServiceUtil.getStructure(ddmStructureId);
+		
+		Fields fields = null;
+
+		if(ddmFormValues != null){
+			fields = DDMFormValuesToFieldsConverterUtil.convert(ddmStructure, ddmFormValues);
+		}
+		
+		pageContext.setAttribute("checkRequired", checkRequired);
+		
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext = new DDMFormFieldRenderingContext();
 
 		ddmFormFieldRenderingContext.setFields(fields);
@@ -51,25 +68,7 @@
 					p_l_id: <%= themeDisplay.getPlid() %>,
 					portletNamespace: '<portlet:namespace />',
 					repeatable: <%= repeatable %>
-
-					<%
-					long ddmStructureId = classPK;
-
-					if (classNameId == PortalUtil.getClassNameId(DDMTemplate.class)) {
-						DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(classPK);
-
-						ddmStructureId = ddmTemplate.getClassPK();
-					}
-
-					DDMStructure ddmStructure = DDMStructureServiceUtil.getStructure(ddmStructureId);
-
-					DDMFormValues ddmFormValues = null;
-
-					if (fields != null) {
-						ddmFormValues = FieldsToDDMFormValuesConverterUtil.convert(ddmStructure, fields);
-					}
-					%>
-
+					
 					<c:if test="<%= ddmFormValues != null %>">
 						, values: <%= DDMFormValuesJSONSerializerUtil.serialize(ddmFormValues) %>
 					</c:if>
