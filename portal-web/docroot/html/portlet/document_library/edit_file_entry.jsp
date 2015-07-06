@@ -371,7 +371,7 @@ else {
 						<aui:input name="fileEntryTypeId" type="hidden" value="<%= fileEntryTypeId %>" />
 					</c:otherwise>
 				</c:choose>
-				
+
 				<aui:input name="defaultLanguageId" type="hidden" value="<%= themeDisplay.getLanguageId() %>" />
 
 				<%
@@ -394,7 +394,7 @@ else {
 								<c:if test="<%= !dlEditFileEntryDisplayContext.isDDMStructureVisible(ddmStructure) %>">
 									<div class="hide">
 								</c:if>
-								
+
 								<liferay-ddm:html
 									classNameId="<%= PortalUtil.getClassNameId(DDMStructure.class) %>"
 									classPK="<%= ddmStructure.getPrimaryKey() %>"

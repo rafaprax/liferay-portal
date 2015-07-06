@@ -68,7 +68,7 @@
 					p_l_id: <%= themeDisplay.getPlid() %>,
 					portletNamespace: '<portlet:namespace />',
 					repeatable: <%= repeatable %>
-					
+
 					<c:if test="<%= ddmFormValues != null %>">
 						, values: <%= DDMFormValuesJSONSerializerUtil.serialize(ddmFormValues) %>
 					</c:if>
