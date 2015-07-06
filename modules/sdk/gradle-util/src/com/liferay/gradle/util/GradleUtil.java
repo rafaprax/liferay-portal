@@ -45,6 +45,7 @@ import org.gradle.api.file.FileTree;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -254,13 +255,18 @@ public class GradleUtil {
 	}
 
 	public static boolean getProperty(
-		Project project, String name, boolean defaultValue) {
+		ExtensionAware extensionAware, String name, boolean defaultValue) {
 
-		if (!project.hasProperty(name)) {
+		ExtensionContainer extensionContainer = extensionAware.getExtensions();
+
+		ExtraPropertiesExtension extraPropertiesExtension =
+			extensionContainer.getExtraProperties();
+
+		if (!extraPropertiesExtension.has(name)) {
 			return defaultValue;
 		}
 
-		Object value = project.property(name);
+		Object value = extraPropertiesExtension.get(name);
 
 		if (value instanceof Boolean) {
 			return (Boolean)value;
@@ -329,6 +335,17 @@ public class GradleUtil {
 				iterator.remove();
 			}
 		}
+	}
+
+	public static void setProperty(
+		ExtensionAware extensionAware, String name, Object value) {
+
+		ExtensionContainer extensionContainer = extensionAware.getExtensions();
+
+		ExtraPropertiesExtension extraPropertiesExtension =
+			extensionContainer.getExtraProperties();
+
+		extraPropertiesExtension.set(name, value);
 	}
 
 	public static File toFile(Project project, Object object) {

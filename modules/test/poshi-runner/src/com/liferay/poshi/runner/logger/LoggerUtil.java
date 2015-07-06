@@ -104,6 +104,11 @@ public final class LoggerUtil {
 			"addChildLoggerElement(" + parentSB + ", " + childSB + ");");
 	}
 
+	public static void createSummary() throws Exception {
+		FileUtil.write(
+			_getSummaryLogFilePath(), SummaryLoggerHandler.getSummaryLogText());
+	}
+
 	public static void executeJavaScript(String script) {
 		if (!isLoggerStarted()) {
 			return;
@@ -248,7 +253,7 @@ public final class LoggerUtil {
 			"META-INF/resources/css/main.css");
 
 		FileUtil.write(
-			_CURRENT_DIR + "/test-results/css/main.css", mainCSSContent);
+			_CURRENT_DIR_NAME + "/test-results/css/main.css", mainCSSContent);
 
 		String indexHTMLContent = _readResource(
 			"META-INF/resources/html/index.html");
@@ -267,12 +272,13 @@ public final class LoggerUtil {
 			"META-INF/resources/js/component.js");
 
 		FileUtil.write(
-			_CURRENT_DIR + "/test-results/js/component.js", componentJSContent);
+			_CURRENT_DIR_NAME + "/test-results/js/component.js",
+			componentJSContent);
 
 		String mainJSContent = _readResource("META-INF/resources/js/main.js");
 
 		FileUtil.write(
-			_CURRENT_DIR + "/test-results/js/main.js", mainJSContent);
+			_CURRENT_DIR_NAME + "/test-results/js/main.js", mainJSContent);
 
 		_webDriver.get("file://" + _getHtmlFilePath());
 	}
@@ -283,20 +289,21 @@ public final class LoggerUtil {
 				"META-INF/resources/css/main.css");
 
 			FileUtil.write(
-				_CURRENT_DIR + "/test-results/css/main.css", mainCSSContent);
+				_CURRENT_DIR_NAME + "/test-results/css/main.css",
+				mainCSSContent);
 
 			String componentJSContent = _readResource(
 				"META-INF/resources/js/component.js");
 
 			FileUtil.write(
-				_CURRENT_DIR + "/test-results/js/component.js",
+				_CURRENT_DIR_NAME + "/test-results/js/component.js",
 				componentJSContent);
 
 			String mainJSContent = _readResource(
 				"META-INF/resources/js/main.js");
 
 			FileUtil.write(
-				_CURRENT_DIR + "/test-results/js/main.js", mainJSContent);
+				_CURRENT_DIR_NAME + "/test-results/js/main.js", mainJSContent);
 		}
 
 		String indexHTMLContent = _readResource(
@@ -337,12 +344,25 @@ public final class LoggerUtil {
 	private static String _getHtmlFilePath() {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(_CURRENT_DIR);
+		sb.append(_CURRENT_DIR_NAME);
 		sb.append("/test-results/");
 		sb.append(
 			StringUtil.replace(
 				PoshiRunnerContext.getTestCaseCommandName(), "#", "_"));
 		sb.append("/index.html");
+
+		return sb.toString();
+	}
+
+	private static String _getSummaryLogFilePath() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(_CURRENT_DIR_NAME);
+		sb.append("/test-results/");
+		sb.append(
+			StringUtil.replace(
+				PoshiRunnerContext.getTestCaseCommandName(), "#", "_"));
+		sb.append("/summary.html");
 
 		return sb.toString();
 	}
@@ -371,7 +391,7 @@ public final class LoggerUtil {
 		return sb.toString();
 	}
 
-	private static final String _CURRENT_DIR =
+	private static final String _CURRENT_DIR_NAME =
 		PoshiRunnerGetterUtil.getCanonicalPath(".");
 
 	private static JavascriptExecutor _javascriptExecutor;
