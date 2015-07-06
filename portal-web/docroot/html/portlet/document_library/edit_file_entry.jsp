@@ -371,7 +371,7 @@ else {
 						<aui:input name="fileEntryTypeId" type="hidden" value="<%= fileEntryTypeId %>" />
 					</c:otherwise>
 				</c:choose>
-				
+
 				<aui:input name="defaultLanguageId" type="hidden" value="<%= themeDisplay.getLanguageId() %>" />
 
 				<%
