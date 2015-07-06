@@ -394,7 +394,7 @@ else {
 								<c:if test="<%= !dlEditFileEntryDisplayContext.isDDMStructureVisible(ddmStructure) %>">
 									<div class="hide">
 								</c:if>
-								
+
 								<liferay-ddm:html
 									classNameId="<%= PortalUtil.getClassNameId(DDMStructure.class) %>"
 									classPK="<%= ddmStructure.getPrimaryKey() %>"
