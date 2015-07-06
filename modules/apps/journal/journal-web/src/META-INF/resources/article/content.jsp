@@ -38,8 +38,8 @@ if (article != null) {
 
 	if (Validator.isNotNull(content)) {
 		Fields fields = JournalConverterUtil.getDDMFields(ddmStructure, content);
-		
-		if(fields != null){
+
+		if (fields != null) {
 			ddmFormValues = FieldsToDDMFormValuesConverterUtil.convert(ddmStructure, fields);
 		}
 	}
