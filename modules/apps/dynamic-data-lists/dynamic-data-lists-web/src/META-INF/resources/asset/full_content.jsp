@@ -26,7 +26,6 @@ DDLRecordSet recordSet = record.getRecordSet();
 DDMStructure ddmStructure = recordSet.getDDMStructure();
 
 DDMFormValues ddmFormValues = StorageEngineUtil.getDDMFormValues(recordVersion.getDDMStorageId());
-
 %>
 
 <liferay-ddm:html
