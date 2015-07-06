@@ -620,6 +620,8 @@ public class AssetPublisherUtil {
 			allAssetCategoryIds = overrideAllAssetCategoryIds;
 		}
 
+		allAssetCategoryIds = _filterAssetCategoryIds(allAssetCategoryIds);
+
 		assetEntryQuery.setAllCategoryIds(allAssetCategoryIds);
 
 		if (overrideAllAssetTagNames != null) {
@@ -920,13 +922,9 @@ public class AssetPublisherUtil {
 
 			long scopeGroupId = GetterUtil.getLong(scopeIdSuffix);
 
-			Group scopeGroup = GroupLocalServiceUtil.fetchGroup(scopeGroupId);
+			Group scopeGroup = GroupLocalServiceUtil.getGroup(scopeGroupId);
 
-			if (scopeGroup == null) {
-				throw new PrincipalException();
-			}
-
-			return scopeGroupId;
+			return scopeGroup.getGroupId();
 		}
 		else if (scopeId.startsWith(SCOPE_ID_LAYOUT_UUID_PREFIX)) {
 			String layoutUuid = scopeId.substring(
@@ -1384,6 +1382,26 @@ public class AssetPublisherUtil {
 		}
 
 		return filteredAssetEntries;
+	}
+
+	private static long[] _filterAssetCategoryIds(long[] assetCategoryIds) {
+		List<Long> assetCategoryIdsList = new ArrayList<>();
+
+		for (long assetCategoryId : assetCategoryIds) {
+			AssetCategory category =
+				AssetCategoryLocalServiceUtil.fetchAssetCategory(
+					assetCategoryId);
+
+			if (category == null) {
+				continue;
+			}
+
+			assetCategoryIdsList.add(assetCategoryId);
+		}
+
+		return ArrayUtil.toArray(
+			assetCategoryIdsList.toArray(
+				new Long[assetCategoryIdsList.size()]));
 	}
 
 	private static List<AssetEntry> _filterAssetTagNamesAssetEntries(

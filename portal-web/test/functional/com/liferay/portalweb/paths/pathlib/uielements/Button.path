@@ -55,7 +55,7 @@
 </tr>
 <tr>
 	<td>ADD_TAGS</td>
-	<td>//button[contains(.,'Add Tags')]</td>
+	<td>//button[contains(.,'Add')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -156,6 +156,11 @@
 <tr>
 	<td>DOCUMENTS_AND_MEDIA</td>
 	<td>//div[@data-fieldname='${key_fieldName}']/div/button[contains(.,'Select')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DONE</td>
+	<td>//button[contains(.,'Done')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -290,7 +295,7 @@
 </tr>
 <tr>
 	<td>REPLY_AS</td>
-	<td>//button[contains(.,'Reply As...')]</td>
+	<td>//button[contains(.,'Reply as...')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -366,6 +371,11 @@
 <tr>
 	<td>SEND</td>
 	<td>//button[contains(.,'Send')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SHARE</td>
+	<td>//button[contains(.,'Share')]</td>
 	<td></td>
 </tr>
 <tr>

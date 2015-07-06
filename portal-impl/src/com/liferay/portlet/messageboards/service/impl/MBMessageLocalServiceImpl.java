@@ -57,6 +57,7 @@ import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.security.auth.PrincipalException;
+import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.LayoutURLUtil;
@@ -245,7 +246,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		if (mbGroupServiceSettings != null) {
 			if (!mbGroupServiceSettings.isAllowAnonymousPosting()) {
 				if (anonymous || user.isDefaultUser()) {
-					throw new PrincipalException();
+					throw new PrincipalException.MustHavePermission(
+						userId, ActionKeys.ADD_MESSAGE);
 				}
 			}
 		}
@@ -677,7 +679,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 			// Indexer
 
-			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+			Indexer<MBThread> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 				MBThread.class);
 
 			indexer.delete(thread);
@@ -784,7 +786,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 			// Indexer
 
-			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+			Indexer<MBThread> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 				MBThread.class);
 
 			indexer.reindex(thread);
@@ -1636,8 +1638,8 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 					// Indexer
 
-					Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-						MBMessage.class);
+					Indexer<MBMessage> indexer =
+						IndexerRegistryUtil.nullSafeGetIndexer(MBMessage.class);
 
 					indexer.delete(message);
 				}
@@ -1797,7 +1799,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		updateThreadStatus(thread, message, user, oldStatus, modifiedDate);
 
-		Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+		Indexer<MBMessage> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 			MBMessage.class);
 
 		if (status == WorkflowConstants.STATUS_APPROVED) {
@@ -2531,7 +2533,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		// Indexer
 
-		Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+		Indexer<MBThread> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 			MBThread.class);
 
 		indexer.reindex(thread);

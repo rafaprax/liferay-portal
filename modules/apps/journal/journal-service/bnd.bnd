@@ -14,6 +14,7 @@ Export-Package:\
 	com.liferay.journal.social,\
 	com.liferay.journal.transformer,\
 	com.liferay.journal.trash,\
+	com.liferay.journal.upgrade,\
 	com.liferay.journal.util.impl,\
 	com.liferay.journal.verify,\
 	com.liferay.journal.workflow
@@ -22,6 +23,7 @@ Include-Resource:\
 	custom-sql/default.xml=classes/META-INF/custom-sql/default.xml,\
 	META-INF/=../../../../portal-impl/src/META-INF/log4j.dtd,\
 	resource-actions/default.xml=classes/META-INF/resource-actions/default.xml,\
+	@../../../../util-java/util-java.jar!/com/liferay/util/ContentUtil.class,\
 	@../../../../util-java/util-java.jar!/com/liferay/util/FiniteUniqueStack.class,\
 	@../../../../util-java/util-java.jar!/com/liferay/util/FiniteStack.class,\
 	@../../../../util-java/util-java.jar!/com/liferay/util/RSSThreadLocal.class,\

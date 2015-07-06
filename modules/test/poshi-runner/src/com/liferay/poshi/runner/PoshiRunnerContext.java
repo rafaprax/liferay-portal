@@ -121,6 +121,10 @@ public class PoshiRunnerContext {
 	}
 
 	public static int getFunctionLocatorCount(String className) {
+		if (_functionLocatorCounts.get(className) == null) {
+			return 0;
+		}
+
 		return _functionLocatorCounts.get(className);
 	}
 
@@ -170,6 +174,10 @@ public class PoshiRunnerContext {
 
 	public static String getTestCaseName() {
 		return _testClassName;
+	}
+
+	public static List<String> getTestCaseRequiredPropertyNames() {
+		return _testCaseRequiredPropertyNames;
 	}
 
 	public static Element getTestCaseRootElement(String className) {
@@ -417,7 +425,8 @@ public class PoshiRunnerContext {
 					}
 
 					if (extendFilePath.endsWith(expectedExtendedPath)) {
-						extendFilePath = _BASE_DIR + "/" + extendFilePath;
+						extendFilePath =
+							_TEST_BASE_DIR_NAME + "/" + extendFilePath;
 
 						_readPathFile(
 							extendFilePath, className,
@@ -438,7 +447,7 @@ public class PoshiRunnerContext {
 	private static void _readPoshiFiles() throws Exception {
 		DirectoryScanner directoryScanner = new DirectoryScanner();
 
-		directoryScanner.setBasedir(_BASE_DIR);
+		directoryScanner.setBasedir(_TEST_BASE_DIR_NAME);
 		directoryScanner.setIncludes(
 			new String[] {
 				"**\\*.action", "**\\*.function", "**\\*.macro", "**\\*.path",
@@ -450,7 +459,7 @@ public class PoshiRunnerContext {
 		_filePathsArray = directoryScanner.getIncludedFiles();
 
 		for (String filePath : _filePathsArray) {
-			filePath = _BASE_DIR + "/" + filePath;
+			filePath = _TEST_BASE_DIR_NAME + "/" + filePath;
 
 			if (OSDetector.isWindows()) {
 				filePath = filePath.replace("/", "\\");
@@ -659,7 +668,7 @@ public class PoshiRunnerContext {
 		FileUtil.write("test.generated.properties", sb.toString());
 	}
 
-	private static final String _BASE_DIR =
+	private static final String _TEST_BASE_DIR_NAME =
 		PoshiRunnerGetterUtil.getCanonicalPath(PropsValues.TEST_BASE_DIR_NAME);
 
 	private static final Map<String, String> _actionExtendClassName =
@@ -683,6 +692,8 @@ public class PoshiRunnerContext {
 	private static final Map<String, Set<String>> _testCaseClassCommandNames =
 		new TreeMap<>();
 	private static final List<String> _testCaseClassNames = new ArrayList<>();
+	private static final List<String> _testCaseRequiredPropertyNames =
+		new ArrayList<>();
 	private static String _testClassCommandName;
 	private static String _testClassName;
 
@@ -705,6 +716,14 @@ public class PoshiRunnerContext {
 			_testCaseAvailablePropertyNames.addAll(
 				Arrays.asList(
 					StringUtil.split(testCaseAvailablePropertyNames)));
+		}
+
+		String testCaseRequiredPropertyNames =
+			PropsValues.TEST_CASE_REQUIRED_PROPERTY_NAMES;
+
+		if (Validator.isNotNull(testCaseRequiredPropertyNames)) {
+			_testCaseRequiredPropertyNames.addAll(
+				Arrays.asList(StringUtil.split(testCaseRequiredPropertyNames)));
 		}
 	}
 

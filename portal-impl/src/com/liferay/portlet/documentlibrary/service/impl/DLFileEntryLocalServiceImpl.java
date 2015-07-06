@@ -15,12 +15,14 @@
 package com.liferay.portlet.documentlibrary.service.impl;
 
 import com.liferay.portal.NoSuchModelException;
+import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.image.ImageBag;
@@ -36,6 +38,10 @@ import com.liferay.portal.kernel.lock.LockManagerUtil;
 import com.liferay.portal.kernel.lock.NoSuchLockException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.event.RepositoryEventTrigger;
+import com.liferay.portal.kernel.repository.event.RepositoryEventType;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Indexable;
@@ -75,6 +81,7 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portal.util.RepositoryUtil;
 import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.DuplicateFolderNameException;
 import com.liferay.portlet.documentlibrary.FileExtensionException;
@@ -101,6 +108,7 @@ import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.portlet.documentlibrary.util.DLValidatorUtil;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelModifiedDateComparator;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
 import com.liferay.portlet.expando.NoSuchRowException;
@@ -720,6 +728,9 @@ public class DLFileEntryLocalServiceImpl
 			final boolean includeTrashedEntries)
 		throws PortalException {
 
+		final RepositoryEventTrigger repositoryEventTrigger =
+			getFolderRepositoryEventTrigger(groupId, folderId);
+
 		ActionableDynamicQuery actionableDynamicQuery =
 			dlFileEntryLocalService.getActionableDynamicQuery();
 
@@ -747,6 +758,10 @@ public class DLFileEntryLocalServiceImpl
 
 					if (includeTrashedEntries ||
 						!dlFileEntry.isInTrashExplicitly()) {
+
+						repositoryEventTrigger.trigger(
+							RepositoryEventType.Delete.class, FileEntry.class,
+							new LiferayFileEntry(dlFileEntry));
 
 						dlFileEntryLocalService.deleteFileEntry(dlFileEntry);
 					}
@@ -972,6 +987,9 @@ public class DLFileEntryLocalServiceImpl
 			final boolean includeTrashedEntries)
 		throws PortalException {
 
+		final RepositoryEventTrigger repositoryEventTrigger =
+			RepositoryUtil.getRepositoryEventTrigger(repositoryId);
+
 		int total = dlFileEntryPersistence.countByR_F(repositoryId, folderId);
 
 		final IntervalActionProcessor<Void> intervalActionProcessor =
@@ -991,6 +1009,11 @@ public class DLFileEntryLocalServiceImpl
 					for (DLFileEntry dlFileEntry : dlFileEntries) {
 						if (includeTrashedEntries ||
 							!dlFileEntry.isInTrashExplicitly()) {
+
+							repositoryEventTrigger.trigger(
+								RepositoryEventType.Delete.class,
+								FileEntry.class,
+								new LiferayFileEntry(dlFileEntry));
 
 							dlFileEntryLocalService.deleteFileEntry(
 								dlFileEntry);
@@ -1708,7 +1731,7 @@ public class DLFileEntryLocalServiceImpl
 			String[] mimeTypes, int status, int start, int end)
 		throws PortalException {
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(
+		Indexer<DLFileEntry> indexer = IndexerRegistryUtil.getIndexer(
 			DLFileEntryConstants.getClassName());
 
 		SearchContext searchContext = new SearchContext();
@@ -1745,7 +1768,11 @@ public class DLFileEntryLocalServiceImpl
 			final long folderId, final String treePath, final boolean reindex)
 		throws PortalException {
 
-		ActionableDynamicQuery actionableDynamicQuery =
+		if (treePath == null) {
+			throw new IllegalArgumentException("Tree path is null");
+		}
+
+		final ActionableDynamicQuery actionableDynamicQuery =
 			getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
@@ -1761,12 +1788,15 @@ public class DLFileEntryLocalServiceImpl
 					Property treePathProperty = PropertyFactoryUtil.forName(
 						"treePath");
 
-					dynamicQuery.add(treePathProperty.ne(treePath));
+					dynamicQuery.add(
+						RestrictionsFactoryUtil.or(
+							treePathProperty.isNull(),
+							treePathProperty.ne(treePath)));
 				}
 
 			});
 
-		final Indexer indexer = IndexerRegistryUtil.getIndexer(
+		final Indexer<DLFileEntry> indexer = IndexerRegistryUtil.getIndexer(
 			DLFileEntry.class.getName());
 
 		actionableDynamicQuery.setPerformActionMethod(
@@ -1786,7 +1816,9 @@ public class DLFileEntryLocalServiceImpl
 						return;
 					}
 
-					indexer.reindex(dlFileEntry);
+					Document document = indexer.getDocument(dlFileEntry);
+
+					actionableDynamicQuery.addDocument(document);
 				}
 
 			});
@@ -1976,8 +2008,8 @@ public class DLFileEntryLocalServiceImpl
 					dlFileVersion.getVersion(),
 					DLFileEntryConstants.VERSION_DEFAULT)) {
 
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					DLFileEntry.class);
+				Indexer<DLFileEntry> indexer =
+					IndexerRegistryUtil.nullSafeGetIndexer(DLFileEntry.class);
 
 				indexer.delete(dlFileEntry);
 			}
@@ -2270,6 +2302,17 @@ public class DLFileEntryLocalServiceImpl
 		}
 	}
 
+	protected RepositoryEventTrigger getFolderRepositoryEventTrigger(
+			long groupId, long folderId)
+		throws PortalException {
+
+		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return RepositoryUtil.getFolderRepositoryEventTrigger(folderId);
+		}
+
+		return RepositoryUtil.getRepositoryEventTrigger(groupId);
+	}
+
 	protected String getNextVersion(
 			DLFileEntry dlFileEntry, boolean majorVersion, int workflowAction)
 		throws PortalException {
@@ -2525,7 +2568,7 @@ public class DLFileEntryLocalServiceImpl
 	}
 
 	protected void reindex(DLFileEntry dlFileEntry) throws SearchException {
-		Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+		Indexer<DLFileEntry> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 			DLFileEntry.class);
 
 		indexer.reindex(dlFileEntry);
@@ -2825,6 +2868,9 @@ public class DLFileEntryLocalServiceImpl
 			}
 		}
 	}
+
+	@BeanReference(type = DDMStructureLocalService.class)
+	protected DDMStructureLocalService ddmStructureLocalService;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DLFileEntryLocalServiceImpl.class);
