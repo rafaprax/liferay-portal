@@ -3468,6 +3468,7 @@ public class SACPEntryPersistenceImpl extends BasePersistenceImpl<SACPEntry>
 		sacpEntryImpl.setCreateDate(sacpEntry.getCreateDate());
 		sacpEntryImpl.setModifiedDate(sacpEntry.getModifiedDate());
 		sacpEntryImpl.setAllowedServiceSignatures(sacpEntry.getAllowedServiceSignatures());
+		sacpEntryImpl.setDefaultSACPEntry(sacpEntry.isDefaultSACPEntry());
 		sacpEntryImpl.setName(sacpEntry.getName());
 		sacpEntryImpl.setTitle(sacpEntry.getTitle());
 
@@ -3830,6 +3831,18 @@ public class SACPEntryPersistenceImpl extends BasePersistenceImpl<SACPEntry>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected int getColumnType(String columnName) {
+		Integer type = SACPEntryModelImpl.TABLE_COLUMNS_MAP.get(columnName);
+
+		if (type == null) {
+			throw new IllegalArgumentException("Unknown column name " +
+				columnName + " for table " + SACPEntryModelImpl.TABLE_NAME);
+		}
+
+		return type;
 	}
 
 	/**
