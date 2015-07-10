@@ -1996,6 +1996,11 @@ public class TrashVersionPersistenceImpl extends BasePersistenceImpl<TrashVersio
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return TrashVersionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the trash version persistence.
 	 */

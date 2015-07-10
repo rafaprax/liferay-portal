@@ -1566,6 +1566,11 @@ public class ListTypePersistenceImpl extends BasePersistenceImpl<ListType>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ListTypeModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the list type persistence.
 	 */

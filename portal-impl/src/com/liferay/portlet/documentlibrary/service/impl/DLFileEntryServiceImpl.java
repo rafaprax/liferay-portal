@@ -39,6 +39,7 @@ import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,7 +85,9 @@ public class DLFileEntryServiceImpl extends DLFileEntryServiceBaseImpl {
 			if (locked && !hasFileEntryLock(fileEntryId) &&
 				!_hasOverrideCheckoutPermission(fileEntryId)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					getUserId(), DLFileEntry.class.getName(), fileEntryId,
+					ActionKeys.OVERRIDE_CHECKOUT);
 			}
 		}
 		catch (NoSuchFileEntryException nsfee) {
@@ -106,7 +109,9 @@ public class DLFileEntryServiceImpl extends DLFileEntryServiceBaseImpl {
 			if (isLocked && !hasFileEntryLock(fileEntryId) &&
 				!_hasOverrideCheckoutPermission(fileEntryId)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					getUserId(), DLFileEntry.class.getName(), fileEntryId,
+					ActionKeys.OVERRIDE_CHECKOUT);
 			}
 		}
 		catch (NoSuchFileEntryException nsfee) {
@@ -137,7 +142,9 @@ public class DLFileEntryServiceImpl extends DLFileEntryServiceBaseImpl {
 			if (!hasFileEntryLock(fileEntryId) &&
 				!_hasOverrideCheckoutPermission(fileEntryId)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					getUserId(), DLFileEntry.class.getName(), fileEntryId,
+					ActionKeys.OVERRIDE_CHECKOUT);
 			}
 		}
 		catch (NoSuchFileEntryException nsfee) {
@@ -607,6 +614,20 @@ public class DLFileEntryServiceImpl extends DLFileEntryServiceBaseImpl {
 	}
 
 	@Override
+	public boolean isKeepFileVersionLabel(
+			long fileEntryId, ServiceContext serviceContext)
+		throws PortalException {
+
+		PermissionChecker permissionChecker = getPermissionChecker();
+
+		DLFileEntryPermission.check(
+			permissionChecker, fileEntryId, ActionKeys.VIEW);
+
+		return dlFileEntryLocalService.isKeepFileVersionLabel(
+			fileEntryId, serviceContext);
+	}
+
+	@Override
 	public DLFileEntry moveFileEntry(
 			long fileEntryId, long newFolderId, ServiceContext serviceContext)
 		throws PortalException {
@@ -680,6 +701,24 @@ public class DLFileEntryServiceImpl extends DLFileEntryServiceBaseImpl {
 			getUserId(), fileEntryId, sourceFileName, mimeType, title,
 			description, changeLog, majorVersion, fileEntryTypeId,
 			ddmFormValuesMap, file, is, size, serviceContext);
+	}
+
+	@Override
+	public DLFileEntry updateStatus(
+			long userId, long fileVersionId, int status,
+			ServiceContext serviceContext,
+			Map<String, Serializable> workflowContext)
+		throws PortalException {
+
+		DLFileVersion dlFileVersion = dlFileVersionLocalService.getFileVersion(
+			fileVersionId);
+
+		DLFileEntryPermission.check(
+			getPermissionChecker(), dlFileVersion.getFileEntryId(),
+			ActionKeys.UPDATE);
+
+		return dlFileEntryLocalService.updateStatus(
+			userId, fileVersionId, status, serviceContext, workflowContext);
 	}
 
 	@Override

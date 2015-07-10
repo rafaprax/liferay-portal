@@ -2390,6 +2390,11 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalArticleResourceModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the journal article resource persistence.
 	 */

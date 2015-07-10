@@ -2658,6 +2658,11 @@ public class AssetCategoryPropertyPersistenceImpl extends BasePersistenceImpl<As
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AssetCategoryPropertyModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the asset category property persistence.
 	 */

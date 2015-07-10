@@ -11523,6 +11523,11 @@ public class AssetCategoryPersistenceImpl extends BasePersistenceImpl<AssetCateg
 	}
 
 	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AssetCategoryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
+	@Override
 	public long countAncestors(AssetCategory assetCategory) {
 		Object[] finderArgs = new Object[] {
 				assetCategory.getGroupId(), assetCategory.getLeftCategoryId(),

@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<project name="portal-test-batch" basedir="." xmlns:antelope="antlib:ise.antelope.tasks" xmlns:if="ant:if" xmlns:unless="ant:unless">
+	<import file="build-test.xml" />
+
+	<condition else="0" property="jenkins.axis.variable" value="${env.AXIS_VARIABLE}">
+		<isset property="env.AXIS_VARIABLE" />
+	</condition>
+
+	<macrodef name="check-deprecated-method">
+		<sequential>
+			<if>
+				<and>
+					<available file="javac.output.txt" />
+					<isset property="env.TOP_LEVEL_SHARED_DIR" />
+				</and>
+				<then>
+					<copy file="javac.output.txt" tofile="${env.TOP_LEVEL_SHARED_DIR}/javac.output.txt" />
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="merge-test-results">
+		<sequential>
+			<antcall target="merge-test-results" />
+
+			<if>
+				<isset property="env.WORKSPACE" />
+				<then>
+					<mkdir dir="${env.WORKSPACE}/test-results" />
+
+					<copy file="test-results/TESTS-TestSuites.xml" tofile="${env.WORKSPACE}/test-results/TESTS-TestSuites.xml" />
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="prepare-test-build">
+		<sequential>
+			<antcall target="prepare-test-build" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="run-batch-test">
+		<attribute name="test.class.group.index" />
+		<element name="test-action" />
+		<sequential>
+			<if>
+				<not>
+					<equals arg1="@{test.class.group.index}" arg2="default" />
+				</not>
+				<then>
+					<prepare-test-build />
+
+					<test-action />
+
+					<merge-test-results />
+
+					<check-deprecated-method />
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="run-build-selenium">
+		<sequential>
+			<ant antfile="build.xml" dir="portal-web" target="build-selenium" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="run-source-formatter">
+		<sequential>
+			<antcall target="test-package" inheritAll="false">
+				<param name="test.package" value="com.liferay.source.formatter" />
+			</antcall>
+		</sequential>
+	</macrodef>
+
+	<target name="integration-mysql">
+		<run-batch-test test.class.group.index="${jenkins.axis.variable}">
+			<test-action>
+				<antcall target="test-class-group">
+					<param name="test.class.group.index" value="@{test.class.group.index}" />
+				</antcall>
+			</test-action>
+		</run-batch-test>
+	</target>
+
+	<target name="integration-oracle">
+		<echo>${jenkins.axis.variable}</echo>
+	</target>
+
+	<target name="integration-postgresql">
+		<echo>${jenkins.axis.variable}</echo>
+	</target>
+
+	<target name="plugins">
+		<run-batch-test test.class.group.index="${jenkins.axis.variable}">
+			<test-action>
+				<ant antfile="build-test-plugins.xml" target="test-plugin-group">
+					<property name="test.plugin.group.index" value="@{test.class.group.index}" />
+				</ant>
+			</test-action>
+		</run-batch-test>
+	</target>
+
+	<target name="portal-web">
+		<run-batch-test test.class.group.index="${jenkins.axis.variable}">
+			<test-action>
+				<run-build-selenium />
+
+				<run-source-formatter />
+			</test-action>
+		</run-batch-test>
+	</target>
+
+	<target name="unit">
+		<echo>${jenkins.axis.variable}</echo>
+	</target>
+</project>

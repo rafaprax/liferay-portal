@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -627,9 +628,8 @@ public class JournalFolderLocalServiceImpl
 
 		extraDataJSONObject.put("title", title);
 
-		socialActivityLocalService.addActivity(
-			userId, folder.getGroupId(), JournalFolder.class.getName(),
-			folder.getFolderId(), SocialActivityConstants.TYPE_MOVE_TO_TRASH,
+		SocialActivityManagerUtil.addActivity(
+			userId, folder, SocialActivityConstants.TYPE_MOVE_TO_TRASH,
 			extraDataJSONObject.toString(), 0);
 
 		return folder;
@@ -680,11 +680,13 @@ public class JournalFolderLocalServiceImpl
 						return;
 					}
 
-					Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-						JournalFolder.class);
+					Indexer<JournalFolder> indexer =
+						IndexerRegistryUtil.nullSafeGetIndexer(
+							JournalFolder.class);
 
 					for (TreeModel treeModel : treeModels) {
-						indexer.reindex(treeModel);
+						JournalFolder journalFolder = (JournalFolder)treeModel;
+						indexer.reindex(journalFolder);
 					}
 				}
 
@@ -730,10 +732,8 @@ public class JournalFolderLocalServiceImpl
 
 		extraDataJSONObject.put("title", folder.getName());
 
-		socialActivityLocalService.addActivity(
-			userId, folder.getGroupId(), JournalFolder.class.getName(),
-			folder.getFolderId(),
-			SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
+		SocialActivityManagerUtil.addActivity(
+			userId, folder, SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
 			extraDataJSONObject.toString(), 0);
 	}
 
@@ -946,7 +946,7 @@ public class JournalFolderLocalServiceImpl
 
 		// Index
 
-		Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+		Indexer<JournalFolder> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 			JournalFolder.class);
 
 		indexer.reindex(folder);
@@ -1131,8 +1131,8 @@ public class JournalFolderLocalServiceImpl
 
 			journalArticlePersistence.update(article);
 
-			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-				JournalArticle.class);
+			Indexer<JournalArticle> indexer =
+				IndexerRegistryUtil.nullSafeGetIndexer(JournalArticle.class);
 
 			indexer.reindex(article);
 		}
@@ -1211,8 +1211,9 @@ public class JournalFolderLocalServiceImpl
 
 				// Indexer
 
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					JournalArticle.class);
+				Indexer<JournalArticle> indexer =
+					IndexerRegistryUtil.nullSafeGetIndexer(
+						JournalArticle.class);
 
 				indexer.reindex(article);
 			}
@@ -1254,8 +1255,8 @@ public class JournalFolderLocalServiceImpl
 
 				// Index
 
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					JournalFolder.class);
+				Indexer<JournalFolder> indexer =
+					IndexerRegistryUtil.nullSafeGetIndexer(JournalFolder.class);
 
 				indexer.reindex(folder);
 			}
@@ -1327,8 +1328,9 @@ public class JournalFolderLocalServiceImpl
 
 				// Indexer
 
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					JournalArticle.class);
+				Indexer<JournalArticle> indexer =
+					IndexerRegistryUtil.nullSafeGetIndexer(
+						JournalArticle.class);
 
 				indexer.reindex(article);
 			}
@@ -1377,8 +1379,8 @@ public class JournalFolderLocalServiceImpl
 
 				// Index
 
-				Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-					JournalFolder.class);
+				Indexer<JournalFolder> indexer =
+					IndexerRegistryUtil.nullSafeGetIndexer(JournalFolder.class);
 
 				indexer.reindex(folder);
 			}

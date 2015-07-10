@@ -3853,6 +3853,11 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LayoutSetBranchModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the layout set branch persistence.
 	 */

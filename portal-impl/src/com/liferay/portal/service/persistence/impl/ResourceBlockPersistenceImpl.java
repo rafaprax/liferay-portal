@@ -2306,6 +2306,11 @@ public class ResourceBlockPersistenceImpl extends BasePersistenceImpl<ResourceBl
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ResourceBlockModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the resource block persistence.
 	 */

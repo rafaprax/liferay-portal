@@ -9646,6 +9646,11 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RoleModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the role persistence.
 	 */

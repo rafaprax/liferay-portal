@@ -7587,6 +7587,11 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return BookmarksFolderModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the bookmarks folder persistence.
 	 */

@@ -1983,6 +1983,11 @@ public class ShoppingCartPersistenceImpl extends BasePersistenceImpl<ShoppingCar
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ShoppingCartModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the shopping cart persistence.
 	 */

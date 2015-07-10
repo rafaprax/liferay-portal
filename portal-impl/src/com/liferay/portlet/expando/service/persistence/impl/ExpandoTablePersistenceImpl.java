@@ -1564,6 +1564,11 @@ public class ExpandoTablePersistenceImpl extends BasePersistenceImpl<ExpandoTabl
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ExpandoTableModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the expando table persistence.
 	 */

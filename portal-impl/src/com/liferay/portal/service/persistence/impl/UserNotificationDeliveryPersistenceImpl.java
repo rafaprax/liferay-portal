@@ -1627,6 +1627,11 @@ public class UserNotificationDeliveryPersistenceImpl extends BasePersistenceImpl
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return UserNotificationDeliveryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the user notification delivery persistence.
 	 */

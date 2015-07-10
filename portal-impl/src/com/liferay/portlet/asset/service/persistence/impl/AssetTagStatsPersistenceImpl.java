@@ -1964,6 +1964,11 @@ public class AssetTagStatsPersistenceImpl extends BasePersistenceImpl<AssetTagSt
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AssetTagStatsModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the asset tag stats persistence.
 	 */

@@ -2689,6 +2689,11 @@ public class SocialActivityLimitPersistenceImpl extends BasePersistenceImpl<Soci
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SocialActivityLimitModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the social activity limit persistence.
 	 */

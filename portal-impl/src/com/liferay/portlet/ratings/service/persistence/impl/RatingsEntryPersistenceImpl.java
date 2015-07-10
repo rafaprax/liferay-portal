@@ -3272,6 +3272,11 @@ public class RatingsEntryPersistenceImpl extends BasePersistenceImpl<RatingsEntr
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RatingsEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the ratings entry persistence.
 	 */

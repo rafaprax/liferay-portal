@@ -12028,6 +12028,11 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLFolderModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the document library folder persistence.
 	 */

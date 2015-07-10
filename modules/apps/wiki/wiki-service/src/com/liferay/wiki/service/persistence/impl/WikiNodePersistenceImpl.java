@@ -5238,6 +5238,11 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return WikiNodeModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the wiki node persistence.
 	 */

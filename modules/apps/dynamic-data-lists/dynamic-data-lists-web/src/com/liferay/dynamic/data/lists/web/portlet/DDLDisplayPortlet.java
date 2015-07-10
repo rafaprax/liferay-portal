@@ -14,12 +14,14 @@
 
 package com.liferay.dynamic.data.lists.web.portlet;
 
+import com.liferay.dynamic.data.lists.constants.DDLWebKeys;
 import com.liferay.dynamic.data.lists.exception.NoSuchRecordSetException;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordService;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetService;
 import com.liferay.dynamic.data.lists.web.constants.DDLPortletKeys;
+import com.liferay.portal.PortletPreferencesException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -28,7 +30,6 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PrefsParamUtil;
 import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.util.WebKeys;
 
 import java.io.IOException;
 
@@ -116,7 +117,10 @@ public class DDLDisplayPortlet extends MVCPortlet {
 		if (SessionErrors.contains(
 				renderRequest, NoSuchRecordSetException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest,
+				PortletPreferencesException.MustBeStrict.class.getName()) ||
+			SessionErrors.contains(
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(templatePath + "error.jsp", renderRequest, renderResponse);
 		}
@@ -128,6 +132,7 @@ public class DDLDisplayPortlet extends MVCPortlet {
 	@Override
 	protected boolean isSessionErrorException(Throwable cause) {
 		if (cause instanceof NoSuchRecordSetException ||
+			cause instanceof PortletPreferencesException ||
 			cause instanceof PrincipalException) {
 
 			return true;
@@ -147,7 +152,8 @@ public class DDLDisplayPortlet extends MVCPortlet {
 			record = _ddlRecordService.getRecord(recordId);
 		}
 
-		renderRequest.setAttribute(WebKeys.DYNAMIC_DATA_LISTS_RECORD, record);
+		renderRequest.setAttribute(
+			DDLWebKeys.DYNAMIC_DATA_LISTS_RECORD, record);
 	}
 
 	protected void setDDLRecordSetRequestAttribute(RenderRequest renderRequest)
@@ -163,7 +169,7 @@ public class DDLDisplayPortlet extends MVCPortlet {
 		}
 
 		renderRequest.setAttribute(
-			WebKeys.DYNAMIC_DATA_LISTS_RECORD_SET, recordSet);
+			DDLWebKeys.DYNAMIC_DATA_LISTS_RECORD_SET, recordSet);
 	}
 
 	@Reference

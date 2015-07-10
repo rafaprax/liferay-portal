@@ -1576,6 +1576,11 @@ public class PluginSettingPersistenceImpl extends BasePersistenceImpl<PluginSett
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PluginSettingModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the plugin setting persistence.
 	 */

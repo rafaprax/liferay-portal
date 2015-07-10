@@ -14,6 +14,8 @@
 
 package com.liferay.portlet.messageboards.asset;
 
+import com.liferay.portal.kernel.comment.Comment;
+import com.liferay.portal.kernel.comment.CommentManagerUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -23,10 +25,10 @@ import com.liferay.portlet.PortletURLFactoryUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Jorge Ferrer
@@ -38,6 +40,24 @@ public class MBDiscussionAssetRenderer extends MBMessageAssetRenderer {
 		super(message);
 
 		_message = message;
+	}
+
+	@Override
+	public String getJspPath(HttpServletRequest request, String template) {
+		if (template.equals(TEMPLATE_ABSTRACT) ||
+			template.equals(TEMPLATE_FULL_CONTENT)) {
+
+			return "/html/portlet/message_boards/asset/discussion_" +
+				template + ".jsp";
+		}
+		else {
+			return null;
+		}
+	}
+
+	@Override
+	public int getStatus() {
+		return _message.getStatus();
 	}
 
 	@Override
@@ -59,7 +79,7 @@ public class MBDiscussionAssetRenderer extends MBMessageAssetRenderer {
 		editPortletURL.setParameter(
 			"struts_action", "/message_boards/edit_discussion");
 		editPortletURL.setParameter(
-			"messageId", String.valueOf(_message.getMessageId()));
+			"commentId", String.valueOf(_message.getMessageId()));
 
 		return editPortletURL;
 	}
@@ -74,24 +94,17 @@ public class MBDiscussionAssetRenderer extends MBMessageAssetRenderer {
 	}
 
 	@Override
-	public String render(
-			PortletRequest portletRequest, PortletResponse portletResponse,
+	public boolean include(
+			HttpServletRequest request, HttpServletResponse response,
 			String template)
 		throws Exception {
 
-		if (template.equals(TEMPLATE_ABSTRACT) ||
-			template.equals(TEMPLATE_FULL_CONTENT)) {
+		Comment comment = CommentManagerUtil.fetchComment(
+			_message.getMessageId());
 
-			portletRequest.setAttribute(
-				WebKeys.MESSAGE_BOARDS_MESSAGE, _message);
+		request.setAttribute(WebKeys.COMMENT, comment);
 
-			return
-				"/html/portlet/message_boards/asset/discussion_" + template +
-					".jsp";
-		}
-		else {
-			return null;
-		}
+		return super.include(request, response, template);
 	}
 
 	private final MBMessage _message;

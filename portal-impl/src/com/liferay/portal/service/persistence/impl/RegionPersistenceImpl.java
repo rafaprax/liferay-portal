@@ -2517,6 +2517,11 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RegionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the region persistence.
 	 */

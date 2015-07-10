@@ -991,6 +991,11 @@ public class WebDAVPropsPersistenceImpl extends BasePersistenceImpl<WebDAVProps>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return WebDAVPropsModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the web d a v props persistence.
 	 */

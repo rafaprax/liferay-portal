@@ -3547,6 +3547,11 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SubscriptionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the subscription persistence.
 	 */

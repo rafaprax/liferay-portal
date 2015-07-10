@@ -3321,6 +3321,11 @@ public class JournalFeedPersistenceImpl extends BasePersistenceImpl<JournalFeed>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalFeedModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the journal feed persistence.
 	 */

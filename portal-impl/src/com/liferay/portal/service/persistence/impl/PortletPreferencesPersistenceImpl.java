@@ -5137,6 +5137,11 @@ public class PortletPreferencesPersistenceImpl extends BasePersistenceImpl<Portl
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PortletPreferencesModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the portlet preferences persistence.
 	 */

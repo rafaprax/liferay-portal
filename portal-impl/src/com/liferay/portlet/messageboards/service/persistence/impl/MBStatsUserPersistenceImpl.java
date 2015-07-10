@@ -2491,6 +2491,11 @@ public class MBStatsUserPersistenceImpl extends BasePersistenceImpl<MBStatsUser>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBStatsUserModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message boards stats user persistence.
 	 */

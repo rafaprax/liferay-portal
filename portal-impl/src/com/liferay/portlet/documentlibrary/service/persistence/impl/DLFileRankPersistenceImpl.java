@@ -3119,6 +3119,11 @@ public class DLFileRankPersistenceImpl extends BasePersistenceImpl<DLFileRank>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLFileRankModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the document library file rank persistence.
 	 */

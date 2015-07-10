@@ -7728,6 +7728,11 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return OrganizationModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the organization persistence.
 	 */

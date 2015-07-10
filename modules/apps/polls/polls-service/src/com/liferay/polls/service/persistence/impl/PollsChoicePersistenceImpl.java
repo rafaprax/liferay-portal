@@ -2963,6 +2963,11 @@ public class PollsChoicePersistenceImpl extends BasePersistenceImpl<PollsChoice>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PollsChoiceModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the polls choice persistence.
 	 */

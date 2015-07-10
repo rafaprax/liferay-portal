@@ -2667,6 +2667,11 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MDRActionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the m d r action persistence.
 	 */

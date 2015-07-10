@@ -2644,6 +2644,11 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LockModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the lock persistence.
 	 */

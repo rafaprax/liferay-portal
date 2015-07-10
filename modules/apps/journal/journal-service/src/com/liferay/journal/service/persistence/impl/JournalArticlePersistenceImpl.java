@@ -30233,6 +30233,11 @@ public class JournalArticlePersistenceImpl extends BasePersistenceImpl<JournalAr
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalArticleModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the journal article persistence.
 	 */

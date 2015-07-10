@@ -2949,6 +2949,11 @@ public class MBMailingListPersistenceImpl extends BasePersistenceImpl<MBMailingL
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBMailingListModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message boards mailing list persistence.
 	 */

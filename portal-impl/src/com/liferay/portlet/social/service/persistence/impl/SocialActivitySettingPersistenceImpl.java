@@ -3269,6 +3269,11 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SocialActivitySettingModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the social activity setting persistence.
 	 */

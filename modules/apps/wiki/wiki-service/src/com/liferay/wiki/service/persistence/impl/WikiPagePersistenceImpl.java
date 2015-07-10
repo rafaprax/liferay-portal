@@ -22472,6 +22472,11 @@ public class WikiPagePersistenceImpl extends BasePersistenceImpl<WikiPage>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return WikiPageModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the wiki page persistence.
 	 */

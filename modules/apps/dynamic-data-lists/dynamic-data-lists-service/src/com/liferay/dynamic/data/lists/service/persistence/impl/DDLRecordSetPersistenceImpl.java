@@ -3752,6 +3752,11 @@ public class DDLRecordSetPersistenceImpl extends BasePersistenceImpl<DDLRecordSe
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDLRecordSetModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d l record set persistence.
 	 */

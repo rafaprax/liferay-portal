@@ -12695,6 +12695,11 @@ public class BookmarksEntryPersistenceImpl extends BasePersistenceImpl<Bookmarks
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return BookmarksEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the bookmarks entry persistence.
 	 */

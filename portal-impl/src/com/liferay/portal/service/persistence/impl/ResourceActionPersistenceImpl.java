@@ -1571,6 +1571,11 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ResourceActionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the resource action persistence.
 	 */

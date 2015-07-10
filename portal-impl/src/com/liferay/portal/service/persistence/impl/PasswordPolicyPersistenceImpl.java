@@ -4160,6 +4160,11 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PasswordPolicyModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the password policy persistence.
 	 */

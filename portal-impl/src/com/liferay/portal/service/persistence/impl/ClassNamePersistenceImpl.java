@@ -957,6 +957,11 @@ public class ClassNamePersistenceImpl extends BasePersistenceImpl<ClassName>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ClassNameModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the class name persistence.
 	 */

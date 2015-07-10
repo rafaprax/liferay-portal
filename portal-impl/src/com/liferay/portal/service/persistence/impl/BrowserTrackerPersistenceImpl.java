@@ -933,6 +933,11 @@ public class BrowserTrackerPersistenceImpl extends BasePersistenceImpl<BrowserTr
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return BrowserTrackerModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the browser tracker persistence.
 	 */

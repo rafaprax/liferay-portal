@@ -12507,6 +12507,11 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDMTemplateModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d m template persistence.
 	 */

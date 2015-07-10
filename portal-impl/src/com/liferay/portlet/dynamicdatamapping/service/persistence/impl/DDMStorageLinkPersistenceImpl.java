@@ -1997,6 +1997,11 @@ public class DDMStorageLinkPersistenceImpl extends BasePersistenceImpl<DDMStorag
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDMStorageLinkModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d m storage link persistence.
 	 */

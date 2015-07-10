@@ -2847,6 +2847,11 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLContentModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the document library content persistence.
 	 */

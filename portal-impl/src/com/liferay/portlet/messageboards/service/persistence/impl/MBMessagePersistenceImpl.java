@@ -19398,6 +19398,11 @@ public class MBMessagePersistenceImpl extends BasePersistenceImpl<MBMessage>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBMessageModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message-boards message persistence.
 	 */

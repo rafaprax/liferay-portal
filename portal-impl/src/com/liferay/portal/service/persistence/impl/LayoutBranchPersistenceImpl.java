@@ -2657,6 +2657,11 @@ public class LayoutBranchPersistenceImpl extends BasePersistenceImpl<LayoutBranc
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LayoutBranchModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the layout branch persistence.
 	 */

@@ -10237,6 +10237,11 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBCategoryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message boards category persistence.
 	 */

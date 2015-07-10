@@ -1232,6 +1232,11 @@ public class VirtualHostPersistenceImpl extends BasePersistenceImpl<VirtualHost>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return VirtualHostModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the virtual host persistence.
 	 */

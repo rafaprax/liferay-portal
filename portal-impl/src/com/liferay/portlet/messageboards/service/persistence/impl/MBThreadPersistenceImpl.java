@@ -13367,6 +13367,11 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBThreadModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message boards thread persistence.
 	 */

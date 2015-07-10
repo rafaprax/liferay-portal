@@ -3150,6 +3150,11 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDMContentModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d m content persistence.
 	 */

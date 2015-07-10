@@ -963,6 +963,11 @@ public class RatingsStatsPersistenceImpl extends BasePersistenceImpl<RatingsStat
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RatingsStatsModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the ratings stats persistence.
 	 */

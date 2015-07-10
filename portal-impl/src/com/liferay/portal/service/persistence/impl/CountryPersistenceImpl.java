@@ -1988,6 +1988,11 @@ public class CountryPersistenceImpl extends BasePersistenceImpl<Country>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return CountryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the country persistence.
 	 */

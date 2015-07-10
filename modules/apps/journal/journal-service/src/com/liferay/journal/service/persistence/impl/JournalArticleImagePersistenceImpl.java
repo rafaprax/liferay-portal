@@ -2874,6 +2874,11 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalArticleImageModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the journal article image persistence.
 	 */

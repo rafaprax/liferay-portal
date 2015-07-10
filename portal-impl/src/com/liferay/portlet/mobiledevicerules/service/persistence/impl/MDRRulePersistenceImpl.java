@@ -2645,6 +2645,11 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MDRRuleModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the m d r rule persistence.
 	 */

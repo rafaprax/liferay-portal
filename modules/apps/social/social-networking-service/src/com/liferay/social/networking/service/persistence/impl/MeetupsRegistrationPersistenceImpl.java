@@ -2083,6 +2083,11 @@ public class MeetupsRegistrationPersistenceImpl extends BasePersistenceImpl<Meet
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MeetupsRegistrationModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the meetups registration persistence.
 	 */

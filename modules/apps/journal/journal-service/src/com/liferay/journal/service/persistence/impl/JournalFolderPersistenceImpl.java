@@ -7937,6 +7937,11 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalFolderModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the journal folder persistence.
 	 */

@@ -3551,6 +3551,11 @@ public class BlogsStatsUserPersistenceImpl extends BasePersistenceImpl<BlogsStat
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return BlogsStatsUserModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the blogs stats user persistence.
 	 */

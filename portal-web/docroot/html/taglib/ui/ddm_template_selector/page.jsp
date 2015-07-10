@@ -27,7 +27,7 @@ DDMTemplate portletDisplayDDMTemplate = (DDMTemplate)request.getAttribute("lifer
 String refreshURL = (String)request.getAttribute("liferay-ui:ddm-template-select:refreshURL");
 boolean showEmptyOption = GetterUtil.getBoolean((String)request.getAttribute("liferay-ui:ddm-template-select:showEmptyOption"));
 
-long ddmTemplateGroupId = PortletDisplayTemplateUtil.getDDMTemplateGroupId(themeDisplay.getScopeGroupId());
+long ddmTemplateGroupId = PortletDisplayTemplateManagerUtil.getDDMTemplateGroupId(themeDisplay.getScopeGroupId());
 
 Group ddmTemplateGroup = GroupLocalServiceUtil.getGroup(ddmTemplateGroupId);
 %>
@@ -57,7 +57,7 @@ Group ddmTemplateGroup = GroupLocalServiceUtil.getGroup(ddmTemplateGroupId);
 
 	<%
 	for (DDMTemplate curDDMTemplate : DDMTemplateLocalServiceUtil.getTemplates(PortalUtil.getCurrentAndAncestorSiteGroupIds(scopeGroupId), classNameId, 0L)) {
-		Map<String,Object> data = new HashMap<String,Object>();
+		Map<String, Object> data = new HashMap<String, Object>();
 
 		data.put("displaystylegroupid", curDDMTemplate.getGroupId());
 
@@ -66,7 +66,7 @@ Group ddmTemplateGroup = GroupLocalServiceUtil.getGroup(ddmTemplateGroupId);
 		}
 	%>
 
-		<aui:option data="<%= data %>" label="<%= HtmlUtil.escape(curDDMTemplate.getName(locale)) %>" selected="<%= (portletDisplayDDMTemplate != null) && (curDDMTemplate.getTemplateId() == portletDisplayDDMTemplate.getTemplateId()) %>" value="<%= PortletDisplayTemplate.DISPLAY_STYLE_PREFIX + curDDMTemplate.getTemplateKey() %>" />
+		<aui:option data="<%= data %>" label="<%= HtmlUtil.escape(curDDMTemplate.getName(locale)) %>" selected="<%= (portletDisplayDDMTemplate != null) && (curDDMTemplate.getTemplateId() == portletDisplayDDMTemplate.getTemplateId()) %>" value="<%= PortletDisplayTemplateManager.DISPLAY_STYLE_PREFIX + curDDMTemplate.getTemplateKey() %>" />
 
 	<%
 	}

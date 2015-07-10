@@ -2073,6 +2073,11 @@ public class DDMTemplateVersionPersistenceImpl extends BasePersistenceImpl<DDMTe
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDMTemplateVersionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d m template version persistence.
 	 */

@@ -12445,6 +12445,11 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLFileEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the document library file entry persistence.
 	 */

@@ -1830,6 +1830,11 @@ public class UserIdMapperPersistenceImpl extends BasePersistenceImpl<UserIdMappe
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return UserIdMapperModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the user ID mapper persistence.
 	 */

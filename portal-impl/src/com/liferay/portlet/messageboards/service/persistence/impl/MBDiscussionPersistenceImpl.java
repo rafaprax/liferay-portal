@@ -3168,6 +3168,11 @@ public class MBDiscussionPersistenceImpl extends BasePersistenceImpl<MBDiscussio
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBDiscussionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message boards discussion persistence.
 	 */

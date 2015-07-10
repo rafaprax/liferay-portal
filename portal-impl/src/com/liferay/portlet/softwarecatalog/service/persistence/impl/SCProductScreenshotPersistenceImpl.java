@@ -2012,6 +2012,11 @@ public class SCProductScreenshotPersistenceImpl extends BasePersistenceImpl<SCPr
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SCProductScreenshotModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the s c product screenshot persistence.
 	 */

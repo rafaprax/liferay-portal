@@ -5537,6 +5537,11 @@ public class UserGroupPersistenceImpl extends BasePersistenceImpl<UserGroup>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return UserGroupModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the user group persistence.
 	 */

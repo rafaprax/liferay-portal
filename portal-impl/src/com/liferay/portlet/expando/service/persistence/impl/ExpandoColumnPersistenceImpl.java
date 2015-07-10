@@ -2358,6 +2358,11 @@ public class ExpandoColumnPersistenceImpl extends BasePersistenceImpl<ExpandoCol
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ExpandoColumnModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the expando column persistence.
 	 */

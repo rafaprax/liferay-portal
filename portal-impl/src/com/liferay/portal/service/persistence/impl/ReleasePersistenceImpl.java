@@ -1007,6 +1007,11 @@ public class ReleasePersistenceImpl extends BasePersistenceImpl<Release>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ReleaseModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the release persistence.
 	 */

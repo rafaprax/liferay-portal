@@ -3506,6 +3506,11 @@ public class ModulePersistenceImpl extends BasePersistenceImpl<Module>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ModuleModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the module persistence.
 	 */

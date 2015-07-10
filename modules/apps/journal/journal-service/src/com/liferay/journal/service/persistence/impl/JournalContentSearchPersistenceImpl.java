@@ -5281,6 +5281,11 @@ public class JournalContentSearchPersistenceImpl extends BasePersistenceImpl<Jou
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalContentSearchModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the journal content search persistence.
 	 */

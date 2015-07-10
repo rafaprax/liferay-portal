@@ -2012,6 +2012,11 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ResourceBlockPermissionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the resource block permission persistence.
 	 */

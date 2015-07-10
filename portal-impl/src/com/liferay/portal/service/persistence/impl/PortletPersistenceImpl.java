@@ -1494,6 +1494,11 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PortletModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the portlet persistence.
 	 */

@@ -1495,6 +1495,11 @@ public class PasswordPolicyRelPersistenceImpl extends BasePersistenceImpl<Passwo
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PasswordPolicyRelModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the password policy rel persistence.
 	 */

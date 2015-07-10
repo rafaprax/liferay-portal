@@ -39,12 +39,12 @@ PortletURL portletURL = (PortletURL)request.getAttribute("view.jsp-portletURL");
 		groupParams.put("site", Boolean.TRUE);
 		groupParams.put("usersGroups", user.getUserId());
 
-		List<Group> groups = GroupLocalServiceUtil.search(user.getCompanyId(), groupParams, QueryUtil.ALL_POS,QueryUtil.ALL_POS);
+		List<Group> groups = GroupLocalServiceUtil.search(user.getCompanyId(), groupParams, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 		userGroupParams.put("userGroupsGroups", SitesUtil.filterGroups(groups, PropsValues.MY_SITES_DIRECTORY_SITE_EXCLUDES));
 	}
 	else if (portletName.equals(PortletKeys.SITE_MEMBERS_DIRECTORY)) {
-		userGroupParams.put("userGroupsGroups", new Long(themeDisplay.getScopeGroupId()));
+		userGroupParams.put("userGroupsGroups", Long.valueOf(themeDisplay.getScopeGroupId()));
 	}
 	%>
 

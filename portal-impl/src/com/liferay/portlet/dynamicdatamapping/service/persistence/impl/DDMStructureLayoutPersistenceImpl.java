@@ -2435,6 +2435,11 @@ public class DDMStructureLayoutPersistenceImpl extends BasePersistenceImpl<DDMSt
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDMStructureLayoutModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d m structure layout persistence.
 	 */

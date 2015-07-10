@@ -6949,6 +6949,11 @@ public class SocialRequestPersistenceImpl extends BasePersistenceImpl<SocialRequ
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SocialRequestModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the social request persistence.
 	 */

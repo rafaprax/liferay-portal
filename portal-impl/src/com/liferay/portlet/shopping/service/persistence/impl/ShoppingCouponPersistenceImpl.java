@@ -1512,6 +1512,11 @@ public class ShoppingCouponPersistenceImpl extends BasePersistenceImpl<ShoppingC
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ShoppingCouponModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the shopping coupon persistence.
 	 */

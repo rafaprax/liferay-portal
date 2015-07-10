@@ -9788,6 +9788,11 @@ public class GroupPersistenceImpl extends BasePersistenceImpl<Group>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return GroupModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the group persistence.
 	 */

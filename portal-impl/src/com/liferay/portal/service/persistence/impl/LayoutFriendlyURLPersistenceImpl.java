@@ -5611,6 +5611,11 @@ public class LayoutFriendlyURLPersistenceImpl extends BasePersistenceImpl<Layout
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LayoutFriendlyURLModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the layout friendly u r l persistence.
 	 */

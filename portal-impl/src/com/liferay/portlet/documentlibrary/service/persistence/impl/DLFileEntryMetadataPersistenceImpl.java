@@ -2569,6 +2569,11 @@ public class DLFileEntryMetadataPersistenceImpl extends BasePersistenceImpl<DLFi
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLFileEntryMetadataModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the document library file entry metadata persistence.
 	 */

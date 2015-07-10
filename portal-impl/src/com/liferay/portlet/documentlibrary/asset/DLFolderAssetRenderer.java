@@ -30,7 +30,7 @@ import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
-import com.liferay.portlet.asset.model.BaseAssetRenderer;
+import com.liferay.portlet.asset.model.BaseJSPAssetRenderer;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.permission.DLFolderPermission;
@@ -45,11 +45,14 @@ import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.WindowState;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author Alexander Chow
  */
 public class DLFolderAssetRenderer
-	extends BaseAssetRenderer implements TrashRenderer {
+	extends BaseJSPAssetRenderer implements TrashRenderer {
 
 	public static final String TYPE = "folder";
 
@@ -133,6 +136,19 @@ public class DLFolderAssetRenderer
 	}
 
 	@Override
+	public String getJspPath(HttpServletRequest request, String template) {
+		if (template.equals(TEMPLATE_ABSTRACT) ||
+			template.equals(TEMPLATE_FULL_CONTENT)) {
+
+			return "/html/portlet/document_library/asset/folder_" + template +
+				".jsp";
+		}
+		else {
+			return null;
+		}
+	}
+
+	@Override
 	public String getPortletId() {
 		AssetRendererFactory assetRendererFactory = getAssetRendererFactory();
 
@@ -194,7 +210,7 @@ public class DLFolderAssetRenderer
 			PortletKeys.DOCUMENT_LIBRARY_ADMIN, PortletRequest.RENDER_PHASE);
 
 		portletURL.setParameter(
-			"struts_action", "/document_library/edit_folder");
+			"mvcRenderCommandName", "/document_library/edit_folder");
 		portletURL.setParameter(
 			"folderId", String.valueOf(_folder.getFolderId()));
 
@@ -213,7 +229,7 @@ public class DLFolderAssetRenderer
 			liferayPortletResponse, windowState);
 
 		portletURL.setParameter(
-			"struts_action", "/document_library_display/view");
+			"mvcRenderCommandName", "/document_library/view");
 		portletURL.setParameter(
 			"folderId", String.valueOf(_folder.getFolderId()));
 		portletURL.setWindowState(windowState);
@@ -264,32 +280,23 @@ public class DLFolderAssetRenderer
 	}
 
 	@Override
+	public boolean include(
+			HttpServletRequest request, HttpServletResponse response,
+			String template)
+		throws Exception {
+
+		request.setAttribute(WebKeys.DOCUMENT_LIBRARY_FOLDER, _folder);
+
+		return super.include(request, response, template);
+	}
+
+	@Override
 	public boolean isDisplayable() {
 		if (_folder.isMountPoint()) {
 			return false;
 		}
 
 		return true;
-	}
-
-	@Override
-	public String render(
-			PortletRequest portletRequest, PortletResponse portletResponse,
-			String template)
-		throws Exception {
-
-		if (template.equals(TEMPLATE_ABSTRACT) ||
-			template.equals(TEMPLATE_FULL_CONTENT)) {
-
-			portletRequest.setAttribute(
-				WebKeys.DOCUMENT_LIBRARY_FOLDER, _folder);
-
-			return "/html/portlet/document_library/asset/folder_" + template +
-				".jsp";
-		}
-		else {
-			return null;
-		}
 	}
 
 	private final Folder _folder;

@@ -980,6 +980,11 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PortalPreferencesModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the portal preferences persistence.
 	 */

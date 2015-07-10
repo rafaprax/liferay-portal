@@ -1975,6 +1975,11 @@ public class CompanyPersistenceImpl extends BasePersistenceImpl<Company>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return CompanyModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the company persistence.
 	 */

@@ -385,15 +385,15 @@ public interface PropsKeys {
 
 	public static final String CLUSTER_LINK_AUTODETECT_ADDRESS = "cluster.link.autodetect.address";
 
-	public static final String CLUSTER_LINK_CHANNEL_NAME_PREFIX = "cluster.link.channel.name.prefix";
+	public static final String CLUSTER_LINK_CHANNEL_NAME_CONTROL = "cluster.link.channel.name.control";
+
+	public static final String CLUSTER_LINK_CHANNEL_NAME_TRANSPORT = "cluster.link.channel.name.transport";
 
 	public static final String CLUSTER_LINK_CHANNEL_PROPERTIES_CONTROL = "cluster.link.channel.properties.control";
 
 	public static final String CLUSTER_LINK_CHANNEL_PROPERTIES_TRANSPORT = "cluster.link.channel.properties.transport";
 
 	public static final String CLUSTER_LINK_CHANNEL_SYSTEM_PROPERTIES = "cluster.link.channel.system.properties";
-
-	public static final String CLUSTER_LINK_DEBUG_ENABLED = "cluster.link.debug.enabled";
 
 	public static final String CLUSTER_LINK_ENABLED = "cluster.link.enabled";
 
@@ -803,12 +803,6 @@ public interface PropsKeys {
 
 	public static final String DOCKBAR_ADMINISTRATIVE_LINKS_SHOW_IN_POP_UP = "dockbar.administrative.links.show.in.pop.up";
 
-	public static final String DYNAMIC_DATA_LISTS_ERROR_TEMPLATE = "dynamic.data.lists.error.template";
-
-	public static final String DYNAMIC_DATA_LISTS_RECORD_SET_FORCE_AUTOGENERATE_KEY = "dynamic.data.lists.record.set.force.autogenerate.key";
-
-	public static final String DYNAMIC_DATA_LISTS_STORAGE_TYPE = "dynamic.data.lists.storage.type";
-
 	public static final String DYNAMIC_DATA_MAPPING_IMAGE_EXTENSIONS = "dynamic.data.mapping.image.extensions";
 
 	public static final String DYNAMIC_DATA_MAPPING_IMAGE_SMALL_MAX_SIZE = "dynamic.data.mapping.image.small.max.size";
@@ -920,14 +914,6 @@ public interface PropsKeys {
 	public static final String HOT_UNDEPLOY_INTERVAL = "hot.undeploy.interval";
 
 	public static final String HOT_UNDEPLOY_ON_REDEPLOY = "hot.undeploy.on.redeploy";
-
-	public static final String HTTP_HEADER_SECURE_X_CONTENT_TYPE_OPTIONS = "http.header.secure.x.content.type.options";
-
-	public static final String HTTP_HEADER_SECURE_X_CONTENT_TYPE_OPTIONS_URLS_EXCLUDES = "http.header.secure.x.content.type.options.urls.excludes";
-
-	public static final String HTTP_HEADER_SECURE_X_FRAME_OPTIONS = "http.header.secure.x.frame.options";
-
-	public static final String HTTP_HEADER_SECURE_X_XSS_PROTECTION = "http.header.secure.x.xss.protection";
 
 	public static final String HTTP_HEADER_VERSION_VERBOSITY = "http.header.version.verbosity";
 
@@ -1941,6 +1927,8 @@ public interface PropsKeys {
 
 	public static final String PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_ACTIONS = "portlet.add.default.resource.check.whitelist.actions";
 
+	public static final String PORTLET_CONFIG_SHOW_PORTLET_ID = "portlet.config.show.portlet.id";
+
 	public static final String PORTLET_CONFIGS = "portlet.configs";
 
 	public static final String PORTLET_CONTAINER_RESTRICT = "portlet.container.restrict";
@@ -1948,6 +1936,8 @@ public interface PropsKeys {
 	public static final String PORTLET_CROSS_LAYOUT_INVOCATION_MODE = "portlet.cross.layout.invocation.mode";
 
 	public static final String PORTLET_CSS_ENABLED = "portlet.css.enabled";
+
+	public static final String PORTLET_DISPLAY_TEMPLATES_ERROR = "portlet.display.templates.error";
 
 	public static final String PORTLET_DISPLAY_TEMPLATES_HELP = "portlet.display.templates.help";
 
@@ -2162,10 +2152,6 @@ public interface PropsKeys {
 	public static final String SETUP_WIZARD_ADD_SAMPLE_DATA = "setup.wizard.add.sample.data";
 
 	public static final String SETUP_WIZARD_ENABLED = "setup.wizard.enabled";
-
-	public static final String SHARD_DEFAULT_NAME = "shard.default.name";
-
-	public static final String SHARD_SELECTOR = "shard.selector";
 
 	public static final String SHAREPOINT_STORAGE_CLASS = "sharepoint.storage.class";
 

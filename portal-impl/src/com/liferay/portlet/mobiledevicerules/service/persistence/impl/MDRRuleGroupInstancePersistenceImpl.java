@@ -5398,6 +5398,11 @@ public class MDRRuleGroupInstancePersistenceImpl extends BasePersistenceImpl<MDR
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MDRRuleGroupInstanceModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the m d r rule group instance persistence.
 	 */

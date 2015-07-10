@@ -1507,6 +1507,11 @@ public class AnnouncementsFlagPersistenceImpl extends BasePersistenceImpl<Announ
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AnnouncementsFlagModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the announcements flag persistence.
 	 */

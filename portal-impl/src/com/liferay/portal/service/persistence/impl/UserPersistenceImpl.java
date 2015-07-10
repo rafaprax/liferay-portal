@@ -9287,6 +9287,11 @@ public class UserPersistenceImpl extends BasePersistenceImpl<User>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return UserModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the user persistence.
 	 */

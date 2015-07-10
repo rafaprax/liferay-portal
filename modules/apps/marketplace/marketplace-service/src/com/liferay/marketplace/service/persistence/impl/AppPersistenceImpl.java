@@ -3104,6 +3104,11 @@ public class AppPersistenceImpl extends BasePersistenceImpl<App>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AppModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the app persistence.
 	 */

@@ -2390,6 +2390,11 @@ public class TeamPersistenceImpl extends BasePersistenceImpl<Team>
 		}
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return TeamModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the team persistence.
 	 */

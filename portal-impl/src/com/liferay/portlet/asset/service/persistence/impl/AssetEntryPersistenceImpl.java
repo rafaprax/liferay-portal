@@ -4977,6 +4977,11 @@ public class AssetEntryPersistenceImpl extends BasePersistenceImpl<AssetEntry>
 		}
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AssetEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the asset entry persistence.
 	 */

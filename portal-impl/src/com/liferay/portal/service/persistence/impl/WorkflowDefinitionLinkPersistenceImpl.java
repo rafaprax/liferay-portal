@@ -2872,6 +2872,11 @@ public class WorkflowDefinitionLinkPersistenceImpl extends BasePersistenceImpl<W
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return WorkflowDefinitionLinkModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the workflow definition link persistence.
 	 */

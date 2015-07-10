@@ -2827,6 +2827,11 @@ public class ShoppingCategoryPersistenceImpl extends BasePersistenceImpl<Shoppin
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ShoppingCategoryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the shopping category persistence.
 	 */

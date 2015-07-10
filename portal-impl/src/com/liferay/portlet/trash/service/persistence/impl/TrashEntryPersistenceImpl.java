@@ -3036,6 +3036,11 @@ public class TrashEntryPersistenceImpl extends BasePersistenceImpl<TrashEntry>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return TrashEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the trash entry persistence.
 	 */

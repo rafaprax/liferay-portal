@@ -5234,6 +5234,11 @@ public class AssetVocabularyPersistenceImpl extends BasePersistenceImpl<AssetVoc
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AssetVocabularyModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the asset vocabulary persistence.
 	 */

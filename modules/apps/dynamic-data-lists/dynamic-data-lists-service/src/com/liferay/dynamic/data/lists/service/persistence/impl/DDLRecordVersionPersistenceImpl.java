@@ -2056,6 +2056,11 @@ public class DDLRecordVersionPersistenceImpl extends BasePersistenceImpl<DDLReco
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDLRecordVersionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d l record version persistence.
 	 */

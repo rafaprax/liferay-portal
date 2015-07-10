@@ -40,7 +40,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ContainerModel;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
@@ -185,7 +184,8 @@ public class TrashImpl implements Trash {
 		SessionMessages.add(
 			actionRequest,
 			PortalUtil.getPortletId(actionRequest) +
-				SessionMessages.KEY_SUFFIX_DELETE_SUCCESS_DATA, data);
+				SessionMessages.KEY_SUFFIX_DELETE_SUCCESS_DATA,
+			data);
 	}
 
 	@Override
@@ -477,12 +477,7 @@ public class TrashImpl implements Trash {
 				"trashEntryId", String.valueOf(trashEntry.getEntryId()));
 		}
 
-		portletURL.setParameter("type", trashRenderer.getType());
-		portletURL.setParameter(
-			"status", String.valueOf(WorkflowConstants.STATUS_IN_TRASH));
-		portletURL.setParameter("showActions", Boolean.FALSE.toString());
 		portletURL.setParameter("showAssetMetadata", Boolean.TRUE.toString());
-		portletURL.setParameter("showEditURL", Boolean.FALSE.toString());
 
 		return portletURL;
 	}

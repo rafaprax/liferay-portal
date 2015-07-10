@@ -1404,6 +1404,11 @@ public class DLSyncEventPersistenceImpl extends BasePersistenceImpl<DLSyncEvent>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLSyncEventModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d l sync event persistence.
 	 */

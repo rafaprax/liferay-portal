@@ -6286,6 +6286,11 @@ public class SocialRelationPersistenceImpl extends BasePersistenceImpl<SocialRel
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SocialRelationModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the social relation persistence.
 	 */

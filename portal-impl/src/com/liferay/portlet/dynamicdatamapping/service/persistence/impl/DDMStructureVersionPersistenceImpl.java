@@ -2085,6 +2085,11 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DDMStructureVersionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the d d m structure version persistence.
 	 */

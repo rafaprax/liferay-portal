@@ -3860,6 +3860,11 @@ public class MBBanPersistenceImpl extends BasePersistenceImpl<MBBan>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBBanModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the message boards ban persistence.
 	 */

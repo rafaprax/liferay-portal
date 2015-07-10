@@ -1549,6 +1549,11 @@ public class TicketPersistenceImpl extends BasePersistenceImpl<Ticket>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return TicketModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the ticket persistence.
 	 */

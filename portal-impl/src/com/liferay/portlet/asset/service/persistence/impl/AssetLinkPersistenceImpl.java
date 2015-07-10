@@ -3594,6 +3594,11 @@ public class AssetLinkPersistenceImpl extends BasePersistenceImpl<AssetLink>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AssetLinkModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the asset link persistence.
 	 */

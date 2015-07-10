@@ -3837,6 +3837,11 @@ public class SocialActivityAchievementPersistenceImpl
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SocialActivityAchievementModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the social activity achievement persistence.
 	 */

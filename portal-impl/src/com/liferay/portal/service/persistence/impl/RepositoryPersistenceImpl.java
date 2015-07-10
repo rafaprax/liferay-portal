@@ -3018,6 +3018,11 @@ public class RepositoryPersistenceImpl extends BasePersistenceImpl<Repository>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RepositoryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the repository persistence.
 	 */

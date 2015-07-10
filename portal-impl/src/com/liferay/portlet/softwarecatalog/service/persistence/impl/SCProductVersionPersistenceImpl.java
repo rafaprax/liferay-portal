@@ -1829,6 +1829,11 @@ public class SCProductVersionPersistenceImpl extends BasePersistenceImpl<SCProdu
 		}
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SCProductVersionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the s c product version persistence.
 	 */

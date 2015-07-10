@@ -1525,6 +1525,11 @@ public class AnnouncementsDeliveryPersistenceImpl extends BasePersistenceImpl<An
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AnnouncementsDeliveryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the announcements delivery persistence.
 	 */

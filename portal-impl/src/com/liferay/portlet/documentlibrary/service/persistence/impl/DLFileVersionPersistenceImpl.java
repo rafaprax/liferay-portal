@@ -6373,6 +6373,11 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLFileVersionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the document library file version persistence.
 	 */

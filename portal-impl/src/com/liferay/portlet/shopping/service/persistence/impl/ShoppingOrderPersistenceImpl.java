@@ -3254,6 +3254,11 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ShoppingOrderModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the shopping order persistence.
 	 */

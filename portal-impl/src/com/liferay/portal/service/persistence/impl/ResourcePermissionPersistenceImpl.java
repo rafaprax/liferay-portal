@@ -4686,6 +4686,11 @@ public class ResourcePermissionPersistenceImpl extends BasePersistenceImpl<Resou
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ResourcePermissionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the resource permission persistence.
 	 */

@@ -3652,6 +3652,11 @@ public class SCProductEntryPersistenceImpl extends BasePersistenceImpl<SCProduct
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SCProductEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the s c product entry persistence.
 	 */

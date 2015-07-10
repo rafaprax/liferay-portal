@@ -2213,6 +2213,11 @@ public class ResourceTypePermissionPersistenceImpl extends BasePersistenceImpl<R
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return ResourceTypePermissionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the resource type permission persistence.
 	 */

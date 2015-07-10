@@ -2283,6 +2283,11 @@ public class PortletItemPersistenceImpl extends BasePersistenceImpl<PortletItem>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PortletItemModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the portlet item persistence.
 	 */

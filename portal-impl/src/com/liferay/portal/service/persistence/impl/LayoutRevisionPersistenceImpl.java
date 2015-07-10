@@ -6489,6 +6489,11 @@ public class LayoutRevisionPersistenceImpl extends BasePersistenceImpl<LayoutRev
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LayoutRevisionModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the layout revision persistence.
 	 */

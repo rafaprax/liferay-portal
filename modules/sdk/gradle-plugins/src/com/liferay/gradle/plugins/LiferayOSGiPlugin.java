@@ -34,7 +34,6 @@ import groovy.lang.Closure;
 import java.io.File;
 
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -68,7 +67,6 @@ import org.gradle.api.tasks.TaskOutputs;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.api.tasks.bundling.Zip;
-import org.gradle.api.tasks.compile.CompileOptions;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.internal.Factory;
 
@@ -95,7 +93,12 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 
 				@Override
 				public void execute(Project project) {
-					configureBundleExtensionDefaults(project);
+					LiferayOSGiExtension liferayOSGiExtension =
+						GradleUtil.getExtension(
+							project, LiferayOSGiExtension.class);
+
+					configureBundleExtensionDefaults(
+						project, liferayOSGiExtension);
 				}
 
 			});
@@ -267,8 +270,12 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 
 					jarBuilder.withBase(BundleUtils.getBase(project));
 
+					LiferayOSGiExtension liferayOSGiExtension =
+						GradleUtil.getExtension(
+							project, LiferayOSGiExtension.class);
+
 					Map<String, String> properties =
-						getBundleDefaultInstructions(project);
+						liferayOSGiExtension.getBundleDefaultInstructions();
 
 					String bundleName = getBundleInstruction(
 						project, Constants.BUNDLE_NAME);
@@ -281,8 +288,8 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 						project, Constants.BUNDLE_SYMBOLICNAME);
 
 					properties.put(
-						Constants.BUNDLE_SYMBOLICNAME, bundleSymbolicName +
-							".wsdd");
+						Constants.BUNDLE_SYMBOLICNAME,
+						bundleSymbolicName + ".wsdd");
 					properties.put(Constants.FRAGMENT_HOST, bundleSymbolicName);
 					properties.put(
 						Constants.IMPORT_PACKAGE,
@@ -479,7 +486,7 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 	protected void configureBundleExtension(Project project) {
 		Map<String, String> bundleInstructions = getBundleInstructions(project);
 
-		Properties bundleProperties;
+		Properties bundleProperties = null;
 
 		try {
 			bundleProperties = FileUtil.readProperties(project, "bnd.bnd");
@@ -499,11 +506,13 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 		}
 	}
 
-	protected void configureBundleExtensionDefaults(Project project) {
+	protected void configureBundleExtensionDefaults(
+		Project project, LiferayOSGiExtension liferayOSGiExtension) {
+
 		Map<String, String> bundleInstructions = getBundleInstructions(project);
 
 		Map<String, String> bundleDefaultInstructions =
-			getBundleDefaultInstructions(project);
+			liferayOSGiExtension.getBundleDefaultInstructions();
 
 		for (Map.Entry<String, String> entry :
 				bundleDefaultInstructions.entrySet()) {
@@ -621,24 +630,22 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 
 		super.configureTaskDeploy(project, liferayExtension);
 
-		Copy deployTask = (Copy)GradleUtil.getTask(project, DEPLOY_TASK_NAME);
+		Copy copy = (Copy)GradleUtil.getTask(project, DEPLOY_TASK_NAME);
 
-		configureTaskDeployRename(deployTask);
+		configureTaskDeployFrom(copy);
+		configureTaskDeployRename(copy);
 	}
 
-	@Override
-	protected void configureTaskDeployFrom(Copy deployTask) {
-		super.configureTaskDeployFrom(deployTask);
-
-		File wsddJarFile = getWSDDJarFile(deployTask.getProject());
+	protected void configureTaskDeployFrom(Copy copy) {
+		File wsddJarFile = getWSDDJarFile(copy.getProject());
 
 		if (wsddJarFile.exists()) {
-			deployTask.from(wsddJarFile);
+			copy.from(wsddJarFile);
 		}
 	}
 
-	protected void configureTaskDeployRename(Copy deployTask) {
-		final Project project = deployTask.getProject();
+	protected void configureTaskDeployRename(Copy copy) {
+		final Project project = copy.getProject();
 
 		Closure<String> closure = new Closure<String>(null) {
 
@@ -651,7 +658,7 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 
 		};
 
-		deployTask.rename(closure);
+		copy.rename(closure);
 	}
 
 	@Override
@@ -709,43 +716,6 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 		super.configureVersion(project, liferayExtension);
 	}
 
-	protected Map<String, String> getBundleDefaultInstructions(
-		Project project) {
-
-		Map<String, String> map = new HashMap<>();
-
-		map.put(Constants.BUNDLE_SYMBOLICNAME, project.getName());
-		map.put(Constants.BUNDLE_VENDOR, "Liferay, Inc.");
-
-		map.put(
-			"Git-Descriptor",
-			"${system-allow-fail;git describe --dirty --always}");
-		map.put("Git-SHA", "${system-allow-fail;git rev-list -1 HEAD}");
-
-		JavaCompile javaCompile = (JavaCompile)GradleUtil.getTask(
-			project, JavaPlugin.COMPILE_JAVA_TASK_NAME);
-
-		CompileOptions compileOptions = javaCompile.getOptions();
-
-		map.put("Javac-Debug", getOnOffValue(compileOptions.isDebug()));
-		map.put(
-			"Javac-Deprecation", getOnOffValue(compileOptions.isDeprecation()));
-
-		String encoding = compileOptions.getEncoding();
-
-		if (Validator.isNull(encoding)) {
-			encoding = System.getProperty("file.encoding");
-		}
-
-		map.put("Javac-Encoding", encoding);
-
-		map.put(Constants.DONOTCOPY, "(.touch)");
-		map.put(Constants.DSANNOTATIONS, "*");
-		map.put(Constants.SOURCES, "false");
-
-		return map;
-	}
-
 	protected String getBundleInstruction(Project project, String key) {
 		Map<String, String> bundleInstructions = getBundleInstructions(project);
 
@@ -768,14 +738,6 @@ public class LiferayOSGiPlugin extends LiferayJavaPlugin {
 		}
 
 		return new File(docrootDir, "WEB-INF/lib");
-	}
-
-	protected String getOnOffValue(boolean b) {
-		if (b) {
-			return "on";
-		}
-
-		return "off";
 	}
 
 	@Override

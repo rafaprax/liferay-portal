@@ -8869,6 +8869,11 @@ public class LayoutPersistenceImpl extends BasePersistenceImpl<Layout>
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LayoutModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the layout persistence.
 	 */

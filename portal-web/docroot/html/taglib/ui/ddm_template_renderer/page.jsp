@@ -17,11 +17,11 @@
 <%@ include file="/html/taglib/init.jsp" %>
 
 <%
-Map<String,Object> contextObjects = ((Map<String,Object>)request.getAttribute("liferay-ui:ddm-template-renderer:contextObjects"));
+Map<String, Object> contextObjects = ((Map<String, Object>)request.getAttribute("liferay-ui:ddm-template-renderer:contextObjects"));
 List<?> entries = (List<?>)request.getAttribute("liferay-ui:ddm-template-renderer:entries");
 DDMTemplate portletDisplayDDMTemplate = (DDMTemplate)request.getAttribute("liferay-ui:ddm-template-renderer:portletDisplayDDMTemplate");
 %>
 
 <c:if test="<%= portletDisplayDDMTemplate != null %>">
-	<%= PortletDisplayTemplateUtil.renderDDMTemplate(request, response, portletDisplayDDMTemplate, entries, contextObjects) %>
+	<%= PortletDisplayTemplateManagerUtil.renderDDMTemplate(request, response, portletDisplayDDMTemplate.getTemplateId(), entries, contextObjects) %>
 </c:if>

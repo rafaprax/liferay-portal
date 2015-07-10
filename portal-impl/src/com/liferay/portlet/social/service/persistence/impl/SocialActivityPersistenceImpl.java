@@ -6819,6 +6819,11 @@ public class SocialActivityPersistenceImpl extends BasePersistenceImpl<SocialAct
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SocialActivityModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the social activity persistence.
 	 */
