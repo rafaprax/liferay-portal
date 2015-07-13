@@ -15,6 +15,7 @@
 package com.liferay.item.selector;
 
 import com.liferay.portal.kernel.registry.ServiceTrackerCustomizerFactory;
+import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.PredicateFilter;
 import com.liferay.registry.collections.ServiceTrackerCollections;
 import com.liferay.registry.collections.ServiceTrackerList;
@@ -22,42 +23,64 @@ import com.liferay.registry.collections.ServiceTrackerList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Roberto Díaz
  */
 public abstract class BaseItemSelectorCriterionHandler
-	<T extends ItemSelectorCriterion, S extends ItemSelectorReturnType>
-		implements ItemSelectorCriterionHandler {
+	<T extends ItemSelectorCriterion> implements ItemSelectorCriterionHandler {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<ItemSelectorView<T, S>>
+	public List<ItemSelectorView<T>>
 		getItemSelectorViews(ItemSelectorCriterion itemSelectorCriterion) {
 
-		List<ItemSelectorView<T, S>> filteredItemSelectedViews =
-			new ArrayList<>();
+		List<ItemSelectorView<T>> filteredItemSelectedViews = new ArrayList<>();
 
 		for (ItemSelectorView itemSelectorView : _itemSelectorViews) {
-			Set<S> supportedItemSelectorReturnTypes =
-				itemSelectorView.getSupportedItemSelectorReturnTypes();
-
-			Set<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
+			List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
 				itemSelectorCriterion.getDesiredItemSelectorReturnTypes();
 
 			for (ItemSelectorReturnType desiredItemSelectorReturnType :
 					desiredItemSelectorReturnTypes) {
 
-				if (supportedItemSelectorReturnTypes.contains(
-						desiredItemSelectorReturnType)) {
+				if (_isItemSelectorViewSupported(
+						itemSelectorView, desiredItemSelectorReturnType)) {
 
 					filteredItemSelectedViews.add(itemSelectorView);
+
+					break;
 				}
 			}
 		}
 
 		return (List)Collections.unmodifiableList(filteredItemSelectedViews);
+	}
+
+	private boolean _isItemSelectorViewSupported(
+		ItemSelectorView itemSelectorView,
+		ItemSelectorReturnType itemSelectorReturnType) {
+
+		String itemSelectorReturnTypeClassName = ClassUtil.getClassName(
+			itemSelectorReturnType);
+
+		List<ItemSelectorReturnType> supportedItemSelectorReturnTypes =
+			itemSelectorView.getSupportedItemSelectorReturnTypes();
+
+		for (ItemSelectorReturnType supportedItemSelectorReturnType :
+				supportedItemSelectorReturnTypes) {
+
+			String supportedItemSelectorReturnTypeClassName =
+				ClassUtil.getClassName(supportedItemSelectorReturnType);
+
+			if (itemSelectorReturnTypeClassName.equals(
+					supportedItemSelectorReturnTypeClassName)) {
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private final ServiceTrackerList<ItemSelectorView> _itemSelectorViews =

@@ -86,6 +86,15 @@
 			<var name="categoryName" value="Category Name" />
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
+
+		<execute macro="Page#gotoContentCP">
+			<var name="portletName" value="Categories" />
+		</execute>
+
+		<execute macro="Category#viewCP">
+			<var name="categoryName" value="Category Name" />
+			<var name="vocabularyName" value="Vocabulary Name" />
+		</execute>
 	</command>
 
 	<command name="AddCategoryProperties" priority="4">
@@ -460,7 +469,7 @@
 		</execute>
 	</command>
 
-	<command name="AddVocabularyAssetTypes" priority="4">
+	<command known-issues="LPS-56665" name="AddVocabularyAssetTypes" priority="4">
 		<execute macro="Page#gotoContentCP">
 			<var name="portletName" value="Categories" />
 		</execute>
@@ -506,7 +515,7 @@
 		</execute>
 	</command>
 
-	<command name="AddVocabularyAssetTypeWebContent" priority="4">
+	<command known-issues="LPS-56665" name="AddVocabularyAssetTypeWebContent" priority="4">
 		<execute macro="Page#gotoContentCP">
 			<var name="portletName" value="Categories" />
 		</execute>
@@ -640,7 +649,7 @@
 		<execute macro="Vocabulary#addVocabularyWithNullTitle" />
 	</command>
 
-	<command name="DeleteAssociatedAssetTypeViaVocabulary" priority="3">
+	<command known-issues="LPS-56956" name="DeleteAssociatedAssetTypeViaVocabulary" priority="3">
 		<execute macro="Page#gotoContentCP">
 			<var name="portletName" value="Categories" />
 		</execute>

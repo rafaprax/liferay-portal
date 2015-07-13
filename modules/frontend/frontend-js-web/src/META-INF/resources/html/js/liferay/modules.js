@@ -1,5 +1,4 @@
 ;(function() {
-	var Browser = Liferay.Browser;
 	var LiferayAUI = Liferay.AUI;
 
 	var COMBINE = LiferayAUI.getCombine();
@@ -518,6 +517,20 @@
 						path: 'item_selector_dialog.js',
 						requires: [
 							'aui-component'
+						]
+					},
+					'liferay-item-selector-uploader': {
+						path: 'item_selector_uploader.js',
+						requires: [
+							'aui-base',
+							'uploader'
+						]
+					},
+					'liferay-item-selector-url': {
+						path: 'item_selector_url.js',
+						requires: [
+							'liferay-item-viewer',
+							'liferay-portlet-base'
 						]
 					},
 					'liferay-item-viewer': {

@@ -106,7 +106,8 @@ public class CreateAccountAction extends PortletAction {
 		Company company = themeDisplay.getCompany();
 
 		if (!company.isStrangers()) {
-			throw new PrincipalException();
+			throw new PrincipalException(
+				"Strangers are not allowed to access the portal");
 		}
 
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
@@ -292,7 +293,7 @@ public class CreateAccountAction extends PortletAction {
 
 		if (openIdPending) {
 			session.setAttribute(
-				WebKeys.OPEN_ID_LOGIN, new Long(user.getUserId()));
+				WebKeys.OPEN_ID_LOGIN, Long.valueOf(user.getUserId()));
 
 			session.removeAttribute(WebKeys.OPEN_ID_LOGIN_PENDING);
 		}
@@ -357,7 +358,8 @@ public class CreateAccountAction extends PortletAction {
 			themeDisplay.getCompanyId(), emailAddress);
 
 		if (anonymousUser.getStatus() != WorkflowConstants.STATUS_INCOMPLETE) {
-			throw new PrincipalException();
+			throw new PrincipalException.MustBeAuthenticated(
+				anonymousUser.getUuid());
 		}
 
 		UserLocalServiceUtil.deleteUser(anonymousUser.getUserId());

@@ -18,7 +18,8 @@ import com.liferay.blogs.item.selector.criterion.BlogsItemSelectorCriterion;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.ItemSelectorReturnType;
-import com.liferay.item.selector.criteria.DefaultItemSelectorReturnType;
+import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
+import com.liferay.item.selector.criteria.UploadableFileReturnType;
 import com.liferay.item.selector.criteria.image.criterion.ImageItemSelectorCriterion;
 import com.liferay.portal.kernel.editor.configuration.BaseEditorConfigContributor;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigContributor;
@@ -27,9 +28,9 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletURL;
 
@@ -76,11 +77,15 @@ public class BlogsContentEditorConfigContributor
 		JSONObject jsonObject, LiferayPortletResponse liferayPortletResponse,
 		String eventName) {
 
-		Set<ItemSelectorReturnType>
-			blogsContentEditorDesiredItemSelectorReturnTypes = new HashSet<>();
+		List<ItemSelectorReturnType>
+			blogsContentEditorDesiredItemSelectorReturnTypes =
+				new ArrayList<>();
 
 		blogsContentEditorDesiredItemSelectorReturnTypes.add(
-			DefaultItemSelectorReturnType.URL);
+			new UploadableFileReturnType());
+
+		blogsContentEditorDesiredItemSelectorReturnTypes.add(
+			new URLItemSelectorReturnType());
 
 		ItemSelectorCriterion blogsItemSelectorCriterion =
 			new BlogsItemSelectorCriterion();

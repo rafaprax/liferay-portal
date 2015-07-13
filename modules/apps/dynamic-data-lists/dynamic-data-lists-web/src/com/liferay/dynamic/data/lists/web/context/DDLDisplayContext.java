@@ -14,15 +14,17 @@
 
 package com.liferay.dynamic.data.lists.web.context;
 
+import com.liferay.dynamic.data.lists.constants.DDLActionKeys;
+import com.liferay.dynamic.data.lists.constants.DDLWebKeys;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.permission.DDLPermission;
 import com.liferay.dynamic.data.lists.service.permission.DDLRecordSetPermission;
-import com.liferay.dynamic.data.lists.util.DDLUtil;
 import com.liferay.dynamic.data.lists.web.constants.DDLPortletKeys;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.PrefsParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
@@ -30,7 +32,6 @@ import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.theme.PortletDisplay;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
@@ -59,9 +60,7 @@ public class DDLDisplayContext {
 
 		_portletPreferences = renderRequest.getPreferences();
 
-		String portletId = PortalUtil.getPortletId(renderRequest);
-
-		if (portletId.equals(PortletKeys.PORTLET_CONFIGURATION)) {
+		if (Validator.isNotNull(getPortletResource())) {
 			return;
 		}
 
@@ -123,7 +122,7 @@ public class DDLDisplayContext {
 		}
 
 		_recordSet = (DDLRecordSet)_renderRequest.getAttribute(
-			WebKeys.DYNAMIC_DATA_LISTS_RECORD_SET);
+			DDLWebKeys.DYNAMIC_DATA_LISTS_RECORD_SET);
 
 		if (_recordSet != null) {
 			return _recordSet;
@@ -138,12 +137,6 @@ public class DDLDisplayContext {
 	public long getRecordSetId() {
 		return PrefsParamUtil.getLong(
 			_portletPreferences, _renderRequest, "recordSetId");
-	}
-
-	public String getTemplateContent() throws Exception {
-		return DDLUtil.getTemplateContent(
-			getDisplayDDMTemplateId(), _recordSet, getThemeDisplay(),
-			_renderRequest, _renderResponse);
 	}
 
 	public boolean isEditable() {
@@ -181,7 +174,7 @@ public class DDLDisplayContext {
 
 		_hasAddRecordSetPermission = DDLPermission.contains(
 			getPermissionChecker(), getScopeGroupId(), getPortletId(),
-			ActionKeys.ADD_RECORD_SET);
+			DDLActionKeys.ADD_RECORD_SET);
 
 		return _hasAddRecordSetPermission;
 	}
@@ -213,7 +206,7 @@ public class DDLDisplayContext {
 
 		_hasEditDisplayDDMTemplatePermission = DDMTemplatePermission.contains(
 			getPermissionChecker(), getScopeGroupId(),
-			getDisplayDDMTemplateId(), PortletKeys.DYNAMIC_DATA_LISTS,
+			getDisplayDDMTemplateId(), DDLPortletKeys.DYNAMIC_DATA_LISTS,
 			ActionKeys.UPDATE);
 
 		return _hasEditDisplayDDMTemplatePermission;
@@ -232,7 +225,7 @@ public class DDLDisplayContext {
 
 		_hasEditFormDDMTemplatePermission = DDMTemplatePermission.contains(
 			getPermissionChecker(), getScopeGroupId(), getFormDDMTemplateId(),
-			PortletKeys.DYNAMIC_DATA_LISTS, ActionKeys.UPDATE);
+			DDLPortletKeys.DYNAMIC_DATA_LISTS, ActionKeys.UPDATE);
 
 		return _hasEditFormDDMTemplatePermission;
 	}
@@ -332,6 +325,14 @@ public class DDLDisplayContext {
 		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
 		return portletDisplay.getId();
+	}
+
+	protected String getPortletResource() {
+		ThemeDisplay themeDisplay = getThemeDisplay();
+
+		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
+		return portletDisplay.getPortletResource();
 	}
 
 	protected long getScopeGroupId() {

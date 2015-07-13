@@ -105,7 +105,6 @@
 		<user-notification-definitions>com/liferay/portlet/messageboards/message-boards-user-notification-definitions.xml</user-notification-definitions>
 		<user-notification-handler-class>com.liferay.portlet.messageboards.notifications.MessageBoardsUserNotificationHandler</user-notification-handler-class>
 		<asset-renderer-factory>com.liferay.portlet.messageboards.asset.MBCategoryAssetRendererFactory</asset-renderer-factory>
-		<asset-renderer-factory>com.liferay.portlet.messageboards.asset.MBDiscussionAssetRendererFactory</asset-renderer-factory>
 		<asset-renderer-factory>com.liferay.portlet.messageboards.asset.MBMessageAssetRendererFactory</asset-renderer-factory>
 		<custom-attributes-display>com.liferay.portlet.messageboards.MBCategoryCustomAttributesDisplay</custom-attributes-display>
 		<custom-attributes-display>com.liferay.portlet.messageboards.MBMessageCustomAttributesDisplay</custom-attributes-display>
@@ -154,13 +153,12 @@
 		<atom-collection-adapter>com.liferay.portlet.documentlibrary.atom.FolderAtomCollectionAdapter</atom-collection-adapter>
 		<custom-attributes-display>com.liferay.portlet.documentlibrary.DLFileEntryCustomAttributesDisplay</custom-attributes-display>
 		<custom-attributes-display>com.liferay.portlet.documentlibrary.DLFolderCustomAttributesDisplay</custom-attributes-display>
-		<ddm-display>com.liferay.portlet.documentlibrary.ddm.DLDDMDisplay</ddm-display>
 		<trash-handler>com.liferay.portlet.documentlibrary.trash.DLFileEntryTrashHandler</trash-handler>
 		<trash-handler>com.liferay.portlet.documentlibrary.trash.DLFileShortcutTrashHandler</trash-handler>
 		<trash-handler>com.liferay.portlet.documentlibrary.trash.DLFolderTrashHandler</trash-handler>
 		<workflow-handler>com.liferay.portlet.documentlibrary.workflow.DLFileEntryWorkflowHandler</workflow-handler>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
 		<private-session-attributes>false</private-session-attributes>
@@ -190,7 +188,7 @@
 		<webdav-storage-token>document_library</webdav-storage-token>
 		<webdav-storage-class>com.liferay.portlet.documentlibrary.webdav.DLWebDAVStorageImpl</webdav-storage-class>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<instanceable>true</instanceable>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
@@ -240,7 +238,7 @@
 		<workflow-handler>com.liferay.portlet.blogs.workflow.BlogsEntryWorkflowHandler</workflow-handler>
 		<preferences-unique-per-layout>false</preferences-unique-per-layout>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
 		<private-session-attributes>false</private-session-attributes>
@@ -388,6 +386,7 @@
 		<portlet-name>107</portlet-name>
 		<icon>/html/icons/page_comments.png</icon>
 		<struts-path>page_comments</struts-path>
+		<portlet-data-handler-class>com.liferay.portlet.messageboards.lar.CommentsPortletDataHandler</portlet-data-handler-class>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
 		<use-default-template>false</use-default-template>
 		<private-request-attributes>false</private-request-attributes>
@@ -399,6 +398,7 @@
 		<portlet-name>108</portlet-name>
 		<icon>/html/icons/page_ratings.png</icon>
 		<struts-path>page_ratings</struts-path>
+		<portlet-data-handler-class>com.liferay.portlet.ratings.lar.RatingsPortletDataHandler</portlet-data-handler-class>
 		<staged-model-data-handler-class>com.liferay.portlet.ratings.lar.RatingsEntryStagedModelDataHandler</staged-model-data-handler-class>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
 		<use-default-template>false</use-default-template>
@@ -421,7 +421,7 @@
 		<webdav-storage-token>document_library</webdav-storage-token>
 		<webdav-storage-class>com.liferay.portlet.documentlibrary.webdav.DLWebDAVStorageImpl</webdav-storage-class>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<instanceable>true</instanceable>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
@@ -439,6 +439,7 @@
 		<configuration-action-class>com.liferay.portal.kernel.portlet.DefaultConfigurationAction</configuration-action-class>
 		<portlet-data-handler-class>com.liferay.portlet.blogsaggregator.lar.BlogsAggregatorPortletDataHandler</portlet-data-handler-class>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
+		<use-default-template>true</use-default-template>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
 		<private-session-attributes>false</private-session-attributes>
@@ -453,7 +454,7 @@
 		<portlet-url-class>com.liferay.portal.struts.StrutsActionPortletURL</portlet-url-class>
 		<portlet-data-handler-class>com.liferay.portlet.blogsaggregator.lar.BlogsAggregatorPortletDataHandler</portlet-data-handler-class>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
 		<private-session-attributes>false</private-session-attributes>
@@ -610,7 +611,7 @@
 	<portlet>
 		<portlet-name>135</portlet-name>
 		<icon>/html/icons/admin_instances.png</icon>
-		<struts-path>admin_instances</struts-path>
+		<struts-path>portal_instances</struts-path>
 		<portlet-url-class>com.liferay.portal.struts.StrutsActionPortletURL</portlet-url-class>
 		<control-panel-entry-category>configuration</control-panel-entry-category>
 		<control-panel-entry-weight>4.0</control-panel-entry-weight>
@@ -640,21 +641,6 @@
 		<render-weight>50</render-weight>
 		<footer-portlet-javascript>/html/portlet/admin/js/main.js</footer-portlet-javascript>
 		<css-class-wrapper>portlet-admin</css-class-wrapper>
-	</portlet>
-	<portlet>
-		<portlet-name>139</portlet-name>
-		<icon>/html/icons/expando.png</icon>
-		<control-panel-entry-category>configuration</control-panel-entry-category>
-		<control-panel-entry-weight>2.0</control-panel-entry-weight>
-		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>true</use-default-template>
-		<private-request-attributes>false</private-request-attributes>
-		<private-session-attributes>false</private-session-attributes>
-		<render-weight>50</render-weight>
-		<header-portlet-css>/html/portlet/expando/css/main.css</header-portlet-css>
-		<css-class-wrapper>portlet-expando</css-class-wrapper>
-		<add-default-resource>true</add-default-resource>
-		<system>true</system>
 	</portlet>
 	<portlet>
 		<portlet-name>142</portlet-name>
@@ -704,7 +690,7 @@
 		<control-panel-entry-weight>5.0</control-panel-entry-weight>
 		<preferences-unique-per-layout>false</preferences-unique-per-layout>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
 		<private-session-attributes>false</private-session-attributes>
@@ -882,12 +868,6 @@
 		<system>true</system>
 	</portlet>
 	<portlet>
-		<portlet-name>196</portlet-name>
-		<icon>/html/icons/page_comments.png</icon>
-		<user-notification-definitions>com/liferay/portlet/comments/comments-user-notification-definitions.xml</user-notification-definitions>
-		<user-notification-handler-class>com.liferay.portlet.comments.notifications.CommentsUserNotificationHandler</user-notification-handler-class>
-	</portlet>
-	<portlet>
 		<portlet-name>197</portlet-name>
 		<icon>/html/icons/shopping.png</icon>
 		<struts-path>shopping_admin</struts-path>
@@ -928,7 +908,7 @@
 		<control-panel-entry-weight>3.0</control-panel-entry-weight>
 		<preferences-unique-per-layout>false</preferences-unique-per-layout>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
-		<use-default-template>false</use-default-template>
+		<use-default-template>true</use-default-template>
 		<scopeable>true</scopeable>
 		<private-request-attributes>false</private-request-attributes>
 		<private-session-attributes>false</private-session-attributes>
@@ -958,7 +938,6 @@
 		<control-panel-entry-category>site_administration.configuration</control-panel-entry-category>
 		<control-panel-entry-weight>2.0</control-panel-entry-weight>
 		<control-panel-entry-class>com.liferay.portlet.exportimport.ExportImportControlPanelEntry</control-panel-entry-class>
-		<trash-handler>com.liferay.portlet.exportimport.trash.ExportImportConfigurationTrashHandler</trash-handler>
 		<preferences-owned-by-group>true</preferences-owned-by-group>
 		<use-default-template>false</use-default-template>
 		<private-request-attributes>false</private-request-attributes>

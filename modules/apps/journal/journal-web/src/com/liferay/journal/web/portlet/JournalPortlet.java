@@ -15,6 +15,7 @@
 package com.liferay.journal.web.portlet;
 
 import com.liferay.item.selector.ItemSelector;
+import com.liferay.journal.constants.JournalWebKeys;
 import com.liferay.journal.exception.ArticleContentException;
 import com.liferay.journal.exception.ArticleContentSizeException;
 import com.liferay.journal.exception.ArticleDisplayDateException;
@@ -45,10 +46,10 @@ import com.liferay.journal.service.JournalArticleService;
 import com.liferay.journal.service.JournalContentSearchLocalService;
 import com.liferay.journal.service.JournalFeedService;
 import com.liferay.journal.service.JournalFolderService;
+import com.liferay.journal.service.configuration.configurator.JournalServiceConfigurator;
 import com.liferay.journal.util.impl.JournalUtil;
 import com.liferay.journal.web.asset.JournalArticleAssetRenderer;
 import com.liferay.journal.web.constants.JournalPortletKeys;
-import com.liferay.journal.web.constants.JournalWebKeys;
 import com.liferay.journal.web.portlet.action.ActionUtil;
 import com.liferay.journal.web.upgrade.JournalWebUpgrade;
 import com.liferay.journal.web.util.JournalRSSUtil;
@@ -289,13 +290,6 @@ public class JournalPortlet extends MVCPortlet {
 		sendEditEntryRedirect(actionRequest, actionResponse);
 	}
 
-	public void moveArticlesToTrash(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		deleteArticles(actionRequest, actionResponse, true);
-	}
-
 	public void moveEntries(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -362,6 +356,13 @@ public class JournalPortlet extends MVCPortlet {
 		throws Exception {
 
 		deleteFolders(actionRequest, actionResponse, true);
+	}
+
+	public void moveToTrash(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		deleteArticles(actionRequest, actionResponse, true);
 	}
 
 	public void previewArticle(
@@ -1059,7 +1060,7 @@ public class JournalPortlet extends MVCPortlet {
 			SessionErrors.contains(
 				renderRequest, NoSuchTemplateException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(
 				"/portlet/journal/html/error.jsp", renderRequest,
@@ -1284,6 +1285,11 @@ public class JournalPortlet extends MVCPortlet {
 		JournalFolderService journalFolderService) {
 
 		_journalFolderService = journalFolderService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setJournalServiceConfigurator(
+		JournalServiceConfigurator journalServiceConfigurator) {
 	}
 
 	@Reference(unbind = "-")

@@ -27,10 +27,9 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
-import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.servlet.taglib.ui.ImageSelector;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
+import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
@@ -519,13 +518,6 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		trashEntryLocalService.deleteEntry(
 			BlogsEntry.class.getName(), entry.getEntryId());
-
-		// Indexer
-
-		Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-			BlogsEntry.class);
-
-		indexer.delete(entry);
 
 		// Workflow
 
@@ -1056,9 +1048,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		extraDataJSONObject.put("title", entry.getTitle());
 
-		socialActivityLocalService.addActivity(
-			userId, entry.getGroupId(), BlogsEntry.class.getName(),
-			entry.getEntryId(), SocialActivityConstants.TYPE_MOVE_TO_TRASH,
+		SocialActivityManagerUtil.addActivity(
+			userId, entry, SocialActivityConstants.TYPE_MOVE_TO_TRASH,
 			extraDataJSONObject.toString(), 0);
 
 		// Workflow
@@ -1121,9 +1112,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		extraDataJSONObject.put("title", entry.getTitle());
 
-		socialActivityLocalService.addActivity(
-			userId, trashEntry.getGroupId(), BlogsEntry.class.getName(),
-			entryId, SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
+		SocialActivityManagerUtil.addActivity(
+			userId, entry, SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
 			extraDataJSONObject.toString(), 0);
 
 		return entry;
@@ -1531,17 +1521,13 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 				(oldStatus != WorkflowConstants.STATUS_SCHEDULED)) {
 
 				if (serviceContext.isCommandUpdate()) {
-					socialActivityLocalService.addActivity(
-						user.getUserId(), entry.getGroupId(),
-						BlogsEntry.class.getName(), entryId,
-						BlogsActivityKeys.UPDATE_ENTRY,
+					SocialActivityManagerUtil.addActivity(
+						user.getUserId(), entry, BlogsActivityKeys.UPDATE_ENTRY,
 						extraDataJSONObject.toString(), 0);
 				}
 				else {
-					socialActivityLocalService.addUniqueActivity(
-						user.getUserId(), entry.getGroupId(),
-						BlogsEntry.class.getName(), entryId,
-						BlogsActivityKeys.ADD_ENTRY,
+					SocialActivityManagerUtil.addUniqueActivity(
+						user.getUserId(), entry, BlogsActivityKeys.ADD_ENTRY,
 						extraDataJSONObject.toString(), 0);
 				}
 			}
@@ -1586,17 +1572,13 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 				(oldStatus != WorkflowConstants.STATUS_IN_TRASH)) {
 
 				if (serviceContext.isCommandUpdate()) {
-					socialActivityLocalService.addActivity(
-						user.getUserId(), entry.getGroupId(),
-						BlogsEntry.class.getName(), entryId,
-						BlogsActivityKeys.UPDATE_ENTRY,
+					SocialActivityManagerUtil.addActivity(
+						user.getUserId(), entry, BlogsActivityKeys.UPDATE_ENTRY,
 						extraDataJSONObject.toString(), 0);
 				}
 				else {
-					socialActivityLocalService.addUniqueActivity(
-						user.getUserId(), entry.getGroupId(),
-						BlogsEntry.class.getName(), entryId,
-						BlogsActivityKeys.ADD_ENTRY,
+					SocialActivityManagerUtil.addUniqueActivity(
+						user.getUserId(), entry, BlogsActivityKeys.ADD_ENTRY,
 						extraDataJSONObject.toString(), 0);
 				}
 			}
@@ -1750,7 +1732,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			request, PortletKeys.BLOGS_ADMIN, controlPanelPlid,
 			PortletRequest.RENDER_PHASE);
 
-		portletURL.setParameter("struts_action", "/blogs_admin/view_entry");
+		portletURL.setParameter("mvcRenderCommandName", "/blogs/view_entry");
 		portletURL.setParameter("entryId", String.valueOf(entry.getEntryId()));
 
 		return portletURL.toString();
@@ -1971,8 +1953,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		String name = group.getDescriptiveName();
 		String url = layoutFullURL + Portal.FRIENDLY_URL_SEPARATOR + "blogs";
-		String changesURL =
-			layoutFullURL + Portal.FRIENDLY_URL_SEPARATOR + "blogs/rss";
+		String changesURL = serviceContext.getPathMain() + "/blogs/rss";
 
 		sb.append("http://blogsearch.google.com/ping?name=");
 		sb.append(HttpUtil.encodeURL(name));

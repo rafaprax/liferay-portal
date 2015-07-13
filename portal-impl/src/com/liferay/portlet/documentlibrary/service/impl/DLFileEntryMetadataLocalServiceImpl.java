@@ -14,6 +14,8 @@
 
 package com.liferay.portlet.documentlibrary.service.impl;
 
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dynamicdatamapping.storage.StorageEngineManagerUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
@@ -21,8 +23,8 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.service.base.DLFileEntryMetadataLocalServiceBaseImpl;
 import com.liferay.portlet.dynamicdatamapping.StorageException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLinkLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -174,7 +176,8 @@ public class DLFileEntryMetadataLocalServiceImpl
 
 		// Dynamic data mapping storage
 
-		StorageEngineUtil.deleteByClass(fileEntryMetadata.getDDMStorageId());
+		StorageEngineManagerUtil.deleteByClass(
+			fileEntryMetadata.getDDMStorageId());
 
 		// Dynamic data mapping structure link
 
@@ -196,7 +199,7 @@ public class DLFileEntryMetadataLocalServiceImpl
 				ddmStructure.getStructureId(), fileVersionId);
 
 		if (fileEntryMetadata != null) {
-			StorageEngineUtil.update(
+			StorageEngineManagerUtil.update(
 				fileEntryMetadata.getDDMStorageId(), ddmFormValues,
 				serviceContext);
 		}
@@ -209,7 +212,7 @@ public class DLFileEntryMetadataLocalServiceImpl
 			fileEntryMetadata = dlFileEntryMetadataPersistence.create(
 				fileEntryMetadataId);
 
-			long ddmStorageId = StorageEngineUtil.create(
+			long ddmStorageId = StorageEngineManagerUtil.create(
 				companyId, ddmStructure.getStructureId(), ddmFormValues,
 				serviceContext);
 
@@ -231,5 +234,8 @@ public class DLFileEntryMetadataLocalServiceImpl
 				ddmStructure.getStructureId());
 		}
 	}
+
+	@BeanReference(type = DDMStructureLinkLocalService.class)
+	protected DDMStructureLinkLocalService ddmStructureLinkLocalService;
 
 }

@@ -46,8 +46,8 @@ public class CommentsContentMetadataAssetAddonEntry
 	}
 
 	@Override
-	public String getJSPPath() {
-		return _JSP_PATH;
+	public String getJspPath() {
+		return "/META-INF/resources/comments.jsp";
 	}
 
 	@Override
@@ -114,13 +114,12 @@ public class CommentsContentMetadataAssetAddonEntry
 
 	@Override
 	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.journal.content.asset.addon.entry.comments)"
+		target = "(osgi.web.symbolicname=com.liferay.journal.content.asset.addon.entry.comments)",
+		unbind = "-"
 	)
 	public void setServletContext(ServletContext servletContext) {
 		super.setServletContext(servletContext);
 	}
-
-	private static final String _JSP_PATH = "/META-INF/resources/comments.jsp";
 
 	private CommentRatingsContentMetadataAssetAddonEntry
 		_commentRatingsContentMetadataAssetAddonEntry;

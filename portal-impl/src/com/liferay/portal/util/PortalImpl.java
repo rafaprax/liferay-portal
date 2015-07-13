@@ -51,7 +51,7 @@ import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletBag;
 import com.liferay.portal.kernel.portlet.PortletBagPool;
 import com.liferay.portal.kernel.security.auth.AlwaysAllowDoAsUser;
-import com.liferay.portal.kernel.security.auth.session.AuthenticatedSessionManagerUtil;
+import com.liferay.portal.kernel.security.auth.http.HttpAuthManagerUtil;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.servlet.DynamicServletRequest;
@@ -61,6 +61,7 @@ import com.liferay.portal.kernel.servlet.NonSerializableObjectRequestWrapper;
 import com.liferay.portal.kernel.servlet.PersistentHttpServletRequestWrapper;
 import com.liferay.portal.kernel.servlet.PortalMessages;
 import com.liferay.portal.kernel.servlet.PortalSessionThreadLocal;
+import com.liferay.portal.kernel.servlet.PortalWebResourcesUtil;
 import com.liferay.portal.kernel.servlet.ServletContextUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbEntry;
@@ -68,7 +69,6 @@ import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbUtil;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.upload.UploadServletRequest;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ClassUtil;
@@ -135,7 +135,6 @@ import com.liferay.portal.model.VirtualLayoutConstants;
 import com.liferay.portal.model.impl.CookieRemotePreference;
 import com.liferay.portal.model.impl.VirtualLayout;
 import com.liferay.portal.plugin.PluginPackageUtil;
-import com.liferay.portal.security.auth.AuthException;
 import com.liferay.portal.security.auth.AuthTokenUtil;
 import com.liferay.portal.security.auth.AuthTokenWhitelistUtil;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
@@ -171,7 +170,6 @@ import com.liferay.portal.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.service.permission.UserPermissionUtil;
 import com.liferay.portal.servlet.filters.i18n.I18nFilter;
-import com.liferay.portal.servlet.filters.secure.NonceUtil;
 import com.liferay.portal.spring.context.PortalContextLoaderListener;
 import com.liferay.portal.struts.StrutsUtil;
 import com.liferay.portal.theme.PortletDisplay;
@@ -197,7 +195,6 @@ import com.liferay.portlet.StateAwareResponseImpl;
 import com.liferay.portlet.UserAttributes;
 import com.liferay.portlet.admin.util.OmniadminUtil;
 import com.liferay.portlet.blogs.model.BlogsEntry;
-import com.liferay.portlet.calendar.model.CalEvent;
 import com.liferay.portlet.documentlibrary.ImageSizeException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
@@ -1223,7 +1220,7 @@ public class PortalImpl implements Portal {
 				method = serviceUtil.getMethod(
 					methodName, new Class[] {Long.TYPE});
 
-				return (BaseModel<?>)method.invoke(null, new Long(primKey));
+				return (BaseModel<?>)method.invoke(null, Long.valueOf(primKey));
 			}
 
 			method = serviceUtil.getMethod(
@@ -1246,6 +1243,11 @@ public class PortalImpl implements Portal {
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 * 		HttpAuthManagerUtil#getBasicUserId(HttpServletRequest)}
+	 */
+	@Deprecated
 	@Override
 	public long getBasicAuthUserId(HttpServletRequest request)
 		throws PortalException {
@@ -1255,62 +1257,16 @@ public class PortalImpl implements Portal {
 		return getBasicAuthUserId(request, companyId);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 * 		HttpAuthManagerUtil#getBasicUserId(HttpServletRequest)}
+	 */
+	@Deprecated
 	@Override
 	public long getBasicAuthUserId(HttpServletRequest request, long companyId)
 		throws PortalException {
 
-		long userId = 0;
-
-		String authorizationHeader = request.getHeader(
-			HttpHeaders.AUTHORIZATION);
-
-		if (Validator.isNull(authorizationHeader)) {
-			return userId;
-		}
-
-		String[] authorizationArray = authorizationHeader.split("\\s+");
-
-		String authorization = authorizationArray[0];
-		String credentials = new String(Base64.decode(authorizationArray[1]));
-
-		if (!StringUtil.equalsIgnoreCase(
-				authorization, HttpServletRequest.BASIC_AUTH)) {
-
-			return userId;
-		}
-
-		String[] loginAndPassword = StringUtil.split(
-			credentials, CharPool.COLON);
-
-		String login = HttpUtil.decodeURL(loginAndPassword[0].trim());
-
-		String password = null;
-
-		if (loginAndPassword.length > 1) {
-			password = loginAndPassword[1].trim();
-		}
-
-		// Strip @uid and @sn for backwards compatibility
-
-		if (login.endsWith("@uid")) {
-			int pos = login.indexOf("@uid");
-
-			login = login.substring(0, pos);
-		}
-		else if (login.endsWith("@sn")) {
-			int pos = login.indexOf("@sn");
-
-			login = login.substring(0, pos);
-		}
-
-		try {
-			userId = AuthenticatedSessionManagerUtil.getAuthenticatedUserId(
-				request, login, password, null);
-		}
-		catch (AuthException ae) {
-		}
-
-		return userId;
+		return HttpAuthManagerUtil.getBasicUserId(request);
 	}
 
 	@Override
@@ -1322,7 +1278,7 @@ public class PortalImpl implements Portal {
 
 		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
 
-		params.put("usersGroups", new Long(userId));
+		params.put("usersGroups", Long.valueOf(userId));
 
 		groups.addAll(
 			0,
@@ -2143,64 +2099,16 @@ public class PortalImpl implements Portal {
 		return PortalInstances.getDefaultCompanyId();
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 * 		HttpAuthManagerUtil#getDigestUserId(HttpServletRequest)}
+	 */
+	@Deprecated
 	@Override
 	public long getDigestAuthUserId(HttpServletRequest request)
 		throws PortalException {
 
-		long userId = 0;
-
-		String authorizationHeader = request.getHeader(
-			HttpHeaders.AUTHORIZATION);
-
-		if (Validator.isNull(authorizationHeader) ||
-			!authorizationHeader.startsWith("Digest ")) {
-
-			return userId;
-		}
-
-		authorizationHeader = authorizationHeader.substring("Digest ".length());
-		authorizationHeader = StringUtil.replace(
-			authorizationHeader, CharPool.COMMA, CharPool.NEW_LINE);
-
-		UnicodeProperties authorizationProperties = new UnicodeProperties();
-
-		authorizationProperties.fastLoad(authorizationHeader);
-
-		String username = StringUtil.unquote(
-			authorizationProperties.getProperty("username"));
-		String realm = StringUtil.unquote(
-			authorizationProperties.getProperty("realm"));
-		String nonce = StringUtil.unquote(
-			authorizationProperties.getProperty("nonce"));
-		String uri = StringUtil.unquote(
-			authorizationProperties.getProperty("uri"));
-		String response = StringUtil.unquote(
-			authorizationProperties.getProperty("response"));
-
-		if (Validator.isNull(username) || Validator.isNull(realm) ||
-			Validator.isNull(nonce) || Validator.isNull(uri) ||
-			Validator.isNull(response)) {
-
-			return userId;
-		}
-
-		if (!realm.equals(PORTAL_REALM) ||
-			!uri.equals(request.getRequestURI())) {
-
-			return userId;
-		}
-
-		if (!NonceUtil.verify(nonce)) {
-			return userId;
-		}
-
-		long companyId = PortalInstances.getCompanyId(request);
-
-		userId = UserLocalServiceUtil.authenticateForDigest(
-			companyId, username, realm, nonce, request.getMethod(), uri,
-			response);
-
-		return userId;
+		return HttpAuthManagerUtil.getDigestUserId(request);
 	}
 
 	@Override
@@ -5332,16 +5240,26 @@ public class PortalImpl implements Portal {
 		if (((parameterMap == null) || !parameterMap.containsKey("t")) &&
 			 !(timestamp < 0)) {
 
-			if ((timestamp == 0) && uri.startsWith(StrutsUtil.TEXT_HTML_DIR)) {
-				ServletContext servletContext =
-					(ServletContext)request.getAttribute(WebKeys.CTX);
-
-				timestamp = ServletContextUtil.getLastModified(
-					servletContext, uri, true);
-			}
-
 			if (timestamp == 0) {
-				timestamp = theme.getTimestamp();
+				String portalURL = getPortalURL(request);
+
+				String path = StringUtil.replace(
+					uri, portalURL, StringPool.BLANK);
+
+				if (path.startsWith(StrutsUtil.TEXT_HTML_DIR)) {
+					ServletContext servletContext =
+						(ServletContext)request.getAttribute(WebKeys.CTX);
+
+					timestamp = ServletContextUtil.getLastModified(
+						servletContext, path, true);
+				}
+				else if (PortalWebResourcesUtil.hasContextPath(path)) {
+					timestamp = PortalWebResourcesUtil.getLastModified(
+						PortalWebResourcesUtil.getPathResourceType(path));
+				}
+				else {
+					timestamp = theme.getTimestamp();
+				}
 			}
 
 			sb.append("&t=");
@@ -5646,18 +5564,20 @@ public class PortalImpl implements Portal {
 		}
 
 		String path = GetterUtil.getString(request.getPathInfo());
-		String strutsAction = getStrutsAction(request);
+		String mvcRenderCommandName = ParamUtil.getString(
+			request, "mvcRenderCommandName");
 		String actionName = getPortletParam(request, "actionName");
 
 		boolean alwaysAllowDoAsUser = false;
 
 		if (path.equals("/portal/session_click") ||
-			strutsAction.equals("/document_library/edit_file_entry") ||
-			strutsAction.equals("/document_library_display/edit_file_entry") ||
-			strutsAction.equals("/image_gallery_display/edit_file_entry") ||
-			strutsAction.equals("/image_gallery_display/edit_image") ||
+			mvcRenderCommandName.equals("/document_library/edit_file_entry") ||
+			mvcRenderCommandName.equals(
+				"/document_library_display/edit_file_entry") ||
+			mvcRenderCommandName.equals(
+				"/image_gallery_display/edit_file_entry") ||
 			actionName.equals("addFile") ||
-			isAlwaysAllowDoAsUser(path, strutsAction, actionName)) {
+			isAlwaysAllowDoAsUser(path, mvcRenderCommandName, actionName)) {
 
 			try {
 				alwaysAllowDoAsUser = isAlwaysAllowDoAsUser(request);
@@ -5982,7 +5902,6 @@ public class PortalImpl implements Portal {
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTAL.MODEL.USER$]",
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTAL.MODEL.USERGROUP$]",
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.BLOGS.MODEL.BLOGSENTRY$]",
-			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.CALENDAR.MODEL.CALEVENT$]",
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.DOCUMENTLIBRARY.MODEL." +
 				"DLFILEENTRY$]",
 			"[$CLASS_NAME_ID_COM.LIFERAY.PORTLET.DOCUMENTLIBRARY.MODEL." +
@@ -6013,10 +5932,10 @@ public class PortalImpl implements Portal {
 			getClassNameId(Group.class), getClassNameId(Layout.class),
 			getClassNameId(Organization.class), getClassNameId(Role.class),
 			getClassNameId(User.class), getClassNameId(UserGroup.class),
-			getClassNameId(BlogsEntry.class), getClassNameId(CalEvent.class),
-			getClassNameId(DLFileEntry.class), getClassNameId(DLFolder.class),
-			getClassNameId(MBMessage.class), getClassNameId(MBThread.class),
-			ResourceConstants.SCOPE_COMPANY, ResourceConstants.SCOPE_GROUP,
+			getClassNameId(BlogsEntry.class), getClassNameId(DLFileEntry.class),
+			getClassNameId(DLFolder.class), getClassNameId(MBMessage.class),
+			getClassNameId(MBThread.class), ResourceConstants.SCOPE_COMPANY,
+			ResourceConstants.SCOPE_GROUP,
 			ResourceConstants.SCOPE_GROUP_TEMPLATE,
 			ResourceConstants.SCOPE_INDIVIDUAL,
 			SocialRelationConstants.TYPE_BI_COWORKER,
@@ -7783,7 +7702,7 @@ public class PortalImpl implements Portal {
 		}
 
 		if (alwaysAllowDoAsUser) {
-			request.setAttribute(WebKeys.USER_ID, new Long(doAsUserId));
+			request.setAttribute(WebKeys.USER_ID, Long.valueOf(doAsUserId));
 
 			return doAsUserId;
 		}
@@ -7811,7 +7730,7 @@ public class PortalImpl implements Portal {
 				permissionChecker, doAsUserId, organizationIds,
 				ActionKeys.IMPERSONATE)) {
 
-			request.setAttribute(WebKeys.USER_ID, new Long(doAsUserId));
+			request.setAttribute(WebKeys.USER_ID, Long.valueOf(doAsUserId));
 
 			return doAsUserId;
 		}
@@ -8572,4 +8491,5 @@ public class PortalImpl implements Portal {
 
 	private static final Map<Long, String> _cdnHostHttpsMap =
 		new ConcurrentHashMap<>();
+
 }

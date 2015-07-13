@@ -18199,8 +18199,8 @@ public class MBMessagePersistenceImpl extends BasePersistenceImpl<MBMessage>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(MBMessage mbMessage) {
-		if (mbMessage.isNew()) {
+	protected void cacheUniqueFindersCache(MBMessage mbMessage, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					mbMessage.getUuid(), mbMessage.getGroupId()
 				};
@@ -18994,7 +18994,7 @@ public class MBMessagePersistenceImpl extends BasePersistenceImpl<MBMessage>
 			MBMessageImpl.class, mbMessage.getPrimaryKey(), mbMessage, false);
 
 		clearUniqueFindersCache(mbMessage);
-		cacheUniqueFindersCache(mbMessage);
+		cacheUniqueFindersCache(mbMessage, isNew);
 
 		mbMessage.resetOriginalValues();
 
@@ -19396,6 +19396,11 @@ public class MBMessagePersistenceImpl extends BasePersistenceImpl<MBMessage>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBMessageModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

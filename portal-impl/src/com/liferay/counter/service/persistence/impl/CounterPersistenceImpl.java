@@ -669,6 +669,11 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return CounterModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the counter persistence.
 	 */

@@ -461,7 +461,8 @@ public class PortletConfigurationPortlet extends MVCPortlet {
 			actionRequest, "modelResource");
 		long[] roleIds = StringUtil.split(
 			ParamUtil.getString(
-				actionRequest, "rolesSearchContainerPrimaryKeys"), 0L);
+				actionRequest, "rolesSearchContainerPrimaryKeys"),
+			0L);
 
 		String selResource = PortletConstants.getRootPortletId(portletResource);
 
@@ -551,7 +552,9 @@ public class PortletConfigurationPortlet extends MVCPortlet {
 		catch (Exception ex) {
 			_log.error(ex.getMessage());
 
-			include("/error.jsp", renderRequest, renderResponse);
+			include(
+				"/html/portlet/portlet_configuration/error.jsp", renderRequest,
+				renderResponse);
 		}
 
 		super.doDispatch(renderRequest, renderResponse);
