@@ -14,6 +14,7 @@
 
 package com.liferay.blogs.editor.configuration;
 
+import com.liferay.blogs.web.constants.BlogsPortletKeys;
 import com.liferay.portal.kernel.editor.configuration.EditorOptions;
 import com.liferay.portal.kernel.editor.configuration.EditorOptionsContributor;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -21,6 +22,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 
 import java.util.Map;
 
+import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
@@ -30,8 +32,9 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"editor.config.key=contentEditor", "javax.portlet.name=33",
-		"javax.portlet.name=161"
+		"editor.config.key=contentEditor",
+		"javax.portlet.name=" + BlogsPortletKeys.BLOGS,
+		"javax.portlet.name=" + BlogsPortletKeys.BLOGS_ADMIN
 	},
 	service = EditorOptionsContributor.class
 )
@@ -51,7 +54,8 @@ public class BlogsContentEditorOptionsContributor
 
 		PortletURL portletURL = liferayPortletResponse.createActionURL();
 
-		portletURL.setParameter("struts_action", "/blogs/upload_editor_image");
+		portletURL.setParameter(
+			ActionRequest.ACTION_NAME, "/blogs/upload_editor_image");
 
 		editorOptions.setUploadURL(portletURL.toString());
 	}

@@ -61,8 +61,6 @@ import com.liferay.portal.kernel.servlet.taglib.ui.FormNavigatorConstants;
 import com.liferay.portal.kernel.servlet.taglib.ui.FormNavigatorEntry;
 import com.liferay.portal.kernel.struts.StrutsAction;
 import com.liferay.portal.kernel.struts.StrutsPortletAction;
-import com.liferay.portal.kernel.struts.path.AuthPublicPath;
-import com.liferay.portal.kernel.struts.path.DefaultAuthPublicPath;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.upgrade.util.UpgradeProcessUtil;
 import com.liferay.portal.kernel.util.CharPool;
@@ -133,6 +131,7 @@ import com.liferay.portlet.documentlibrary.util.DLProcessorRegistryUtil;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
+import com.liferay.taglib.FileAvailabilityUtil;
 
 import java.io.File;
 import java.io.InputStream;
@@ -593,6 +592,7 @@ public class HookHotDeployListener
 		registerClpMessageListeners(servletContext, portletClassLoader);
 
 		DirectServletRegistryUtil.clearServlets();
+		FileAvailabilityUtil.clearAvailabilities();
 
 		if (_log.isInfoEnabled()) {
 			_log.info(
@@ -838,12 +838,9 @@ public class HookHotDeployListener
 			portalProperties.getProperty(AUTH_PUBLIC_PATHS));
 
 		for (String publicPath : publicPaths) {
-			AuthPublicPath authPublicPath = new DefaultAuthPublicPath(
-				publicPath);
-
 			registerService(
 				servletContextName, AUTH_PUBLIC_PATHS + publicPath,
-				AuthPublicPath.class, authPublicPath);
+				Object.class, new Object());
 		}
 	}
 

@@ -5498,6 +5498,11 @@ public class AnnouncementsEntryPersistenceImpl extends BasePersistenceImpl<Annou
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return AnnouncementsEntryModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the announcements entry persistence.
 	 */

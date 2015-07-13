@@ -109,6 +109,10 @@ public class FileEntryStagedModelDataHandler
 				uuid, groupId);
 		}
 		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+
 			return null;
 		}
 	}
@@ -526,10 +530,12 @@ public class FileEntryStagedModelDataHandler
 						LiferayFileEntry liferayFileEntry =
 							(LiferayFileEntry)importedFileEntry;
 
-						Indexer indexer = IndexerRegistryUtil.getIndexer(
-							DLFileEntry.class);
+						Indexer<DLFileEntry> indexer =
+							IndexerRegistryUtil.nullSafeGetIndexer(
+								DLFileEntry.class);
 
-						indexer.reindex(liferayFileEntry.getModel());
+						indexer.reindex(
+							(DLFileEntry)liferayFileEntry.getModel());
 					}
 
 					if (deleteFileEntry &&
@@ -554,6 +560,10 @@ public class FileEntryStagedModelDataHandler
 					fileEntry.getSize(), serviceContext);
 			}
 			catch (DuplicateFileException dfe) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(dfe, dfe);
+				}
+
 				String title = fileEntry.getTitle();
 
 				String[] titleParts = title.split("\\.", 2);

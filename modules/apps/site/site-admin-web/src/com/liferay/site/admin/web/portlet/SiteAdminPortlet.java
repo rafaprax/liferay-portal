@@ -206,7 +206,7 @@ public class SiteAdminPortlet extends MVCPortlet {
 		Group group = TransactionHandlerUtil.invoke(
 			_transactionAttribute, groupCallable);
 
-		String redirect = StringPool.BLANK;
+		String redirect = ParamUtil.getString(actionRequest, "redirect");
 
 		long liveGroupId = ParamUtil.getLong(actionRequest, "liveGroupId");
 
@@ -235,10 +235,6 @@ public class SiteAdminPortlet extends MVCPortlet {
 			MultiSessionMessages.add(
 				actionRequest,
 				SiteAdminPortletKeys.SITE_SETTINGS + "requestProcessed");
-
-			actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
-
-			sendRedirect(actionRequest, actionResponse);
 		}
 		else {
 			long newRefererPlid = getRefererPlid(
@@ -248,9 +244,11 @@ public class SiteAdminPortlet extends MVCPortlet {
 				redirect, "doAsGroupId", group.getGroupId());
 			redirect = HttpUtil.setParameter(
 				redirect, "refererPlid", newRefererPlid);
-
-			actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
 		}
+
+		actionRequest.setAttribute(WebKeys.REDIRECT, redirect);
+
+		sendRedirect(actionRequest, actionResponse);
 	}
 
 	public void editGroupAssignments(
@@ -335,7 +333,7 @@ public class SiteAdminPortlet extends MVCPortlet {
 			SessionErrors.contains(
 				renderRequest, NoSuchGroupException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include("/error.jsp", renderRequest, renderResponse);
 		}
@@ -676,16 +674,6 @@ public class SiteAdminPortlet extends MVCPortlet {
 					Sites.ANALYTICS_PREFIX + analyticsType, analyticsScript);
 			}
 		}
-
-		String publicRobots = ParamUtil.getString(
-			actionRequest, "publicRobots",
-			liveGroup.getTypeSettingsProperty("false-robots.txt"));
-		String privateRobots = ParamUtil.getString(
-			actionRequest, "privateRobots",
-			liveGroup.getTypeSettingsProperty("true-robots.txt"));
-
-		typeSettingsProperties.setProperty("false-robots.txt", publicRobots);
-		typeSettingsProperties.setProperty("true-robots.txt", privateRobots);
 
 		boolean trashEnabled = ParamUtil.getBoolean(
 			actionRequest, "trashEnabled",

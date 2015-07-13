@@ -17,7 +17,7 @@ package com.liferay.frontend.editors.web.editor.configuration;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.ItemSelectorReturnType;
-import com.liferay.item.selector.criteria.DefaultItemSelectorReturnType;
+import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
 import com.liferay.item.selector.criteria.image.criterion.ImageItemSelectorCriterion;
 import com.liferay.item.selector.criteria.url.criterion.URLItemSelectorCriterion;
 import com.liferay.portal.kernel.editor.configuration.BaseEditorConfigContributor;
@@ -32,11 +32,11 @@ import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.theme.ThemeDisplay;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import javax.portlet.PortletURL;
 
@@ -305,11 +305,13 @@ public class AlloyEditorConfigContributor extends BaseEditorConfigContributor {
 		JSONObject jsonObject, LiferayPortletResponse liferayPortletResponse,
 		String eventName) {
 
-		Set<ItemSelectorReturnType> urlDesiredItemSelectorReturnTypes =
-			new HashSet<>();
+		List<ItemSelectorReturnType> urlDesiredItemSelectorReturnTypes =
+			new ArrayList<>();
 
-		urlDesiredItemSelectorReturnTypes.add(
-			DefaultItemSelectorReturnType.URL);
+		ItemSelectorReturnType urlItemSelectorReturnType =
+			new URLItemSelectorReturnType();
+
+		urlDesiredItemSelectorReturnTypes.add(urlItemSelectorReturnType);
 
 		ItemSelectorCriterion urlItemSelectorCriterion =
 			new URLItemSelectorCriterion();
@@ -326,11 +328,10 @@ public class AlloyEditorConfigContributor extends BaseEditorConfigContributor {
 		ItemSelectorCriterion imageItemSelectorCriterion =
 			new ImageItemSelectorCriterion();
 
-		Set<ItemSelectorReturnType> imageDesiredItemSelectorReturnTypes =
-			new HashSet<>();
+		List<ItemSelectorReturnType> imageDesiredItemSelectorReturnTypes =
+			new ArrayList<>();
 
-		imageDesiredItemSelectorReturnTypes.add(
-			DefaultItemSelectorReturnType.URL);
+		imageDesiredItemSelectorReturnTypes.add(urlItemSelectorReturnType);
 
 		imageItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
 			imageDesiredItemSelectorReturnTypes);

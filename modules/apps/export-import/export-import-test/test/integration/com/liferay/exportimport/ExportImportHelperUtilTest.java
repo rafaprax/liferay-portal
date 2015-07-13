@@ -15,6 +15,7 @@
 package com.liferay.exportimport;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.exportimport.lar.ExportImportHelperImpl;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -64,7 +65,6 @@ import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.exportimport.configuration.ExportImportConfigurationConstants;
 import com.liferay.portlet.exportimport.configuration.ExportImportConfigurationSettingsMapFactory;
 import com.liferay.portlet.exportimport.lar.CurrentUserIdStrategy;
-import com.liferay.portlet.exportimport.lar.ExportImportHelperImpl;
 import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.MissingReference;
@@ -98,15 +98,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.powermock.api.mockito.PowerMockito;
-
 /**
  * @author Zsolt Berentey
  * @author Peter Borkuti
  */
 @RunWith(Arquillian.class)
 @Sync
-public class ExportImportHelperUtilTest extends PowerMockito {
+public class ExportImportHelperUtilTest {
 
 	@ClassRule
 	@Rule
@@ -273,13 +271,14 @@ public class ExportImportHelperUtilTest extends PowerMockito {
 
 	@Test
 	public void testExportLayoutReferencesWithContext() throws Exception {
-		PortalImpl portalImpl = spy(new PortalImpl());
+		PortalImpl portalImpl = new PortalImpl() {
 
-		when(
-			portalImpl.getPathContext()
-		).thenReturn(
-			"/de"
-		);
+			@Override
+			public String getPathContext() {
+				return "/de";
+			}
+
+		};
 
 		PortalUtil portalUtil = new PortalUtil();
 

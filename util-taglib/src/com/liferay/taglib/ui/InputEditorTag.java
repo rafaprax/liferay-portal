@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
-import com.liferay.portal.kernel.servlet.DirectRequestDispatcherFactoryUtil;
 import com.liferay.portal.kernel.servlet.PortalWebResourceConstants;
 import com.liferay.portal.kernel.servlet.PortalWebResourcesUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
@@ -42,8 +41,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author Brian Wing Shun Chan
@@ -136,6 +135,14 @@ public class InputEditorTag extends IncludeTag {
 
 	public void setOnInitMethod(String onInitMethod) {
 		_onInitMethod = onInitMethod;
+	}
+
+	@Override
+	public void setPageContext(PageContext pageContext) {
+		super.setPageContext(pageContext);
+
+		servletContext = PortalWebResourcesUtil.getServletContext(
+			PortalWebResourceConstants.RESOURCE_TYPE_EDITORS);
 	}
 
 	public void setPlaceholder(String placeholder) {
@@ -294,14 +301,6 @@ public class InputEditorTag extends IncludeTag {
 		Editor editor = getEditor(request);
 
 		return editor.getJspPath(request);
-	}
-
-	@Override
-	protected RequestDispatcher getRequestDispatcher(String page) {
-		return DirectRequestDispatcherFactoryUtil.getRequestDispatcher(
-			PortalWebResourcesUtil.getServletContext(
-				PortalWebResourceConstants.RESOURCE_TYPE_EDITORS),
-			page);
 	}
 
 	@Override

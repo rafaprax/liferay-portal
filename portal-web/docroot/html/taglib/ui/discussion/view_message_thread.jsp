@@ -24,7 +24,7 @@ int index = GetterUtil.getInteger(request.getAttribute("liferay-ui:discussion:in
 
 index++;
 
-request.setAttribute("liferay-ui:discussion:index", new Integer(index));
+request.setAttribute("liferay-ui:discussion:index", Integer.valueOf(index));
 
 String randomNamespace = (String)request.getAttribute("liferay-ui:discussion:randomNamespace");
 
@@ -150,7 +150,7 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 				</header>
 
 				<div class="lfr-discussion-message-body" id='<portlet:namespace /><%= randomNamespace + "discussionMessage" + index %>'>
-					<%= discussionComment.getTranslatedBody() %>
+					<%= discussionComment.getTranslatedBody(themeDisplay.getPathThemeImages()) %>
 				</div>
 
 				<c:if test="<%= commentTreeDisplayContext.isEditControlsVisible() %>">

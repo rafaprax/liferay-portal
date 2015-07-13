@@ -27,7 +27,7 @@ DDMTemplate portletDisplayDDMTemplate = (DDMTemplate)request.getAttribute("lifer
 String refreshURL = (String)request.getAttribute("liferay-ui:ddm-template-select:refreshURL");
 boolean showEmptyOption = GetterUtil.getBoolean((String)request.getAttribute("liferay-ui:ddm-template-select:showEmptyOption"));
 
-long ddmTemplateGroupId = PortletDisplayTemplateUtil.getDDMTemplateGroupId(themeDisplay.getScopeGroupId());
+long ddmTemplateGroupId = PortletDisplayTemplateManagerUtil.getDDMTemplateGroupId(themeDisplay.getScopeGroupId());
 
 Group ddmTemplateGroup = GroupLocalServiceUtil.getGroup(ddmTemplateGroupId);
 %>
@@ -56,17 +56,17 @@ Group ddmTemplateGroup = GroupLocalServiceUtil.getGroup(ddmTemplateGroupId);
 	</c:if>
 
 	<%
-	for (DDMTemplate curDDMTemplate : DDMTemplateLocalServiceUtil.getTemplates(PortalUtil.getCurrentAndAncestorSiteGroupIds(scopeGroupId), classNameId, 0L)) {
-		Map<String,Object> data = new HashMap<String,Object>();
+	for (DDMTemplate curDDMTemplate : DDMTemplateManagerUtil.getTemplates(PortalUtil.getCurrentAndAncestorSiteGroupIds(scopeGroupId), classNameId, 0L)) {
+		Map<String, Object> data = new HashMap<String, Object>();
 
 		data.put("displaystylegroupid", curDDMTemplate.getGroupId());
 
-		if (!DDMTemplatePermission.contains(permissionChecker, scopeGroupId, curDDMTemplate, PortletKeys.PORTLET_DISPLAY_TEMPLATE, ActionKeys.VIEW)) {
+		if (!DDMTemplateManagerUtil.hasPermission(permissionChecker, scopeGroupId, curDDMTemplate.getTemplateId(), PortletKeys.PORTLET_DISPLAY_TEMPLATE, ActionKeys.VIEW)) {
 			continue;
 		}
 	%>
 
-		<aui:option data="<%= data %>" label="<%= HtmlUtil.escape(curDDMTemplate.getName(locale)) %>" selected="<%= (portletDisplayDDMTemplate != null) && (curDDMTemplate.getTemplateId() == portletDisplayDDMTemplate.getTemplateId()) %>" value="<%= PortletDisplayTemplate.DISPLAY_STYLE_PREFIX + curDDMTemplate.getTemplateKey() %>" />
+		<aui:option data="<%= data %>" label="<%= HtmlUtil.escape(curDDMTemplate.getName(locale)) %>" selected="<%= (portletDisplayDDMTemplate != null) && (curDDMTemplate.getTemplateId() == portletDisplayDDMTemplate.getTemplateId()) %>" value="<%= PortletDisplayTemplateManager.DISPLAY_STYLE_PREFIX + curDDMTemplate.getTemplateKey() %>" />
 
 	<%
 	}

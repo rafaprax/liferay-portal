@@ -17,7 +17,7 @@ package com.liferay.wiki.editor.configuration;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.ItemSelectorReturnType;
-import com.liferay.item.selector.criteria.DefaultItemSelectorReturnType;
+import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
 import com.liferay.portal.kernel.editor.configuration.BaseEditorConfigContributor;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigContributor;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -27,9 +27,9 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.wiki.constants.WikiPortletKeys;
 import com.liferay.wiki.item.selector.criterion.WikiAttachmentItemSelectorCriterion;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletURL;
 
@@ -83,10 +83,10 @@ public class WikiAttachmentEditorConfigContributor
 		ItemSelectorCriterion attachmentItemSelectorCriterion =
 			new WikiAttachmentItemSelectorCriterion(wikiPageResourcePrimKey);
 
-		Set<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
-			new HashSet<>();
+		List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
+			new ArrayList<>();
 
-		desiredItemSelectorReturnTypes.add(DefaultItemSelectorReturnType.URL);
+		desiredItemSelectorReturnTypes.add(new URLItemSelectorReturnType());
 
 		attachmentItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
 			desiredItemSelectorReturnTypes);
