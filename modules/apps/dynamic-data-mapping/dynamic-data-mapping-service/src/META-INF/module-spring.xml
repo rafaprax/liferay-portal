@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-destroy-method="destroy" default-init-method="afterPropertiesSet" xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMContentLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMContentLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMContentLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMContentLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMContent" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMContentPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMContentPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMContentPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMContentPersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStorageLinkLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStorageLink" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStorageLinkPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStorageLinkPersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStructure" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStructure" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStructurePersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureLayoutLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStructureLayout" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLayoutPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStructureLayoutPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLayoutPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLayoutPersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureLinkLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStructureLink" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLinkPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStructureLinkPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLinkPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLinkPersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureVersionLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureVersionLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureVersionLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureVersionLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStructureVersion" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureVersionService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureVersionServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureVersionService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureVersionService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMStructureVersion" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureVersionPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStructureVersionPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureVersionPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureVersionPersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMTemplateLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMTemplate" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMTemplateService" class="com.liferay.dynamic.data.mapping.service.impl.DDMTemplateServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMTemplateService" ref="com.liferay.dynamic.data.mapping.service.DDMTemplateService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMTemplate" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMTemplatePersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMTemplateLinkLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMTemplateLink" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateLinkPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMTemplateLinkPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateLinkPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateLinkPersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMTemplateVersionLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMTemplateVersionLocalServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMTemplateVersionLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMTemplateVersionLocalService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMTemplateVersion" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.DDMTemplateVersionService" class="com.liferay.dynamic.data.mapping.service.impl.DDMTemplateVersionServiceImpl" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMTemplateVersionService" ref="com.liferay.dynamic.data.mapping.service.DDMTemplateVersionService">
+		<osgi:service-properties>
+			<entry key="json.web.service.context.name" value="ddm" />
+			<entry key="json.web.service.context.path" value="DDMTemplateVersion" />
+		</osgi:service-properties>
+	</osgi:service>
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateVersionPersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMTemplateVersionPersistenceImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateVersionPersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateVersionPersistence" />
+</beans>
