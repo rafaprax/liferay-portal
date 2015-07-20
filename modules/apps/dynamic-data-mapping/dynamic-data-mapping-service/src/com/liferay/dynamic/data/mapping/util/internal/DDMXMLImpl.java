@@ -51,10 +51,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Bruno Basto
  * @author Brian Wing Shun Chan
  */
+@Component(immediate = true)
 @DoPrivileged
 public class DDMXMLImpl implements DDMXML {
 

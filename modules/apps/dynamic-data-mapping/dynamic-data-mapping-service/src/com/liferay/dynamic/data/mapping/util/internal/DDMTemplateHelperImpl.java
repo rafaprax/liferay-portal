@@ -47,10 +47,13 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Juan Fernández
  * @author Jorge Ferrer
  */
+@Component(immediate = true)
 public class DDMTemplateHelperImpl implements DDMTemplateHelper {
 
 	@Override
