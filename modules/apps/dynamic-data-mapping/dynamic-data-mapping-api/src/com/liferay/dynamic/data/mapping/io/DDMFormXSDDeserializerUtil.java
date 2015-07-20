@@ -12,38 +12,38 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.io;
+package com.liferay.dynamic.data.mapping.io;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 
 /**
- * @author Marcellus Tavares
+ * @author Pablo Carvalho
  */
-public class DDMFormJSONDeserializerUtil {
+public class DDMFormXSDDeserializerUtil {
 
 	public static DDMForm deserialize(String serializedDDMForm)
 		throws PortalException {
 
-		return getDDMFormJSONDeserializer().deserialize(serializedDDMForm);
+		return getDDMFormXSDDeserializer().deserialize(serializedDDMForm);
 	}
 
-	public static DDMFormJSONDeserializer getDDMFormJSONDeserializer() {
+	public static DDMFormXSDDeserializer getDDMFormXSDDeserializer() {
 		PortalRuntimePermission.checkGetBeanProperty(
-			DDMFormJSONDeserializerUtil.class);
+			DDMFormXSDDeserializerUtil.class);
 
-		return _ddmFormJSONDeserializer;
+		return _ddmFormXSDDeserializer;
 	}
 
-	public void setDDMFormJSONDeserializer(
-		DDMFormJSONDeserializer ddmFormJSONDeserializer) {
+	public void setDDMFormXSDDeserializer(
+		DDMFormXSDDeserializer ddmFormXSDSerializer) {
 
 		PortalRuntimePermission.checkSetBeanProperty(getClass());
 
-		_ddmFormJSONDeserializer = ddmFormJSONDeserializer;
+		_ddmFormXSDDeserializer = ddmFormXSDSerializer;
 	}
 
-	private static DDMFormJSONDeserializer _ddmFormJSONDeserializer;
+	private static DDMFormXSDDeserializer _ddmFormXSDDeserializer;
 
 }
