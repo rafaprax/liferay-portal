@@ -14,11 +14,14 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 
 /**
  * @author Marcellus Tavares
  */
+@Component(immediate = true, service = DDMFormFieldValueRenderer.class)
 public class RadioDDMFormFieldValueRenderer
 	extends BaseListDDMFormFieldValueRenderer {
 

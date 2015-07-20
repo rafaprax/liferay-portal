@@ -30,10 +30,13 @@ import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Sergio González
  * @author Marcellus Tavares
  */
+@Component(immediate = true, service = DDMFormFieldValueRenderer.class)
 public class GeolocationDDMFormFieldValueRenderer
 	extends BaseDDMFormFieldValueRenderer {
 

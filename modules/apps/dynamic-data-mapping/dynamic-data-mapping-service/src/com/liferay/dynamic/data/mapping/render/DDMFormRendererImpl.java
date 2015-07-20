@@ -25,9 +25,12 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Marcellus Tavares
  */
+@Component(immediate = true)
 public class DDMFormRendererImpl implements DDMFormRenderer {
 
 	@Override
