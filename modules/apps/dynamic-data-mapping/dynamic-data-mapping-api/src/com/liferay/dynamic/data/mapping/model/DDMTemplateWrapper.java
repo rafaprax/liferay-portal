@@ -573,6 +573,12 @@ public class DDMTemplateWrapper implements DDMTemplate,
 		return _ddmTemplate.getSmallImageId();
 	}
 
+	@Override
+	public java.lang.String getSmallImageType()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmTemplate.getSmallImageType();
+	}
+
 	/**
 	* Returns the small image u r l of this d d m template.
 	*
@@ -593,6 +599,12 @@ public class DDMTemplateWrapper implements DDMTemplate,
 		return _ddmTemplate.getTemplateId();
 	}
 
+	@Override
+	public java.lang.String getTemplateImageURL(
+		com.liferay.portal.theme.ThemeDisplay themeDisplay) {
+		return _ddmTemplate.getTemplateImageURL(themeDisplay);
+	}
+
 	/**
 	* Returns the template key of this d d m template.
 	*
@@ -601,6 +613,12 @@ public class DDMTemplateWrapper implements DDMTemplate,
 	@Override
 	public java.lang.String getTemplateKey() {
 		return _ddmTemplate.getTemplateKey();
+	}
+
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMTemplateVersion getTemplateVersion()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmTemplate.getTemplateVersion();
 	}
 
 	/**
@@ -691,6 +709,22 @@ public class DDMTemplateWrapper implements DDMTemplate,
 	@Override
 	public java.lang.String getVersionUserUuid() {
 		return _ddmTemplate.getVersionUserUuid();
+	}
+
+	/**
+	* Returns the WebDAV URL to access the template.
+	*
+	* @param themeDisplay the theme display needed to build the URL. It can
+	set HTTPS access, the server name, the server port, the path
+	context, and the scope group.
+	* @param webDAVToken the WebDAV token for the URL
+	* @return the WebDAV URL
+	*/
+	@Override
+	public java.lang.String getWebDavURL(
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		java.lang.String webDAVToken) {
+		return _ddmTemplate.getWebDavURL(themeDisplay, webDAVToken);
 	}
 
 	@Override
@@ -1052,6 +1086,11 @@ public class DDMTemplateWrapper implements DDMTemplate,
 	@Override
 	public void setSmallImageId(long smallImageId) {
 		_ddmTemplate.setSmallImageId(smallImageId);
+	}
+
+	@Override
+	public void setSmallImageType(java.lang.String smallImageType) {
+		_ddmTemplate.setSmallImageType(smallImageType);
 	}
 
 	/**

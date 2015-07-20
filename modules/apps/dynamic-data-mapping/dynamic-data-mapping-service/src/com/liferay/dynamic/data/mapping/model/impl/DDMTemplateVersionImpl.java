@@ -16,22 +16,19 @@ package com.liferay.dynamic.data.mapping.model.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
+
 /**
- * The extended model implementation for the DDMTemplateVersion service. Represents a row in the &quot;DDMTemplateVersion&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.model.DDMTemplateVersion} interface.
- * </p>
- *
  * @author Brian Wing Shun Chan
  */
 @ProviderType
 public class DDMTemplateVersionImpl extends DDMTemplateVersionBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. All methods that expect a d d m template version model instance should use the {@link com.liferay.dynamic.data.mapping.model.DDMTemplateVersion} interface instead.
-	 */
-	public DDMTemplateVersionImpl() {
+
+	@Override
+	public DDMTemplate getTemplate() throws PortalException {
+		return DDMTemplateLocalServiceUtil.getTemplate(getTemplateId());
 	}
+
 }

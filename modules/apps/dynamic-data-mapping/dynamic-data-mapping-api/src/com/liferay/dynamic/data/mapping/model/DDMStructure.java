@@ -34,4 +34,103 @@ public interface DDMStructure extends DDMStructureModel, PersistedModel {
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.dynamic.data.mapping.model.impl.DDMStructureImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm createFullHierarchyDDMForm()
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.util.List<java.lang.String> getChildrenFieldNames(
+		java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm getDDMForm();
+
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormField getDDMFormField(
+		java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMFormField> getDDMFormFields(
+		boolean includeTransientFields);
+
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout getDDMFormLayout()
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getFieldDataType(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getFieldLabel(java.lang.String fieldName,
+		java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getFieldLabel(java.lang.String fieldName,
+		java.lang.String locale)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.util.Set<java.lang.String> getFieldNames();
+
+	public java.lang.String getFieldProperty(java.lang.String fieldName,
+		java.lang.String property)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public boolean getFieldRepeatable(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public boolean getFieldRequired(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getFieldTip(java.lang.String fieldName,
+		java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getFieldTip(java.lang.String fieldName,
+		java.lang.String locale)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getFieldType(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm getFullHierarchyDDMForm();
+
+	public java.util.Map<java.lang.String, com.liferay.portlet.dynamicdatamapping.model.DDMFormField> getFullHierarchyDDMFormFieldsMap(
+		boolean includeNestedDDMFormFields);
+
+	public java.util.List<java.lang.String> getRootFieldNames();
+
+	public com.liferay.portlet.dynamicdatamapping.model.DDMStructureVersion getStructureVersion()
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> getTemplates();
+
+	public java.lang.String getUnambiguousName(
+		java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> structures,
+		long groupId, java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	/**
+	* Returns the WebDAV URL to access the structure.
+	*
+	* @param themeDisplay the theme display needed to build the URL. It can
+	set HTTPS access, the server name, the server port, the path
+	context, and the scope group.
+	* @param webDAVToken the WebDAV token for the URL
+	* @return the WebDAV URL
+	*/
+	public java.lang.String getWebDavURL(
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		java.lang.String webDAVToken);
+
+	public boolean hasField(java.lang.String fieldName);
+
+	public boolean isFieldRepeatable(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public boolean isFieldTransient(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public void setDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm ddmForm);
+
+	public void setFullHierarchyDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm fullHierarchyDDMForm);
+
+	public void updateDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm ddmForm);
 }

@@ -16,22 +16,63 @@ package com.liferay.dynamic.data.mapping.model.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.model.CacheField;
+import com.liferay.portlet.dynamicdatamapping.io.DDMFormJSONDeserializerUtil;
+import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLayout;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLayoutLocalServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
+
 /**
- * The extended model implementation for the DDMStructureVersion service. Represents a row in the &quot;DDMStructureVersion&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.model.DDMStructureVersion} interface.
- * </p>
- *
  * @author Brian Wing Shun Chan
+ * @author Leonardo Barros
  */
 @ProviderType
 public class DDMStructureVersionImpl extends DDMStructureVersionBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. All methods that expect a d d m structure version model instance should use the {@link com.liferay.dynamic.data.mapping.model.DDMStructureVersion} interface instead.
-	 */
-	public DDMStructureVersionImpl() {
+
+	@Override
+	public DDMForm getDDMForm() {
+		if (_ddmForm == null) {
+			try {
+				_ddmForm = DDMFormJSONDeserializerUtil.deserialize(
+					getDefinition());
+			}
+			catch (Exception e) {
+				_log.error(e, e);
+			}
+		}
+
+		return new DDMForm(_ddmForm);
 	}
+
+	@Override
+	public DDMFormLayout getDDMFormLayout() throws PortalException {
+		DDMStructureLayout ddmStructureLayout =
+			DDMStructureLayoutLocalServiceUtil.
+				getStructureLayoutByStructureVersionId(getStructureVersionId());
+
+		return ddmStructureLayout.getDDMFormLayout();
+	}
+
+	@Override
+	public DDMStructure getStructure() throws PortalException {
+		return DDMStructureLocalServiceUtil.getStructure(getStructureId());
+	}
+
+	@Override
+	public void setDDMForm(DDMForm ddmForm) {
+		_ddmForm = ddmForm;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DDMStructureVersionImpl.class);
+
+	@CacheField(methodName = "DDMForm")
+	private DDMForm _ddmForm;
+
 }

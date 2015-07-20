@@ -141,11 +141,14 @@ public class DDMStructureLayoutCacheModel implements CacheModel<DDMStructureLayo
 
 		ddmStructureLayoutImpl.resetOriginalValues();
 
+		ddmStructureLayoutImpl.setDDMFormLayout(_ddmFormLayout);
+
 		return ddmStructureLayoutImpl;
 	}
 
 	@Override
-	public void readExternal(ObjectInput objectInput) throws IOException {
+	public void readExternal(ObjectInput objectInput)
+		throws ClassNotFoundException, IOException {
 		uuid = objectInput.readUTF();
 		structureLayoutId = objectInput.readLong();
 		groupId = objectInput.readLong();
@@ -156,6 +159,8 @@ public class DDMStructureLayoutCacheModel implements CacheModel<DDMStructureLayo
 		modifiedDate = objectInput.readLong();
 		structureVersionId = objectInput.readLong();
 		definition = objectInput.readUTF();
+
+		_ddmFormLayout = (com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout)objectInput.readObject();
 	}
 
 	@Override
@@ -190,6 +195,8 @@ public class DDMStructureLayoutCacheModel implements CacheModel<DDMStructureLayo
 		else {
 			objectOutput.writeUTF(definition);
 		}
+
+		objectOutput.writeObject(_ddmFormLayout);
 	}
 
 	public String uuid;
@@ -202,4 +209,5 @@ public class DDMStructureLayoutCacheModel implements CacheModel<DDMStructureLayo
 	public long modifiedDate;
 	public long structureVersionId;
 	public String definition;
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout _ddmFormLayout;
 }

@@ -14,24 +14,25 @@
 
 package com.liferay.dynamic.data.mapping.model.impl;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 
 /**
- * The extended model implementation for the DDMStorageLink service. Represents a row in the &quot;DDMStorageLink&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.model.DDMStorageLink} interface.
- * </p>
- *
  * @author Brian Wing Shun Chan
  */
-@ProviderType
 public class DDMStorageLinkImpl extends DDMStorageLinkBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. All methods that expect a d d m storage link model instance should use the {@link com.liferay.dynamic.data.mapping.model.DDMStorageLink} interface instead.
-	 */
-	public DDMStorageLinkImpl() {
+
+	@Override
+	public String getStorageType() throws PortalException {
+		DDMStructure structure = getStructure();
+
+		return structure.getStorageType();
 	}
+
+	@Override
+	public DDMStructure getStructure() throws PortalException {
+		return DDMStructureLocalServiceUtil.getStructure(getStructureId());
+	}
+
 }

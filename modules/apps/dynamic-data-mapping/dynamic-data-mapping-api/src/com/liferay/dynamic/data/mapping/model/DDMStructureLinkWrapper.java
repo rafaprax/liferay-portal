@@ -148,6 +148,12 @@ public class DDMStructureLinkWrapper implements DDMStructureLink,
 		return _ddmStructureLink.getPrimaryKeyObj();
 	}
 
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructureLink.getStructure();
+	}
+
 	/**
 	* Returns the structure ID of this d d m structure link.
 	*
