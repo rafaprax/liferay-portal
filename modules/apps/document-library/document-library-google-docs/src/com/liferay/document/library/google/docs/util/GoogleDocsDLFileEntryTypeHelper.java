@@ -14,8 +14,10 @@
 
 package com.liferay.document.library.google.docs.util;
 
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.service.ClassNameLocalService;
 import com.liferay.portal.service.ServiceContext;
@@ -23,7 +25,6 @@ import com.liferay.portal.service.UserLocalService;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormXSDDeserializerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
@@ -73,7 +74,7 @@ public class GoogleDocsDLFileEntryTypeHelper {
 		String definition = ResourceUtil.get(
 			this, "dependencies/ddm_structure_google_docs.xml");
 
-		DDMForm ddmForm = DDMFormXSDDeserializerUtil.deserialize(definition);
+		DDMForm ddmForm = _ddmFormXSDDeserializer.deserialize(definition);
 
 		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
 
@@ -148,5 +149,6 @@ public class GoogleDocsDLFileEntryTypeHelper {
 	private final long _dlFileEntryMetadataClassNameId;
 	private final DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 	private final UserLocalService _userLocalService;
-
+	private static final DDMFormXSDDeserializer _ddmFormXSDDeserializer =
+		ProxyFactory.newServiceTrackedInstance(DDMFormXSDDeserializer.class);
 }

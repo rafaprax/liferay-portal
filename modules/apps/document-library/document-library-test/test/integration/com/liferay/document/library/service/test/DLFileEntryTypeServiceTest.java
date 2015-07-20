@@ -16,6 +16,7 @@ package com.liferay.document.library.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.events.AddDefaultDocumentLibraryStructuresAction;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.portal.kernel.events.SimpleAction;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -34,6 +35,7 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
@@ -51,7 +53,6 @@ import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormXSDDeserializerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
@@ -147,7 +148,7 @@ public class DLFileEntryTypeServiceTest {
 		byte[] testFileBytes = FileUtil.getBytes(
 			getClass(), _TEST_DDM_STRUCTURE);
 
-		DDMForm ddmForm = DDMFormXSDDeserializerUtil.deserialize(
+		DDMForm ddmForm = _ddmFormXSDDeserializer.deserialize(
 			new String(testFileBytes));
 
 		serviceContext.setAttribute("ddmForm", ddmForm);
@@ -392,6 +393,9 @@ public class DLFileEntryTypeServiceTest {
 
 	private static final String _TEST_DDM_STRUCTURE =
 		"dependencies/ddmstructure.xml";
+
+	private static final DDMFormXSDDeserializer _ddmFormXSDDeserializer =
+		ProxyFactory.newServiceTrackedInstance(DDMFormXSDDeserializer.class);
 
 	private DLFileEntryType _basicDocumentDLFileEntryType;
 	private DLFileEntryType _contractDLFileEntryType;
