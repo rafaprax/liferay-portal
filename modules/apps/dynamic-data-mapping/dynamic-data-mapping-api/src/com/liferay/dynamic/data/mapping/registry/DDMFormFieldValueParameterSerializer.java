@@ -12,33 +12,17 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.registry;
+package com.liferay.dynamic.data.mapping.registry;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Marcellus Tavares
  */
-public abstract class BaseDDMFormFieldType implements DDMFormFieldType {
+public interface DDMFormFieldValueParameterSerializer {
 
-	@Override
-	public String getDDMFormFieldTypeJavaScriptClass() {
-		return "Liferay.DDM.Renderer.Field";
-	}
-
-	@Override
-	public String getDDMFormFieldTypeJavaScriptModule() {
-		return "liferay-ddm-form-renderer-field";
-	}
-
-	@Override
-	public Class<? extends DDMFormFieldTypeSettings>
-		getDDMFormFieldTypeSettings() {
-
-		return DefaultDDMFormFieldTypeSettings.class;
-	}
-
-	@Override
-	public String getIcon() {
-		return "icon-ok-circle";
-	}
+	public String getParameterValue(
+		HttpServletRequest httpServletRequest, String ddmFormFieldParameterName,
+		String defaultDDMFormFieldParameterValue);
 
 }

@@ -12,17 +12,24 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.registry;
+package com.liferay.dynamic.data.mapping.registry;
 
-import javax.servlet.http.HttpServletRequest;
+import com.liferay.portlet.dynamicdatamapping.registry.annotations.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.registry.annotations.DDMFormField;
 
 /**
  * @author Marcellus Tavares
  */
-public interface DDMFormFieldValueParameterSerializer {
+@DDMForm(localization = "content/Language")
+public interface DDMFormFieldTypeSettings {
 
-	public String getParameterValue(
-		HttpServletRequest httpServletRequest, String ddmFormFieldParameterName,
-		String defaultDDMFormFieldParameterValue);
+	@DDMFormField(visibilityExpression = "false")
+	public String dataType();
+
+	@DDMFormField(label = "%name")
+	public String name();
+
+	@DDMFormField(visibilityExpression = "false")
+	public String type();
 
 }

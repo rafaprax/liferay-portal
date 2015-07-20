@@ -12,24 +12,26 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.registry;
+package com.liferay.dynamic.data.mapping.registry.annotations;
 
-import com.liferay.portlet.dynamicdatamapping.registry.annotations.DDMForm;
-import com.liferay.portlet.dynamicdatamapping.registry.annotations.DDMFormField;
+import com.liferay.portal.kernel.util.StringPool;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Marcellus Tavares
  */
-@DDMForm(localization = "content/Language")
-public interface DDMFormFieldTypeSettings {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface DDMForm {
 
-	@DDMFormField(visibilityExpression = "false")
-	public String dataType();
+	public String availableLanguageIds() default StringPool.BLANK;
 
-	@DDMFormField(label = "%name")
-	public String name();
+	public String defaultLanguageId() default StringPool.BLANK;
 
-	@DDMFormField(visibilityExpression = "false")
-	public String type();
+	public String localization() default StringPool.BLANK;
 
 }
