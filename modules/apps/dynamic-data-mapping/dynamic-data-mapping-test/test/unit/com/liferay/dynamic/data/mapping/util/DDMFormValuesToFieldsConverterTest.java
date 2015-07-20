@@ -66,6 +66,7 @@ public class DDMFormValuesToFieldsConverterTest extends BaseDDMTestCase {
 		setUpDDMStructureLocalServiceUtil();
 		setUpHtmlUtil();
 		setUpJSONFactoryUtil();
+		setUpLanguageUtil();
 		setUpPropsUtil();
 		setUpSAXReaderUtil();
 	}
@@ -161,21 +162,41 @@ public class DDMFormValuesToFieldsConverterTest extends BaseDDMTestCase {
 
 		ddmFormValues.addDDMFormFieldValue(integerDDMFormFieldValue);
 
-		Fields fields = DDMFormValuesToFieldsConverterUtil.convert(
-			ddmStructure, ddmFormValues);
+		try (CaptureHandler captureHandler =
+				JDKLoggerTestUtil.configureJDKLogger(
+					LocaleUtil.class.getName(), Level.WARNING)) {
 
-		Assert.assertNotNull(fields);
+			Fields fields = DDMFormValuesToFieldsConverterUtil.convert(
+				ddmStructure, ddmFormValues);
 
-		Field integerField = fields.get("Integer");
+			Assert.assertNotNull(fields);
 
-		testField(
-			integerField, createValuesList(""), createValuesList(""),
-			_availableLocales, LocaleUtil.US);
+			Field integerField = fields.get("Integer");
 
-		Field fieldsDisplayField = fields.get(DDMImpl.FIELDS_DISPLAY_NAME);
+			testField(
+				integerField, createValuesList(""), createValuesList(""),
+				_availableLocales, LocaleUtil.US);
 
-		Assert.assertEquals(
-			"Integer_INSTANCE_rztm", fieldsDisplayField.getValue());
+			Field fieldsDisplayField = fields.get(DDMImpl.FIELDS_DISPLAY_NAME);
+
+			Assert.assertEquals(
+				"Integer_INSTANCE_rztm", fieldsDisplayField.getValue());
+
+			List<LogRecord> logRecords = captureHandler.getLogRecords();
+
+			Assert.assertEquals(5, logRecords.size());
+
+			String[] expectedValues =
+				{"pt_BR", "en_US", "en_US", "pt_BR", "en_US"};
+
+			for (int i = 0; i < logRecords.size(); i++) {
+				LogRecord logRecord = logRecords.get(i);
+
+				Assert.assertEquals(
+					expectedValues[i]+" is not a valid language id",
+					logRecord.getMessage());
+			}
+		}
 	}
 
 	@Test
@@ -286,8 +307,9 @@ public class DDMFormValuesToFieldsConverterTest extends BaseDDMTestCase {
 
 			Assert.assertEquals(
 				"Name_INSTANCE_rztm,Phone_INSTANCE_ovho,Phone_INSTANCE_krvx," +
-				"Name_INSTANCE_rght,Phone_INSTANCE_latb,Phone_INSTANCE_jewp," +
-				"Phone_INSTANCE_mkar", fieldsDisplayField.getValue());
+					"Name_INSTANCE_rght,Phone_INSTANCE_latb," +
+						"Phone_INSTANCE_jewp,Phone_INSTANCE_mkar",
+				fieldsDisplayField.getValue());
 		}
 	}
 
@@ -346,9 +368,8 @@ public class DDMFormValuesToFieldsConverterTest extends BaseDDMTestCase {
 
 			testField(
 				nameField, createValuesList("Name 1", "Name 2", "Name 3"),
-				createValuesList(
-					"Nome 1", "Nome 2", "Nome 3"), _availableLocales,
-					LocaleUtil.US);
+				createValuesList("Nome 1", "Nome 2", "Nome 3"),
+				_availableLocales, LocaleUtil.US);
 
 			Field fieldsDisplayField = fields.get(DDMImpl.FIELDS_DISPLAY_NAME);
 

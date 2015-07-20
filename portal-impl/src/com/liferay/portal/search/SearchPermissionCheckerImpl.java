@@ -93,7 +93,8 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 				return;
 			}
 
-			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(className);
+			Indexer<?> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+				className);
 
 			if (!indexer.isPermissionAware()) {
 				return;
@@ -211,7 +212,7 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 			BooleanFilter booleanFilter, SearchContext searchContext)
 		throws Exception {
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(className);
+		Indexer<?> indexer = IndexerRegistryUtil.getIndexer(className);
 
 		if (!indexer.isPermissionAware()) {
 			return booleanFilter;
@@ -251,14 +252,15 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 			groupIdsToRoles);
 
 		return doGetPermissionFilter_6(
-			companyId, groupIds, userId, className, booleanFilter, groups,
-			roles, userGroupRoles, groupIdsToRoles);
+			companyId, groupIds, userId, advancedPermissionChecker, className,
+			booleanFilter, groups, roles, userGroupRoles, groupIdsToRoles);
 	}
 
 	protected BooleanFilter doGetPermissionFilter_6(
-			long companyId, long[] groupIds, long userId, String className,
-			BooleanFilter booleanFilter, Set<Group> groups, Set<Role> roles,
-			Set<UserGroupRole> userGroupRoles,
+			long companyId, long[] groupIds, long userId,
+			AdvancedPermissionChecker advancedPermissionChecker,
+			String className, BooleanFilter booleanFilter, Set<Group> groups,
+			Set<Role> roles, Set<UserGroupRole> userGroupRoles,
 			Map<Long, List<Role>> groupIdsToRoles)
 		throws Exception {
 
@@ -299,7 +301,9 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 			}
 
 			for (Group group : groups) {
-				if (ResourcePermissionLocalServiceUtil.hasResourcePermission(
+				if (advancedPermissionChecker.isGroupAdmin(
+						group.getGroupId()) ||
+					ResourcePermissionLocalServiceUtil.hasResourcePermission(
 						companyId, className, ResourceConstants.SCOPE_GROUP,
 						String.valueOf(group.getGroupId()), role.getRoleId(),
 						ActionKeys.VIEW)) {
@@ -392,7 +396,7 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 			String resourceName, String resourceClassPK)
 		throws Exception {
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(resourceName);
+		Indexer<?> indexer = IndexerRegistryUtil.getIndexer(resourceName);
 
 		if (indexer != null) {
 			indexer.reindex(resourceName, GetterUtil.getLong(resourceClassPK));

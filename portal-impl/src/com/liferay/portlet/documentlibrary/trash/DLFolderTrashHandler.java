@@ -16,7 +16,10 @@ package com.liferay.portlet.documentlibrary.trash;
 
 import com.liferay.portal.InvalidRepositoryException;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.repository.Repository;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.DocumentRepository;
+import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.kernel.repository.RepositoryProviderUtil;
 import com.liferay.portal.kernel.repository.capabilities.TrashCapability;
 import com.liferay.portal.kernel.repository.model.Folder;
@@ -73,12 +76,12 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 
 	@Override
 	public void deleteTrashEntry(long classPK) throws PortalException {
-		Repository repository = getRepository(classPK);
+		DocumentRepository documentRepository = getDocumentRepository(classPK);
 
-		TrashCapability trashCapability = repository.getCapability(
+		TrashCapability trashCapability = documentRepository.getCapability(
 			TrashCapability.class);
 
-		Folder folder = repository.getFolder(classPK);
+		Folder folder = documentRepository.getFolder(classPK);
 
 		trashCapability.deleteFolder(folder);
 	}
@@ -192,6 +195,10 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 			return dlFolder.isInTrash();
 		}
 		catch (InvalidRepositoryException ire) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(ire, ire);
+			}
+
 			return false;
 		}
 	}
@@ -204,6 +211,10 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 			return dlFolder.isInTrashContainer();
 		}
 		catch (InvalidRepositoryException ire) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(ire, ire);
+			}
+
 			return false;
 		}
 	}
@@ -239,17 +250,17 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		Repository repository = getRepository(classPK);
+		DocumentRepository documentRepository = getDocumentRepository(classPK);
 
-		TrashCapability trashCapability = repository.getCapability(
+		TrashCapability trashCapability = documentRepository.getCapability(
 			TrashCapability.class);
 
-		Folder folder = repository.getFolder(classPK);
+		Folder folder = documentRepository.getFolder(classPK);
 
 		Folder destinationFolder = null;
 
 		if (containerModelId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			destinationFolder = repository.getFolder(containerModelId);
+			destinationFolder = documentRepository.getFolder(containerModelId);
 		}
 
 		trashCapability.moveFolderFromTrash(
@@ -260,12 +271,12 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 	public void restoreTrashEntry(long userId, long classPK)
 		throws PortalException {
 
-		Repository repository = getRepository(classPK);
+		DocumentRepository documentRepository = getDocumentRepository(classPK);
 
-		TrashCapability trashCapability = repository.getCapability(
+		TrashCapability trashCapability = documentRepository.getCapability(
 			TrashCapability.class);
 
-		Folder folder = repository.getFolder(classPK);
+		Folder folder = documentRepository.getFolder(classPK);
 
 		trashCapability.restoreFolderFromTrash(userId, folder);
 	}
@@ -326,17 +337,19 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 	}
 
 	@Override
-	protected Repository getRepository(long classPK) throws PortalException {
-		Repository repository = RepositoryProviderUtil.getFolderRepository(
-			classPK);
+	protected DocumentRepository getDocumentRepository(long classPK)
+		throws PortalException {
 
-		if (!repository.isCapabilityProvided(TrashCapability.class)) {
+		LocalRepository localRepository =
+			RepositoryProviderUtil.getFolderLocalRepository(classPK);
+
+		if (!localRepository.isCapabilityProvided(TrashCapability.class)) {
 			throw new InvalidRepositoryException(
-				"Repository " + repository.getRepositoryId() +
+				"LocalRepository " + localRepository.getRepositoryId() +
 					" does not support trash operations");
 		}
 
-		return repository;
+		return localRepository;
 	}
 
 	@Override
@@ -353,5 +366,8 @@ public class DLFolderTrashHandler extends DLBaseTrashHandler {
 		return DLFolderPermission.contains(
 			permissionChecker, dlFolder, actionId);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DLFolderTrashHandler.class);
 
 }

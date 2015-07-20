@@ -16,18 +16,27 @@ package com.liferay.service.access.control.profile;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.access.control.AccessControlPolicy;
+import com.liferay.portal.kernel.security.access.control.AccessControlUtil;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.security.access.control.BaseAccessControlPolicy;
 import com.liferay.portal.kernel.security.access.control.profile.ServiceAccessControlProfileThreadLocal;
+import com.liferay.portal.kernel.security.auth.verifier.AuthVerifierResult;
+import com.liferay.portal.kernel.settings.CompanyServiceSettingsLocator;
+import com.liferay.portal.kernel.settings.SettingsException;
+import com.liferay.portal.kernel.settings.SettingsFactory;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.security.auth.AccessControlContext;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
+import com.liferay.service.access.control.profile.configuration.SACPConfiguration;
+import com.liferay.service.access.control.profile.constants.SACPConstants;
 import com.liferay.service.access.control.profile.model.SACPEntry;
 import com.liferay.service.access.control.profile.service.SACPEntryLocalService;
 
 import java.lang.reflect.Method;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,8 +60,55 @@ public class SACPAccessControlPolicy extends BaseAccessControlPolicy {
 			ServiceAccessControlProfileThreadLocal.
 				getActiveServiceAccessControlProfileNames();
 
-		if (serviceAccessControlProfileNames == null) {
-			return;
+		SACPConfiguration sacpConfiguration = null;
+
+		try {
+			sacpConfiguration = _settingsFactory.getSettings(
+				SACPConfiguration.class,
+				new CompanyServiceSettingsLocator(
+					CompanyThreadLocal.getCompanyId(),
+					SACPConstants.SERVICE_NAME));
+		}
+		catch (SettingsException se) {
+			throw new SecurityException(
+				"Unable to determine default service access control profile",
+				se);
+		}
+
+		if (sacpConfiguration.requireDefaultSACPEntry() ||
+			(serviceAccessControlProfileNames == null)) {
+
+			if (serviceAccessControlProfileNames == null) {
+				serviceAccessControlProfileNames = new ArrayList<>();
+
+				ServiceAccessControlProfileThreadLocal.
+					setActiveServiceAccessControlProfileNames(
+						serviceAccessControlProfileNames);
+			}
+
+			boolean passwordBasedAuthentication = false;
+
+			AccessControlContext accessControlContext =
+				AccessControlUtil.getAccessControlContext();
+
+			if (accessControlContext != null) {
+				AuthVerifierResult authVerifierResult =
+					accessControlContext.getAuthVerifierResult();
+
+				if (authVerifierResult != null) {
+					passwordBasedAuthentication =
+						authVerifierResult.isPasswordBasedAuthentication();
+				}
+			}
+
+			if (passwordBasedAuthentication) {
+				serviceAccessControlProfileNames.add(
+					sacpConfiguration.defaultUserSACPEntryName());
+			}
+			else {
+				serviceAccessControlProfileNames.add(
+					sacpConfiguration.defaultApplicationSACPEntryName());
+			}
 		}
 
 		long companyId = CompanyThreadLocal.getCompanyId();
@@ -70,6 +126,10 @@ public class SACPAccessControlPolicy extends BaseAccessControlPolicy {
 			catch (PortalException pe) {
 				throw new SecurityException(pe);
 			}
+		}
+
+		if (allowedServiceSignatures.contains(StringPool.STAR)) {
+			return;
 		}
 
 		Class<?> clazz = method.getDeclaringClass();
@@ -200,6 +260,12 @@ public class SACPAccessControlPolicy extends BaseAccessControlPolicy {
 		_sacpEntryLocalService = sacpEntryLocalService;
 	}
 
+	@Reference
+	protected void setSettingsFactory(SettingsFactory settingsFactory) {
+		_settingsFactory = settingsFactory;
+	}
+
 	private SACPEntryLocalService _sacpEntryLocalService;
+	private volatile SettingsFactory _settingsFactory;
 
 }

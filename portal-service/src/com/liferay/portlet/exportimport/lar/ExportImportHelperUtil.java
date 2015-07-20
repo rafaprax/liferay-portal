@@ -68,6 +68,20 @@ public class ExportImportHelperUtil {
 			portletRequest, paramPrefix, timeZoneSensitive);
 	}
 
+	public static List<Portlet> getDataSiteLevelPortlets(long companyId)
+		throws Exception {
+
+		return getExportImportHelper().getDataSiteLevelPortlets(companyId);
+	}
+
+	public static List<Portlet> getDataSiteLevelPortlets(
+			long companyId, boolean excludeDataAlwaysStaged)
+		throws Exception {
+
+		return getExportImportHelper().getDataSiteLevelPortlets(
+			companyId, excludeDataAlwaysStaged);
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, moved to {@link
 	 *             ExportImportDateUtil#getDateRange(PortletRequest, long,
@@ -526,6 +540,13 @@ public class ExportImportHelperUtil {
 			portletDataContext, content, importReferencedContent);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, see {@link
+	 *             DefaultConfigurationPortletDataHandler#updateExportPortletPreferencesClassPKs(
+	 *             PortletDataContext, Portlet, PortletPreferences, String,
+	 *             String)}
+	 */
+	@Deprecated
 	public static void updateExportPortletPreferencesClassPKs(
 			PortletDataContext portletDataContext, Portlet portlet,
 			PortletPreferences portletPreferences, String key, String className)
@@ -552,6 +573,12 @@ public class ExportImportHelperUtil {
 			rootElement);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, see {@link
+	 *             DefaultConfigurationPortletDataHandler#updateImportPortletPreferencesClassPKs(
+	 *             PortletDataContext, PortletPreferences, String, Class, long)}
+	 */
+	@Deprecated
 	public static void updateImportPortletPreferencesClassPKs(
 			PortletDataContext portletDataContext,
 			PortletPreferences portletPreferences, String key, Class<?> clazz,

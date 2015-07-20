@@ -20,6 +20,7 @@
 		<!-- Other fields -->
 
 		<column name="allowedServiceSignatures" type="String" />
+		<column name="defaultSACPEntry" type="boolean" />
 		<column name="name" type="String" />
 		<column name="title" type="String" localized="true" />
 
@@ -32,9 +33,15 @@
 			<finder-column name="companyId" />
 			<finder-column name="name" case-sensitive="false" />
 		</finder>
+
+		<!-- References -->
+
+		<reference package-path="com.liferay.portal" entity="ResourcePermission" />
+		<reference package-path="com.liferay.portal" entity="Role" />
 	</entity>
 	<exceptions>
 		<exception>DuplicateSACPEntryName</exception>
+		<exception>RequiredSACPEntry</exception>
 		<exception>SACPEntryName</exception>
 		<exception>SACPEntryTitle</exception>
 	</exceptions>

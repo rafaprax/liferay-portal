@@ -15,17 +15,15 @@
 package com.liferay.portal.comment;
 
 import com.liferay.portal.kernel.comment.BaseDiscussionPermission;
+import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.comment.Discussion;
 import com.liferay.portal.kernel.comment.DiscussionComment;
 import com.liferay.portal.kernel.comment.DiscussionPermission;
 import com.liferay.portal.kernel.comment.DiscussionStagingHandler;
 import com.liferay.portal.kernel.util.Function;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.exportimport.lar.PortletDataContext;
 
 /**
  * @author André de Oliveira
@@ -33,9 +31,11 @@ import com.liferay.portlet.exportimport.lar.PortletDataContext;
 public class DummyCommentManagerImpl implements CommentManager {
 
 	@Override
-	public void addComment(
+	public long addComment(
 		long userId, long groupId, String className, long classPK, String body,
 		Function<String, ServiceContext> serviceContextFunction) {
+
+		return 0;
 	}
 
 	@Override
@@ -71,6 +71,15 @@ public class DummyCommentManagerImpl implements CommentManager {
 	}
 
 	@Override
+	public void deleteGroupComments(long groupId) {
+	}
+
+	@Override
+	public Comment fetchComment(long commentId) {
+		return null;
+	}
+
+	@Override
 	public int getCommentsCount(String className, long classPK) {
 		return 0;
 	}
@@ -92,7 +101,7 @@ public class DummyCommentManagerImpl implements CommentManager {
 
 	@Override
 	public DiscussionStagingHandler getDiscussionStagingHandler() {
-		return _discussionStagingHandler;
+		return null;
 	}
 
 	@Override
@@ -150,6 +159,18 @@ public class DummyCommentManagerImpl implements CommentManager {
 			}
 
 			@Override
+			public boolean hasPermission(long commentId, String actionId) {
+				return false;
+			}
+
+			@Override
+			public boolean hasSubscribePermission(
+				long companyId, long groupId, String className, long classPK) {
+
+				return false;
+			}
+
+			@Override
 			public boolean hasUpdatePermission(long commentId) {
 
 				return false;
@@ -160,26 +181,6 @@ public class DummyCommentManagerImpl implements CommentManager {
 				long companyId, long groupId, String className, long classPK) {
 
 				return false;
-			}
-
-		};
-
-	private static final DiscussionStagingHandler _discussionStagingHandler =
-		new DiscussionStagingHandler() {
-
-			@Override
-			public <T extends StagedModel> void exportReferenceDiscussions(
-				PortletDataContext portletDataContext, T stagedModel) {
-			}
-
-			@Override
-			public <T extends StagedModel> void importReferenceDiscussions(
-				PortletDataContext portletDataContext, T stagedModel) {
-			}
-
-			@Override
-			public String getClassName() {
-				return StringPool.BLANK;
 			}
 
 		};

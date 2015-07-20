@@ -14,7 +14,9 @@
 
 package com.liferay.bookmarks.upgrade;
 
+import com.liferay.bookmarks.service.configuration.configurator.BookmarksServiceConfigurator;
 import com.liferay.bookmarks.upgrade.v1_0_0.UpgradeClassNames;
+import com.liferay.bookmarks.upgrade.v1_0_0.UpgradeLastPublishDate;
 import com.liferay.bookmarks.upgrade.v1_0_0.UpgradePortletId;
 import com.liferay.bookmarks.upgrade.v1_0_0.UpgradePortletSettings;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -29,22 +31,15 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import org.springframework.context.ApplicationContext;
-
 /**
  * @author Miguel Pastor
  */
 @Component(immediate = true, service = BookmarksServiceUpgrade.class)
 public class BookmarksServiceUpgrade {
 
-	@Reference(
-		target =
-			"(org.springframework.context.service.name=" +
-				"com.liferay.bookmarks.service)",
-		unbind = "-"
-	)
-	protected void setApplicationContext(
-		ApplicationContext applicationContext) {
+	@Reference(unbind = "-")
+	protected void setBookmarksServiceConfigurator(
+		BookmarksServiceConfigurator bookmarksServiceConfigurator) {
 	}
 
 	@Reference(unbind = "-")
@@ -66,6 +61,7 @@ public class BookmarksServiceUpgrade {
 		upgradeProcesses.add(new UpgradePortletId());
 
 		upgradeProcesses.add(new UpgradeClassNames());
+		upgradeProcesses.add(new UpgradeLastPublishDate());
 		upgradeProcesses.add(new UpgradePortletSettings(_settingsFactory));
 
 		_releaseLocalService.updateRelease(

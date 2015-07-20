@@ -215,6 +215,21 @@ public class DDMImpl implements DDM {
 	}
 
 	@Override
+	public DDMFormValues getDDMFormValues(
+			long ddmStructureId, String fieldNamespace,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
+			ddmStructureId);
+
+		Fields fields = getFields(
+			ddmStructure.getStructureId(), fieldNamespace, serviceContext);
+
+		return FieldsToDDMFormValuesConverterUtil.convert(ddmStructure, fields);
+	}
+
+	@Override
 	public DDMPermissionHandler getDDMPermissionHandler(long classNameId) {
 		DDMDisplay ddmDisplay = getDDMDisplay(classNameId);
 
