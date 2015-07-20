@@ -14,24 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.model.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
 /**
- * The extended model implementation for the DDMContent service. Represents a row in the &quot;DDMContent&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.model.DDMContent} interface.
- * </p>
- *
  * @author Brian Wing Shun Chan
  */
-@ProviderType
 public class DDMContentImpl extends DDMContentBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. All methods that expect a d d m content model instance should use the {@link com.liferay.dynamic.data.mapping.model.DDMContent} interface instead.
-	 */
-	public DDMContentImpl() {
-	}
 }

@@ -148,6 +148,12 @@ public class DDMTemplateLinkWrapper implements DDMTemplateLink,
 		return _ddmTemplateLink.getPrimaryKeyObj();
 	}
 
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMTemplate getTemplate()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmTemplateLink.getTemplate();
+	}
+
 	/**
 	* Returns the template ID of this d d m template link.
 	*

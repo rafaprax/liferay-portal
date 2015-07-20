@@ -16,22 +16,37 @@ package com.liferay.dynamic.data.mapping.model.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.model.CacheField;
+import com.liferay.portlet.dynamicdatamapping.io.DDMFormLayoutJSONDeserializerUtil;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
+
 /**
- * The extended model implementation for the DDMStructureLayout service. Represents a row in the &quot;DDMStructureLayout&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.model.DDMStructureLayout} interface.
- * </p>
- *
- * @author Brian Wing Shun Chan
+ * @author Marcellus Tavares
  */
 @ProviderType
 public class DDMStructureLayoutImpl extends DDMStructureLayoutBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. All methods that expect a d d m structure layout model instance should use the {@link com.liferay.dynamic.data.mapping.model.DDMStructureLayout} interface instead.
-	 */
-	public DDMStructureLayoutImpl() {
+
+	@Override
+	public DDMFormLayout getDDMFormLayout() {
+		if (_ddmFormLayout == null) {
+			try {
+				_ddmFormLayout = DDMFormLayoutJSONDeserializerUtil.deserialize(
+					getDefinition());
+			}
+			catch (Exception e) {
+				_log.error(e, e);
+			}
+		}
+
+		return new DDMFormLayout(_ddmFormLayout);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DDMStructureLayoutImpl.class);
+
+	@CacheField(methodName = "DDMFormLayout")
+	private DDMFormLayout _ddmFormLayout;
+
 }

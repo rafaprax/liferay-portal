@@ -842,6 +842,14 @@ public class DDMStructureVersionModelImpl extends BaseModelImpl<DDMStructureVers
 		_statusDate = statusDate;
 	}
 
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm getDDMForm() {
+		return null;
+	}
+
+	public void setDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm ddmForm) {
+	}
+
 	/**
 	 * @deprecated As of 6.1.0, replaced by {@link #isApproved}
 	 */
@@ -1134,6 +1142,8 @@ public class DDMStructureVersionModelImpl extends BaseModelImpl<DDMStructureVers
 
 		ddmStructureVersionModelImpl._setOriginalStatus = false;
 
+		setDDMForm(null);
+
 		ddmStructureVersionModelImpl._columnBitmask = 0;
 	}
 
@@ -1232,6 +1242,8 @@ public class DDMStructureVersionModelImpl extends BaseModelImpl<DDMStructureVers
 		else {
 			ddmStructureVersionCacheModel.statusDate = Long.MIN_VALUE;
 		}
+
+		ddmStructureVersionCacheModel._ddmForm = getDDMForm();
 
 		return ddmStructureVersionCacheModel;
 	}

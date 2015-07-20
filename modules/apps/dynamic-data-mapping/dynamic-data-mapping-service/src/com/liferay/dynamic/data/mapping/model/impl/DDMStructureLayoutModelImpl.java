@@ -415,6 +415,14 @@ public class DDMStructureLayoutModelImpl extends BaseModelImpl<DDMStructureLayou
 		_definition = definition;
 	}
 
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout getDDMFormLayout() {
+		return null;
+	}
+
+	public void setDDMFormLayout(
+		com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout ddmFormLayout) {
+	}
+
 	@Override
 	public StagedModelType getStagedModelType() {
 		return new StagedModelType(PortalUtil.getClassNameId(
@@ -540,6 +548,8 @@ public class DDMStructureLayoutModelImpl extends BaseModelImpl<DDMStructureLayou
 
 		ddmStructureLayoutModelImpl._setOriginalStructureVersionId = false;
 
+		setDDMFormLayout(null);
+
 		ddmStructureLayoutModelImpl._columnBitmask = 0;
 	}
 
@@ -598,6 +608,8 @@ public class DDMStructureLayoutModelImpl extends BaseModelImpl<DDMStructureLayou
 		if ((definition != null) && (definition.length() == 0)) {
 			ddmStructureLayoutCacheModel.definition = null;
 		}
+
+		ddmStructureLayoutCacheModel._ddmFormLayout = getDDMFormLayout();
 
 		return ddmStructureLayoutCacheModel;
 	}

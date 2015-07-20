@@ -207,8 +207,21 @@ public class DDMStructureWrapper implements DDMStructure,
 	}
 
 	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm createFullHierarchyDDMForm()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.createFullHierarchyDDMForm();
+	}
+
+	@Override
 	public java.lang.String[] getAvailableLanguageIds() {
 		return _ddmStructure.getAvailableLanguageIds();
+	}
+
+	@Override
+	public java.util.List<java.lang.String> getChildrenFieldNames(
+		java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getChildrenFieldNames(fieldName);
 	}
 
 	/**
@@ -249,6 +262,30 @@ public class DDMStructureWrapper implements DDMStructure,
 	@Override
 	public Date getCreateDate() {
 		return _ddmStructure.getCreateDate();
+	}
+
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm getDDMForm() {
+		return _ddmStructure.getDDMForm();
+	}
+
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormField getDDMFormField(
+		java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getDDMFormField(fieldName);
+	}
+
+	@Override
+	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMFormField> getDDMFormFields(
+		boolean includeTransientFields) {
+		return _ddmStructure.getDDMFormFields(includeTransientFields);
+	}
+
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout getDDMFormLayout()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getDDMFormLayout();
 	}
 
 	@Override
@@ -347,6 +384,81 @@ public class DDMStructureWrapper implements DDMStructure,
 	@Override
 	public com.liferay.portlet.expando.model.ExpandoBridge getExpandoBridge() {
 		return _ddmStructure.getExpandoBridge();
+	}
+
+	@Override
+	public java.lang.String getFieldDataType(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldDataType(fieldName);
+	}
+
+	@Override
+	public java.lang.String getFieldLabel(java.lang.String fieldName,
+		java.lang.String locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldLabel(fieldName, locale);
+	}
+
+	@Override
+	public java.lang.String getFieldLabel(java.lang.String fieldName,
+		java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldLabel(fieldName, locale);
+	}
+
+	@Override
+	public java.util.Set<java.lang.String> getFieldNames() {
+		return _ddmStructure.getFieldNames();
+	}
+
+	@Override
+	public java.lang.String getFieldProperty(java.lang.String fieldName,
+		java.lang.String property)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldProperty(fieldName, property);
+	}
+
+	@Override
+	public boolean getFieldRepeatable(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldRepeatable(fieldName);
+	}
+
+	@Override
+	public boolean getFieldRequired(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldRequired(fieldName);
+	}
+
+	@Override
+	public java.lang.String getFieldTip(java.lang.String fieldName,
+		java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldTip(fieldName, locale);
+	}
+
+	@Override
+	public java.lang.String getFieldTip(java.lang.String fieldName,
+		java.lang.String locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldTip(fieldName, locale);
+	}
+
+	@Override
+	public java.lang.String getFieldType(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getFieldType(fieldName);
+	}
+
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMForm getFullHierarchyDDMForm() {
+		return _ddmStructure.getFullHierarchyDDMForm();
+	}
+
+	@Override
+	public Map<java.lang.String, com.liferay.portlet.dynamicdatamapping.model.DDMFormField> getFullHierarchyDDMFormFieldsMap(
+		boolean includeNestedDDMFormFields) {
+		return _ddmStructure.getFullHierarchyDDMFormFieldsMap(includeNestedDDMFormFields);
 	}
 
 	/**
@@ -471,6 +583,11 @@ public class DDMStructureWrapper implements DDMStructure,
 		return _ddmStructure.getPrimaryKeyObj();
 	}
 
+	@Override
+	public java.util.List<java.lang.String> getRootFieldNames() {
+		return _ddmStructure.getRootFieldNames();
+	}
+
 	/**
 	* Returns the storage type of this d d m structure.
 	*
@@ -501,6 +618,17 @@ public class DDMStructureWrapper implements DDMStructure,
 		return _ddmStructure.getStructureKey();
 	}
 
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMStructureVersion getStructureVersion()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getStructureVersion();
+	}
+
+	@Override
+	public java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMTemplate> getTemplates() {
+		return _ddmStructure.getTemplates();
+	}
+
 	/**
 	* Returns the type of this d d m structure.
 	*
@@ -509,6 +637,14 @@ public class DDMStructureWrapper implements DDMStructure,
 	@Override
 	public int getType() {
 		return _ddmStructure.getType();
+	}
+
+	@Override
+	public java.lang.String getUnambiguousName(
+		java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> structures,
+		long groupId, java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.getUnambiguousName(structures, groupId, locale);
 	}
 
 	/**
@@ -591,6 +727,27 @@ public class DDMStructureWrapper implements DDMStructure,
 		return _ddmStructure.getVersionUserUuid();
 	}
 
+	/**
+	* Returns the WebDAV URL to access the structure.
+	*
+	* @param themeDisplay the theme display needed to build the URL. It can
+	set HTTPS access, the server name, the server port, the path
+	context, and the scope group.
+	* @param webDAVToken the WebDAV token for the URL
+	* @return the WebDAV URL
+	*/
+	@Override
+	public java.lang.String getWebDavURL(
+		com.liferay.portal.theme.ThemeDisplay themeDisplay,
+		java.lang.String webDAVToken) {
+		return _ddmStructure.getWebDavURL(themeDisplay, webDAVToken);
+	}
+
+	@Override
+	public boolean hasField(java.lang.String fieldName) {
+		return _ddmStructure.hasField(fieldName);
+	}
+
 	@Override
 	public int hashCode() {
 		return _ddmStructure.hashCode();
@@ -604,6 +761,18 @@ public class DDMStructureWrapper implements DDMStructure,
 	@Override
 	public boolean isEscapedModel() {
 		return _ddmStructure.isEscapedModel();
+	}
+
+	@Override
+	public boolean isFieldRepeatable(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.isFieldRepeatable(fieldName);
+	}
+
+	@Override
+	public boolean isFieldTransient(java.lang.String fieldName)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructure.isFieldTransient(fieldName);
 	}
 
 	@Override
@@ -667,6 +836,12 @@ public class DDMStructureWrapper implements DDMStructure,
 	@Override
 	public void setCreateDate(Date createDate) {
 		_ddmStructure.setCreateDate(createDate);
+	}
+
+	@Override
+	public void setDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm ddmForm) {
+		_ddmStructure.setDDMForm(ddmForm);
 	}
 
 	/**
@@ -759,6 +934,12 @@ public class DDMStructureWrapper implements DDMStructure,
 	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_ddmStructure.setExpandoBridgeAttributes(serviceContext);
+	}
+
+	@Override
+	public void setFullHierarchyDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm fullHierarchyDDMForm) {
+		_ddmStructure.setFullHierarchyDDMForm(fullHierarchyDDMForm);
 	}
 
 	/**
@@ -1015,6 +1196,12 @@ public class DDMStructureWrapper implements DDMStructure,
 	@Override
 	public java.lang.String toXmlString() {
 		return _ddmStructure.toXmlString();
+	}
+
+	@Override
+	public void updateDDMForm(
+		com.liferay.portlet.dynamicdatamapping.model.DDMForm ddmForm) {
+		_ddmStructure.updateDDMForm(ddmForm);
 	}
 
 	@Override

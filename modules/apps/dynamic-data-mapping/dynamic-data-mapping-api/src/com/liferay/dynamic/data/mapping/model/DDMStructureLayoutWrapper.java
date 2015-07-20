@@ -163,6 +163,11 @@ public class DDMStructureLayoutWrapper implements DDMStructureLayout,
 		return _ddmStructureLayout.getCreateDate();
 	}
 
+	@Override
+	public com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout getDDMFormLayout() {
+		return _ddmStructureLayout.getDDMFormLayout();
+	}
+
 	/**
 	* Returns the definition of this d d m structure layout.
 	*

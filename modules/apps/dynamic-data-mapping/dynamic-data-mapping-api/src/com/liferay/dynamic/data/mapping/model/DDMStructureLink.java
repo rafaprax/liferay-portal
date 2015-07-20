@@ -34,4 +34,6 @@ public interface DDMStructureLink extends DDMStructureLinkModel, PersistedModel 
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.dynamic.data.mapping.model.impl.DDMStructureLinkImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure()
+		throws com.liferay.portal.kernel.exception.PortalException;
 }
