@@ -23,9 +23,12 @@ import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
 import java.util.Locale;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Marcellus Tavares
  */
+@Component(immediate = true, service = DDMFormFieldValueRenderer.class)
 public class CheckboxDDMFormFieldValueRenderer
 	extends BaseDDMFormFieldValueRenderer {
 
