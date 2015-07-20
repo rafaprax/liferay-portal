@@ -12,19 +12,18 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.storage;
+package com.liferay.dynamic.data.mapping.storage;
 
-import java.util.Set;
+import java.util.Locale;
 
 /**
+ * @author Bruno Basto
  * @author Marcellus Tavares
  */
-public interface StorageAdapterRegistry {
+public interface FieldRenderer {
 
-	public StorageAdapter getDefaultStorageAdapter();
+	public String render(Field field, Locale locale);
 
-	public StorageAdapter getStorageAdapter(String storageType);
-
-	public Set<String> getStorageTypes();
+	public String render(Field field, Locale locale, int valueIndex);
 
 }
