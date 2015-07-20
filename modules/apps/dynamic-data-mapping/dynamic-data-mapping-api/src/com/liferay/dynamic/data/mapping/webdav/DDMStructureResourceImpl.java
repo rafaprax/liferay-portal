@@ -12,42 +12,43 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.webdav;
+package com.liferay.dynamic.data.mapping.webdav;
 
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.webdav.BaseResourceImpl;
 import com.liferay.portal.kernel.webdav.WebDAVException;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 
 import java.io.InputStream;
 
 /**
  * @author Juan Fernández
  */
-public class DDMTemplateResourceImpl extends BaseResourceImpl {
+public class DDMStructureResourceImpl extends BaseResourceImpl {
 
-	public DDMTemplateResourceImpl(
-		DDMTemplate template, String parentPath, String name) {
+	public DDMStructureResourceImpl(
+		DDMStructure structure, String parentPath, String name) {
 
 		super(
-			parentPath, name, template.getName(template.getDefaultLanguageId()),
-			template.getCreateDate(), template.getModifiedDate(),
-			template.getScript().length());
+			parentPath, name,
+			structure.getName(structure.getDefaultLanguageId()),
+			structure.getCreateDate(), structure.getModifiedDate(),
+			structure.getDefinition().length());
 
-		setModel(template);
-		setClassName(DDMTemplate.class.getName());
-		setPrimaryKey(template.getPrimaryKey());
+		setModel(structure);
+		setClassName(DDMStructure.class.getName());
+		setPrimaryKey(structure.getPrimaryKey());
 
-		_template = template;
+		_structure = structure;
 	}
 
 	@Override
 	public InputStream getContentAsStream() throws WebDAVException {
 		try {
 			return new UnsyncByteArrayInputStream(
-				_template.getScript().getBytes(StringPool.UTF8));
+				_structure.getDefinition().getBytes(StringPool.UTF8));
 		}
 		catch (Exception e) {
 			throw new WebDAVException(e);
@@ -64,6 +65,6 @@ public class DDMTemplateResourceImpl extends BaseResourceImpl {
 		return false;
 	}
 
-	private final DDMTemplate _template;
+	private final DDMStructure _structure;
 
 }
