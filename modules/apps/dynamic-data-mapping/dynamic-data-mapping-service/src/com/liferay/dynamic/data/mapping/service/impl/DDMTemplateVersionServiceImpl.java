@@ -17,27 +17,69 @@ package com.liferay.dynamic.data.mapping.service.impl;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.dynamic.data.mapping.service.base.DDMTemplateVersionServiceBaseImpl;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateVersion;
+import com.liferay.portlet.dynamicdatamapping.service.permission.DDMTemplatePermission;
+
+import java.util.List;
 
 /**
- * The implementation of the d d m template version remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.service.DDMTemplateVersionService} interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see DDMTemplateVersionServiceBaseImpl
- * @see com.liferay.dynamic.data.mapping.service.DDMTemplateVersionServiceUtil
+ * @author Marcellus Tavares
  */
 @ProviderType
 public class DDMTemplateVersionServiceImpl
 	extends DDMTemplateVersionServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.dynamic.data.mapping.service.DDMTemplateVersionServiceUtil} to access the d d m template version remote service.
-	 */
+
+	@Override
+	public DDMTemplateVersion getLatestTemplateVersion(long templateId)
+		throws PortalException {
+
+		DDMTemplatePermission.check(
+			getPermissionChecker(), templateId, ActionKeys.VIEW);
+
+		return ddmTemplateVersionLocalService.getLatestTemplateVersion(
+			templateId);
+	}
+
+	@Override
+	public DDMTemplateVersion getTemplateVersion(long templateVersionId)
+		throws PortalException {
+
+		DDMTemplateVersion templateVersion =
+			ddmTemplateVersionLocalService.getTemplateVersion(
+				templateVersionId);
+
+		DDMTemplatePermission.check(
+			getPermissionChecker(), templateVersion.getTemplateId(),
+			ActionKeys.VIEW);
+
+		return templateVersion;
+	}
+
+	@Override
+	public List<DDMTemplateVersion> getTemplateVersions(
+			long templateId, int start, int end,
+			OrderByComparator<DDMTemplateVersion> orderByComparator)
+		throws PortalException {
+
+		DDMTemplatePermission.check(
+			getPermissionChecker(), templateId, ActionKeys.VIEW);
+
+		return ddmTemplateVersionLocalService.getTemplateVersions(
+			templateId, start, end, orderByComparator);
+	}
+
+	@Override
+	public int getTemplateVersionsCount(long templateId)
+		throws PortalException {
+
+		DDMTemplatePermission.check(
+			getPermissionChecker(), templateId, ActionKeys.VIEW);
+
+		return ddmTemplateVersionLocalService.getTemplateVersionsCount(
+			templateId);
+	}
+
 }

@@ -14,30 +14,107 @@
 
 package com.liferay.dynamic.data.mapping.service.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.dynamic.data.mapping.service.base.DDMTemplateLinkLocalServiceBaseImpl;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateLink;
+
+import java.util.List;
 
 /**
- * The implementation of the d d m template link local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService} interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see DDMTemplateLinkLocalServiceBaseImpl
- * @see com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalServiceUtil
+ * @author Marcellus Tavares
  */
-@ProviderType
 public class DDMTemplateLinkLocalServiceImpl
 	extends DDMTemplateLinkLocalServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalServiceUtil} to access the d d m template link local service.
-	 */
+
+	@Override
+	public DDMTemplateLink addTemplateLink(
+		long classNameId, long classPK, long templateId) {
+
+		long templateLinkId = counterLocalService.increment();
+
+		DDMTemplateLink templateLink = ddmTemplateLinkPersistence.create(
+			templateLinkId);
+
+		templateLink.setClassNameId(classNameId);
+		templateLink.setClassPK(classPK);
+		templateLink.setTemplateId(templateId);
+
+		return ddmTemplateLinkPersistence.update(templateLink);
+	}
+
+	@Override
+	public DDMTemplateLink deleteTemplateLink(DDMTemplateLink templateLink) {
+		return ddmTemplateLinkPersistence.remove(templateLink);
+	}
+
+	@Override
+	public DDMTemplateLink deleteTemplateLink(long templateLinkId)
+		throws PortalException {
+
+		DDMTemplateLink templateLink =
+			ddmTemplateLinkPersistence.findByPrimaryKey(templateLinkId);
+
+		return deleteDDMTemplateLink(templateLink);
+	}
+
+	@Override
+	public DDMTemplateLink deleteTemplateLink(long classNameId, long classPK) {
+		DDMTemplateLink templateLink = ddmTemplateLinkPersistence.fetchByC_C(
+			classNameId, classPK);
+
+		if (templateLink != null) {
+			deleteDDMTemplateLink(templateLink);
+		}
+
+		return templateLink;
+	}
+
+	@Override
+	public DDMTemplateLink getTemplateLink(long templateLinkId)
+		throws PortalException {
+
+		return ddmTemplateLinkPersistence.findByPrimaryKey(templateLinkId);
+	}
+
+	@Override
+	public DDMTemplateLink getTemplateLink(long classNameId, long classPK)
+		throws PortalException {
+
+		return ddmTemplateLinkPersistence.findByC_C(classNameId, classPK);
+	}
+
+	@Override
+	public List<DDMTemplateLink> getTemplateLinks(long classNameId) {
+		return ddmTemplateLinkPersistence.findByClassNameId(classNameId);
+	}
+
+	@Override
+	public DDMTemplateLink updateTemplateLink(
+			long templateLinkId, long templateId)
+		throws PortalException {
+
+		DDMTemplateLink templateLink =
+			ddmTemplateLinkPersistence.findByPrimaryKey(templateLinkId);
+
+		templateLink.setTemplateId(templateId);
+
+		return ddmTemplateLinkPersistence.update(templateLink);
+	}
+
+	@Override
+	public DDMTemplateLink updateTemplateLink(
+		long classNameId, long classPK, long templateId) {
+
+		DDMTemplateLink templateLink = ddmTemplateLinkPersistence.fetchByC_C(
+			classNameId, classPK);
+
+		if (templateLink == null) {
+			return addTemplateLink(classNameId, classPK, templateId);
+		}
+
+		templateLink.setTemplateId(templateId);
+
+		return ddmTemplateLinkPersistence.update(templateLink);
+	}
+
 }

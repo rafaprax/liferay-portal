@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.service.http;
+package com.liferay.dynamic.data.mapping.service.http;
 
 import aQute.bnd.annotation.ProviderType;
 

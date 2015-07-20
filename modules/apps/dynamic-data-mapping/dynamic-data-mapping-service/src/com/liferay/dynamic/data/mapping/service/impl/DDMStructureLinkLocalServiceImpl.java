@@ -14,30 +14,168 @@
 
 package com.liferay.dynamic.data.mapping.service.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureLinkException;
 import com.liferay.dynamic.data.mapping.service.base.DDMStructureLinkLocalServiceBaseImpl;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLink;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The implementation of the d d m structure link local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService} interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
  * @author Brian Wing Shun Chan
- * @see DDMStructureLinkLocalServiceBaseImpl
- * @see com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalServiceUtil
+ * @author Bruno Basto
+ * @author Marcellus Tavares
  */
-@ProviderType
 public class DDMStructureLinkLocalServiceImpl
 	extends DDMStructureLinkLocalServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalServiceUtil} to access the d d m structure link local service.
-	 */
+
+	@Override
+	public DDMStructureLink addStructureLink(
+		long classNameId, long classPK, long structureId) {
+
+		long structureLinkId = counterLocalService.increment();
+
+		DDMStructureLink structureLink = ddmStructureLinkPersistence.create(
+			structureLinkId);
+
+		structureLink.setClassNameId(classNameId);
+		structureLink.setClassPK(classPK);
+		structureLink.setStructureId(structureId);
+
+		ddmStructureLinkPersistence.update(structureLink);
+
+		return structureLink;
+	}
+
+	@Override
+	public void deleteStructureLink(DDMStructureLink structureLink) {
+		ddmStructureLinkPersistence.remove(structureLink);
+	}
+
+	@Override
+	public void deleteStructureLink(long structureLinkId)
+		throws PortalException {
+
+		DDMStructureLink structureLink =
+			ddmStructureLinkPersistence.findByPrimaryKey(structureLinkId);
+
+		deleteStructureLink(structureLink);
+	}
+
+	@Override
+	public void deleteStructureLink(
+			long classNameId, long classPK, long structureId)
+		throws PortalException {
+
+		DDMStructureLink structureLink =
+			ddmStructureLinkPersistence.findByC_C_S(
+				classNameId, classPK, structureId);
+
+		deleteDDMStructureLink(structureLink);
+	}
+
+	@Override
+	public void deleteStructureLinks(long classNameId, long classPK) {
+		List<DDMStructureLink> structureLinks =
+			ddmStructureLinkPersistence.findByC_C(classNameId, classPK);
+
+		for (DDMStructureLink ddmStructureLink : structureLinks) {
+			deleteStructureLink(ddmStructureLink);
+		}
+	}
+
+	@Override
+	public void deleteStructureStructureLinks(long structureId) {
+		List<DDMStructureLink> structureLinks =
+			ddmStructureLinkPersistence.findByStructureId(structureId);
+
+		for (DDMStructureLink structureLink : structureLinks) {
+			deleteStructureLink(structureLink);
+		}
+	}
+
+	@Override
+	public List<DDMStructureLink> getClassNameStructureLinks(long classNameId) {
+		return ddmStructureLinkPersistence.findByClassNameId(classNameId);
+	}
+
+	@Override
+	public DDMStructureLink getStructureLink(long structureLinkId)
+		throws PortalException {
+
+		return ddmStructureLinkPersistence.findByPrimaryKey(structureLinkId);
+	}
+
+	@Override
+	public List<DDMStructureLink> getStructureLinks(long structureId) {
+		return ddmStructureLinkPersistence.findByStructureId(structureId);
+	}
+
+	@Override
+	public List<DDMStructureLink> getStructureLinks(
+		long structureId, int start, int end) {
+
+		return ddmStructureLinkPersistence.findByStructureId(
+			structureId, start, end);
+	}
+
+	@Override
+	public List<DDMStructureLink> getStructureLinks(
+		long classNameId, long classPK) {
+
+		return ddmStructureLinkPersistence.findByC_C(classNameId, classPK);
+	}
+
+	@Override
+	public List<DDMStructure> getStructureLinkStructures(
+			long classNameId, long classPK)
+		throws PortalException {
+
+		List<DDMStructure> structures = new ArrayList<>();
+
+		List<DDMStructureLink> structureLinks = getStructureLinks(
+			classNameId, classPK);
+
+		for (DDMStructureLink structureLink : structureLinks) {
+			structures.add(structureLink.getStructure());
+		}
+
+		return structures;
+	}
+
+	@Override
+	public DDMStructureLink getUniqueStructureLink(
+			long classNameId, long classPK)
+		throws PortalException {
+
+		List<DDMStructureLink> structureLinks =
+			ddmStructureLinkPersistence.findByC_C(classNameId, classPK);
+
+		if (structureLinks.isEmpty()) {
+			throw new NoSuchStructureLinkException();
+		}
+
+		return structureLinks.get(0);
+	}
+
+	@Override
+	public DDMStructureLink updateStructureLink(
+			long structureLinkId, long classNameId, long classPK,
+			long structureId)
+		throws PortalException {
+
+		DDMStructureLink structureLink =
+			ddmStructureLinkPersistence.findByPrimaryKey(structureLinkId);
+
+		structureLink.setClassNameId(classNameId);
+		structureLink.setClassPK(classPK);
+		structureLink.setStructureId(structureId);
+
+		ddmStructureLinkPersistence.update(structureLink);
+
+		return structureLink;
+	}
+
 }
