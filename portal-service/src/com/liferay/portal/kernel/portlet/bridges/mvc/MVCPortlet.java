@@ -211,6 +211,10 @@ public class MVCPortlet extends LiferayPortlet {
 			"ResourceCommand");
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public void invokeTaglibDiscussion(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -221,6 +225,10 @@ public class MVCPortlet extends LiferayPortlet {
 			portletConfig, actionRequest, actionResponse);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public void invokeTaglibDiscussionPagination(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws IOException, PortletException {
@@ -249,19 +257,23 @@ public class MVCPortlet extends LiferayPortlet {
 		throws IOException, PortletException {
 
 		String mvcRenderCommandName = ParamUtil.getString(
-			renderRequest, "mvcRenderCommandName");
+			renderRequest, "mvcRenderCommandName", "/");
 
-		MVCRenderCommand mvcRenderCommand =
-			(MVCRenderCommand)_mvcRenderCommandCache.getMVCCommand(
-				mvcRenderCommandName);
+		String mvcPath = ParamUtil.getString(renderRequest, "mvcPath");
 
-		if (mvcRenderCommand != MVCRenderCommand.EMPTY) {
-			String mvcPath = mvcRenderCommand.render(
-				renderRequest, renderResponse);
+		if (!mvcRenderCommandName.equals("/") || Validator.isNull(mvcPath)) {
+			MVCRenderCommand mvcRenderCommand =
+				(MVCRenderCommand)_mvcRenderCommandCache.getMVCCommand(
+					mvcRenderCommandName);
 
-			if (Validator.isNotNull(mvcPath)) {
-				renderRequest.setAttribute(_MVC_PATH, mvcPath);
+			mvcPath = null;
+
+			if (mvcRenderCommand != MVCRenderCommand.EMPTY) {
+				mvcPath = mvcRenderCommand.render(
+					renderRequest, renderResponse);
 			}
+
+			renderRequest.setAttribute(_MVC_PATH, mvcPath);
 		}
 
 		super.render(renderRequest, renderResponse);

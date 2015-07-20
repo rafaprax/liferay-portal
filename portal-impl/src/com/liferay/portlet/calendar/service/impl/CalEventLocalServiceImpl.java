@@ -123,13 +123,15 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.model.property.XProperty;
 
 /**
- * @author Brian Wing Shun Chan
- * @author Bruno Farache
- * @author Samuel Kong
- * @author Ganesh Ram
- * @author Brett Swaim
- * @author Mate Thurzo
+ * @author     Brian Wing Shun Chan
+ * @author     Bruno Farache
+ * @author     Samuel Kong
+ * @author     Ganesh Ram
+ * @author     Brett Swaim
+ * @author     Mate Thurzo
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 
 	@Indexable(type = IndexableType.REINDEX)
@@ -1464,7 +1466,7 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 			int[] byMonthDay = recurrence.getByMonthDay();
 
 			if (byMonthDay != null) {
-				Integer monthDay = new Integer(byMonthDay[0]);
+				Integer monthDay = Integer.valueOf(byMonthDay[0]);
 
 				recur.getMonthDayList().add(monthDay);
 			}
@@ -1475,7 +1477,7 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 
 				recur.getDayList().add(weekDay);
 
-				Integer position = new Integer(byDay[0].getDayPosition());
+				Integer position = Integer.valueOf(byDay[0].getDayPosition());
 
 				recur.getSetPosList().add(position);
 			}

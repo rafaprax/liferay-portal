@@ -75,7 +75,6 @@ import javax.portlet.RenderResponse;
  * @author Connor McKay
  * @author Drew Brokke
  */
-
 public class RolesAdminPortlet extends MVCPortlet {
 
 	public void deletePermission(
@@ -376,9 +375,9 @@ public class RolesAdminPortlet extends MVCPortlet {
 				renderResponse);
 		}
 		else if (SessionErrors.contains(
-					renderRequest, PrincipalException.class.getName()) ||
+					renderRequest, NoSuchRoleException.class.getName()) ||
 				 SessionErrors.contains(
-					 renderRequest, NoSuchRoleException.class.getName()) ||
+					 renderRequest, PrincipalException.getNestedClasses()) ||
 				 SessionErrors.contains(
 					 renderRequest, RoleAssignmentException.class.getName()) ||
 				 SessionErrors.contains(

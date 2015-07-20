@@ -3,15 +3,7 @@
 
 	<set-up>
 		<execute macro="User#firstLoginPG" />
-	</set-up>
 
-	<tear-down>
-		<execute macro="Page#tearDownPG" />
-
-		<execute macro="Site#tearDownCP" />
-	</tear-down>
-
-	<command name="AddFeedBetweenFeeds" priority="4">
 		<execute macro="Page#gotoCP">
 			<var name="portletName" value="Sites" />
 		</execute>
@@ -30,7 +22,15 @@
 			<var name="sitePagePrivacy" value="Public" />
 			<var name="siteScopeSelected" value="true" />
 		</execute>
+	</set-up>
 
+	<tear-down>
+		<execute macro="Page#tearDownPG" />
+
+		<execute macro="Site#tearDownCP" />
+	</tear-down>
+
+	<command name="AddFeedBetweenFeeds" priority="4">
 		<execute macro="Page#gotoPG">
 			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
@@ -70,12 +70,18 @@
 
 		<execute macro="RSS#addFeed">
 			<var name="buttonRowIndexNumber" value="1" />
-			<var name="feedRowIndexNumber" value="2" />
+			<var name="feedRowIndexNumber" value="3" />
 			<var name="feedTitle" value="NBA" />
 			<var name="feedUrlLink" value="http://sports.espn.go.com/espn/rss/nba/news" />
 		</execute>
 
 		<execute macro="RSS#save" />
+
+		<execute macro="Page#gotoPG">
+			<var name="pageName" value="Site Page Name" />
+			<var name="siteName" value="Site Name" />
+			<var name="siteURL" value="true" />
+		</execute>
 
 		<for list="Technology,NBA,Latimes > Technology News" param="feedTitle" >
 			<execute macro="RSS#viewDefaultDisplayFeedTitle">
@@ -428,26 +434,20 @@
 		</execute>
 	</command>
 
-	<command name="EnableRSSFeedFromAssetpublisher" priority="4">
+	<command known-issues="LPS-56875" name="EnableRSSFeedFromAssetpublisher" priority="4">
 		<execute macro="Page#gotoPagesCP">
 			<var name="portletName" value="Site Pages" />
 			<var name="siteScopeName" value="Site Name" />
 		</execute>
 
 		<execute macro="SitePage#addCP">
-			<var name="sitePageName" value="Page1 Name" />
-			<var name="sitePagePrivacy" value="Public" />
-			<var name="siteScopeSelected" value="true" />
-		</execute>
-
-		<execute macro="SitePage#addCP">
-			<var name="sitePageName" value="Page2 Name" />
+			<var name="sitePageName" value="Site Page Name 2" />
 			<var name="sitePagePrivacy" value="Public" />
 			<var name="siteScopeSelected" value="true" />
 		</execute>
 
 		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Page1 Name" />
+			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -457,7 +457,7 @@
 		</execute>
 
 		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Page2 Name" />
+			<var name="pageName" value="Site Page Name 2" />
 			<var name="siteName" value="Site Name" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -483,7 +483,7 @@
 		<execute macro="RSS#save" />
 
 		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Page2 Name" />
+			<var name="pageName" value="Site Page Name 2" />
 			<var name="siteName" value="Site Name" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -491,7 +491,7 @@
 		<var attribute="href" locator="PGAssetpublisher#RSS_LINK" name="rssFeedUrl" />
 
 		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Page1 Name" />
+			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -511,7 +511,7 @@
 		<execute macro="RSS#save" />
 
 		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Page1 Name" />
+			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
 			<var name="siteURL" value="true" />
 		</execute>
