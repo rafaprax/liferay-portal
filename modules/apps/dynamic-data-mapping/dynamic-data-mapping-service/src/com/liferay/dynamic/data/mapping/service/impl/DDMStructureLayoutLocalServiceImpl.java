@@ -16,28 +16,94 @@ package com.liferay.dynamic.data.mapping.service.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONSerializerUtil;
 import com.liferay.dynamic.data.mapping.service.base.DDMStructureLayoutLocalServiceBaseImpl;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.model.SystemEventConstants;
+import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLayout;
 
 /**
- * The implementation of the d d m structure layout local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService} interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see DDMStructureLayoutLocalServiceBaseImpl
- * @see com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalServiceUtil
+ * @author Marcellus Tavares
  */
 @ProviderType
 public class DDMStructureLayoutLocalServiceImpl
 	extends DDMStructureLayoutLocalServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalServiceUtil} to access the d d m structure layout local service.
-	 */
+
+	@Override
+	public DDMStructureLayout addStructureLayout(
+			long userId, long groupId, long structureVersionId,
+			DDMFormLayout ddmFormLayout, ServiceContext serviceContext)
+		throws PortalException {
+
+		User user = userPersistence.findByPrimaryKey(userId);
+
+		long structureLayoutId = counterLocalService.increment();
+
+		DDMStructureLayout structureLayout =
+			ddmStructureLayoutPersistence.create(structureLayoutId);
+
+		structureLayout.setUuid(serviceContext.getUuid());
+		structureLayout.setGroupId(groupId);
+		structureLayout.setCompanyId(user.getCompanyId());
+		structureLayout.setUserId(user.getUserId());
+		structureLayout.setUserName(user.getFullName());
+		structureLayout.setStructureVersionId(structureVersionId);
+		structureLayout.setDefinition(
+			DDMFormLayoutJSONSerializerUtil.serialize(ddmFormLayout));
+
+		return ddmStructureLayoutPersistence.update(structureLayout);
+	}
+
+	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
+	public void deleteStructureLayout(DDMStructureLayout structureLayout) {
+		ddmStructureLayoutPersistence.remove(structureLayout);
+	}
+
+	@Override
+	public void deleteStructureLayout(long structureLayoutId)
+		throws PortalException {
+
+		DDMStructureLayout structureLayout =
+			ddmStructureLayoutPersistence.findByPrimaryKey(structureLayoutId);
+
+		ddmStructureLayoutLocalService.deleteStructureLayout(structureLayout);
+	}
+
+	@Override
+	public DDMStructureLayout getStructureLayout(long structureLayoutId)
+		throws PortalException {
+
+		return ddmStructureLayoutPersistence.findByPrimaryKey(
+			structureLayoutId);
+	}
+
+	@Override
+	public DDMStructureLayout getStructureLayoutByStructureVersionId(
+			long structureVersionId)
+		throws PortalException {
+
+		return ddmStructureLayoutPersistence.findByStructureVersionId(
+			structureVersionId);
+	}
+
+	@Override
+	public DDMStructureLayout updateStructureLayout(
+			long structureLayoutId, DDMFormLayout ddmFormLayout,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		DDMStructureLayout structureLayout =
+			ddmStructureLayoutPersistence.findByPrimaryKey(structureLayoutId);
+
+		structureLayout.setDefinition(
+			DDMFormLayoutJSONSerializerUtil.serialize(ddmFormLayout));
+
+		return ddmStructureLayoutPersistence.update(structureLayout);
+	}
+
 }

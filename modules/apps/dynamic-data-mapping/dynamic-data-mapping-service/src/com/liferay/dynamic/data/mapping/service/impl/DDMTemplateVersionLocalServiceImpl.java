@@ -16,28 +16,72 @@ package com.liferay.dynamic.data.mapping.service.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchTemplateVersionException;
 import com.liferay.dynamic.data.mapping.service.base.DDMTemplateVersionLocalServiceBaseImpl;
+import com.liferay.dynamic.data.mapping.util.comparator.TemplateVersionVersionComparator;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateVersion;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * The implementation of the d d m template version local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.service.DDMTemplateVersionLocalService} interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see DDMTemplateVersionLocalServiceBaseImpl
- * @see com.liferay.dynamic.data.mapping.service.DDMTemplateVersionLocalServiceUtil
+ * @author Marcellus Tavares
  */
 @ProviderType
 public class DDMTemplateVersionLocalServiceImpl
 	extends DDMTemplateVersionLocalServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.dynamic.data.mapping.service.DDMTemplateVersionLocalServiceUtil} to access the d d m template version local service.
-	 */
+
+	@Override
+	public DDMTemplateVersion getLatestTemplateVersion(long templateId)
+		throws PortalException {
+
+		List<DDMTemplateVersion> templateVersions =
+			ddmTemplateVersionPersistence.findByTemplateId(templateId);
+
+		if (templateVersions.isEmpty()) {
+			throw new NoSuchTemplateVersionException(
+				"No template versions found for template ID " + templateId);
+		}
+
+		templateVersions = ListUtil.copy(templateVersions);
+
+		Collections.sort(
+			templateVersions, new TemplateVersionVersionComparator());
+
+		return templateVersions.get(0);
+	}
+
+	@Override
+	public DDMTemplateVersion getTemplateVersion(long templateVersionId)
+		throws PortalException {
+
+		return ddmTemplateVersionPersistence.findByPrimaryKey(
+			templateVersionId);
+	}
+
+	@Override
+	public DDMTemplateVersion getTemplateVersion(
+			long templateId, String version)
+		throws PortalException {
+
+		return ddmTemplateVersionPersistence.findByT_V(templateId, version);
+	}
+
+	@Override
+	public List<DDMTemplateVersion> getTemplateVersions(
+		long templateId, int start, int end,
+		OrderByComparator<DDMTemplateVersion> orderByComparator) {
+
+		return ddmTemplateVersionPersistence.findByTemplateId(
+			templateId, start, end, orderByComparator);
+	}
+
+	@Override
+	public int getTemplateVersionsCount(long templateId) {
+		return ddmTemplateVersionPersistence.countByTemplateId(templateId);
+	}
+
 }

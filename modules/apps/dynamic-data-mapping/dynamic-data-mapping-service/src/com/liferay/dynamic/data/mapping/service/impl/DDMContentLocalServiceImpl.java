@@ -14,29 +14,118 @@
 
 package com.liferay.dynamic.data.mapping.service.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.dynamic.data.mapping.exception.ContentException;
+import com.liferay.dynamic.data.mapping.exception.ContentNameException;
 import com.liferay.dynamic.data.mapping.service.base.DDMContentLocalServiceBaseImpl;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portlet.dynamicdatamapping.model.DDMContent;
+
+import java.util.List;
 
 /**
- * The implementation of the d d m content local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the {@link com.liferay.dynamic.data.mapping.service.DDMContentLocalService} interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
  * @author Brian Wing Shun Chan
- * @see DDMContentLocalServiceBaseImpl
- * @see com.liferay.dynamic.data.mapping.service.DDMContentLocalServiceUtil
+ * @author Eduardo Lundgren
  */
-@ProviderType
 public class DDMContentLocalServiceImpl extends DDMContentLocalServiceBaseImpl {
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use {@link com.liferay.dynamic.data.mapping.service.DDMContentLocalServiceUtil} to access the d d m content local service.
-	 */
+
+	@Override
+	public DDMContent addContent(
+			long userId, long groupId, String name, String description,
+			String data, ServiceContext serviceContext)
+		throws PortalException {
+
+		User user = userPersistence.findByPrimaryKey(userId);
+
+		validate(name, data);
+
+		long contentId = counterLocalService.increment();
+
+		DDMContent content = ddmContentPersistence.create(contentId);
+
+		content.setUuid(serviceContext.getUuid());
+		content.setGroupId(serviceContext.getScopeGroupId());
+		content.setCompanyId(user.getCompanyId());
+		content.setUserId(user.getUserId());
+		content.setUserName(user.getFullName());
+		content.setName(name);
+		content.setDescription(description);
+		content.setData(data);
+
+		ddmContentPersistence.update(content);
+
+		return content;
+	}
+
+	@Override
+	public void deleteContent(DDMContent content) {
+		ddmContentPersistence.remove(content);
+	}
+
+	@Override
+	public void deleteContents(long groupId) {
+		List<DDMContent> contents = ddmContentPersistence.findByGroupId(
+			groupId);
+
+		for (DDMContent content : contents) {
+			deleteContent(content);
+		}
+	}
+
+	@Override
+	public DDMContent getContent(long contentId) throws PortalException {
+		return ddmContentPersistence.findByPrimaryKey(contentId);
+	}
+
+	@Override
+	public List<DDMContent> getContents() {
+		return ddmContentPersistence.findAll();
+	}
+
+	@Override
+	public List<DDMContent> getContents(long groupId) {
+		return ddmContentPersistence.findByGroupId(groupId);
+	}
+
+	@Override
+	public List<DDMContent> getContents(long groupId, int start, int end) {
+		return ddmContentPersistence.findByGroupId(groupId, start, end);
+	}
+
+	@Override
+	public int getContentsCount(long groupId) {
+		return ddmContentPersistence.countByGroupId(groupId);
+	}
+
+	@Override
+	public DDMContent updateContent(
+			long contentId, String name, String description, String data,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		validate(name, data);
+
+		DDMContent content = ddmContentPersistence.findByPrimaryKey(contentId);
+
+		content.setName(name);
+		content.setDescription(description);
+		content.setData(data);
+
+		ddmContentPersistence.update(content);
+
+		return content;
+	}
+
+	protected void validate(String name, String data) throws PortalException {
+		if (Validator.isNull(name)) {
+			throw new ContentNameException();
+		}
+
+		if (Validator.isNull(data)) {
+			throw new ContentException();
+		}
+	}
+
 }

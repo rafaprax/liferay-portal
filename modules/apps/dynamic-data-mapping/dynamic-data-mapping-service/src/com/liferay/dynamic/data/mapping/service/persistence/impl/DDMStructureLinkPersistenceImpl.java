@@ -17,11 +17,8 @@ package com.liferay.dynamic.data.mapping.service.persistence.impl;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.dynamic.data.mapping.exception.NoSuchStructureLinkException;
-import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
 import com.liferay.dynamic.data.mapping.model.impl.DDMStructureLinkImpl;
 import com.liferay.dynamic.data.mapping.model.impl.DDMStructureLinkModelImpl;
-import com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLinkPersistence;
-
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -36,9 +33,10 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLink;
+import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMStructureLinkPersistence;
 
 import java.io.Serializable;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +54,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see DDMStructureLinkPersistence
- * @see com.liferay.dynamic.data.mapping.service.persistence.DDMStructureLinkUtil
+ * @see com.liferay.portlet.dynamicdatamapping.service.persistence.DDMStructureLinkUtil
  * @generated
  */
 @ProviderType
@@ -254,7 +252,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param classNameId the class name ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByClassNameId_First(long classNameId,
@@ -305,7 +303,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param classNameId the class name ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByClassNameId_Last(long classNameId,
@@ -363,7 +361,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param classNameId the class name ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink[] findByClassNameId_PrevAndNext(
@@ -739,7 +737,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param structureId the structure ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByStructureId_First(long structureId,
@@ -790,7 +788,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param structureId the structure ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByStructureId_Last(long structureId,
@@ -848,7 +846,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param structureId the structure ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink[] findByStructureId_PrevAndNext(
@@ -1236,7 +1234,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param classPK the class p k
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByC_C_First(long classNameId, long classPK,
@@ -1292,7 +1290,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param classPK the class p k
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByC_C_Last(long classNameId, long classPK,
@@ -1355,7 +1353,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 * @param classPK the class p k
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink[] findByC_C_PrevAndNext(long structureLinkId,
@@ -1589,13 +1587,13 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 			});
 
 	/**
-	 * Returns the d d m structure link where classNameId = &#63; and classPK = &#63; and structureId = &#63; or throws a {@link com.liferay.dynamic.data.mapping.NoSuchStructureLinkException} if it could not be found.
+	 * Returns the d d m structure link where classNameId = &#63; and classPK = &#63; and structureId = &#63; or throws a {@link NoSuchStructureLinkException} if it could not be found.
 	 *
 	 * @param classNameId the class name ID
 	 * @param classPK the class p k
 	 * @param structureId the structure ID
 	 * @return the matching d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a matching d d m structure link could not be found
+	 * @throws NoSuchStructureLinkException if a matching d d m structure link could not be found
 	 */
 	@Override
 	public DDMStructureLink findByC_C_S(long classNameId, long classPK,
@@ -1994,7 +1992,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 *
 	 * @param structureLinkId the primary key of the d d m structure link
 	 * @return the d d m structure link that was removed
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink remove(long structureLinkId)
@@ -2007,7 +2005,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 *
 	 * @param primaryKey the primary key of the d d m structure link
 	 * @return the d d m structure link that was removed
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink remove(Serializable primaryKey)
@@ -2206,7 +2204,7 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	 *
 	 * @param primaryKey the primary key of the d d m structure link
 	 * @return the d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink findByPrimaryKey(Serializable primaryKey)
@@ -2226,11 +2224,11 @@ public class DDMStructureLinkPersistenceImpl extends BasePersistenceImpl<DDMStru
 	}
 
 	/**
-	 * Returns the d d m structure link with the primary key or throws a {@link com.liferay.dynamic.data.mapping.NoSuchStructureLinkException} if it could not be found.
+	 * Returns the d d m structure link with the primary key or throws a {@link NoSuchStructureLinkException} if it could not be found.
 	 *
 	 * @param structureLinkId the primary key of the d d m structure link
 	 * @return the d d m structure link
-	 * @throws com.liferay.dynamic.data.mapping.NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
+	 * @throws NoSuchStructureLinkException if a d d m structure link with the primary key could not be found
 	 */
 	@Override
 	public DDMStructureLink findByPrimaryKey(long structureLinkId)
