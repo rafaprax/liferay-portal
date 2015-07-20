@@ -14,14 +14,11 @@
 
 package com.liferay.dynamic.data.mapping.exception;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
  * @author Brian Wing Shun Chan
  */
-@ProviderType
 public class RequiredTemplateException extends PortalException {
 
 	public RequiredTemplateException() {
@@ -37,6 +34,19 @@ public class RequiredTemplateException extends PortalException {
 
 	public RequiredTemplateException(Throwable cause) {
 		super(cause);
+	}
+
+	public static class MustNotDeleteTemplateReferencedByTemplateLinks
+		extends RequiredTemplateException {
+
+		public MustNotDeleteTemplateReferencedByTemplateLinks(long templateId) {
+			super(
+				String.format(
+					"Template %s cannot be deleted because it is " +
+						"referenced by one or more template links",
+					templateId));
+		}
+
 	}
 
 }

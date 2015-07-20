@@ -14,14 +14,11 @@
 
 package com.liferay.dynamic.data.mapping.exception;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
  * @author Brian Wing Shun Chan
  */
-@ProviderType
 public class StructureDuplicateStructureKeyException extends PortalException {
 
 	public StructureDuplicateStructureKeyException() {
@@ -31,12 +28,24 @@ public class StructureDuplicateStructureKeyException extends PortalException {
 		super(msg);
 	}
 
-	public StructureDuplicateStructureKeyException(String msg, Throwable cause) {
+	public StructureDuplicateStructureKeyException(
+		String msg, Throwable cause) {
+
 		super(msg, cause);
 	}
 
 	public StructureDuplicateStructureKeyException(Throwable cause) {
 		super(cause);
 	}
+
+	public String getStructureKey() {
+		return _structureKey;
+	}
+
+	public void setStructureKey(String structureKey) {
+		_structureKey = structureKey;
+	}
+
+	private String _structureKey;
 
 }

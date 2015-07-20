@@ -14,15 +14,10 @@
 
 package com.liferay.dynamic.data.mapping.exception;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.portal.kernel.exception.PortalException;
-
 /**
  * @author Brian Wing Shun Chan
  */
-@ProviderType
-public class StorageFieldValueException extends PortalException {
+public class StorageFieldValueException extends StorageException {
 
 	public StorageFieldValueException() {
 	}
