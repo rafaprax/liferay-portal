@@ -16,6 +16,9 @@ package com.liferay.document.library.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.events.AddDefaultDocumentLibraryStructuresAction;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portal.kernel.events.SimpleAction;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -31,6 +34,7 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.Group;
@@ -59,9 +63,6 @@ import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUt
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesToFieldsConverterUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMImpl;
-import com.liferay.portlet.dynamicdatamapping.util.FieldsToDDMFormValuesConverterUtil;
 import com.liferay.portlet.expando.model.ExpandoColumnConstants;
 import com.liferay.portlet.expando.model.ExpandoTable;
 import com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil;
@@ -317,12 +318,12 @@ public class DLFileVersionTest {
 
 		for (String fieldName : fieldNames) {
 			fieldsDisplayValues.add(
-				fieldName + DDMImpl.INSTANCE_SEPARATOR +
+				fieldName + DDM.INSTANCE_SEPARATOR +
 				StringUtil.randomString());
 		}
 
 		Field fieldsDisplayField = new Field(
-			ddmStructure.getStructureId(), DDMImpl.FIELDS_DISPLAY_NAME,
+			ddmStructure.getStructureId(), DDM.FIELDS_DISPLAY_NAME,
 			StringUtil.merge(fieldsDisplayValues));
 
 		fieldsDisplayField.setDefaultLocale(LocaleUtil.US);
@@ -367,7 +368,7 @@ public class DLFileVersionTest {
 			fields.put(fieldsDisplayField);
 
 			DDMFormValues ddmFormValues =
-				FieldsToDDMFormValuesConverterUtil.convert(
+				_fieldsToDDMFormValuesConverter.convert(
 					DDMStructureLocalServiceUtil.getDDMStructure(
 						ddmStructure.getStructureId()),
 					fields);
@@ -488,7 +489,7 @@ public class DLFileVersionTest {
 				structure = DDMStructureLocalServiceUtil.getDDMStructure(
 					ddmStructure.getStructureId());
 
-			Fields fields = DDMFormValuesToFieldsConverterUtil.convert(
+			Fields fields = _ddmFormValuesToFieldsConverter.convert(
 				structure, ddmFormValues);
 
 			for (Field field : fields) {
@@ -499,7 +500,7 @@ public class DLFileVersionTest {
 				}
 			}
 
-			ddmFormValues = FieldsToDDMFormValuesConverterUtil.convert(
+			ddmFormValues = _fieldsToDDMFormValuesConverter.convert(
 				structure, fields);
 
 			_serviceContext.setAttribute(
@@ -525,6 +526,17 @@ public class DLFileVersionTest {
 	private static final String _TITLE = "Title";
 
 	private static final String _UPDATE_VALUE = "Update Value";
+
+	private static final DDM _ddm = ProxyFactory.newServiceTrackedInstance(
+		DDM.class);
+	private static final DDMFormValuesToFieldsConverter
+		_ddmFormValuesToFieldsConverter =
+			ProxyFactory.newServiceTrackedInstance(
+				DDMFormValuesToFieldsConverter.class);
+	private static final FieldsToDDMFormValuesConverter
+		_fieldsToDDMFormValuesConverter =
+			ProxyFactory.newServiceTrackedInstance(
+				FieldsToDDMFormValuesConverter.class);
 
 	static {
 		for (int i = 0; i < _DATA_SIZE_1; i++) {

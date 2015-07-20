@@ -23,6 +23,8 @@ import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.util.DDL;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -49,9 +51,6 @@ import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesToFieldsConverterUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMImpl;
-import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,6 +62,7 @@ import javax.portlet.PortletPreferences;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -103,7 +103,7 @@ public class DDLImpl implements DDL {
 		DDMFormValues ddmFormValues = StorageEngineUtil.getDDMFormValues(
 			recordVersion.getDDMStorageId());
 
-		Fields fields = DDMFormValuesToFieldsConverterUtil.convert(
+		Fields fields = _ddmFormValuesToFieldsConverter.convert(
 			ddmStructure, ddmFormValues);
 
 		for (Field field : fields) {
@@ -114,7 +114,7 @@ public class DDLImpl implements DDL {
 			if (fieldValue instanceof Date) {
 				jsonObject.put(fieldName, ((Date)fieldValue).getTime());
 			}
-			else if (fieldType.equals(DDMImpl.TYPE_DDM_DOCUMENTLIBRARY) &&
+			else if (fieldType.equals(DDM.TYPE_DDM_DOCUMENTLIBRARY) &&
 					 Validator.isNotNull(fieldValue)) {
 
 				JSONObject fieldValueJSONObject =
@@ -129,7 +129,7 @@ public class DDLImpl implements DDL {
 
 				jsonObject.put(fieldName, fieldValueJSONObject.toString());
 			}
-			else if (fieldType.equals(DDMImpl.TYPE_DDM_LINK_TO_PAGE) &&
+			else if (fieldType.equals(DDM.TYPE_DDM_LINK_TO_PAGE) &&
 					 Validator.isNotNull(fieldValue)) {
 
 				JSONObject fieldValueJSONObject =
@@ -150,8 +150,8 @@ public class DDLImpl implements DDL {
 
 				jsonObject.put(fieldName, fieldValueJSONObject.toString());
 			}
-			else if ((fieldType.equals(DDMImpl.TYPE_RADIO) ||
-					  fieldType.equals(DDMImpl.TYPE_SELECT)) &&
+			else if ((fieldType.equals(DDM.TYPE_RADIO) ||
+					  fieldType.equals(DDM.TYPE_SELECT)) &&
 					 Validator.isNotNull(fieldValue)) {
 
 				fieldValue = JSONFactoryUtil.createJSONArray(
@@ -334,7 +334,7 @@ public class DDLImpl implements DDL {
 
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 
-		Fields fields = DDMUtil.getFields(
+		Fields fields = _ddm.getFields(
 			ddmStructure.getStructureId(), serviceContext);
 
 		if (record != null) {
@@ -408,6 +408,21 @@ public class DDLImpl implements DDL {
 				"content");
 		}
 	}
+
+	@Reference
+	protected void setDDM(DDM ddm) {
+		_ddm = ddm;
+	}
+
+	@Reference
+	protected void setDDMFormValuesToFieldsConverter(
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+	}
+
+	protected DDM _ddm;
+	protected DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
 
 	private static final Log _log = LogFactoryUtil.getLog(DDLImpl.class);
 

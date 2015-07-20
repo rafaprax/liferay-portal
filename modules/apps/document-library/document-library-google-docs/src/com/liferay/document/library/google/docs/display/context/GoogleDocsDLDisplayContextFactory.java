@@ -15,6 +15,8 @@
 package com.liferay.document.library.google.docs.display.context;
 
 import com.liferay.document.library.google.docs.util.GoogleDocsMetadataHelper;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -71,8 +73,10 @@ public class GoogleDocsDLDisplayContextFactory
 
 		GoogleDocsMetadataHelper googleDocsMetadataHelper =
 			new GoogleDocsMetadataHelper(
-				_ddmStructureLocalService, (DLFileEntry)fileEntry.getModel(),
-				_dlFileEntryMetadataLocalService, _storageEngine);
+				_ddmFormValuesToFieldsConverter, _ddmStructureLocalService,
+				(DLFileEntry)fileEntry.getModel(),
+				_dlFileEntryMetadataLocalService,
+				_fieldsToDDMFormValuesConverter, _storageEngine);
 
 		if (googleDocsMetadataHelper.isGoogleDocs()) {
 			return new GoogleDocsDLEditFileEntryDisplayContext(
@@ -126,8 +130,9 @@ public class GoogleDocsDLDisplayContextFactory
 
 		GoogleDocsMetadataHelper googleDocsMetadataHelper =
 			new GoogleDocsMetadataHelper(
-				_ddmStructureLocalService, (DLFileVersion)model,
-				_dlFileEntryMetadataLocalService, _storageEngine);
+				_ddmFormValuesToFieldsConverter, _ddmStructureLocalService,
+				(DLFileVersion)model, _dlFileEntryMetadataLocalService,
+				_fieldsToDDMFormValuesConverter, _storageEngine);
 
 		if (googleDocsMetadataHelper.isGoogleDocs()) {
 			return new GoogleDocsDLViewFileVersionDisplayContext(
@@ -162,9 +167,25 @@ public class GoogleDocsDLDisplayContextFactory
 		_storageEngine = storageEngine;
 	}
 
+	@Reference
+	protected void setDDMFormValuesToFieldsConverter(
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+	}
+
+	@Reference
+	protected void setFieldsToDDMFormValuesConverter(
+		FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter) {
+
+		_fieldsToDDMFormValuesConverter = fieldsToDDMFormValuesConverter;
+	}
+
+	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private DLAppService _dlAppService;
 	private DLFileEntryMetadataLocalService _dlFileEntryMetadataLocalService;
+	private FieldsToDDMFormValuesConverter _fieldsToDDMFormValuesConverter;
 	private StorageEngine _storageEngine;
 
 }

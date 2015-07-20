@@ -17,6 +17,7 @@ package com.liferay.asset.publisher.web.context;
 import com.liferay.asset.publisher.web.configuration.AssetPublisherWebConfigurationValues;
 import com.liferay.asset.publisher.web.constants.AssetPublisherPortletKeys;
 import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
+import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -29,6 +30,7 @@ import com.liferay.portal.kernel.util.PredicateFilter;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.RSSUtil;
 import com.liferay.portal.kernel.util.StringComparator;
 import com.liferay.portal.kernel.util.StringPool;
@@ -56,7 +58,6 @@ import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryServiceUtil;
 import com.liferay.portlet.asset.service.persistence.AssetEntryQuery;
 import com.liferay.portlet.asset.util.AssetUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMIndexerUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1118,7 +1119,7 @@ public class AssetPublisherDisplayContext {
 
 		assetEntryQuery.setAttribute(
 			"ddmStructureFieldName",
-			DDMIndexerUtil.encodeName(
+			_ddmIndexer.encodeName(
 				classTypeField.getClassTypeId(), getDDMStructureFieldName(),
 				locale));
 		assetEntryQuery.setAttribute(
@@ -1386,6 +1387,9 @@ public class AssetPublisherDisplayContext {
 
 		return false;
 	}
+
+	private static final DDMIndexer _ddmIndexer =
+		ProxyFactory.newServiceTrackedInstance(DDMIndexer.class);
 
 	private Integer _abstractLength;
 	private long[] _allAssetCategoryIds;

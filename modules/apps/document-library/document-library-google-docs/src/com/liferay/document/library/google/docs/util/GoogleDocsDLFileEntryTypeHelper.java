@@ -15,9 +15,9 @@
 package com.liferay.document.library.google.docs.util;
 
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
+import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.service.ClassNameLocalService;
 import com.liferay.portal.service.ServiceContext;
@@ -31,7 +31,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
-import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,13 +43,16 @@ import java.util.Map;
 public class GoogleDocsDLFileEntryTypeHelper {
 
 	public GoogleDocsDLFileEntryTypeHelper(
-		Company company, ClassNameLocalService classNameLocalService,
+		Company company, ClassNameLocalService classNameLocalService, DDM ddm,
+		DDMFormXSDDeserializer ddmFormXSDDeserializer,
 		DDMStructureLocalService ddmStructureLocalService,
 		DLFileEntryTypeLocalService dlFileEntryTypeLocalService,
 		UserLocalService userLocalService) {
 
 		_company = company;
 		_classNameLocalService = classNameLocalService;
+		_ddm = ddm;
+		_ddmFormXSDDeserializer = ddmFormXSDDeserializer;
 		_ddmStructureLocalService = ddmStructureLocalService;
 		_dlFileEntryTypeLocalService = dlFileEntryTypeLocalService;
 		_userLocalService = userLocalService;
@@ -76,7 +78,7 @@ public class GoogleDocsDLFileEntryTypeHelper {
 
 		DDMForm ddmForm = _ddmFormXSDDeserializer.deserialize(definition);
 
-		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
+		DDMFormLayout ddmFormLayout = _ddm.getDefaultDDMFormLayout(ddmForm);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -145,10 +147,11 @@ public class GoogleDocsDLFileEntryTypeHelper {
 
 	private final ClassNameLocalService _classNameLocalService;
 	private final Company _company;
+	private final DDM _ddm;
+	private final DDMFormXSDDeserializer _ddmFormXSDDeserializer;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private final long _dlFileEntryMetadataClassNameId;
 	private final DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 	private final UserLocalService _userLocalService;
-	private static final DDMFormXSDDeserializer _ddmFormXSDDeserializer =
-		ProxyFactory.newServiceTrackedInstance(DDMFormXSDDeserializer.class);
+
 }
