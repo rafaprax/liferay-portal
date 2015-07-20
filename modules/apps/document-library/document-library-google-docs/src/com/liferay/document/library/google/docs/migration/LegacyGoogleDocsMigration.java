@@ -17,6 +17,7 @@ package com.liferay.document.library.google.docs.migration;
 import com.liferay.document.library.google.docs.util.GoogleDocsConstants;
 import com.liferay.document.library.google.docs.util.GoogleDocsDLFileEntryTypeHelper;
 import com.liferay.document.library.google.docs.util.GoogleDocsMetadataHelper;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -38,7 +39,9 @@ import com.liferay.portlet.dynamicdatamapping.storage.StorageEngine;
 public class LegacyGoogleDocsMigration {
 
 	public LegacyGoogleDocsMigration(
-		Company company, DDMStructureLocalService ddmStructureLocalService,
+		Company company,
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter,
+		DDMStructureLocalService ddmStructureLocalService,
 		DLFileEntryTypeLocalService dlFileEntryTypeLocalService,
 		DLFileEntryLocalService dlFileEntryLocalService,
 		DLFileEntryMetadataLocalService dlFileEntryMetadataLocalService,
@@ -46,6 +49,7 @@ public class LegacyGoogleDocsMigration {
 		StorageEngine storageEngine) {
 
 		_company = company;
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
 		_ddmStructureLocalService = ddmStructureLocalService;
 		_dlFileEntryTypeLocalService = dlFileEntryTypeLocalService;
 		_dlFileEntryLocalService = dlFileEntryLocalService;
@@ -125,6 +129,7 @@ public class LegacyGoogleDocsMigration {
 					LegacyGoogleDocsMetadataHelper
 						legacyGoogleDocsMetadataHelper =
 							new LegacyGoogleDocsMetadataHelper(
+								_ddmFormValuesToFieldsConverter,
 								_ddmStructureLocalService, dlFileEntry,
 								_storageEngine);
 
@@ -161,6 +166,8 @@ public class LegacyGoogleDocsMigration {
 	}
 
 	private final Company _company;
+	private final DDMFormValuesToFieldsConverter
+		_ddmFormValuesToFieldsConverter;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private final DLFileEntryLocalService _dlFileEntryLocalService;
 	private final DLFileEntryMetadataLocalService

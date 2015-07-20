@@ -65,6 +65,7 @@ import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 
 import java.io.ByteArrayInputStream;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -480,7 +481,7 @@ public class VerifyDocumentLibraryTest extends BaseVerifyProcessTestCase {
 
 	private static final DDMFormXSDDeserializer _ddmFormXSDDeserializer =
 		ProxyFactory.newServiceTrackedInstance(DDMFormXSDDeserializer.class);
-	
+
 	@DeleteAfterTestRun
 	private Group _group;
 

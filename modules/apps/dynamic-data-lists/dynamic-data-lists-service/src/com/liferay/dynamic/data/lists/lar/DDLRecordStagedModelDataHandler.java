@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -28,7 +29,6 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesToFieldsConverterUtil;
 import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Daniel Kocsis
@@ -111,7 +112,7 @@ public class DDLRecordStagedModelDataHandler
 		DDMFormValues ddmFormValues = StorageEngineUtil.getDDMFormValues(
 			recordVersion.getDDMStorageId());
 
-		Fields fields = DDMFormValuesToFieldsConverterUtil.convert(
+		Fields fields = _ddmFormValuesToFieldsConverter.convert(
 			recordSet.getDDMStructure(), ddmFormValues);
 
 		String fieldsPath = ExportImportPathUtil.getModelPath(
@@ -177,6 +178,13 @@ public class DDLRecordStagedModelDataHandler
 		portletDataContext.importClassedModel(record, importedRecord);
 	}
 
+	@Reference
+	protected void setDDMFormValuesToFieldsConverter(
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+	}
+
 	@Override
 	protected void validateExport(
 			PortletDataContext portletDataContext, DDLRecord record)
@@ -202,5 +210,7 @@ public class DDLRecordStagedModelDataHandler
 			throw pde;
 		}
 	}
+
+	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
 
 }

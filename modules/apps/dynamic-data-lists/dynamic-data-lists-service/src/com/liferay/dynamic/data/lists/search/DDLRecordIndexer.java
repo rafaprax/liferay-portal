@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordSetConstants;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -42,7 +43,6 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMIndexerUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +53,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -137,7 +138,7 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 		DDMFormValues ddmFormValues = StorageEngineUtil.getDDMFormValues(
 			recordVersion.getDDMStorageId());
 
-		DDMIndexerUtil.addAttributes(document, ddmStructure, ddmFormValues);
+		_ddmIndexer.addAttributes(document, ddmStructure, ddmFormValues);
 
 		return document;
 	}
@@ -213,7 +214,7 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 
 		DDLRecordSet recordSet = recordVersion.getRecordSet();
 
-		return DDMIndexerUtil.extractAttributes(
+		return _ddmIndexer.extractIndexableAttributes(
 			recordSet.getDDMStructure(), ddmFormValues, locale);
 	}
 
@@ -296,6 +297,13 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 		SearchEngineUtil.updateDocuments(
 			getSearchEngineId(), companyId, documents, isCommitImmediately());
 	}
+
+	@Reference
+	protected void setDDMIndexer(DDMIndexer ddmIndexer) {
+		_ddmIndexer = ddmIndexer;
+	}
+
+	protected DDMIndexer _ddmIndexer;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDLRecordIndexer.class);
