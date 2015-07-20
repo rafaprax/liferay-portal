@@ -47,9 +47,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Alexander Chow
  */
+@Component(immediate = true)
 public class DDMIndexerImpl implements DDMIndexer {
 
 	@Override
