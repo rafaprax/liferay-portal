@@ -38,6 +38,26 @@ import javax.portlet.PortletRequest;
  * @author Leonardo Barros
  */
 public interface DDM {
+	
+	public static final String FIELDS_DISPLAY_NAME = "_fieldsDisplay";
+
+	public static final String INSTANCE_SEPARATOR = "_INSTANCE_";
+
+	public static final String TYPE_CHECKBOX = "checkbox";
+
+	public static final String TYPE_DDM_DATE = "ddm-date";
+
+	public static final String TYPE_DDM_DOCUMENTLIBRARY = "ddm-documentlibrary";
+
+	public static final String TYPE_DDM_IMAGE = "ddm-image";
+
+	public static final String TYPE_DDM_LINK_TO_PAGE = "ddm-link-to-page";
+
+	public static final String TYPE_DDM_TEXT_HTML = "ddm-text-html";
+
+	public static final String TYPE_RADIO = "radio";
+
+	public static final String TYPE_SELECT = "select";
 
 	public DDMDisplay getDDMDisplay(long classNameId) throws PortalException;
 

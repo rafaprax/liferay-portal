@@ -106,26 +106,6 @@ import org.osgi.service.component.annotations.Component;
 @DoPrivileged
 public class DDMImpl implements DDM {
 
-	public static final String FIELDS_DISPLAY_NAME = "_fieldsDisplay";
-
-	public static final String INSTANCE_SEPARATOR = "_INSTANCE_";
-
-	public static final String TYPE_CHECKBOX = "checkbox";
-
-	public static final String TYPE_DDM_DATE = "ddm-date";
-
-	public static final String TYPE_DDM_DOCUMENTLIBRARY = "ddm-documentlibrary";
-
-	public static final String TYPE_DDM_IMAGE = "ddm-image";
-
-	public static final String TYPE_DDM_LINK_TO_PAGE = "ddm-link-to-page";
-
-	public static final String TYPE_DDM_TEXT_HTML = "ddm-text-html";
-
-	public static final String TYPE_RADIO = "radio";
-
-	public static final String TYPE_SELECT = "select";
-
 	@Override
 	public DDMDisplay getDDMDisplay(long classNameId) {
 		List<DDMDisplay> ddmDisplays = DDMDisplayRegistryUtil.getDDMDisplays();
@@ -279,7 +259,7 @@ public class DDMImpl implements DDM {
 
 			fieldValue = dateFormat.format(valueDate);
 		}
-		else if (type.equals(DDMImpl.TYPE_CHECKBOX)) {
+		else if (type.equals(DDM.TYPE_CHECKBOX)) {
 			Boolean valueBoolean = (Boolean)fieldValue;
 
 			if (valueBoolean) {
@@ -289,7 +269,7 @@ public class DDMImpl implements DDM {
 				fieldValue = LanguageUtil.get(themeDisplay.getLocale(), "no");
 			}
 		}
-		else if (type.equals(DDMImpl.TYPE_DDM_DOCUMENTLIBRARY)) {
+		else if (type.equals(DDM.TYPE_DDM_DOCUMENTLIBRARY)) {
 			if (Validator.isNull(fieldValue)) {
 				return StringPool.BLANK;
 			}
@@ -310,7 +290,7 @@ public class DDMImpl implements DDM {
 				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK,
 				false, true);
 		}
-		else if (type.equals(DDMImpl.TYPE_DDM_LINK_TO_PAGE)) {
+		else if (type.equals(DDM.TYPE_DDM_LINK_TO_PAGE)) {
 			if (Validator.isNull(fieldValue)) {
 				return StringPool.BLANK;
 			}
@@ -329,8 +309,8 @@ public class DDMImpl implements DDM {
 
 			fieldValue = PortalUtil.getLayoutFriendlyURL(layout, themeDisplay);
 		}
-		else if (type.equals(DDMImpl.TYPE_RADIO) ||
-				 type.equals(DDMImpl.TYPE_SELECT)) {
+		else if (type.equals(DDM.TYPE_RADIO) ||
+				 type.equals(DDM.TYPE_SELECT)) {
 
 			String valueString = String.valueOf(fieldValue);
 
@@ -448,7 +428,7 @@ public class DDMImpl implements DDM {
 
 		for (String value : values) {
 			String fieldName = StringUtil.extractFirst(
-				value, DDMImpl.INSTANCE_SEPARATOR);
+				value, DDM.INSTANCE_SEPARATOR);
 
 			if (ddmStructure.hasField(fieldName)) {
 				fieldsDisplayValues.add(fieldName);
@@ -472,8 +452,8 @@ public class DDMImpl implements DDM {
 
 			fieldValue = dateFormat.format(valueDate);
 		}
-		else if (type.equals(DDMImpl.TYPE_RADIO) ||
-				 type.equals(DDMImpl.TYPE_SELECT)) {
+		else if (type.equals(DDM.TYPE_RADIO) ||
+				 type.equals(DDM.TYPE_SELECT)) {
 
 			String valueString = (String)fieldValue;
 
@@ -534,10 +514,10 @@ public class DDMImpl implements DDM {
 	@Override
 	public Fields mergeFields(Fields newFields, Fields existingFields) {
 		String[] newFieldsDisplayValues = splitFieldsDisplayValue(
-			newFields.get(DDMImpl.FIELDS_DISPLAY_NAME));
+			newFields.get(DDM.FIELDS_DISPLAY_NAME));
 
 		String[] existingFieldsDisplayValues = splitFieldsDisplayValue(
-			existingFields.get(DDMImpl.FIELDS_DISPLAY_NAME));
+			existingFields.get(DDM.FIELDS_DISPLAY_NAME));
 
 		Iterator<Field> itr = newFields.iterator(true);
 
@@ -591,8 +571,8 @@ public class DDMImpl implements DDM {
 			propertyValue = localizedValue.getString(defaultLocale);
 		}
 
-		if (type.equals(DDMImpl.TYPE_RADIO) ||
-			type.equals(DDMImpl.TYPE_SELECT)) {
+		if (type.equals(DDM.TYPE_RADIO) ||
+			type.equals(DDM.TYPE_SELECT)) {
 
 			if (propertyName.equals("predefinedValue")) {
 				try {
@@ -616,8 +596,8 @@ public class DDMImpl implements DDM {
 
 		String type = ddmFormField.getType();
 
-		if (!(type.equals(DDMImpl.TYPE_RADIO) ||
-			  type.equals(DDMImpl.TYPE_SELECT))) {
+		if (!(type.equals(DDM.TYPE_RADIO) ||
+			  type.equals(DDM.TYPE_SELECT))) {
 
 			return;
 		}
@@ -867,7 +847,7 @@ public class DDMImpl implements DDM {
 
 				if (index < 0) {
 					return StringUtil.extractLast(
-						fieldsDisplayValue, DDMImpl.INSTANCE_SEPARATOR);
+						fieldsDisplayValue, DDM.INSTANCE_SEPARATOR);
 				}
 			}
 		}
@@ -937,7 +917,7 @@ public class DDMImpl implements DDM {
 		for (String fieldsDisplayValue : fieldsDisplayValues) {
 			if (fieldsDisplayValue.startsWith(prefix)) {
 				String fieldIstanceId = StringUtil.extractLast(
-					fieldsDisplayValue, DDMImpl.INSTANCE_SEPARATOR);
+					fieldsDisplayValue, DDM.INSTANCE_SEPARATOR);
 
 				if (fieldIstanceId.equals(instanceId)) {
 					return offset;
@@ -976,7 +956,7 @@ public class DDMImpl implements DDM {
 					serviceContext.getLocale());
 			}
 
-			if (fieldType.equals(DDMImpl.TYPE_CHECKBOX) &&
+			if (fieldType.equals(DDM.TYPE_CHECKBOX) &&
 				Validator.isNull(fieldValue)) {
 
 				fieldValue = "false";
@@ -1031,8 +1011,8 @@ public class DDMImpl implements DDM {
 				return null;
 			}
 
-			if (DDMImpl.TYPE_RADIO.equals(fieldType) ||
-				DDMImpl.TYPE_SELECT.equals(fieldType)) {
+			if (DDM.TYPE_RADIO.equals(fieldType) ||
+				DDM.TYPE_SELECT.equals(fieldType)) {
 
 				String predefinedValueString = predefinedValue.getString(
 					serviceContext.getLocale());
@@ -1196,6 +1176,6 @@ public class DDMImpl implements DDM {
 		return StringUtil.split(value);
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(DDMImpl.class);
+	private static final Log _log = LogFactoryUtil.getLog(DDM.class);
 
 }
