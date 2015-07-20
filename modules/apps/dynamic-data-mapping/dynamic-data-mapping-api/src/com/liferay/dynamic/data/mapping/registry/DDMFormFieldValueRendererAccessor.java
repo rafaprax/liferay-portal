@@ -12,26 +12,25 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.registry;
+package com.liferay.dynamic.data.mapping.registry;
 
-import com.liferay.portal.kernel.util.ParamUtil;
-
-import javax.servlet.http.HttpServletRequest;
+import com.liferay.portal.kernel.util.Accessor;
+import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
 /**
  * @author Marcellus Tavares
  */
-public class DefaultDDMFormFieldValueParameterSerializer
-	implements DDMFormFieldValueParameterSerializer {
+public abstract class DDMFormFieldValueRendererAccessor
+	implements Accessor<DDMFormFieldValue, String> {
 
 	@Override
-	public String getParameterValue(
-		HttpServletRequest httpServletRequest, String ddmFormFieldParameterName,
-		String defaultDDMFormFieldParameterValue) {
+	public Class<String> getAttributeClass() {
+		return String.class;
+	}
 
-		return ParamUtil.getString(
-			httpServletRequest, ddmFormFieldParameterName,
-			defaultDDMFormFieldParameterValue);
+	@Override
+	public Class<DDMFormFieldValue> getTypeClass() {
+		return DDMFormFieldValue.class;
 	}
 
 }
