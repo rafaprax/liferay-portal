@@ -28,9 +28,12 @@ import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeSettings;
 
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Bruno Basto
  */
+@Component(immediate = true)
 public class DDMFormFieldTypesJSONSerializerImpl
 	implements DDMFormFieldTypesJSONSerializer {
 
