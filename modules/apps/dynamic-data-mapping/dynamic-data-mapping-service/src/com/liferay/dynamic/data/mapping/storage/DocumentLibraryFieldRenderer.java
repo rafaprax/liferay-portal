@@ -12,23 +12,25 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.storage;
+package com.liferay.dynamic.data.mapping.storage;
 
-import com.liferay.portal.NoSuchLayoutException;
+import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
+import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.service.LayoutServiceUtil;
+import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
+import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +38,7 @@ import java.util.Locale;
 /**
  * @author Bruno Basto
  */
-public class LinkToPageFieldRenderer extends BaseFieldRenderer {
+public class DocumentLibraryFieldRenderer extends BaseFieldRenderer {
 
 	@Override
 	protected String doRender(Field field, Locale locale) throws Exception {
@@ -66,11 +68,11 @@ public class LinkToPageFieldRenderer extends BaseFieldRenderer {
 		return handleJSON(String.valueOf(value), locale);
 	}
 
-	protected String handleJSON(String value, Locale locale) {
+	protected String handleJSON(String json, Locale locale) {
 		JSONObject jsonObject = null;
 
 		try {
-			jsonObject = JSONFactoryUtil.createJSONObject(value);
+			jsonObject = JSONFactoryUtil.createJSONObject(json);
 		}
 		catch (JSONException jsone) {
 			if (_log.isDebugEnabled()) {
@@ -80,17 +82,17 @@ public class LinkToPageFieldRenderer extends BaseFieldRenderer {
 			return StringPool.BLANK;
 		}
 
-		long groupId = jsonObject.getLong("groupId");
-		boolean privateLayout = jsonObject.getBoolean("privateLayout");
-		long layoutId = jsonObject.getLong("layoutId");
+		long fileEntryGroupId = jsonObject.getLong("groupId");
+		String fileEntryUUID = jsonObject.getString("uuid");
 
 		try {
-			return LayoutServiceUtil.getLayoutName(
-				groupId, privateLayout, layoutId,
-				LanguageUtil.getLanguageId(locale));
+			FileEntry fileEntry = DLAppServiceUtil.getFileEntryByUuidAndGroupId(
+				fileEntryUUID, fileEntryGroupId);
+
+			return fileEntry.getTitle();
 		}
 		catch (Exception e) {
-			if (e instanceof NoSuchLayoutException ||
+			if (e instanceof NoSuchFileEntryException ||
 				e instanceof PrincipalException) {
 
 				return LanguageUtil.format(
@@ -102,6 +104,6 @@ public class LinkToPageFieldRenderer extends BaseFieldRenderer {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		LinkToPageFieldRenderer.class);
+		DocumentLibraryFieldRenderer.class);
 
 }

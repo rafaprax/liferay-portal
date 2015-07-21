@@ -12,8 +12,10 @@
  * details.
  */
 
-package com.liferay.portlet.dynamicdatamapping.storage;
+package com.liferay.dynamic.data.mapping.storage;
 
+import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
+import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -26,9 +28,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
-
 import java.text.NumberFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
