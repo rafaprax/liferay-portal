@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.documentlibrary.util;
 
+import com.liferay.dynamic.data.mapping.exception.StructureFieldException;
 import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -75,7 +76,6 @@ import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
 import com.liferay.portlet.dynamicdatamapping.StorageEngineManagerUtil;
-import com.liferay.portlet.dynamicdatamapping.StructureFieldException;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
@@ -84,7 +84,6 @@ import com.liferay.portlet.expando.util.ExpandoBridgeIndexerUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;

@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.transaction.Isolation;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.service.BaseService;
 
@@ -53,6 +54,24 @@ public interface DDMTemplateVersionService extends BaseService {
 	* @return the Spring bean ID for this bean
 	*/
 	public java.lang.String getBeanIdentifier();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateVersion getLatestTemplateVersion(
+		long templateId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateVersion getTemplateVersion(
+		long templateVersionId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMTemplateVersion> getTemplateVersions(
+		long templateId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMTemplateVersion> orderByComparator)
+		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getTemplateVersionsCount(long templateId)
+		throws PortalException;
 
 	/**
 	* Sets the Spring bean ID for this bean.

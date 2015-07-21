@@ -15,7 +15,7 @@
 package com.liferay.dynamic.data.mapping.util.comparator;
 
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 
 /**
  * @author Eduardo Garcia

@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordSetConstants;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.storage.StorageEngineUtil;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -42,7 +43,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

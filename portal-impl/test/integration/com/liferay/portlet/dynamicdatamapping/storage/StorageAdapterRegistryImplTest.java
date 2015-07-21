@@ -14,6 +14,10 @@
 
 package com.liferay.portlet.dynamicdatamapping.storage;
 
+import com.liferay.dynamic.data.mapping.storage.JSONStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistry;
+import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.MainServletTestRule;

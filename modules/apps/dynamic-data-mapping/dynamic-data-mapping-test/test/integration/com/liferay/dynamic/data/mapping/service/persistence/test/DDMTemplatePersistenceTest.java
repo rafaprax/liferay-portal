@@ -404,6 +404,12 @@ public class DDMTemplatePersistenceTest {
 			getOrderByComparator());
 	}
 
+	@Test
+	public void testFilterFindByGroupId() throws Exception {
+		_persistence.filterFindByGroupId(0, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, getOrderByComparator());
+	}
+
 	protected OrderByComparator<DDMTemplate> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create("DDMTemplate", "uuid", true,
 			"templateId", true, "groupId", true, "companyId", true, "userId",

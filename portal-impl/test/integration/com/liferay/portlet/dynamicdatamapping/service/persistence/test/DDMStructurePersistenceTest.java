@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.dynamicdatamapping.service.persistence.test;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
@@ -33,8 +34,6 @@ import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
-
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMStructurePersistence;
@@ -47,7 +46,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;

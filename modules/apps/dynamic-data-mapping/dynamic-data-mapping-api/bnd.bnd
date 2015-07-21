@@ -3,4 +3,13 @@ Bundle-SymbolicName: com.liferay.dynamic.data.mapping.api
 Bundle-Version: 1.0.0
 Include-Resource: classes
 Export-Package:  \
-	com.liferay.dynamic.data.mapping.io
+	com.liferay.dynamic.data.mapping.io,\
+	com.liferay.dynamic.data.mapping.exception,\
+	com.liferay.dynamic.data.mapping.model,\
+	com.liferay.dynamic.data.mapping.render,\
+	com.liferay.dynamic.data.mapping.search,\
+	com.liferay.dynamic.data.mapping.service,\
+	com.liferay.dynamic.data.mapping.webdav,\
+	com.liferay.dynamic.data.mapping.util,\
+	com.liferay.dynamic.data.mapping.util.comparator,\
+	com.liferay.dynamic.data.mapping.service.permission

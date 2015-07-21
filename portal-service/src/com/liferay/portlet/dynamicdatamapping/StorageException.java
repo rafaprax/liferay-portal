@@ -12,23 +12,28 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.util.comparator;
+package com.liferay.portlet.dynamicdatamapping;
 
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.portlet.exportimport.lar.StagedModelModifiedDateComparator;
+import com.liferay.portal.kernel.exception.PortalException;
 
 /**
- * @author Eduardo Garcia
+ * @author Leonardo Barros
  */
-public class TemplateModifiedDateComparator
-	extends StagedModelModifiedDateComparator<DDMTemplate> {
-
-	public TemplateModifiedDateComparator() {
-		this(false);
+public class StorageException extends PortalException {
+	
+	public StorageException() {
 	}
 
-	public TemplateModifiedDateComparator(boolean ascending) {
-		super(ascending);
+	public StorageException(String msg) {
+		super(msg);
 	}
 
+	public StorageException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
+
+	public StorageException(Throwable cause) {
+		super(cause);
+	}
+	
 }

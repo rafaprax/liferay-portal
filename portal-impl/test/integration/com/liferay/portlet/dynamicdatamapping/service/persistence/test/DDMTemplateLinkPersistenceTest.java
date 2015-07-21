@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.dynamicdatamapping.service.persistence.test;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchTemplateLinkException;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
@@ -30,8 +31,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
-
-import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateLinkException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateLink;
 import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMTemplateLinkPersistence;
@@ -44,7 +43,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;

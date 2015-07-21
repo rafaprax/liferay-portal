@@ -47,6 +47,11 @@ public interface DDMContentLocalService extends BaseLocalService,
 	 *
 	 * Never modify or reference this interface directly. Always use {@link DDMContentLocalServiceUtil} to access the d d m content local service. Add custom service methods to {@link com.liferay.dynamic.data.mapping.service.impl.DDMContentLocalServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public com.liferay.dynamic.data.mapping.model.DDMContent addContent(
+		long userId, long groupId, java.lang.String name,
+		java.lang.String description, java.lang.String data,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws PortalException;
 
 	/**
 	* Adds the d d m content to the database. Also notifies the appropriate model listeners.
@@ -66,6 +71,11 @@ public interface DDMContentLocalService extends BaseLocalService,
 	*/
 	public com.liferay.dynamic.data.mapping.model.DDMContent createDDMContent(
 		long contentId);
+
+	public void deleteContent(
+		com.liferay.dynamic.data.mapping.model.DDMContent content);
+
+	public void deleteContents(long groupId);
 
 	/**
 	* Deletes the d d m content with the primary key from the database. Also notifies the appropriate model listeners.
@@ -186,6 +196,24 @@ public interface DDMContentLocalService extends BaseLocalService,
 	*/
 	public java.lang.String getBeanIdentifier();
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMContent getContent(
+		long contentId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMContent> getContents();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMContent> getContents(
+		long groupId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMContent> getContents(
+		long groupId, int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getContentsCount(long groupId);
+
 	/**
 	* Returns the d d m content with the primary key.
 	*
@@ -273,6 +301,12 @@ public interface DDMContentLocalService extends BaseLocalService,
 	* @param beanIdentifier the Spring bean ID for this bean
 	*/
 	public void setBeanIdentifier(java.lang.String beanIdentifier);
+
+	public com.liferay.dynamic.data.mapping.model.DDMContent updateContent(
+		long contentId, java.lang.String name, java.lang.String description,
+		java.lang.String data,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws PortalException;
 
 	/**
 	* Updates the d d m content in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.

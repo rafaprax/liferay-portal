@@ -54,6 +54,11 @@ public class DDMStructureLinkLocalServiceUtil {
 		return getService().addDDMStructureLink(ddmStructureLink);
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureLink addStructureLink(
+		long classNameId, long classPK, long structureId) {
+		return getService().addStructureLink(classNameId, classPK, structureId);
+	}
+
 	/**
 	* Creates a new d d m structure link with the primary key. Does not add the d d m structure link to the database.
 	*
@@ -96,6 +101,30 @@ public class DDMStructureLinkLocalServiceUtil {
 		com.liferay.portal.model.PersistedModel persistedModel)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().deletePersistedModel(persistedModel);
+	}
+
+	public static void deleteStructureLink(long classNameId, long classPK,
+		long structureId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().deleteStructureLink(classNameId, classPK, structureId);
+	}
+
+	public static void deleteStructureLink(
+		com.liferay.dynamic.data.mapping.model.DDMStructureLink structureLink) {
+		getService().deleteStructureLink(structureLink);
+	}
+
+	public static void deleteStructureLink(long structureLinkId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().deleteStructureLink(structureLinkId);
+	}
+
+	public static void deleteStructureLinks(long classNameId, long classPK) {
+		getService().deleteStructureLinks(classNameId, classPK);
+	}
+
+	public static void deleteStructureStructureLinks(long structureId) {
+		getService().deleteStructureStructureLinks(structureId);
 	}
 
 	public static com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
@@ -194,6 +223,11 @@ public class DDMStructureLinkLocalServiceUtil {
 		return getService().getBeanIdentifier();
 	}
 
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> getClassNameStructureLinks(
+		long classNameId) {
+		return getService().getClassNameStructureLinks(classNameId);
+	}
+
 	/**
 	* Returns the d d m structure link with the primary key.
 	*
@@ -238,6 +272,39 @@ public class DDMStructureLinkLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureLink getStructureLink(
+		long structureLinkId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getStructureLink(structureLinkId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructureLinkStructures(
+		long classNameId, long classPK)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getStructureLinkStructures(classNameId, classPK);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> getStructureLinks(
+		long classNameId, long classPK) {
+		return getService().getStructureLinks(classNameId, classPK);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> getStructureLinks(
+		long structureId) {
+		return getService().getStructureLinks(structureId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> getStructureLinks(
+		long structureId, int start, int end) {
+		return getService().getStructureLinks(structureId, start, end);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureLink getUniqueStructureLink(
+		long classNameId, long classPK)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getUniqueStructureLink(classNameId, classPK);
+	}
+
 	/**
 	* Sets the Spring bean ID for this bean.
 	*
@@ -256,6 +323,14 @@ public class DDMStructureLinkLocalServiceUtil {
 	public static com.liferay.dynamic.data.mapping.model.DDMStructureLink updateDDMStructureLink(
 		com.liferay.dynamic.data.mapping.model.DDMStructureLink ddmStructureLink) {
 		return getService().updateDDMStructureLink(ddmStructureLink);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureLink updateStructureLink(
+		long structureLinkId, long classNameId, long classPK, long structureId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateStructureLink(structureLinkId, classNameId, classPK,
+			structureId);
 	}
 
 	public static DDMStructureLinkLocalService getService() {

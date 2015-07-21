@@ -54,6 +54,14 @@ public class DDMStorageLinkLocalServiceUtil {
 		return getService().addDDMStorageLink(ddmStorageLink);
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStorageLink addStorageLink(
+		long classNameId, long classPK, long structureId,
+		com.liferay.portal.service.ServiceContext serviceContext) {
+		return getService()
+				   .addStorageLink(classNameId, classPK, structureId,
+			serviceContext);
+	}
+
 	/**
 	* Creates a new d d m storage link with the primary key. Does not add the d d m storage link to the database.
 	*
@@ -63,6 +71,10 @@ public class DDMStorageLinkLocalServiceUtil {
 	public static com.liferay.dynamic.data.mapping.model.DDMStorageLink createDDMStorageLink(
 		long storageLinkId) {
 		return getService().createDDMStorageLink(storageLinkId);
+	}
+
+	public static void deleteClassStorageLink(long classPK) {
+		getService().deleteClassStorageLink(classPK);
 	}
 
 	/**
@@ -96,6 +108,19 @@ public class DDMStorageLinkLocalServiceUtil {
 		com.liferay.portal.model.PersistedModel persistedModel)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().deletePersistedModel(persistedModel);
+	}
+
+	public static void deleteStorageLink(
+		com.liferay.dynamic.data.mapping.model.DDMStorageLink storageLink) {
+		getService().deleteStorageLink(storageLink);
+	}
+
+	public static void deleteStorageLink(long storageLinkId) {
+		getService().deleteStorageLink(storageLinkId);
+	}
+
+	public static void deleteStructureStorageLinks(long structureId) {
+		getService().deleteStructureStorageLinks(structureId);
 	}
 
 	public static com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery() {
@@ -194,6 +219,12 @@ public class DDMStorageLinkLocalServiceUtil {
 		return getService().getBeanIdentifier();
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStorageLink getClassStorageLink(
+		long classPK)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getClassStorageLink(classPK);
+	}
+
 	/**
 	* Returns the d d m storage link with the primary key.
 	*
@@ -238,6 +269,21 @@ public class DDMStorageLinkLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStorageLink getStorageLink(
+		long storageLinkId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getStorageLink(storageLinkId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStorageLink> getStructureStorageLinks(
+		long structureId) {
+		return getService().getStructureStorageLinks(structureId);
+	}
+
+	public static int getStructureStorageLinksCount(long structureId) {
+		return getService().getStructureStorageLinksCount(structureId);
+	}
+
 	/**
 	* Sets the Spring bean ID for this bean.
 	*
@@ -256,6 +302,13 @@ public class DDMStorageLinkLocalServiceUtil {
 	public static com.liferay.dynamic.data.mapping.model.DDMStorageLink updateDDMStorageLink(
 		com.liferay.dynamic.data.mapping.model.DDMStorageLink ddmStorageLink) {
 		return getService().updateDDMStorageLink(ddmStorageLink);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMStorageLink updateStorageLink(
+		long storageLinkId, long classNameId, long classPK)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateStorageLink(storageLinkId, classNameId, classPK);
 	}
 
 	public static DDMStorageLinkLocalService getService() {

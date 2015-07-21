@@ -14,6 +14,11 @@
 
 package com.liferay.portlet.documentlibrary.action;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.exception.RequiredStructureException;
+import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
+import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
+import com.liferay.dynamic.data.mapping.exception.StructureNameException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -40,11 +45,6 @@ import com.liferay.portlet.documentlibrary.NoSuchMetadataSetException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
-import com.liferay.portlet.dynamicdatamapping.RequiredStructureException;
-import com.liferay.portlet.dynamicdatamapping.StructureDefinitionException;
-import com.liferay.portlet.dynamicdatamapping.StructureDuplicateElementException;
-import com.liferay.portlet.dynamicdatamapping.StructureNameException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
 

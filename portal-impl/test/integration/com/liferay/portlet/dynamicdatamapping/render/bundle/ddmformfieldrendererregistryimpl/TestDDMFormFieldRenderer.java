@@ -14,9 +14,9 @@
 
 package com.liferay.portlet.dynamicdatamapping.render.bundle.ddmformfieldrendererregistryimpl;
 
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderer;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
-import com.liferay.portlet.dynamicdatamapping.render.DDMFormFieldRenderer;
-import com.liferay.portlet.dynamicdatamapping.render.DDMFormFieldRenderingContext;
 
 import java.util.Arrays;
 import java.util.List;

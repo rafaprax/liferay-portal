@@ -35,6 +35,8 @@
 	</osgi:service>
 	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStructurePersistenceImpl" parent="basePersistence" />
 	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStructurePersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureFinder" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMStructureFinderImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureFinder" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureFinder" />
 	<bean id="com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMStructureLayoutLocalServiceImpl" />
 	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService">
 		<osgi:service-properties>
@@ -85,6 +87,8 @@
 	</osgi:service>
 	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersistence" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMTemplatePersistenceImpl" parent="basePersistence" />
 	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersistence" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplatePersistence" />
+	<bean id="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateFinder" class="com.liferay.dynamic.data.mapping.service.persistence.impl.DDMTemplateFinderImpl" parent="basePersistence" />
+	<osgi:service interface="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateFinder" ref="com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateFinder" />
 	<bean id="com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService" class="com.liferay.dynamic.data.mapping.service.impl.DDMTemplateLinkLocalServiceImpl" />
 	<osgi:service interface="com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService" ref="com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService">
 		<osgi:service-properties>

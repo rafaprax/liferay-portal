@@ -20,13 +20,13 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.model.CacheField;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormJSONDeserializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLayout;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLayoutLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 
 /**
  * @author Brian Wing Shun Chan

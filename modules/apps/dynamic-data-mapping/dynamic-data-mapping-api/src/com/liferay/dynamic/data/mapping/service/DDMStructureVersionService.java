@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.transaction.Isolation;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.service.BaseService;
 
@@ -53,6 +54,24 @@ public interface DDMStructureVersionService extends BaseService {
 	* @return the Spring bean ID for this bean
 	*/
 	public java.lang.String getBeanIdentifier();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMStructureVersion getLatestStructureVersion(
+		long structureId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMStructureVersion getStructureVersion(
+		long structureVersionId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureVersion> getStructureVersions(
+		long structureId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMStructureVersion> orderByComparator)
+		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getStructureVersionsCount(long structureId)
+		throws PortalException;
 
 	/**
 	* Sets the Spring bean ID for this bean.

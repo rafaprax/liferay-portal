@@ -149,7 +149,7 @@ public class DDMStructureLinkWrapper implements DDMStructureLink,
 	}
 
 	@Override
-	public com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure()
+	public com.liferay.dynamic.data.mapping.model.DDMStructure getStructure()
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmStructureLink.getStructure();
 	}

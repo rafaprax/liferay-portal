@@ -54,12 +54,12 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureVersion;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 
 import java.util.ArrayList;
 import java.util.Collections;

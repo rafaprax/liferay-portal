@@ -47,9 +47,9 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.persistence.ImageUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplateVersion;
 import com.liferay.util.xml.XMLUtil;
 
 import java.io.File;

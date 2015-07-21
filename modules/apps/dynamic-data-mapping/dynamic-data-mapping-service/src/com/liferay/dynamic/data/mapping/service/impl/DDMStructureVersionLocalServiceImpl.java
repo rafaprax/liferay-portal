@@ -22,7 +22,7 @@ import com.liferay.dynamic.data.mapping.util.comparator.StructureVersionVersionC
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 
 import java.util.Collections;
 import java.util.List;

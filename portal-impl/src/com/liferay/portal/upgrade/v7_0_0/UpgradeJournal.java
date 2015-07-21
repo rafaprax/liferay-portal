@@ -14,6 +14,7 @@
 
 package com.liferay.portal.upgrade.v7_0_0;
 
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -38,7 +39,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
 import com.liferay.util.ContentUtil;
 import com.liferay.util.xml.XMLUtil;
 
@@ -47,7 +47,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

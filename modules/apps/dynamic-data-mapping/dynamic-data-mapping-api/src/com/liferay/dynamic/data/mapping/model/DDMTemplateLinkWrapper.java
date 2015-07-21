@@ -149,7 +149,7 @@ public class DDMTemplateLinkWrapper implements DDMTemplateLink,
 	}
 
 	@Override
-	public com.liferay.portlet.dynamicdatamapping.model.DDMTemplate getTemplate()
+	public com.liferay.dynamic.data.mapping.model.DDMTemplate getTemplate()
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmTemplateLink.getTemplate();
 	}
