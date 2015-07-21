@@ -12,8 +12,9 @@
  * details.
  */
 
-package com.liferay.portal.upgrade.v7_0_0;
+package com.liferay.dynamic.data.mapping.upgrade.v7_0_0;
 
+import com.liferay.dynamic.data.mapping.util.internal.DDMFieldsCounter;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -63,20 +64,17 @@ import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.portlet.dynamicdatamapping.util.DDMFieldsCounter;
 import com.liferay.portlet.dynamicdatamapping.util.DDMFormFieldValueTransformer;
 import com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesTransformer;
-import com.liferay.portlet.dynamicdatamapping.util.DDMImpl;
 import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
+import com.liferay.dynamic.data.mapping.util.DDM;
 
 import java.io.File;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -940,7 +938,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 				return StringUtil.randomString();
 			}
 
-			String prefix = fieldName.concat(DDMImpl.INSTANCE_SEPARATOR);
+			String prefix = fieldName.concat(DDM.INSTANCE_SEPARATOR);
 
 			for (String ddmFieldsDisplayValue : ddmFieldsDisplayValues) {
 				if (ddmFieldsDisplayValue.startsWith(prefix)) {
@@ -948,7 +946,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 
 					if (index < 0) {
 						return StringUtil.extractLast(
-							ddmFieldsDisplayValue, DDMImpl.INSTANCE_SEPARATOR);
+							ddmFieldsDisplayValue, DDM.INSTANCE_SEPARATOR);
 					}
 				}
 			}
@@ -976,7 +974,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 
 					if (extractFieldName) {
 						fieldDisplayValue = StringUtil.extractFirst(
-							fieldDisplayValue, DDMImpl.INSTANCE_SEPARATOR);
+							fieldDisplayValue, DDM.INSTANCE_SEPARATOR);
 					}
 
 					ddmFieldsDisplayValues.add(fieldDisplayValue);

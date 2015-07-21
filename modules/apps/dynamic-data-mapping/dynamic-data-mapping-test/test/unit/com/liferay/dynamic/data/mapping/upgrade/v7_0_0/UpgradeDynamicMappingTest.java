@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.upgrade.v7_0_0;
+package com.liferay.dynamic.data.mapping.upgrade.v7_0_0;
 
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONSerializerUtil;
 import com.liferay.dynamic.data.mapping.io.internal.DDMFormValuesJSONSerializerImpl;
@@ -41,6 +41,7 @@ import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.upgrade.v7_0_0.UpgradeDynamicDataMapping;
 
 import java.util.LinkedHashSet;
 import java.util.Locale;
