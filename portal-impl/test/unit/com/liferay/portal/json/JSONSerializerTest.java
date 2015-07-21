@@ -14,7 +14,6 @@
 
 package com.liferay.portal.json;
 
-import com.liferay.dynamic.data.mapping.model.impl.DDMStructureImpl;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.search.Hits;
@@ -23,16 +22,21 @@ import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.LocalizationImpl;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author Igor Spasic
  */
-public class JSONSerializerTest {
+@RunWith(PowerMockRunner.class)
+public class JSONSerializerTest extends PowerMockito{
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,15 +51,14 @@ public class JSONSerializerTest {
 
 	@Test
 	public void testSerializeDDMStructure() {
-		DDMStructure ddmStructure = new DDMStructureImpl();
 
-		ddmStructure.setDefinition("value");
+		_ddmStructure.setDefinition("value");
 
 		JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 
 		jsonSerializer.exclude("*.class");
 
-		String json = jsonSerializer.serialize(ddmStructure);
+		String json = jsonSerializer.serialize(_ddmStructure);
 
 		Assert.assertTrue(json.contains("\"definition\":\"value\""));
 	}
@@ -115,4 +118,6 @@ public class JSONSerializerTest {
 		Assert.assertEquals(json1, json2);
 	}
 
+	@Mock
+	private DDMStructure _ddmStructure;
 }
