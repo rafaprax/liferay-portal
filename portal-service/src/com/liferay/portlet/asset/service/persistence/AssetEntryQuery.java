@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.asset.service.persistence;
 
+import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.log.Log;
@@ -30,10 +31,8 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMIndexer;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

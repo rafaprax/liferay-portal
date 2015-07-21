@@ -46,6 +46,16 @@ public class DDMStructureLayoutLocalServiceWrapper
 		return _ddmStructureLayoutLocalService.addDDMStructureLayout(ddmStructureLayout);
 	}
 
+	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMStructureLayout addStructureLayout(
+		long userId, long groupId, long structureVersionId,
+		com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout ddmFormLayout,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructureLayoutLocalService.addStructureLayout(userId,
+			groupId, structureVersionId, ddmFormLayout, serviceContext);
+	}
+
 	/**
 	* Creates a new d d m structure layout with the primary key. Does not add the d d m structure layout to the database.
 	*
@@ -92,6 +102,18 @@ public class DDMStructureLayoutLocalServiceWrapper
 		com.liferay.portal.model.PersistedModel persistedModel)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmStructureLayoutLocalService.deletePersistedModel(persistedModel);
+	}
+
+	@Override
+	public void deleteStructureLayout(
+		com.liferay.dynamic.data.mapping.model.DDMStructureLayout structureLayout) {
+		_ddmStructureLayoutLocalService.deleteStructureLayout(structureLayout);
+	}
+
+	@Override
+	public void deleteStructureLayout(long structureLayoutId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_ddmStructureLayoutLocalService.deleteStructureLayout(structureLayoutId);
 	}
 
 	@Override
@@ -317,6 +339,20 @@ public class DDMStructureLayoutLocalServiceWrapper
 		return _ddmStructureLayoutLocalService.getPersistedModel(primaryKeyObj);
 	}
 
+	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMStructureLayout getStructureLayout(
+		long structureLayoutId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructureLayoutLocalService.getStructureLayout(structureLayoutId);
+	}
+
+	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMStructureLayout getStructureLayoutByStructureVersionId(
+		long structureVersionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructureLayoutLocalService.getStructureLayoutByStructureVersionId(structureVersionId);
+	}
+
 	/**
 	* Sets the Spring bean ID for this bean.
 	*
@@ -337,6 +373,16 @@ public class DDMStructureLayoutLocalServiceWrapper
 	public com.liferay.dynamic.data.mapping.model.DDMStructureLayout updateDDMStructureLayout(
 		com.liferay.dynamic.data.mapping.model.DDMStructureLayout ddmStructureLayout) {
 		return _ddmStructureLayoutLocalService.updateDDMStructureLayout(ddmStructureLayout);
+	}
+
+	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMStructureLayout updateStructureLayout(
+		long structureLayoutId,
+		com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout ddmFormLayout,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmStructureLayoutLocalService.updateStructureLayout(structureLayoutId,
+			ddmFormLayout, serviceContext);
 	}
 
 	/**

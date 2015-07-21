@@ -616,7 +616,7 @@ public class DDMTemplateWrapper implements DDMTemplate,
 	}
 
 	@Override
-	public com.liferay.portlet.dynamicdatamapping.model.DDMTemplateVersion getTemplateVersion()
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateVersion getTemplateVersion()
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmTemplate.getTemplateVersion();
 	}

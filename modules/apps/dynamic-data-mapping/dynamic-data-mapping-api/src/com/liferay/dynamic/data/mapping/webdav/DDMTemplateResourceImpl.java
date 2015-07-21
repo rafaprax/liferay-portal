@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.webdav.BaseResourceImpl;
 import com.liferay.portal.kernel.webdav.WebDAVException;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 
 import java.io.InputStream;
 

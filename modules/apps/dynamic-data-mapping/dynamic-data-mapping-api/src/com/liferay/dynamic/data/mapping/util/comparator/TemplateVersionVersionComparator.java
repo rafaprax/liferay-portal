@@ -16,7 +16,7 @@ package com.liferay.dynamic.data.mapping.util.comparator;
 
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplateVersion;
 
 import java.util.Comparator;
 

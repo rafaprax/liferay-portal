@@ -338,6 +338,12 @@ public class DDMStructurePersistenceTest {
 			getOrderByComparator());
 	}
 
+	@Test
+	public void testFilterFindByGroupId() throws Exception {
+		_persistence.filterFindByGroupId(0, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, getOrderByComparator());
+	}
+
 	protected OrderByComparator<DDMStructure> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create("DDMStructure", "uuid",
 			true, "structureId", true, "groupId", true, "companyId", true,

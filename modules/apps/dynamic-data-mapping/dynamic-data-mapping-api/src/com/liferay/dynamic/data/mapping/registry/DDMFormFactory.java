@@ -90,12 +90,12 @@ public class DDMFormFactory {
 	}
 
 	private static final Class<? extends Annotation> _DDM_FORM_ANNOTATION =
-		com.liferay.portlet.dynamicdatamapping.registry.annotations.
+		com.liferay.dynamic.data.mapping.registry.annotations.
 			DDMForm.class;
 
 	private static final Class<? extends Annotation>
 		_DDM_FORM_FIELD_ANNOTATION =
-			com.liferay.portlet.dynamicdatamapping.registry.annotations.
+			com.liferay.dynamic.data.mapping.registry.annotations.
 				DDMFormField.class;
 
 }

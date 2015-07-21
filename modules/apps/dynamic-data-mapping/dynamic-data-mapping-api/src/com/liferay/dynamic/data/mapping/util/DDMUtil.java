@@ -22,12 +22,12 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureVersion;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.portlet.dynamicdatamapping.storage.Field;
-import com.liferay.portlet.dynamicdatamapping.storage.Fields;
+import com.liferay.dynamic.data.mapping.storage.Field;
+import com.liferay.dynamic.data.mapping.storage.Fields;
 
 import java.io.Serializable;
 

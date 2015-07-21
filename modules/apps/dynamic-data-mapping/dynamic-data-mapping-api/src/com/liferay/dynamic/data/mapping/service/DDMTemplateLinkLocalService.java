@@ -58,6 +58,9 @@ public interface DDMTemplateLinkLocalService extends BaseLocalService,
 	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink addDDMTemplateLink(
 		com.liferay.dynamic.data.mapping.model.DDMTemplateLink ddmTemplateLink);
 
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink addTemplateLink(
+		long classNameId, long classPK, long templateId);
+
 	/**
 	* Creates a new d d m template link with the primary key. Does not add the d d m template link to the database.
 	*
@@ -95,6 +98,15 @@ public interface DDMTemplateLinkLocalService extends BaseLocalService,
 	public com.liferay.portal.model.PersistedModel deletePersistedModel(
 		com.liferay.portal.model.PersistedModel persistedModel)
 		throws PortalException;
+
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink deleteTemplateLink(
+		long classNameId, long classPK);
+
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink deleteTemplateLink(
+		com.liferay.dynamic.data.mapping.model.DDMTemplateLink templateLink);
+
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink deleteTemplateLink(
+		long templateLinkId) throws PortalException;
 
 	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery();
 
@@ -214,6 +226,18 @@ public interface DDMTemplateLinkLocalService extends BaseLocalService,
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink getTemplateLink(
+		long classNameId, long classPK) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink getTemplateLink(
+		long templateLinkId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMTemplateLink> getTemplateLinks(
+		long classNameId);
+
 	/**
 	* Sets the Spring bean ID for this bean.
 	*
@@ -230,4 +254,10 @@ public interface DDMTemplateLinkLocalService extends BaseLocalService,
 	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.REINDEX)
 	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink updateDDMTemplateLink(
 		com.liferay.dynamic.data.mapping.model.DDMTemplateLink ddmTemplateLink);
+
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink updateTemplateLink(
+		long classNameId, long classPK, long templateId);
+
+	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink updateTemplateLink(
+		long templateLinkId, long templateId) throws PortalException;
 }

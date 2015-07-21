@@ -14,6 +14,9 @@
 
 package com.liferay.portlet.dynamicdatamapping.render;
 
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderer;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldRendererRegistry;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldRendererRegistryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.MainServletTestRule;

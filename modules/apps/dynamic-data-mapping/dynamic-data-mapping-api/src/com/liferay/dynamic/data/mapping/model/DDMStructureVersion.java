@@ -40,7 +40,7 @@ public interface DDMStructureVersion extends DDMStructureVersionModel,
 	public com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout getDDMFormLayout()
 		throws com.liferay.portal.kernel.exception.PortalException;
 
-	public com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure()
+	public com.liferay.dynamic.data.mapping.model.DDMStructure getStructure()
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public void setDDMForm(

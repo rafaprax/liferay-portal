@@ -14,12 +14,12 @@
 
 package com.liferay.portlet.dynamicdatamapping.registry.bundle.ddmformfieldtyperegistryimpl;
 
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldRenderer;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldType;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeSettings;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldValueAccessor;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldValueParameterSerializer;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldValueRendererAccessor;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldRenderer;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeSettings;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueAccessor;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueParameterSerializer;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueRendererAccessor;
 
 import java.util.Locale;
 

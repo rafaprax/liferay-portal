@@ -23,6 +23,9 @@ import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.util.DDL;
+import com.liferay.dynamic.data.mapping.storage.Field;
+import com.liferay.dynamic.data.mapping.storage.Fields;
+import com.liferay.dynamic.data.mapping.storage.StorageEngineUtil;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -48,9 +51,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.portlet.dynamicdatamapping.storage.Field;
-import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.PortletPreferences;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;

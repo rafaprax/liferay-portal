@@ -14,13 +14,13 @@
 
 package com.liferay.portlet.dynamicdatamapping.util.bundle.ddmdisplayregistryutil;
 
+import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.util.DDMDisplay;
-import com.liferay.portlet.dynamicdatamapping.util.DDMPermissionHandler;
 
 import java.util.Locale;
 import java.util.Set;

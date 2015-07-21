@@ -27,7 +27,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
 
 import java.util.HashMap;
 import java.util.Locale;

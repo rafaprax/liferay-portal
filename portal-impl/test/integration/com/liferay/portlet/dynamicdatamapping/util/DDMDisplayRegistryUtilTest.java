@@ -14,6 +14,8 @@
 
 package com.liferay.portlet.dynamicdatamapping.util;
 
+import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.MainServletTestRule;

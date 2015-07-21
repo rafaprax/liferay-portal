@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFactory;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldRenderer;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldType;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeSettings;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFactory;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldRenderer;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeSettings;
 
 import java.util.List;
 

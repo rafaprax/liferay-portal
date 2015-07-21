@@ -22,9 +22,9 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.service.permission.DDMPermission;
-import com.liferay.portlet.dynamicdatamapping.service.permission.DDMTemplatePermission;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.permission.DDMPermission;
+import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
 
 import java.io.File;
 import java.util.ArrayList;

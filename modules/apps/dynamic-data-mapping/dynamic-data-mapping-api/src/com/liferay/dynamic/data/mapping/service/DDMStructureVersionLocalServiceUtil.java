@@ -232,10 +232,45 @@ public class DDMStructureVersionLocalServiceUtil {
 		return getService().getDDMStructureVersionsCount();
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureVersion getLatestStructureVersion(
+		long structureId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getLatestStructureVersion(structureId);
+	}
+
 	public static com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureVersion getStructureVersion(
+		long structureId, java.lang.String version)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getStructureVersion(structureId, version);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureVersion getStructureVersion(
+		long structureVersionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getStructureVersion(structureVersionId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureVersion> getStructureVersions(
+		long structureId) {
+		return getService().getStructureVersions(structureId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureVersion> getStructureVersions(
+		long structureId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMStructureVersion> orderByComparator) {
+		return getService()
+				   .getStructureVersions(structureId, start, end,
+			orderByComparator);
+	}
+
+	public static int getStructureVersionsCount(long structureId) {
+		return getService().getStructureVersionsCount(structureId);
 	}
 
 	/**

@@ -16,7 +16,7 @@ package com.liferay.dynamic.data.mapping.util;
 
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 
 import java.util.Locale;

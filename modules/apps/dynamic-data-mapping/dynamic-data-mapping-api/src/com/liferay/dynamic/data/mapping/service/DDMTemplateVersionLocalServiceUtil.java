@@ -232,10 +232,40 @@ public class DDMTemplateVersionLocalServiceUtil {
 		return getService().getDDMTemplateVersionsCount();
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMTemplateVersion getLatestTemplateVersion(
+		long templateId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getLatestTemplateVersion(templateId);
+	}
+
 	public static com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMTemplateVersion getTemplateVersion(
+		long templateId, java.lang.String version)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getTemplateVersion(templateId, version);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMTemplateVersion getTemplateVersion(
+		long templateVersionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getTemplateVersion(templateVersionId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMTemplateVersion> getTemplateVersions(
+		long templateId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMTemplateVersion> orderByComparator) {
+		return getService()
+				   .getTemplateVersions(templateId, start, end,
+			orderByComparator);
+	}
+
+	public static int getTemplateVersionsCount(long templateId) {
+		return getService().getTemplateVersionsCount(templateId);
 	}
 
 	/**

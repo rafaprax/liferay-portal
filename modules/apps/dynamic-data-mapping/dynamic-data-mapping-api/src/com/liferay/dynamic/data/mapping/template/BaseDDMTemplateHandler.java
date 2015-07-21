@@ -23,8 +23,8 @@ import com.liferay.portal.kernel.templateparser.TemplateNode;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 
 import java.util.LinkedHashMap;
 import java.util.List;

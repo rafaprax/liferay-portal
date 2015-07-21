@@ -42,6 +42,15 @@ public class DDMContentLocalServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.dynamic.data.mapping.service.impl.DDMContentLocalServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static com.liferay.dynamic.data.mapping.model.DDMContent addContent(
+		long userId, long groupId, java.lang.String name,
+		java.lang.String description, java.lang.String data,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addContent(userId, groupId, name, description, data,
+			serviceContext);
+	}
 
 	/**
 	* Adds the d d m content to the database. Also notifies the appropriate model listeners.
@@ -63,6 +72,15 @@ public class DDMContentLocalServiceUtil {
 	public static com.liferay.dynamic.data.mapping.model.DDMContent createDDMContent(
 		long contentId) {
 		return getService().createDDMContent(contentId);
+	}
+
+	public static void deleteContent(
+		com.liferay.dynamic.data.mapping.model.DDMContent content) {
+		getService().deleteContent(content);
+	}
+
+	public static void deleteContents(long groupId) {
+		getService().deleteContents(groupId);
 	}
 
 	/**
@@ -206,6 +224,30 @@ public class DDMContentLocalServiceUtil {
 		return getService().getBeanIdentifier();
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMContent getContent(
+		long contentId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getContent(contentId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMContent> getContents() {
+		return getService().getContents();
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMContent> getContents(
+		long groupId) {
+		return getService().getContents(groupId);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMContent> getContents(
+		long groupId, int start, int end) {
+		return getService().getContents(groupId, start, end);
+	}
+
+	public static int getContentsCount(long groupId) {
+		return getService().getContentsCount(groupId);
+	}
+
 	/**
 	* Returns the d d m content with the primary key.
 	*
@@ -306,6 +348,16 @@ public class DDMContentLocalServiceUtil {
 	*/
 	public static void setBeanIdentifier(java.lang.String beanIdentifier) {
 		getService().setBeanIdentifier(beanIdentifier);
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMContent updateContent(
+		long contentId, java.lang.String name, java.lang.String description,
+		java.lang.String data,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateContent(contentId, name, description, data,
+			serviceContext);
 	}
 
 	/**

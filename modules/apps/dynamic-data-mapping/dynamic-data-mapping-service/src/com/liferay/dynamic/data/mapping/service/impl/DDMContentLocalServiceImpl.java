@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portlet.dynamicdatamapping.model.DDMContent;
+import com.liferay.dynamic.data.mapping.model.DDMContent;
 
 import java.util.List;
 

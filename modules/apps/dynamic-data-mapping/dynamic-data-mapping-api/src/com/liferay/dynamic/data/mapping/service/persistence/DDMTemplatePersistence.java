@@ -429,6 +429,60 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 
 	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = &#63;.
+	*
+	* @param groupId the group ID
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByGroupId(long groupId);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByGroupId(long groupId,
+		int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permissions to view where groupId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByGroupId(long groupId,
+		int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
+	* Returns the d d m templates before and after the current d d m template in the ordered set of d d m templates that the user has permission to view where groupId = &#63;.
+	*
+	* @param templateId the primary key of the current d d m template
+	* @param groupId the group ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next d d m template
+	* @throws com.liferay.dynamic.data.mapping.NoSuchTemplateException if a d d m template with the primary key could not be found
+	*/
+	public DDMTemplate[] filterFindByGroupId_PrevAndNext(long templateId,
+		long groupId,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator)
+		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+
+	/**
 	* Removes all the d d m templates where groupId = &#63; from the database.
 	*
 	* @param groupId the group ID
@@ -442,6 +496,14 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 	* @return the number of matching d d m templates
 	*/
 	public int countByGroupId(long groupId);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = &#63;.
+	*
+	* @param groupId the group ID
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByGroupId(long groupId);
 
 	/**
 	* Returns all the d d m templates where classPK = &#63;.
@@ -1048,6 +1110,65 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 
 	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C(long groupId,
+		long classNameId);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C(long groupId,
+		long classNameId, int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permissions to view where groupId = &#63; and classNameId = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C(long groupId,
+		long classNameId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
+	* Returns the d d m templates before and after the current d d m template in the ordered set of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63;.
+	*
+	* @param templateId the primary key of the current d d m template
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next d d m template
+	* @throws com.liferay.dynamic.data.mapping.NoSuchTemplateException if a d d m template with the primary key could not be found
+	*/
+	public DDMTemplate[] filterFindByG_C_PrevAndNext(long templateId,
+		long groupId, long classNameId,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator)
+		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+
+	/**
 	* Removes all the d d m templates where groupId = &#63; and classNameId = &#63; from the database.
 	*
 	* @param groupId the group ID
@@ -1063,6 +1184,15 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 	* @return the number of matching d d m templates
 	*/
 	public int countByG_C(long groupId, long classNameId);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_C(long groupId, long classNameId);
 
 	/**
 	* Returns all the d d m templates where groupId = &#63; and classPK = &#63;.
@@ -1171,6 +1301,109 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 
 	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = &#63; and classPK = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classPK the class p k
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_CPK(long groupId,
+		long classPK);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_CPK(long groupId,
+		long classPK, int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permissions to view where groupId = &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_CPK(long groupId,
+		long classPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
+	* Returns the d d m templates before and after the current d d m template in the ordered set of d d m templates that the user has permission to view where groupId = &#63; and classPK = &#63;.
+	*
+	* @param templateId the primary key of the current d d m template
+	* @param groupId the group ID
+	* @param classPK the class p k
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next d d m template
+	* @throws com.liferay.dynamic.data.mapping.NoSuchTemplateException if a d d m template with the primary key could not be found
+	*/
+	public DDMTemplate[] filterFindByG_CPK_PrevAndNext(long templateId,
+		long groupId, long classPK,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator)
+		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+
+	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = any &#63; and classPK = &#63;.
+	*
+	* @param groupIds the group IDs
+	* @param classPK the class p k
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_CPK(long[] groupIds,
+		long classPK);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = any &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupIds the group IDs
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_CPK(long[] groupIds,
+		long classPK, int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permission to view where groupId = any &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupIds the group IDs
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_CPK(long[] groupIds,
+		long classPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
 	* Returns all the d d m templates where groupId = any &#63; and classPK = &#63;.
 	*
 	* <p>
@@ -1242,6 +1475,24 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 	* @return the number of matching d d m templates
 	*/
 	public int countByG_CPK(long[] groupIds, long classPK);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = &#63; and classPK = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classPK the class p k
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_CPK(long groupId, long classPK);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = any &#63; and classPK = &#63;.
+	*
+	* @param groupIds the group IDs
+	* @param classPK the class p k
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_CPK(long[] groupIds, long classPK);
 
 	/**
 	* Returns all the d d m templates where groupId = &#63; and classNameId = &#63; and classPK = &#63;.
@@ -1363,6 +1614,116 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 
 	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C(long groupId,
+		long classNameId, long classPK);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C(long groupId,
+		long classNameId, long classPK, int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permissions to view where groupId = &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C(long groupId,
+		long classNameId, long classPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
+	* Returns the d d m templates before and after the current d d m template in the ordered set of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* @param templateId the primary key of the current d d m template
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next d d m template
+	* @throws com.liferay.dynamic.data.mapping.NoSuchTemplateException if a d d m template with the primary key could not be found
+	*/
+	public DDMTemplate[] filterFindByG_C_C_PrevAndNext(long templateId,
+		long groupId, long classNameId, long classPK,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator)
+		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+
+	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = any &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* @param groupIds the group IDs
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C(long[] groupIds,
+		long classNameId, long classPK);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = any &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupIds the group IDs
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C(long[] groupIds,
+		long classNameId, long classPK, int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permission to view where groupId = any &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupIds the group IDs
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C(long[] groupIds,
+		long classNameId, long classPK, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
 	* Returns all the d d m templates where groupId = any &#63; and classNameId = &#63; and classPK = &#63;.
 	*
 	* <p>
@@ -1441,6 +1802,27 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 	* @return the number of matching d d m templates
 	*/
 	public int countByG_C_C(long[] groupIds, long classNameId, long classPK);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_C_C(long groupId, long classNameId, long classPK);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = any &#63; and classNameId = &#63; and classPK = &#63;.
+	*
+	* @param groupIds the group IDs
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_C_C(long[] groupIds, long classNameId,
+		long classPK);
 
 	/**
 	* Returns the d d m template where groupId = &#63; and classNameId = &#63; and templateKey = &#63; or throws a {@link com.liferay.dynamic.data.mapping.NoSuchTemplateException} if it could not be found.
@@ -1771,6 +2153,75 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 
 	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C_T(long groupId,
+		long classNameId, long classPK, java.lang.String type);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C_T(long groupId,
+		long classNameId, long classPK, java.lang.String type, int start,
+		int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permissions to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C_T(long groupId,
+		long classNameId, long classPK, java.lang.String type, int start,
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
+	* Returns the d d m templates before and after the current d d m template in the ordered set of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63;.
+	*
+	* @param templateId the primary key of the current d d m template
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next d d m template
+	* @throws com.liferay.dynamic.data.mapping.NoSuchTemplateException if a d d m template with the primary key could not be found
+	*/
+	public DDMTemplate[] filterFindByG_C_C_T_PrevAndNext(long templateId,
+		long groupId, long classNameId, long classPK, java.lang.String type,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator)
+		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+
+	/**
 	* Removes all the d d m templates where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; from the database.
 	*
 	* @param groupId the group ID
@@ -1792,6 +2243,18 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 	*/
 	public int countByG_C_C_T(long groupId, long classNameId, long classPK,
 		java.lang.String type);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_C_C_T(long groupId, long classNameId,
+		long classPK, java.lang.String type);
 
 	/**
 	* Returns all the d d m templates where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63;.
@@ -1933,6 +2396,81 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
 
 	/**
+	* Returns all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param mode the mode
+	* @return the matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C_T_M(long groupId,
+		long classNameId, long classPK, java.lang.String type,
+		java.lang.String mode);
+
+	/**
+	* Returns a range of all the d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param mode the mode
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @return the range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C_T_M(long groupId,
+		long classNameId, long classPK, java.lang.String type,
+		java.lang.String mode, int start, int end);
+
+	/**
+	* Returns an ordered range of all the d d m templates that the user has permissions to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DDMTemplateModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param mode the mode
+	* @param start the lower bound of the range of d d m templates
+	* @param end the upper bound of the range of d d m templates (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the ordered range of matching d d m templates that the user has permission to view
+	*/
+	public java.util.List<DDMTemplate> filterFindByG_C_C_T_M(long groupId,
+		long classNameId, long classPK, java.lang.String type,
+		java.lang.String mode, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator);
+
+	/**
+	* Returns the d d m templates before and after the current d d m template in the ordered set of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63;.
+	*
+	* @param templateId the primary key of the current d d m template
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param mode the mode
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the previous, current, and next d d m template
+	* @throws com.liferay.dynamic.data.mapping.NoSuchTemplateException if a d d m template with the primary key could not be found
+	*/
+	public DDMTemplate[] filterFindByG_C_C_T_M_PrevAndNext(long templateId,
+		long groupId, long classNameId, long classPK, java.lang.String type,
+		java.lang.String mode,
+		com.liferay.portal.kernel.util.OrderByComparator<DDMTemplate> orderByComparator)
+		throws com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+
+	/**
 	* Removes all the d d m templates where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63; from the database.
 	*
 	* @param groupId the group ID
@@ -1956,6 +2494,19 @@ public interface DDMTemplatePersistence extends BasePersistence<DDMTemplate> {
 	*/
 	public int countByG_C_C_T_M(long groupId, long classNameId, long classPK,
 		java.lang.String type, java.lang.String mode);
+
+	/**
+	* Returns the number of d d m templates that the user has permission to view where groupId = &#63; and classNameId = &#63; and classPK = &#63; and type = &#63; and mode = &#63;.
+	*
+	* @param groupId the group ID
+	* @param classNameId the class name ID
+	* @param classPK the class p k
+	* @param type the type
+	* @param mode the mode
+	* @return the number of matching d d m templates that the user has permission to view
+	*/
+	public int filterCountByG_C_C_T_M(long groupId, long classNameId,
+		long classPK, java.lang.String type, java.lang.String mode);
 
 	/**
 	* Caches the d d m template in the entity cache if it is enabled.
