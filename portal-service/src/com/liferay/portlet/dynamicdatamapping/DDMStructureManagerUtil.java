@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
+
 /**
  * @author Leonardo Barros
  */
@@ -141,6 +143,11 @@ public class DDMStructureManagerUtil {
 	public static DDMForm getDDMForm(long classNameId, long classPk) 
 		throws PortalException {
 		return _ddmStructureManager.getDDMForm(classNameId, classPk);
+	}
+	
+	public static DDMForm getDDMForm(PortletRequest portletRequest) 
+			throws PortalException {
+		return _ddmStructureManager.getDDMForm(portletRequest);
 	}
 
 	public static JSONArray getDDMFormFieldsJSONArray(
