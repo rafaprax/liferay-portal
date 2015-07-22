@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -267,8 +269,20 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	}
 	
 	@Override
-	public DDMForm getDDMForm(long classNameId, long classPk) 
+	public DDMForm getDDMForm(PortletRequest portletRequest) 
 		throws PortalException {
+
+		try{
+			return DDMUtil.getDDMForm(portletRequest);
+		}
+		catch(com.liferay.dynamic.data.mapping.exception.StructureDefinitionException e){
+			throw new StructureDefinitionException(e.getMessage(), e.getCause());
+		}
+	}
+
+	@Override
+	public DDMForm getDDMForm(long classNameId, long classPk) 
+			throws PortalException {
 		return DDMUtil.getDDMForm(classNameId, classPk);
 	}
 
