@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.storage;
 
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
+import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 
 import java.util.Map;
 
