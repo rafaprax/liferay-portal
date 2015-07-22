@@ -38,6 +38,11 @@ public class DDMStructureLinkManagerUtil {
 		_ddmStructureLinkManager.deleteStructureLink(
 			classNameId, classPK, structureId);
 	}
+	
+	public static void deleteStructureLinks(long classNameId, long classPK){
+
+		_ddmStructureLinkManager.deleteStructureLinks(classNameId, classPK);
+	}
 
 	public static List<DDMStructureLink> getClassNameStructureLinks(
 		long classNameId) {
