@@ -14,7 +14,8 @@
 
 package com.liferay.portal.verify.model;
 
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManagerUtil;
+
 
 /**
  * @author Brian Wing Shun Chan
@@ -23,7 +24,10 @@ public class DDMTemplateVerifiableModel implements VerifiableResourcedModel {
 
 	@Override
 	public String getModelName() {
-		return DDMTemplate.class.getName();
+		Class<?> ddmTemplateClass =
+			DDMTemplateManagerUtil.getDDMTemplateModelClass();
+
+		return ddmTemplateClass.getName();
 	}
 
 	@Override
