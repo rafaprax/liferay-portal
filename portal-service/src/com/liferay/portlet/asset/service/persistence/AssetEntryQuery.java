@@ -14,7 +14,6 @@
 
 package com.liferay.portlet.asset.service.persistence;
 
-import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.log.Log;
@@ -31,6 +30,7 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,7 +56,8 @@ public class AssetEntryQuery {
 	public static String checkOrderByCol(String orderByCol) {
 		if (ArrayUtil.contains(ORDER_BY_COLUMNS, orderByCol) ||
 			((orderByCol != null) &&
-			 orderByCol.startsWith(DDMIndexer.DDM_FIELD_PREFIX))) {
+			 orderByCol.startsWith(
+				DDMStructureManager.STRUCTURE_INDEXER_FIELD_PREFIX))) {
 
 			return orderByCol;
 		}

@@ -41,6 +41,8 @@ import com.liferay.portlet.asset.model.DDMFormValuesReader;
 import com.liferay.portlet.asset.service.persistence.AssetEntryQuery;
 import com.liferay.portlet.asset.service.persistence.test.AssetEntryQueryTestUtil;
 import com.liferay.portlet.asset.util.AssetUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
@@ -226,7 +228,7 @@ public abstract class TestOrderHelper {
 
 		String orderByCol1 = DDMIndexerUtil.encodeName(
 			ddmStructure.getStructureId(), "name");
-
+		
 		assetEntryQuery.setOrderByCol1(orderByCol1);
 		assetEntryQuery.setOrderByType1("asc");
 
