@@ -27,6 +27,8 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.dynamic.data.mapping.util.DDMIndexerUtil;
 import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureIdComparator;
@@ -34,9 +36,11 @@ import com.liferay.dynamic.data.mapping.util.comparator.StructureStructureKeyCom
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.PortletDataException;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
+import com.liferay.dynamic.data.mapping.storage.FieldRenderer;
+import com.liferay.dynamic.data.mapping.storage.FieldRendererFactory;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -78,6 +82,16 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 				type, serviceContext);
 
 		return new DDMStructureImpl(ddmStructure);
+	}
+	
+	@Override
+	public Fields convertDDMFormValues(
+		long structureId, DDMFormValues ddmFormValues) 
+		throws PortalException {
+		com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
+			_ddmStructureLocalService.getStructure(structureId);
+		return DDMFormValuesToFieldsConverterUtil.convert(
+				ddmStructure, ddmFormValues);
 	}
 
 	@Override
@@ -212,6 +226,12 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 
 		return ddmStructures;
 	}
+	
+	@Override
+	public DDMForm getDDMForm(long classNameId, long classPk) 
+		throws PortalException {
+		return DDMUtil.getDDMForm(classNameId, classPk);
+	}
 
 	@Override
 	public JSONArray getDDMFormFieldsJSONArray(long structureId, String script)
@@ -231,6 +251,30 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	@Override
 	public DDMFormLayout getDefaultDDMFormLayout(DDMForm ddmForm) {
 		return DDMUtil.getDefaultDDMFormLayout(ddmForm);
+	}
+	
+	@Override
+	public String getFieldRenderedValue(
+		Field field, Locale locale, int valueIndex)
+		throws PortalException {
+		
+		DDMStructure ddmStructure = field.getDDMStructure();
+
+		String dataType = null;
+
+		if (ddmStructure != null) {
+			dataType = field.getDataType();
+		}
+		
+		FieldRenderer fieldRenderer = 
+			FieldRendererFactory.getFieldRenderer(dataType);
+		
+		if(valueIndex >= 0) {
+			return fieldRenderer.render(field, locale, valueIndex);
+		} 
+		else {
+			return fieldRenderer.render(field, locale);
+		}
 	}
 
 	@Override
