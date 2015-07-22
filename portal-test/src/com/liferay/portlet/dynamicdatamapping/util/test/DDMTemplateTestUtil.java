@@ -55,10 +55,53 @@ public class DDMTemplateTestUtil {
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
 
-		return DDMTemplateManagerUtil.addTemplate(
-			TestPropsValues.getUserId(), groupId, classNameId, classPK, 0l,
-			null, nameMap, null, DDMTemplateManager.TEMPLATE_TYPE_DISPLAY, null,
-			language, script, false, false, null, null, serviceContext);
+		return DDMTemplateLocalServiceUtil.addTemplate(
+			TestPropsValues.getUserId(), groupId, classNameId, classPK, 0,
+			nameMap, null, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null,
+			language, script, serviceContext);
+	}
+
+	public static DDMTemplate addTemplate(
+			long groupId, long structureId, String language, String script,
+			Locale defaultLocale)
+		throws Exception {
+
+		return addTemplate(
+			groupId, PortalUtil.getClassNameId(DDMStructure.class), structureId,
+			language, script, defaultLocale);
+	}
+
+	public static DDMTemplate addTemplate(
+			long structureId, String language, String script)
+		throws Exception {
+
+		return addTemplate(
+			TestPropsValues.getGroupId(), structureId, language, script,
+			LocaleUtil.getSiteDefault());
+	}
+
+	public static DDMTemplate addTemplate(
+			long structureId, String language, String script,
+			Locale defaultLocale)
+		throws Exception {
+
+		return addTemplate(
+			TestPropsValues.getGroupId(), structureId, language, script,
+			defaultLocale);
+	}
+
+	public static Document createDocument(
+		String availableLocales, String defaultLocale) {
+
+		Document document = SAXReaderUtil.createDocument();
+
+		Element rootElement = document.addElement("root");
+
+		rootElement.addAttribute("available-locales", availableLocales);
+		rootElement.addAttribute("default-locale", defaultLocale);
+		rootElement.addElement("request");
+
+		return document;
 	}
 
 	public static String getSampleTemplateXSL() {
