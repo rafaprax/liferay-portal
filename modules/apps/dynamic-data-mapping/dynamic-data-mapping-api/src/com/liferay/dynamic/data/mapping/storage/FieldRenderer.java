@@ -16,6 +16,8 @@ package com.liferay.dynamic.data.mapping.storage;
 
 import java.util.Locale;
 
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+
 /**
  * @author Bruno Basto
  * @author Marcellus Tavares

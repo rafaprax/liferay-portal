@@ -26,8 +26,8 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.Field;
-import com.liferay.dynamic.data.mapping.storage.Fields;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.Serializable;
 

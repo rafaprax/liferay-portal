@@ -16,6 +16,7 @@ package com.liferay.dynamic.data.mapping.storage;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
 
 import java.util.Locale;
 

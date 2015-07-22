@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.storage;
+package com.liferay.portlet.dynamicdatamapping.storage;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -22,11 +22,11 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
+import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -125,7 +125,7 @@ public class Field implements Serializable {
 	}
 
 	public DDMStructure getDDMStructure() {
-		return DDMStructureLocalServiceUtil.fetchStructure(_ddmStructureId);
+		return DDMStructureManagerUtil.fetchStructure(_ddmStructureId);
 	}
 
 	public long getDDMStructureId() {
@@ -141,17 +141,15 @@ public class Field implements Serializable {
 	}
 
 	public String getRenderedValue(Locale locale) throws PortalException {
-		FieldRenderer fieldRenderer = getFieldRenderer();
-
-		return fieldRenderer.render(this, locale);
+		return DDMStructureManagerUtil.getFieldRenderedValue(
+			this, locale, -1);
 	}
 
 	public String getRenderedValue(Locale locale, int valueIndex)
 		throws PortalException {
-
-		FieldRenderer fieldRenderer = getFieldRenderer();
-
-		return fieldRenderer.render(this, locale, valueIndex);
+		
+		return DDMStructureManagerUtil.getFieldRenderedValue(
+			this, locale, valueIndex);
 	}
 
 	public String getType() throws PortalException {
@@ -285,18 +283,6 @@ public class Field implements Serializable {
 
 	public void setValuesMap(Map<Locale, List<Serializable>> valuesMap) {
 		_valuesMap = valuesMap;
-	}
-
-	protected FieldRenderer getFieldRenderer() throws PortalException {
-		DDMStructure ddmStructure = getDDMStructure();
-
-		String dataType = null;
-
-		if (ddmStructure != null) {
-			dataType = getDataType();
-		}
-
-		return FieldRendererFactory.getFieldRenderer(dataType);
 	}
 
 	private List<Serializable> _getValues(Locale locale) {
