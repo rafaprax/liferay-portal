@@ -20,7 +20,7 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseTransactionalMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;

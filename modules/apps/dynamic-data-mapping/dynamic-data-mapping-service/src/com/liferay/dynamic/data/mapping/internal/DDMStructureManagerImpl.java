@@ -25,7 +25,7 @@ import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
 import com.liferay.portlet.dynamicdatamapping.RequiredStructureException;
 import com.liferay.portlet.dynamicdatamapping.StructureDefinitionException;
 import com.liferay.portlet.dynamicdatamapping.StructureDuplicateElementException;
@@ -478,7 +478,7 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	}
 
 	protected OrderByComparator
-		<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>
+		<com.liferay.dynamic.data.mapping.model.DDMStructure>
 		getStructureOrderByComparator(
 			int structureComparator) {
 

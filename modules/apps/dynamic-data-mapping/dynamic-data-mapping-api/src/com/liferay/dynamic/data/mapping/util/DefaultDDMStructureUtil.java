@@ -36,8 +36,8 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
@@ -109,10 +109,10 @@ public class DefaultDDMStructureUtil {
 
 			ddmStructure = DDMStructureLocalServiceUtil.addStructure(
 				userId, groupId,
-				DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID, classNameId,
+				DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID, classNameId,
 				ddmStructureKey, nameMap, descriptionMap, ddmForm,
 				ddmFormLayout, StorageType.JSON.toString(),
-				DDMStructureConstants.TYPE_DEFAULT, serviceContext);
+				DDMStructureManager.TYPE_DEFAULT, serviceContext);
 
 			Element templateElement = structureElement.element("template");
 

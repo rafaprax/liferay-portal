@@ -37,7 +37,7 @@ import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
 import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.dynamic.data.mapping.storage.FieldConstants;
 import com.liferay.dynamic.data.mapping.storage.Fields;
@@ -379,7 +379,7 @@ public class DDMXMLImpl implements DDMXML {
 						element.formattedString());
 			}
 
-			if (name.startsWith(DDMStructureConstants.XSD_NAME_RESERVED)) {
+			if (name.startsWith(DDMStructureManager.XSD_NAME_RESERVED)) {
 				throw new StructureDefinitionException(
 					"Element name " + name + " is reserved");
 			}

@@ -27,10 +27,10 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,11 +89,11 @@ public class GoogleDocsDLFileEntryTypeHelper {
 
 		return _ddmStructureLocalService.addStructure(
 			defaultUserId, _company.getGroupId(),
-			DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
+			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
 			_dlFileEntryMetadataClassNameId,
 			GoogleDocsConstants.DDM_STRUCTURE_KEY_GOOGLE_DOCS, nameMap,
 			descriptionMap, ddmForm, ddmFormLayout, StorageType.JSON.toString(),
-			DDMStructureConstants.TYPE_DEFAULT, serviceContext);
+			DDMStructureManager.TYPE_DEFAULT, serviceContext);
 	}
 
 	public DLFileEntryType addGoogleDocsDLFileEntryType()

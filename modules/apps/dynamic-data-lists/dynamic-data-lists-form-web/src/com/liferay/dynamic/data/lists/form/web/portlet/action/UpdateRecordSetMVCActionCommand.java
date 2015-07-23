@@ -26,15 +26,15 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.dynamicdatamapping.StructureDefinitionException;
-import com.liferay.portlet.dynamicdatamapping.StructureLayoutException;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormJSONDeserializer;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormLayoutJSONDeserializer;
+import com.liferay.dynamic.data.mapping.StructureDefinitionException;
+import com.liferay.dynamic.data.mapping.StructureLayoutException;
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONDeserializer;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureService;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -150,7 +150,7 @@ public class UpdateRecordSetMVCActionCommand
 			DDMStructure.class.getName(), actionRequest);
 
 		return _ddmStructureService.updateStructure(
-			ddmStructureId, DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
+			ddmStructureId, DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
 			getLocalizedMap(themeDisplay.getLocale(), name),
 			getLocalizedMap(themeDisplay.getLocale(), description), ddmForm,
 			ddmFormLayout, serviceContext);

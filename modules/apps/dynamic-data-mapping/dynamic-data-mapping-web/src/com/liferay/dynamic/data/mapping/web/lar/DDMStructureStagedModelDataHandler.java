@@ -24,9 +24,9 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
@@ -220,7 +220,7 @@ public class DDMStructureStagedModelDataHandler
 			structure);
 
 		if (structure.getParentStructureId() !=
-				DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID) {
+				DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID) {
 
 			DDMStructure parentStructure =
 				DDMStructureLocalServiceUtil.getStructure(

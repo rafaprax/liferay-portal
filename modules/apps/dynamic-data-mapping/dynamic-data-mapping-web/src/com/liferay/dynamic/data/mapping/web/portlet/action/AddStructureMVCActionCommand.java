@@ -22,9 +22,9 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureService;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.portlet.dynamicdatamapping.util.DDM;
 
 import java.util.Locale;
@@ -59,7 +59,7 @@ public class AddStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 			actionRequest, "structureKey");
 		long parentStructureId = ParamUtil.getLong(
 			actionRequest, "parentStructureId",
-			DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID);
+			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID);
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, "name");
 		Map<Locale, String> descriptionMap =
@@ -74,7 +74,7 @@ public class AddStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 		return _ddmStructureService.addStructure(
 			groupId, parentStructureId, scopeClassNameId, structureKey, nameMap,
 			descriptionMap, ddmForm, ddmFormLayout, storageType,
-			DDMStructureConstants.TYPE_DEFAULT, serviceContext);
+			DDMStructureManager.TYPE_DEFAULT, serviceContext);
 	}
 
 	@Override

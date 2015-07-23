@@ -30,7 +30,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMStructureFinder;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
@@ -69,7 +69,7 @@ public class DDMStructureFinderImpl
 
 		return countByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureConstants.TYPE_DEFAULT, andOperator);
+			DDMStructureManager.TYPE_DEFAULT, andOperator);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class DDMStructureFinderImpl
 
 		return filterCountByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureConstants.TYPE_DEFAULT, andOperator);
+			DDMStructureManager.TYPE_DEFAULT, andOperator);
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class DDMStructureFinderImpl
 
 		return filterFindByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureConstants.TYPE_DEFAULT, andOperator, start, end,
+			DDMStructureManager.TYPE_DEFAULT, andOperator, start, end,
 			orderByComparator);
 	}
 
@@ -209,7 +209,7 @@ public class DDMStructureFinderImpl
 
 		return findByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureConstants.TYPE_DEFAULT, andOperator, start, end,
+			DDMStructureManager.TYPE_DEFAULT, andOperator, start, end,
 			orderByComparator);
 	}
 

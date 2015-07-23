@@ -28,10 +28,10 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
-import com.liferay.portlet.dynamicdatamapping.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.DDMStructure;
+import com.liferay.dynamic.data.mapping.DDMStructureManagerUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 
 /**
  * @author Iván Zaera
@@ -76,7 +76,7 @@ public class LegacyGoogleDocsMigration {
 	}
 
 	public void migrate() throws PortalException {
-		com.liferay.portlet.dynamicdatamapping.model.DDMStructure ddmStructure =
+		DDMStructure ddmStructure =
 			_googleDocsDLFileEntryTypeHelper.addGoogleDocsDDMStructure();
 
 		_dlFileEntryType.setFileEntryTypeKey(

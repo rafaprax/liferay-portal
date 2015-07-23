@@ -55,10 +55,10 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
+
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
+import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 
 import java.util.ArrayList;
@@ -136,7 +136,7 @@ public class DDMStructureLocalServiceImpl
 		structure.setParentStructureId(parentStructureId);
 		structure.setClassNameId(classNameId);
 		structure.setStructureKey(structureKey);
-		structure.setVersion(DDMStructureConstants.VERSION_DEFAULT);
+		structure.setVersion(DDMStructureManager.VERSION_DEFAULT);
 		structure.setNameMap(nameMap);
 		structure.setDescriptionMap(descriptionMap);
 		structure.setDefinition(DDMFormJSONSerializerUtil.serialize(ddmForm));
@@ -163,7 +163,7 @@ public class DDMStructureLocalServiceImpl
 		// Structure version
 
 		DDMStructureVersion structureVersion = addStructureVersion(
-			user, structure, DDMStructureConstants.VERSION_DEFAULT,
+			user, structure, DDMStructureManager.VERSION_DEFAULT,
 			serviceContext);
 
 		// Structure Layout
@@ -182,7 +182,7 @@ public class DDMStructureLocalServiceImpl
 	 * @param      groupId the primary key of the group
 	 * @param      parentStructureId the primary key of the parent structure
 	 *             (optionally {@link
-	 *             com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants#DEFAULT_PARENT_STRUCTURE_ID})
+	 *             com.liferay.portlet.dynamicdatamapping.DDMStructureManager#DEFAULT_PARENT_STRUCTURE_ID})
 	 * @param      classNameId the primary key of the class name for the
 	 *             structure's related model
 	 * @param      structureKey the unique string identifying the structure
@@ -193,9 +193,9 @@ public class DDMStructureLocalServiceImpl
 	 * @param      definition the structure's XML schema definition
 	 * @param      storageType the structure's storage type. It can be "xml" or
 	 *             "expando". For more information, see {@link
-	 *             com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	 *             com.liferay.dynamic.data.mapping.storage.StorageType}.
 	 * @param      type the structure's type. For more information, see {@link
-	 *             com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	 *             com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	 * @param      serviceContext the service context to be applied. Can set the
 	 *             UUID, creation date, modification date, guest permissions,
 	 *             and group permissions for the structure.
@@ -237,9 +237,9 @@ public class DDMStructureLocalServiceImpl
 		throws PortalException {
 
 		return addStructure(
-			userId, groupId, DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
+			userId, groupId, DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
 			classNameId, null, nameMap, descriptionMap, ddmForm, ddmFormLayout,
-			storageType, DDMStructureConstants.TYPE_DEFAULT, serviceContext);
+			storageType, DDMStructureManager.TYPE_DEFAULT, serviceContext);
 	}
 
 	/**
@@ -272,11 +272,12 @@ public class DDMStructureLocalServiceImpl
 			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 			String definition, ServiceContext serviceContext)
 		throws PortalException {
+		
 
 		return addStructure(
-			userId, groupId, DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
+			userId, groupId, DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
 			classNameId, null, nameMap, descriptionMap, definition,
-			StorageType.JSON.toString(), DDMStructureConstants.TYPE_DEFAULT,
+			StorageType.JSON.toString(), DDMStructureManager.TYPE_DEFAULT,
 			serviceContext);
 	}
 
@@ -293,7 +294,7 @@ public class DDMStructureLocalServiceImpl
 			groupId, classNameId, parentStructureKey);
 
 		long parentStructureId =
-			DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID;
+			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID;
 
 		if (parentStructure != null) {
 			parentStructureId = parentStructure.getStructureId();
@@ -323,9 +324,9 @@ public class DDMStructureLocalServiceImpl
 	 * @param      definition the structure's XML schema definition
 	 * @param      storageType the structure's storage type. It can be "xml" or
 	 *             "expando". For more information, see {@link
-	 *             com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	 *             com.liferay.dynamic.data.mapping.storage.StorageType}.
 	 * @param      type the structure's type. For more information, see {@link
-	 *             com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	 *             com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	 * @param      serviceContext the service context to be applied. Can set the
 	 *             UUID, creation date, modification date, guest permissions and
 	 *             group permissions for the structure.
@@ -1162,9 +1163,9 @@ public class DDMStructureLocalServiceImpl
 	 * @param  description the description keywords
 	 * @param  storageType the structure's storage type. It can be "xml" or
 	 *         "expando". For more information, see {@link
-	 *         com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	 *         com.liferay.dynamic.data.mapping.storage.StorageType}.
 	 * @param  type the structure's type. For more information, see {@link
-	 *         com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	 *         com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field
 	 * @param  start the lower bound of the range of structures to return
@@ -1216,9 +1217,9 @@ public class DDMStructureLocalServiceImpl
 	 * @param  description the description keywords
 	 * @param  storageType the structure's storage type. It can be "xml" or
 	 *         "expando". For more information, see {@link
-	 *         com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	 *         com.liferay.dynamic.data.mapping.storage.StorageType}.
 	 * @param  type the structure's type. For more information, see {@link
-	 *         com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	 *         com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field
 	 * @return the number of matching structures
