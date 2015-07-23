@@ -54,6 +54,8 @@ public interface DDMStructure extends StagedGroupedModel {
 
 	public String getFieldDataType(String fieldName) throws PortalException;
 
+	public boolean isFieldRepeatable(String fieldName) throws PortalException;
+
 	public Set<String> getFieldNames();
 
 	public String getFieldProperty(String fieldName, String property)
