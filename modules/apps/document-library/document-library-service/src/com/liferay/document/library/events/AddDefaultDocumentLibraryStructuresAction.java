@@ -40,15 +40,15 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
 import com.liferay.portlet.documentlibrary.util.RawMetadataProcessor;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormXSDDeserializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
-import com.liferay.portlet.dynamicdatamapping.util.DDM;
-import com.liferay.portlet.dynamicdatamapping.util.DefaultDDMStructureUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DefaultDDMStructureUtil;
 
 import java.io.StringReader;
 
@@ -258,11 +258,11 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 
 				_ddmStructureLocalService.addStructure(
 					userId, groupId,
-					DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
+					DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
 					PortalUtil.getClassNameId(RawMetadataProcessor.class), name,
 					nameMap, descriptionMap, ddmForm, ddmFormLayout,
 					StorageType.JSON.toString(),
-					DDMStructureConstants.TYPE_DEFAULT, serviceContext);
+					DDMStructureManager.TYPE_DEFAULT, serviceContext);
 			}
 		}
 	}

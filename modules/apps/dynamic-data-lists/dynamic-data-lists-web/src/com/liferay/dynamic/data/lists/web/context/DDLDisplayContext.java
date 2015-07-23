@@ -33,13 +33,13 @@ import com.liferay.portal.theme.PortletDisplay;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.service.permission.DDMPermission;
-import com.liferay.portlet.dynamicdatamapping.service.permission.DDMTemplatePermission;
-import com.liferay.portlet.dynamicdatamapping.util.DDMDisplay;
-import com.liferay.portlet.dynamicdatamapping.util.DDMDisplayRegistryUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMPermissionHandler;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.permission.DDMPermission;
+import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
+import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistryUtil;
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 
 import java.util.Locale;
 

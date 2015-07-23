@@ -26,8 +26,8 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeRegistry;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeRegistryUtil;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistry;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
 
 import java.util.Arrays;
 import java.util.HashSet;

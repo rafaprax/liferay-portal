@@ -22,13 +22,14 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.model.DLFileVersion;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.DDMStructure;
+
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 
 import java.io.Serializable;
 
@@ -47,7 +48,7 @@ public class LegacyGoogleDocsMetadataHelper {
 		List<DDMStructure> ddmStructures = dlFileEntryType.getDDMStructures();
 
 		for (DDMStructure ddmStructure : ddmStructures) {
-			if (ddmStructure.getType() == DDMStructureConstants.TYPE_AUTO) {
+			if (ddmStructure.getType() == DDMStructureManager.TYPE_AUTO) {
 				return ddmStructure;
 			}
 		}

@@ -21,8 +21,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutColumn;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutRow;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLayout;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLayoutLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalServiceUtil;
 
 import java.util.ArrayList;
 import java.util.List;

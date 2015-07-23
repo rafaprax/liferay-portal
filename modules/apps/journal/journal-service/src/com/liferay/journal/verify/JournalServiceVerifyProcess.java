@@ -57,7 +57,7 @@ import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.service.AssetEntryLocalService;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalService;
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
 import com.liferay.portlet.dynamicdatamapping.util.DDMFieldsCounter;
 
 import java.sql.Connection;

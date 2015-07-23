@@ -33,7 +33,7 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalServiceUtil;
 
 import java.util.List;
 

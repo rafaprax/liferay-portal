@@ -27,9 +27,9 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -60,9 +60,9 @@ public class DDMStructureTestHelper {
 		throws Exception {
 
 		return addStructure(
-			DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID, _classNameId,
+			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID, _classNameId,
 			null, "Test Structure", StringPool.BLANK, ddmForm, ddmFormLayout,
-			StorageType.JSON.toString(), DDMStructureConstants.TYPE_DEFAULT);
+			StorageType.JSON.toString(), DDMStructureManager.TYPE_DEFAULT);
 	}
 
 	public DDMStructure addStructure(DDMForm ddmForm, String storageType)
@@ -70,7 +70,7 @@ public class DDMStructureTestHelper {
 
 		return addStructure(
 			_classNameId, null, "Test Structure", ddmForm, storageType,
-			DDMStructureConstants.TYPE_DEFAULT);
+			DDMStructureManager.TYPE_DEFAULT);
 	}
 
 	public DDMStructure addStructure(
@@ -95,7 +95,7 @@ public class DDMStructureTestHelper {
 		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
 
 		return addStructure(
-			DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID, classNameId,
+			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID, classNameId,
 			structureKey, name, StringPool.BLANK, ddmForm, ddmFormLayout,
 			storageType, type);
 	}

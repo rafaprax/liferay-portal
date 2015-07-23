@@ -23,8 +23,8 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portlet.documentlibrary.model.DLFileVersion;
 import com.liferay.portlet.documentlibrary.service.DLAppService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.portlet.imagegallerydisplay.display.context.IGDisplayContextFactory;
 import com.liferay.portlet.imagegallerydisplay.display.context.IGViewFileVersionDisplayContext;
 

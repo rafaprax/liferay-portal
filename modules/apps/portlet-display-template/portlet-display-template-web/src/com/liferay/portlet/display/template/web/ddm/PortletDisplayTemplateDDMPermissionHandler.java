@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.display.template.PortletDisplayTemplate;
-import com.liferay.portlet.dynamicdatamapping.util.DDMPermissionHandler;
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 
 /**
  * @author Marcellus Tavares

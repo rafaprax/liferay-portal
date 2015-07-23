@@ -19,7 +19,7 @@ import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
 import com.liferay.portlet.documentlibrary.service.permission.DLPermission;
-import com.liferay.portlet.dynamicdatamapping.util.DDMPermissionHandler;
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 
 /**
  * @author Marcellus Tavares

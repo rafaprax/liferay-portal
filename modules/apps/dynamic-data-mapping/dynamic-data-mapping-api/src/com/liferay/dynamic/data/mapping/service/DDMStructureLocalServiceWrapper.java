@@ -120,7 +120,7 @@ public class DDMStructureLocalServiceWrapper implements DDMStructureLocalService
 	* @param groupId the primary key of the group
 	* @param parentStructureId the primary key of the parent structure
 	(optionally {@link
-	com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants#DEFAULT_PARENT_STRUCTURE_ID})
+	com.liferay.portlet.dynamicdatamapping.DDMStructureManager#DEFAULT_PARENT_STRUCTURE_ID})
 	* @param classNameId the primary key of the class name for the
 	structure's related model
 	* @param structureKey the unique string identifying the structure
@@ -131,9 +131,9 @@ public class DDMStructureLocalServiceWrapper implements DDMStructureLocalService
 	* @param definition the structure's XML schema definition
 	* @param storageType the structure's storage type. It can be "xml" or
 	"expando". For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	com.liferay.dynamic.data.mapping.storage.StorageType}.
 	* @param type the structure's type. For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	* @param serviceContext the service context to be applied. Can set the
 	UUID, creation date, modification date, guest permissions,
 	and group permissions for the structure.
@@ -195,9 +195,9 @@ public class DDMStructureLocalServiceWrapper implements DDMStructureLocalService
 	* @param definition the structure's XML schema definition
 	* @param storageType the structure's storage type. It can be "xml" or
 	"expando". For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	com.liferay.dynamic.data.mapping.storage.StorageType}.
 	* @param type the structure's type. For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	* @param serviceContext the service context to be applied. Can set the
 	UUID, creation date, modification date, guest permissions and
 	group permissions for the structure.
@@ -1140,9 +1140,9 @@ public class DDMStructureLocalServiceWrapper implements DDMStructureLocalService
 	* @param description the description keywords
 	* @param storageType the structure's storage type. It can be "xml" or
 	"expando". For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	com.liferay.dynamic.data.mapping.storage.StorageType}.
 	* @param type the structure's type. For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	* @param andOperator whether every field must match its keywords, or just
 	one field
 	* @param start the lower bound of the range of structures to return
@@ -1194,9 +1194,9 @@ public class DDMStructureLocalServiceWrapper implements DDMStructureLocalService
 	* @param description the description keywords
 	* @param storageType the structure's storage type. It can be "xml" or
 	"expando". For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.storage.StorageType}.
+	com.liferay.dynamic.data.mapping.storage.StorageType}.
 	* @param type the structure's type. For more information, see {@link
-	com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants}.
+	com.liferay.portlet.dynamicdatamapping.DDMStructureManager}.
 	* @param andOperator whether every field must match its keywords, or just
 	one field
 	* @return the number of matching structures
