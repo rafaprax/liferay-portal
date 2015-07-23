@@ -28,13 +28,13 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetEntry;
-import com.liferay.portlet.dynamicdatamapping.TemplateDuplicateTemplateKeyException;
-import com.liferay.portlet.dynamicdatamapping.TemplateNameException;
-import com.liferay.portlet.dynamicdatamapping.TemplateScriptException;
+import com.liferay.dynamic.data.mapping.exception.TemplateDuplicateTemplateKeyException;
+import com.liferay.dynamic.data.mapping.exception.TemplateNameException;
+import com.liferay.dynamic.data.mapping.exception.TemplateScriptException;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.util.comparator.TemplateIdComparator;
+import com.liferay.dynamic.data.mapping.exception.util.comparator.TemplateIdComparator;
 
 import java.util.List;
 
