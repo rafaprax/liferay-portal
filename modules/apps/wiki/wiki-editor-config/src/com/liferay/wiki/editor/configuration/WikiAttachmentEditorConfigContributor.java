@@ -17,19 +17,19 @@ package com.liferay.wiki.editor.configuration;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.ItemSelectorReturnType;
-import com.liferay.item.selector.criteria.DefaultItemSelectorReturnType;
+import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
 import com.liferay.portal.kernel.editor.configuration.BaseEditorConfigContributor;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigContributor;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.RequestBackedPortletURLFactory;
 import com.liferay.wiki.constants.WikiPortletKeys;
 import com.liferay.wiki.item.selector.criterion.WikiAttachmentItemSelectorCriterion;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletURL;
 
@@ -55,7 +55,7 @@ public class WikiAttachmentEditorConfigContributor
 	public void populateConfigJSONObject(
 		JSONObject jsonObject, Map<String, Object> inputEditorTaglibAttributes,
 		ThemeDisplay themeDisplay,
-		LiferayPortletResponse liferayPortletResponse) {
+		RequestBackedPortletURLFactory requestBackedPortletURLFactory) {
 
 		boolean allowBrowseDocuments = GetterUtil.getBoolean(
 			inputEditorTaglibAttributes.get(
@@ -83,10 +83,10 @@ public class WikiAttachmentEditorConfigContributor
 		ItemSelectorCriterion attachmentItemSelectorCriterion =
 			new WikiAttachmentItemSelectorCriterion(wikiPageResourcePrimKey);
 
-		Set<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
-			new HashSet<>();
+		List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
+			new ArrayList<>();
 
-		desiredItemSelectorReturnTypes.add(DefaultItemSelectorReturnType.URL);
+		desiredItemSelectorReturnTypes.add(new URLItemSelectorReturnType());
 
 		attachmentItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
 			desiredItemSelectorReturnTypes);
@@ -99,11 +99,15 @@ public class WikiAttachmentEditorConfigContributor
 				"liferay-ui:input-editor:inlineEdit"));
 
 		if (!inlineEdit) {
-			name = liferayPortletResponse.getNamespace() + name;
+			String namespace = GetterUtil.getString(
+				inputEditorTaglibAttributes.get(
+					"liferay-ui:input-editor:namespace"));
+
+			name = namespace + name;
 		}
 
 		PortletURL itemSelectorURL = _itemSelector.getItemSelectorURL(
-			liferayPortletResponse, name + "selectItem",
+			requestBackedPortletURLFactory, name + "selectItem",
 			attachmentItemSelectorCriterion);
 
 		jsonObject.put(

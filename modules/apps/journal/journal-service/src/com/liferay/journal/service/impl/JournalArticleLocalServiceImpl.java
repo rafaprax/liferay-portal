@@ -14,7 +14,9 @@
 
 package com.liferay.journal.service.impl;
 
+import com.liferay.journal.configuration.JournalGroupServiceConfiguration;
 import com.liferay.journal.configuration.JournalServiceConfigurationValues;
+import com.liferay.journal.constants.JournalConstants;
 import com.liferay.journal.exception.ArticleContentException;
 import com.liferay.journal.exception.ArticleDisplayDateException;
 import com.liferay.journal.exception.ArticleExpirationDateException;
@@ -35,6 +37,7 @@ import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.model.impl.JournalArticleDisplayImpl;
 import com.liferay.journal.service.base.JournalArticleLocalServiceBaseImpl;
 import com.liferay.journal.service.permission.JournalPermission;
+import com.liferay.journal.service.util.JournalServiceComponentProvider;
 import com.liferay.journal.social.JournalActivityKeys;
 import com.liferay.journal.util.JournalContentUtil;
 import com.liferay.journal.util.comparator.ArticleIDComparator;
@@ -73,6 +76,10 @@ import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
+import com.liferay.portal.kernel.settings.SettingsException;
+import com.liferay.portal.kernel.settings.SettingsFactory;
+import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -3602,10 +3609,8 @@ public class JournalArticleLocalServiceImpl
 
 		extraDataJSONObject.put("title", article.getTitle());
 
-		socialActivityLocalService.addActivity(
-			userId, article.getGroupId(), JournalArticle.class.getName(),
-			article.getResourcePrimKey(),
-			SocialActivityConstants.TYPE_MOVE_TO_TRASH,
+		SocialActivityManagerUtil.addActivity(
+			userId, article, SocialActivityConstants.TYPE_MOVE_TO_TRASH,
 			extraDataJSONObject.toString(), 0);
 
 		if (oldStatus == WorkflowConstants.STATUS_PENDING) {
@@ -3801,10 +3806,8 @@ public class JournalArticleLocalServiceImpl
 
 		extraDataJSONObject.put("title", article.getTitle());
 
-		socialActivityLocalService.addActivity(
-			userId, article.getGroupId(), JournalArticle.class.getName(),
-			article.getResourcePrimKey(),
-			SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
+		SocialActivityManagerUtil.addActivity(
+			userId, article, SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
 			extraDataJSONObject.toString(), 0);
 
 		return article;
@@ -3890,9 +3893,10 @@ public class JournalArticleLocalServiceImpl
 	 * parameters without using the indexer, including a keywords parameter for
 	 * matching with the article's ID, title, description, and content, a DDM
 	 * structure key parameter, and a DDM template key parameter. It is
-	 * preferable to use the indexed version {@link #search(long, long, java.util.List,
-	 * long, String, String, String, java.util.LinkedHashMap, int, int, Sort)} instead of
-	 * this method wherever possible for performance reasons.
+	 * preferable to use the indexed version {@link #search(long, long,
+	 * java.util.List, long, String, String, String, java.util.LinkedHashMap,
+	 * int, int, Sort)} instead of this method wherever possible for performance
+	 * reasons.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end -
@@ -3961,10 +3965,10 @@ public class JournalArticleLocalServiceImpl
 	 * parameters without using the indexer, including keyword parameters for
 	 * article ID, title, description, and content, a DDM structure key
 	 * parameter, a DDM template key parameter, and an AND operator switch. It
-	 * is preferable to use the indexed version {@link #search(long, long, java.util.List,
-	 * long, String, String, String, String, int, String, String, java.util.LinkedHashMap,
-	 * boolean, int, int, Sort)} instead of this method wherever possible for
-	 * performance reasons.
+	 * is preferable to use the indexed version {@link #search(long, long,
+	 * java.util.List, long, String, String, String, String, int, String,
+	 * String, java.util.LinkedHashMap, boolean, int, int, Sort)} instead of
+	 * this method wherever possible for performance reasons.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end -
@@ -4262,8 +4266,8 @@ public class JournalArticleLocalServiceImpl
 		int end, Sort sort) {
 
 		try {
-			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-				JournalArticle.class);
+			Indexer<JournalArticle> indexer =
+				IndexerRegistryUtil.nullSafeGetIndexer(JournalArticle.class);
 
 			SearchContext searchContext = buildSearchContext(
 				companyId, groupId, folderIds, classNameId, articleId, title,
@@ -4278,9 +4282,10 @@ public class JournalArticleLocalServiceImpl
 	}
 
 	/**
-	 * @deprecated As of 7.0.0, replaced by {@link #search(long, long, java.util.List,
-	 *             long, String, String, String, String, int, String, String,
-	 *             java.util.LinkedHashMap, boolean, int, int, Sort)}
+	 * @deprecated As of 7.0.0, replaced by {@link #search(long, long,
+	 *             java.util.List, long, String, String, String, String, int,
+	 *             String, String, java.util.LinkedHashMap, boolean, int, int,
+	 *             Sort)}
 	 */
 	@Deprecated
 	@Override
@@ -4335,7 +4340,7 @@ public class JournalArticleLocalServiceImpl
 			int start, int end)
 		throws PortalException {
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(
+		Indexer<JournalArticle> indexer = IndexerRegistryUtil.getIndexer(
 			JournalArticle.class.getName());
 
 		SearchContext searchContext = buildSearchContext(
@@ -4783,7 +4788,7 @@ public class JournalArticleLocalServiceImpl
 			final long folderId, final String treePath, final boolean reindex)
 		throws PortalException {
 
-		ActionableDynamicQuery actionableDynamicQuery =
+		final ActionableDynamicQuery actionableDynamicQuery =
 			getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
@@ -4804,7 +4809,7 @@ public class JournalArticleLocalServiceImpl
 
 			});
 
-		final Indexer indexer = IndexerRegistryUtil.getIndexer(
+		final Indexer<JournalArticle> indexer = IndexerRegistryUtil.getIndexer(
 			JournalArticle.class.getName());
 
 		actionableDynamicQuery.setPerformActionMethod(
@@ -4824,7 +4829,10 @@ public class JournalArticleLocalServiceImpl
 						return;
 					}
 
-					indexer.reindex(article);
+					com.liferay.portal.kernel.search.Document document =
+						indexer.getDocument(article);
+
+					actionableDynamicQuery.addDocument(document);
 				}
 
 			});
@@ -5371,8 +5379,9 @@ public class JournalArticleLocalServiceImpl
 
 	/**
 	 * @deprecated As of 6.2.0, replaced by {@link
-	 *             #updateArticleTranslation(long, String, double, java.util.Locale,
-	 *             String, String, String, Map, ServiceContext)}
+	 *             #updateArticleTranslation(long, String, double,
+	 *             java.util.Locale, String, String, String, Map,
+	 *             ServiceContext)}
 	 */
 	@Deprecated
 	@Override
@@ -5803,18 +5812,14 @@ public class JournalArticleLocalServiceImpl
 				extraDataJSONObject.put("title", article.getTitle());
 
 				if (serviceContext.isCommandUpdate()) {
-					socialActivityLocalService.addActivity(
-						user.getUserId(), article.getGroupId(),
-						JournalArticle.class.getName(),
-						article.getResourcePrimKey(),
+					SocialActivityManagerUtil.addActivity(
+						user.getUserId(), article,
 						JournalActivityKeys.UPDATE_ARTICLE,
 						extraDataJSONObject.toString(), 0);
 				}
 				else {
-					socialActivityLocalService.addUniqueActivity(
-						user.getUserId(), article.getGroupId(),
-						JournalArticle.class.getName(),
-						article.getResourcePrimKey(),
+					SocialActivityManagerUtil.addUniqueActivity(
+						user.getUserId(), article,
 						JournalActivityKeys.ADD_ARTICLE,
 						extraDataJSONObject.toString(), 0);
 				}
@@ -6156,8 +6161,8 @@ public class JournalArticleLocalServiceImpl
 
 			updatePreviousApprovedArticle(article);
 
-			Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-				JournalArticle.class);
+			Indexer<JournalArticle> indexer =
+				IndexerRegistryUtil.nullSafeGetIndexer(JournalArticle.class);
 
 			indexer.reindex(article);
 
@@ -6980,6 +6985,23 @@ public class JournalArticleLocalServiceImpl
 		}
 	}
 
+	protected JournalGroupServiceConfiguration
+			getJournalGroupServiceConfiguration(long groupId)
+		throws SettingsException {
+
+		JournalServiceComponentProvider journalServiceComponentProvider =
+			JournalServiceComponentProvider.
+				getJournalServiceComponentProvider();
+
+		SettingsFactory settingsFactory =
+			journalServiceComponentProvider.getSettingsFactory();
+
+		return settingsFactory.getSettings(
+			JournalGroupServiceConfiguration.class,
+			new GroupServiceSettingsLocator(
+				groupId, JournalConstants.SERVICE_NAME));
+	}
+
 	protected String getUniqueUrlTitle(
 			long id, long groupId, String articleId, String title)
 		throws PortalException {
@@ -7044,77 +7066,68 @@ public class JournalArticleLocalServiceImpl
 			return;
 		}
 
+		JournalGroupServiceConfiguration journalGroupServiceConfiguration =
+			getJournalGroupServiceConfiguration(article.getGroupId());
+
 		String articleTitle = article.getTitle(serviceContext.getLanguageId());
 
 		articleURL = buildArticleURL(
 			articleURL, article.getGroupId(), article.getFolderId(),
 			article.getArticleId());
 
-		PortletPreferences preferences =
-			ServiceContextUtil.getPortletPreferences(serviceContext);
-
-		if (preferences == null) {
-			long ownerId = article.getGroupId();
-			int ownerType = PortletKeys.PREFS_OWNER_TYPE_GROUP;
-			long plid = PortletKeys.PREFS_PLID_SHARED;
-			String portletId = PortletProviderUtil.getPortletId(
-				JournalArticle.class.getName(), PortletProvider.Action.EDIT);
-			String defaultPreferences = null;
-
-			preferences = portletPreferencesLocalService.getPreferences(
-				article.getCompanyId(), ownerId, ownerType, plid, portletId,
-				defaultPreferences);
-		}
-
 		if (action.equals("add") &&
-			JournalUtil.getEmailArticleAddedEnabled(preferences)) {
+			journalGroupServiceConfiguration.emailArticleAddedEnabled()) {
 		}
 		else if (action.equals("move_to") &&
-				 JournalUtil.getEmailArticleMovedToFolderEnabled(preferences)) {
+				 journalGroupServiceConfiguration.
+					 emailArticleMovedToFolderEnabled()) {
 		}
 		else if (action.equals("move_from") &&
-				 JournalUtil.getEmailArticleMovedFromFolderEnabled(
-					 preferences)) {
+				 journalGroupServiceConfiguration.
+					 emailArticleMovedFromFolderEnabled()) {
 		}
 		else if (action.equals("update") &&
-				 JournalUtil.getEmailArticleUpdatedEnabled(preferences)) {
+				 journalGroupServiceConfiguration.
+					 emailArticleUpdatedEnabled()) {
 		}
 		else {
 			return;
 		}
 
-		String fromName = JournalUtil.getEmailFromName(
-			preferences, article.getCompanyId());
-		String fromAddress = JournalUtil.getEmailFromAddress(
-			preferences, article.getCompanyId());
+		String fromName = journalGroupServiceConfiguration.emailFromName();
+		String fromAddress =
+			journalGroupServiceConfiguration.emailFromAddress();
 
 		Map<Locale, String> localizedSubjectMap = null;
 		Map<Locale, String> localizedBodyMap = null;
 
 		if (action.equals("add")) {
-			localizedSubjectMap = JournalUtil.getEmailArticleAddedSubjectMap(
-				preferences);
-			localizedBodyMap = JournalUtil.getEmailArticleAddedBodyMap(
-				preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.emailArticleAddedSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.emailArticleAddedBody());
 		}
 		else if (action.equals("move_to")) {
-			localizedSubjectMap =
-				JournalUtil.getEmailArticleMovedToFolderSubjectMap(preferences);
-			localizedBodyMap = JournalUtil.getEmailArticleMovedToFolderBodyMap(
-				preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleMovedToFolderSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleMovedToFolderBody());
 		}
 		else if (action.equals("move_from")) {
-			localizedSubjectMap =
-				JournalUtil.getEmailArticleMovedFromFolderSubjectMap(
-					preferences);
-			localizedBodyMap =
-				JournalUtil.getEmailArticleMovedFromFolderBodyMap(preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleMovedFromFolderSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleMovedFromFolderBody());
 		}
 		else if (action.equals("update")) {
-			localizedSubjectMap = JournalUtil.getEmailArticleUpdatedSubjectMap(
-				preferences);
-			localizedBodyMap = JournalUtil.getEmailArticleUpdatedBodyMap(
-				preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.emailArticleUpdatedSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.emailArticleUpdatedBody());
 		}
 
 		String articleContent = StringPool.BLANK;
@@ -7240,8 +7253,8 @@ public class JournalArticleLocalServiceImpl
 			SearchContext searchContext)
 		throws PortalException {
 
-		Indexer indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-			JournalArticle.class);
+		Indexer<JournalArticle> indexer =
+			IndexerRegistryUtil.nullSafeGetIndexer(JournalArticle.class);
 
 		for (int i = 0; i < 10; i++) {
 			Hits hits = indexer.search(
@@ -7264,23 +7277,26 @@ public class JournalArticleLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
+		JournalGroupServiceConfiguration journalGroupServiceConfiguration =
+			getJournalGroupServiceConfiguration(article.getGroupId());
+
 		if (preferences == null) {
 			return;
 		}
 		else if (emailType.equals("denied") &&
-				 JournalUtil.getEmailArticleApprovalDeniedEnabled(
-					 preferences)) {
+				 journalGroupServiceConfiguration.
+					 emailArticleApprovalDeniedEnabled()) {
 		}
 		else if (emailType.equals("granted") &&
-				 JournalUtil.getEmailArticleApprovalGrantedEnabled(
-					 preferences)) {
+				 journalGroupServiceConfiguration.
+					 emailArticleApprovalGrantedEnabled()) {
 		}
 		else if (emailType.equals("requested") &&
-				 JournalUtil.getEmailArticleApprovalRequestedEnabled(
-					 preferences)) {
+				 journalGroupServiceConfiguration.
+					 emailArticleApprovalRequestedEnabled()) {
 		}
 		else if (emailType.equals("review") &&
-				 JournalUtil.getEmailArticleReviewEnabled(preferences)) {
+				 journalGroupServiceConfiguration.emailArticleReviewEnabled()) {
 		}
 		else {
 			return;
@@ -7291,10 +7307,9 @@ public class JournalArticleLocalServiceImpl
 
 		User user = userPersistence.findByPrimaryKey(article.getUserId());
 
-		String fromName = JournalUtil.getEmailFromName(
-			preferences, article.getCompanyId());
-		String fromAddress = JournalUtil.getEmailFromAddress(
-			preferences, article.getCompanyId());
+		String fromName = journalGroupServiceConfiguration.emailFromName();
+		String fromAddress =
+			journalGroupServiceConfiguration.emailFromAddress();
 
 		String toName = user.getFullName();
 		String toAddress = user.getEmailAddress();
@@ -7314,32 +7329,34 @@ public class JournalArticleLocalServiceImpl
 		Map<Locale, String> localizedBodyMap = null;
 
 		if (emailType.equals("denied")) {
-			localizedSubjectMap =
-				JournalUtil.getEmailArticleApprovalDeniedSubjectMap(
-					preferences);
-			localizedBodyMap = JournalUtil.getEmailArticleApprovalDeniedBodyMap(
-				preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleApprovalDeniedSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleApprovalDeniedBody());
 		}
 		else if (emailType.equals("granted")) {
-			localizedSubjectMap =
-				JournalUtil.getEmailArticleApprovalGrantedSubjectMap(
-					preferences);
-			localizedBodyMap =
-				JournalUtil.getEmailArticleApprovalGrantedBodyMap(preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleApprovalGrantedSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleApprovalGrantedBody());
 		}
 		else if (emailType.equals("requested")) {
-			localizedSubjectMap =
-				JournalUtil.getEmailArticleApprovalRequestedSubjectMap(
-					preferences);
-			localizedBodyMap =
-				JournalUtil.getEmailArticleApprovalRequestedBodyMap(
-					preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleApprovalGrantedSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.
+					emailArticleApprovalGrantedBody());
 		}
 		else if (emailType.equals("review")) {
-			localizedSubjectMap = JournalUtil.getEmailArticleReviewSubjectMap(
-				preferences);
-			localizedBodyMap = JournalUtil.getEmailArticleReviewBodyMap(
-				preferences);
+			localizedSubjectMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.emailArticleReviewSubject());
+			localizedBodyMap = LocalizationUtil.getMap(
+				journalGroupServiceConfiguration.emailArticleReviewBody());
 		}
 
 		SubscriptionSender subscriptionSender = new SubscriptionSender();

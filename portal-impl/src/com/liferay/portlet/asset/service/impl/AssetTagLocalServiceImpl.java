@@ -77,6 +77,7 @@ public class AssetTagLocalServiceImpl extends AssetTagLocalServiceBaseImpl {
 
 		AssetTag tag = assetTagPersistence.create(tagId);
 
+		tag.setUuid(serviceContext.getUuid());
 		tag.setGroupId(groupId);
 		tag.setCompanyId(user.getCompanyId());
 		tag.setUserId(user.getUserId());
@@ -286,6 +287,10 @@ public class AssetTagLocalServiceImpl extends AssetTagLocalServiceBaseImpl {
 		resourceLocalService.deleteResource(
 			tag.getCompanyId(), AssetTag.class.getName(),
 			ResourceConstants.SCOPE_INDIVIDUAL, tag.getTagId());
+
+		// Stats
+
+		assetTagStatsLocalService.deleteTagStatsByTagId(tag.getTagId());
 
 		// Indexer
 

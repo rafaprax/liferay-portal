@@ -534,7 +534,9 @@ public class SitesImpl implements Sites {
 			!GroupPermissionUtil.contains(
 				permissionChecker, group, ActionKeys.PUBLISH_STAGING)) {
 
-			throw new PrincipalException();
+			throw new PrincipalException.MustHavePermission(
+				permissionChecker, Group.class.getName(), group.getGroupId(),
+				ActionKeys.MANAGE_STAGING, ActionKeys.PUBLISH_STAGING);
 		}
 
 		if (LayoutPermissionUtil.contains(
@@ -1173,6 +1175,25 @@ public class SitesImpl implements Sites {
 	}
 
 	@Override
+	public boolean isUserGroupLayout(Layout layout) throws PortalException {
+		if (!(layout instanceof VirtualLayout)) {
+			return false;
+		}
+
+		VirtualLayout virtualLayout = (VirtualLayout)layout;
+
+		Layout sourceLayout = virtualLayout.getSourceLayout();
+
+		Group sourceGroup = sourceLayout.getGroup();
+
+		if (sourceGroup.isUserGroup()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
 	public boolean isUserGroupLayoutSetViewable(
 			PermissionChecker permissionChecker, Group userGroupGroup)
 		throws PortalException {
@@ -1568,13 +1589,17 @@ public class SitesImpl implements Sites {
 			!LayoutPermissionUtil.contains(
 				permissionChecker, layout, ActionKeys.UPDATE)) {
 
-			throw new PrincipalException();
+			throw new PrincipalException.MustHavePermission(
+				permissionChecker, layout.getName(), layout.getLayoutId(),
+				ActionKeys.UPDATE);
 		}
 		else if (!group.isUser() &&
 				 !GroupPermissionUtil.contains(
 					 permissionChecker, group, ActionKeys.UPDATE)) {
 
-			throw new PrincipalException();
+			throw new PrincipalException.MustHavePermission(
+				permissionChecker, group.getName(), group.getGroupId(),
+				ActionKeys.UPDATE);
 		}
 		else if (group.isUser() &&
 				 (permissionChecker.getUserId() != group.getClassPK())) {

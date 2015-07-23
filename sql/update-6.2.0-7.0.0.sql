@@ -1,5 +1,7 @@
 alter table AssetEntry add listable BOOLEAN;
 
+alter table AssetTag add uuid_ VARCHAR(75);
+
 COMMIT_TRANSACTION;
 
 update AssetEntry set listable = TRUE;
@@ -33,6 +35,8 @@ create table DDMStructureLayout (
 	definition TEXT null
 );
 
+drop index IX_C803899D on DDMStructureLink;
+
 create table DDMStructureVersion (
 	structureVersionId LONG not null primary key,
 	groupId LONG,
@@ -44,7 +48,7 @@ create table DDMStructureVersion (
 	version VARCHAR(75) null,
 	parentStructureId LONG,
 	name STRING null,
-	description STRING null,
+	description TEXT null,
 	definition TEXT null,
 	storageType VARCHAR(75) null,
 	type_ INTEGER,
@@ -82,7 +86,7 @@ create table DDMTemplateVersion (
 	templateId LONG,
 	version VARCHAR(75) null,
 	name STRING null,
-	description STRING null,
+	description TEXT null,
 	language VARCHAR(75) null,
 	script TEXT null,
 	status INTEGER,
@@ -160,5 +164,7 @@ update Region set regionCode = 'BB' where regionId = 4004 and regionCode = 'BR';
 update Region set name = 'Monza e Brianza', regionCode = 'MB' where regionId = 8060 and regionCode = 'MZ';
 
 alter table Subscription add groupId LONG;
+
+alter table Team add uuid_ VARCHAR(75);
 
 alter table UserNotificationEvent add actionRequired BOOLEAN;

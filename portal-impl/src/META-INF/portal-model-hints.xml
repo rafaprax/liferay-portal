@@ -871,13 +871,6 @@
 			<hint-collection name="CLOB" />
 		</field>
 	</model>
-	<model name="com.liferay.portal.model.Shard">
-		<field name="mvccVersion" type="long" />
-		<field name="shardId" type="long" />
-		<field name="classNameId" type="long" />
-		<field name="classPK" type="long" />
-		<field name="name" type="String" />
-	</model>
 	<model name="com.liferay.portal.model.Subscription">
 		<field name="mvccVersion" type="long" />
 		<field name="subscriptionId" type="long" />
@@ -912,6 +905,7 @@
 	</model>
 	<model name="com.liferay.portal.model.Team">
 		<field name="mvccVersion" type="long" />
+		<field name="uuid" type="String" />
 		<field name="teamId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="userId" type="long" />
@@ -1294,6 +1288,7 @@
 		<field name="weight" type="int" />
 	</model>
 	<model name="com.liferay.portlet.asset.model.AssetTag">
+		<field name="uuid" type="String" />
 		<field name="tagId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="companyId" type="long" />
@@ -1668,7 +1663,7 @@
 			<validator name="required" />
 		</field>
 		<field name="description" type="String" localized="true">
-			<hint-collection name="TEXTAREA" />
+			<hint-collection name="CLOB" />
 		</field>
 		<field name="definition" type="String">
 			<hint-collection name="CLOB" />
@@ -1710,7 +1705,7 @@
 			<validator name="required" />
 		</field>
 		<field name="description" type="String" localized="true">
-			<hint-collection name="TEXTAREA" />
+			<hint-collection name="CLOB" />
 		</field>
 		<field name="definition" type="String">
 			<hint-collection name="CLOB" />
@@ -1745,7 +1740,7 @@
 			<validator name="required" />
 		</field>
 		<field name="description" type="String" localized="true">
-			<hint-collection name="TEXTAREA" />
+			<hint-collection name="CLOB" />
 			<hint name="autoSize">true</hint>
 		</field>
 		<field name="type" type="String" />
@@ -1780,7 +1775,7 @@
 			<validator name="required" />
 		</field>
 		<field name="description" type="String" localized="true">
-			<hint-collection name="TEXTAREA" />
+			<hint-collection name="CLOB" />
 			<hint name="autoSize">true</hint>
 		</field>
 		<field name="language" type="String" />

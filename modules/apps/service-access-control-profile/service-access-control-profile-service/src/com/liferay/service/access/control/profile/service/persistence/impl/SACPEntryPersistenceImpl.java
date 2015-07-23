@@ -3164,8 +3164,8 @@ public class SACPEntryPersistenceImpl extends BasePersistenceImpl<SACPEntry>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(SACPEntry sacpEntry) {
-		if (sacpEntry.isNew()) {
+	protected void cacheUniqueFindersCache(SACPEntry sacpEntry, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					sacpEntry.getCompanyId(), sacpEntry.getName()
 				};
@@ -3443,7 +3443,7 @@ public class SACPEntryPersistenceImpl extends BasePersistenceImpl<SACPEntry>
 			SACPEntryImpl.class, sacpEntry.getPrimaryKey(), sacpEntry, false);
 
 		clearUniqueFindersCache(sacpEntry);
-		cacheUniqueFindersCache(sacpEntry);
+		cacheUniqueFindersCache(sacpEntry, isNew);
 
 		sacpEntry.resetOriginalValues();
 
@@ -3468,6 +3468,7 @@ public class SACPEntryPersistenceImpl extends BasePersistenceImpl<SACPEntry>
 		sacpEntryImpl.setCreateDate(sacpEntry.getCreateDate());
 		sacpEntryImpl.setModifiedDate(sacpEntry.getModifiedDate());
 		sacpEntryImpl.setAllowedServiceSignatures(sacpEntry.getAllowedServiceSignatures());
+		sacpEntryImpl.setDefaultSACPEntry(sacpEntry.isDefaultSACPEntry());
 		sacpEntryImpl.setName(sacpEntry.getName());
 		sacpEntryImpl.setTitle(sacpEntry.getTitle());
 
@@ -3830,6 +3831,11 @@ public class SACPEntryPersistenceImpl extends BasePersistenceImpl<SACPEntry>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SACPEntryModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

@@ -55,7 +55,7 @@
 </tr>
 <tr>
 	<td>ADD_TAGS</td>
-	<td>//button[contains(.,'Add Tags')]</td>
+	<td>//button[contains(.,'Add')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -85,12 +85,22 @@
 </tr>
 <tr>
 	<td>CANCEL</td>
-	<td>//a[contains(@id,'cancel') and contains(@class,'btn')]|//button[contains(.,'Cancel')]</td>
+	<td>//a[contains(@id,'cancel') and contains(@class,'btn')] | //button[contains(.,'Cancel')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHECKIN</td>
+	<td>//button[contains(.,'Checkin')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CANCEL_CHECKOUT</td>
 	<td>//button[contains(.,'Cancel Checkout')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHECKOUT</td>
+	<td>//button[contains(.,'Checkout')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -159,8 +169,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>DONE</td>
+	<td>//button[contains(.,'Done')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DOWNLOAD</td>
+	<td>//button[contains(.,'Download')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>EDIT</td>
-	<td>//a[contains(@id,'edit') and contains(@class,'btn')]</td>
+	<td>//a[contains(@id,'edit') and contains(@class,'btn')] | //button[contains(.,'Edit')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -181,6 +201,11 @@
 <tr>
 	<td>I_DISAGREE_BUTTON</td>
 	<td>//button[contains(.,'I Disagree')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>INVOKE</td>
+	<td>//button[contains(.,'Invoke')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -290,7 +315,7 @@
 </tr>
 <tr>
 	<td>REPLY_AS</td>
-	<td>//button[contains(.,'Reply As...')]</td>
+	<td>//button[contains(.,'Reply as...')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -366,6 +391,11 @@
 <tr>
 	<td>SEND</td>
 	<td>//button[contains(.,'Send')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SHARE</td>
+	<td>//button[contains(.,'Share')]</td>
 	<td></td>
 </tr>
 <tr>

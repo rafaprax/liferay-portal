@@ -53,9 +53,9 @@ import com.liferay.portlet.documentlibrary.service.DLFileVersionLocalServiceUtil
 import com.liferay.portlet.documentlibrary.util.DLProcessorRegistryUtil;
 import com.liferay.portlet.documentlibrary.util.DLProcessorThreadLocal;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.StorageEngineManagerUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
 import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
 import com.liferay.portlet.exportimport.lar.ExportImportThreadLocal;
@@ -109,6 +109,10 @@ public class FileEntryStagedModelDataHandler
 				uuid, groupId);
 		}
 		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+
 			return null;
 		}
 	}
@@ -526,10 +530,12 @@ public class FileEntryStagedModelDataHandler
 						LiferayFileEntry liferayFileEntry =
 							(LiferayFileEntry)importedFileEntry;
 
-						Indexer indexer = IndexerRegistryUtil.getIndexer(
-							DLFileEntry.class);
+						Indexer<DLFileEntry> indexer =
+							IndexerRegistryUtil.nullSafeGetIndexer(
+								DLFileEntry.class);
 
-						indexer.reindex(liferayFileEntry.getModel());
+						indexer.reindex(
+							(DLFileEntry)liferayFileEntry.getModel());
 					}
 
 					if (deleteFileEntry &&
@@ -554,6 +560,10 @@ public class FileEntryStagedModelDataHandler
 					fileEntry.getSize(), serviceContext);
 			}
 			catch (DuplicateFileException dfe) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(dfe, dfe);
+				}
+
 				String title = fileEntry.getTitle();
 
 				String[] titleParts = title.split("\\.", 2);
@@ -666,8 +676,9 @@ public class FileEntryStagedModelDataHandler
 			structureFields.addAttribute(
 				"structureUuid", ddmStructure.getUuid());
 
-			DDMFormValues ddmFormValues = StorageEngineUtil.getDDMFormValues(
-				dlFileEntryMetadata.getDDMStorageId());
+			DDMFormValues ddmFormValues =
+				StorageEngineManagerUtil.getDDMFormValues(
+					dlFileEntryMetadata.getDDMStorageId());
 
 			portletDataContext.addZipEntry(path, ddmFormValues);
 		}

@@ -191,11 +191,12 @@ public class CSSBuilder {
 
 		directoryScanner.setExcludes(
 			new String[] {
-				"**\\_diffs\\**", "**\\.sass-cache*\\**",
+				"**\\_*.scss", "**\\_diffs\\**", "**\\.sass-cache*\\**",
 				"**\\.sass_cache_*\\**", "**\\_sass_cache_*\\**",
-				"**\\_styled\\**", "**\\_unstyled\\**", "**\\tmp\\**"
+				"**\\_styled\\**", "**\\_unstyled\\**", "**\\css\\aui\\**",
+				"**\\tmp\\**"
 			});
-		directoryScanner.setIncludes(new String[] {"**\\*.css"});
+		directoryScanner.setIncludes(new String[] {"**\\*.css", "**\\*.scss"});
 
 		directoryScanner.scan();
 
@@ -245,6 +246,8 @@ public class CSSBuilder {
 
 			try {
 				_sassCompiler = new JniSassCompiler();
+
+				System.out.println("Using native Sass compiler");
 			}
 			catch (Throwable t) {
 				System.out.println(
@@ -256,6 +259,8 @@ public class CSSBuilder {
 		else {
 			try {
 				_sassCompiler = new RubySassCompiler();
+
+				System.out.println("Using ruby Sass compiler");
 			}
 			catch (Exception e) {
 				System.out.println(
