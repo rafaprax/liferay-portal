@@ -58,6 +58,8 @@ public interface DDMStructureManager {
 
 	public static final int STRUCTURE_TYPE_DEFAULT = 0;
 
+	public static final String STRUCTURE_STORAGE_TYPE_DEFAULT = "json";
+
 	public static final String STRUCTURE_VERSION_DEFAULT = "1.0";
 
 	public void addAttributes(
