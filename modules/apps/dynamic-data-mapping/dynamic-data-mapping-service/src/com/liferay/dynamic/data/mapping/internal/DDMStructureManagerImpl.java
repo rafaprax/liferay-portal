@@ -289,16 +289,11 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	@Override
 	public JSONArray getDDMFormFieldsJSONArray(long structureId, String script)
 		throws PortalException {
-		
-		try {
-			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
-				_ddmStructureLocalService.fetchDDMStructure(structureId);
-	
-			return DDMUtil.getDDMFormFieldsJSONArray(ddmStructure, script);
-		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
-			throw new NoSuchStructureException(e.getMessage(), e.getCause());
-		}
+
+		com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
+			_ddmStructureLocalService.fetchDDMStructure(structureId);
+
+		return DDMUtil.getDDMFormFieldsJSONArray(ddmStructure, script);
 	}
 
 	@Override
@@ -397,20 +392,15 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	public List<DDMStructure> getStructures(long[] groupIds, long classNameId) {
 		List<DDMStructure> ddmStructures = new ArrayList<>();
 
-		try{
-			for (com.liferay.dynamic.data.mapping.model.DDMStructure
-					ddmStructure :
-						_ddmStructureLocalService.getStructures(
-							groupIds, classNameId)) {
-	
-				ddmStructures.add(new DDMStructureImpl(ddmStructure));
-			}
-	
-			return ddmStructures;
+		for (com.liferay.dynamic.data.mapping.model.DDMStructure
+				ddmStructure :
+					_ddmStructureLocalService.getStructures(
+						groupIds, classNameId)) {
+
+			ddmStructures.add(new DDMStructureImpl(ddmStructure));
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
-			throw new NoSuchStructureException(e.getMessage(), e.getCause());
-		}
+
+		return ddmStructures;
 	}
 
 	@Override

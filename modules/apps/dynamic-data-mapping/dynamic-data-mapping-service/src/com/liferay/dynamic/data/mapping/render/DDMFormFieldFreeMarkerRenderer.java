@@ -35,13 +35,13 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.storage.Field;
-import com.liferay.dynamic.data.mapping.storage.Fields;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.Writer;
 import java.net.URL;
@@ -561,7 +561,7 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 
 		if ((fieldReadOnly && Validator.isNotNull(mode) &&
 			 StringUtil.equalsIgnoreCase(
-				 mode, DDMTemplateConstants.TEMPLATE_MODE_EDIT)) ||
+				 mode, DDMTemplateManager.TEMPLATE_MODE_EDIT)) ||
 			readOnly) {
 
 			fieldNamespace = _DEFAULT_READ_ONLY_NAMESPACE;

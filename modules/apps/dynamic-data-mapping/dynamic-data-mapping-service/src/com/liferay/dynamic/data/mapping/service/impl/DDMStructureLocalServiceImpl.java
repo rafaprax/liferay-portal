@@ -51,14 +51,14 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 
 import java.util.ArrayList;
@@ -136,7 +136,7 @@ public class DDMStructureLocalServiceImpl
 		structure.setParentStructureId(parentStructureId);
 		structure.setClassNameId(classNameId);
 		structure.setStructureKey(structureKey);
-		structure.setVersion(DDMStructureManager.VERSION_DEFAULT);
+		structure.setVersion(DDMStructureManager.STRUCTURE_VERSION_DEFAULT);
 		structure.setNameMap(nameMap);
 		structure.setDescriptionMap(descriptionMap);
 		structure.setDefinition(DDMFormJSONSerializerUtil.serialize(ddmForm));
@@ -163,7 +163,7 @@ public class DDMStructureLocalServiceImpl
 		// Structure version
 
 		DDMStructureVersion structureVersion = addStructureVersion(
-			user, structure, DDMStructureManager.VERSION_DEFAULT,
+			user, structure, DDMStructureManager.STRUCTURE_VERSION_DEFAULT,
 			serviceContext);
 
 		// Structure Layout
@@ -237,9 +237,9 @@ public class DDMStructureLocalServiceImpl
 		throws PortalException {
 
 		return addStructure(
-			userId, groupId, DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
+			userId, groupId, DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
 			classNameId, null, nameMap, descriptionMap, ddmForm, ddmFormLayout,
-			storageType, DDMStructureManager.TYPE_DEFAULT, serviceContext);
+			storageType, DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 	}
 
 	/**
@@ -275,9 +275,9 @@ public class DDMStructureLocalServiceImpl
 		
 
 		return addStructure(
-			userId, groupId, DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
+			userId, groupId, DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
 			classNameId, null, nameMap, descriptionMap, definition,
-			StorageType.JSON.toString(), DDMStructureManager.TYPE_DEFAULT,
+			StorageType.JSON.toString(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT,
 			serviceContext);
 	}
 
@@ -294,7 +294,7 @@ public class DDMStructureLocalServiceImpl
 			groupId, classNameId, parentStructureKey);
 
 		long parentStructureId =
-			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID;
+				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID;
 
 		if (parentStructure != null) {
 			parentStructureId = parentStructure.getStructureId();
@@ -1650,7 +1650,7 @@ public class DDMStructureLocalServiceImpl
 						new DDMFormTemplateSynchonizer(structure.getDDMForm());
 
 					List<DDMTemplate> templates = getStructureTemplates(
-						structure, DDMTemplateConstants.TEMPLATE_TYPE_FORM);
+						structure, DDMTemplateManager.TEMPLATE_TYPE_FORM);
 
 					ddmFormTemplateSynchonizer.setDDMFormTemplates(templates);
 

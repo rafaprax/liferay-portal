@@ -55,10 +55,10 @@ import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONSerializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
 import com.liferay.dynamic.data.mapping.model.DDMContent;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
@@ -172,7 +172,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 			ps.setString(5, userName);
 			ps.setTimestamp(6, createDate);
 			ps.setLong(7, structureId);
-			ps.setString(8, DDMStructureManager.VERSION_DEFAULT);
+			ps.setString(8, DDMStructureManager.STRUCTURE_VERSION_DEFAULT);
 			ps.setLong(9, parentStructureId);
 			ps.setString(10, name);
 			ps.setString(11, description);
@@ -234,7 +234,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 			ps.setLong(7, classNameId);
 			ps.setLong(8, classPK);
 			ps.setLong(9, templateId);
-			ps.setString(10, DDMStructureManager.VERSION_DEFAULT);
+			ps.setString(10, DDMStructureManager.STRUCTURE_VERSION_DEFAULT);
 			ps.setString(11, name);
 			ps.setString(12, description);
 			ps.setString(13, language);

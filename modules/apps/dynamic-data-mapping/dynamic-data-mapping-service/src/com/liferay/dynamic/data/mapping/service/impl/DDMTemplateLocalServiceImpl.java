@@ -47,8 +47,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.persistence.ImageUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.model.DDMTemplateVersion;
 import com.liferay.util.xml.XMLUtil;
 
@@ -216,7 +216,7 @@ public class DDMTemplateLocalServiceImpl
 		template.setClassPK(classPK);
 		template.setResourceClassNameId(resourceClassNameId);
 		template.setTemplateKey(templateKey);
-		template.setVersion(DDMTemplateConstants.VERSION_DEFAULT);
+		template.setVersion(DDMTemplateManager.TEMPLATE_VERSION_DEFAULT);
 		template.setNameMap(nameMap);
 		template.setDescriptionMap(descriptionMap);
 		template.setType(type);
@@ -254,7 +254,7 @@ public class DDMTemplateLocalServiceImpl
 		// Template version
 
 		addTemplateVersion(
-			user, template, DDMTemplateConstants.VERSION_DEFAULT,
+			user, template, DDMTemplateManager.TEMPLATE_VERSION_DEFAULT,
 			serviceContext);
 
 		return template;

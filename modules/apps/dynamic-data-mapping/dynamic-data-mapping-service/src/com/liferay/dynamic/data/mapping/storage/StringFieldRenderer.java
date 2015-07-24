@@ -14,8 +14,9 @@
 
 package com.liferay.dynamic.data.mapping.storage;
 
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
-import com.liferay.dynamic.data.mapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -88,7 +89,7 @@ public class StringFieldRenderer extends BaseFieldRenderer {
 			Field field, String optionValue)
 		throws Exception {
 
-		DDMStructure ddmStructure = field.getDDMStructure();
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(field.getDDMStructureId());
 
 		DDMFormField ddmFormField = ddmStructure.getDDMFormField(
 			field.getName());
@@ -100,7 +101,7 @@ public class StringFieldRenderer extends BaseFieldRenderer {
 	}
 
 	protected String getFieldType(Field field) throws Exception {
-		DDMStructure ddmStructure = field.getDDMStructure();
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(field.getDDMStructureId());
 
 		return ddmStructure.getFieldType(field.getName());
 	}

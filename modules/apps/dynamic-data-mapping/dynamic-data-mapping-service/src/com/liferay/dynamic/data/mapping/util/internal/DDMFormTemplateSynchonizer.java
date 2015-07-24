@@ -18,10 +18,10 @@ import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class DDMFormTemplateSynchonizer {
 
 			String mode = ddmTemplate.getMode();
 
-			if (mode.equals(DDMTemplateConstants.TEMPLATE_MODE_CREATE)) {
+			if (mode.equals(DDMTemplateManager.TEMPLATE_MODE_CREATE)) {
 				addRequiredDDMFormFields(
 					_structureDDMForm.getDDMFormFields(),
 					templateDDMForm.getDDMFormFields());
@@ -118,7 +118,7 @@ public class DDMFormTemplateSynchonizer {
 			return;
 		}
 
-		if (!templateMode.equals(DDMTemplateConstants.TEMPLATE_MODE_CREATE)) {
+		if (!templateMode.equals(DDMTemplateManager.TEMPLATE_MODE_CREATE)) {
 			return;
 		}
 
