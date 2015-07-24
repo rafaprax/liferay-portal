@@ -24,9 +24,9 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.PortletURLImpl;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateService;
 
@@ -91,7 +91,7 @@ public class CopyStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 		if (copyDisplayTemplates) {
 			_ddmTemplateService.copyTemplates(
 				classNameId, oldClassPK, resourceClassNameId, newClassPK,
-				DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, serviceContext);
+				DDMTemplateManager.TEMPLATE_TYPE_DISPLAY, serviceContext);
 		}
 
 		boolean copyFormTemplates = ParamUtil.getBoolean(
@@ -100,7 +100,7 @@ public class CopyStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 		if (copyFormTemplates) {
 			_ddmTemplateService.copyTemplates(
 				classNameId, oldClassPK, resourceClassNameId, newClassPK,
-				DDMTemplateConstants.TEMPLATE_TYPE_FORM, serviceContext);
+				DDMTemplateManager.TEMPLATE_TYPE_FORM, serviceContext);
 		}
 	}
 

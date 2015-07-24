@@ -47,7 +47,7 @@ import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.RequiredTemplateException;
+import com.liferay.dynamic.data.mapping.exception.RequiredTemplateException;
 import com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException;
 import com.liferay.portlet.dynamicdatamapping.StructureDefinitionException;
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;

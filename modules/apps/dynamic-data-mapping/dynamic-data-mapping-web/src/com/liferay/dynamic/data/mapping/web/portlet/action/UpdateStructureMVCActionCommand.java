@@ -25,7 +25,7 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
-import com.liferay.portlet.dynamicdatamapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDM;
 
 import java.util.Locale;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class UpdateStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 
 		long parentStructureId = ParamUtil.getLong(
 			actionRequest, "parentStructureId",
-			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID);
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID);
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, "name");
 		Map<Locale, String> descriptionMap =

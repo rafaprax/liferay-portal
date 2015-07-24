@@ -26,7 +26,7 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.util.DDMImpl;
+import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
 
 import java.io.Serializable;
 

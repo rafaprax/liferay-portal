@@ -25,7 +25,7 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
-import com.liferay.portlet.dynamicdatamapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDM;
 
 import java.util.Locale;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class AddStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 			actionRequest, "structureKey");
 		long parentStructureId = ParamUtil.getLong(
 			actionRequest, "parentStructureId",
-			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID);
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID);
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, "name");
 		Map<Locale, String> descriptionMap =
@@ -74,7 +74,7 @@ public class AddStructureMVCActionCommand extends DDMBaseMVCActionCommand {
 		return _ddmStructureService.addStructure(
 			groupId, parentStructureId, scopeClassNameId, structureKey, nameMap,
 			descriptionMap, ddmForm, ddmFormLayout, storageType,
-			DDMStructureManager.TYPE_DEFAULT, serviceContext);
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 	}
 
 	@Override

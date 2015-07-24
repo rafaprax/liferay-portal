@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFactory;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFactory;
 
 import java.util.Locale;
 import java.util.Map;

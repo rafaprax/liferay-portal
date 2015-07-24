@@ -118,7 +118,7 @@ public class DDMStructureTestUtil {
 			TestPropsValues.getUserId(), groupId, parentStructureId,
 			PortalUtil.getClassNameId(className), null, nameMap, null, ddmForm,
 			ddmFormLayout, StorageType.JSON.toString(),
-			DDMStructureManager.TYPE_DEFAULT, serviceContext);
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 	}
 
 	public static DDMStructure addStructure(String className) throws Exception {

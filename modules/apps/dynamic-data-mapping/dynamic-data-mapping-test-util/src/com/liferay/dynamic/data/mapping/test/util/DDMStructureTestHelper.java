@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.mapping.util.DDMXMLUtil;
 import com.liferay.portal.kernel.locale.test.LocaleTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.Group;
@@ -60,9 +61,9 @@ public class DDMStructureTestHelper {
 		throws Exception {
 
 		return addStructure(
-			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID, _classNameId,
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID, _classNameId,
 			null, "Test Structure", StringPool.BLANK, ddmForm, ddmFormLayout,
-			StorageType.JSON.toString(), DDMStructureManager.TYPE_DEFAULT);
+			StorageType.JSON.toString(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 	}
 
 	public DDMStructure addStructure(DDMForm ddmForm, String storageType)
@@ -70,7 +71,7 @@ public class DDMStructureTestHelper {
 
 		return addStructure(
 			_classNameId, null, "Test Structure", ddmForm, storageType,
-			DDMStructureManager.TYPE_DEFAULT);
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 	}
 
 	public DDMStructure addStructure(
@@ -95,7 +96,7 @@ public class DDMStructureTestHelper {
 		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
 
 		return addStructure(
-			DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID, classNameId,
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID, classNameId,
 			structureKey, name, StringPool.BLANK, ddmForm, ddmFormLayout,
 			storageType, type);
 	}

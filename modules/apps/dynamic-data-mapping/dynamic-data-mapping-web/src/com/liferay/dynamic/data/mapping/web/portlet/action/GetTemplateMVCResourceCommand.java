@@ -23,13 +23,12 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateService;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,7 +66,7 @@ public class GetTemplateMVCResourceCommand extends BaseMVCResourceCommand {
 		String language = GetterUtil.getString(
 			template.getLanguage(), TemplateConstants.LANG_TYPE_VM);
 
-		if (type.equals(DDMTemplateConstants.TEMPLATE_TYPE_FORM) ||
+		if (type.equals(DDMTemplateManager.TEMPLATE_TYPE_FORM) ||
 			language.equals(TemplateConstants.LANG_TYPE_XSL)) {
 
 			contentType = ContentTypes.TEXT_XML_UTF8;

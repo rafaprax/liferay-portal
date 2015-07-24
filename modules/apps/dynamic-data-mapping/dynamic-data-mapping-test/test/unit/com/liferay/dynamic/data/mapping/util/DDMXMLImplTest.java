@@ -23,8 +23,8 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMXML;
-import com.liferay.portlet.dynamicdatamapping.util.DDMXMLImpl;
+import com.liferay.dynamic.data.mapping.util.DDMXML;
+import com.liferay.dynamic.data.mapping.util.internal.DDMXMLImpl;
 
 import java.util.List;
 import java.util.Locale;

@@ -30,8 +30,8 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.DDMUtil;
@@ -65,7 +65,7 @@ public class BaseDDMServiceTestCase {
 
 		return addTemplate(
 			classNameId, classPK, sourceClassNameId, StringPool.BLANK, name,
-			description, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
+			description, DDMTemplateManager.TEMPLATE_TYPE_DISPLAY,
 			StringPool.BLANK, language, getTestTemplateScript(language));
 	}
 
@@ -77,7 +77,7 @@ public class BaseDDMServiceTestCase {
 
 		return addTemplate(
 			classNameId, classPK, name,
-			DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, StringPool.BLANK,
+			DDMTemplateManager.TEMPLATE_TYPE_DISPLAY, StringPool.BLANK,
 			language, getTestTemplateScript(language));
 	}
 
@@ -100,8 +100,8 @@ public class BaseDDMServiceTestCase {
 
 		return addTemplate(
 			PortalUtil.getClassNameId(DDMStructure.class), classPK, name,
-			DDMTemplateConstants.TEMPLATE_TYPE_FORM,
-			DDMTemplateConstants.TEMPLATE_MODE_CREATE, "xsd", definition);
+			DDMTemplateManager.TEMPLATE_TYPE_FORM,
+			DDMTemplateManager.TEMPLATE_MODE_CREATE, "xsd", definition);
 	}
 
 	protected DDMStructure addStructure(
@@ -141,7 +141,7 @@ public class BaseDDMServiceTestCase {
 
 		return addStructure(
 			0, classNameId, null, name, description, read("test-structure.xsd"),
-			StorageType.JSON.getValue(), DDMStructureManager.TYPE_DEFAULT);
+			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 	}
 
 	protected DDMStructure addStructure(

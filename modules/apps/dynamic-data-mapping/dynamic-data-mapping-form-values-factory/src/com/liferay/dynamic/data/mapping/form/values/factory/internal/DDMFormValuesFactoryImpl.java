@@ -29,9 +29,9 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldValueParameterSerializer;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueParameterSerializer;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 

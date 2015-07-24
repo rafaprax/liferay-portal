@@ -220,7 +220,7 @@ public class DDMStructureStagedModelDataHandler
 			structure);
 
 		if (structure.getParentStructureId() !=
-				DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID) {
+				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID) {
 
 			DDMStructure parentStructure =
 				DDMStructureLocalServiceUtil.getStructure(
