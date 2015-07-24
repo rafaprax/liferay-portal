@@ -37,7 +37,7 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
@@ -109,10 +109,10 @@ public class DefaultDDMStructureUtil {
 
 			ddmStructure = DDMStructureLocalServiceUtil.addStructure(
 				userId, groupId,
-				DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID, classNameId,
+				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID, classNameId,
 				ddmStructureKey, nameMap, descriptionMap, ddmForm,
 				ddmFormLayout, StorageType.JSON.toString(),
-				DDMStructureManager.TYPE_DEFAULT, serviceContext);
+				DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 
 			Element templateElement = structureElement.element("template");
 
@@ -133,8 +133,8 @@ public class DefaultDDMStructureUtil {
 			DDMTemplateLocalServiceUtil.addTemplate(
 				userId, groupId, PortalUtil.getClassNameId(DDMStructure.class),
 				ddmStructure.getStructureId(), ddmStructure.getClassNameId(),
-				null, nameMap, null, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-				DDMTemplateConstants.TEMPLATE_MODE_CREATE,
+				null, nameMap, null, DDMTemplateManager.TEMPLATE_TYPE_DISPLAY,
+				DDMTemplateManager.TEMPLATE_MODE_CREATE,
 				TemplateConstants.LANG_TYPE_FTL, script, cacheable, false,
 				StringPool.BLANK, null, serviceContext);
 		}

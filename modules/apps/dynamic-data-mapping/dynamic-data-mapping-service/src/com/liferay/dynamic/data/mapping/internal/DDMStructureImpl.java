@@ -23,7 +23,6 @@ import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.io.Serializable;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -308,7 +307,13 @@ public class DDMStructureImpl implements DDMStructure {
 		_ddmStructure.setUuid(uuid);
 	}
 
+	@Override
+	public boolean isFieldRepeatable(String fieldName) throws PortalException {
+		return _ddmStructure.isFieldRepeatable(fieldName);
+	}
+
 	private final com.liferay.dynamic.data.mapping.model.DDMStructure
 		_ddmStructure;
+
 
 }

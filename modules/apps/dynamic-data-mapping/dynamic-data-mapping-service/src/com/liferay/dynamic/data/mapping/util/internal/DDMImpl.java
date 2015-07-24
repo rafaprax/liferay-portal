@@ -74,9 +74,9 @@ import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.Field;
-import com.liferay.dynamic.data.mapping.storage.FieldConstants;
-import com.liferay.dynamic.data.mapping.storage.Fields;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.File;
 import java.io.Serializable;
@@ -420,7 +420,7 @@ public class DDMImpl implements DDM {
 	public String[] getFieldsDisplayValues(Field fieldsDisplayField)
 		throws Exception {
 
-		DDMStructure ddmStructure = fieldsDisplayField.getDDMStructure();
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(fieldsDisplayField.getDDMStructureId());
 
 		List<String> fieldsDisplayValues = new ArrayList<>();
 

@@ -69,7 +69,7 @@ public class DDMStructureFinderImpl
 
 		return countByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureManager.TYPE_DEFAULT, andOperator);
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, andOperator);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class DDMStructureFinderImpl
 
 		return filterCountByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureManager.TYPE_DEFAULT, andOperator);
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, andOperator);
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class DDMStructureFinderImpl
 
 		return filterFindByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureManager.TYPE_DEFAULT, andOperator, start, end,
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, andOperator, start, end,
 			orderByComparator);
 	}
 
@@ -209,7 +209,7 @@ public class DDMStructureFinderImpl
 
 		return findByC_G_C_N_D_S_T(
 			companyId, groupIds, classNameId, names, descriptions, null,
-			DDMStructureManager.TYPE_DEFAULT, andOperator, start, end,
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, andOperator, start, end,
 			orderByComparator);
 	}
 
