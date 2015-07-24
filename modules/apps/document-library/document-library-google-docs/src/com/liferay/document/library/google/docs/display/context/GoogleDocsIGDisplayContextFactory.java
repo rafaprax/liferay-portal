@@ -25,6 +25,8 @@ import com.liferay.portlet.documentlibrary.service.DLAppService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portlet.imagegallerydisplay.display.context.IGDisplayContextFactory;
 import com.liferay.portlet.imagegallerydisplay.display.context.IGViewFileVersionDisplayContext;
 
@@ -74,9 +76,11 @@ public class GoogleDocsIGDisplayContextFactory
 
 		GoogleDocsMetadataHelper googleDocsMetadataHelper =
 			new GoogleDocsMetadataHelper(
+				_ddmFormValuesToFieldsConverter,
 				_ddmStructureLocalService,
 				(DLFileVersion)fileVersion.getModel(),
-				_dlFileEntryMetadataLocalService, _storageEngine);
+				_dlFileEntryMetadataLocalService,
+				_fieldsToDDMFormValuesConverter, _storageEngine);
 
 		if (googleDocsMetadataHelper.isGoogleDocs()) {
 			return new GoogleDocsIGViewFileVersionDisplayContext(
@@ -107,13 +111,25 @@ public class GoogleDocsIGDisplayContextFactory
 	}
 
 	@Reference
+	public void setDDMFormValuesToFieldsConverter(DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+	}
+
+	@Reference
+	public void setFieldsToDDMFormValuesConverter(FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter) {
+		_fieldsToDDMFormValuesConverter = fieldsToDDMFormValuesConverter;
+	}
+
+	@Reference
 	public void setStorageEngine(StorageEngine storageEngine) {
 		_storageEngine = storageEngine;
 	}
 
+	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private DLAppService _dlAppService;
 	private DLFileEntryMetadataLocalService _dlFileEntryMetadataLocalService;
+	private FieldsToDDMFormValuesConverter _fieldsToDDMFormValuesConverter;
 	private StorageEngine _storageEngine;
 
 }
