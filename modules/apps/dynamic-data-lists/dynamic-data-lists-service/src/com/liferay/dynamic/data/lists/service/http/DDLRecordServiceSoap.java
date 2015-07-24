@@ -86,7 +86,7 @@ public class DDLRecordServiceSoap {
 
 	public static com.liferay.dynamic.data.lists.model.DDLRecordSoap addRecord(
 		long groupId, long recordSetId, int displayIndex,
-		com.liferay.dynamic.data.mapping.storage.Fields fields,
+		com.liferay.portlet.dynamicdatamapping.storage.Fields fields,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -197,7 +197,7 @@ public class DDLRecordServiceSoap {
 
 	public static com.liferay.dynamic.data.lists.model.DDLRecordSoap updateRecord(
 		long recordId, boolean majorVersion, int displayIndex,
-		com.liferay.dynamic.data.mapping.storage.Fields fields,
+		com.liferay.portlet.dynamicdatamapping.storage.Fields fields,
 		boolean mergeFields,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {

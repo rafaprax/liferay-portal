@@ -15,7 +15,7 @@
 package com.liferay.dynamic.data.mapping.test.util.search;
 
 import com.liferay.dynamic.data.mapping.render.ValueAccessor;
-import com.liferay.dynamic.data.mapping.storage.FieldConstants;
+import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 import com.liferay.dynamic.data.mapping.util.DDMIndexerUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMTemplateTestUtil;
