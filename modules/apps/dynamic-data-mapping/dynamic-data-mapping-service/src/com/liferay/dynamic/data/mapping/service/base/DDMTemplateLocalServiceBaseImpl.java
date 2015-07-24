@@ -1046,7 +1046,7 @@ public abstract class DDMTemplateLocalServiceBaseImpl
 		}
 	}
 
-	@BeanReference(type = DDMTemplateLocalService.class)
+	@BeanReference(type = com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService.class)
 	protected DDMTemplateLocalService ddmTemplateLocalService;
 	@BeanReference(type = com.liferay.dynamic.data.mapping.service.DDMTemplateService.class)
 	protected com.liferay.dynamic.data.mapping.service.DDMTemplateService ddmTemplateService;
