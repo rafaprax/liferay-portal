@@ -62,6 +62,8 @@ public interface DDMStructureManager {
 
 	public static final String STRUCTURE_VERSION_DEFAULT = "1.0";
 
+	public static final String XSD_NAME_RESERVED = "reserved";
+
 	public void addAttributes(
 			long structureId, Document document, DDMFormValues ddmFormValues)
 		throws PortalException;
