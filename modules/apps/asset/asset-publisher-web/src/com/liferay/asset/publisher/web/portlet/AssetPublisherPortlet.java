@@ -19,6 +19,7 @@ import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
 import com.liferay.asset.publisher.web.util.AssetRSSUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -137,7 +138,7 @@ public class AssetPublisherPortlet extends MVCPortlet {
 				return;
 			}
 
-			DDMStructure ddmStructure = field.getDDMStructure();
+			DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(field.getDDMStructureId());
 
 			String type = ddmStructure.getFieldType(fieldName);
 
