@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.util.MethodKey;
 import com.liferay.portal.security.auth.HttpPrincipal;
 import com.liferay.portal.service.http.TunnelUtil;
 
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureServiceUtil;
 
 /**
  * Provides the HTTP utility for the
@@ -55,7 +55,7 @@ import com.liferay.portlet.dynamicdatamapping.service.DDMStructureServiceUtil;
  */
 @ProviderType
 public class DDMStructureServiceHttp {
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure addStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure addStructure(
 		HttpPrincipal httpPrincipal, long userId, long groupId,
 		long classNameId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
@@ -86,7 +86,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -95,7 +95,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure addStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure addStructure(
 		HttpPrincipal httpPrincipal, long userId, long groupId,
 		long classNameId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
@@ -124,7 +124,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -133,7 +133,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure addStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure addStructure(
 		HttpPrincipal httpPrincipal, long groupId, long parentStructureId,
 		long classNameId, java.lang.String structureKey,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
@@ -165,7 +165,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -174,7 +174,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure addStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure addStructure(
 		HttpPrincipal httpPrincipal, long groupId, long parentStructureId,
 		long classNameId, java.lang.String structureKey,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
@@ -203,7 +203,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -212,7 +212,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure addStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure addStructure(
 		HttpPrincipal httpPrincipal, long userId, long groupId,
 		java.lang.String parentStructureKey, long classNameId,
 		java.lang.String structureKey,
@@ -245,7 +245,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -254,7 +254,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure addStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure addStructure(
 		HttpPrincipal httpPrincipal, long userId, long groupId,
 		java.lang.String parentStructureKey, long classNameId,
 		java.lang.String structureKey,
@@ -285,7 +285,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -294,7 +294,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure copyStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure copyStructure(
 		HttpPrincipal httpPrincipal, long structureId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -320,7 +320,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -329,7 +329,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure copyStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure copyStructure(
 		HttpPrincipal httpPrincipal, long structureId,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -353,7 +353,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -390,7 +390,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure fetchStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure fetchStructure(
 		HttpPrincipal httpPrincipal, long groupId, long classNameId,
 		java.lang.String structureKey)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -414,7 +414,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -423,7 +423,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure fetchStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure fetchStructure(
 		HttpPrincipal httpPrincipal, long groupId, long classNameId,
 		java.lang.String structureKey, boolean includeAncestorStructures)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -447,7 +447,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -456,7 +456,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure getStructure(
 		HttpPrincipal httpPrincipal, long structureId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		try {
@@ -479,7 +479,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -488,7 +488,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure getStructure(
 		HttpPrincipal httpPrincipal, long groupId, long classNameId,
 		java.lang.String structureKey)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -512,7 +512,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -521,7 +521,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure getStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure getStructure(
 		HttpPrincipal httpPrincipal, long groupId, long classNameId,
 		java.lang.String structureKey, boolean includeAncestorStructures)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -545,7 +545,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -554,7 +554,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> getStructures(
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructures(
 		HttpPrincipal httpPrincipal, long groupId) {
 		try {
 			MethodKey methodKey = new MethodKey(DDMStructureServiceUtil.class,
@@ -571,7 +571,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>)returnObj;
+			return (java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure>)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -580,7 +580,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> getStructures(
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructures(
 		HttpPrincipal httpPrincipal, long[] groupIds) {
 		try {
 			MethodKey methodKey = new MethodKey(DDMStructureServiceUtil.class,
@@ -597,7 +597,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>)returnObj;
+			return (java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure>)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -606,7 +606,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> getStructures(
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructures(
 		HttpPrincipal httpPrincipal, long[] groupIds, long classNameId) {
 		try {
 			MethodKey methodKey = new MethodKey(DDMStructureServiceUtil.class,
@@ -624,7 +624,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>)returnObj;
+			return (java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure>)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -633,7 +633,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> getStructures(
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructures(
 		HttpPrincipal httpPrincipal, long[] groupIds, long classNameId,
 		int start, int end) {
 		try {
@@ -652,7 +652,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>)returnObj;
+			return (java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure>)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -690,10 +690,10 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> search(
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> search(
 		HttpPrincipal httpPrincipal, long companyId, long[] groupIds,
 		long classNameId, java.lang.String keywords, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> orderByComparator) {
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMStructure> orderByComparator) {
 		try {
 			MethodKey methodKey = new MethodKey(DDMStructureServiceUtil.class,
 					"search", _searchParameterTypes19);
@@ -711,7 +711,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>)returnObj;
+			return (java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure>)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -720,12 +720,12 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> search(
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> search(
 		HttpPrincipal httpPrincipal, long companyId, long[] groupIds,
 		long classNameId, java.lang.String name, java.lang.String description,
 		java.lang.String storageType, int type, boolean andOperator, int start,
 		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portlet.dynamicdatamapping.model.DDMStructure> orderByComparator) {
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMStructure> orderByComparator) {
 		try {
 			MethodKey methodKey = new MethodKey(DDMStructureServiceUtil.class,
 					"search", _searchParameterTypes20);
@@ -744,7 +744,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (java.util.List<com.liferay.portlet.dynamicdatamapping.model.DDMStructure>)returnObj;
+			return (java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure>)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -810,7 +810,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure updateStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure updateStructure(
 		HttpPrincipal httpPrincipal, long groupId, long parentStructureId,
 		long classNameId, java.lang.String structureKey,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
@@ -840,7 +840,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -849,7 +849,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure updateStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure updateStructure(
 		HttpPrincipal httpPrincipal, long groupId, long parentStructureId,
 		long classNameId, java.lang.String structureKey,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
@@ -878,7 +878,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -887,7 +887,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure updateStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure updateStructure(
 		HttpPrincipal httpPrincipal, long structureId, long parentStructureId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -916,7 +916,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
@@ -925,7 +925,7 @@ public class DDMStructureServiceHttp {
 		}
 	}
 
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStructure updateStructure(
+	public static com.liferay.dynamic.data.mapping.model.DDMStructure updateStructure(
 		HttpPrincipal httpPrincipal, long structureId, long parentStructureId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
@@ -953,7 +953,7 @@ public class DDMStructureServiceHttp {
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 
-			return (com.liferay.portlet.dynamicdatamapping.model.DDMStructure)returnObj;
+			return (com.liferay.dynamic.data.mapping.model.DDMStructure)returnObj;
 		}
 		catch (com.liferay.portal.kernel.exception.SystemException se) {
 			_log.error(se, se);
