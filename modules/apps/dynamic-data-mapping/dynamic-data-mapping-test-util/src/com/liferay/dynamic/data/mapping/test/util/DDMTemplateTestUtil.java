@@ -22,9 +22,9 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class DDMTemplateTestUtil {
 
 		return DDMTemplateLocalServiceUtil.addTemplate(
 			TestPropsValues.getUserId(), groupId, classNameId, classPK, 0,
-			nameMap, null, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null,
+			nameMap, null, DDMTemplateManager.TEMPLATE_TYPE_DISPLAY, null,
 			language, script, serviceContext);
 	}
 

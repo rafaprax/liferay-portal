@@ -61,8 +61,8 @@ import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
-import com.liferay.portlet.dynamicdatamapping.util.DDMImpl;
-import com.liferay.portlet.dynamicdatamapping.util.DDMXMLImpl;
+import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
+import com.liferay.dynamic.data.mapping.util.internal.DDMXMLImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 

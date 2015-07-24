@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.dynamic.data.mapping.storage.FieldRenderer;
-import com.liferay.portlet.dynamicdatamapping.storage.GeolocationFieldRenderer;
+import com.liferay.dynamic.data.mapping.storage.GeolocationFieldRenderer;
 
 import java.util.Locale;
 
