@@ -28,7 +28,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mock;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -36,7 +38,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Igor Spasic
  */
 @RunWith(PowerMockRunner.class)
-public class JSONSerializerTest extends PowerMockito{
+public class JSONSerializerTest extends PowerMockito {
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,13 +49,12 @@ public class JSONSerializerTest extends PowerMockito{
 		LocalizationUtil localizationUtil = new LocalizationUtil();
 
 		localizationUtil.setLocalization(new LocalizationImpl());
+
+		setUpDDMStructure();
 	}
 
 	@Test
 	public void testSerializeDDMStructure() {
-
-		_ddmStructure.setDefinition("value");
-
 		JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 
 		jsonSerializer.exclude("*.class");
@@ -118,6 +119,15 @@ public class JSONSerializerTest extends PowerMockito{
 		Assert.assertEquals(json1, json2);
 	}
 
+	protected void setUpDDMStructure() {
+		when(
+			_ddmStructure.getDefinition()
+		).thenReturn(
+			"value"
+		);
+	}
+
 	@Mock
 	private DDMStructure _ddmStructure;
+
 }
