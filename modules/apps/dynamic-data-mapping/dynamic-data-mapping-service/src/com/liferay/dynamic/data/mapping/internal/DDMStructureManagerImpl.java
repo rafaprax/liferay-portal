@@ -32,6 +32,7 @@ import com.liferay.portlet.dynamicdatamapping.StructureDuplicateElementException
 import com.liferay.portlet.dynamicdatamapping.StructureNameException;
 import com.liferay.portlet.dynamicdatamapping.StructureFieldException;
 import com.liferay.portlet.dynamicdatamapping.StructureDuplicateStructureKeyException;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
@@ -404,6 +405,12 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	}
 
 	@Override
+	public int getStructureStorageLinksCount(long structureId) {
+		return _ddmStorageLinkLocalService.getStructureStorageLinksCount(
+					structureId);
+	}
+
+	@Override
 	public DDMStructure updateStructure(
 			long userId, long structureId, long parentStructureId,
 			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
@@ -488,6 +495,15 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		_ddmStructureLocalService = ddmStructureLocalService;
 	}
 
+	@Reference
+	protected void setDDMStorageLinkLocalService(
+			DDMStorageLinkLocalService ddmStorageLinkLocalService) {
+		
+		_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
+	}
+
 	private DDMStructureLocalService _ddmStructureLocalService;
+	private DDMStorageLinkLocalService _ddmStorageLinkLocalService;
+
 
 }
