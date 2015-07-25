@@ -14,6 +14,9 @@
 
 package com.liferay.dynamic.data.mapping.util.internal;
 
+import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
+import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.util.DDMXML;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -34,9 +37,6 @@ import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.xml.XMLSchema;
 import com.liferay.portal.kernel.xml.XPath;
-import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
-import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
@@ -44,6 +44,7 @@ import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.IOException;
 import java.io.Serializable;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;

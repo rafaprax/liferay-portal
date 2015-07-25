@@ -14,8 +14,13 @@
 
 package com.liferay.dynamic.data.mapping.service.test;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureLayoutTestHelper;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -26,15 +31,10 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
-import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
-import com.liferay.dynamic.data.mapping.util.DDMUtil;
+import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -141,7 +141,8 @@ public class BaseDDMServiceTestCase {
 
 		return addStructure(
 			0, classNameId, null, name, description, read("test-structure.xsd"),
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 	}
 
 	protected DDMStructure addStructure(

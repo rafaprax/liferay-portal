@@ -30,7 +30,7 @@ import java.util.Locale;
 public class DDMTemplateImpl implements DDMTemplate {
 
 	public DDMTemplateImpl(
-			com.liferay.dynamic.data.mapping.model.DDMTemplate ddmTemplate) {
+		com.liferay.dynamic.data.mapping.model.DDMTemplate ddmTemplate) {
 
 		_ddmTemplate = ddmTemplate;
 	}

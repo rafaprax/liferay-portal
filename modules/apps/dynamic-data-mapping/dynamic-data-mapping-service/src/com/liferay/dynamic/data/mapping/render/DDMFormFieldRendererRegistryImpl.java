@@ -14,8 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderer;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRendererRegistry;
 import com.liferay.registry.Filter;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;

@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
  * @author Leonardo Barros
  */
 public class StorageException extends PortalException {
-	
+
 	public StorageException() {
 	}
 
@@ -35,5 +35,5 @@ public class StorageException extends PortalException {
 	public StorageException(Throwable cause) {
 		super(cause);
 	}
-	
+
 }

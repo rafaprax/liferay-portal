@@ -17,6 +17,10 @@ package com.liferay.dynamic.data.mapping.util;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONDeserializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.upgrade.util.UpgradeProcessUtil;
@@ -33,14 +37,10 @@ import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
-import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
-import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +84,7 @@ public class DefaultDDMStructureUtil {
 			if (ddmStructure != null) {
 				continue;
 			}
+
 			Map<Locale, String> nameMap = new HashMap<>();
 			Map<Locale, String> descriptionMap = new HashMap<>();
 
@@ -109,8 +110,8 @@ public class DefaultDDMStructureUtil {
 
 			ddmStructure = DDMStructureLocalServiceUtil.addStructure(
 				userId, groupId,
-				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID, classNameId,
-				ddmStructureKey, nameMap, descriptionMap, ddmForm,
+				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
+				classNameId, ddmStructureKey, nameMap, descriptionMap, ddmForm,
 				ddmFormLayout, StorageType.JSON.toString(),
 				DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 

@@ -14,8 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.search;
 
-import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portal.kernel.dao.search.SearchContainer;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;

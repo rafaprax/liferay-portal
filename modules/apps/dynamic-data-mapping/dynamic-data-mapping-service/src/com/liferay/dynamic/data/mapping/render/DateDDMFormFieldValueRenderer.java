@@ -14,8 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
-import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.ValueAccessor;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -24,6 +22,7 @@ import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
 import java.text.Format;
+
 import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;

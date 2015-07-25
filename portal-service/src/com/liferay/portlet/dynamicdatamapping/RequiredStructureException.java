@@ -35,4 +35,5 @@ public class RequiredStructureException extends PortalException {
 	public RequiredStructureException(Throwable cause) {
 		super(cause);
 	}
+
 }

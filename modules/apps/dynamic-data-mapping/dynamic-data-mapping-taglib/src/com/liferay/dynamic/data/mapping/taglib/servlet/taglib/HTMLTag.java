@@ -67,7 +67,7 @@ public class HTMLTag extends BaseHTMLTag {
 	protected Fields getFields() {
 		try {
 			long ddmStructureId = getClassPK();
-			
+
 			if (getClassNameId() ==
 					PortalUtil.getClassNameId(DDMTemplate.class)) {
 

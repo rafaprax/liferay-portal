@@ -28,11 +28,14 @@ public class StructureDuplicateStructureKeyException extends PortalException {
 		super(msg);
 	}
 
-	public StructureDuplicateStructureKeyException(String msg, Throwable cause) {
+	public StructureDuplicateStructureKeyException(
+		String msg, Throwable cause) {
+
 		super(msg, cause);
 	}
 
 	public StructureDuplicateStructureKeyException(Throwable cause) {
 		super(cause);
 	}
+
 }

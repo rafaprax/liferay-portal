@@ -16,12 +16,12 @@ package com.liferay.dynamic.data.mapping.service.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.dynamic.data.mapping.model.DDMTemplateVersion;
 import com.liferay.dynamic.data.mapping.service.base.DDMTemplateVersionServiceBaseImpl;
+import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateVersion;
-import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
 
 import java.util.List;
 

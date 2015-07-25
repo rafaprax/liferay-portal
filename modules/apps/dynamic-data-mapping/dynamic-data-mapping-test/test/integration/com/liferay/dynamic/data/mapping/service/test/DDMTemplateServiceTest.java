@@ -15,6 +15,12 @@
 package com.liferay.dynamic.data.mapping.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.dynamic.data.mapping.exception.TemplateDuplicateTemplateKeyException;
+import com.liferay.dynamic.data.mapping.exception.TemplateNameException;
+import com.liferay.dynamic.data.mapping.exception.TemplateScriptException;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.comparator.TemplateIdComparator;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -29,12 +35,6 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
-import com.liferay.dynamic.data.mapping.exception.TemplateDuplicateTemplateKeyException;
-import com.liferay.dynamic.data.mapping.exception.TemplateNameException;
-import com.liferay.dynamic.data.mapping.exception.TemplateScriptException;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.util.comparator.TemplateIdComparator;
 
 import java.util.List;
 

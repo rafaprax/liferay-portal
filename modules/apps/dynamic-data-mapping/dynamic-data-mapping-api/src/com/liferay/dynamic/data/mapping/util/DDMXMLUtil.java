@@ -14,12 +14,12 @@
 
 package com.liferay.dynamic.data.mapping.util;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 
 import java.util.List;
 import java.util.Locale;

@@ -15,7 +15,6 @@
 package com.liferay.dynamic.data.mapping.io;
 
 import com.liferay.dynamic.data.mapping.io.internal.DDMFormJSONSerializerImpl;
-import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 
 import org.junit.Before;

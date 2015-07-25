@@ -14,9 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
-import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.ValueAccessor;
-import com.liferay.dynamic.data.mapping.render.ValueAccessorException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;

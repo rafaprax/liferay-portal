@@ -24,9 +24,9 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
-import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -141,13 +141,12 @@ public class Field implements Serializable {
 	}
 
 	public String getRenderedValue(Locale locale) throws PortalException {
-		return DDMStructureManagerUtil.getFieldRenderedValue(
-			this, locale, -1);
+		return DDMStructureManagerUtil.getFieldRenderedValue(this, locale, -1);
 	}
 
 	public String getRenderedValue(Locale locale, int valueIndex)
 		throws PortalException {
-		
+
 		return DDMStructureManagerUtil.getFieldRenderedValue(
 			this, locale, valueIndex);
 	}

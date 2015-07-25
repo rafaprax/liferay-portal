@@ -21,8 +21,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.base.DDLRecordLocalServiceBaseImpl;
 import com.liferay.dynamic.data.lists.util.DDL;
 import com.liferay.dynamic.data.lists.util.DDLUtil;
-import com.liferay.portlet.dynamicdatamapping.storage.Field;
-import com.liferay.portlet.dynamicdatamapping.storage.Fields;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.StorageEngineUtil;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
 import com.liferay.dynamic.data.mapping.util.DDMUtil;
@@ -51,11 +50,13 @@ import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.portlet.expando.model.ExpandoBridge;
 
 import java.io.Serializable;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;

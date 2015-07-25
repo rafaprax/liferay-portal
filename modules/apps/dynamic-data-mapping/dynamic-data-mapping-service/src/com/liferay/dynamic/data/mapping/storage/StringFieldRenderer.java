@@ -14,9 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.storage;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
-import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -26,10 +25,11 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -89,7 +89,9 @@ public class StringFieldRenderer extends BaseFieldRenderer {
 			Field field, String optionValue)
 		throws Exception {
 
-		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(field.getDDMStructureId());
+		DDMStructure ddmStructure =
+			DDMStructureLocalServiceUtil.fetchDDMStructure(
+				field.getDDMStructureId());
 
 		DDMFormField ddmFormField = ddmStructure.getDDMFormField(
 			field.getName());
@@ -101,7 +103,9 @@ public class StringFieldRenderer extends BaseFieldRenderer {
 	}
 
 	protected String getFieldType(Field field) throws Exception {
-		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(field.getDDMStructureId());
+		DDMStructure ddmStructure =
+			DDMStructureLocalServiceUtil.fetchDDMStructure(
+				field.getDDMStructureId());
 
 		return ddmStructure.getFieldType(field.getName());
 	}

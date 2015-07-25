@@ -15,6 +15,9 @@
 package com.liferay.dynamic.data.mapping.io.internal;
 
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFactory;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -26,9 +29,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.registry.DDMFormFactory;
-import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
-import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;

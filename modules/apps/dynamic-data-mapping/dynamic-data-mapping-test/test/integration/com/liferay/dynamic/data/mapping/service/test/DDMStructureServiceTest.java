@@ -15,16 +15,6 @@
 package com.liferay.dynamic.data.mapping.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
-import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.exception.RequiredStructureException;
 import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
 import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
@@ -35,6 +25,16 @@ import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureIdComparator;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 
 import java.util.List;
 
@@ -44,6 +44,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
@@ -338,8 +339,9 @@ public class DDMStructureServiceTest extends BaseDDMServiceTestCase {
 		List<DDMStructure> structures = DDMStructureLocalServiceUtil.search(
 			TestPropsValues.getCompanyId(), new long[] {group.getGroupId()},
 			_CLASS_NAME_ID, "Contact", "Event", null,
-			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, false, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS, new StructureIdComparator(true));
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, false,
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+			new StructureIdComparator(true));
 
 		Assert.assertEquals("Contact", getStructureName(structures.get(0)));
 		Assert.assertEquals("Event", getStructureName(structures.get(1)));

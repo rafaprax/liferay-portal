@@ -14,10 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderer;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRendererRegistryUtil;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.dynamic.data.mapping.render.DDMFormRenderer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;

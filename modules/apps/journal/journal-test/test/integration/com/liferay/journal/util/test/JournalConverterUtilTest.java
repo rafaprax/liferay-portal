@@ -15,7 +15,12 @@
 package com.liferay.journal.util.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
+import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
+import com.liferay.dynamic.data.mapping.util.internal.DDMXMLImpl;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.journal.util.JournalConverter;
@@ -51,18 +56,13 @@ import com.liferay.portal.xml.XMLSchemaImpl;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
-import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
-import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
-import com.liferay.dynamic.data.mapping.util.internal.DDMXMLImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 
@@ -118,7 +118,8 @@ public class JournalConverterUtilTest {
 
 		_ddmStructure = _ddmStructureTestHelper.addStructure(
 			classNameId, null, "Test Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Registry registry = RegistryUtil.getRegistry();
 

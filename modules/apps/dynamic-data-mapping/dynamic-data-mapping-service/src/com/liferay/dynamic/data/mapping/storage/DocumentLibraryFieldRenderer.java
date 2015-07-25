@@ -14,8 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.storage;
 
-import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
-import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -29,8 +27,10 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
