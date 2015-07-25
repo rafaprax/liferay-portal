@@ -14,7 +14,6 @@
 
 package com.liferay.portlet.documentlibrary.service.impl;
 
-import com.liferay.portlet.dynamicdatamapping.StorageException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
@@ -23,6 +22,7 @@ import com.liferay.portlet.documentlibrary.service.base.DLFileEntryMetadataLocal
 import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureLinkManagerUtil;
 import com.liferay.portlet.dynamicdatamapping.StorageEngineManagerUtil;
+import com.liferay.portlet.dynamicdatamapping.StorageException;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 
 import java.util.List;

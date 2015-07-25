@@ -15,7 +15,15 @@
 package com.liferay.dynamic.data.mapping.storage.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.test.BaseDDMServiceTestCase;
+import com.liferay.dynamic.data.mapping.storage.JSONStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
+import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverterUtil;
+import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -33,18 +41,10 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.storage.JSONStorageAdapter;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
-import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
-import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverterUtil;
 
 import java.io.Serializable;
 
@@ -87,7 +87,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Boolean Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -124,7 +125,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Date Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -166,7 +168,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Decimal Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -260,7 +263,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Integer Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -297,7 +301,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Link to Page Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -334,7 +339,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Number Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -371,7 +377,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Radio Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -407,7 +414,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Select Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 
@@ -443,7 +451,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		DDMStructure structure = addStructure(
 			_CLASS_NAME_ID, null, "Text Field Structure", definition,
-			StorageType.JSON.getValue(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
+			StorageType.JSON.getValue(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT);
 
 		Fields fields = new Fields();
 

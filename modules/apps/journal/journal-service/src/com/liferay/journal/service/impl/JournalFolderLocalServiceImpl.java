@@ -14,6 +14,8 @@
 
 package com.liferay.journal.service.impl;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
 import com.liferay.journal.exception.DuplicateFolderNameException;
 import com.liferay.journal.exception.InvalidDDMStructureException;
 import com.liferay.journal.exception.NoSuchFolderException;
@@ -56,8 +58,6 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLinkConstants;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
 import com.liferay.portlet.social.model.SocialActivityConstants;
 import com.liferay.portlet.trash.model.TrashEntry;
 import com.liferay.portlet.trash.model.TrashVersion;

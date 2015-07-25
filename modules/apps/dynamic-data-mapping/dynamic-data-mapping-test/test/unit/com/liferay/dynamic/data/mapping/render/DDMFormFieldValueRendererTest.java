@@ -35,17 +35,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
-import com.liferay.dynamic.data.mapping.render.CheckboxDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.DateDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.DecimalDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.DocumentLibraryDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.GeolocationDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.IntegerDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.LinkToPageDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.SelectDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.TextDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.ValueAccessorException;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 

@@ -18,7 +18,7 @@ package com.liferay.portlet.dynamicdatamapping;
  * @author Leonardo Barros
  */
 public class StorageFieldRequiredException extends StorageException {
-	
+
 	public StorageFieldRequiredException() {
 	}
 
@@ -33,4 +33,5 @@ public class StorageFieldRequiredException extends StorageException {
 	public StorageFieldRequiredException(Throwable cause) {
 		super(cause);
 	}
+
 }

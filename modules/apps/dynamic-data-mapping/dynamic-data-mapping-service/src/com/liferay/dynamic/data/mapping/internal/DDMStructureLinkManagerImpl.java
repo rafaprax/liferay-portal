@@ -14,10 +14,10 @@
 
 package com.liferay.dynamic.data.mapping.internal;
 
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureLink;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureLinkManager;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,11 +53,10 @@ public class DDMStructureLinkManagerImpl implements DDMStructureLinkManager {
 
 	@Override
 	public void deleteStructureLinks(long classNameId, long classPK) {
-
 		_ddmStructureLinkLocalService.deleteStructureLinks(
-				classNameId, classPK);
+			classNameId, classPK);
 	}
-	
+
 	@Override
 	public List<DDMStructureLink> getClassNameStructureLinks(long classNameId) {
 		List<DDMStructureLink> ddmStructureLinks = new ArrayList<>();

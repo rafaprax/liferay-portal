@@ -14,9 +14,9 @@
 
 package com.liferay.dynamic.data.mapping.model.impl;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 
 /**
  * @author Marcellus Tavares

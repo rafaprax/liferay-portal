@@ -17,6 +17,8 @@ package com.liferay.document.library.google.docs.migration;
 import com.liferay.document.library.google.docs.util.GoogleDocsConstants;
 import com.liferay.document.library.google.docs.util.GoogleDocsDLFileEntryTypeHelper;
 import com.liferay.document.library.google.docs.util.GoogleDocsMetadataHelper;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
@@ -31,8 +33,6 @@ import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalServi
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
 import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 
 /**
  * @author Iván Zaera
@@ -179,9 +179,10 @@ public class LegacyGoogleDocsMigration {
 		_dlFileEntryMetadataLocalService;
 	private DLFileEntryType _dlFileEntryType;
 	private final DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
+	private final FieldsToDDMFormValuesConverter
+		_fieldsToDDMFormValuesConverter;
 	private final GoogleDocsDLFileEntryTypeHelper
 		_googleDocsDLFileEntryTypeHelper;
 	private final StorageEngine _storageEngine;
-	private FieldsToDDMFormValuesConverter _fieldsToDDMFormValuesConverter;
 
 }

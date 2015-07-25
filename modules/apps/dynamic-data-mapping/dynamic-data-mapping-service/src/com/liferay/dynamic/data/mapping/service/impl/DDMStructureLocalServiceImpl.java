@@ -23,7 +23,11 @@ import com.liferay.dynamic.data.mapping.exception.StructureDuplicateStructureKey
 import com.liferay.dynamic.data.mapping.exception.StructureNameException;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.base.DDMStructureLocalServiceBaseImpl;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.dynamic.data.mapping.util.DDMXMLUtil;
 import com.liferay.dynamic.data.mapping.util.internal.DDMFormTemplateSynchonizer;
@@ -57,10 +61,6 @@ import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -237,9 +237,11 @@ public class DDMStructureLocalServiceImpl
 		throws PortalException {
 
 		return addStructure(
-			userId, groupId, DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
+			userId, groupId,
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
 			classNameId, null, nameMap, descriptionMap, ddmForm, ddmFormLayout,
-			storageType, DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
+			storageType, DDMStructureManager.STRUCTURE_TYPE_DEFAULT,
+			serviceContext);
 	}
 
 	/**
@@ -272,13 +274,13 @@ public class DDMStructureLocalServiceImpl
 			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 			String definition, ServiceContext serviceContext)
 		throws PortalException {
-		
 
 		return addStructure(
-			userId, groupId, DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
+			userId, groupId,
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
 			classNameId, null, nameMap, descriptionMap, definition,
-			StorageType.JSON.toString(), DDMStructureManager.STRUCTURE_TYPE_DEFAULT,
-			serviceContext);
+			StorageType.JSON.toString(),
+			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 	}
 
 	@Override
@@ -294,7 +296,7 @@ public class DDMStructureLocalServiceImpl
 			groupId, classNameId, parentStructureKey);
 
 		long parentStructureId =
-				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID;
+			DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID;
 
 		if (parentStructure != null) {
 			parentStructureId = parentStructure.getStructureId();

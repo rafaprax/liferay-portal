@@ -14,7 +14,10 @@
 
 package com.liferay.dynamic.data.mapping.service.impl;
 
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.base.DDMTemplateServiceBaseImpl;
+import com.liferay.dynamic.data.mapping.service.permission.DDMPermission;
+import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
 import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -22,11 +25,9 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.service.permission.DDMPermission;
-import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

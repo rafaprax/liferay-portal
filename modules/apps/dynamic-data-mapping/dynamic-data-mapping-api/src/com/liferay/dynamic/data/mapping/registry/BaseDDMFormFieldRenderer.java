@@ -26,7 +26,9 @@ import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 
 import java.io.Writer;
+
 import java.net.URL;
+
 import java.util.Locale;
 
 /**

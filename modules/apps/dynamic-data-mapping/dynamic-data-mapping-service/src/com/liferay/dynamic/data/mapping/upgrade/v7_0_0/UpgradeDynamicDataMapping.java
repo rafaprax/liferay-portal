@@ -14,6 +14,16 @@
 
 package com.liferay.dynamic.data.mapping.upgrade.v7_0_0;
 
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONSerializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONSerializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMContent;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDMFormFieldValueTransformer;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesTransformer;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.dynamic.data.mapping.util.internal.DDMFieldsCounter;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -49,12 +59,6 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
-import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
-import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONSerializerUtil;
-import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializerUtil;
-import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONSerializerUtil;
-import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
-import com.liferay.dynamic.data.mapping.model.DDMContent;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
@@ -64,17 +68,15 @@ import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.util.DDMFormFieldValueTransformer;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesTransformer;
-import com.liferay.dynamic.data.mapping.util.DDMUtil;
-import com.liferay.dynamic.data.mapping.util.DDM;
 
 import java.io.File;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;

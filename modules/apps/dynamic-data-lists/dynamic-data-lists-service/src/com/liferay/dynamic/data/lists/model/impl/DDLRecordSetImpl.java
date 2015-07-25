@@ -16,11 +16,11 @@ package com.liferay.dynamic.data.lists.model.impl;
 
 import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 
 import java.util.List;
 

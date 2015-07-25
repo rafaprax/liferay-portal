@@ -22,8 +22,6 @@ import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.util.DDMFormFieldValueTransformer;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesTransformer;
 
 import java.util.List;
 import java.util.Locale;

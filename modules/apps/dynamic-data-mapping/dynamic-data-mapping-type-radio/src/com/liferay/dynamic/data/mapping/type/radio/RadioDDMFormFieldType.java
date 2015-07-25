@@ -14,9 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.type.radio;
 
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.dynamic.data.mapping.registry.BaseDDMFormFieldType;
 import com.liferay.dynamic.data.mapping.registry.DDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
@@ -24,6 +21,9 @@ import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeSettings;
 import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueAccessor;
 import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueParameterSerializer;
 import com.liferay.dynamic.data.mapping.registry.DDMFormFieldValueRendererAccessor;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 
 import java.util.Locale;
 

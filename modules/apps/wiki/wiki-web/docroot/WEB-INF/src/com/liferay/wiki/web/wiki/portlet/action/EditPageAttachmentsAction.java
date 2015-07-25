@@ -14,6 +14,7 @@
 
 package com.liferay.wiki.web.wiki.portlet.action;
 
+import com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -66,7 +67,6 @@ import com.liferay.portlet.documentlibrary.NoSuchFolderException;
 import com.liferay.portlet.documentlibrary.SourceFileNameException;
 import com.liferay.portlet.documentlibrary.antivirus.AntivirusScannerException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
-import com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException;
 import com.liferay.portlet.trash.service.TrashEntryServiceUtil;
 import com.liferay.portlet.trash.util.TrashUtil;
 import com.liferay.taglib.util.RestoreEntryUtil;

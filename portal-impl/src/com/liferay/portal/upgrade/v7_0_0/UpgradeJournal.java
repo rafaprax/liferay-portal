@@ -46,6 +46,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -97,8 +98,7 @@ public class UpgradeJournal extends UpgradeBaseJournal {
 
 		long ddmStructureId = addDDMStructure(
 			ddmStructureUUID, increment(), groupId, companyId, name,
-			localizedName, localizedDescription, definition, layout,
-			"json");
+			localizedName, localizedDescription, definition, layout, "json");
 
 		String ddmTemplateUUID = PortalUUIDUtil.generate();
 
@@ -201,7 +201,7 @@ public class UpgradeJournal extends UpgradeBaseJournal {
 
 			Map<String, Long> bitwiseValues = getBitwiseValues(
 				DDMStructureManagerUtil.getDDMStructureModelClass().getName());
-			
+
 			List<String> actionIds = new ArrayList<>();
 
 			actionIds.add(ActionKeys.VIEW);
@@ -209,15 +209,14 @@ public class UpgradeJournal extends UpgradeBaseJournal {
 			long bitwiseValue = getBitwiseValue(bitwiseValues, actionIds);
 
 			addResourcePermission(
-				companyId, 
-				DDMStructureManagerUtil.getDDMStructureModelClass().getName(), 
-				ddmStructureId, getRoleId(
-					companyId, RoleConstants.GUEST), 
+				companyId,
+				DDMStructureManagerUtil.getDDMStructureModelClass().getName(),
+				ddmStructureId, getRoleId(companyId, RoleConstants.GUEST),
 				bitwiseValue);
 			addResourcePermission(
-				companyId, 
-				DDMStructureManagerUtil.getDDMStructureModelClass().getName(), 
-				ddmStructureId, getRoleId(companyId, RoleConstants.SITE_MEMBER), 
+				companyId,
+				DDMStructureManagerUtil.getDDMStructureModelClass().getName(),
+				ddmStructureId, getRoleId(companyId, RoleConstants.SITE_MEMBER),
 				bitwiseValue);
 		}
 		catch (Exception e) {
@@ -377,11 +376,12 @@ public class UpgradeJournal extends UpgradeBaseJournal {
 			ps.setString(6, StringPool.BLANK);
 			ps.setTimestamp(7, now);
 			ps.setTimestamp(8, now);
-			ps.setLong(9, PortalUtil.getClassNameId(
-				DDMStructureManagerUtil.getDDMStructureModelClass()));
+			ps.setLong(
+				9,
+				PortalUtil.getClassNameId(
+					DDMStructureManagerUtil.getDDMStructureModelClass()));
 			ps.setLong(10, ddmStructureId);
 			ps.setString(11, templateKey);
-			
 			ps.setString(12, DDMTemplateManager.TEMPLATE_VERSION_DEFAULT);
 			ps.setString(13, localizedName);
 			ps.setString(14, localizedDescription);
@@ -400,8 +400,8 @@ public class UpgradeJournal extends UpgradeBaseJournal {
 				increment(), groupId, companyId, getDefaultUserId(companyId),
 				StringPool.BLANK, now,
 				PortalUtil.getClassNameId(
-					DDMStructureManagerUtil.getDDMStructureModelClass()), 
-				ddmStructureId, ddmTemplateId, localizedName, 
+					DDMStructureManagerUtil.getDDMStructureModelClass()),
+				ddmStructureId, ddmTemplateId, localizedName,
 				localizedDescription, TemplateConstants.LANG_TYPE_FTL, script,
 				WorkflowConstants.STATUS_APPROVED, getDefaultUserId(companyId),
 				StringPool.BLANK, now);
@@ -416,13 +416,13 @@ public class UpgradeJournal extends UpgradeBaseJournal {
 			long bitwiseValue = getBitwiseValue(bitwiseValues, actionIds);
 
 			addResourcePermission(
-				companyId, 
-				DDMTemplateManagerUtil.getDDMTemplateModelClass().getName(), 
-				ddmTemplateId, getRoleId(companyId, RoleConstants.GUEST), 
+				companyId,
+				DDMTemplateManagerUtil.getDDMTemplateModelClass().getName(),
+				ddmTemplateId, getRoleId(companyId, RoleConstants.GUEST),
 				bitwiseValue);
 			addResourcePermission(
-				companyId, 
-				DDMTemplateManagerUtil.getDDMTemplateModelClass().getName(), 
+				companyId,
+				DDMTemplateManagerUtil.getDDMTemplateModelClass().getName(),
 				ddmTemplateId, getRoleId(companyId, RoleConstants.SITE_MEMBER),
 				bitwiseValue);
 		}

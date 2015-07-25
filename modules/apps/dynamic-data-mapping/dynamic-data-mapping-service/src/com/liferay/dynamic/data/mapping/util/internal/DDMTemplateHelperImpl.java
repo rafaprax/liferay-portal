@@ -14,6 +14,10 @@
 
 package com.liferay.dynamic.data.mapping.util.internal;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureServiceUtil;
 import com.liferay.dynamic.data.mapping.util.DDMTemplateHelper;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -31,13 +35,10 @@ import com.liferay.portal.template.TemplateContextHelper;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.service.DDMStructureServiceUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;

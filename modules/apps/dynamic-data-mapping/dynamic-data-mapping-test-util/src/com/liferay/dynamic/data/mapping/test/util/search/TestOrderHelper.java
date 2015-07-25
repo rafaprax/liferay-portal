@@ -14,11 +14,12 @@
 
 package com.liferay.dynamic.data.mapping.test.util.search;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.render.ValueAccessor;
-import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
-import com.liferay.dynamic.data.mapping.util.DDMIndexerUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMTemplateTestUtil;
+import com.liferay.dynamic.data.mapping.util.DDMIndexerUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -41,17 +42,14 @@ import com.liferay.portlet.asset.model.DDMFormValuesReader;
 import com.liferay.portlet.asset.service.persistence.AssetEntryQuery;
 import com.liferay.portlet.asset.service.persistence.test.AssetEntryQueryTestUtil;
 import com.liferay.portlet.asset.util.AssetUtil;
-import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
-import com.liferay.portlet.dynamicdatamapping.DDMStructureManagerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
+import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 
 import java.util.List;
 import java.util.Locale;
@@ -60,6 +58,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ArrayUtils;
+
 import org.junit.Assert;
 
 /**
@@ -228,7 +227,7 @@ public abstract class TestOrderHelper {
 
 		String orderByCol1 = DDMIndexerUtil.encodeName(
 			ddmStructure.getStructureId(), "name");
-		
+
 		assetEntryQuery.setOrderByCol1(orderByCol1);
 		assetEntryQuery.setOrderByType1("asc");
 

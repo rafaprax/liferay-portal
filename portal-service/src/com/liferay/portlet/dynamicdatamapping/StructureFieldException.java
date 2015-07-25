@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
  * @author Rafael Praxedes
  */
 public class StructureFieldException extends PortalException {
-	
+
 	public StructureFieldException() {
 	}
 
@@ -35,5 +35,5 @@ public class StructureFieldException extends PortalException {
 	public StructureFieldException(Throwable cause) {
 		super(cause);
 	}
-	
+
 }

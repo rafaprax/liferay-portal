@@ -14,6 +14,9 @@
 
 package com.liferay.dynamic.data.mapping.util;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -21,9 +24,6 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
@@ -38,7 +38,7 @@ import javax.portlet.PortletRequest;
  * @author Leonardo Barros
  */
 public interface DDM {
-	
+
 	public static final String FIELDS_DISPLAY_NAME = "_fieldsDisplay";
 
 	public static final String INSTANCE_SEPARATOR = "_INSTANCE_";

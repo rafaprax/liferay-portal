@@ -14,7 +14,6 @@
 
 package com.liferay.portlet.exportimport.service.impl;
 
-import com.liferay.portlet.dynamicdatamapping.StructureDuplicateStructureKeyException;
 import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -25,6 +24,7 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.util.DLValidatorUtil;
+import com.liferay.portlet.dynamicdatamapping.StructureDuplicateStructureKeyException;
 import com.liferay.portlet.exportimport.LARFileNameException;
 import com.liferay.portlet.exportimport.backgroundtask.LayoutExportBackgroundTaskExecutor;
 import com.liferay.portlet.exportimport.backgroundtask.LayoutImportBackgroundTaskExecutor;
@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+
 import java.util.HashMap;
 import java.util.Map;
 

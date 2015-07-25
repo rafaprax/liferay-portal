@@ -14,13 +14,12 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
-import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
-import com.liferay.dynamic.data.mapping.render.ValueAccessor;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
 import java.text.NumberFormat;
+
 import java.util.Locale;
 
 /**

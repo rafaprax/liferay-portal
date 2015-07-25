@@ -15,6 +15,9 @@
 package com.liferay.dynamic.data.mapping.util;
 
 import com.liferay.dynamic.data.mapping.BaseDDMTestCase;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
@@ -22,11 +25,8 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutColumn;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutPage;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutRow;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.util.internal.DDMImpl;
 
 import java.io.Serializable;
 

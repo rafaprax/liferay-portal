@@ -14,6 +14,11 @@
 
 package com.liferay.portlet.display.template.web.ddm;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.util.BaseDDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -27,12 +32,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.display.template.PortletDisplayTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
-import com.liferay.dynamic.data.mapping.util.BaseDDMDisplay;
-import com.liferay.dynamic.data.mapping.util.DDMDisplay;
-import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 
 import java.util.Locale;
 import java.util.Set;
@@ -104,7 +104,7 @@ public class PortletDisplayTemplateDDMDisplay extends BaseDDMDisplay {
 
 	@Override
 	public String getTemplateType() {
-		return DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY;
+		return DDMTemplateManager.TEMPLATE_TYPE_DISPLAY;
 	}
 
 	@Override

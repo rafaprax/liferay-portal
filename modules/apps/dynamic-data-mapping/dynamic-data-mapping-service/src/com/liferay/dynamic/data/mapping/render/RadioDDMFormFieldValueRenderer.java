@@ -14,9 +14,9 @@
 
 package com.liferay.dynamic.data.mapping.render;
 
-import org.osgi.service.component.annotations.Component;
-
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Marcellus Tavares

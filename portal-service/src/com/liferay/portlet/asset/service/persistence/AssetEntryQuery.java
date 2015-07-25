@@ -33,6 +33,7 @@ import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class AssetEntryQuery {
 		if (ArrayUtil.contains(ORDER_BY_COLUMNS, orderByCol) ||
 			((orderByCol != null) &&
 			 orderByCol.startsWith(
-				DDMStructureManager.STRUCTURE_INDEXER_FIELD_PREFIX))) {
+				 DDMStructureManager.STRUCTURE_INDEXER_FIELD_PREFIX))) {
 
 			return orderByCol;
 		}

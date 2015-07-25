@@ -14,12 +14,12 @@
 
 package com.liferay.dynamic.data.mapping.webdav;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.webdav.BaseResourceImpl;
 import com.liferay.portal.kernel.webdav.WebDAVException;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 
 import java.io.InputStream;
 

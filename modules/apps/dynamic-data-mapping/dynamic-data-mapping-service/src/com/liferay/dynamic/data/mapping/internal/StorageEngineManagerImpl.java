@@ -14,13 +14,13 @@
 
 package com.liferay.dynamic.data.mapping.internal;
 
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.dynamicdatamapping.StorageEngineManager;
 import com.liferay.portlet.dynamicdatamapping.StorageException;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
-import com.liferay.dynamic.data.mapping.util.DDM;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -40,7 +40,7 @@ public class StorageEngineManagerImpl implements StorageEngineManager {
 		try {
 			return _storageEngine.create(
 				companyId, ddmStructureId, ddmFormValues, serviceContext);
-		} 
+		}
 		catch (com.liferay.dynamic.data.mapping.exception.StorageException e) {
 			throw new StorageException(e.getMessage(), e.getCause());
 		}
@@ -50,7 +50,7 @@ public class StorageEngineManagerImpl implements StorageEngineManager {
 	public void deleteByClass(long classPK) throws StorageException {
 		try {
 			_storageEngine.deleteByClass(classPK);
-		} 
+		}
 		catch (com.liferay.dynamic.data.mapping.exception.StorageException e) {
 			throw new StorageException(e.getMessage(), e.getCause());
 		}
@@ -62,7 +62,7 @@ public class StorageEngineManagerImpl implements StorageEngineManager {
 
 		try {
 			_storageEngine.deleteByDDMStructure(ddmStructureId);
-		} 
+		}
 		catch (com.liferay.dynamic.data.mapping.exception.StorageException e) {
 			throw new StorageException(e.getMessage(), e.getCause());
 		}
@@ -74,7 +74,7 @@ public class StorageEngineManagerImpl implements StorageEngineManager {
 
 		try {
 			return _storageEngine.getDDMFormValues(classPK);
-		} 
+		}
 		catch (com.liferay.dynamic.data.mapping.exception.StorageException e) {
 			throw new StorageException(e.getMessage(), e.getCause());
 		}
@@ -98,7 +98,7 @@ public class StorageEngineManagerImpl implements StorageEngineManager {
 
 		try {
 			_storageEngine.update(classPK, ddmFormValues, serviceContext);
-		} 
+		}
 		catch (com.liferay.dynamic.data.mapping.exception.StorageException e) {
 			throw new StorageException(e.getMessage(), e.getCause());
 		}

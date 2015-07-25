@@ -14,6 +14,16 @@
 
 package com.liferay.dynamic.data.mapping.internal;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.FieldRenderer;
+import com.liferay.dynamic.data.mapping.storage.FieldRendererFactory;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
+import com.liferay.dynamic.data.mapping.util.DDMIndexerUtil;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
+import com.liferay.dynamic.data.mapping.util.comparator.StructureIdComparator;
+import com.liferay.dynamic.data.mapping.util.comparator.StructureStructureKeyComparator;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.search.Document;
@@ -23,32 +33,23 @@ import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
-import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
-import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
 import com.liferay.portlet.dynamicdatamapping.RequiredStructureException;
 import com.liferay.portlet.dynamicdatamapping.StructureDefinitionException;
 import com.liferay.portlet.dynamicdatamapping.StructureDuplicateElementException;
-import com.liferay.portlet.dynamicdatamapping.StructureNameException;
-import com.liferay.portlet.dynamicdatamapping.StructureFieldException;
 import com.liferay.portlet.dynamicdatamapping.StructureDuplicateStructureKeyException;
-import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.portlet.dynamicdatamapping.StructureFieldException;
+import com.liferay.portlet.dynamicdatamapping.StructureNameException;
+import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.util.DDMIndexerUtil;
-import com.liferay.dynamic.data.mapping.util.DDMUtil;
-import com.liferay.dynamic.data.mapping.util.comparator.StructureIdComparator;
-import com.liferay.dynamic.data.mapping.util.comparator.StructureStructureKeyComparator;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.PortletDataException;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
-import com.liferay.dynamic.data.mapping.storage.FieldRenderer;
-import com.liferay.dynamic.data.mapping.storage.FieldRendererFactory;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -70,13 +71,15 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 			long structureId, Document document, DDMFormValues ddmFormValues)
 		throws PortalException {
 
-		try{
+		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.getStructure(structureId);
-	
+
 			DDMIndexerUtil.addAttributes(document, ddmStructure, ddmFormValues);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -93,45 +96,64 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.addStructure(
-					userId, groupId, parentStructureKey, classNameId, structureKey,
-					nameMap, descriptionMap, ddmForm, ddmFormLayout, storageType,
-					type, serviceContext);
-	
+					userId, groupId, parentStructureKey, classNameId,
+					structureKey, nameMap, descriptionMap, ddmForm,
+					ddmFormLayout, storageType, type, serviceContext);
+
 			return new DDMStructureImpl(ddmStructure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureDefinitionException e){
-			throw new StructureDefinitionException(e.getMessage(), e.getCause());
+		catch (com.
+		liferay.dynamic.data.mapping.exception.StructureDefinitionException e) {
+
+			throw new StructureDefinitionException(
+				e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException e){
-			throw new StructureDuplicateElementException(e.getMessage(), e.getCause());
+		catch (com.
+		liferay.
+		dynamic.data.mapping.exception.StructureDuplicateElementException e) {
+
+			throw new StructureDuplicateElementException(
+				e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureNameException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.StructureNameException e) {
+
 			throw new StructureNameException(e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureDuplicateStructureKeyException e){
-			throw new StructureDuplicateStructureKeyException(e.getMessage(), e.getCause());
+		catch (com.
+		liferay.
+		dynamic.
+		data.mapping.exception.StructureDuplicateStructureKeyException e) {
+
+			throw new StructureDuplicateStructureKeyException(
+				e.getMessage(), e.getCause());
 		}
 	}
-	
+
 	@Override
 	public Fields convertDDMFormValues(
-		long structureId, DDMFormValues ddmFormValues) 
+			long structureId, DDMFormValues ddmFormValues)
 		throws PortalException {
+
 		com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 			_ddmStructureLocalService.getStructure(structureId);
 		return DDMFormValuesToFieldsConverterUtil.convert(
-				ddmStructure, ddmFormValues);
+			ddmStructure, ddmFormValues);
 	}
 
 	@Override
 	public void deleteStructure(long structureId) throws PortalException {
-		try{
+		try {
 			_ddmStructureLocalService.deleteStructure(structureId);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.RequiredStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.RequiredStructureException e) {
+
 			throw new RequiredStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -164,11 +186,13 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.getStructure(structureId);
-	
+
 			return DDMIndexerUtil.extractAttributes(
 				ddmStructure, ddmFormValues, locale);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -268,23 +292,27 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 
 		return ddmStructures;
 	}
-	
+
 	@Override
-	public DDMForm getDDMForm(PortletRequest portletRequest) 
+	public DDMForm getDDMForm(long classNameId, long classPk)
 		throws PortalException {
 
-		try{
-			return DDMUtil.getDDMForm(portletRequest);
-		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureDefinitionException e){
-			throw new StructureDefinitionException(e.getMessage(), e.getCause());
-		}
+		return DDMUtil.getDDMForm(classNameId, classPk);
 	}
 
 	@Override
-	public DDMForm getDDMForm(long classNameId, long classPk) 
-			throws PortalException {
-		return DDMUtil.getDDMForm(classNameId, classPk);
+	public DDMForm getDDMForm(PortletRequest portletRequest)
+		throws PortalException {
+
+		try {
+			return DDMUtil.getDDMForm(portletRequest);
+		}
+		catch (com.
+		liferay.dynamic.data.mapping.exception.StructureDefinitionException e) {
+
+			throw new StructureDefinitionException(
+				e.getMessage(), e.getCause());
+		}
 	}
 
 	@Override
@@ -306,12 +334,12 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	public DDMFormLayout getDefaultDDMFormLayout(DDMForm ddmForm) {
 		return DDMUtil.getDefaultDDMFormLayout(ddmForm);
 	}
-	
+
 	@Override
 	public String getFieldRenderedValue(
-		Field field, Locale locale, int valueIndex)
+			Field field, Locale locale, int valueIndex)
 		throws PortalException {
-		
+
 		DDMStructure ddmStructure = field.getDDMStructure();
 
 		String dataType = null;
@@ -319,13 +347,13 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		if (ddmStructure != null) {
 			dataType = field.getDataType();
 		}
-		
-		FieldRenderer fieldRenderer = 
-			FieldRendererFactory.getFieldRenderer(dataType);
-		
-		if(valueIndex >= 0) {
+
+		FieldRenderer fieldRenderer = FieldRendererFactory.getFieldRenderer(
+			dataType);
+
+		if (valueIndex >= 0) {
 			return fieldRenderer.render(field, locale, valueIndex);
-		} 
+		}
 		else {
 			return fieldRenderer.render(field, locale);
 		}
@@ -335,10 +363,13 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	public Serializable getIndexedFieldValue(
 			Serializable fieldValue, String fieldType)
 		throws Exception {
+
 		try {
 			return DDMUtil.getIndexedFieldValue(fieldValue, fieldType);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureFieldException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.StructureFieldException e) {
+
 			throw new StructureFieldException(e.getMessage(), e.getCause());
 		}
 	}
@@ -348,10 +379,12 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.getStructure(structureId);
-	
+
 			return new DDMStructureImpl(ddmStructure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -361,14 +394,16 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 			long groupId, long classNameId, String structureKey)
 		throws PortalException {
 
-		try{
+		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure structure =
 				_ddmStructureLocalService.getStructure(
 					groupId, classNameId, structureKey);
-	
+
 			return new DDMStructureImpl(structure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -377,14 +412,16 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	public DDMStructure getStructureByUuidAndGroupId(String uuid, long groupId)
 		throws PortalException {
 
-		try{
+		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.getDDMStructureByUuidAndGroupId(
 					uuid, groupId);
-	
+
 			return new DDMStructureImpl(ddmStructure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -421,21 +458,32 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.updateStructure(
-					userId, structureId, parentStructureId, nameMap, descriptionMap,
-					ddmForm, ddmFormLayout, serviceContext);
-	
+					userId, structureId, parentStructureId, nameMap,
+					descriptionMap, ddmForm, ddmFormLayout, serviceContext);
+
 			return new DDMStructureImpl(ddmStructure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureDefinitionException e){
-			throw new StructureDefinitionException(e.getMessage(), e.getCause());
+		catch (com.
+		liferay.dynamic.data.mapping.exception.StructureDefinitionException e) {
+
+			throw new StructureDefinitionException(
+				e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException e){
-			throw new StructureDuplicateElementException(e.getMessage(), e.getCause());
+		catch (com.
+		liferay.
+		dynamic.data.mapping.exception.StructureDuplicateElementException e) {
+
+			throw new StructureDuplicateElementException(
+				e.getMessage(), e.getCause());
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.StructureNameException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.StructureNameException e) {
+
 			throw new StructureNameException(e.getMessage(), e.getCause());
 		}
 	}
@@ -447,12 +495,14 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.getDDMStructure(structureId);
-	
+
 			ddmStructure.setDefinition(definition);
-	
+
 			_ddmStructureLocalService.updateDDMStructure(ddmStructure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -461,15 +511,17 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	public void updateStructureKey(long structureId, String structureKey)
 		throws PortalException {
 
-		try{
+		try {
 			com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
 				_ddmStructureLocalService.getDDMStructure(structureId);
-	
+
 			ddmStructure.setStructureKey(structureKey);
-	
+
 			_ddmStructureLocalService.updateDDMStructure(ddmStructure);
 		}
-		catch(com.liferay.dynamic.data.mapping.exception.NoSuchStructureException e){
+		catch (com.
+		liferay.dynamic.data.mapping.exception.NoSuchStructureException e) {
+
 			throw new NoSuchStructureException(e.getMessage(), e.getCause());
 		}
 	}
@@ -489,21 +541,20 @@ public class DDMStructureManagerImpl implements DDMStructureManager {
 	}
 
 	@Reference
+	protected void setDDMStorageLinkLocalService(
+		DDMStorageLinkLocalService ddmStorageLinkLocalService) {
+
+		_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
+	}
+
+	@Reference
 	protected void setDDMStructureLocalService(
 		DDMStructureLocalService ddmStructureLocalService) {
 
 		_ddmStructureLocalService = ddmStructureLocalService;
 	}
 
-	@Reference
-	protected void setDDMStorageLinkLocalService(
-			DDMStorageLinkLocalService ddmStorageLinkLocalService) {
-		
-		_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
-	}
-
-	private DDMStructureLocalService _ddmStructureLocalService;
 	private DDMStorageLinkLocalService _ddmStorageLinkLocalService;
-
+	private DDMStructureLocalService _ddmStructureLocalService;
 
 }

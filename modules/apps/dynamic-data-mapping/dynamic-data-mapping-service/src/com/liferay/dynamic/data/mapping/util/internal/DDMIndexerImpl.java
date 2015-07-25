@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.util.internal;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -34,15 +35,17 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.Serializable;
+
 import java.math.BigDecimal;
+
 import java.text.Format;
+
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;

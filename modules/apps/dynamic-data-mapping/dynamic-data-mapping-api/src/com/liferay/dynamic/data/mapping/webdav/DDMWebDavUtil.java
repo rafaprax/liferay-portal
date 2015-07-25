@@ -15,6 +15,15 @@
 package com.liferay.dynamic.data.mapping.webdav;
 
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateServiceUtil;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
+import com.liferay.dynamic.data.mapping.util.DDMXMLUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -28,15 +37,6 @@ import com.liferay.portal.kernel.webdav.WebDAVRequest;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.service.DDMStructureServiceUtil;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateServiceUtil;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
-import com.liferay.dynamic.data.mapping.util.DDMUtil;
-import com.liferay.dynamic.data.mapping.util.DDMXMLUtil;
 
 import java.util.HashMap;
 import java.util.Locale;

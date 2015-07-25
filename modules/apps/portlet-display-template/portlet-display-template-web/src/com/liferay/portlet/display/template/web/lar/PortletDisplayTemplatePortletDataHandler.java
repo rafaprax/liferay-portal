@@ -14,6 +14,8 @@
 
 package com.liferay.portlet.display.template.web.lar;
 
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
@@ -24,9 +26,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.portlet.exportimport.lar.BasePortletDataHandler;
 import com.liferay.portlet.exportimport.lar.ManifestSummary;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
@@ -179,7 +179,7 @@ public class PortletDisplayTemplatePortletDataHandler
 
 					dynamicQuery.add(
 						typeProperty.eq(
-							DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY));
+							DDMTemplateManager.TEMPLATE_TYPE_DISPLAY));
 				}
 
 			});

@@ -17,8 +17,7 @@ package com.liferay.asset.publisher.web.portlet;
 import com.liferay.asset.publisher.web.upgrade.AssetPublisherWebUpgrade;
 import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
 import com.liferay.asset.publisher.web.util.AssetRSSUtil;
-import com.liferay.portlet.dynamicdatamapping.storage.Field;
-import com.liferay.portlet.dynamicdatamapping.storage.Fields;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.NoSuchGroupException;
@@ -36,12 +35,15 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+
 import java.text.DateFormat;
+
 import java.util.Date;
 
 import javax.portlet.ActionRequest;
@@ -53,6 +55,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+
 import javax.servlet.ServletException;
 
 import org.osgi.service.component.annotations.Component;
@@ -138,7 +141,9 @@ public class AssetPublisherPortlet extends MVCPortlet {
 				return;
 			}
 
-			DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(field.getDDMStructureId());
+			DDMStructure ddmStructure =
+				DDMStructureLocalServiceUtil.fetchDDMStructure(
+					field.getDDMStructureId());
 
 			String type = ddmStructure.getFieldType(fieldName);
 

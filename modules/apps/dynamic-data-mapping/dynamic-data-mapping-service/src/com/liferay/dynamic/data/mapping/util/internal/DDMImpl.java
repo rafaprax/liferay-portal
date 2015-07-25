@@ -14,8 +14,14 @@
 
 package com.liferay.dynamic.data.mapping.util.internal;
 
+import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.dynamic.data.mapping.util.DDMDisplay;
 import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistryUtil;
@@ -59,7 +65,6 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
-import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
@@ -67,12 +72,7 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutColumn;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutPage;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutRow;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
@@ -80,8 +80,10 @@ import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 
 import java.io.File;
 import java.io.Serializable;
+
 import java.text.DateFormat;
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -92,6 +94,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletRequest;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -309,9 +312,7 @@ public class DDMImpl implements DDM {
 
 			fieldValue = PortalUtil.getLayoutFriendlyURL(layout, themeDisplay);
 		}
-		else if (type.equals(DDM.TYPE_RADIO) ||
-				 type.equals(DDM.TYPE_SELECT)) {
-
+		else if (type.equals(DDM.TYPE_RADIO) || type.equals(DDM.TYPE_SELECT)) {
 			String valueString = String.valueOf(fieldValue);
 
 			JSONArray jsonArray = JSONFactoryUtil.createJSONArray(valueString);
@@ -420,7 +421,9 @@ public class DDMImpl implements DDM {
 	public String[] getFieldsDisplayValues(Field fieldsDisplayField)
 		throws Exception {
 
-		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(fieldsDisplayField.getDDMStructureId());
+		DDMStructure ddmStructure =
+			DDMStructureLocalServiceUtil.fetchDDMStructure(
+				fieldsDisplayField.getDDMStructureId());
 
 		List<String> fieldsDisplayValues = new ArrayList<>();
 
@@ -452,9 +455,7 @@ public class DDMImpl implements DDM {
 
 			fieldValue = dateFormat.format(valueDate);
 		}
-		else if (type.equals(DDM.TYPE_RADIO) ||
-				 type.equals(DDM.TYPE_SELECT)) {
-
+		else if (type.equals(DDM.TYPE_RADIO) || type.equals(DDM.TYPE_SELECT)) {
 			String valueString = (String)fieldValue;
 
 			JSONArray jsonArray = JSONFactoryUtil.createJSONArray(valueString);
@@ -571,9 +572,7 @@ public class DDMImpl implements DDM {
 			propertyValue = localizedValue.getString(defaultLocale);
 		}
 
-		if (type.equals(DDM.TYPE_RADIO) ||
-			type.equals(DDM.TYPE_SELECT)) {
-
+		if (type.equals(DDM.TYPE_RADIO) || type.equals(DDM.TYPE_SELECT)) {
 			if (propertyName.equals("predefinedValue")) {
 				try {
 					jsonObject.put(
@@ -596,9 +595,7 @@ public class DDMImpl implements DDM {
 
 		String type = ddmFormField.getType();
 
-		if (!(type.equals(DDM.TYPE_RADIO) ||
-			  type.equals(DDM.TYPE_SELECT))) {
-
+		if (!(type.equals(DDM.TYPE_RADIO) || type.equals(DDM.TYPE_SELECT))) {
 			return;
 		}
 
@@ -1176,6 +1173,6 @@ public class DDMImpl implements DDM {
 		return StringUtil.split(value);
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(DDM.class);
+	private static final Log _log = LogFactoryUtil.getLog(DDMImpl.class);
 
 }

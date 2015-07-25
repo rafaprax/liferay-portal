@@ -15,6 +15,10 @@
 package com.liferay.document.library.google.docs.display.context;
 
 import com.liferay.document.library.google.docs.util.GoogleDocsMetadataHelper;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -23,10 +27,6 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portlet.documentlibrary.model.DLFileVersion;
 import com.liferay.portlet.documentlibrary.service.DLAppService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalService;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
-import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portlet.imagegallerydisplay.display.context.IGDisplayContextFactory;
 import com.liferay.portlet.imagegallerydisplay.display.context.IGViewFileVersionDisplayContext;
 
@@ -76,8 +76,7 @@ public class GoogleDocsIGDisplayContextFactory
 
 		GoogleDocsMetadataHelper googleDocsMetadataHelper =
 			new GoogleDocsMetadataHelper(
-				_ddmFormValuesToFieldsConverter,
-				_ddmStructureLocalService,
+				_ddmFormValuesToFieldsConverter, _ddmStructureLocalService,
 				(DLFileVersion)fileVersion.getModel(),
 				_dlFileEntryMetadataLocalService,
 				_fieldsToDDMFormValuesConverter, _storageEngine);
@@ -89,6 +88,13 @@ public class GoogleDocsIGDisplayContextFactory
 		}
 
 		return parentIGViewFileVersionDisplayContext;
+	}
+
+	@Reference
+	public void setDDMFormValuesToFieldsConverter(
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
 	}
 
 	@Reference
@@ -111,12 +117,9 @@ public class GoogleDocsIGDisplayContextFactory
 	}
 
 	@Reference
-	public void setDDMFormValuesToFieldsConverter(DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
-		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
-	}
+	public void setFieldsToDDMFormValuesConverter(
+		FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter) {
 
-	@Reference
-	public void setFieldsToDDMFormValuesConverter(FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter) {
 		_fieldsToDDMFormValuesConverter = fieldsToDDMFormValuesConverter;
 	}
 

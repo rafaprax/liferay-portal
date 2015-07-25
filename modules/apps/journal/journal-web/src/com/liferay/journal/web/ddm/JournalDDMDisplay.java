@@ -14,6 +14,11 @@
 
 package com.liferay.journal.web.ddm;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.util.BaseDDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 import com.liferay.journal.configuration.JournalServiceConfigurationValues;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
@@ -26,12 +31,7 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
-import com.liferay.dynamic.data.mapping.util.BaseDDMDisplay;
-import com.liferay.dynamic.data.mapping.util.DDMDisplay;
-import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 
 import java.util.Set;
 
@@ -134,7 +134,7 @@ public class JournalDDMDisplay extends BaseDDMDisplay {
 
 	@Override
 	public String getTemplateType() {
-		return DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY;
+		return DDMTemplateManager.TEMPLATE_TYPE_DISPLAY;
 	}
 
 	@Override

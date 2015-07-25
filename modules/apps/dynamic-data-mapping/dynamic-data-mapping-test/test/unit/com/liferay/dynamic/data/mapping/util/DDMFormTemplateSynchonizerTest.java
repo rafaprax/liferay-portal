@@ -15,19 +15,19 @@
 package com.liferay.dynamic.data.mapping.util;
 
 import com.liferay.dynamic.data.mapping.BaseDDMTestCase;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
-import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
-import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
-import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.util.internal.DDMFormTemplateSynchonizer;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
+import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
+import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,6 +37,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 /**
