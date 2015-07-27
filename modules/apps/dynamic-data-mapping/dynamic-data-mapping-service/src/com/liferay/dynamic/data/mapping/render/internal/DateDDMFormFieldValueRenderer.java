@@ -12,29 +12,34 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
-import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.util.HtmlUtil;
-import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.ValueAccessor;
+import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
+import java.text.Format;
 import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * @author Bruno Basto
  * @author Marcellus Tavares
  */
 @Component(immediate = true, service = DDMFormFieldValueRenderer.class)
-public class TextHTMLDDMFormFieldValueRenderer
-	extends BaseTextDDMFormFieldValueRenderer {
+public class DateDDMFormFieldValueRenderer
+	extends BaseDDMFormFieldValueRenderer {
 
 	@Override
 	public String getSupportedDDMFormFieldType() {
-		return DDMFormFieldType.TEXT_HTML;
+		return DDMFormFieldType.DATE;
 	}
 
 	@Override
@@ -45,20 +50,20 @@ public class TextHTMLDDMFormFieldValueRenderer
 			public String get(DDMFormFieldValue ddmFormFieldValue) {
 				Value value = ddmFormFieldValue.getValue();
 
-				return StringUtil.replace(
-					_HTML,
-					new String[] {"[$DDM_FORM_FIELD_VALUE$]", "[$PREVIEW$]"},
-					new String[] {
-						HtmlUtil.escapeJS(value.getString(locale)),
-						LanguageUtil.get(locale, "preview")
-					});
+				String valueString = value.getString(locale);
+
+				if (Validator.isNull(valueString)) {
+					return StringPool.BLANK;
+				}
+
+				long valueLong = Long.valueOf(valueString);
+
+				Format format = FastDateFormatFactoryUtil.getDate(locale);
+
+				return format.format(valueLong);
 			}
 
 		};
 	}
-
-	private static final String _HTML =
-		"<a href=\"\" onclick=\"Liferay.DDLUtil.openPreviewDialog(" +
-			"'[$DDM_FORM_FIELD_VALUE$]');\">([$PREVIEW$])</a>";
 
 }

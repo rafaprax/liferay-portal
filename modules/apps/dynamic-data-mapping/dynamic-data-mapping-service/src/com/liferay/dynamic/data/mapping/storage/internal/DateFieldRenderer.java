@@ -12,8 +12,9 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.storage;
+package com.liferay.dynamic.data.mapping.storage.internal;
 
+import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -21,9 +22,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 
 import java.io.Serializable;
-
 import java.text.Format;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

@@ -12,33 +12,21 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
-import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.ValueAccessor;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
-import java.text.Format;
-
 import java.util.Locale;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
- * @author Bruno Basto
  * @author Marcellus Tavares
  */
-@Component(immediate = true, service = DDMFormFieldValueRenderer.class)
-public class DateDDMFormFieldValueRenderer
+public abstract class BaseTextDDMFormFieldValueRenderer
 	extends BaseDDMFormFieldValueRenderer {
-
-	@Override
-	public String getSupportedDDMFormFieldType() {
-		return DDMFormFieldType.DATE;
-	}
 
 	@Override
 	protected ValueAccessor getValueAcessor(Locale locale) {
@@ -48,17 +36,7 @@ public class DateDDMFormFieldValueRenderer
 			public String get(DDMFormFieldValue ddmFormFieldValue) {
 				Value value = ddmFormFieldValue.getValue();
 
-				String valueString = value.getString(locale);
-
-				if (Validator.isNull(valueString)) {
-					return StringPool.BLANK;
-				}
-
-				long valueLong = Long.valueOf(valueString);
-
-				Format format = FastDateFormatFactoryUtil.getDate(locale);
-
-				return format.format(valueLong);
+				return HtmlUtil.escape(value.getString(locale));
 			}
 
 		};

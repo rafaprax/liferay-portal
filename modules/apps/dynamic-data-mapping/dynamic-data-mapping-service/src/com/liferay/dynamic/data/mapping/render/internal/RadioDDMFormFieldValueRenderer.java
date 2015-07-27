@@ -12,8 +12,9 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 
 import org.osgi.service.component.annotations.Component;

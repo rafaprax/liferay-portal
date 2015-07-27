@@ -12,32 +12,31 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.storage;
+package com.liferay.dynamic.data.mapping.storage.internal;
 
-import com.liferay.portal.NoSuchLayoutException;
+import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.service.LayoutServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 
 import java.io.Serializable;
-
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * @author Bruno Basto
+ * @author Sergio González
  */
-public class LinkToPageFieldRenderer extends BaseFieldRenderer {
+public class GeolocationFieldRenderer extends BaseFieldRenderer {
 
 	@Override
 	protected String doRender(Field field, Locale locale) throws Exception {
@@ -81,28 +80,29 @@ public class LinkToPageFieldRenderer extends BaseFieldRenderer {
 			return StringPool.BLANK;
 		}
 
-		long groupId = jsonObject.getLong("groupId");
-		boolean privateLayout = jsonObject.getBoolean("privateLayout");
-		long layoutId = jsonObject.getLong("layoutId");
+		StringBundler sb = new StringBundler(7);
 
-		try {
-			return LayoutServiceUtil.getLayoutName(
-				groupId, privateLayout, layoutId,
-				LanguageUtil.getLanguageId(locale));
-		}
-		catch (Exception e) {
-			if (e instanceof NoSuchLayoutException ||
-				e instanceof PrincipalException) {
+		sb.append(LanguageUtil.get(locale, "latitude"));
+		sb.append(": ");
 
-				return LanguageUtil.format(
-					locale, "is-temporarily-unavailable", "content");
-			}
-		}
+		double latitude = jsonObject.getDouble("latitude");
 
-		return StringPool.BLANK;
+		NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
+
+		sb.append(numberFormat.format(latitude));
+
+		sb.append(StringPool.COMMA_AND_SPACE);
+		sb.append(LanguageUtil.get(locale, "longitude"));
+		sb.append(": ");
+
+		double longitude = jsonObject.getDouble("longitude");
+
+		sb.append(numberFormat.format(longitude));
+
+		return sb.toString();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		LinkToPageFieldRenderer.class);
+		GeolocationFieldRenderer.class);
 
 }

@@ -15,6 +15,15 @@
 package com.liferay.dynamic.data.mapping.render;
 
 import com.liferay.dynamic.data.mapping.BaseDDMTestCase;
+import com.liferay.dynamic.data.mapping.render.internal.CheckboxDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.DateDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.DecimalDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.DocumentLibraryDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.GeolocationDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.IntegerDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.LinkToPageDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.SelectDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.internal.TextDDMFormFieldValueRenderer;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -43,9 +52,7 @@ import java.util.Calendar;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.mockito.Matchers;
-
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 /**
