@@ -2,14 +2,21 @@ Bundle-Name: Liferay Dynamic Data Mapping API
 Bundle-SymbolicName: com.liferay.dynamic.data.mapping.api
 Bundle-Version: 1.0.0
 Include-Resource: classes
-Export-Package:  \
+Export-Package:\
 	com.liferay.dynamic.data.mapping.io,\
 	com.liferay.dynamic.data.mapping.exception,\
 	com.liferay.dynamic.data.mapping.model,\
+	com.liferay.dynamic.data.mapping.registry,\
+	com.liferay.dynamic.data.mapping.registry.annotations,\
 	com.liferay.dynamic.data.mapping.render,\
 	com.liferay.dynamic.data.mapping.search,\
 	com.liferay.dynamic.data.mapping.service,\
+	com.liferay.dynamic.data.mapping.service.permission,\
+	com.liferay.dynamic.data.mapping.service.persistence,\
+	com.liferay.dynamic.data.mapping.storage,\
+	com.liferay.dynamic.data.mapping.template,\
 	com.liferay.dynamic.data.mapping.webdav,\
 	com.liferay.dynamic.data.mapping.util,\
 	com.liferay.dynamic.data.mapping.util.comparator,\
+	com.liferay.dynamic.data.mapping.validator,\
 	com.liferay.dynamic.data.mapping.service.permission
