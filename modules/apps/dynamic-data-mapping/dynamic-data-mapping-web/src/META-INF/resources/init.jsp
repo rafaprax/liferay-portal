@@ -39,7 +39,6 @@ page import="com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil" %>
 page import="com.liferay.dynamic.data.mapping.model.DDMStructure" %><%@
 page import="com.liferay.dynamic.data.mapping.model.DDMStructureVersion" %><%@
 page import="com.liferay.dynamic.data.mapping.model.DDMTemplate" %><%@
-page import="com.liferay.dynamic.data.mapping.model.DDMTemplateConstants" %><%@
 page import="com.liferay.dynamic.data.mapping.model.DDMTemplateVersion" %><%@
 page import="com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalServiceUtil" %><%@
 page import="com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil" %><%@
@@ -109,13 +108,14 @@ page import="com.liferay.portlet.display.template.PortletDisplayTemplate" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.DDMStructureManager" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.StructureFieldException" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.DDMForm" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.search.StructureDisplayTerms" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.search.StructureSearch" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.search.StructureSearchTerms" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.search.TemplateDisplayTerms" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.search.TemplateSearch" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.search.TemplateSearchTerms" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.util.DDMTemplateHelperUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.search.StructureDisplayTerms" %><%@
+page import="com.liferay.dynamic.data.mapping.search.StructureSearch" %><%@
+page import="com.liferay.dynamic.data.mapping.search.StructureSearchTerms" %><%@
+page import="com.liferay.dynamic.data.mapping.search.TemplateDisplayTerms" %><%@
+page import="com.liferay.dynamic.data.mapping.search.TemplateSearch" %><%@
+page import="com.liferay.dynamic.data.mapping.search.TemplateSearchTerms" %><%@
+page import="com.liferay.dynamic.data.mapping.util.DDMTemplateHelperUtil" %><%@
+page import="com.liferay.portlet.dynamicdatamapping.DDMTemplateManager" %><%@
 page import="com.liferay.registry.Registry" %><%@
 page import="com.liferay.registry.RegistryUtil" %><%@
 page import="com.liferay.taglib.search.ResultRow" %><%@
@@ -178,11 +178,11 @@ else if (scopeStorageType.equals("xml")) {
 
 String templateTypeValue = StringPool.BLANK;
 
-if (scopeTemplateType.equals(DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY)) {
-	templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY;
+if (scopeTemplateType.equals(DDMTemplateManager.TEMPLATE_TYPE_DISPLAY)) {
+	templateTypeValue = DDMTemplateManager.TEMPLATE_TYPE_DISPLAY;
 }
-else if (scopeTemplateType.equals(DDMTemplateConstants.TEMPLATE_TYPE_FORM)) {
-	templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_FORM;
+else if (scopeTemplateType.equals(DDMTemplateManager.TEMPLATE_TYPE_FORM)) {
+	templateTypeValue = DDMTemplateManager.TEMPLATE_TYPE_FORM;
 }
 %>
 
