@@ -12,8 +12,12 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
+import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.ValueAccessor;
+import com.liferay.dynamic.data.mapping.render.ValueAccessorException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -25,7 +29,6 @@ import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 
 import java.text.NumberFormat;
-
 import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;

@@ -12,8 +12,9 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 
 import org.osgi.service.component.annotations.Component;
@@ -22,12 +23,12 @@ import org.osgi.service.component.annotations.Component;
  * @author Marcellus Tavares
  */
 @Component(immediate = true, service = DDMFormFieldValueRenderer.class)
-public class SelectDDMFormFieldValueRenderer
-	extends BaseListDDMFormFieldValueRenderer {
+public class TextDDMFormFieldValueRenderer
+	extends BaseTextDDMFormFieldValueRenderer {
 
 	@Override
 	public String getSupportedDDMFormFieldType() {
-		return DDMFormFieldType.SELECT;
+		return DDMFormFieldType.TEXT;
 	}
 
 }

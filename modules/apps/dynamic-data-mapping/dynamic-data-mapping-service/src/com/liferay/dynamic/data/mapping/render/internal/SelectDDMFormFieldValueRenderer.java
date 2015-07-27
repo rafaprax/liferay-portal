@@ -12,32 +12,23 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
-import com.liferay.portal.kernel.util.HtmlUtil;
-import com.liferay.portlet.dynamicdatamapping.model.Value;
-import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 
-import java.util.Locale;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Marcellus Tavares
  */
-public abstract class BaseTextDDMFormFieldValueRenderer
-	extends BaseDDMFormFieldValueRenderer {
+@Component(immediate = true, service = DDMFormFieldValueRenderer.class)
+public class SelectDDMFormFieldValueRenderer
+	extends BaseListDDMFormFieldValueRenderer {
 
 	@Override
-	protected ValueAccessor getValueAcessor(Locale locale) {
-		return new ValueAccessor(locale) {
-
-			@Override
-			public String get(DDMFormFieldValue ddmFormFieldValue) {
-				Value value = ddmFormFieldValue.getValue();
-
-				return HtmlUtil.escape(value.getString(locale));
-			}
-
-		};
+	public String getSupportedDDMFormFieldType() {
+		return DDMFormFieldType.SELECT;
 	}
 
 }

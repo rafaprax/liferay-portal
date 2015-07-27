@@ -12,14 +12,20 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.render;
+package com.liferay.dynamic.data.mapping.render.internal;
 
+import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer;
+import com.liferay.dynamic.data.mapping.render.ValueAccessor;
+import com.liferay.dynamic.data.mapping.render.ValueAccessorException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.service.LayoutServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 import com.liferay.portlet.dynamicdatamapping.model.Value;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
@@ -30,15 +36,14 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Bruno Basto
- * @author Marcellus Tavares
  */
 @Component(immediate = true, service = DDMFormFieldValueRenderer.class)
-public class DocumentLibraryDDMFormFieldValueRenderer
+public class LinkToPageDDMFormFieldValueRenderer
 	extends BaseDDMFormFieldValueRenderer {
 
 	@Override
 	public String getSupportedDDMFormFieldType() {
-		return DDMFormFieldType.DOCUMENT_LIBRARY;
+		return DDMFormFieldType.LINK_TO_PAGE;
 	}
 
 	@Override
@@ -52,17 +57,20 @@ public class DocumentLibraryDDMFormFieldValueRenderer
 				JSONObject jsonObject = createJSONObject(
 					value.getString(locale));
 
-				String uuid = jsonObject.getString("uuid");
 				long groupId = jsonObject.getLong("groupId");
+				boolean privateLayout = jsonObject.getBoolean("privateLayout");
+				long layoutId = jsonObject.getLong("layoutId");
 
 				try {
-					FileEntry fileEntry =
-						DLAppLocalServiceUtil.getFileEntryByUuidAndGroupId(
-							uuid, groupId);
-
-					return fileEntry.getTitle();
+					return LayoutServiceUtil.getLayoutName(
+						groupId, privateLayout, layoutId,
+						LanguageUtil.getLanguageId(locale));
 				}
-				catch (Exception e) {
+				catch (PortalException pe) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(pe, pe);
+					}
+
 					return LanguageUtil.format(
 						locale, "is-temporarily-unavailable", "content");
 				}
@@ -79,5 +87,8 @@ public class DocumentLibraryDDMFormFieldValueRenderer
 
 		};
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		LinkToPageDDMFormFieldValueRenderer.class);
 
 }
