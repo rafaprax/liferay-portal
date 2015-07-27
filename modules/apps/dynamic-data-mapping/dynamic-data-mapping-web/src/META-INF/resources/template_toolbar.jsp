@@ -38,7 +38,7 @@ long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
 
 		<c:choose>
 			<c:when test="<%= classNameId == PortalUtil.getClassNameId(DDMStructure.class) %>">
-				<c:if test="<%= DDMPermission.contains(permissionChecker, scopeGroupId, ddmPermissionHandler.getResourceName(scopeClassNameId), ddmPermissionHandler.getAddTemplateActionId()) && (Validator.isNull(templateTypeValue) || templateTypeValue.equals(DDMTemplateConstants.TEMPLATE_TYPE_FORM)) %>">
+				<c:if test="<%= DDMPermission.contains(permissionChecker, scopeGroupId, ddmPermissionHandler.getResourceName(scopeClassNameId), ddmPermissionHandler.getAddTemplateActionId()) && (Validator.isNull(templateTypeValue) || templateTypeValue.equals(DDMTemplateManager.TEMPLATE_TYPE_FORM)) %>">
 
 					<%
 					if (Validator.isNull(templateTypeValue)) {
@@ -59,7 +59,7 @@ long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
 					<aui:nav-item href="<%= addTemplateURL %>" iconCssClass="icon-plus" label="<%= message %>" selected='<%= toolbarItem.equals("add-form-template") %>' />
 				</c:if>
 
-				<c:if test="<%= DDMPermission.contains(permissionChecker, scopeGroupId, ddmPermissionHandler.getResourceName(scopeClassNameId), ddmPermissionHandler.getAddTemplateActionId()) && (Validator.isNull(templateTypeValue) || templateTypeValue.equals(DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY)) %>">
+				<c:if test="<%= DDMPermission.contains(permissionChecker, scopeGroupId, ddmPermissionHandler.getResourceName(scopeClassNameId), ddmPermissionHandler.getAddTemplateActionId()) && (Validator.isNull(templateTypeValue) || templateTypeValue.equals(DDMTemplateManager.TEMPLATE_TYPE_DISPLAY)) %>">
 
 					<%
 					if (Validator.isNull(templateTypeValue)) {
@@ -74,7 +74,7 @@ long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
 						<portlet:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
 						<portlet:param name="classPK" value="<%= String.valueOf(classPK) %>" />
 						<portlet:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
-						<portlet:param name="type" value="<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>" />
+						<portlet:param name="type" value="<%= DDMTemplateManager.TEMPLATE_TYPE_DISPLAY %>" />
 					</portlet:renderURL>
 
 					<aui:nav-item href="<%= addTemplateURL %>" iconCssClass="icon-plus" label="<%= message %>" selected='<%= toolbarItem.equals("add-display-template") %>' />
@@ -117,7 +117,7 @@ long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
 							<portlet:param name="mvcPath" value="/edit_template.jsp" />
 							<portlet:param name="redirect" value="<%= redirect %>" />
 							<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-							<portlet:param name="type" value="<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>" />
+							<portlet:param name="type" value="<%= DDMTemplateManager.TEMPLATE_TYPE_DISPLAY %>" />
 						</liferay-portlet:renderURL>
 
 						<%

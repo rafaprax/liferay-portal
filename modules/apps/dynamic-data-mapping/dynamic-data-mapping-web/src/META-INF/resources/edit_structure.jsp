@@ -33,7 +33,7 @@ if (structure != null) {
 
 long groupId = BeanParamUtil.getLong(structure, request, "groupId", scopeGroupId);
 
-long parentStructureId = BeanParamUtil.getLong(structure, request, "parentStructureId", DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID);
+long parentStructureId = BeanParamUtil.getLong(structure, request, "parentStructureId", DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID);
 
 String parentStructureName = StringPool.BLANK;
 
