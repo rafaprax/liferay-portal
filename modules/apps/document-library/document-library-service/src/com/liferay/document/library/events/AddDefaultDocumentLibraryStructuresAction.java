@@ -258,11 +258,11 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 
 				_ddmStructureLocalService.addStructure(
 					userId, groupId,
-					DDMStructureManager.DEFAULT_PARENT_STRUCTURE_ID,
+					DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
 					PortalUtil.getClassNameId(RawMetadataProcessor.class), name,
 					nameMap, descriptionMap, ddmForm, ddmFormLayout,
 					StorageType.JSON.toString(),
-					DDMStructureManager.TYPE_DEFAULT, serviceContext);
+					DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
 			}
 		}
 	}
