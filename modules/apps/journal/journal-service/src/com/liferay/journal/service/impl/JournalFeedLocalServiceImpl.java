@@ -15,6 +15,7 @@
 package com.liferay.journal.service.impl;
 
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.journal.exception.DuplicateFeedIdException;
 import com.liferay.journal.exception.FeedContentFieldException;
 import com.liferay.journal.exception.FeedIdException;
@@ -39,6 +40,7 @@ import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
@@ -386,6 +388,7 @@ public class JournalFeedLocalServiceImpl
 
 		return false;
 	}
+	
 
 	protected void validate(
 			long companyId, long groupId, String feedId, boolean autoFeedId,
@@ -442,6 +445,9 @@ public class JournalFeedLocalServiceImpl
 			throw new FeedContentFieldException();
 		}
 	}
+
+	@ServiceReference(type = DDMStructureLocalService.class)
+	protected DDMStructureLocalService ddmStructureLocalService;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalFeedLocalServiceImpl.class);
