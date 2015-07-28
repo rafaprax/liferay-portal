@@ -80,19 +80,19 @@
 		<property name="fieldRenderers">
 			<map>
 				<entry key="date">
-					<bean class="com.liferay.dynamic.data.mapping.storage.internalDateFieldRenderer" />
+					<bean class="com.liferay.dynamic.data.mapping.storage.internal.DateFieldRenderer" />
 				</entry>
 				<entry key="document-library">
-					<bean class="com.liferay.dynamic.data.mapping.storage.internalDocumentLibraryFieldRenderer" />
+					<bean class="com.liferay.dynamic.data.mapping.storage.internal.DocumentLibraryFieldRenderer" />
 				</entry>
 				<entry key="geolocation">
-					<bean class="com.liferay.dynamic.data.mapping.storage.internalGeolocationFieldRenderer" />
+					<bean class="com.liferay.dynamic.data.mapping.storage.internal.GeolocationFieldRenderer" />
 				</entry>
 				<entry key="link-to-page">
-					<bean class="com.liferay.dynamic.data.mapping.storage.internalLinkToPageFieldRenderer" />
+					<bean class="com.liferay.dynamic.data.mapping.storage.internal.LinkToPageFieldRenderer" />
 				</entry>
 				<entry key="string">
-					<bean class="com.liferay.dynamic.data.mapping.storage.internalStringFieldRenderer" />
+					<bean class="com.liferay.dynamic.data.mapping.storage.internal.StringFieldRenderer" />
 				</entry>
 			</map>
 		</property>

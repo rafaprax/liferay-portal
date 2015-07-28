@@ -4,4 +4,7 @@ Bundle-Version: 1.0.0
 Include-Resource:\
 	classes,\
 	META-INF/resources=src/META-INF/resources
+Import-Package:\
+	com.liferay.dynamic.data.mapping.registry,\
+	*
 Web-ContextPath: /ddm-type-checkbox
