@@ -23,7 +23,8 @@ import com.liferay.portal.search.elasticsearch.configuration.ElasticsearchConfig
 import com.liferay.portal.search.elasticsearch.index.IndexFactory;
 import com.liferay.portal.search.elasticsearch.settings.SettingsContributor;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Future;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequestBuilder;
@@ -41,7 +42,7 @@ public abstract class BaseElasticsearchConnection
 	implements ElasticsearchConnection {
 
 	@Override
-	public synchronized void close() {
+	public void close() {
 		if (_client == null) {
 			return;
 		}
@@ -52,11 +53,7 @@ public abstract class BaseElasticsearchConnection
 	}
 
 	@Override
-	public synchronized Client getClient() {
-		if (_client != null) {
-			return _client;
-		}
-
+	public void connect() {
 		ImmutableSettings.Builder builder = ImmutableSettings.settingsBuilder();
 
 		loadOptionalDefaultConfigurations(builder);
@@ -81,7 +78,10 @@ public abstract class BaseElasticsearchConnection
 		loadSettingsContributors(builder);
 
 		_client = createClient(builder);
+	}
 
+	@Override
+	public Client getClient() {
 		return _client;
 	}
 
@@ -122,7 +122,7 @@ public abstract class BaseElasticsearchConnection
 	protected void addSettingsContributor(
 		SettingsContributor settingsContributor) {
 
-		_settingsContributors.addIfAbsent(settingsContributor);
+		_settingsContributors.add(settingsContributor);
 	}
 
 	protected abstract Client createClient(ImmutableSettings.Builder builder);
@@ -171,7 +171,7 @@ public abstract class BaseElasticsearchConnection
 
 	private Client _client;
 	private IndexFactory _indexFactory;
-	private final CopyOnWriteArrayList<SettingsContributor>
-		_settingsContributors = new CopyOnWriteArrayList<>();
+	private final Set<SettingsContributor> _settingsContributors =
+		new ConcurrentSkipListSet<>();
 
 }

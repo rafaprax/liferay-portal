@@ -64,6 +64,7 @@ if (Validator.isNotNull(portletResource)) {
 	<aui:input name="portletResource" type="hidden" value="<%= portletResource %>" />
 	<aui:input name="modelResources" type="hidden" value='<%= (modelResources == null) ? "" : StringUtil.merge(modelResources) %>' />
 	<aui:input name="selectedTargets" type="hidden" />
+	<aui:input name="unselectedTargets" type="hidden" />
 
 	<h3><%= HtmlUtil.escape(portletResourceLabel) %></h3>
 
@@ -135,7 +136,7 @@ if (Validator.isNotNull(portletResource)) {
 
 			List resultRows = searchContainer.getResultRows();
 
-			List <TemplateHandler> templateHandlers = PortletDisplayTemplateUtil.getPortletDisplayTemplateHandlers();
+			List<TemplateHandler> templateHandlers = PortletDisplayTemplateManagerUtil.getPortletDisplayTemplateHandlers();
 
 			ListUtil.sort(templateHandlers, new TemplateHandlerComparator(locale));
 

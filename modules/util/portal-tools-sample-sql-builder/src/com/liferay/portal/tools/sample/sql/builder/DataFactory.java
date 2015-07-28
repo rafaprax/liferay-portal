@@ -14,6 +14,7 @@
 
 package com.liferay.portal.tools.sample.sql.builder;
 
+import com.liferay.blogs.web.constants.BlogsPortletKeys;
 import com.liferay.counter.model.Counter;
 import com.liferay.counter.model.CounterModel;
 import com.liferay.counter.model.impl.CounterModelImpl;
@@ -27,6 +28,21 @@ import com.liferay.dynamic.data.lists.model.impl.DDLRecordModelImpl;
 import com.liferay.dynamic.data.lists.model.impl.DDLRecordSetModelImpl;
 import com.liferay.dynamic.data.lists.model.impl.DDLRecordVersionModelImpl;
 import com.liferay.dynamic.data.lists.web.constants.DDLPortletKeys;
+import com.liferay.dynamic.data.mapping.model.DDMContent;
+import com.liferay.dynamic.data.mapping.model.DDMContentModel;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLinkModel;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLinkModel;
+import com.liferay.dynamic.data.mapping.model.DDMStructureModel;
+import com.liferay.dynamic.data.mapping.model.DDMTemplateModel;
+import com.liferay.dynamic.data.mapping.model.impl.DDMContentModelImpl;
+import com.liferay.dynamic.data.mapping.model.impl.DDMStorageLinkModelImpl;
+import com.liferay.dynamic.data.mapping.model.impl.DDMStructureLinkModelImpl;
+import com.liferay.dynamic.data.mapping.model.impl.DDMStructureModelImpl;
+import com.liferay.dynamic.data.mapping.model.impl.DDMTemplateModelImpl;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalArticleModel;
@@ -36,7 +52,6 @@ import com.liferay.journal.model.impl.JournalArticleModelImpl;
 import com.liferay.journal.model.impl.JournalArticleResourceModelImpl;
 import com.liferay.journal.model.impl.JournalContentSearchModelImpl;
 import com.liferay.journal.social.JournalActivityKeys;
-import com.liferay.journal.web.constants.JournalPortletKeys;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.metadata.RawMetadataProcessor;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -140,22 +155,8 @@ import com.liferay.portlet.documentlibrary.model.impl.DLFileEntryTypeModelImpl;
 import com.liferay.portlet.documentlibrary.model.impl.DLFileVersionModelImpl;
 import com.liferay.portlet.documentlibrary.model.impl.DLFolderModelImpl;
 import com.liferay.portlet.documentlibrary.social.DLActivityKeys;
-import com.liferay.portlet.dynamicdatamapping.model.DDMContent;
-import com.liferay.portlet.dynamicdatamapping.model.DDMContentModel;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStorageLink;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStorageLinkModel;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLinkModel;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureModel;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateModel;
-import com.liferay.portlet.dynamicdatamapping.model.impl.DDMContentModelImpl;
-import com.liferay.portlet.dynamicdatamapping.model.impl.DDMStorageLinkModelImpl;
-import com.liferay.portlet.dynamicdatamapping.model.impl.DDMStructureLinkModelImpl;
-import com.liferay.portlet.dynamicdatamapping.model.impl.DDMStructureModelImpl;
-import com.liferay.portlet.dynamicdatamapping.model.impl.DDMTemplateModelImpl;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBCategoryConstants;
 import com.liferay.portlet.messageboards.model.MBCategoryModel;
@@ -679,6 +680,7 @@ public class DataFactory {
 			for (int j = 0; j < _maxAssetTagCount; j++) {
 				AssetTagModel assetTagModel = new AssetTagModelImpl();
 
+				assetTagModel.setUuid(SequentialUUID.generate());
 				assetTagModel.setTagId(_counter.get());
 				assetTagModel.setGroupId(i);
 				assetTagModel.setCompanyId(_companyId);
@@ -1115,7 +1117,8 @@ public class DataFactory {
 
 		portletPreferencesModels.add(
 			newPortletPreferencesModel(
-				plid, PortletKeys.BLOGS, PortletConstants.DEFAULT_PREFERENCES));
+				plid, BlogsPortletKeys.BLOGS,
+				PortletConstants.DEFAULT_PREFERENCES));
 		portletPreferencesModels.add(
 			newPortletPreferencesModel(
 				plid, PortletKeys.DOCKBAR,
@@ -1266,7 +1269,7 @@ public class DataFactory {
 				PortletConstants.DEFAULT_PREFERENCES));
 		portletPreferencesModels.add(
 			newPortletPreferencesModel(
-				plid, PortletKeys.DYNAMIC_DATA_LISTS,
+				plid, DDLPortletKeys.DYNAMIC_DATA_LISTS,
 				PortletConstants.DEFAULT_PREFERENCES));
 		portletPreferencesModels.add(
 			newPortletPreferencesModel(
@@ -1572,6 +1575,7 @@ public class DataFactory {
 		journalArticleModel.setExpirationDate(nextFutureDate());
 		journalArticleModel.setReviewDate(new Date());
 		journalArticleModel.setIndexable(true);
+		journalArticleModel.setLastPublishDate(new Date());
 		journalArticleModel.setStatusDate(new Date());
 
 		return journalArticleModel;
@@ -1997,7 +2001,8 @@ public class DataFactory {
 		List<LayoutModel> layoutModels = new ArrayList<>();
 
 		layoutModels.add(newLayoutModel(groupId, "welcome", "58,", "47,"));
-		layoutModels.add(newLayoutModel(groupId, "blogs", "", "33,"));
+		layoutModels.add(
+			newLayoutModel(groupId, "blogs", "", BlogsPortletKeys.BLOGS + ","));
 		layoutModels.add(
 			newLayoutModel(groupId, "document_library", "", "20,"));
 		layoutModels.add(newLayoutModel(groupId, "forums", "", "19,"));
@@ -2562,7 +2567,7 @@ public class DataFactory {
 		dDMStructureModel.setModifiedDate(nextFutureDate());
 		dDMStructureModel.setClassNameId(classNameId);
 		dDMStructureModel.setStructureKey(structureKey);
-		dDMStructureModel.setVersion(DDMStructureConstants.VERSION_DEFAULT);
+		dDMStructureModel.setVersion(DDMStructureManager.STRUCTURE_VERSION_DEFAULT);
 
 		StringBundler sb = new StringBundler(5);
 
@@ -2597,7 +2602,7 @@ public class DataFactory {
 		ddmTemplateModel.setClassPK(structureId);
 		ddmTemplateModel.setResourceClassNameId(structureId);
 		ddmTemplateModel.setTemplateKey(String.valueOf(_counter.get()));
-		ddmTemplateModel.setVersion(DDMTemplateConstants.VERSION_DEFAULT);
+		ddmTemplateModel.setVersion(DDMTemplateManager.TEMPLATE_VERSION_DEFAULT);
 		ddmTemplateModel.setVersionUserId(userId);
 		ddmTemplateModel.setVersionUserName(_SAMPLE_USER_NAME);
 
@@ -2610,8 +2615,8 @@ public class DataFactory {
 
 		ddmTemplateModel.setName(sb.toString());
 
-		ddmTemplateModel.setType(DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY);
-		ddmTemplateModel.setMode(DDMTemplateConstants.TEMPLATE_MODE_CREATE);
+		ddmTemplateModel.setType(DDMTemplateManager.TEMPLATE_TYPE_DISPLAY);
+		ddmTemplateModel.setMode(DDMTemplateManager.TEMPLATE_MODE_CREATE);
 		ddmTemplateModel.setLanguage(TemplateConstants.LANG_TYPE_FTL);
 		ddmTemplateModel.setScript("${content.getData()}");
 		ddmTemplateModel.setCacheable(false);
@@ -2959,6 +2964,7 @@ public class DataFactory {
 		wikiNodeModel.setModifiedDate(new Date());
 		wikiNodeModel.setName("Test Node " + index);
 		wikiNodeModel.setLastPostDate(new Date());
+		wikiNodeModel.setLastPublishDate(new Date());
 		wikiNodeModel.setStatusDate(new Date());
 
 		return wikiNodeModel;
@@ -2984,6 +2990,7 @@ public class DataFactory {
 		wikiPageModel.setContent("This is test page " + index + ".");
 		wikiPageModel.setFormat("creole");
 		wikiPageModel.setHead(true);
+		wikiPageModel.setLastPublishDate(new Date());
 
 		return wikiPageModel;
 	}

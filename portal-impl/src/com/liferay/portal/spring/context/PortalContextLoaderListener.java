@@ -16,6 +16,7 @@ package com.liferay.portal.spring.context;
 
 import com.liferay.portal.bean.BeanLocatorImpl;
 import com.liferay.portal.dao.orm.hibernate.FieldInterceptionHelperUtil;
+import com.liferay.portal.deploy.hot.CustomJspBagRegistryUtil;
 import com.liferay.portal.deploy.hot.IndexerPostProcessorRegistry;
 import com.liferay.portal.deploy.hot.ServiceWrapperRegistry;
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
@@ -183,7 +184,12 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
-		SystemProperties.reload();
+		try {
+			Class.forName(SystemProperties.class.getName());
+		}
+		catch (ClassNotFoundException cnfe) {
+			throw new RuntimeException(cnfe);
+		}
 
 		DBFactoryUtil.reset();
 		DeployManagerUtil.reset();
@@ -354,6 +360,8 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		CustomJspBagRegistryUtil.getCustomJspBags();
 
 		initListeners(servletContext);
 

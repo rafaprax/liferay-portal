@@ -124,7 +124,7 @@ DDLRecordSet selRecordSet = ddlDisplayContext.getRecordSet();
 				<aui:option label="default" value="<%= 0 %>" />
 
 				<%
-				List<DDMTemplate> templates = DDMTemplateLocalServiceUtil.getTemplates(scopeGroupId, PortalUtil.getClassNameId(DDMStructure.class), selRecordSet.getDDMStructureId(), DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY);
+				List<DDMTemplate> templates = DDMTemplateLocalServiceUtil.getTemplates(scopeGroupId, PortalUtil.getClassNameId(DDMStructure.class), selRecordSet.getDDMStructureId(), DDMTemplateManager.TEMPLATE_TYPE_DISPLAY);
 
 				for (DDMTemplate template : templates) {
 					boolean selected = false;
@@ -146,7 +146,7 @@ DDLRecordSet selRecordSet = ddlDisplayContext.getRecordSet();
 				<aui:option label="default" value="<%= 0 %>" />
 
 				<%
-				List<DDMTemplate> templates = DDMTemplateLocalServiceUtil.getTemplates(scopeGroupId, PortalUtil.getClassNameId(DDMStructure.class), selRecordSet.getDDMStructureId(), DDMTemplateConstants.TEMPLATE_TYPE_FORM, DDMTemplateConstants.TEMPLATE_MODE_CREATE);
+				List<DDMTemplate> templates = DDMTemplateLocalServiceUtil.getTemplates(scopeGroupId, PortalUtil.getClassNameId(DDMStructure.class), selRecordSet.getDDMStructureId(), DDMTemplateManager.TEMPLATE_TYPE_FORM, DDMTemplateManager.TEMPLATE_MODE_CREATE);
 
 				for (DDMTemplate template : templates) {
 					boolean selected = false;

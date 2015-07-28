@@ -69,10 +69,6 @@ import com.liferay.portlet.asset.service.persistence.AssetCategoryPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetLinkPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetTagPersistence;
-import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMStorageLinkPersistence;
-import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMStructurePersistence;
-import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMTemplateLinkPersistence;
-import com.liferay.portlet.dynamicdatamapping.service.persistence.DDMTemplatePersistence;
 import com.liferay.portlet.expando.service.persistence.ExpandoRowPersistence;
 import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
 import com.liferay.portlet.exportimport.lar.ManifestSummary;
@@ -82,7 +78,6 @@ import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
 import com.liferay.portlet.exportimport.lar.StagedModelType;
 import com.liferay.portlet.ratings.service.persistence.RatingsStatsPersistence;
-import com.liferay.portlet.social.service.persistence.SocialActivityPersistence;
 import com.liferay.portlet.trash.service.persistence.TrashEntryPersistence;
 import com.liferay.portlet.trash.service.persistence.TrashVersionPersistence;
 
@@ -1364,196 +1359,6 @@ public abstract class JournalArticleLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the d d m storage link local service.
-	 *
-	 * @return the d d m storage link local service
-	 */
-	public com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalService getDDMStorageLinkLocalService() {
-		return ddmStorageLinkLocalService;
-	}
-
-	/**
-	 * Sets the d d m storage link local service.
-	 *
-	 * @param ddmStorageLinkLocalService the d d m storage link local service
-	 */
-	public void setDDMStorageLinkLocalService(
-		com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalService ddmStorageLinkLocalService) {
-		this.ddmStorageLinkLocalService = ddmStorageLinkLocalService;
-	}
-
-	/**
-	 * Returns the d d m storage link persistence.
-	 *
-	 * @return the d d m storage link persistence
-	 */
-	public DDMStorageLinkPersistence getDDMStorageLinkPersistence() {
-		return ddmStorageLinkPersistence;
-	}
-
-	/**
-	 * Sets the d d m storage link persistence.
-	 *
-	 * @param ddmStorageLinkPersistence the d d m storage link persistence
-	 */
-	public void setDDMStorageLinkPersistence(
-		DDMStorageLinkPersistence ddmStorageLinkPersistence) {
-		this.ddmStorageLinkPersistence = ddmStorageLinkPersistence;
-	}
-
-	/**
-	 * Returns the d d m structure local service.
-	 *
-	 * @return the d d m structure local service
-	 */
-	public com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService getDDMStructureLocalService() {
-		return ddmStructureLocalService;
-	}
-
-	/**
-	 * Sets the d d m structure local service.
-	 *
-	 * @param ddmStructureLocalService the d d m structure local service
-	 */
-	public void setDDMStructureLocalService(
-		com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService ddmStructureLocalService) {
-		this.ddmStructureLocalService = ddmStructureLocalService;
-	}
-
-	/**
-	 * Returns the d d m structure remote service.
-	 *
-	 * @return the d d m structure remote service
-	 */
-	public com.liferay.portlet.dynamicdatamapping.service.DDMStructureService getDDMStructureService() {
-		return ddmStructureService;
-	}
-
-	/**
-	 * Sets the d d m structure remote service.
-	 *
-	 * @param ddmStructureService the d d m structure remote service
-	 */
-	public void setDDMStructureService(
-		com.liferay.portlet.dynamicdatamapping.service.DDMStructureService ddmStructureService) {
-		this.ddmStructureService = ddmStructureService;
-	}
-
-	/**
-	 * Returns the d d m structure persistence.
-	 *
-	 * @return the d d m structure persistence
-	 */
-	public DDMStructurePersistence getDDMStructurePersistence() {
-		return ddmStructurePersistence;
-	}
-
-	/**
-	 * Sets the d d m structure persistence.
-	 *
-	 * @param ddmStructurePersistence the d d m structure persistence
-	 */
-	public void setDDMStructurePersistence(
-		DDMStructurePersistence ddmStructurePersistence) {
-		this.ddmStructurePersistence = ddmStructurePersistence;
-	}
-
-	/**
-	 * Returns the d d m template local service.
-	 *
-	 * @return the d d m template local service
-	 */
-	public com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalService getDDMTemplateLocalService() {
-		return ddmTemplateLocalService;
-	}
-
-	/**
-	 * Sets the d d m template local service.
-	 *
-	 * @param ddmTemplateLocalService the d d m template local service
-	 */
-	public void setDDMTemplateLocalService(
-		com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalService ddmTemplateLocalService) {
-		this.ddmTemplateLocalService = ddmTemplateLocalService;
-	}
-
-	/**
-	 * Returns the d d m template remote service.
-	 *
-	 * @return the d d m template remote service
-	 */
-	public com.liferay.portlet.dynamicdatamapping.service.DDMTemplateService getDDMTemplateService() {
-		return ddmTemplateService;
-	}
-
-	/**
-	 * Sets the d d m template remote service.
-	 *
-	 * @param ddmTemplateService the d d m template remote service
-	 */
-	public void setDDMTemplateService(
-		com.liferay.portlet.dynamicdatamapping.service.DDMTemplateService ddmTemplateService) {
-		this.ddmTemplateService = ddmTemplateService;
-	}
-
-	/**
-	 * Returns the d d m template persistence.
-	 *
-	 * @return the d d m template persistence
-	 */
-	public DDMTemplatePersistence getDDMTemplatePersistence() {
-		return ddmTemplatePersistence;
-	}
-
-	/**
-	 * Sets the d d m template persistence.
-	 *
-	 * @param ddmTemplatePersistence the d d m template persistence
-	 */
-	public void setDDMTemplatePersistence(
-		DDMTemplatePersistence ddmTemplatePersistence) {
-		this.ddmTemplatePersistence = ddmTemplatePersistence;
-	}
-
-	/**
-	 * Returns the d d m template link local service.
-	 *
-	 * @return the d d m template link local service
-	 */
-	public com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalService getDDMTemplateLinkLocalService() {
-		return ddmTemplateLinkLocalService;
-	}
-
-	/**
-	 * Sets the d d m template link local service.
-	 *
-	 * @param ddmTemplateLinkLocalService the d d m template link local service
-	 */
-	public void setDDMTemplateLinkLocalService(
-		com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalService ddmTemplateLinkLocalService) {
-		this.ddmTemplateLinkLocalService = ddmTemplateLinkLocalService;
-	}
-
-	/**
-	 * Returns the d d m template link persistence.
-	 *
-	 * @return the d d m template link persistence
-	 */
-	public DDMTemplateLinkPersistence getDDMTemplateLinkPersistence() {
-		return ddmTemplateLinkPersistence;
-	}
-
-	/**
-	 * Sets the d d m template link persistence.
-	 *
-	 * @param ddmTemplateLinkPersistence the d d m template link persistence
-	 */
-	public void setDDMTemplateLinkPersistence(
-		DDMTemplateLinkPersistence ddmTemplateLinkPersistence) {
-		this.ddmTemplateLinkPersistence = ddmTemplateLinkPersistence;
-	}
-
-	/**
 	 * Returns the expando row local service.
 	 *
 	 * @return the expando row local service
@@ -1627,63 +1432,6 @@ public abstract class JournalArticleLocalServiceBaseImpl
 	public void setRatingsStatsPersistence(
 		RatingsStatsPersistence ratingsStatsPersistence) {
 		this.ratingsStatsPersistence = ratingsStatsPersistence;
-	}
-
-	/**
-	 * Returns the social activity local service.
-	 *
-	 * @return the social activity local service
-	 */
-	public com.liferay.portlet.social.service.SocialActivityLocalService getSocialActivityLocalService() {
-		return socialActivityLocalService;
-	}
-
-	/**
-	 * Sets the social activity local service.
-	 *
-	 * @param socialActivityLocalService the social activity local service
-	 */
-	public void setSocialActivityLocalService(
-		com.liferay.portlet.social.service.SocialActivityLocalService socialActivityLocalService) {
-		this.socialActivityLocalService = socialActivityLocalService;
-	}
-
-	/**
-	 * Returns the social activity remote service.
-	 *
-	 * @return the social activity remote service
-	 */
-	public com.liferay.portlet.social.service.SocialActivityService getSocialActivityService() {
-		return socialActivityService;
-	}
-
-	/**
-	 * Sets the social activity remote service.
-	 *
-	 * @param socialActivityService the social activity remote service
-	 */
-	public void setSocialActivityService(
-		com.liferay.portlet.social.service.SocialActivityService socialActivityService) {
-		this.socialActivityService = socialActivityService;
-	}
-
-	/**
-	 * Returns the social activity persistence.
-	 *
-	 * @return the social activity persistence
-	 */
-	public SocialActivityPersistence getSocialActivityPersistence() {
-		return socialActivityPersistence;
-	}
-
-	/**
-	 * Sets the social activity persistence.
-	 *
-	 * @param socialActivityPersistence the social activity persistence
-	 */
-	public void setSocialActivityPersistence(
-		SocialActivityPersistence socialActivityPersistence) {
-		this.socialActivityPersistence = socialActivityPersistence;
 	}
 
 	/**
@@ -2032,7 +1780,7 @@ public abstract class JournalArticleLocalServiceBaseImpl
 		}
 	}
 
-	@BeanReference(type = JournalArticleLocalService.class)
+	@BeanReference(type = com.liferay.journal.service.JournalArticleLocalService.class)
 	protected JournalArticleLocalService journalArticleLocalService;
 	@BeanReference(type = com.liferay.journal.service.JournalArticleService.class)
 	protected com.liferay.journal.service.JournalArticleService journalArticleService;
@@ -2124,26 +1872,6 @@ public abstract class JournalArticleLocalServiceBaseImpl
 	protected com.liferay.portlet.documentlibrary.service.DLAppLocalService dlAppLocalService;
 	@BeanReference(type = com.liferay.portlet.documentlibrary.service.DLAppService.class)
 	protected com.liferay.portlet.documentlibrary.service.DLAppService dlAppService;
-	@BeanReference(type = com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalService.class)
-	protected com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalService ddmStorageLinkLocalService;
-	@BeanReference(type = DDMStorageLinkPersistence.class)
-	protected DDMStorageLinkPersistence ddmStorageLinkPersistence;
-	@BeanReference(type = com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService.class)
-	protected com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService ddmStructureLocalService;
-	@BeanReference(type = com.liferay.portlet.dynamicdatamapping.service.DDMStructureService.class)
-	protected com.liferay.portlet.dynamicdatamapping.service.DDMStructureService ddmStructureService;
-	@BeanReference(type = DDMStructurePersistence.class)
-	protected DDMStructurePersistence ddmStructurePersistence;
-	@BeanReference(type = com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalService.class)
-	protected com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalService ddmTemplateLocalService;
-	@BeanReference(type = com.liferay.portlet.dynamicdatamapping.service.DDMTemplateService.class)
-	protected com.liferay.portlet.dynamicdatamapping.service.DDMTemplateService ddmTemplateService;
-	@BeanReference(type = DDMTemplatePersistence.class)
-	protected DDMTemplatePersistence ddmTemplatePersistence;
-	@BeanReference(type = com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalService.class)
-	protected com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalService ddmTemplateLinkLocalService;
-	@BeanReference(type = DDMTemplateLinkPersistence.class)
-	protected DDMTemplateLinkPersistence ddmTemplateLinkPersistence;
 	@BeanReference(type = com.liferay.portlet.expando.service.ExpandoRowLocalService.class)
 	protected com.liferay.portlet.expando.service.ExpandoRowLocalService expandoRowLocalService;
 	@BeanReference(type = ExpandoRowPersistence.class)
@@ -2152,12 +1880,6 @@ public abstract class JournalArticleLocalServiceBaseImpl
 	protected com.liferay.portlet.ratings.service.RatingsStatsLocalService ratingsStatsLocalService;
 	@BeanReference(type = RatingsStatsPersistence.class)
 	protected RatingsStatsPersistence ratingsStatsPersistence;
-	@BeanReference(type = com.liferay.portlet.social.service.SocialActivityLocalService.class)
-	protected com.liferay.portlet.social.service.SocialActivityLocalService socialActivityLocalService;
-	@BeanReference(type = com.liferay.portlet.social.service.SocialActivityService.class)
-	protected com.liferay.portlet.social.service.SocialActivityService socialActivityService;
-	@BeanReference(type = SocialActivityPersistence.class)
-	protected SocialActivityPersistence socialActivityPersistence;
 	@BeanReference(type = com.liferay.portlet.trash.service.TrashEntryLocalService.class)
 	protected com.liferay.portlet.trash.service.TrashEntryLocalService trashEntryLocalService;
 	@BeanReference(type = com.liferay.portlet.trash.service.TrashEntryService.class)

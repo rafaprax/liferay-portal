@@ -175,10 +175,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	descriptions
 	* @param content the HTML content wrapped in XML. For more information,
 	see the content example in the {@link #addArticle(long, long,
-	long, long, long, String, boolean, double, java.util.Map, java.util.Map, String,
+	long, long, long, String, boolean, double, Map, Map, String,
 	String, String, String, int, int, int, int, int, int, int, int,
 	int, int, boolean, int, int, int, int, int, boolean, boolean,
-	boolean, String, java.io.File, java.util.Map, String, ServiceContext)} description.
+	boolean, String, File, Map, String, ServiceContext)} description.
 	* @param ddmStructureKey the primary key of the web content article's DDM
 	structure, if the article is related to a DDM structure, or
 	<code>null</code> otherwise
@@ -2306,9 +2306,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 		com.liferay.portal.kernel.search.Sort sort);
 
 	/**
-	* @deprecated As of 7.0.0, replaced by {@link #search(long, long, java.util.List,
-	long, String, String, String, String, int, String, String,
-	java.util.LinkedHashMap, boolean, int, int, Sort)}
+	* @deprecated As of 7.0.0, replaced by {@link #search(long, long,
+	java.util.List, long, String, String, String, String, int,
+	String, String, java.util.LinkedHashMap, boolean, int, int,
+	Sort)}
 	*/
 	@java.lang.Deprecated
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -2327,10 +2328,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	* parameters without using the indexer, including keyword parameters for
 	* article ID, title, description, and content, a DDM structure key
 	* parameter, a DDM template key parameter, and an AND operator switch. It
-	* is preferable to use the indexed version {@link #search(long, long, java.util.List,
-	* long, String, String, String, String, int, String, String, java.util.LinkedHashMap,
-	* boolean, int, int, Sort)} instead of this method wherever possible for
-	* performance reasons.
+	* is preferable to use the indexed version {@link #search(long, long,
+	* java.util.List, long, String, String, String, String, int, String,
+	* String, java.util.LinkedHashMap, boolean, int, int, Sort)} instead of
+	* this method wherever possible for performance reasons.
 	*
 	* <p>
 	* Useful when paginating results. Returns a maximum of <code>end -
@@ -2528,9 +2529,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	* parameters without using the indexer, including a keywords parameter for
 	* matching with the article's ID, title, description, and content, a DDM
 	* structure key parameter, and a DDM template key parameter. It is
-	* preferable to use the indexed version {@link #search(long, long, java.util.List,
-	* long, String, String, String, java.util.LinkedHashMap, int, int, Sort)} instead of
-	* this method wherever possible for performance reasons.
+	* preferable to use the indexed version {@link #search(long, long,
+	* java.util.List, long, String, String, String, java.util.LinkedHashMap,
+	* int, int, Sort)} instead of this method wherever possible for performance
+	* reasons.
 	*
 	* <p>
 	* Useful when paginating results. Returns a maximum of <code>end -
@@ -3101,10 +3103,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	* @param version the web content article's version
 	* @param content the HTML content wrapped in XML. For more information,
 	see the content example in the {@link #addArticle(long, long,
-	long, long, long, String, boolean, double, java.util.Map, java.util.Map, String,
+	long, long, long, String, boolean, double, Map, Map, String,
 	String, String, String, int, int, int, int, int, int, int, int,
 	int, int, boolean, int, int, int, int, int, boolean, boolean,
-	boolean, String, java.io.File, java.util.Map, String, ServiceContext)} description.
+	boolean, String, File, Map, String, ServiceContext)} description.
 	* @param serviceContext the service context to be applied. Can set the
 	modification date, expando bridge attributes, asset category IDs,
 	asset tag names, asset link entry IDs, workflow actions, URL
@@ -3139,10 +3141,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	descriptions
 	* @param content the HTML content wrapped in XML. For more information,
 	see the content example in the {@link #addArticle(long, long,
-	long, long, long, String, boolean, double, java.util.Map, java.util.Map, String,
+	long, long, long, String, boolean, double, Map, Map, String,
 	String, String, String, int, int, int, int, int, int, int, int,
 	int, int, boolean, int, int, int, int, int, boolean, boolean,
-	boolean, String, java.io.File, java.util.Map, String, ServiceContext)} description.
+	boolean, String, File, Map, String, ServiceContext)} description.
 	* @param ddmStructureKey the primary key of the web content article's DDM
 	structure, if the article is related to a DDM structure, or
 	<code>null</code> otherwise
@@ -3244,10 +3246,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	descriptions
 	* @param content the HTML content wrapped in XML. For more information,
 	see the content example in the {@link #addArticle(long, long,
-	long, long, long, String, boolean, double, java.util.Map, java.util.Map, String,
+	long, long, long, String, boolean, double, Map, Map, String,
 	String, String, String, int, int, int, int, int, int, int, int,
 	int, int, boolean, int, int, int, int, int, boolean, boolean,
-	boolean, String, java.io.File, java.util.Map, String, ServiceContext)} description.
+	boolean, String, File, Map, String, ServiceContext)} description.
 	* @param layoutUuid the unique string identifying the web content
 	article's display page
 	* @param serviceContext the service context to be applied. Can set the
@@ -3275,8 +3277,9 @@ public interface JournalArticleLocalService extends BaseLocalService,
 
 	/**
 	* @deprecated As of 6.2.0, replaced by {@link
-	#updateArticleTranslation(long, String, double, java.util.Locale,
-	String, String, String, java.util.Map, ServiceContext)}
+	#updateArticleTranslation(long, String, double,
+	java.util.Locale, String, String, String, Map,
+	ServiceContext)}
 	*/
 	@java.lang.Deprecated
 	public com.liferay.journal.model.JournalArticle updateArticleTranslation(
@@ -3297,10 +3300,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	* @param description the translated web content article description
 	* @param content the HTML content wrapped in XML. For more information,
 	see the content example in the {@link #addArticle(long, long,
-	long, long, long, String, boolean, double, java.util.Map, java.util.Map, String,
+	long, long, long, String, boolean, double, Map, Map, String,
 	String, String, String, int, int, int, int, int, int, int, int,
 	int, int, boolean, int, int, int, int, int, boolean, boolean,
-	boolean, String, java.io.File, java.util.Map, String, ServiceContext)} description.
+	boolean, String, File, Map, String, ServiceContext)} description.
 	* @param images the web content's images
 	* @param serviceContext the service context to be applied. Can set the
 	modification date and URL title for the web content article.
@@ -3344,10 +3347,10 @@ public interface JournalArticleLocalService extends BaseLocalService,
 	* @param version the web content article's version
 	* @param content the HTML content wrapped in XML. For more information,
 	see the content example in the {@link #addArticle(long, long,
-	long, long, long, String, boolean, double, java.util.Map, java.util.Map, String,
+	long, long, long, String, boolean, double, Map, Map, String,
 	String, String, String, int, int, int, int, int, int, int, int,
 	int, int, boolean, int, int, int, int, int, boolean, boolean,
-	boolean, String, java.io.File, java.util.Map, String, ServiceContext)} description.
+	boolean, String, File, Map, String, ServiceContext)} description.
 	* @return the updated web content article
 	* @throws PortalException if a matching web content article could not be
 	found

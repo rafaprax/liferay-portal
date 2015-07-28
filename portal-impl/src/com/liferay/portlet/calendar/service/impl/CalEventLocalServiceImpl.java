@@ -55,6 +55,7 @@ import com.liferay.portal.model.ModelHintsUtil;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.permission.ModelPermissions;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
@@ -123,13 +124,15 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.model.property.XProperty;
 
 /**
- * @author Brian Wing Shun Chan
- * @author Bruno Farache
- * @author Samuel Kong
- * @author Ganesh Ram
- * @author Brett Swaim
- * @author Mate Thurzo
+ * @author     Brian Wing Shun Chan
+ * @author     Bruno Farache
+ * @author     Samuel Kong
+ * @author     Ganesh Ram
+ * @author     Brett Swaim
+ * @author     Mate Thurzo
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 
 	@Indexable(type = IndexableType.REINDEX)
@@ -221,9 +224,7 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 				serviceContext.isAddGuestPermissions());
 		}
 		else {
-			addEventResources(
-				event, serviceContext.getGroupPermissions(),
-				serviceContext.getGuestPermissions());
+			addEventResources(event, serviceContext.getModelPermissions());
 		}
 
 		// Asset
@@ -290,14 +291,12 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 
 	@Override
 	public void addEventResources(
-			CalEvent event, String[] groupPermissions,
-			String[] guestPermissions)
+			CalEvent event, ModelPermissions modelPermissions)
 		throws PortalException {
 
 		resourceLocalService.addModelResources(
 			event.getCompanyId(), event.getGroupId(), event.getUserId(),
-			CalEvent.class.getName(), event.getEventId(), groupPermissions,
-			guestPermissions);
+			CalEvent.class.getName(), event.getEventId(), modelPermissions);
 	}
 
 	@Override
@@ -313,12 +312,12 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 
 	@Override
 	public void addEventResources(
-			long eventId, String[] groupPermissions, String[] guestPermissions)
+			long eventId, ModelPermissions modelPermissions)
 		throws PortalException {
 
 		CalEvent event = calEventPersistence.findByPrimaryKey(eventId);
 
-		addEventResources(event, groupPermissions, guestPermissions);
+		addEventResources(event, modelPermissions);
 	}
 
 	@Override
@@ -1464,7 +1463,7 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 			int[] byMonthDay = recurrence.getByMonthDay();
 
 			if (byMonthDay != null) {
-				Integer monthDay = new Integer(byMonthDay[0]);
+				Integer monthDay = Integer.valueOf(byMonthDay[0]);
 
 				recur.getMonthDayList().add(monthDay);
 			}
@@ -1475,7 +1474,7 @@ public class CalEventLocalServiceImpl extends CalEventLocalServiceBaseImpl {
 
 				recur.getDayList().add(weekDay);
 
-				Integer position = new Integer(byDay[0].getDayPosition());
+				Integer position = Integer.valueOf(byDay[0].getDayPosition());
 
 				recur.getSetPosList().add(position);
 			}

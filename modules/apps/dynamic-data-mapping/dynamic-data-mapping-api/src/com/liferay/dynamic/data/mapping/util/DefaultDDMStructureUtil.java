@@ -1,0 +1,232 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.dynamic.data.mapping.util;
+
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONDeserializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.portal.kernel.upgrade.util.UpgradeProcessUtil;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.xml.Attribute;
+import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
+import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
+import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * @author Michael C. Han
+ */
+public class DefaultDDMStructureUtil {
+
+	public static void addDDMStructures(
+			long userId, long groupId, long classNameId,
+			ClassLoader classLoader, String fileName,
+			ServiceContext serviceContext)
+		throws Exception {
+
+		Locale locale = PortalUtil.getSiteDefaultLocale(groupId);
+
+		List<Element> structureElements = getDDMStructures(
+			classLoader, fileName, locale);
+
+		for (Element structureElement : structureElements) {
+			boolean dynamicStructure = GetterUtil.getBoolean(
+				structureElement.elementText("dynamic-structure"));
+
+			if (dynamicStructure) {
+				continue;
+			}
+
+			String name = structureElement.elementText("name");
+
+			String description = structureElement.elementText("description");
+
+			String ddmStructureKey = name;
+
+			DDMStructure ddmStructure =
+				DDMStructureLocalServiceUtil.fetchStructure(
+					groupId, classNameId, ddmStructureKey);
+
+			if (ddmStructure != null) {
+				continue;
+			}
+
+			Map<Locale, String> nameMap = new HashMap<>();
+			Map<Locale, String> descriptionMap = new HashMap<>();
+
+			for (Locale curLocale : LanguageUtil.getAvailableLocales(groupId)) {
+				nameMap.put(curLocale, LanguageUtil.get(curLocale, name));
+				descriptionMap.put(
+					curLocale, LanguageUtil.get(curLocale, description));
+			}
+
+			if (name.equals(DLFileEntryTypeConstants.NAME_IG_IMAGE) &&
+				!UpgradeProcessUtil.isCreateIGImageDocumentType()) {
+
+				continue;
+			}
+
+			DDMForm ddmForm = getDDMForm(structureElement, locale);
+
+			DDMFormLayout ddmFormLayout = getDDMFormLayout(
+				structureElement, ddmForm);
+
+			serviceContext.setAttribute(
+				"status", WorkflowConstants.STATUS_APPROVED);
+
+			ddmStructure = DDMStructureLocalServiceUtil.addStructure(
+				userId, groupId,
+				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
+				classNameId, ddmStructureKey, nameMap, descriptionMap, ddmForm,
+				ddmFormLayout, StorageType.JSON.toString(),
+				DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
+
+			Element templateElement = structureElement.element("template");
+
+			if (templateElement == null) {
+				continue;
+			}
+
+			String templateFileName = templateElement.elementText("file-name");
+
+			String script = StringUtil.read(
+				classLoader,
+				FileUtil.getPath(fileName) + StringPool.SLASH +
+					templateFileName);
+
+			boolean cacheable = GetterUtil.getBoolean(
+				templateElement.elementText("cacheable"));
+
+			DDMTemplateLocalServiceUtil.addTemplate(
+				userId, groupId, PortalUtil.getClassNameId(DDMStructure.class),
+				ddmStructure.getStructureId(), ddmStructure.getClassNameId(),
+				null, nameMap, null, DDMTemplateManager.TEMPLATE_TYPE_DISPLAY,
+				DDMTemplateManager.TEMPLATE_MODE_CREATE,
+				TemplateConstants.LANG_TYPE_FTL, script, cacheable, false,
+				StringPool.BLANK, null, serviceContext);
+		}
+	}
+
+	public static String getDynamicDDMStructureDefinition(
+			ClassLoader classLoader, String fileName,
+			String dynamicDDMStructureName, Locale locale)
+		throws Exception {
+
+		List<Element> structureElements = getDDMStructures(
+			classLoader, fileName, locale);
+
+		for (Element structureElement : structureElements) {
+			boolean dynamicStructure = GetterUtil.getBoolean(
+				structureElement.elementText("dynamic-structure"));
+
+			if (!dynamicStructure) {
+				continue;
+			}
+
+			String name = structureElement.elementText("name");
+
+			if (!name.equals(dynamicDDMStructureName)) {
+				continue;
+			}
+
+			Element structureElementRootElement = structureElement.element(
+				"root");
+
+			return structureElementRootElement.asXML();
+		}
+
+		return null;
+	}
+
+	protected static DDMForm getDDMForm(Element structureElement, Locale locale)
+		throws Exception {
+
+		Element structureElementDefinitionElement = structureElement.element(
+			"definition");
+
+		if (structureElementDefinitionElement != null) {
+			return DDMFormJSONDeserializerUtil.deserialize(
+				structureElementDefinitionElement.getTextTrim());
+		}
+
+		Element structureElementRootElement = structureElement.element("root");
+
+		String definition = structureElementRootElement.asXML();
+
+		Attribute defaultLocaleAttribute =
+			structureElementRootElement.attribute("default-locale");
+
+		Locale ddmStructureDefaultLocale = LocaleUtil.fromLanguageId(
+			defaultLocaleAttribute.getValue());
+
+		definition = DDMXMLUtil.updateXMLDefaultLocale(
+			definition, ddmStructureDefaultLocale, locale);
+
+		return DDMFormXSDDeserializerUtil.deserialize(definition);
+	}
+
+	protected static DDMFormLayout getDDMFormLayout(
+			Element structureElement, DDMForm ddmForm)
+		throws Exception {
+
+		Element structureElementLayoutElement = structureElement.element(
+			"layout");
+
+		if (structureElementLayoutElement != null) {
+			return DDMFormLayoutJSONDeserializerUtil.deserialize(
+				structureElementLayoutElement.getTextTrim());
+		}
+
+		return DDMUtil.getDefaultDDMFormLayout(ddmForm);
+	}
+
+	protected static List<Element> getDDMStructures(
+			ClassLoader classLoader, String fileName, Locale locale)
+		throws Exception {
+
+		String xml = StringUtil.read(classLoader, fileName);
+
+		xml = StringUtil.replace(xml, "[$LOCALE_DEFAULT$]", locale.toString());
+
+		Document document = UnsecureSAXReaderUtil.read(xml);
+
+		Element rootElement = document.getRootElement();
+
+		return rootElement.elements("structure");
+	}
+
+}

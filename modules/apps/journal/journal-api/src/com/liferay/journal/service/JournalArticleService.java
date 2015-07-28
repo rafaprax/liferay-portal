@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
+import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -38,6 +39,8 @@ import com.liferay.portal.service.BaseService;
  */
 @AccessControlled
 @JSONWebService
+@OSGiBeanProperties(property =  {
+	"json.web.service.context.name=journal", "json.web.service.context.path=JournalArticle"}, service = JournalArticleService.class)
 @ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
@@ -814,6 +817,36 @@ public interface JournalArticleService extends BaseService {
 	* Returns an ordered range of all the web content articles matching the
 	* group, user, the root folder or any of its subfolders.
 	*
+	* @param groupId the primary key of the web content article's group
+	* @param userId the primary key of the user (optionally <code>0</code>)
+	* @param rootFolderId the primary key of the root folder to begin the
+	search
+	* @param status the web content article's workflow status. For more
+	information see {@link WorkflowConstants} for constants starting
+	with the "STATUS_" prefix.
+	* @param start the lower bound of the range of web content articles to
+	return
+	* @param end the upper bound of the range of web content articles to
+	return (not inclusive)
+	* @param orderByComparator the comparator to order the web content
+	articles
+	* @return the range of matching web content articles ordered by the
+	comparator
+	* @throws PortalException if the root folder could not be found, if the
+	current user did not have permission to view the root folder, or
+	if a portal exception occurred
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.journal.model.JournalArticle> getGroupArticles(
+		long groupId, long userId, long rootFolderId, int status,
+		boolean includeOwner, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.journal.model.JournalArticle> orderByComparator)
+		throws PortalException;
+
+	/**
+	* Returns an ordered range of all the web content articles matching the
+	* group, user, the root folder or any of its subfolders.
+	*
 	* <p>
 	* Useful when paginating results. Returns a maximum of <code>end -
 	* start</code> instances. <code>start</code> and <code>end</code> are not
@@ -882,6 +915,28 @@ public interface JournalArticleService extends BaseService {
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getGroupArticlesCount(long groupId, long userId,
 		long rootFolderId, int status) throws PortalException;
+
+	/**
+	* Returns the number of web content articles matching the group, user,
+	* the root folder or any of its subfolders.
+	*
+	* @param groupId the primary key of the web content article's group
+	* @param userId the primary key of the user (optionally <code>0</code>)
+	* @param rootFolderId the primary key of the root folder to begin the
+	search
+	* @param status the web content article's workflow status. For more
+	information see {@link WorkflowConstants} for constants starting
+	with the "STATUS_" prefix.
+	* @return the range of matching web content articles ordered by the
+	comparator
+	* @throws PortalException if the root folder could not be found, if the
+	current user did not have permission to view the root folder, or
+	if a portal exception occurred
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getGroupArticlesCount(long groupId, long userId,
+		long rootFolderId, int status, boolean includeOwner)
+		throws PortalException;
 
 	/**
 	* Returns the latest web content article matching the group, article ID,
@@ -1732,8 +1787,9 @@ public interface JournalArticleService extends BaseService {
 
 	/**
 	* @deprecated As of 6.2.0, replaced by {@link
-	#updateArticleTranslation(long, String, double, java.util.Locale,
-	String, String, String, java.util.Map, ServiceContext)}
+	#updateArticleTranslation(long, String, double,
+	java.util.Locale, String, String, String, java.util.Map,
+	ServiceContext)}
 	*/
 	@java.lang.Deprecated
 	public com.liferay.journal.model.JournalArticle updateArticleTranslation(

@@ -87,7 +87,7 @@ DDLRecordSet recordSet = ddlDisplayContext.getRecordSet();
 					<portlet:param name="classNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDMStructure.class)) %>" />
 					<portlet:param name="classPK" value="<%= String.valueOf(recordSet.getDDMStructureId()) %>" />
 					<portlet:param name="resourceClassNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDLRecordSet.class)) %>" />
-					<portlet:param name="type" value="<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>" />
+					<portlet:param name="type" value="<%= DDMTemplateManager.TEMPLATE_TYPE_DISPLAY %>" />
 				</liferay-portlet:renderURL>
 
 				<%
@@ -114,7 +114,7 @@ DDLRecordSet recordSet = ddlDisplayContext.getRecordSet();
 					<portlet:param name="groupId" value="<%= String.valueOf(scopeGroupId) %>" />
 					<portlet:param name="templateId" value="<%= String.valueOf(ddlDisplayContext.getDisplayDDMTemplateId()) %>" />
 					<portlet:param name="resourceClassNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDLRecordSet.class)) %>" />
-					<portlet:param name="type" value="<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>" />
+					<portlet:param name="type" value="<%= DDMTemplateManager.TEMPLATE_TYPE_DISPLAY %>" />
 				</liferay-portlet:renderURL>
 
 				<%
@@ -144,7 +144,7 @@ DDLRecordSet recordSet = ddlDisplayContext.getRecordSet();
 					<portlet:param name="classPK" value="<%= String.valueOf(recordSet.getDDMStructureId()) %>" />
 					<portlet:param name="templateId" value="<%= String.valueOf(ddlDisplayContext.getFormDDMTemplateId()) %>" />
 					<portlet:param name="resourceClassNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDLRecordSet.class)) %>" />
-					<portlet:param name="type" value="<%= DDMTemplateConstants.TEMPLATE_TYPE_FORM %>" />
+					<portlet:param name="type" value="<%= DDMTemplateManager.TEMPLATE_TYPE_FORM %>" />
 					<portlet:param name="structureAvailableFields" value='<%= renderResponse.getNamespace() + "getAvailableFields" %>' />
 				</liferay-portlet:renderURL>
 

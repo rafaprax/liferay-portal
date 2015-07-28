@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.permission.BaseResourcePermissionChecker;
 import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.security.permission.ResourcePermissionChecker;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -29,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {"resource.name=com.liferay.journal"},
-	service = BaseResourcePermissionChecker.class
+	service = ResourcePermissionChecker.class
 )
 public class JournalPermission extends BaseResourcePermissionChecker {
 
@@ -40,7 +41,8 @@ public class JournalPermission extends BaseResourcePermissionChecker {
 		throws PortalException {
 
 		if (!contains(permissionChecker, groupId, actionId)) {
-			throw new PrincipalException();
+			throw new PrincipalException.MustHavePermission(
+				permissionChecker, RESOURCE_NAME, groupId, actionId);
 		}
 	}
 

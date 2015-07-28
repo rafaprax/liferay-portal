@@ -321,11 +321,14 @@ public class LiferayWebAppPlugin extends LiferayJavaPlugin {
 	}
 
 	@Override
-	protected void configureTaskDeployFrom(Copy deployTask) {
-		War war = (War)GradleUtil.getTask(
-			deployTask.getProject(), WarPlugin.WAR_TASK_NAME);
+	protected void configureTaskDeployFrom(Copy copy) {
+		Project project = copy.getProject();
 
-		deployTask.from(war.getOutputs());
+		War war = (War)GradleUtil.getTask(project, WarPlugin.WAR_TASK_NAME);
+
+		copy.from(war);
+
+		addCleanDeployedFile(project, war.getArchivePath());
 	}
 
 	protected void configureTaskDirectDeploy(
@@ -628,7 +631,7 @@ public class LiferayWebAppPlugin extends LiferayJavaPlugin {
 		File pluginPackagePropertiesFile = new File(
 			getWebAppDir(project), "WEB-INF/liferay-plugin-package.properties");
 
-		Properties pluginPackageProperties;
+		Properties pluginPackageProperties = null;
 
 		try {
 			pluginPackageProperties = FileUtil.readProperties(

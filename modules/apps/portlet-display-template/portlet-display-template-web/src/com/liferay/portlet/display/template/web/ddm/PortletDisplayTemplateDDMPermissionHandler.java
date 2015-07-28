@@ -14,13 +14,13 @@
 
 package com.liferay.portlet.display.template.web.ddm;
 
+import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 import com.liferay.portal.kernel.template.TemplateHandler;
 import com.liferay.portal.kernel.template.TemplateHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMPermissionHandler;
-import com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplate;
+import com.liferay.portlet.display.template.PortletDisplayTemplate;
 
 /**
  * @author Marcellus Tavares

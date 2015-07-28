@@ -7117,8 +7117,9 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 		}
 	}
 
-	protected void cacheUniqueFindersCache(JournalFolder journalFolder) {
-		if (journalFolder.isNew()) {
+	protected void cacheUniqueFindersCache(JournalFolder journalFolder,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					journalFolder.getUuid(), journalFolder.getGroupId()
 				};
@@ -7541,7 +7542,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 			journalFolder, false);
 
 		clearUniqueFindersCache(journalFolder);
-		cacheUniqueFindersCache(journalFolder);
+		cacheUniqueFindersCache(journalFolder, isNew);
 
 		journalFolder.resetOriginalValues();
 
@@ -7571,6 +7572,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 		journalFolderImpl.setName(journalFolder.getName());
 		journalFolderImpl.setDescription(journalFolder.getDescription());
 		journalFolderImpl.setRestrictionType(journalFolder.getRestrictionType());
+		journalFolderImpl.setLastPublishDate(journalFolder.getLastPublishDate());
 		journalFolderImpl.setStatus(journalFolder.getStatus());
 		journalFolderImpl.setStatusByUserId(journalFolder.getStatusByUserId());
 		journalFolderImpl.setStatusByUserName(journalFolder.getStatusByUserName());
@@ -7935,6 +7937,11 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalFolderModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

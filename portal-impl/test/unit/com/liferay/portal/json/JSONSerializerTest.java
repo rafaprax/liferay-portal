@@ -20,18 +20,25 @@ import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.HitsImpl;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.LocalizationImpl;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.impl.DDMStructureImpl;
+import com.liferay.portlet.dynamicdatamapping.DDMStructure;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.mockito.Mock;
+
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author Igor Spasic
  */
-public class JSONSerializerTest {
+@RunWith(PowerMockRunner.class)
+public class JSONSerializerTest extends PowerMockito {
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,19 +49,17 @@ public class JSONSerializerTest {
 		LocalizationUtil localizationUtil = new LocalizationUtil();
 
 		localizationUtil.setLocalization(new LocalizationImpl());
+
+		setUpDDMStructure();
 	}
 
 	@Test
 	public void testSerializeDDMStructure() {
-		DDMStructure ddmStructure = new DDMStructureImpl();
-
-		ddmStructure.setDefinition("value");
-
 		JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 
 		jsonSerializer.exclude("*.class");
 
-		String json = jsonSerializer.serialize(ddmStructure);
+		String json = jsonSerializer.serialize(_ddmStructure);
 
 		Assert.assertTrue(json.contains("\"definition\":\"value\""));
 	}
@@ -77,5 +82,52 @@ public class JSONSerializerTest {
 		Assert.assertTrue(json.contains("\"start\":0"));
 		Assert.assertTrue(json.contains("\"length\":0"));
 	}
+
+	@Test
+	public void testSerializeServiceContext() {
+		ServiceContext serviceContext = new ServiceContext();
+
+		String[] groupPermissions = new String[] {"VIEW"};
+
+		serviceContext.setAttribute("groupPermissions", groupPermissions);
+		serviceContext.setGroupPermissions(groupPermissions);
+
+		String json = JSONFactoryUtil.serialize(serviceContext);
+
+		ServiceContext deserializedServiceContext =
+			(ServiceContext)JSONFactoryUtil.deserialize(json);
+
+		Assert.assertNotNull(deserializedServiceContext.getGroupPermissions());
+	}
+
+	@Test
+	public void testSerializeTwice() {
+		ServiceContext serviceContext = new ServiceContext();
+
+		String[] groupPermissions = new String[] {"VIEW"};
+
+		serviceContext.setAttribute("groupPermissions", groupPermissions);
+		serviceContext.setGroupPermissions(groupPermissions);
+
+		String json1 = JSONFactoryUtil.serialize(serviceContext);
+
+		ServiceContext deserializedServiceContext =
+			(ServiceContext)JSONFactoryUtil.deserialize(json1);
+
+		String json2 = JSONFactoryUtil.serialize(deserializedServiceContext);
+
+		Assert.assertEquals(json1, json2);
+	}
+
+	protected void setUpDDMStructure() {
+		when(
+			_ddmStructure.getDefinition()
+		).thenReturn(
+			"value"
+		);
+	}
+
+	@Mock
+	private DDMStructure _ddmStructure;
 
 }

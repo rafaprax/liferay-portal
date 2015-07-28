@@ -47,7 +47,7 @@ backURL.setParameter("templateId", String.valueOf(template.getTemplateId()));
 <aui:input disabled="<%= true %>" name="description" />
 
 <c:choose>
-	<c:when test="<%= template.getType().equals(DDMTemplateConstants.TEMPLATE_TYPE_FORM) %>">
+	<c:when test="<%= template.getType().equals(DDMTemplateManager.TEMPLATE_TYPE_FORM) %>">
 
 		<%
 		DDMStructure structure = DDMTemplateHelperUtil.fetchStructure(template);

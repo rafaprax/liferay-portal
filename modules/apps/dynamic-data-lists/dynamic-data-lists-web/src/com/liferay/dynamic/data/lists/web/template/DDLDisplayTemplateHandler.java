@@ -22,20 +22,19 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetService;
 import com.liferay.dynamic.data.lists.util.DDLConstants;
 import com.liferay.dynamic.data.lists.web.constants.DDLPortletKeys;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureService;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateService;
+import com.liferay.dynamic.data.mapping.template.BaseDDMTemplateHandler;
+import com.liferay.dynamic.data.mapping.template.DDMTemplateVariableCodeHandler;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.template.TemplateHandler;
 import com.liferay.portal.kernel.template.TemplateVariableCodeHandler;
 import com.liferay.portal.kernel.template.TemplateVariableGroup;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portal.util.PortletKeys;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateService;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
-import com.liferay.portlet.dynamicdatamapping.template.BaseDDMTemplateHandler;
-import com.liferay.portlet.dynamicdatamapping.template.DDMTemplateVariableCodeHandler;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,7 +64,7 @@ public class DDLDisplayTemplateHandler extends BaseDDMTemplateHandler {
 	@Override
 	public String getName(Locale locale) {
 		String portletTitle = PortalUtil.getPortletTitle(
-			PortletKeys.DYNAMIC_DATA_LISTS, locale);
+			DDLPortletKeys.DYNAMIC_DATA_LISTS, locale);
 
 		return portletTitle.concat(StringPool.SPACE).concat(
 			LanguageUtil.get(locale, "template"));

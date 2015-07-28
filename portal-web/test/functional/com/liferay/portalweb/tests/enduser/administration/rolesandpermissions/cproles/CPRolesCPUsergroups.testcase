@@ -42,6 +42,7 @@
 			<var name="userLoginEmailAddress" value="${userEmailAddress}" />
 			<var name="userLoginEmailAddress" value="test@liferay.com" />
 			<var name="userLoginFullName" value="Test Test" />
+			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
 		<execute macro="Permissions#definePermissionLoginUserCP">
@@ -54,7 +55,7 @@
 
 		<execute macro="Page#gotoCP" />
 
-		<execute function="AssertElementNotPresent" locator1="CPUsergroups#ADD" />
+		<execute function="AssertElementNotPresent" locator1="NavBar#ADD" />
 
 		<execute macro="Permissions#definePermissionLoginUserCP">
 			<var name="permissionDefinitionKey" value="${permissionDefinition1Key}" />
@@ -96,6 +97,6 @@
 
 		<execute macro="Page#gotoCP" />
 
-		<execute function="AssertElementNotPresent" locator1="CPUsergroups#ADD" />
+		<execute function="AssertElementNotPresent" locator1="NavBar#ADD" />
 	</command>
 </definition>

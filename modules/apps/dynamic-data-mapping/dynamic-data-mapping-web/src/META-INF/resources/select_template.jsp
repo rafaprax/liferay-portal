@@ -74,7 +74,7 @@ String title = ddmDisplay.getViewTemplatesTitle(structure, locale);
 		</liferay-ui:search-container-results>
 
 		<liferay-ui:search-container-row
-			className="com.liferay.portlet.dynamicdatamapping.model.DDMTemplate"
+			className="com.liferay.dynamic.data.mapping.model.DDMTemplate"
 			keyProperty="templateId"
 			modelVar="template"
 		>
@@ -107,6 +107,8 @@ String title = ddmDisplay.getViewTemplatesTitle(structure, locale);
 
 					data.put("ddmtemplateid", template.getTemplateId());
 					data.put("ddmtemplatekey", template.getTemplateKey());
+					data.put("description", template.getDescription(locale));
+					data.put("imageurl", template.getTemplateImageURL(themeDisplay));
 					data.put("name", template.getName(locale));
 					%>
 

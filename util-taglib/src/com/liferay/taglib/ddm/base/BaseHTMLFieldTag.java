@@ -74,7 +74,8 @@ public abstract class BaseHTMLFieldTag extends com.liferay.taglib.util.IncludeTa
 		setScopedAttribute("classPK", classPK);
 	}
 
-	public void setField(com.liferay.portlet.dynamicdatamapping.storage.Field field) {
+	public void setField(
+		com.liferay.portlet.dynamicdatamapping.storage.Field field) {
 		_field = field;
 
 		setScopedAttribute("field", field);
