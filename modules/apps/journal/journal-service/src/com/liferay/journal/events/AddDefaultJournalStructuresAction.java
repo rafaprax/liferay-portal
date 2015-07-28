@@ -14,7 +14,12 @@
 
 package com.liferay.journal.events;
 
-import com.liferay.dynamic.data.mapping.util.DefaultDDMStructureUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONDeserializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
+import com.liferay.dynamic.data.mapping.util.DefaultDDMStructureHelper;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.events.SimpleAction;
@@ -55,6 +60,9 @@ public class AddDefaultJournalStructuresAction extends SimpleAction {
 
 	@Activate
 	protected void activate() throws ActionException {
+
+		setUpDefaultDDMStructureHelper();
+
 		Long companyId = CompanyThreadLocal.getCompanyId();
 
 		try {
@@ -82,7 +90,7 @@ public class AddDefaultJournalStructuresAction extends SimpleAction {
 
 		serviceContext.setUserId(defaultUserId);
 
-		DefaultDDMStructureUtil.addDDMStructures(
+		_ddmDefaultStructureHelper.addDDMStructures(
 			defaultUserId, group.getGroupId(),
 			PortalUtil.getClassNameId(JournalArticle.class),
 			PortalClassLoaderUtil.getClassLoader(),
@@ -102,6 +110,48 @@ public class AddDefaultJournalStructuresAction extends SimpleAction {
 	protected void setGroupLocalService(GroupLocalService groupLocalService) {
 		_groupLocalService = groupLocalService;
 	}
+	
+	@Reference
+	protected void setDDMFormJSONDeserializer(
+		DDMFormJSONDeserializer ddmFormJSONDeserializer) {
+
+		_ddmFormJSONDeserializer = ddmFormJSONDeserializer;
+	}
+	
+	@Reference
+	protected void setDDMFormXSDDeserializer(
+			DDMFormXSDDeserializer ddmFormXSDDeserializer) {
+		
+		_ddmFormXSDDeserializer = ddmFormXSDDeserializer;
+	}
+	
+	@Reference
+	protected void setDDMFormLayoutJSONDeserializer(
+			DDMFormLayoutJSONDeserializer ddmFormLayoutJSONDeserializer) {
+		
+		_ddmFormLayoutJSONDeserializer = ddmFormLayoutJSONDeserializer;
+	}
+	
+	@Reference
+	protected void setDDMStructureLocalService(
+			DDMStructureLocalService ddmStructureLocalService) {
+		
+		_ddmStructureLocalService = ddmStructureLocalService;
+	}
+	
+	@Reference
+	protected void setDDMTemplateLocalService(
+			DDMTemplateLocalService ddmTemplateLocalService) {
+		
+		_ddmTemplateLocalService = ddmTemplateLocalService;
+	}
+	
+	private void setUpDefaultDDMStructureHelper(){
+		_ddmDefaultStructureHelper = new DefaultDDMStructureHelper(
+			_ddmFormJSONDeserializer, _ddmFormLayoutJSONDeserializer,
+			_ddmFormXSDDeserializer, _ddmStructureLocalService,
+			_ddmTemplateLocalService);
+	}
 
 	@Reference(target = "(original.bean=true)", unbind = "-")
 	protected void setServletContext(ServletContext servletContext) {
@@ -113,6 +163,12 @@ public class AddDefaultJournalStructuresAction extends SimpleAction {
 	}
 
 	private CompanyLocalService _companyLocalService;
+	private DDMFormJSONDeserializer _ddmFormJSONDeserializer;
+	private DDMFormLayoutJSONDeserializer _ddmFormLayoutJSONDeserializer;
+	private DDMFormXSDDeserializer _ddmFormXSDDeserializer;
+	private DDMStructureLocalService _ddmStructureLocalService;
+	private DDMTemplateLocalService _ddmTemplateLocalService;
+	private DefaultDDMStructureHelper _ddmDefaultStructureHelper;
 	private GroupLocalService _groupLocalService;
 	private UserLocalService _userLocalService;
 
