@@ -14,12 +14,15 @@
 
 package com.liferay.document.library.events;
 
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONDeserializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.DDM;
-import com.liferay.dynamic.data.mapping.util.DefaultDDMStructureUtil;
+import com.liferay.dynamic.data.mapping.util.DefaultDDMStructureHelper;
 import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.events.SimpleAction;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -51,9 +54,7 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 
 import java.io.StringReader;
-
 import java.lang.reflect.Field;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,8 +89,11 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 
 	@Activate
 	protected void activate() throws ActionException {
-		Long companyId = CompanyThreadLocal.getCompanyId();
 
+		setUpDefaultDDMStructureHelper();
+
+		Long companyId = CompanyThreadLocal.getCompanyId();
+		
 		try {
 			List<Company> companies = _companyLocalService.getCompanies();
 
@@ -131,7 +135,7 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 		Locale locale = PortalUtil.getSiteDefaultLocale(groupId);
 
 		String definition =
-			DefaultDDMStructureUtil.getDynamicDDMStructureDefinition(
+			_ddmDefaultStructureHelper.getDynamicDDMStructureDefinition(
 				AddDefaultDocumentLibraryStructuresAction.class.
 					getClassLoader(),
 				"com/liferay/document/library/events/dependencies" +
@@ -349,7 +353,7 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 
 		serviceContext.setUserId(defaultUserId);
 
-		DefaultDDMStructureUtil.addDDMStructures(
+		_ddmDefaultStructureHelper.addDDMStructures(
 			defaultUserId, group.getGroupId(),
 			PortalUtil.getClassNameId(DLFileEntryMetadata.class),
 			AddDefaultDocumentLibraryStructuresAction.class.getClassLoader(),
@@ -380,6 +384,13 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 
 		return localizationMap;
 	}
+	
+	private void setUpDefaultDDMStructureHelper(){
+		_ddmDefaultStructureHelper = new DefaultDDMStructureHelper(
+			_ddmFormJSONDeserializer, _ddmFormLayoutJSONDeserializer,
+			_ddmFormXSDDeserializer, _ddmStructureLocalService,
+			_ddmTemplateLocalService);
+	}
 
 	@Reference
 	protected void setCompanyLocalService(
@@ -401,10 +412,31 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 	}
 
 	@Reference
-	protected void setDDMStructureLocalService(
-		DDMStructureLocalService ddmStructureLocalService) {
+	protected void setDDMFormJSONDeserializer(
+		DDMFormJSONDeserializer ddmFormJSONDeserializer) {
 
+		_ddmFormJSONDeserializer = ddmFormJSONDeserializer;
+	}
+	
+	@Reference
+	protected void setDDMFormLayoutJSONDeserializer(
+			DDMFormLayoutJSONDeserializer ddmFormLayoutJSONDeserializer) {
+		
+		_ddmFormLayoutJSONDeserializer = ddmFormLayoutJSONDeserializer;
+	}
+	
+	@Reference
+	protected void setDDMStructureLocalService(
+			DDMStructureLocalService ddmStructureLocalService) {
+		
 		_ddmStructureLocalService = ddmStructureLocalService;
+	}
+	
+	@Reference
+	protected void setDDMTemplateLocalService(
+			DDMTemplateLocalService ddmTemplateLocalService) {
+		
+		_ddmTemplateLocalService = ddmTemplateLocalService;
 	}
 
 	@Reference
@@ -431,7 +463,11 @@ public class AddDefaultDocumentLibraryStructuresAction extends SimpleAction {
 	private CompanyLocalService _companyLocalService;
 	private DDM _ddm;
 	private DDMFormXSDDeserializer _ddmFormXSDDeserializer;
+	private DDMFormJSONDeserializer _ddmFormJSONDeserializer;
+	private DDMFormLayoutJSONDeserializer _ddmFormLayoutJSONDeserializer;
 	private DDMStructureLocalService _ddmStructureLocalService;
+	private DDMTemplateLocalService _ddmTemplateLocalService;
+	private DefaultDDMStructureHelper _ddmDefaultStructureHelper;
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
 	private GroupLocalService _groupLocalService;
 	private UserLocalService _userLocalService;
