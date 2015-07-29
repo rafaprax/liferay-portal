@@ -4,6 +4,7 @@ Bundle-Version: 1.0.0
 Import-Package: com.liferay.portal.xml,\
 *
 Export-Package:\
+	com.liferay.dynamic.data.mapping.configuration,\
 	com.liferay.dynamic.data.mapping.internal,\
 	com.liferay.dynamic.data.mapping.io.internal,\
 	com.liferay.dynamic.data.mapping.model.impl,\
