@@ -39,7 +39,8 @@ create table DDMStructure (
 	description STRING null,
 	definition VARCHAR(75) null,
 	storageType VARCHAR(75) null,
-	type_ INTEGER
+	type_ INTEGER,
+	lastPublishDate DATE null
 );
 
 create table DDMStructureLayout (
@@ -108,7 +109,8 @@ create table DDMTemplate (
 	cacheable BOOLEAN,
 	smallImage BOOLEAN,
 	smallImageId LONG,
-	smallImageURL VARCHAR(75) null
+	smallImageURL VARCHAR(75) null,
+	lastPublishDate DATE null
 );
 
 create table DDMTemplateLink (
