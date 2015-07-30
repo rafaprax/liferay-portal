@@ -57,6 +57,7 @@
 		<property name="definition" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="storageType" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="type" type="com.liferay.portal.dao.orm.hibernate.IntegerType" column="type_" />
+		<property name="lastPublishDate" type="org.hibernate.type.TimestampType" />
 	</class>
 	<class name="com.liferay.dynamic.data.mapping.model.impl.DDMStructureLayoutImpl" table="DDMStructureLayout">
 		<id name="structureLayoutId" type="long">
@@ -130,6 +131,7 @@
 		<property name="smallImage" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="smallImageId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="smallImageURL" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="lastPublishDate" type="org.hibernate.type.TimestampType" />
 	</class>
 	<class name="com.liferay.dynamic.data.mapping.model.impl.DDMTemplateLinkImpl" table="DDMTemplateLink">
 		<id name="templateLinkId" type="long">

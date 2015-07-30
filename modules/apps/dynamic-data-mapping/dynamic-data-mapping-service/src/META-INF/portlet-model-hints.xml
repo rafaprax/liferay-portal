@@ -41,6 +41,7 @@
 		<field name="definition" type="String" />
 		<field name="storageType" type="String" />
 		<field name="type" type="int" />
+		<field name="lastPublishDate" type="Date" />
 	</model>
 	<model name="com.liferay.dynamic.data.mapping.model.DDMStructureLayout">
 		<field name="uuid" type="String" />
@@ -106,6 +107,7 @@
 		<field name="smallImage" type="boolean" />
 		<field name="smallImageId" type="long" />
 		<field name="smallImageURL" type="String" />
+		<field name="lastPublishDate" type="Date" />
 	</model>
 	<model name="com.liferay.dynamic.data.mapping.model.DDMTemplateLink">
 		<field name="templateLinkId" type="long" />

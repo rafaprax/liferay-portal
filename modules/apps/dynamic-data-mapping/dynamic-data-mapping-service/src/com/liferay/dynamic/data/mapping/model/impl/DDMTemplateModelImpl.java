@@ -103,7 +103,8 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 			{ "cacheable", Types.BOOLEAN },
 			{ "smallImage", Types.BOOLEAN },
 			{ "smallImageId", Types.BIGINT },
-			{ "smallImageURL", Types.VARCHAR }
+			{ "smallImageURL", Types.VARCHAR },
+			{ "lastPublishDate", Types.TIMESTAMP }
 		};
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP = new HashMap<String, Integer>();
 
@@ -133,9 +134,10 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 		TABLE_COLUMNS_MAP.put("smallImage", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("smallImageId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("smallImageURL", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("lastPublishDate", Types.TIMESTAMP);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table DDMTemplate (uuid_ VARCHAR(75) null,templateId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,versionUserId LONG,versionUserName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,classNameId LONG,classPK LONG,resourceClassNameId LONG,templateKey VARCHAR(75) null,version VARCHAR(75) null,name STRING null,description STRING null,type_ VARCHAR(75) null,mode_ VARCHAR(75) null,language VARCHAR(75) null,script VARCHAR(75) null,cacheable BOOLEAN,smallImage BOOLEAN,smallImageId LONG,smallImageURL VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table DDMTemplate (uuid_ VARCHAR(75) null,templateId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,versionUserId LONG,versionUserName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,classNameId LONG,classPK LONG,resourceClassNameId LONG,templateKey VARCHAR(75) null,version VARCHAR(75) null,name STRING null,description STRING null,type_ VARCHAR(75) null,mode_ VARCHAR(75) null,language VARCHAR(75) null,script VARCHAR(75) null,cacheable BOOLEAN,smallImage BOOLEAN,smallImageId LONG,smallImageURL VARCHAR(75) null,lastPublishDate DATE null)";
 	public static final String TABLE_SQL_DROP = "drop table DDMTemplate";
 	public static final String ORDER_BY_JPQL = " ORDER BY ddmTemplate.templateId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY DDMTemplate.templateId ASC";
@@ -201,6 +203,7 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 		model.setSmallImage(soapModel.getSmallImage());
 		model.setSmallImageId(soapModel.getSmallImageId());
 		model.setSmallImageURL(soapModel.getSmallImageURL());
+		model.setLastPublishDate(soapModel.getLastPublishDate());
 
 		return model;
 	}
@@ -290,6 +293,7 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 		attributes.put("smallImage", getSmallImage());
 		attributes.put("smallImageId", getSmallImageId());
 		attributes.put("smallImageURL", getSmallImageURL());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -447,6 +451,12 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 
 		if (smallImageURL != null) {
 			setSmallImageURL(smallImageURL);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 	}
 
@@ -1131,6 +1141,17 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 		_smallImageURL = smallImageURL;
 	}
 
+	@JSON
+	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+	}
+
 	@Override
 	public StagedModelType getStagedModelType() {
 		return new StagedModelType(PortalUtil.getClassNameId(
@@ -1275,6 +1296,7 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 		ddmTemplateImpl.setSmallImage(getSmallImage());
 		ddmTemplateImpl.setSmallImageId(getSmallImageId());
 		ddmTemplateImpl.setSmallImageURL(getSmallImageURL());
+		ddmTemplateImpl.setLastPublishDate(getLastPublishDate());
 
 		ddmTemplateImpl.resetOriginalValues();
 
@@ -1512,12 +1534,21 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 			ddmTemplateCacheModel.smallImageURL = null;
 		}
 
+		Date lastPublishDate = getLastPublishDate();
+
+		if (lastPublishDate != null) {
+			ddmTemplateCacheModel.lastPublishDate = lastPublishDate.getTime();
+		}
+		else {
+			ddmTemplateCacheModel.lastPublishDate = Long.MIN_VALUE;
+		}
+
 		return ddmTemplateCacheModel;
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(51);
+		StringBundler sb = new StringBundler(53);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -1569,6 +1600,8 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 		sb.append(getSmallImageId());
 		sb.append(", smallImageURL=");
 		sb.append(getSmallImageURL());
+		sb.append(", lastPublishDate=");
+		sb.append(getLastPublishDate());
 		sb.append("}");
 
 		return sb.toString();
@@ -1576,7 +1609,7 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(79);
+		StringBundler sb = new StringBundler(82);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.dynamic.data.mapping.model.DDMTemplate");
@@ -1682,6 +1715,10 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 			"<column><column-name>smallImageURL</column-name><column-value><![CDATA[");
 		sb.append(getSmallImageURL());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>lastPublishDate</column-name><column-value><![CDATA[");
+		sb.append(getLastPublishDate());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -1735,6 +1772,7 @@ public class DDMTemplateModelImpl extends BaseModelImpl<DDMTemplate>
 	private long _originalSmallImageId;
 	private boolean _setOriginalSmallImageId;
 	private String _smallImageURL;
+	private Date _lastPublishDate;
 	private long _columnBitmask;
 	private DDMTemplate _escapedModel;
 }
