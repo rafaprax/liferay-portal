@@ -14,6 +14,8 @@
  */
 --%>
 
+<%@page import="com.liferay.portal.kernel.portlet.PortletProviderUtil"%>
+<%@page import="com.liferay.portal.kernel.portlet.PortletProvider"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
@@ -52,6 +54,7 @@ page import="com.liferay.dynamic.data.lists.web.template.DDLDisplayTemplateTrans
 page import="com.liferay.dynamic.data.mapping.exception.NoSuchStructureException" %><%@
 page import="com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException" %><%@
 page import="com.liferay.dynamic.data.mapping.model.DDMStructure" %><%@
+page import="com.liferay.dynamic.data.mapping.model.DDMStructureLink" %><%@
 page import="com.liferay.dynamic.data.mapping.model.DDMTemplate" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.DDMTemplateManager" %><%@
 page import="com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer" %><%@
