@@ -14,6 +14,7 @@
  */
 --%>
 
+<%@ page import="com.liferay.dynamic.data.mapping.constants.DDMPortletKeys" %>
 <%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
 <%@ page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil" %>
 <%@ page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateManager" %>
