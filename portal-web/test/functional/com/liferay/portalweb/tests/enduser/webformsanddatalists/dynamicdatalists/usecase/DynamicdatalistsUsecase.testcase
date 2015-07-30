@@ -1019,9 +1019,7 @@
 		<execute function="SelectWindow" locator1="title=Dynamic Data Lists - Control Panel - Liferay" />
 	</command>
 
-	<command known-issues="LPS-49842" name="AssertUserUpdateRejectedRecord" priority="4">
-		<property name="web.plugins.includes" value="kaleo-web" />
-
+	<command name="AssertUserUpdateRejectedRecord" priority="4">
 		<var name="workflowAssetTitle" value="DDL List" />
 
 		<execute macro="Page#addPG">

@@ -1,5 +1,4 @@
 <definition component-name="portal-workflow">
-	<property name="web.plugins.includes" value="kaleo-web" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<set-up>
@@ -34,7 +33,7 @@
 		<execute macro="Site#tearDownCP" />
 	</tear-down>
 
-	<command known-issues="LRQA-12687" name="AddBlogsEntriesWithPortalScopeWorkflowAndAssertWorkflowScope" priority="4">
+	<command name="AddBlogsEntriesWithPortalScopeWorkflowAndAssertWorkflowScope" priority="4">
 		<execute macro="Page#gotoCP">
 			<var name="portletName" value="Workflow Configuration" />
 		</execute>
@@ -185,7 +184,7 @@
 		</execute>
 	</command>
 
-	<command known-issues="LRQA-12687" name="AddBlogsEntriesWithSiteScopeWorkflowAndAssertWorkflowScope" priority="4">
+	<command name="AddBlogsEntriesWithSiteScopeWorkflowAndAssertWorkflowScope" priority="4">
 		<execute macro="Page#gotoCP">
 			<var name="portletName" value="Sites" />
 		</execute>
@@ -374,6 +373,7 @@
 		<execute macro="User#loginPG">
 			<var name="password" value="test" />
 			<var name="userEmailAddress" value="test@liferay.com" />
+			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
 		<execute macro="Page#gotoMyAccount">
@@ -509,7 +509,7 @@
 		</execute>
 	</command>
 
-	<command known-issues="LRQA-12687" name="ViewBlogsEntryWorkflowViaNotifications" priority="4">
+	<command name="ViewBlogsEntryWorkflowViaNotifications" priority="4">
 		<property name="portlet.plugins.includes" value="notifications-portlet" />
 
 		<execute macro="Page#gotoConfigurationCP">

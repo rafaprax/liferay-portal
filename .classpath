@@ -52,6 +52,7 @@
 	<classpathentry kind="lib" path="lib/development/jargs.jar"/>
 	<classpathentry kind="lib" path="lib/development/jarjar.jar"/>
 	<classpathentry kind="lib" path="lib/development/jasper.jar"/>
+	<classpathentry kind="lib" path="lib/development/javacpp.jar"/>
 	<classpathentry kind="lib" path="lib/development/jaxb-api.jar"/>
 	<classpathentry kind="lib" path="lib/development/jbi_rt.jar"/>
 	<classpathentry kind="lib" path="lib/development/jetty-server.jar"/>
@@ -73,10 +74,13 @@
 	<classpathentry kind="lib" path="lib/development/mockito.jar"/>
 	<classpathentry kind="lib" path="lib/development/mysql.jar"/>
 	<classpathentry kind="lib" path="lib/development/objenesis.jar"/>
+	<classpathentry kind="lib" path="lib/development/opencv.jar"/>
 	<classpathentry kind="lib" path="lib/development/orangevolt-ant-tasks.jar"/>
 	<classpathentry kind="lib" path="lib/development/org.freemarker-2.3.17.LIFERAY-PATCHED-1.jar"/>
 	<classpathentry kind="lib" path="lib/development/p6spy.jar"/>
 	<classpathentry kind="lib" path="lib/development/persistence.jar"/>
+	<classpathentry kind="lib" path="lib/development/piccolo2d-core.jar"/>
+	<classpathentry kind="lib" path="lib/development/piccolo2d-extras.jar"/>
 	<classpathentry kind="lib" path="lib/development/postgresql.jar"/>
 	<classpathentry kind="lib" path="lib/development/powermock-api-mockito.jar"/>
 	<classpathentry kind="lib" path="lib/development/powermock-api-support.jar"/>
@@ -94,7 +98,7 @@
 	<classpathentry kind="lib" path="lib/development/selenium-server.jar"/>
 	<classpathentry kind="lib" path="lib/development/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/development/sikuli-api.jar"/>
-	<classpathentry kind="lib" path="lib/development/sikuli-script.jar"/>
+	<classpathentry kind="lib" path="lib/development/sikuli-core.jar"/>
 	<classpathentry kind="lib" path="lib/development/smtp.jar"/>
 	<classpathentry kind="lib" path="lib/development/spring-instrument.jar"/>
 	<classpathentry kind="lib" path="lib/development/spring-instrument-tomcat.jar"/>
@@ -141,6 +145,7 @@
 	<classpathentry kind="lib" path="lib/portal/com.liferay.sass.compiler.jni.jar"/>
 	<classpathentry kind="lib" path="lib/portal/com.liferay.sass.compiler.ruby.jar"/>
 	<classpathentry kind="lib" path="lib/portal/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="lib/portal/commons-chain.jar"/>
 	<classpathentry kind="lib" path="lib/portal/commons-codec.jar"/>
 	<classpathentry kind="lib" path="lib/portal/commons-collections.jar"/>
 	<classpathentry kind="lib" path="lib/portal/commons-compress.jar"/>
@@ -182,11 +187,6 @@
 	<classpathentry kind="lib" path="lib/portal/im4java.jar"/>
 	<classpathentry kind="lib" path="lib/portal/isoparser.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jabsorb.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jackrabbit-api.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jackrabbit-core.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jackrabbit-jcr-commons.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jackrabbit-spi.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jackrabbit-spi-commons.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jai_codec.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jai_core.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jakarta-regexp.jar"/>
@@ -201,12 +201,10 @@
 	<classpathentry kind="lib" path="lib/portal/jcifs.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jcommon.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jcl-over-slf4j.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jcr.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jempbox.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jena.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jericho-html.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jets3t.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jfreechart.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jhighlight.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jhlabs-filters.jar"/>
@@ -214,7 +212,6 @@
 	<classpathentry kind="lib" path="lib/portal/jodconverter.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jodd.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jrcs-diff.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jruby.jar"/>
 	<classpathentry kind="lib" path="lib/portal/json-java.jar"/>
 	<classpathentry kind="lib" path="lib/portal/json-schema-validator.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jsonrpc.jar"/>
@@ -280,8 +277,11 @@
 	<classpathentry kind="lib" path="lib/portal/stax-ex.jar"/>
 	<classpathentry kind="lib" path="lib/portal/streambuffer.jar"/>
 	<classpathentry kind="lib" path="lib/portal/stringtemplate.jar"/>
-	<classpathentry kind="lib" path="lib/portal/struts.jar"/>
+	<classpathentry kind="lib" path="lib/portal/struts-core.jar"/>
 	<classpathentry kind="lib" path="lib/portal/struts-el.jar"/>
+	<classpathentry kind="lib" path="lib/portal/struts-extras.jar"/>
+	<classpathentry kind="lib" path="lib/portal/struts-taglib.jar"/>
+	<classpathentry kind="lib" path="lib/portal/struts-tiles.jar"/>
 	<classpathentry kind="lib" path="lib/portal/tagsoup.jar"/>
 	<classpathentry kind="lib" path="lib/portal/tika-core.jar"/>
 	<classpathentry kind="lib" path="lib/portal/tika-parsers.jar"/>

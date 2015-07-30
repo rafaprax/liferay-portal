@@ -30,6 +30,7 @@
 		<column name="title" type="String" localized="true" />
 		<column name="description" type="String" localized="true" />
 		<column name="vocabularyId" type="long" />
+		<column name="lastPublishDate" type="Date" />
 
 		<!-- Relationships -->
 
@@ -293,7 +294,7 @@
 		<reference package-path="com.liferay.portal" entity="User" />
 		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
 	</entity>
-	<entity name="AssetTag" local-service="true" remote-service="true">
+	<entity name="AssetTag" uuid="true" local-service="true" remote-service="true">
 
 		<!-- PK fields -->
 
@@ -315,6 +316,7 @@
 
 		<column name="name" type="String" accessor="true" />
 		<column name="assetCount" type="int" />
+		<column name="lastPublishDate" type="Date" />
 
 		<!-- Relationships -->
 
@@ -408,6 +410,7 @@
 		<column name="title" type="String" localized="true" />
 		<column name="description" type="String" localized="true" />
 		<column name="settings" type="String" />
+		<column name="lastPublishDate" type="Date" />
 
 		<!-- Order -->
 

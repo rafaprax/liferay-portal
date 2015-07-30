@@ -136,14 +136,6 @@
 		<priority value="ERROR" />
 	</category>
 
-	<category name="com.liferay.portal.dao.shard">
-		<priority value="ERROR" />
-	</category>
-
-	<category name="com.liferay.portal.dao.shard.DefaultShardDataSourceTargetSource">
-		<priority value="INFO" />
-	</category>
-
 	<category name="com.liferay.portal.deploy">
 		<priority value="INFO" />
 	</category>
@@ -432,14 +424,6 @@
 		<priority value="ERROR" />
 	</category>
 
-	<category name="com.liferay.portal.scripting.ruby.RubyExecutor">
-		<priority value="ERROR" />
-	</category>
-
-	<category name="com.liferay.portal.search.IndexerRegistryImpl">
-		<priority value="WARN" />
-	</category>
-
 	<category name="com.liferay.portal.search.lucene">
 		<priority value="ERROR" />
 	</category>
@@ -450,6 +434,10 @@
 
 	<category name="com.liferay.portal.search.lucene.LuceneIndexWriterImpl">
 		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.security">
+		<priority value="WARN" />
 	</category>
 
 	<category name="com.liferay.portal.security.auth.EmailAddressGeneratorFactory">
@@ -1169,10 +1157,6 @@
 	</category>
 
 	<category name="org.apache.commons.validator">
-		<priority value="ERROR" />
-	</category>
-
-	<category name="org.apache.jackrabbit">
 		<priority value="ERROR" />
 	</category>
 

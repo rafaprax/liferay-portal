@@ -215,10 +215,6 @@ public interface PropsKeys {
 
 	public static final String BASIC_AUTH_PASSWORD_REQUIRED = "basic.auth.password.required";
 
-	public static final String BLOGS_COMMENT_RATINGS_ENABLED = "blogs.comment.ratings.enabled";
-
-	public static final String BLOGS_DISPLAY_STYLE = "blogs.display.style";
-
 	public static final String BLOGS_DISPLAY_TEMPLATES_CONFIG = "blogs.display.templates.config";
 
 	public static final String BLOGS_EMAIL_ENTRY_ADDED_BODY = "blogs.email.entry.added.body";
@@ -243,8 +239,6 @@ public interface PropsKeys {
 
 	public static final String BLOGS_ENTRY_PREVIOUS_AND_NEXT_NAVIGATION_ENABLED = "blogs.entry.previous.and.next.navigation.enabled";
 
-	public static final String BLOGS_FLAGS_ENABLED = "blogs.flags.enabled";
-
 	public static final String BLOGS_IMAGE_ALLOY_EDITOR_MAX_SIZE = "blogs.image.alloy.editor.max.size";
 
 	public static final String BLOGS_IMAGE_COVER_MAX_SIZE = "blogs.image.cover.max.size";
@@ -263,19 +257,7 @@ public interface PropsKeys {
 
 	public static final String BLOGS_PUBLISH_TO_LIVE_BY_DEFAULT = "blogs.publish.to.live.by.default";
 
-	public static final String BLOGS_RATINGS_ENABLED = "blogs.ratings.enabled";
-
-	public static final String BLOGS_RELATED_ASSETS_ENABLED = "blogs.related.assets.enabled";
-
 	public static final String BLOGS_RSS_ABSTRACT_LENGTH = "blogs.rss.abstract.length";
-
-	public static final String BLOGS_RSS_ENABLED = "blogs.rss.enabled";
-
-	public static final String BLOGS_SOCIAL_BOOKMARKS_DISPLAY_POSITION = "blogs.social.bookmarks.display.position";
-
-	public static final String BLOGS_SOCIAL_BOOKMARKS_DISPLAY_STYLE = "blogs.social.bookmarks.display.style";
-
-	public static final String BLOGS_SOCIAL_BOOKMARKS_ENABLED = "blogs.social.bookmarks.enabled";
 
 	public static final String BLOGS_TRACKBACK_ENABLED = "blogs.trackback.enabled";
 
@@ -385,15 +367,15 @@ public interface PropsKeys {
 
 	public static final String CLUSTER_LINK_AUTODETECT_ADDRESS = "cluster.link.autodetect.address";
 
-	public static final String CLUSTER_LINK_CHANNEL_NAME_PREFIX = "cluster.link.channel.name.prefix";
+	public static final String CLUSTER_LINK_CHANNEL_NAME_CONTROL = "cluster.link.channel.name.control";
+
+	public static final String CLUSTER_LINK_CHANNEL_NAME_TRANSPORT = "cluster.link.channel.name.transport";
 
 	public static final String CLUSTER_LINK_CHANNEL_PROPERTIES_CONTROL = "cluster.link.channel.properties.control";
 
 	public static final String CLUSTER_LINK_CHANNEL_PROPERTIES_TRANSPORT = "cluster.link.channel.properties.transport";
 
 	public static final String CLUSTER_LINK_CHANNEL_SYSTEM_PROPERTIES = "cluster.link.channel.system.properties";
-
-	public static final String CLUSTER_LINK_DEBUG_ENABLED = "cluster.link.debug.enabled";
 
 	public static final String CLUSTER_LINK_ENABLED = "cluster.link.enabled";
 
@@ -749,8 +731,6 @@ public interface PropsKeys {
 
 	public static final String DL_RELATED_ASSETS_ENABLED = "dl.related.assets.enabled";
 
-	public static final String DL_REPOSITORY_CMIS_DELETE_DEPTH = "dl.repository.cmis.delete.depth";
-
 	public static final String DL_REPOSITORY_GUEST_PASSWORD = "dl.repository.guest.password";
 
 	public static final String DL_REPOSITORY_GUEST_USERNAME = "dl.repository.guest.username";
@@ -759,41 +739,11 @@ public interface PropsKeys {
 
 	public static final String DL_SHOW_HIDDEN_MOUNT_FOLDERS = "dl.show.hidden.mount.folders";
 
-	public static final String DL_STORE_ADVANCED_FILE_SYSTEM_ROOT_DIR = "dl.store.advanced.file.system.root.dir";
-
 	public static final String DL_STORE_ANTIVIRUS_ENABLED = "dl.store.antivirus.enabled";
 
 	public static final String DL_STORE_ANTIVIRUS_IMPL = "dl.store.antivirus.impl";
 
-	public static final String DL_STORE_CMIS_CREDENTIALS_PASSWORD = "dl.store.cmis.credentials.password";
-
-	public static final String DL_STORE_CMIS_CREDENTIALS_USERNAME = "dl.store.cmis.credentials.username";
-
-	public static final String DL_STORE_CMIS_REPOSITORY_URL = "dl.store.cmis.repository.url";
-
-	public static final String DL_STORE_CMIS_SYSTEM_ROOT_DIR = "dl.store.cmis.system.root.dir";
-
-	public static final String DL_STORE_FILE_SYSTEM_ROOT_DIR = "dl.store.file.system.root.dir";
-
 	public static final String DL_STORE_IMPL = "dl.store.impl";
-
-	public static final String DL_STORE_JCR_FETCH_DELAY = "dl.store.jcr.fetch.delay";
-
-	public static final String DL_STORE_JCR_FETCH_MAX_FAILURES = "dl.store.jcr.fetch.max.failures";
-
-	public static final String DL_STORE_JCR_MOVE_VERSION_LABELS = "dl.store.jcr.move.version.labels";
-
-	public static final String DL_STORE_S3_ACCESS_KEY = "dl.store.s3.access.key";
-
-	public static final String DL_STORE_S3_BUCKET_NAME = "dl.store.s3.bucket.name";
-
-	public static final String DL_STORE_S3_JETS3T = "dl.store.s3.jets3t";
-
-	public static final String DL_STORE_S3_SECRET_KEY = "dl.store.s3.secret.key";
-
-	public static final String DL_STORE_S3_TEMP_DIR_CLEAN_UP_EXPUNGE = "dl.store.s3.temp.dir.clean.up.expunge";
-
-	public static final String DL_STORE_S3_TEMP_DIR_CLEAN_UP_FREQUENCY = "dl.store.s3.temp.dir.clean.up.frequency";
 
 	public static final String DL_SUBFOLDERS_VISIBLE = "dl.subfolders.visible";
 
@@ -802,24 +752,6 @@ public interface PropsKeys {
 	public static final String DOCKBAR_ADD_PORTLETS = "dockbar.add.portlets";
 
 	public static final String DOCKBAR_ADMINISTRATIVE_LINKS_SHOW_IN_POP_UP = "dockbar.administrative.links.show.in.pop.up";
-
-	public static final String DYNAMIC_DATA_LISTS_ERROR_TEMPLATE = "dynamic.data.lists.error.template";
-
-	public static final String DYNAMIC_DATA_LISTS_RECORD_SET_FORCE_AUTOGENERATE_KEY = "dynamic.data.lists.record.set.force.autogenerate.key";
-
-	public static final String DYNAMIC_DATA_LISTS_STORAGE_TYPE = "dynamic.data.lists.storage.type";
-
-	public static final String DYNAMIC_DATA_MAPPING_IMAGE_EXTENSIONS = "dynamic.data.mapping.image.extensions";
-
-	public static final String DYNAMIC_DATA_MAPPING_IMAGE_SMALL_MAX_SIZE = "dynamic.data.mapping.image.small.max.size";
-
-	public static final String DYNAMIC_DATA_MAPPING_STRUCTURE_FORCE_AUTOGENERATE_KEY = "dynamic.data.mapping.structure.force.autogenerate.key";
-
-	public static final String DYNAMIC_DATA_MAPPING_TEMPLATE_FORCE_AUTOGENERATE_KEY = "dynamic.data.mapping.template.force.autogenerate.key";
-
-	public static final String DYNAMIC_DATA_MAPPING_TEMPLATE_LANGUAGE_CONTENT = "dynamic.data.mapping.template.language.content";
-
-	public static final String DYNAMIC_DATA_MAPPING_TEMPLATE_LANGUAGE_DEFAULT = "dynamic.data.mapping.template.language.default";
 
 	public static final String DYNAMIC_RESOURCE_SERVLET_ALLOWED_PATHS = "dynamic.resource.servlet.allowed.paths";
 
@@ -920,14 +852,6 @@ public interface PropsKeys {
 	public static final String HOT_UNDEPLOY_INTERVAL = "hot.undeploy.interval";
 
 	public static final String HOT_UNDEPLOY_ON_REDEPLOY = "hot.undeploy.on.redeploy";
-
-	public static final String HTTP_HEADER_SECURE_X_CONTENT_TYPE_OPTIONS = "http.header.secure.x.content.type.options";
-
-	public static final String HTTP_HEADER_SECURE_X_CONTENT_TYPE_OPTIONS_URLS_EXCLUDES = "http.header.secure.x.content.type.options.urls.excludes";
-
-	public static final String HTTP_HEADER_SECURE_X_FRAME_OPTIONS = "http.header.secure.x.frame.options";
-
-	public static final String HTTP_HEADER_SECURE_X_XSS_PROTECTION = "http.header.secure.x.xss.protection";
 
 	public static final String HTTP_HEADER_VERSION_VERBOSITY = "http.header.version.verbosity";
 
@@ -1070,24 +994,6 @@ public interface PropsKeys {
 	public static final String JAVASCRIPT_LOG_ENABLED = "javascript.log.enabled";
 
 	public static final String JAVASCRIPT_SINGLE_PAGE_APPLICATION_ENABLED = "javascript.single.page.application.enabled";
-
-	public static final String JCR_INITIALIZE_ON_STARTUP = "jcr.initialize.on.startup";
-
-	public static final String JCR_JACKRABBIT_CONFIG_FILE_PATH = "jcr.jackrabbit.config.file.path";
-
-	public static final String JCR_JACKRABBIT_CREDENTIALS_PASSWORD = "jcr.jackrabbit.credentials.password";
-
-	public static final String JCR_JACKRABBIT_CREDENTIALS_USERNAME = "jcr.jackrabbit.credentials.username";
-
-	public static final String JCR_JACKRABBIT_REPOSITORY_HOME = "jcr.jackrabbit.repository.home";
-
-	public static final String JCR_JACKRABBIT_REPOSITORY_ROOT = "jcr.jackrabbit.repository.root";
-
-	public static final String JCR_NODE_DOCUMENTLIBRARY = "jcr.node.documentlibrary";
-
-	public static final String JCR_WORKSPACE_NAME = "jcr.workspace.name";
-
-	public static final String JCR_WRAP_SESSION = "jcr.wrap.session";
 
 	public static final String JDBC_DEFAULT_DRIVER_CLASS_NAME = "jdbc.default.driverClassName";
 
@@ -1941,6 +1847,8 @@ public interface PropsKeys {
 
 	public static final String PORTLET_ADD_DEFAULT_RESOURCE_CHECK_WHITELIST_ACTIONS = "portlet.add.default.resource.check.whitelist.actions";
 
+	public static final String PORTLET_CONFIG_SHOW_PORTLET_ID = "portlet.config.show.portlet.id";
+
 	public static final String PORTLET_CONFIGS = "portlet.configs";
 
 	public static final String PORTLET_CONTAINER_RESTRICT = "portlet.container.restrict";
@@ -1948,6 +1856,8 @@ public interface PropsKeys {
 	public static final String PORTLET_CROSS_LAYOUT_INVOCATION_MODE = "portlet.cross.layout.invocation.mode";
 
 	public static final String PORTLET_CSS_ENABLED = "portlet.css.enabled";
+
+	public static final String PORTLET_DISPLAY_TEMPLATES_ERROR = "portlet.display.templates.error";
 
 	public static final String PORTLET_DISPLAY_TEMPLATES_HELP = "portlet.display.templates.help";
 
@@ -2073,8 +1983,6 @@ public interface PropsKeys {
 
 	public static final String SCRIPTING_JRUBY_COMPILE_THRESHOLD = "scripting.jruby.compile.threshold";
 
-	public static final String SCRIPTING_JRUBY_LOAD_PATHS = "scripting.jruby.load.paths";
-
 	public static final String SEARCH_CONTAINER_PAGE_DEFAULT_DELTA = "search.container.page.default.delta";
 
 	public static final String SEARCH_CONTAINER_PAGE_DELTA_VALUES = "search.container.page.delta.values";
@@ -2162,10 +2070,6 @@ public interface PropsKeys {
 	public static final String SETUP_WIZARD_ADD_SAMPLE_DATA = "setup.wizard.add.sample.data";
 
 	public static final String SETUP_WIZARD_ENABLED = "setup.wizard.enabled";
-
-	public static final String SHARD_DEFAULT_NAME = "shard.default.name";
-
-	public static final String SHARD_SELECTOR = "shard.selector";
 
 	public static final String SHAREPOINT_STORAGE_CLASS = "sharepoint.storage.class";
 

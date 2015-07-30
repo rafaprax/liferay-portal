@@ -4176,6 +4176,7 @@ public class PhonePersistenceImpl extends BasePersistenceImpl<Phone>
 		phoneImpl.setExtension(phone.getExtension());
 		phoneImpl.setTypeId(phone.getTypeId());
 		phoneImpl.setPrimary(phone.isPrimary());
+		phoneImpl.setLastPublishDate(phone.getLastPublishDate());
 
 		return phoneImpl;
 	}
@@ -4534,6 +4535,11 @@ public class PhonePersistenceImpl extends BasePersistenceImpl<Phone>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return PhoneModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

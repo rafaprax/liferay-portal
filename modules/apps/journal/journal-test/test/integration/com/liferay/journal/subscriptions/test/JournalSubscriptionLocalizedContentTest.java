@@ -15,6 +15,8 @@
 package com.liferay.journal.subscriptions.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.journal.constants.JournalConstants;
+import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
@@ -81,7 +83,12 @@ public class JournalSubscriptionLocalizedContentTest
 
 	@Override
 	protected String getPortletId() {
-		return PortletKeys.JOURNAL;
+		return JournalPortletKeys.JOURNAL;
+	}
+
+	@Override
+	protected String getServiceName() {
+		return JournalConstants.SERVICE_NAME;
 	}
 
 	@Override
@@ -101,7 +108,7 @@ public class JournalSubscriptionLocalizedContentTest
 
 		PortletPreferences portletPreferences =
 			PortletPreferencesFactoryUtil.getStrictPortletSetup(
-				layout, getPortletId());
+				layout, getServiceName());
 
 		LocalizationUtil.setPreferencesValue(
 			portletPreferences, bodyPreferenceName,
@@ -112,7 +119,8 @@ public class JournalSubscriptionLocalizedContentTest
 
 		PortletPreferencesLocalServiceUtil.updatePreferences(
 			group.getGroupId(), PortletKeys.PREFS_OWNER_TYPE_GROUP,
-			PortletKeys.PREFS_PLID_SHARED, getPortletId(), portletPreferences);
+			PortletKeys.PREFS_PLID_SHARED, getServiceName(),
+			portletPreferences);
 	}
 
 	@Override

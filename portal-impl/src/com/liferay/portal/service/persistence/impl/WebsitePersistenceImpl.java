@@ -4203,6 +4203,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		websiteImpl.setUrl(website.getUrl());
 		websiteImpl.setTypeId(website.getTypeId());
 		websiteImpl.setPrimary(website.isPrimary());
+		websiteImpl.setLastPublishDate(website.getLastPublishDate());
 
 		return websiteImpl;
 	}
@@ -4562,6 +4563,11 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return WebsiteModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

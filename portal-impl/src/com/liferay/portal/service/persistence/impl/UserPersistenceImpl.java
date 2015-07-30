@@ -6915,8 +6915,8 @@ public class UserPersistenceImpl extends BasePersistenceImpl<User>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(User user) {
-		if (user.isNew()) {
+	protected void cacheUniqueFindersCache(User user, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] { user.getContactId() };
 
 			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_CONTACTID, args,
@@ -7544,7 +7544,7 @@ public class UserPersistenceImpl extends BasePersistenceImpl<User>
 			UserImpl.class, user.getPrimaryKey(), user, false);
 
 		clearUniqueFindersCache(user);
-		cacheUniqueFindersCache(user);
+		cacheUniqueFindersCache(user, isNew);
 
 		user.resetOriginalValues();
 
@@ -7601,6 +7601,7 @@ public class UserPersistenceImpl extends BasePersistenceImpl<User>
 		userImpl.setLockoutDate(user.getLockoutDate());
 		userImpl.setAgreedToTermsOfUse(user.isAgreedToTermsOfUse());
 		userImpl.setEmailAddressVerified(user.isEmailAddressVerified());
+		userImpl.setLastPublishDate(user.getLastPublishDate());
 		userImpl.setStatus(user.getStatus());
 
 		return userImpl;
@@ -9285,6 +9286,11 @@ public class UserPersistenceImpl extends BasePersistenceImpl<User>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return UserModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

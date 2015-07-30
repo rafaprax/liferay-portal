@@ -48,6 +48,18 @@ public class PortalWebResourcesUtil {
 		return portalWebResources.getLastModified();
 	}
 
+	public static String getPathResourceType(String path) {
+		for (PortalWebResources portalWebResources :
+				_instance._getPortalWebResourcesList()) {
+
+			if (path.contains(portalWebResources.getContextPath())) {
+				return portalWebResources.getResourceType();
+			}
+		}
+
+		return null;
+	}
+
 	public static ServletContext getPathServletContext(String path) {
 		for (PortalWebResources portalWebResources :
 				_instance._getPortalWebResourcesList()) {
@@ -55,16 +67,10 @@ public class PortalWebResourcesUtil {
 			ServletContext servletContext =
 				portalWebResources.getServletContext();
 
-			path = stripContextPath(servletContext, path);
+			URL url = getResource(servletContext, path);
 
-			try {
-				URL url = servletContext.getResource(path);
-
-				if (url != null) {
-					return servletContext;
-				}
-			}
-			catch (MalformedURLException murle) {
+			if (url != null) {
+				return servletContext;
 			}
 		}
 

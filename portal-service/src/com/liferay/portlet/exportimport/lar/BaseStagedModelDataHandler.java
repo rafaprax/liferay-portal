@@ -39,12 +39,10 @@ import com.liferay.portal.model.StagedGroupedModel;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.model.TrashedModel;
 import com.liferay.portal.model.WorkflowedModel;
-import com.liferay.portal.model.adapter.ModelAdapterUtil;
 import com.liferay.portal.model.adapter.StagedGroup;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetTag;
-import com.liferay.portlet.asset.model.adapter.StagedAssetTag;
 import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.exportimport.lifecycle.ExportImportLifecycleConstants;
@@ -495,11 +493,8 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 			ExportImportClassedModelUtil.getClassPK(stagedModel));
 
 		for (AssetTag assetTag : assetTags) {
-			StagedAssetTag stagedAssetTag = ModelAdapterUtil.adapt(
-				assetTag, AssetTag.class, StagedAssetTag.class);
-
 			StagedModelDataHandlerUtil.exportReferenceStagedModel(
-				portletDataContext, stagedModel, stagedAssetTag,
+				portletDataContext, stagedModel, assetTag,
 				PortletDataContext.REFERENCE_TYPE_WEAK);
 		}
 	}
@@ -521,8 +516,10 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		DiscussionStagingHandler discussionStagingHandler =
 			CommentManagerUtil.getDiscussionStagingHandler();
 
-		discussionStagingHandler.exportReferenceDiscussions(
-			portletDataContext, stagedModel);
+		if (discussionStagingHandler != null) {
+			discussionStagingHandler.exportReferenceDiscussions(
+				portletDataContext, stagedModel);
+		}
 	}
 
 	protected void exportRatings(
@@ -632,30 +629,29 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 		List<Element> referenceElements =
 			portletDataContext.getReferenceElements(
-				stagedModel, StagedAssetTag.class);
+				stagedModel, AssetTag.class);
 
-		List<Long> stagedAssetTagIds = new ArrayList<>(
-			referenceElements.size());
+		List<Long> assetTagIds = new ArrayList<>(referenceElements.size());
 
 		for (Element referenceElement : referenceElements) {
 			long classPK = GetterUtil.getLong(
 				referenceElement.attributeValue("class-pk"));
 
 			StagedModelDataHandlerUtil.importReferenceStagedModel(
-				portletDataContext, stagedModel, StagedAssetTag.class, classPK);
+				portletDataContext, stagedModel, AssetTag.class, classPK);
 
-			stagedAssetTagIds.add(classPK);
+			assetTagIds.add(classPK);
 		}
 
-		Map<Long, Long> stagedAssetTagIdsMap =
+		Map<Long, Long> assetTagIdsMap =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-				StagedAssetTag.class);
+				AssetTag.class);
 
 		Set<String> assetTagNames = new HashSet<>();
 
-		for (long stagedAssetTagId : stagedAssetTagIds) {
+		for (long assetTagId : assetTagIds) {
 			long importedStagedAssetTagId = MapUtil.getLong(
-				stagedAssetTagIdsMap, stagedAssetTagId, stagedAssetTagId);
+				assetTagIdsMap, assetTagId, assetTagId);
 
 			AssetTag assetTag = AssetTagLocalServiceUtil.fetchAssetTag(
 				importedStagedAssetTagId);
@@ -688,8 +684,10 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		DiscussionStagingHandler discussionStagingDataHandler =
 			CommentManagerUtil.getDiscussionStagingHandler();
 
-		discussionStagingDataHandler.importReferenceDiscussions(
-			portletDataContext, stagedModel);
+		if (discussionStagingDataHandler != null) {
+			discussionStagingDataHandler.importReferenceDiscussions(
+				portletDataContext, stagedModel);
+		}
 	}
 
 	protected void importMissingGroupReference(
@@ -739,6 +737,12 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 		DiscussionStagingHandler discussionStagingHandler =
 			CommentManagerUtil.getDiscussionStagingHandler();
 
+		String stagedModelClassName = null;
+
+		if (discussionStagingHandler != null) {
+			stagedModelClassName = discussionStagingHandler.getClassName();
+		}
+
 		List<Element> referenceElements = referencesElement.elements();
 
 		for (Element referenceElement : referenceElements) {
@@ -746,7 +750,7 @@ public abstract class BaseStagedModelDataHandler<T extends StagedModel>
 
 			if (className.equals(AssetCategory.class.getName()) ||
 				className.equals(RatingsEntry.class.getName()) ||
-				className.equals(discussionStagingHandler.getClassName())) {
+				className.equals(stagedModelClassName)) {
 
 				continue;
 			}

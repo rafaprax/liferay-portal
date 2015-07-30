@@ -2605,8 +2605,9 @@ public class JournalFeedPersistenceImpl extends BasePersistenceImpl<JournalFeed>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(JournalFeed journalFeed) {
-		if (journalFeed.isNew()) {
+	protected void cacheUniqueFindersCache(JournalFeed journalFeed,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					journalFeed.getUuid(), journalFeed.getGroupId()
 				};
@@ -2921,7 +2922,7 @@ public class JournalFeedPersistenceImpl extends BasePersistenceImpl<JournalFeed>
 			false);
 
 		clearUniqueFindersCache(journalFeed);
-		cacheUniqueFindersCache(journalFeed);
+		cacheUniqueFindersCache(journalFeed, isNew);
 
 		journalFeed.resetOriginalValues();
 
@@ -2960,6 +2961,7 @@ public class JournalFeedPersistenceImpl extends BasePersistenceImpl<JournalFeed>
 		journalFeedImpl.setContentField(journalFeed.getContentField());
 		journalFeedImpl.setFeedFormat(journalFeed.getFeedFormat());
 		journalFeedImpl.setFeedVersion(journalFeed.getFeedVersion());
+		journalFeedImpl.setLastPublishDate(journalFeed.getLastPublishDate());
 
 		return journalFeedImpl;
 	}
@@ -3319,6 +3321,11 @@ public class JournalFeedPersistenceImpl extends BasePersistenceImpl<JournalFeed>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalFeedModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

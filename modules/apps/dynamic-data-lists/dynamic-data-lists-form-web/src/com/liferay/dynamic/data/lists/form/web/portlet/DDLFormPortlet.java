@@ -16,11 +16,17 @@ package com.liferay.dynamic.data.lists.form.web.portlet;
 
 import com.liferay.dynamic.data.lists.exception.NoSuchRecordSetException;
 import com.liferay.dynamic.data.lists.form.web.constants.DDLFormPortletKeys;
+import com.liferay.dynamic.data.lists.form.web.constants.DDLFormWebKeys;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetService;
+import com.liferay.dynamic.data.mapping.constants.DDMWebKeys;
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureLayoutException;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderer;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingException;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.portal.PortletPreferencesException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -32,9 +38,6 @@ import com.liferay.portal.kernel.util.PrefsParamUtil;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureLayoutException;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 
 import java.io.IOException;
 
@@ -138,7 +141,10 @@ public class DDLFormPortlet extends MVCPortlet {
 				renderRequest,
 				NoSuchStructureLayoutException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest,
+				PortletPreferencesException.MustBeStrict.class.getName()) ||
+			SessionErrors.contains(
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(templatePath + "error.jsp", renderRequest, renderResponse);
 		}
@@ -166,6 +172,7 @@ public class DDLFormPortlet extends MVCPortlet {
 			cause instanceof NoSuchRecordSetException ||
 			cause instanceof NoSuchStructureException ||
 			cause instanceof NoSuchStructureLayoutException ||
+			cause instanceof PortletPreferencesException ||
 			cause instanceof PrincipalException) {
 
 			return true;
@@ -200,13 +207,13 @@ public class DDLFormPortlet extends MVCPortlet {
 		DDLRecordSet recordSet = _ddlRecordSetService.getRecordSet(recordSetId);
 
 		renderRequest.setAttribute(
-			WebKeys.DYNAMIC_DATA_LISTS_RECORD_SET, recordSet);
+			DDLFormWebKeys.DYNAMIC_DATA_LISTS_RECORD_SET, recordSet);
 
 		String ddmFormHTML = getDDMFormHTML(
 			renderRequest, renderResponse, recordSet.getDDMStructure());
 
 		renderRequest.setAttribute(
-			WebKeys.DYNAMIC_DATA_MAPPING_FORM_HTML, ddmFormHTML);
+			DDMWebKeys.DYNAMIC_DATA_MAPPING_FORM_HTML, ddmFormHTML);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(DDLFormPortlet.class);

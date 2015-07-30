@@ -570,7 +570,7 @@ public class PoshiRunnerExecutor {
 						"locator2");
 				}
 			}
-			else if (argument.matches("\\$\\{([^}]*)\\}")) {
+			else {
 				argument = PoshiRunnerVariablesUtil.replaceCommandVars(
 					argument);
 			}
@@ -604,6 +604,11 @@ public class PoshiRunnerExecutor {
 
 	public static void runTaskElement(Element element) throws Exception {
 		PoshiRunnerStackTraceUtil.setCurrentElement(element);
+
+		String summary = PoshiRunnerVariablesUtil.replaceCommandVars(
+			element.attributeValue("summary"));
+
+		element.addAttribute("summary", summary);
 
 		XMLLoggerHandler.updateStatus(element, "pending");
 
@@ -849,7 +854,7 @@ public class PoshiRunnerExecutor {
 	}
 
 	private static final Pattern _locatorKeyPattern = Pattern.compile(
-		"\\w#\\w");
+		"\\S#\\S");
 	private static Object _returnObject;
 	private static final Pattern _variableMethodPattern = Pattern.compile(
 		"\\$\\{([\\S]*)\\?([\\S]*)\\}");

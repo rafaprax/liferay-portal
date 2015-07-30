@@ -15,6 +15,12 @@
 package com.liferay.dynamic.data.mapping.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.dynamic.data.mapping.exception.TemplateDuplicateTemplateKeyException;
+import com.liferay.dynamic.data.mapping.exception.TemplateNameException;
+import com.liferay.dynamic.data.mapping.exception.TemplateScriptException;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.comparator.TemplateIdComparator;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -28,13 +34,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.asset.model.AssetEntry;
-import com.liferay.portlet.dynamicdatamapping.TemplateDuplicateTemplateKeyException;
-import com.liferay.portlet.dynamicdatamapping.TemplateNameException;
-import com.liferay.portlet.dynamicdatamapping.TemplateScriptException;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.util.comparator.TemplateIdComparator;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 
 import java.util.List;
 
@@ -75,13 +75,13 @@ public class DDMTemplateServiceTest extends BaseDDMServiceTestCase {
 		try {
 			addTemplate(
 				_classNameId, 0, templateKey, "Test Template 1",
-				DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-				DDMTemplateConstants.TEMPLATE_MODE_CREATE, language,
+				DDMTemplateManager.TEMPLATE_TYPE_DISPLAY,
+				DDMTemplateManager.TEMPLATE_MODE_CREATE, language,
 				getTestTemplateScript(language));
 			addTemplate(
 				_classNameId, 0, templateKey, "Test Template 2",
-				DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-				DDMTemplateConstants.TEMPLATE_MODE_CREATE, language,
+				DDMTemplateManager.TEMPLATE_TYPE_DISPLAY,
+				DDMTemplateManager.TEMPLATE_MODE_CREATE, language,
 				getTestTemplateScript(language));
 
 			Assert.fail();
@@ -97,8 +97,8 @@ public class DDMTemplateServiceTest extends BaseDDMServiceTestCase {
 		try {
 			addTemplate(
 				_classNameId, 0, null, StringPool.BLANK,
-				DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-				DDMTemplateConstants.TEMPLATE_MODE_CREATE, language,
+				DDMTemplateManager.TEMPLATE_TYPE_DISPLAY,
+				DDMTemplateManager.TEMPLATE_MODE_CREATE, language,
 				getTestTemplateScript(language));
 
 			Assert.fail();
@@ -112,8 +112,8 @@ public class DDMTemplateServiceTest extends BaseDDMServiceTestCase {
 		try {
 			addTemplate(
 				_classNameId, 0, null, "Test Template",
-				DDMTemplateConstants.TEMPLATE_TYPE_FORM,
-				DDMTemplateConstants.TEMPLATE_MODE_CREATE,
+				DDMTemplateManager.TEMPLATE_TYPE_FORM,
+				DDMTemplateManager.TEMPLATE_MODE_CREATE,
 				TemplateConstants.LANG_TYPE_VM, StringPool.BLANK);
 
 			Assert.fail();

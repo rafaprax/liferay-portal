@@ -24,6 +24,8 @@ public interface ElasticsearchConnection {
 
 	public void close();
 
+	public void connect();
+
 	public Client getClient();
 
 	public ClusterHealthResponse getClusterHealthResponse(

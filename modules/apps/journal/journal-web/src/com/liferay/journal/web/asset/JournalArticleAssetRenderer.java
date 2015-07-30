@@ -15,13 +15,13 @@
 package com.liferay.journal.web.asset;
 
 import com.liferay.journal.configuration.JournalServiceConfigurationValues;
+import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalArticleDisplay;
 import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.journal.service.JournalContentSearchLocalServiceUtil;
 import com.liferay.journal.service.permission.JournalArticlePermission;
-import com.liferay.journal.web.constants.JournalPortletKeys;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -44,7 +44,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
-import com.liferay.portlet.asset.model.BaseAssetRenderer;
+import com.liferay.portlet.asset.model.BaseJSPAssetRenderer;
 import com.liferay.portlet.asset.model.DDMFormValuesReader;
 
 import java.util.Date;
@@ -56,6 +56,9 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author Julio Camarero
  * @author Juan Fernández
@@ -63,7 +66,7 @@ import javax.portlet.PortletURL;
  * @author Raymond Augé
  */
 public class JournalArticleAssetRenderer
-	extends BaseAssetRenderer implements TrashRenderer {
+	extends BaseJSPAssetRenderer implements TrashRenderer {
 
 	public static final String TYPE = "journal_article";
 
@@ -129,8 +132,25 @@ public class JournalArticleAssetRenderer
 	}
 
 	@Override
+	public String getJspPath(HttpServletRequest request, String template) {
+		if (template.equals(TEMPLATE_ABSTRACT) ||
+			template.equals(TEMPLATE_FULL_CONTENT)) {
+
+			return "/asset/" + template + ".jsp";
+		}
+		else {
+			return null;
+		}
+	}
+
+	@Override
 	public String getPortletId() {
 		return JournalPortletKeys.JOURNAL;
+	}
+
+	@Override
+	public int getStatus() {
+		return _article.getStatus();
 	}
 
 	@Override
@@ -142,7 +162,7 @@ public class JournalArticleAssetRenderer
 		String summary = _article.getDescription(locale);
 
 		if (Validator.isNotNull(summary)) {
-			return summary;
+			return StringUtil.shorten(summary, 200);
 		}
 
 		try {
@@ -374,6 +394,17 @@ public class JournalArticleAssetRenderer
 	}
 
 	@Override
+	public boolean include(
+			HttpServletRequest request, HttpServletResponse response,
+			String template)
+		throws Exception {
+
+		request.setAttribute(WebKeys.JOURNAL_ARTICLE, _article);
+
+		return super.include(request, response, template);
+	}
+
+	@Override
 	public boolean isConvertible() {
 		return true;
 	}
@@ -405,24 +436,6 @@ public class JournalArticleAssetRenderer
 	@Override
 	public boolean isPrintable() {
 		return true;
-	}
-
-	@Override
-	public String render(
-			PortletRequest portletRequest, PortletResponse portletResponse,
-			String template)
-		throws Exception {
-
-		if (template.equals(TEMPLATE_ABSTRACT) ||
-			template.equals(TEMPLATE_FULL_CONTENT)) {
-
-			portletRequest.setAttribute(WebKeys.JOURNAL_ARTICLE, _article);
-
-			return "/asset/" + template + ".jsp";
-		}
-		else {
-			return null;
-		}
 	}
 
 	@Override

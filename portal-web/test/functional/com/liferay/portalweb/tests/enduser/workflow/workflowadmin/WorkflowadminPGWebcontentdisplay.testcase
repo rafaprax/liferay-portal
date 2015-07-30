@@ -1,5 +1,4 @@
 <definition component-name="portal-workflow">
-	<property name="web.plugins.includes" value="kaleo-web" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<var name="pageName" value="Web Content Display Page" />
@@ -100,6 +99,7 @@
 
 		<execute macro="WebContent#viewPGViaWCD">
 			<var name="webContentContent" value="${webContentContent}" />
+			<var name="webContentTitle" value="${webContentTitle}" />
 		</execute>
 	</command>
 

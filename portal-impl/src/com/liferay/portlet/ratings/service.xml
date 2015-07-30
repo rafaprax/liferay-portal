@@ -22,6 +22,7 @@
 		<column name="classNameId" type="long" />
 		<column name="classPK" type="long" />
 		<column name="score" type="double" />
+		<column name="lastPublishDate" type="Date" />
 
 		<!-- Finder methods -->
 
@@ -45,7 +46,6 @@
 		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
 		<reference package-path="com.liferay.portlet.blogs" entity="BlogsEntry" />
 		<reference package-path="com.liferay.portlet.blogs" entity="BlogsStatsUser" />
-		<reference package-path="com.liferay.portlet.social" entity="SocialActivity" />
 	</entity>
 	<entity name="RatingsStats" local-service="true" remote-service="false">
 

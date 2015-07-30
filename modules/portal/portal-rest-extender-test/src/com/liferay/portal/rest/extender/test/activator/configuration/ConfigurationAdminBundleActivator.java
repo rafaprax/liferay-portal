@@ -46,13 +46,14 @@ public class ConfigurationAdminBundleActivator implements BundleActivator {
 		ServiceReference<ConfigurationAdmin> serviceReference =
 			bundleContext.getServiceReference(ConfigurationAdmin.class);
 
-		ConfigurationAdmin configurationAdmin = bundleContext.getService(
-			serviceReference);
-
 		try {
+			ConfigurationAdmin configurationAdmin = bundleContext.getService(
+				serviceReference);
+
 			_cxfConfiguration = configurationAdmin.createFactoryConfiguration(
 				"com.liferay.portal.cxf.common.configuration." +
-					"CXFEndpointPublisherConfiguration", null);
+					"CXFEndpointPublisherConfiguration",
+				null);
 
 			Dictionary<String, Object> properties = new Hashtable<>();
 

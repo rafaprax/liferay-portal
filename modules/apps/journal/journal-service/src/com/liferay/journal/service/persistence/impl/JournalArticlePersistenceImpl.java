@@ -28856,8 +28856,9 @@ public class JournalArticlePersistenceImpl extends BasePersistenceImpl<JournalAr
 		}
 	}
 
-	protected void cacheUniqueFindersCache(JournalArticle journalArticle) {
-		if (journalArticle.isNew()) {
+	protected void cacheUniqueFindersCache(JournalArticle journalArticle,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					journalArticle.getUuid(), journalArticle.getGroupId()
 				};
@@ -29820,7 +29821,7 @@ public class JournalArticlePersistenceImpl extends BasePersistenceImpl<JournalAr
 			journalArticle, false);
 
 		clearUniqueFindersCache(journalArticle);
-		cacheUniqueFindersCache(journalArticle);
+		cacheUniqueFindersCache(journalArticle, isNew);
 
 		journalArticle.resetOriginalValues();
 
@@ -29866,6 +29867,7 @@ public class JournalArticlePersistenceImpl extends BasePersistenceImpl<JournalAr
 		journalArticleImpl.setSmallImage(journalArticle.isSmallImage());
 		journalArticleImpl.setSmallImageId(journalArticle.getSmallImageId());
 		journalArticleImpl.setSmallImageURL(journalArticle.getSmallImageURL());
+		journalArticleImpl.setLastPublishDate(journalArticle.getLastPublishDate());
 		journalArticleImpl.setStatus(journalArticle.getStatus());
 		journalArticleImpl.setStatusByUserId(journalArticle.getStatusByUserId());
 		journalArticleImpl.setStatusByUserName(journalArticle.getStatusByUserName());
@@ -30231,6 +30233,11 @@ public class JournalArticlePersistenceImpl extends BasePersistenceImpl<JournalAr
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalArticleModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

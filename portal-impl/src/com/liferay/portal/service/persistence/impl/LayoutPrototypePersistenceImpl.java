@@ -4099,6 +4099,7 @@ public class LayoutPrototypePersistenceImpl extends BasePersistenceImpl<LayoutPr
 		layoutPrototypeImpl.setDescription(layoutPrototype.getDescription());
 		layoutPrototypeImpl.setSettings(layoutPrototype.getSettings());
 		layoutPrototypeImpl.setActive(layoutPrototype.isActive());
+		layoutPrototypeImpl.setLastPublishDate(layoutPrototype.getLastPublishDate());
 
 		return layoutPrototypeImpl;
 	}
@@ -4460,6 +4461,11 @@ public class LayoutPrototypePersistenceImpl extends BasePersistenceImpl<LayoutPr
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return LayoutPrototypeModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

@@ -28,7 +28,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.transaction.TransactionCommitCallbackRegistryUtil;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.model.AuditedModel;
@@ -199,8 +199,6 @@ public class ResourceBlockLocalServiceImpl
 		resourceBlockPermissionLocalService.addResourceBlockPermissions(
 			resourceBlockId, resourceBlockPermissionsContainer);
 
-		PermissionCacheUtil.clearResourceBlockCache(companyId, groupId, name);
-
 		return resourceBlock;
 	}
 
@@ -220,10 +218,6 @@ public class ResourceBlockLocalServiceImpl
 			resourceBlock.getPrimaryKey());
 
 		resourceBlockPersistence.remove(resourceBlock);
-
-		PermissionCacheUtil.clearResourceBlockCache(
-			resourceBlock.getCompanyId(), resourceBlock.getGroupId(),
-			resourceBlock.getName());
 
 		return resourceBlock;
 	}
@@ -796,7 +790,7 @@ public class ResourceBlockLocalServiceImpl
 			updateGroupScopeResourceTypePermissions(
 				companyId, groupId, name, roleId, actionIdsLong, operator);
 
-		PermissionCacheUtil.clearResourceBlockCache(companyId, groupId, name);
+		PermissionCacheUtil.clearResourceCache();
 	}
 
 	@Override
@@ -981,7 +975,7 @@ public class ResourceBlockLocalServiceImpl
 
 		};
 
-		TransactionCommitCallbackRegistryUtil.registerCallback(callable);
+		TransactionCommitCallbackUtil.registerCallback(callable);
 
 		return resourceBlock;
 	}

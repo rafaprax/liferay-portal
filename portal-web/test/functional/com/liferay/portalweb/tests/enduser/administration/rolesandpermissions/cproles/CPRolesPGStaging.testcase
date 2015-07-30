@@ -140,8 +140,6 @@
 	</command>
 
 	<command name="StagingBlogsRolesWorkflow" priority="4">
-		<property name="web.plugins.includes" value="kaleo-web" />
-
 		<var name="pageName" value="Blogs Test Page" />
 
 		<execute macro="Page#gotoCP">
@@ -349,7 +347,7 @@
 		</execute>
 
 		<execute macro="Page#addPG">
-			<var name="PageName" value="${pageName}" />
+			<var name="pageName" value="${pageName}" />
 			<var name="pageStaging" value="true" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />

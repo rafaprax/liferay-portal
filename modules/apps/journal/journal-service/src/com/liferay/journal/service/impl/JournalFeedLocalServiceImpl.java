@@ -14,6 +14,8 @@
 
 package com.liferay.journal.service.impl;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.journal.exception.DuplicateFeedIdException;
 import com.liferay.journal.exception.FeedContentFieldException;
 import com.liferay.journal.exception.FeedIdException;
@@ -42,7 +44,6 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 
 import java.util.List;
 import java.util.Map;
@@ -336,7 +337,7 @@ public class JournalFeedLocalServiceImpl
 		}
 
 		try {
-			DDMStructure ddmStructure = ddmStructureLocalService.getStructure(
+			DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
 				groupId,
 				classNameLocalService.getClassNameId(JournalArticle.class),
 				ddmStructureKey);
@@ -386,6 +387,7 @@ public class JournalFeedLocalServiceImpl
 
 		return false;
 	}
+	
 
 	protected void validate(
 			long companyId, long groupId, String feedId, boolean autoFeedId,

@@ -23,13 +23,13 @@ DLFileEntryType fileEntryType = (DLFileEntryType)request.getAttribute(WebKeys.DO
 
 long fileEntryTypeId = BeanParamUtil.getLong(fileEntryType, request, "fileEntryTypeId");
 
-DDMStructure ddmStructure = (DDMStructure)request.getAttribute(WebKeys.DYNAMIC_DATA_MAPPING_STRUCTURE);
+DDMStructure ddmStructure = (DDMStructure)request.getAttribute(WebKeys.DOCUMENT_LIBRARY_DYNAMIC_DATA_MAPPING_STRUCTURE);
 
 long ddmStructureId = BeanParamUtil.getLong(ddmStructure, request, "structureId");
 
 String script = BeanParamUtil.getString(ddmStructure, request, "definition");
 
-JSONArray fieldsJSONArray = DDMUtil.getDDMFormFieldsJSONArray(ddmStructure, script);
+JSONArray fieldsJSONArray = DDMStructureManagerUtil.getDDMFormFieldsJSONArray(ddmStructureId, script);
 
 List<DDMStructure> ddmStructures = null;
 
@@ -54,9 +54,7 @@ String scopeAvailableFields = ParamUtil.getString(request, "scopeAvailableFields
 	/>
 </liferay-util:buffer>
 
-<portlet:actionURL var="editFileEntryTypeURL">
-	<portlet:param name="struts_action" value="/document_library/edit_file_entry_type" />
-</portlet:actionURL>
+<portlet:actionURL name="/document_library/edit_file_entry_type" var="editFileEntryTypeURL" />
 
 <aui:form action="<%= editFileEntryTypeURL %>" method="post" name="fm">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= (fileEntryType == null) ? Constants.ADD : Constants.UPDATE %>" />
@@ -81,7 +79,7 @@ String scopeAvailableFields = ParamUtil.getString(request, "scopeAvailableFields
 	<aui:model-context bean="<%= fileEntryType %>" model="<%= DLFileEntryType.class %>" />
 
 	<aui:fieldset cssClass="edit-file-entry-type">
-		<c:if test="<%= DDMStorageLinkLocalServiceUtil.getStructureStorageLinksCount(ddmStructureId) > 0 %>">
+		<c:if test="<%= DDMStructureManagerUtil.getStructureStorageLinksCount(ddmStructureId) > 0 %>">
 			<div class="alert alert-warning">
 				<liferay-ui:message key="there-are-content-references-to-this-structure.-you-may-lose-data-if-a-field-name-is-renamed-or-removed" />
 			</div>
@@ -94,7 +92,7 @@ String scopeAvailableFields = ParamUtil.getString(request, "scopeAvailableFields
 		</liferay-ui:panel>
 
 		<liferay-ui:panel collapsible="<%= true %>" extended="<%= false %>" id="mainMetadataFields" persistState="<%= true %>" title="main-metadata-fields">
-			<liferay-util:include page="/form_builder.jsp" portletId="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>">
+			<liferay-util:include page="/form_builder.jsp" portletId="<%= PortletProviderUtil.getPortletId(DDMStructureManagerUtil.getDDMStructureModelClass().getName(), PortletProvider.Action.VIEW) %>">
 				<portlet:param name="refererPortletName" value="<%= PortletKeys.DOCUMENT_LIBRARY %>" />
 				<portlet:param name="portletResourceNamespace" value="<%= renderResponse.getNamespace() %>" />
 				<portlet:param name="script" value="<%= script %>" />
@@ -112,7 +110,7 @@ String scopeAvailableFields = ParamUtil.getString(request, "scopeAvailableFields
 				/>
 
 				<liferay-ui:search-container-row
-					className="com.liferay.portlet.dynamicdatamapping.model.DDMStructure"
+					className="com.liferay.portlet.dynamicdatamapping.DDMStructure"
 					escapedModel="<%= true %>"
 					keyProperty="structureId"
 					modelVar="curDDMStructure"
@@ -160,7 +158,7 @@ String scopeAvailableFields = ParamUtil.getString(request, "scopeAvailableFields
 	function <portlet:namespace />openDDMStructureSelector() {
 		Liferay.Util.openDDMPortlet(
 			{
-				basePortletURL: '<%= PortletURLFactoryUtil.create(request, PortletKeys.DYNAMIC_DATA_MAPPING, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
+				basePortletURL: '<%= PortletURLFactoryUtil.create(request, PortletProviderUtil.getPortletId(DDMStructureManagerUtil.getDDMStructureModelClass().getName(), PortletProvider.Action.VIEW), themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
 				classPK: '<%= ddmStructureId %>',
 				dialog: {
 					destroyOnHide: true

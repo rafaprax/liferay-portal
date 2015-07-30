@@ -31,20 +31,24 @@ DDMTemplate ddmTemplate = (DDMTemplate)request.getAttribute("edit_article.jsp-te
 
 String defaultLanguageId = (String)request.getAttribute("edit_article.jsp-defaultLanguageId");
 
-Fields ddmFields = null;
+DDMFormValues ddmFormValues = null;
 
 if (article != null) {
 	String content = article.getContent();
 
 	if (Validator.isNotNull(content)) {
-		ddmFields = JournalConverterUtil.getDDMFields(ddmStructure, content);
+		Fields fields = JournalConverterUtil.getDDMFields(ddmStructure, content);
+
+		if (fields != null) {
+			ddmFormValues = FieldsToDDMFormValuesConverterUtil.convert(ddmStructure, fields);
+		}
 	}
 }
 
 Locale[] availableLocales = new Locale[] {LocaleUtil.fromLanguageId(defaultLanguageId)};
 
-if (ddmFields != null) {
-	Set<Locale> availableLocalesSet = ddmFields.getAvailableLocales();
+if (ddmFormValues != null) {
+	Set<Locale> availableLocalesSet = ddmFormValues.getAvailableLocales();
 
 	availableLocales = availableLocalesSet.toArray(new Locale[availableLocalesSet.size()]);
 }
@@ -195,7 +199,7 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 				checkRequired="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>"
 				classNameId="<%= PortalUtil.getClassNameId(DDMStructure.class) %>"
 				classPK="<%= ddmStructure.getStructureId() %>"
-				fields="<%= ddmFields %>"
+				ddmFormValues="<%= ddmFormValues %>"
 				requestedLocale="<%= LocaleUtil.fromLanguageId(defaultLanguageId) %>"
 			/>
 
@@ -204,7 +208,7 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 	</div>
 </div>
 
-<liferay-portlet:renderURL portletName="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>" var="editStructureURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+<liferay-portlet:renderURL portletName="<%= PortletProviderUtil.getPortletId(DDMStructure.class.getName(), PortletProvider.Action.EDIT) %>" var="editStructureURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 	<portlet:param name="mvcPath" value="/edit_structure.jsp" />
 	<portlet:param name="closeRedirect" value="<%= currentURL %>" />
 	<portlet:param name="showBackURL" value="<%= Boolean.FALSE.toString() %>" />
@@ -214,7 +218,7 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 	<portlet:param name="classPK" value="<%= String.valueOf(ddmStructure.getStructureId()) %>" />
 </liferay-portlet:renderURL>
 
-<liferay-portlet:renderURL portletName="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>" var="editTemplateURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+<liferay-portlet:renderURL portletName="<%= PortletProviderUtil.getPortletId(DDMTemplate.class.getName(), PortletProvider.Action.EDIT) %>" var="editTemplateURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
 	<portlet:param name="mvcPath" value="/edit_template.jsp" />
 	<portlet:param name="closeRedirect" value="<%= currentURL %>" />
 	<portlet:param name="showBackURL" value="<%= Boolean.FALSE.toString() %>" />
@@ -228,7 +232,7 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 <aui:script use="liferay-journal-content">
 	var journalContent = new Liferay.Portlet.JournalContent(
 		{
-			'ddm.basePortletURL': '<%= PortletURLFactoryUtil.create(request, PortletKeys.DYNAMIC_DATA_MAPPING, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
+			'ddm.basePortletURL': '<%= PortletURLFactoryUtil.create(request, PortletProviderUtil.getPortletId(DDMStructure.class.getName(), PortletProvider.Action.VIEW), themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
 			'ddm.classNameId': '<%= PortalUtil.getClassNameId(DDMStructure.class) %>',
 			'ddm.classPK': <%= ddmStructure.getPrimaryKey() %>,
 			'ddm.groupId': <%= groupId %>,

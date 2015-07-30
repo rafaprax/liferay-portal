@@ -1,5 +1,4 @@
 <definition component-name="portal-workflow">
-	<property name="web.plugins.includes" value="kaleo-web" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<var name="workflowAssetType" value="Dynamic Data Lists Record" />
@@ -229,6 +228,7 @@
 		</execute>
 
 		<execute macro="Workflow#viewRejectedTask">
+			<var name="ddlDataDefinitionName" value="${ddlDataDefinitionName}" />
 			<var name="workflowAssetTitle" value="${ddlListName}" />
 			<var name="workflowAssetType" value="${workflowAssetType}" />
 		</execute>

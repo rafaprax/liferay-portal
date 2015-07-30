@@ -17,8 +17,11 @@ package com.liferay.asset.publisher.web.context;
 import com.liferay.asset.publisher.web.configuration.AssetPublisherWebConfigurationValues;
 import com.liferay.asset.publisher.web.constants.AssetPublisherPortletKeys;
 import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
+import com.liferay.dynamic.data.mapping.util.DDMIndexer;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.search.BaseModelSearchResult;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
@@ -27,30 +30,38 @@ import com.liferay.portal.kernel.util.PredicateFilter;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.RSSUtil;
 import com.liferay.portal.kernel.util.StringComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.PortletConstants;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.security.permission.ResourceActionsUtil;
+import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.theme.PortletDisplay;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
+import com.liferay.portlet.asset.model.AssetCategory;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetRenderer;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.asset.model.ClassType;
 import com.liferay.portlet.asset.model.ClassTypeField;
 import com.liferay.portlet.asset.model.ClassTypeReader;
+import com.liferay.portlet.asset.service.AssetCategoryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetEntryServiceUtil;
 import com.liferay.portlet.asset.service.persistence.AssetEntryQuery;
 import com.liferay.portlet.asset.util.AssetUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMIndexerUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -141,28 +152,52 @@ public class AssetPublisherDisplayContext {
 		return _allAssetTagNames;
 	}
 
+	public BaseModelSearchResult<AssetEntry> getAssetEntries(
+			AssetEntryQuery assetEntryQuery, int start, int end)
+		throws Exception {
+
+		if (isSearchWithIndex()) {
+			return AssetUtil.searchAssetEntries(
+				_request, assetEntryQuery, start, end);
+		}
+
+		int total = AssetEntryServiceUtil.getEntriesCount(assetEntryQuery);
+
+		assetEntryQuery.setEnd(end);
+		assetEntryQuery.setStart(start);
+
+		List<AssetEntry> assetEntries = AssetEntryServiceUtil.getEntries(
+			assetEntryQuery);
+
+		return new BaseModelSearchResult<>(assetEntries, total);
+	}
+
 	public AssetEntryQuery getAssetEntryQuery() throws Exception {
+		if (_assetEntryQuery != null) {
+			return _assetEntryQuery;
+		}
+
 		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		AssetEntryQuery assetEntryQuery = AssetPublisherUtil.getAssetEntryQuery(
+		_assetEntryQuery = AssetPublisherUtil.getAssetEntryQuery(
 			_portletPreferences, getGroupIds(), getAllAssetCategoryIds(),
 			getAllAssetTagNames());
 
 		String portletName = getPortletName();
 
 		if (!portletName.equals(AssetPublisherPortletKeys.RELATED_ASSETS)) {
-			assetEntryQuery.setGroupIds(getGroupIds());
+			_assetEntryQuery.setGroupIds(getGroupIds());
 		}
 
-		assetEntryQuery.setClassTypeIds(getClassTypeIds());
-		assetEntryQuery.setEnablePermissions(isEnablePermissions());
-		assetEntryQuery.setExcludeZeroViewCount(isExcludeZeroViewCount());
+		_assetEntryQuery.setClassTypeIds(getClassTypeIds());
+		_assetEntryQuery.setEnablePermissions(isEnablePermissions());
+		_assetEntryQuery.setExcludeZeroViewCount(isExcludeZeroViewCount());
 
-		configureSubtypeFieldFilter(assetEntryQuery, themeDisplay.getLocale());
+		configureSubtypeFieldFilter(_assetEntryQuery, themeDisplay.getLocale());
 
 		if (isShowOnlyLayoutAssets()) {
-			assetEntryQuery.setLayout(themeDisplay.getLayout());
+			_assetEntryQuery.setLayout(themeDisplay.getLayout());
 		}
 
 		if (portletName.equals(AssetPublisherPortletKeys.RELATED_ASSETS)) {
@@ -170,21 +205,43 @@ public class AssetPublisherDisplayContext {
 				WebKeys.LAYOUT_ASSET_ENTRY);
 
 			if (layoutAssetEntry != null) {
-				assetEntryQuery.setLinkedAssetEntryId(
+				_assetEntryQuery.setLinkedAssetEntryId(
 					layoutAssetEntry.getEntryId());
 			}
 		}
 
-		assetEntryQuery.setPaginationType(getPaginationType());
-		assetEntryQuery.setOrderByCol1(getOrderByColumn1());
-		assetEntryQuery.setOrderByCol2(getOrderByColumn2());
-		assetEntryQuery.setOrderByType1(getOrderByType1());
-		assetEntryQuery.setOrderByType2(getOrderByType2());
+		_assetEntryQuery.setPaginationType(getPaginationType());
+		_assetEntryQuery.setOrderByCol1(getOrderByColumn1());
+		_assetEntryQuery.setOrderByCol2(getOrderByColumn2());
+		_assetEntryQuery.setOrderByType1(getOrderByType1());
+		_assetEntryQuery.setOrderByType2(getOrderByType2());
 
 		AssetPublisherUtil.processAssetEntryQuery(
-			themeDisplay.getUser(), _portletPreferences, assetEntryQuery);
+			themeDisplay.getUser(), _portletPreferences, _assetEntryQuery);
 
-		return assetEntryQuery;
+		return _assetEntryQuery;
+	}
+
+	public List<AssetEntryResult> getAssetEntryResults(
+			SearchContainer searchContainer)
+		throws Exception {
+
+		if (!showAssetEntryResults()) {
+			return Collections.emptyList();
+		}
+
+		long assetVocabularyId = GetterUtil.getLong(
+			_portletPreferences.getValue("assetVocabularyId", null));
+
+		if (assetVocabularyId > 0) {
+			return getAssetEntryResultsByVocabulary(
+				assetVocabularyId, searchContainer);
+		}
+		else if (assetVocabularyId <= -1) {
+			return getAssetEntryResultsByClassName(searchContainer);
+		}
+
+		return getAssetEntryResultsByDefault(searchContainer);
 	}
 
 	public String getAssetLinkBehavior() {
@@ -582,6 +639,23 @@ public class AssetPublisherDisplayContext {
 		String assetLinkBehavior = getAssetLinkBehavior();
 
 		return assetLinkBehavior.equals("viewInPortlet");
+	}
+
+	public boolean isDefaultAssetPublisher() {
+		if (_defaultAssetPublisher != null) {
+			return _defaultAssetPublisher;
+		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
+		_defaultAssetPublisher = AssetUtil.isDefaultAssetPublisher(
+			themeDisplay.getLayout(), portletDisplay.getId(),
+			getPortletResource());
+
+		return _defaultAssetPublisher;
 	}
 
 	public boolean isEnableCommentRatings() {
@@ -988,6 +1062,25 @@ public class AssetPublisherDisplayContext {
 		_displayStyle = displayStyle;
 	}
 
+	public void setLayoutAssetEntry(AssetEntry assetEntry)
+		throws PortalException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		String defaultAssetPublisherPortletId =
+			AssetUtil.getDefaultAssetPublisherId(themeDisplay.getLayout());
+
+		if (isDefaultAssetPublisher() ||
+			Validator.isNull(defaultAssetPublisherPortletId) ||
+			!PortletPermissionUtil.contains(
+				themeDisplay.getPermissionChecker(), themeDisplay.getLayout(),
+				defaultAssetPublisherPortletId, ActionKeys.VIEW)) {
+
+			_request.setAttribute(WebKeys.LAYOUT_ASSET_ENTRY, assetEntry);
+		}
+	}
+
 	public void setSelectionStyle(String selectionStyle) {
 		_selectionStyle = selectionStyle;
 	}
@@ -1026,11 +1119,184 @@ public class AssetPublisherDisplayContext {
 
 		assetEntryQuery.setAttribute(
 			"ddmStructureFieldName",
-			DDMIndexerUtil.encodeName(
+			_ddmIndexer.encodeName(
 				classTypeField.getClassTypeId(), getDDMStructureFieldName(),
 				locale));
 		assetEntryQuery.setAttribute(
 			"ddmStructureFieldValue", getDDMStructureFieldValue());
+	}
+
+	protected List<AssetEntryResult> getAssetEntryResultsByClassName(
+			SearchContainer searchContainer)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+		List<AssetEntryResult> assetEntryResults = new ArrayList<>();
+
+		int end = searchContainer.getEnd();
+		int start = searchContainer.getStart();
+
+		int total = 0;
+
+		for (long classNameId : getClassNameIds()) {
+			assetEntryQuery.setClassNameIds(new long[] {classNameId});
+
+			BaseModelSearchResult<AssetEntry> baseModelSearchResult =
+				getAssetEntries(assetEntryQuery, start, end);
+
+			int groupTotal = baseModelSearchResult.getLength();
+
+			total += groupTotal;
+
+			List<AssetEntry> assetEntries =
+				baseModelSearchResult.getBaseModels();
+
+			if (!assetEntries.isEmpty() && (start < groupTotal)) {
+				AssetRendererFactory groupAssetRendererFactory =
+					AssetRendererFactoryRegistryUtil.
+						getAssetRendererFactoryByClassNameId(classNameId);
+
+				String title = ResourceActionsUtil.getModelResource(
+					themeDisplay.getLocale(),
+					groupAssetRendererFactory.getClassName());
+
+				assetEntryResults.add(
+					new AssetEntryResult(title, assetEntries));
+			}
+
+			String portletName = getPortletName();
+
+			if (!portletName.equals(AssetPublisherPortletKeys.RECENT_CONTENT)) {
+				if (groupTotal > 0) {
+					if ((end > 0) && (end > groupTotal)) {
+						end -= groupTotal;
+					}
+					else {
+						end = 0;
+					}
+
+					if ((start > 0) && (start > groupTotal)) {
+						start -= groupTotal;
+					}
+					else {
+						start = 0;
+					}
+				}
+
+				assetEntryQuery.setEnd(QueryUtil.ALL_POS);
+				assetEntryQuery.setStart(QueryUtil.ALL_POS);
+			}
+		}
+
+		searchContainer.setTotal(total);
+
+		return assetEntryResults;
+	}
+
+	protected List<AssetEntryResult> getAssetEntryResultsByDefault(
+			SearchContainer searchContainer)
+		throws Exception {
+
+		List<AssetEntryResult> assetEntryResults = new ArrayList<>();
+
+		int end = searchContainer.getEnd();
+		int start = searchContainer.getStart();
+
+		AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+		assetEntryQuery.setClassNameIds(getClassNameIds());
+
+		BaseModelSearchResult<AssetEntry> baseModelSearchResult =
+			getAssetEntries(assetEntryQuery, start, end);
+
+		int total = baseModelSearchResult.getLength();
+
+		searchContainer.setTotal(total);
+
+		List<AssetEntry> assetEntries = baseModelSearchResult.getBaseModels();
+
+		if (!assetEntries.isEmpty() && (start < total)) {
+			assetEntryResults.add(new AssetEntryResult(assetEntries));
+		}
+
+		return assetEntryResults;
+	}
+
+	protected List<AssetEntryResult> getAssetEntryResultsByVocabulary(
+			long assetVocabularyId, SearchContainer searchContainer)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+		List<AssetEntryResult> assetEntryResults = new ArrayList<>();
+
+		List<AssetCategory> assetCategories =
+			AssetCategoryLocalServiceUtil.getVocabularyRootCategories(
+				assetVocabularyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		assetEntryQuery.setClassNameIds(getClassNameIds());
+
+		int end = searchContainer.getEnd();
+		int start = searchContainer.getStart();
+
+		int total = 0;
+
+		for (AssetCategory assetCategory : assetCategories) {
+			long[] oldAllCategoryIds = assetEntryQuery.getAllCategoryIds();
+
+			long[] newAllAssetCategoryIds = ArrayUtil.append(
+				oldAllCategoryIds, assetCategory.getCategoryId());
+
+			assetEntryQuery.setAllCategoryIds(newAllAssetCategoryIds);
+
+			BaseModelSearchResult<AssetEntry> baseModelSearchResult =
+				getAssetEntries(assetEntryQuery, start, end);
+
+			int groupTotal = baseModelSearchResult.getLength();
+
+			total += groupTotal;
+
+			List<AssetEntry> assetEntries =
+				baseModelSearchResult.getBaseModels();
+
+			if (!assetEntries.isEmpty() && (start < groupTotal)) {
+				String title = assetCategory.getTitle(themeDisplay.getLocale());
+
+				assetEntryResults.add(
+					new AssetEntryResult(title, assetEntries));
+			}
+
+			if (groupTotal > 0) {
+				if ((end > 0) && (end > groupTotal)) {
+					end -= groupTotal;
+				}
+				else {
+					end = 0;
+				}
+
+				if ((start > 0) && (start > groupTotal)) {
+					start -= groupTotal;
+				}
+				else {
+					start = 0;
+				}
+			}
+
+			assetEntryQuery.setAllCategoryIds(oldAllCategoryIds);
+			assetEntryQuery.setEnd(QueryUtil.ALL_POS);
+			assetEntryQuery.setStart(QueryUtil.ALL_POS);
+		}
+
+		searchContainer.setTotal(total);
+
+		return assetEntryResults;
 	}
 
 	protected String getPortletName() {
@@ -1042,6 +1308,23 @@ public class AssetPublisherDisplayContext {
 		}
 
 		return portletConfig.getPortletName();
+	}
+
+	protected boolean isSearchWithIndex() throws Exception {
+		AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+		String portletName = getPortletName();
+
+		if (AssetPublisherWebConfigurationValues.SEARCH_WITH_INDEX &&
+			(assetEntryQuery.getLinkedAssetEntryId() == 0) &&
+			!portletName.equals(
+				AssetPublisherPortletKeys.HIGHEST_RATED_ASSETS) &&
+			!portletName.equals(AssetPublisherPortletKeys.MOST_VIEWED_ASSETS)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	protected void setDDMStructure() throws Exception {
@@ -1091,10 +1374,28 @@ public class AssetPublisherDisplayContext {
 		}
 	}
 
+	protected boolean showAssetEntryResults() throws Exception {
+		AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+		String portletName = getPortletName();
+
+		if (!portletName.equals(AssetPublisherPortletKeys.RELATED_ASSETS) ||
+			(assetEntryQuery.getLinkedAssetEntryId() > 0)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private static final DDMIndexer _ddmIndexer =
+		ProxyFactory.newServiceTrackedInstance(DDMIndexer.class);
+
 	private Integer _abstractLength;
 	private long[] _allAssetCategoryIds;
 	private String[] _allAssetTagNames;
 	private Boolean _anyAssetType;
+	private AssetEntryQuery _assetEntryQuery;
 	private String _assetLinkBehavior;
 	private long[] _availableClassNameIds;
 	private long[] _classNameIds;
@@ -1104,6 +1405,7 @@ public class AssetPublisherDisplayContext {
 	private String _ddmStructureFieldLabel;
 	private String _ddmStructureFieldName;
 	private String _ddmStructureFieldValue;
+	private Boolean _defaultAssetPublisher;
 	private Integer _delta;
 	private String _displayStyle;
 	private Long _displayStyleGroupId;

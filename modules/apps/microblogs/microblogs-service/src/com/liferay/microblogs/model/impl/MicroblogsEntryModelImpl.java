@@ -84,6 +84,23 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 			{ "parentMicroblogsEntryId", Types.BIGINT },
 			{ "socialRelationType", Types.INTEGER }
 		};
+	public static final Map<String, Integer> TABLE_COLUMNS_MAP = new HashMap<String, Integer>();
+
+	static {
+		TABLE_COLUMNS_MAP.put("microblogsEntryId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("creatorClassNameId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("creatorClassPK", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("content", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("type_", Types.INTEGER);
+		TABLE_COLUMNS_MAP.put("parentMicroblogsEntryId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("socialRelationType", Types.INTEGER);
+	}
+
 	public static final String TABLE_SQL_CREATE = "create table MicroblogsEntry (microblogsEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,creatorClassNameId LONG,creatorClassPK LONG,content STRING null,type_ INTEGER,parentMicroblogsEntryId LONG,socialRelationType INTEGER)";
 	public static final String TABLE_SQL_DROP = "drop table MicroblogsEntry";
 	public static final String ORDER_BY_JPQL = " ORDER BY microblogsEntry.createDate DESC";
@@ -91,13 +108,13 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	public static final String DATA_SOURCE = "liferayDataSource";
 	public static final String SESSION_FACTORY = "liferaySessionFactory";
 	public static final String TX_MANAGER = "liferayTransactionManager";
-	public static final boolean ENTITY_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+	public static final boolean ENTITY_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.microblogs.service.util.ServiceProps.get(
 				"value.object.entity.cache.enabled.com.liferay.microblogs.model.MicroblogsEntry"),
 			true);
-	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.microblogs.service.util.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.microblogs.model.MicroblogsEntry"),
 			true);
-	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.microblogs.service.util.ServiceProps.get(
 				"value.object.column.bitmask.enabled.com.liferay.microblogs.model.MicroblogsEntry"),
 			true);
 	public static final long COMPANYID_COLUMN_BITMASK = 1L;
@@ -159,7 +176,7 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		return models;
 	}
 
-	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
+	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.microblogs.service.util.ServiceProps.get(
 				"lock.expiration.time.com.liferay.microblogs.model.MicroblogsEntry"));
 
 	public MicroblogsEntryModelImpl() {

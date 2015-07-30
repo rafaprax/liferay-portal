@@ -1717,8 +1717,8 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 	}
 
 	protected void cacheUniqueFindersCache(
-		JournalArticleResource journalArticleResource) {
-		if (journalArticleResource.isNew()) {
+		JournalArticleResource journalArticleResource, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					journalArticleResource.getUuid(),
 					journalArticleResource.getGroupId()
@@ -2003,7 +2003,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 			false);
 
 		clearUniqueFindersCache(journalArticleResource);
-		cacheUniqueFindersCache(journalArticleResource);
+		cacheUniqueFindersCache(journalArticleResource, isNew);
 
 		journalArticleResource.resetOriginalValues();
 
@@ -2388,6 +2388,11 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return JournalArticleResourceModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

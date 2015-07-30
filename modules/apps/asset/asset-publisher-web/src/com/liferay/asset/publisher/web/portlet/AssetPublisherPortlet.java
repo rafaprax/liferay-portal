@@ -17,6 +17,10 @@ package com.liferay.asset.publisher.web.portlet;
 import com.liferay.asset.publisher.web.upgrade.AssetPublisherWebUpgrade;
 import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
 import com.liferay.asset.publisher.web.util.AssetRSSUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -31,10 +35,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -115,7 +117,7 @@ public class AssetPublisherPortlet extends MVCPortlet {
 				String fieldsNamespace = ParamUtil.getString(
 					resourceRequest, "fieldsNamespace");
 
-				fields = DDMUtil.getFields(
+				fields = _ddm.getFields(
 					structureId, fieldsNamespace, serviceContext);
 			}
 
@@ -139,11 +141,13 @@ public class AssetPublisherPortlet extends MVCPortlet {
 				return;
 			}
 
-			DDMStructure ddmStructure = field.getDDMStructure();
+			DDMStructure ddmStructure =
+				DDMStructureLocalServiceUtil.fetchDDMStructure(
+					field.getDDMStructureId());
 
 			String type = ddmStructure.getFieldType(fieldName);
 
-			Serializable displayValue = DDMUtil.getDisplayFieldValue(
+			Serializable displayValue = _ddm.getDisplayFieldValue(
 				themeDisplay, fieldValue, type);
 
 			jsonObject.put("displayValue", String.valueOf(displayValue));
@@ -265,7 +269,9 @@ public class AssetPublisherPortlet extends MVCPortlet {
 		throws IOException, PortletException {
 
 		if (SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, NoSuchGroupException.class.getName()) ||
+			SessionErrors.contains(
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include("/error.jsp", renderRequest, renderResponse);
 		}
@@ -276,7 +282,9 @@ public class AssetPublisherPortlet extends MVCPortlet {
 
 	@Override
 	protected boolean isSessionErrorException(Throwable cause) {
-		if (cause instanceof PrincipalException) {
+		if (cause instanceof NoSuchGroupException ||
+			cause instanceof PrincipalException) {
+
 			return true;
 		}
 
@@ -287,5 +295,12 @@ public class AssetPublisherPortlet extends MVCPortlet {
 	protected void setAssetPublisherWebUpgrade(
 		AssetPublisherWebUpgrade assetPublisherWebUpgrade) {
 	}
+
+	@Reference
+	protected void setDDM(DDM ddm) {
+		_ddm = ddm;
+	}
+
+	protected DDM _ddm;
 
 }

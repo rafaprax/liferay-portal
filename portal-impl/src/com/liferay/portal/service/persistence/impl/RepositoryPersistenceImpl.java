@@ -2302,8 +2302,8 @@ public class RepositoryPersistenceImpl extends BasePersistenceImpl<Repository>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(Repository repository) {
-		if (repository.isNew()) {
+	protected void cacheUniqueFindersCache(Repository repository, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					repository.getUuid(), repository.getGroupId()
 				};
@@ -2624,7 +2624,7 @@ public class RepositoryPersistenceImpl extends BasePersistenceImpl<Repository>
 			RepositoryImpl.class, repository.getPrimaryKey(), repository, false);
 
 		clearUniqueFindersCache(repository);
-		cacheUniqueFindersCache(repository);
+		cacheUniqueFindersCache(repository, isNew);
 
 		repository.resetOriginalValues();
 
@@ -2656,6 +2656,7 @@ public class RepositoryPersistenceImpl extends BasePersistenceImpl<Repository>
 		repositoryImpl.setPortletId(repository.getPortletId());
 		repositoryImpl.setTypeSettings(repository.getTypeSettings());
 		repositoryImpl.setDlFolderId(repository.getDlFolderId());
+		repositoryImpl.setLastPublishDate(repository.getLastPublishDate());
 
 		return repositoryImpl;
 	}
@@ -3016,6 +3017,11 @@ public class RepositoryPersistenceImpl extends BasePersistenceImpl<Repository>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RepositoryModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

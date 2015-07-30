@@ -19,7 +19,7 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.GroupedModel;
+import com.liferay.portal.model.StagedGroupedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -42,7 +42,7 @@ import java.util.Date;
  * @generated
  */
 @ProviderType
-public interface AssetTagModel extends BaseModel<AssetTag>, GroupedModel {
+public interface AssetTagModel extends BaseModel<AssetTag>, StagedGroupedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -62,6 +62,23 @@ public interface AssetTagModel extends BaseModel<AssetTag>, GroupedModel {
 	 * @param primaryKey the primary key of this asset tag
 	 */
 	public void setPrimaryKey(long primaryKey);
+
+	/**
+	 * Returns the uuid of this asset tag.
+	 *
+	 * @return the uuid of this asset tag
+	 */
+	@AutoEscape
+	@Override
+	public String getUuid();
+
+	/**
+	 * Sets the uuid of this asset tag.
+	 *
+	 * @param uuid the uuid of this asset tag
+	 */
+	@Override
+	public void setUuid(String uuid);
 
 	/**
 	 * Returns the tag ID of this asset tag.
@@ -218,6 +235,20 @@ public interface AssetTagModel extends BaseModel<AssetTag>, GroupedModel {
 	 * @param assetCount the asset count of this asset tag
 	 */
 	public void setAssetCount(int assetCount);
+
+	/**
+	 * Returns the last publish date of this asset tag.
+	 *
+	 * @return the last publish date of this asset tag
+	 */
+	public Date getLastPublishDate();
+
+	/**
+	 * Sets the last publish date of this asset tag.
+	 *
+	 * @param lastPublishDate the last publish date of this asset tag
+	 */
+	public void setLastPublishDate(Date lastPublishDate);
 
 	@Override
 	public boolean isNew();

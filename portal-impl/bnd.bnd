@@ -6,13 +6,12 @@ Export-Package:\
 	com.liferay.portal.increment,\
 	com.liferay.portal.dao.jdbc.aop,\
 	com.liferay.portal.dao.orm.hibernate,\
-	com.liferay.portal.dao.shard,\
-	com.liferay.portal.dao.shard.advice,\
 	com.liferay.portal.deploy.hot,\
 	com.liferay.portal.events,\
 	com.liferay.portal.freemarker,\
 	com.liferay.portal.kernel.util,\
 	com.liferay.portal.messaging.async,\
+	com.liferay.portal.model.impl,\
 	com.liferay.portal.monitoring.statistics.service,\
 	com.liferay.portal.plugin,\
 	com.liferay.portal.resiliency.service,\
@@ -54,12 +53,10 @@ Export-Package:\
 	com.liferay.portlet.documentlibrary.model,\
 	com.liferay.portlet.documentlibrary.service,\
 	com.liferay.portlet.documentlibrary.store,\
-	com.liferay.portlet.dynamicdatamapping.service.permission,\
 	com.liferay.portlet.documentlibrary,\
 	com.liferay.portlet.documentlibrary.action,\
 	com.liferay.portlet.documentlibrary.service.permission,\
 	com.liferay.portlet.documentlibrary.util,\
-	com.liferay.portlet.dynamicdatamapping.util,\
 	com.liferay.portlet.expando.model,\
 	com.liferay.portlet.expando.service,\
 	com.liferay.portlet.expando.service.persistence,\

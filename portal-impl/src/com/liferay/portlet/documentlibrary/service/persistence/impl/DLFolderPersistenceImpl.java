@@ -10792,8 +10792,8 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(DLFolder dlFolder) {
-		if (dlFolder.isNew()) {
+	protected void cacheUniqueFindersCache(DLFolder dlFolder, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					dlFolder.getUuid(), dlFolder.getGroupId()
 				};
@@ -11349,7 +11349,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			DLFolderImpl.class, dlFolder.getPrimaryKey(), dlFolder, false);
 
 		clearUniqueFindersCache(dlFolder);
-		cacheUniqueFindersCache(dlFolder);
+		cacheUniqueFindersCache(dlFolder, isNew);
 
 		dlFolder.resetOriginalValues();
 
@@ -11384,6 +11384,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		dlFolderImpl.setDefaultFileEntryTypeId(dlFolder.getDefaultFileEntryTypeId());
 		dlFolderImpl.setHidden(dlFolder.isHidden());
 		dlFolderImpl.setRestrictionType(dlFolder.getRestrictionType());
+		dlFolderImpl.setLastPublishDate(dlFolder.getLastPublishDate());
 		dlFolderImpl.setStatus(dlFolder.getStatus());
 		dlFolderImpl.setStatusByUserId(dlFolder.getStatusByUserId());
 		dlFolderImpl.setStatusByUserName(dlFolder.getStatusByUserName());
@@ -12026,6 +12027,11 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return DLFolderModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

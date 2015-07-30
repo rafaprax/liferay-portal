@@ -19,6 +19,8 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
+import com.liferay.portlet.exportimport.lar.StagedModelType;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +54,7 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 	public Map<String, Object> getModelAttributes() {
 		Map<String, Object> attributes = new HashMap<String, Object>();
 
+		attributes.put("uuid", getUuid());
 		attributes.put("tagId", getTagId());
 		attributes.put("groupId", getGroupId());
 		attributes.put("companyId", getCompanyId());
@@ -61,12 +64,19 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("name", getName());
 		attributes.put("assetCount", getAssetCount());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		return attributes;
 	}
 
 	@Override
 	public void setModelAttributes(Map<String, Object> attributes) {
+		String uuid = (String)attributes.get("uuid");
+
+		if (uuid != null) {
+			setUuid(uuid);
+		}
+
 		Long tagId = (Long)attributes.get("tagId");
 
 		if (tagId != null) {
@@ -119,6 +129,12 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 
 		if (assetCount != null) {
 			setAssetCount(assetCount);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 	}
 
@@ -175,6 +191,16 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 	@Override
 	public long getGroupId() {
 		return _assetTag.getGroupId();
+	}
+
+	/**
+	* Returns the last publish date of this asset tag.
+	*
+	* @return the last publish date of this asset tag
+	*/
+	@Override
+	public Date getLastPublishDate() {
+		return _assetTag.getLastPublishDate();
 	}
 
 	/**
@@ -250,6 +276,16 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 	@Override
 	public java.lang.String getUserUuid() {
 		return _assetTag.getUserUuid();
+	}
+
+	/**
+	* Returns the uuid of this asset tag.
+	*
+	* @return the uuid of this asset tag
+	*/
+	@Override
+	public java.lang.String getUuid() {
+		return _assetTag.getUuid();
 	}
 
 	@Override
@@ -341,6 +377,16 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 	}
 
 	/**
+	* Sets the last publish date of this asset tag.
+	*
+	* @param lastPublishDate the last publish date of this asset tag
+	*/
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_assetTag.setLastPublishDate(lastPublishDate);
+	}
+
+	/**
 	* Sets the modified date of this asset tag.
 	*
 	* @param modifiedDate the modified date of this asset tag
@@ -420,6 +466,16 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 		_assetTag.setUserUuid(userUuid);
 	}
 
+	/**
+	* Sets the uuid of this asset tag.
+	*
+	* @param uuid the uuid of this asset tag
+	*/
+	@Override
+	public void setUuid(java.lang.String uuid) {
+		_assetTag.setUuid(uuid);
+	}
+
 	@Override
 	public com.liferay.portal.model.CacheModel<com.liferay.portlet.asset.model.AssetTag> toCacheModel() {
 		return _assetTag.toCacheModel();
@@ -462,6 +518,11 @@ public class AssetTagWrapper implements AssetTag, ModelWrapper<AssetTag> {
 		}
 
 		return false;
+	}
+
+	@Override
+	public StagedModelType getStagedModelType() {
+		return _assetTag.getStagedModelType();
 	}
 
 	/**

@@ -14,10 +14,10 @@
 
 package com.liferay.journal.web.asset;
 
+import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
 import com.liferay.journal.service.permission.JournalFolderPermission;
-import com.liferay.journal.web.constants.JournalPortletKeys;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
@@ -32,7 +32,10 @@ import javax.portlet.PortletURL;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 
+import javax.servlet.ServletContext;
+
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alexander Chow
@@ -40,7 +43,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	immediate = true,
 	property = {
-		"model.class.name=com.liferay.journal.model.JournalFolder",
+		"javax.portlet.name=" + JournalPortletKeys.JOURNAL,
 		"search.asset.type=com.liferay.journal.model.JournalFolder"
 	},
 	service = AssetRendererFactory.class
@@ -66,6 +69,7 @@ public class JournalFolderAssetRendererFactory
 			new JournalFolderAssetRenderer(folder);
 
 		journalFolderAssetRenderer.setAssetRendererType(type);
+		journalFolderAssetRenderer.setServletContext(_servletContext);
 
 		return journalFolderAssetRenderer;
 	}
@@ -114,9 +118,18 @@ public class JournalFolderAssetRendererFactory
 			permissionChecker, folder, actionId);
 	}
 
+	@Reference(
+		target = "(osgi.web.symbolicname=com.liferay.journal.web)", unbind = "-"
+	)
+	public void setServletContext(ServletContext servletContext) {
+		_servletContext = servletContext;
+	}
+
 	@Override
 	protected String getIconPath(ThemeDisplay themeDisplay) {
 		return themeDisplay.getPathThemeImages() + "/common/folder.png";
 	}
+
+	private ServletContext _servletContext;
 
 }

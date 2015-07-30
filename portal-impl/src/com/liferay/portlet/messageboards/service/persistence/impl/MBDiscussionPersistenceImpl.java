@@ -2427,8 +2427,9 @@ public class MBDiscussionPersistenceImpl extends BasePersistenceImpl<MBDiscussio
 		}
 	}
 
-	protected void cacheUniqueFindersCache(MBDiscussion mbDiscussion) {
-		if (mbDiscussion.isNew()) {
+	protected void cacheUniqueFindersCache(MBDiscussion mbDiscussion,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					mbDiscussion.getUuid(), mbDiscussion.getGroupId()
 				};
@@ -2778,7 +2779,7 @@ public class MBDiscussionPersistenceImpl extends BasePersistenceImpl<MBDiscussio
 			false);
 
 		clearUniqueFindersCache(mbDiscussion);
-		cacheUniqueFindersCache(mbDiscussion);
+		cacheUniqueFindersCache(mbDiscussion, isNew);
 
 		mbDiscussion.resetOriginalValues();
 
@@ -2806,6 +2807,7 @@ public class MBDiscussionPersistenceImpl extends BasePersistenceImpl<MBDiscussio
 		mbDiscussionImpl.setClassNameId(mbDiscussion.getClassNameId());
 		mbDiscussionImpl.setClassPK(mbDiscussion.getClassPK());
 		mbDiscussionImpl.setThreadId(mbDiscussion.getThreadId());
+		mbDiscussionImpl.setLastPublishDate(mbDiscussion.getLastPublishDate());
 
 		return mbDiscussionImpl;
 	}
@@ -3166,6 +3168,11 @@ public class MBDiscussionPersistenceImpl extends BasePersistenceImpl<MBDiscussio
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBDiscussionModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

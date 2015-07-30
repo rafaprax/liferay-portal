@@ -16,7 +16,7 @@
 
 <%@ include file="/html/common/themes/init.jsp" %>
 
-<liferay-util:dynamic-include key="/html/common/themes/top_head-ext.jsp" />
+<liferay-util:dynamic-include key="/html/common/themes/top_head.jsp#pre" />
 
 <%@ include file="/html/common/themes/top_meta.jspf" %>
 <%@ include file="/html/common/themes/top_meta-ext.jsp" %>
@@ -72,27 +72,7 @@ List<Portlet> portlets = null;
 if (layout != null) {
 	String ppid = ParamUtil.getString(request, "p_p_id");
 
-	if (ppid.equals(PortletKeys.PORTLET_CONFIGURATION)) {
-		if (themeDisplay.isStatePopUp()) {
-			portlets = new ArrayList<Portlet>();
-		}
-		else {
-			portlets = layoutTypePortlet.getAllPortlets();
-		}
-
-		portlets.add(PortletLocalServiceUtil.getPortletById(company.getCompanyId(), PortletKeys.PORTLET_CONFIGURATION));
-
-		ppid = ParamUtil.getString(request, PortalUtil.getPortletNamespace(ppid) + "portletResource");
-
-		if (Validator.isNotNull(ppid)) {
-			Portlet portlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), ppid);
-
-			if ((portlet != null) && !portlets.contains(portlet)) {
-				portlets.add(portlet);
-			}
-		}
-	}
-	else if (layout.isTypeEmbedded() || layout.isTypePortlet()) {
+	if (layout.isTypeEmbedded() || layout.isTypePortlet()) {
 		portlets = layoutTypePortlet.getAllPortlets();
 
 		if (themeDisplay.isStateMaximized() || themeDisplay.isStatePopUp()) {
@@ -111,6 +91,16 @@ if (layout != null) {
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), ppid);
 
 		if (portlet != null) {
+			portlets.add(portlet);
+		}
+	}
+
+	String portletResource = ParamUtil.getString(request, PortalUtil.getPortletNamespace(ppid) + "portletResource");
+
+	if (Validator.isNotNull(portletResource)) {
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), portletResource);
+
+		if ((portlet != null) && !portlets.contains(portlet)) {
 			portlets.add(portlet);
 		}
 	}
@@ -207,6 +197,8 @@ StringBundler pageTopSB = OutputTag.getData(request, WebKeys.PAGE_TOP);
 
 	</style>
 </c:if>
+
+<liferay-util:dynamic-include key="/html/common/themes/top_head.jsp#post" />
 
 <%!
 private String _escapeCssBlock(String css) {

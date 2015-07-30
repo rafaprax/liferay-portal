@@ -15,6 +15,8 @@
 package com.liferay.portlet.announcements.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Role;
@@ -30,6 +32,7 @@ import com.liferay.portal.service.permission.RolePermissionUtil;
 import com.liferay.portal.service.permission.UserGroupPermissionUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
+import com.liferay.portlet.announcements.constants.AnnouncementsConstants;
 import com.liferay.portlet.announcements.model.AnnouncementsEntry;
 import com.liferay.portlet.announcements.service.base.AnnouncementsEntryServiceBaseImpl;
 import com.liferay.portlet.announcements.service.permission.AnnouncementsEntryPermission;
@@ -54,21 +57,29 @@ public class AnnouncementsEntryServiceImpl
 		PermissionChecker permissionChecker = getPermissionChecker();
 
 		if (alert) {
+			String portletId = PortletProviderUtil.getPortletId(
+				AnnouncementsConstants.CLASS_NAME_ALERTS_ENTRY,
+				PortletProvider.Action.MANAGE);
+
 			AnnouncementsEntryPermission.check(
-				permissionChecker, plid, PortletKeys.ALERTS,
-				ActionKeys.ADD_ENTRY);
+				permissionChecker, plid, portletId, ActionKeys.ADD_ENTRY);
 		}
 		else {
+			String portletId = PortletProviderUtil.getPortletId(
+				AnnouncementsEntry.class.getName(),
+				PortletProvider.Action.MANAGE);
+
 			AnnouncementsEntryPermission.check(
-				permissionChecker, plid, PortletKeys.ANNOUNCEMENTS,
-				ActionKeys.ADD_ENTRY);
+				permissionChecker, plid, portletId, ActionKeys.ADD_ENTRY);
 		}
 
 		if (classNameId == 0) {
 			if (!PortalPermissionUtil.contains(
 					permissionChecker, ActionKeys.ADD_GENERAL_ANNOUNCEMENTS)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					permissionChecker, PortletKeys.PORTAL, PortletKeys.PORTAL,
+					ActionKeys.ADD_GENERAL_ANNOUNCEMENTS);
 			}
 		}
 		else {
@@ -79,7 +90,9 @@ public class AnnouncementsEntryServiceImpl
 					permissionChecker, classPK,
 					ActionKeys.MANAGE_ANNOUNCEMENTS)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					permissionChecker, className, classPK,
+					ActionKeys.MANAGE_ANNOUNCEMENTS);
 			}
 
 			if (className.equals(Organization.class.getName()) &&
@@ -87,7 +100,9 @@ public class AnnouncementsEntryServiceImpl
 					permissionChecker, classPK,
 					ActionKeys.MANAGE_ANNOUNCEMENTS)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					permissionChecker, className, classPK,
+					ActionKeys.MANAGE_ANNOUNCEMENTS);
 			}
 
 			if (className.equals(Role.class.getName())) {
@@ -103,14 +118,18 @@ public class AnnouncementsEntryServiceImpl
 							permissionChecker, team.getGroupId(), classPK,
 							ActionKeys.MANAGE_ANNOUNCEMENTS)) {
 
-						throw new PrincipalException();
+						throw new PrincipalException.MustHavePermission(
+							permissionChecker, Team.class.getName(), classPK,
+							ActionKeys.MANAGE_ANNOUNCEMENTS);
 					}
 				}
 				else if (!RolePermissionUtil.contains(
 							permissionChecker, classPK,
 							ActionKeys.MANAGE_ANNOUNCEMENTS)) {
 
-					throw new PrincipalException();
+					throw new PrincipalException.MustHavePermission(
+						permissionChecker, className, classPK,
+						ActionKeys.MANAGE_ANNOUNCEMENTS);
 				}
 			}
 
@@ -119,7 +138,9 @@ public class AnnouncementsEntryServiceImpl
 					permissionChecker, classPK,
 					ActionKeys.MANAGE_ANNOUNCEMENTS)) {
 
-				throw new PrincipalException();
+				throw new PrincipalException.MustHavePermission(
+					permissionChecker, className, classPK,
+					ActionKeys.MANAGE_ANNOUNCEMENTS);
 			}
 		}
 

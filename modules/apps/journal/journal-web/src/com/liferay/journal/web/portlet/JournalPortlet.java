@@ -14,7 +14,14 @@
 
 package com.liferay.journal.web.portlet;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+import com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.item.selector.ItemSelector;
+import com.liferay.journal.constants.JournalPortletKeys;
+import com.liferay.journal.constants.JournalWebKeys;
 import com.liferay.journal.exception.ArticleContentException;
 import com.liferay.journal.exception.ArticleContentSizeException;
 import com.liferay.journal.exception.ArticleDisplayDateException;
@@ -47,8 +54,6 @@ import com.liferay.journal.service.JournalFeedService;
 import com.liferay.journal.service.JournalFolderService;
 import com.liferay.journal.util.impl.JournalUtil;
 import com.liferay.journal.web.asset.JournalArticleAssetRenderer;
-import com.liferay.journal.web.constants.JournalPortletKeys;
-import com.liferay.journal.web.constants.JournalWebKeys;
 import com.liferay.journal.web.portlet.action.ActionUtil;
 import com.liferay.journal.web.upgrade.JournalWebUpgrade;
 import com.liferay.journal.web.util.JournalRSSUtil;
@@ -94,11 +99,6 @@ import com.liferay.portlet.asset.AssetCategoryException;
 import com.liferay.portlet.asset.AssetTagException;
 import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.FileSizeException;
-import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
-import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateException;
-import com.liferay.portlet.dynamicdatamapping.StorageFieldRequiredException;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
 import com.liferay.portlet.trash.service.TrashEntryService;
 import com.liferay.portlet.trash.util.TrashUtil;
 
@@ -289,13 +289,6 @@ public class JournalPortlet extends MVCPortlet {
 		sendEditEntryRedirect(actionRequest, actionResponse);
 	}
 
-	public void moveArticlesToTrash(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		deleteArticles(actionRequest, actionResponse, true);
-	}
-
 	public void moveEntries(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -364,6 +357,13 @@ public class JournalPortlet extends MVCPortlet {
 		deleteFolders(actionRequest, actionResponse, true);
 	}
 
+	public void moveToTrash(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		deleteArticles(actionRequest, actionResponse, true);
+	}
+
 	public void previewArticle(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -376,7 +376,7 @@ public class JournalPortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
-		String path = getPath(renderRequest);
+		String path = getPath(renderRequest, renderResponse);
 
 		if (Validator.equals(path, "/edit_article.jsp")) {
 			renderRequest.setAttribute(
@@ -1059,7 +1059,7 @@ public class JournalPortlet extends MVCPortlet {
 			SessionErrors.contains(
 				renderRequest, NoSuchTemplateException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(
 				"/portlet/journal/html/error.jsp", renderRequest,

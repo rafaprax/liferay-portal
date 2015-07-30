@@ -14,6 +14,7 @@
  */
 --%>
 
+
 <script type="text/javascript">
 	// <![CDATA[
 		var Liferay = {
@@ -119,9 +120,8 @@
 
 			PortletKeys: {
 				DOCUMENT_LIBRARY: '<%= PortletKeys.DOCUMENT_LIBRARY %>',
-				DYNAMIC_DATA_MAPPING: '<%= PortletKeys.DYNAMIC_DATA_MAPPING %>',
+				DYNAMIC_DATA_MAPPING: 'com_liferay_dynamic_data_mapping_web_portlet_DynamicDataMappingPortlet',
 				ITEM_SELECTOR: '<%= PortletKeys.ITEM_SELECTOR %>',
-				PORTLET_CONFIGURATION: '<%= PortletKeys.PORTLET_CONFIGURATION %>',
 				PORTLET_SHARING: '<%= PortletKeys.PORTLET_SHARING %>'
 			},
 
@@ -318,6 +318,15 @@
 	// ]]>
 </script>
 
+<c:if test="<%= PortalWebResourcesUtil.getPortalWebResources(PortalWebResourceConstants.RESOURCE_TYPE_JS_LOADER_MODULES) != null %>">
+
+	<%
+	long jsLoaderModulesLastModified = PortalWebResourcesUtil.getLastModified(PortalWebResourceConstants.RESOURCE_TYPE_JS_LOADER_MODULES);
+	%>
+
+	<script src="<%= HtmlUtil.escape(themeDisplay.getCDNDynamicResourcesHost() + PortalWebResourcesUtil.getContextPath(PortalWebResourceConstants.RESOURCE_TYPE_JS_LOADER_MODULES) + "/js_loader_modules?t=" + jsLoaderModulesLastModified) %>" type="text/javascript"></script>
+</c:if>
+
 <c:choose>
 	<c:when test="<%= themeDisplay.isThemeJsFastLoad() %>">
 		<c:choose>
@@ -356,6 +365,12 @@
 </c:choose>
 
 <script type="text/javascript">
+	(function() {
+		<liferay-util:dynamic-include key="com.liferay.frontend.js.web#loader#configModules" />
+	}());
+</script>
+
+<script type="text/javascript">
 	// <![CDATA[
 		<c:if test="<%= (layoutTypePortlet != null) %>">
 
@@ -378,10 +393,10 @@
 
 			<c:choose>
 				<c:when test="<%= layoutTypePortlet.hasStateMax() %>">
-					Liferay.Portlet.list = ['<%= layoutTypePortlet.getStateMaxPortletId() %>'];
+					Liferay.Portlet.list = ['<%= HtmlUtil.escapeJS(layoutTypePortlet.getStateMaxPortletId()) %>'];
 				</c:when>
 				<c:when test="<%= themeDisplay.isStatePopUp() %>">
-					Liferay.Portlet.list = ['<%= themeDisplay.getPpid() %>'];
+					Liferay.Portlet.list = ['<%= HtmlUtil.escapeJS(themeDisplay.getPpid()) %>'];
 				</c:when>
 				<c:when test="<%= (sb.index() > 0) && !layoutTypePortlet.hasStateMax() %>">
 					Liferay.Portlet.list = ['<%= sb.toString() %>'];

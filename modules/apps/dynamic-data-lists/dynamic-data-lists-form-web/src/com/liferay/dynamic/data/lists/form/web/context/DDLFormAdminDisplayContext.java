@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.lists.form.web.context;
 
+import com.liferay.dynamic.data.lists.constants.DDLActionKeys;
 import com.liferay.dynamic.data.lists.form.web.context.util.DDLFormAdminRequestHelper;
 import com.liferay.dynamic.data.lists.form.web.search.RecordSetSearchTerms;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
@@ -22,6 +23,13 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetServiceUtil;
 import com.liferay.dynamic.data.lists.service.permission.DDLPermission;
 import com.liferay.dynamic.data.lists.service.permission.DDLRecordSetPermission;
+import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializerUtil;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONSerializerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldType;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -29,15 +37,8 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.permission.ActionKeys;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormFieldTypesJSONSerializerUtil;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormJSONSerializerUtil;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormLayoutJSONSerializerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldType;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeRegistryUtil;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 
 import java.util.List;
 
@@ -203,7 +204,7 @@ public class DDLFormAdminDisplayContext {
 		return DDLPermission.contains(
 			_ddlFormAdminRequestHelper.getPermissionChecker(),
 			_ddlFormAdminRequestHelper.getScopeGroupId(),
-			ActionKeys.ADD_RECORD_SET);
+			DDLActionKeys.ADD_RECORD_SET);
 	}
 
 	public boolean isShowDeleteRecordSetIcon(DDLRecordSet recordSet) {

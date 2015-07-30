@@ -4219,6 +4219,7 @@ public class EmailAddressPersistenceImpl extends BasePersistenceImpl<EmailAddres
 		emailAddressImpl.setAddress(emailAddress.getAddress());
 		emailAddressImpl.setTypeId(emailAddress.getTypeId());
 		emailAddressImpl.setPrimary(emailAddress.isPrimary());
+		emailAddressImpl.setLastPublishDate(emailAddress.getLastPublishDate());
 
 		return emailAddressImpl;
 	}
@@ -4579,6 +4580,11 @@ public class EmailAddressPersistenceImpl extends BasePersistenceImpl<EmailAddres
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return EmailAddressModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

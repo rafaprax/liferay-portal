@@ -23,8 +23,10 @@ import com.liferay.dynamic.data.lists.service.DDLRecordLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.util.DDL;
-import com.liferay.dynamic.data.lists.util.DDLConstants;
-import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.storage.StorageEngineUtil;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -35,51 +37,32 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.template.TemplateConstants;
-import com.liferay.portal.kernel.template.TemplateHandler;
-import com.liferay.portal.kernel.template.TemplateHandlerRegistryUtil;
-import com.liferay.portal.kernel.template.TemplateManager;
-import com.liferay.portal.kernel.template.TemplateManagerUtil;
-import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.LayoutServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.templateparser.Transformer;
-import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesToFieldsConverterUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMImpl;
-import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.portlet.PortletPreferences;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -120,7 +103,7 @@ public class DDLImpl implements DDL {
 		DDMFormValues ddmFormValues = StorageEngineUtil.getDDMFormValues(
 			recordVersion.getDDMStorageId());
 
-		Fields fields = DDMFormValuesToFieldsConverterUtil.convert(
+		Fields fields = _ddmFormValuesToFieldsConverter.convert(
 			ddmStructure, ddmFormValues);
 
 		for (Field field : fields) {
@@ -131,7 +114,7 @@ public class DDLImpl implements DDL {
 			if (fieldValue instanceof Date) {
 				jsonObject.put(fieldName, ((Date)fieldValue).getTime());
 			}
-			else if (fieldType.equals(DDMImpl.TYPE_DDM_DOCUMENTLIBRARY) &&
+			else if (fieldType.equals(DDM.TYPE_DDM_DOCUMENTLIBRARY) &&
 					 Validator.isNotNull(fieldValue)) {
 
 				JSONObject fieldValueJSONObject =
@@ -146,7 +129,7 @@ public class DDLImpl implements DDL {
 
 				jsonObject.put(fieldName, fieldValueJSONObject.toString());
 			}
-			else if (fieldType.equals(DDMImpl.TYPE_DDM_LINK_TO_PAGE) &&
+			else if (fieldType.equals(DDM.TYPE_DDM_LINK_TO_PAGE) &&
 					 Validator.isNotNull(fieldValue)) {
 
 				JSONObject fieldValueJSONObject =
@@ -167,8 +150,8 @@ public class DDLImpl implements DDL {
 
 				jsonObject.put(fieldName, fieldValueJSONObject.toString());
 			}
-			else if ((fieldType.equals(DDMImpl.TYPE_RADIO) ||
-					  fieldType.equals(DDMImpl.TYPE_SELECT)) &&
+			else if ((fieldType.equals(DDM.TYPE_RADIO) ||
+					  fieldType.equals(DDM.TYPE_SELECT)) &&
 					 Validator.isNotNull(fieldValue)) {
 
 				fieldValue = JSONFactoryUtil.createJSONArray(
@@ -210,7 +193,7 @@ public class DDLImpl implements DDL {
 						nsre);
 				}
 
-				Indexer indexer = IndexerRegistryUtil.getIndexer(
+				Indexer<DDLRecord> indexer = IndexerRegistryUtil.getIndexer(
 					DDLRecord.class);
 
 				long companyId = GetterUtil.getLong(
@@ -311,62 +294,6 @@ public class DDLImpl implements DDL {
 		return jsonArray;
 	}
 
-	@Override
-	public String getTemplateContent(
-			long ddmTemplateId, DDLRecordSet recordSet,
-			ThemeDisplay themeDisplay, RenderRequest renderRequest,
-			RenderResponse renderResponse)
-		throws Exception {
-
-		Transformer transformer = TransformerHolder.getTransformer();
-
-		Map<String, Object> contextObjects = new HashMap<>();
-
-		contextObjects.put(
-			DDLConstants.RESERVED_DDM_STRUCTURE_ID,
-			recordSet.getDDMStructureId());
-		contextObjects.put(
-			DDLConstants.RESERVED_DDM_TEMPLATE_ID, ddmTemplateId);
-		contextObjects.put(
-			DDLConstants.RESERVED_RECORD_SET_DESCRIPTION,
-			recordSet.getDescription(themeDisplay.getLocale()));
-		contextObjects.put(
-			DDLConstants.RESERVED_RECORD_SET_ID, recordSet.getRecordSetId());
-		contextObjects.put(
-			DDLConstants.RESERVED_RECORD_SET_NAME,
-			recordSet.getName(themeDisplay.getLocale()));
-		contextObjects.put(TemplateConstants.TEMPLATE_ID, ddmTemplateId);
-
-		String viewMode = Constants.VIEW;
-
-		if (renderRequest != null) {
-			viewMode = ParamUtil.getString(
-				renderRequest, "viewMode", Constants.VIEW);
-		}
-
-		contextObjects.put("viewMode", viewMode);
-
-		DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
-			ddmTemplateId);
-
-		contextObjects.put(
-			TemplateConstants.CLASS_NAME_ID, ddmTemplate.getClassNameId());
-
-		TemplateManager templateManager =
-			TemplateManagerUtil.getTemplateManager(ddmTemplate.getLanguage());
-
-		TemplateHandler templateHandler =
-			TemplateHandlerRegistryUtil.getTemplateHandler(
-				DDLRecordSet.class.getName());
-
-		templateManager.addContextObjects(
-			contextObjects, templateHandler.getCustomContextObjects());
-
-		return transformer.transform(
-			themeDisplay, contextObjects, ddmTemplate.getScript(),
-			ddmTemplate.getLanguage(), new UnsyncStringWriter());
-	}
-
 	/**
 	 * @deprecated As of 7.0.0, with no direct replacement
 	 */
@@ -407,7 +334,7 @@ public class DDLImpl implements DDL {
 
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 
-		Fields fields = DDMUtil.getFields(
+		Fields fields = _ddm.getFields(
 			ddmStructure.getStructureId(), serviceContext);
 
 		if (record != null) {
@@ -482,17 +409,21 @@ public class DDLImpl implements DDL {
 		}
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(DDLImpl.class);
-
-	private static class TransformerHolder {
-
-		public static Transformer getTransformer() {
-			return _transformer;
-		}
-
-		private static final Transformer _transformer = new Transformer(
-			PropsKeys.DYNAMIC_DATA_LISTS_ERROR_TEMPLATE, true);
-
+	@Reference
+	protected void setDDM(DDM ddm) {
+		_ddm = ddm;
 	}
+
+	@Reference
+	protected void setDDMFormValuesToFieldsConverter(
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+	}
+
+	protected DDM _ddm;
+	protected DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
+
+	private static final Log _log = LogFactoryUtil.getLog(DDLImpl.class);
 
 }

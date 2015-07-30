@@ -14,6 +14,8 @@
  */
 --%>
 
+<%@page import="com.liferay.portal.kernel.portlet.PortletProviderUtil"%>
+<%@page import="com.liferay.portal.kernel.portlet.PortletProvider"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
@@ -26,7 +28,9 @@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
-<%@ page import="com.liferay.dynamic.data.lists.exception.NoSuchRecordException" %><%@
+<%@ page import="com.liferay.dynamic.data.lists.constants.DDLActionKeys" %><%@
+page import="com.liferay.dynamic.data.lists.constants.DDLWebKeys" %><%@
+page import="com.liferay.dynamic.data.lists.exception.NoSuchRecordException" %><%@
 page import="com.liferay.dynamic.data.lists.exception.NoSuchRecordSetException" %><%@
 page import="com.liferay.dynamic.data.lists.exception.RecordSetDDMStructureIdException" %><%@
 page import="com.liferay.dynamic.data.lists.exception.RecordSetNameException" %><%@
@@ -46,7 +50,22 @@ page import="com.liferay.dynamic.data.lists.web.context.DDLDisplayContext" %><%@
 page import="com.liferay.dynamic.data.lists.web.search.RecordSetDisplayTerms" %><%@
 page import="com.liferay.dynamic.data.lists.web.search.RecordSetSearch" %><%@
 page import="com.liferay.dynamic.data.lists.web.search.RecordSetSearchTerms" %><%@
+page import="com.liferay.dynamic.data.lists.web.template.DDLDisplayTemplateTransformer" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.NoSuchStructureException" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException" %><%@
+page import="com.liferay.dynamic.data.mapping.model.DDMStructure" %><%@
+page import="com.liferay.dynamic.data.mapping.model.DDMStructureLink" %><%@
+page import="com.liferay.dynamic.data.mapping.model.DDMTemplate" %><%@
+page import="com.liferay.portlet.dynamicdatamapping.DDMTemplateManager" %><%@
+page import="com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRenderer" %><%@
+page import="com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRendererRegistryUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalServiceUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.storage.StorageEngineUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.util.DDMUtil" %><%@
 page import="com.liferay.portal.NoSuchWorkflowDefinitionLinkException" %><%@
+page import="com.liferay.portal.PortletPreferencesException" %><%@
 page import="com.liferay.portal.kernel.bean.BeanParamUtil" %><%@
 page import="com.liferay.portal.kernel.dao.search.DisplayTerms" %><%@
 page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
@@ -85,25 +104,11 @@ page import="com.liferay.portlet.PortletURLFactoryUtil" %><%@
 page import="com.liferay.portlet.PortletURLUtil" %><%@
 page import="com.liferay.portlet.documentlibrary.DuplicateFileException" %><%@
 page import="com.liferay.portlet.documentlibrary.FileSizeException" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.NoSuchStructureException" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.StorageFieldRequiredException" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.DDMForm" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.DDMFormField" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.model.DDMStructure" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.model.DDMTemplate" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.LocalizedValue" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.render.DDMFormFieldValueRenderer" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.render.DDMFormFieldValueRendererRegistryUtil" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalServiceUtil" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.storage.Fields" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.util.DDMFormValuesToFieldsConverterUtil" %><%@
-page import="com.liferay.portlet.dynamicdatamapping.util.DDMUtil" %><%@
 page import="com.liferay.taglib.search.ResultRow" %>
 
 <%@ page import="java.util.ArrayList" %><%@

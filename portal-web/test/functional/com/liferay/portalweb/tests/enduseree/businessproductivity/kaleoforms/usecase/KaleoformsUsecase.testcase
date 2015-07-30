@@ -1,7 +1,6 @@
 <definition component-name="portal-business-productivity-ee">
 	<property name="portlet.plugins.includes" value="kaleo-designer-portlet,kaleo-forms-portlet" />
 	<property name="testray.main.component.name" value="Kaleo Forms Admin" />
-	<property name="web.plugins.includes" value="kaleo-web" />
 
 	<set-up>
 		<execute macro="User#firstLoginPG" />
@@ -2106,12 +2105,14 @@
 		<execute macro="KaleoFormsAdmin#next" />
 
 		<execute macro="KaleoFormsAdmin#chooseWorkflow">
+			<var name="kfProcessName" value="${kfProcessName}" />
 			<var name="workflowDefinitionTitleEdit" value="Edited Workflow Definition" />
 		</execute>
 
 		<execute macro="KaleoFormsAdmin#next" />
 
 		<execute macro="KaleoFormsAdmin#assignForm">
+			<var name="kfProcessName" value="${kfProcessName}" />
 			<var name="workflowTask" value="create" />
 		</execute>
 
@@ -4545,6 +4546,7 @@
 		<execute macro="KaleoFormsAdmin#next" />
 
 		<execute macro="KaleoFormsAdmin#assignForm">
+			<var name="kfProcessName" value="${kfProcessName}" />
 			<var name="workflowTask" value="create" />
 		</execute>
 
@@ -4646,6 +4648,7 @@
 		</execute>
 
 		<execute macro="KaleoFormsAdmin#assignForm">
+			<var name="kfProcessName" value="${kfProcessName}" />
 			<var name="workflowTask" value="review" />
 		</execute>
 
@@ -4731,6 +4734,7 @@
 		<execute macro="KaleoFormsAdmin#next" />
 
 		<execute macro="KaleoFormsAdmin#assignForm">
+			<var name="kfProcessName" value="${kfProcessName}" />
 			<var name="workflowTask" value="review" />
 		</execute>
 
@@ -4747,6 +4751,7 @@
 		<execute macro="KaleoFormsAdmin#saveProcess" />
 
 		<execute macro="Page#gotoPG">
+			<var name="kfProcessName" value="${kfProcessName}" />
 			<var name="pageName" value="Kaleo Forms Page" />
 		</execute>
 
@@ -5324,6 +5329,7 @@
 
 		<execute macro="KaleoFormsAdmin#addFieldSet">
 			<var name="kfFieldSetName" value="${kfFieldSetName}" />
+			<var name="kfProcessName" value="${kfProcessName}" />
 		</execute>
 
 		<execute macro="DynamicDataMapping#addField">

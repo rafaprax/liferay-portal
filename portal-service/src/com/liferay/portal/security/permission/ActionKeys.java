@@ -102,10 +102,6 @@ public class ActionKeys {
 
 	public static final String ADD_QUESTION = "ADD_QUESTION";
 
-	public static final String ADD_RECORD = "ADD_RECORD";
-
-	public static final String ADD_RECORD_SET = "ADD_RECORD_SET";
-
 	public static final String ADD_REPOSITORY = "ADD_REPOSITORY";
 
 	public static final String ADD_ROLE = "ADD_ROLE";
@@ -117,15 +113,11 @@ public class ActionKeys {
 
 	public static final String ADD_SHORTCUT = "ADD_SHORTCUT";
 
-	public static final String ADD_STRUCTURE = "ADD_STRUCTURE";
-
 	public static final String ADD_SUBCATEGORY = "ADD_SUBCATEGORY";
 
 	public static final String ADD_SUBFOLDER = "ADD_SUBFOLDER";
 
 	public static final String ADD_TAG = "ADD_TAG";
-
-	public static final String ADD_TEMPLATE = "ADD_TEMPLATE";
 
 	public static final String ADD_TO_PAGE = "ADD_TO_PAGE";
 

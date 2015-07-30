@@ -3143,8 +3143,8 @@ public class MBBanPersistenceImpl extends BasePersistenceImpl<MBBan>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(MBBan mbBan) {
-		if (mbBan.isNew()) {
+	protected void cacheUniqueFindersCache(MBBan mbBan, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] { mbBan.getUuid(), mbBan.getGroupId() };
 
 			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
@@ -3474,7 +3474,7 @@ public class MBBanPersistenceImpl extends BasePersistenceImpl<MBBan>
 			MBBanImpl.class, mbBan.getPrimaryKey(), mbBan, false);
 
 		clearUniqueFindersCache(mbBan);
-		cacheUniqueFindersCache(mbBan);
+		cacheUniqueFindersCache(mbBan, isNew);
 
 		mbBan.resetOriginalValues();
 
@@ -3500,6 +3500,7 @@ public class MBBanPersistenceImpl extends BasePersistenceImpl<MBBan>
 		mbBanImpl.setCreateDate(mbBan.getCreateDate());
 		mbBanImpl.setModifiedDate(mbBan.getModifiedDate());
 		mbBanImpl.setBanUserId(mbBan.getBanUserId());
+		mbBanImpl.setLastPublishDate(mbBan.getLastPublishDate());
 
 		return mbBanImpl;
 	}
@@ -3858,6 +3859,11 @@ public class MBBanPersistenceImpl extends BasePersistenceImpl<MBBan>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MBBanModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

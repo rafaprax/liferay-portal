@@ -381,12 +381,12 @@
 <!--PAGE_COLUMN_PORTLET-->
 <tr>
 	<td>PAGE_COLUMN_PORTLET_COLUMN_1_PORTLET_TITLE</td>
-	<td>//h1[@class='portlet-title' and contains(.,'${key_portletTitleName}')]/span</td>
+	<td>//div[@id='column-1']//h1[@class='portlet-title' and contains(.,'${key_portletTitleName}')]/span</td>
 	<td></td>
 </tr>
 <tr>
 	<td>PAGE_COLUMN_PORTLET_COLUMN_2_PORTLET_TITLE</td>
-	<td>//h1[@class='portlet-title' and contains(.,'${key_portletTitleName}')]/span</td>
+	<td>//div[@id='column-2']//h1[@class='portlet-title' and contains(.,'${key_portletTitleName}')]/span</td>
 	<td></td>
 </tr>
 <tr>
@@ -510,7 +510,7 @@
 </tr>
 <tr>
 	<td>PAGE_COLUMN_2_SIGN_IN_PORTLET</td>
-	<td>//div[@id='column-2']/div/div/section/header/h1[contains(.,'Sign In')]</td>
+	<td>//div[@id='column-2']//section/header/h1[contains(.,'Sign In')]</td>
 	<td></td>
 </tr>
 <tr>

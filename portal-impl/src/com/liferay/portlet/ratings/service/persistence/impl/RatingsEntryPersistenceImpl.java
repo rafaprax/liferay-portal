@@ -2573,8 +2573,9 @@ public class RatingsEntryPersistenceImpl extends BasePersistenceImpl<RatingsEntr
 		}
 	}
 
-	protected void cacheUniqueFindersCache(RatingsEntry ratingsEntry) {
-		if (ratingsEntry.isNew()) {
+	protected void cacheUniqueFindersCache(RatingsEntry ratingsEntry,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					ratingsEntry.getUserId(), ratingsEntry.getClassNameId(),
 					ratingsEntry.getClassPK()
@@ -2883,7 +2884,7 @@ public class RatingsEntryPersistenceImpl extends BasePersistenceImpl<RatingsEntr
 			false);
 
 		clearUniqueFindersCache(ratingsEntry);
-		cacheUniqueFindersCache(ratingsEntry);
+		cacheUniqueFindersCache(ratingsEntry, isNew);
 
 		ratingsEntry.resetOriginalValues();
 
@@ -2910,6 +2911,7 @@ public class RatingsEntryPersistenceImpl extends BasePersistenceImpl<RatingsEntr
 		ratingsEntryImpl.setClassNameId(ratingsEntry.getClassNameId());
 		ratingsEntryImpl.setClassPK(ratingsEntry.getClassPK());
 		ratingsEntryImpl.setScore(ratingsEntry.getScore());
+		ratingsEntryImpl.setLastPublishDate(ratingsEntry.getLastPublishDate());
 
 		return ratingsEntryImpl;
 	}
@@ -3270,6 +3272,11 @@ public class RatingsEntryPersistenceImpl extends BasePersistenceImpl<RatingsEntr
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return RatingsEntryModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**

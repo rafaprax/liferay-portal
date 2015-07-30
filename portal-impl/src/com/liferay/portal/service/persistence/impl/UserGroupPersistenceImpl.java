@@ -4052,8 +4052,8 @@ public class UserGroupPersistenceImpl extends BasePersistenceImpl<UserGroup>
 		}
 	}
 
-	protected void cacheUniqueFindersCache(UserGroup userGroup) {
-		if (userGroup.isNew()) {
+	protected void cacheUniqueFindersCache(UserGroup userGroup, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
 					userGroup.getCompanyId(), userGroup.getName()
 				};
@@ -4358,7 +4358,7 @@ public class UserGroupPersistenceImpl extends BasePersistenceImpl<UserGroup>
 			UserGroupImpl.class, userGroup.getPrimaryKey(), userGroup, false);
 
 		clearUniqueFindersCache(userGroup);
-		cacheUniqueFindersCache(userGroup);
+		cacheUniqueFindersCache(userGroup, isNew);
 
 		userGroup.resetOriginalValues();
 
@@ -4387,6 +4387,7 @@ public class UserGroupPersistenceImpl extends BasePersistenceImpl<UserGroup>
 		userGroupImpl.setName(userGroup.getName());
 		userGroupImpl.setDescription(userGroup.getDescription());
 		userGroupImpl.setAddedByLDAPImport(userGroup.isAddedByLDAPImport());
+		userGroupImpl.setLastPublishDate(userGroup.getLastPublishDate());
 
 		return userGroupImpl;
 	}
@@ -5535,6 +5536,11 @@ public class UserGroupPersistenceImpl extends BasePersistenceImpl<UserGroup>
 	@Override
 	protected Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return UserGroupModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
