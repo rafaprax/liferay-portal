@@ -2576,7 +2576,7 @@ public class DataFactory {
 		ddmStructureModel.setModifiedDate(nextFutureDate());
 		ddmStructureModel.setClassNameId(classNameId);
 		ddmStructureModel.setStructureKey(structureKey);
-		ddmStructureModel.setVersion(DDMStructureManager.VERSION_DEFAULT);
+		ddmStructureModel.setVersion(DDMStructureManager.STRUCTURE_VERSION_DEFAULT);
 
 		StringBundler sb = new StringBundler(5);
 
