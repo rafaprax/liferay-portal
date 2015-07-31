@@ -15,6 +15,9 @@
 package com.liferay.document.library.verify.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -31,6 +34,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
@@ -54,12 +58,9 @@ import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormXSDDeserializerUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.UnlocalizedValue;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormFieldValue;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
 
@@ -358,7 +359,7 @@ public class VerifyDocumentLibraryTest extends BaseVerifyProcessTestCase {
 			"/com/liferay/document/library/service/test/dependencies" +
 				"/ddmstructure.xml");
 
-		DDMForm ddmForm = DDMFormXSDDeserializerUtil.deserialize(
+		DDMForm ddmForm = _ddmFormXSDDeserializer.deserialize(
 			new String(bytes));
 
 		serviceContext.setAttribute("ddmForm", ddmForm);
@@ -477,6 +478,9 @@ public class VerifyDocumentLibraryTest extends BaseVerifyProcessTestCase {
 
 		PrincipalThreadLocal.setName(TestPropsValues.getUserId());
 	}
+
+	private static final DDMFormXSDDeserializer _ddmFormXSDDeserializer =
+		ProxyFactory.newServiceTrackedInstance(DDMFormXSDDeserializer.class);
 
 	@DeleteAfterTestRun
 	private Group _group;

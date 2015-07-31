@@ -2,7 +2,7 @@
 <!DOCTYPE project>
 
 <project>
-	<property name="import.shared" value="../portlet-display-template/portlet-display-template" />
+	<property name="import.shared" value="../portlet-display-template/portlet-display-template,../dynamic-data-mapping/dynamic-data-mapping-api" />
 
 	<import file="../../../../tools/sdk/build-common-osgi-plugin.xml" />
 

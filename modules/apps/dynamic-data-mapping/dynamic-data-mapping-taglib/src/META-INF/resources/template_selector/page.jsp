@@ -75,7 +75,7 @@ Group ddmTemplateGroup = GroupLocalServiceUtil.getGroup(ddmTemplateGroupId);
 	url="javascript:;"
 />
 
-<liferay-portlet:renderURL plid="<%= themeDisplay.getPlid() %>" portletName="<%= PortletKeys.DYNAMIC_DATA_MAPPING %>" var="basePortletURL">
+<liferay-portlet:renderURL plid="<%= themeDisplay.getPlid() %>" portletName="<%= DDMPortletKeys.DYNAMIC_DATA_MAPPING %>" var="basePortletURL">
 	<portlet:param name="showHeader" value="<%= Boolean.FALSE.toString() %>" />
 </liferay-portlet:renderURL>
 
