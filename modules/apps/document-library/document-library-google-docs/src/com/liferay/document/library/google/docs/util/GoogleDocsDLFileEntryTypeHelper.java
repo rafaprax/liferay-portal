@@ -14,6 +14,10 @@
 
 package com.liferay.document.library.google.docs.util;
 
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.model.Company;
@@ -23,14 +27,9 @@ import com.liferay.portal.service.UserLocalService;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
-import com.liferay.portlet.dynamicdatamapping.io.DDMFormXSDDeserializerUtil;
+import com.liferay.portlet.dynamicdatamapping.DDMStructureManager;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
-import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,13 +42,16 @@ import java.util.Map;
 public class GoogleDocsDLFileEntryTypeHelper {
 
 	public GoogleDocsDLFileEntryTypeHelper(
-		Company company, ClassNameLocalService classNameLocalService,
+		Company company, ClassNameLocalService classNameLocalService, DDM ddm,
+		DDMFormXSDDeserializer ddmFormXSDDeserializer,
 		DDMStructureLocalService ddmStructureLocalService,
 		DLFileEntryTypeLocalService dlFileEntryTypeLocalService,
 		UserLocalService userLocalService) {
 
 		_company = company;
 		_classNameLocalService = classNameLocalService;
+		_ddm = ddm;
+		_ddmFormXSDDeserializer = ddmFormXSDDeserializer;
 		_ddmStructureLocalService = ddmStructureLocalService;
 		_dlFileEntryTypeLocalService = dlFileEntryTypeLocalService;
 		_userLocalService = userLocalService;
@@ -58,7 +60,9 @@ public class GoogleDocsDLFileEntryTypeHelper {
 			DLFileEntryMetadata.class);
 	}
 
-	public DDMStructure addGoogleDocsDDMStructure() throws PortalException {
+	public com.liferay.dynamic.data.mapping.model.DDMStructure
+		addGoogleDocsDDMStructure() throws PortalException {
+
 		long defaultUserId = _userLocalService.getDefaultUserId(
 			_company.getCompanyId());
 
@@ -73,9 +77,9 @@ public class GoogleDocsDLFileEntryTypeHelper {
 		String definition = ResourceUtil.get(
 			this, "dependencies/ddm_structure_google_docs.xml");
 
-		DDMForm ddmForm = DDMFormXSDDeserializerUtil.deserialize(definition);
+		DDMForm ddmForm = _ddmFormXSDDeserializer.deserialize(definition);
 
-		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
+		DDMFormLayout ddmFormLayout = _ddm.getDefaultDDMFormLayout(ddmForm);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -84,21 +88,26 @@ public class GoogleDocsDLFileEntryTypeHelper {
 		serviceContext.setScopeGroupId(_company.getGroupId());
 		serviceContext.setUserId(defaultUserId);
 
-		return _ddmStructureLocalService.addStructure(
-			defaultUserId, _company.getGroupId(),
-			DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
-			_dlFileEntryMetadataClassNameId,
-			GoogleDocsConstants.DDM_STRUCTURE_KEY_GOOGLE_DOCS, nameMap,
-			descriptionMap, ddmForm, ddmFormLayout, StorageType.JSON.toString(),
-			DDMStructureConstants.TYPE_DEFAULT, serviceContext);
+		com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
+			_ddmStructureLocalService.addStructure(
+				defaultUserId, _company.getGroupId(),
+				DDMStructureManager.STRUCTURE_DEFAULT_PARENT_STRUCTURE_ID,
+				_dlFileEntryMetadataClassNameId,
+				GoogleDocsConstants.DDM_STRUCTURE_KEY_GOOGLE_DOCS, nameMap,
+				descriptionMap, ddmForm, ddmFormLayout,
+				StorageType.JSON.toString(),
+				DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
+
+		return ddmStructure;
 	}
 
 	public DLFileEntryType addGoogleDocsDLFileEntryType()
 		throws PortalException {
 
-		DDMStructure ddmStructure = _ddmStructureLocalService.fetchStructure(
-			_company.getGroupId(), _dlFileEntryMetadataClassNameId,
-			GoogleDocsConstants.DDM_STRUCTURE_KEY_GOOGLE_DOCS);
+		com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure =
+			_ddmStructureLocalService.fetchStructure(
+				_company.getGroupId(), _dlFileEntryMetadataClassNameId,
+				GoogleDocsConstants.DDM_STRUCTURE_KEY_GOOGLE_DOCS);
 
 		if (ddmStructure == null) {
 			ddmStructure = addGoogleDocsDDMStructure();
@@ -144,6 +153,8 @@ public class GoogleDocsDLFileEntryTypeHelper {
 
 	private final ClassNameLocalService _classNameLocalService;
 	private final Company _company;
+	private final DDM _ddm;
+	private final DDMFormXSDDeserializer _ddmFormXSDDeserializer;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private final long _dlFileEntryMetadataClassNameId;
 	private final DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;

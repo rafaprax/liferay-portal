@@ -14,8 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.validator.internal;
 
-import com.liferay.dynamic.data.mapping.validator.DDMFormLayoutValidationException;
-import com.liferay.dynamic.data.mapping.validator.DDMFormLayoutValidator;
+import com.liferay.dynamic.data.mapping.validator.exception.DDMFormLayoutValidationException;
+import com.liferay.dynamic.data.mapping.validator.exception.DDMFormLayoutValidator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayoutColumn;

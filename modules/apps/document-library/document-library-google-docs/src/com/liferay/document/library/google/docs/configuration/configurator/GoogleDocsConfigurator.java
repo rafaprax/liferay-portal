@@ -16,6 +16,12 @@ package com.liferay.document.library.google.docs.configuration.configurator;
 
 import com.liferay.document.library.google.docs.migration.LegacyGoogleDocsMigration;
 import com.liferay.document.library.google.docs.util.GoogleDocsDLFileEntryTypeHelper;
+import com.liferay.dynamic.data.mapping.io.DDMFormXSDDeserializer;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.model.Company;
@@ -25,8 +31,6 @@ import com.liferay.portal.service.UserLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalService;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.storage.StorageEngine;
 
 import javax.servlet.ServletContext;
 
@@ -57,17 +61,20 @@ public class GoogleDocsConfigurator {
 					GoogleDocsDLFileEntryTypeHelper
 						googleDocsDLFileEntryTypeHelper =
 							new GoogleDocsDLFileEntryTypeHelper(
-								company, _classNameLocalService,
+								company, _classNameLocalService, _ddm,
+								_ddmFormXSDDeserializer,
 								_ddmStructureLocalService,
 								_dlFileEntryTypeLocalService,
 								_userLocalService);
 
 					LegacyGoogleDocsMigration legacyGoogleDocsMigration =
 						new LegacyGoogleDocsMigration(
-							company, _ddmStructureLocalService,
+							company, _ddmFormValuesToFieldsConverter,
+							_ddmStructureLocalService,
 							_dlFileEntryTypeLocalService,
 							_dlFileEntryLocalService,
 							_dlFileEntryMetadataLocalService,
+							_fieldsToDDMFormValuesConverter,
 							googleDocsDLFileEntryTypeHelper, _storageEngine);
 
 					if (legacyGoogleDocsMigration.isMigrationNeeded()) {
@@ -128,6 +135,13 @@ public class GoogleDocsConfigurator {
 	}
 
 	@Reference
+	public void setFieldsToDDMFormValuesConverter(
+		FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter) {
+
+		_fieldsToDDMFormValuesConverter = fieldsToDDMFormValuesConverter;
+	}
+
+	@Reference
 	public void setStorageEngine(StorageEngine storageEngine) {
 		_storageEngine = storageEngine;
 	}
@@ -137,16 +151,39 @@ public class GoogleDocsConfigurator {
 		_userLocalService = userLocalService;
 	}
 
+	@Reference
+	protected void setDDM(DDM ddm) {
+		_ddm = ddm;
+	}
+
+	@Reference
+	protected void setDDMFormValuesToFieldsConverter(
+		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
+
+		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+	}
+
+	@Reference
+	protected void setDDMFormXSDDeserializer(
+		DDMFormXSDDeserializer ddmFormXSDDeserializer) {
+
+		_ddmFormXSDDeserializer = ddmFormXSDDeserializer;
+	}
+
 	@Reference(target = "(original.bean=true)", unbind = "-")
 	protected void setServletContext(ServletContext servletContext) {
 	}
 
 	private ClassNameLocalService _classNameLocalService;
 	private CompanyLocalService _companyLocalService;
+	private DDM _ddm;
+	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
+	private DDMFormXSDDeserializer _ddmFormXSDDeserializer;
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private DLFileEntryLocalService _dlFileEntryLocalService;
 	private DLFileEntryMetadataLocalService _dlFileEntryMetadataLocalService;
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
+	private FieldsToDDMFormValuesConverter _fieldsToDDMFormValuesConverter;
 	private StorageEngine _storageEngine;
 	private UserLocalService _userLocalService;
 

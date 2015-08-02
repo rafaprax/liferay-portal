@@ -40,12 +40,12 @@ public class UpgradeLastPublishDate extends UpgradeProcess {
 		upgradeAssetCategoriesAdmin();
 		upgradeBlogs();
 		upgradeDocumentLibrary();
-		upgradeDynamicDataMapping();
 		upgradeLayoutsAdmin();
 		upgradeMessageBoards();
 		upgradeMobileDeviceRules();
 		upgradeRatings();
 		upgradeRolesAdmin();
+		upgradeSiteAdmin();
 		upgradeUsersAdmin();
 	}
 
@@ -251,17 +251,6 @@ public class UpgradeLastPublishDate extends UpgradeProcess {
 		updateLastPublishDates(PortletKeys.DOCUMENT_LIBRARY, "RepositoryEntry");
 	}
 
-	protected void upgradeDynamicDataMapping() throws Exception {
-		runSQL("alter table DDMStructure add lastPublishDate DATE null");
-
-		updateLastPublishDates(
-			PortletKeys.DYNAMIC_DATA_MAPPING, "DDMStructure");
-
-		runSQL("alter table DDMTemplate add lastPublishDate DATE null");
-
-		updateLastPublishDates(PortletKeys.DYNAMIC_DATA_MAPPING, "DDMTemplate");
-	}
-
 	protected void upgradeLayoutsAdmin() throws Exception {
 		runSQL("alter table Layout add lastPublishDate DATE null");
 
@@ -327,6 +316,12 @@ public class UpgradeLastPublishDate extends UpgradeProcess {
 		runSQL("alter table Role_ add lastPublishDate DATE null");
 
 		updateLastPublishDates(PortletKeys.ROLES_ADMIN, "Role_");
+	}
+
+	protected void upgradeSiteAdmin() throws Exception {
+		runSQL("alter table Team add lastPublishDate DATE null");
+
+		updateLastPublishDates(PortletKeys.SITE_ADMIN, "Team");
 	}
 
 	protected void upgradeUsersAdmin() throws Exception {

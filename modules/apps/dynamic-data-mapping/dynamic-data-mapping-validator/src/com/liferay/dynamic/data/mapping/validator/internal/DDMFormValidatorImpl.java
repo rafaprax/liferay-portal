@@ -14,8 +14,9 @@
 
 package com.liferay.dynamic.data.mapping.validator.internal;
 
-import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException;
-import com.liferay.dynamic.data.mapping.validator.DDMFormValidator;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
+import com.liferay.dynamic.data.mapping.validator.exception.DDMFormValidationException;
+import com.liferay.dynamic.data.mapping.validator.exception.DDMFormValidator;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -26,7 +27,6 @@ import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldOptions;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormFieldType;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.portlet.dynamicdatamapping.registry.DDMFormFieldTypeRegistryUtil;
 
 import java.util.Collections;
 import java.util.HashSet;

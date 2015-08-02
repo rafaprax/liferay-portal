@@ -24,6 +24,8 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormLayout;
 import com.liferay.portlet.dynamicdatamapping.storage.DDMFormValues;
+import com.liferay.portlet.dynamicdatamapping.storage.Field;
+import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.portlet.exportimport.lar.PortletDataException;
 
@@ -32,6 +34,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.portlet.PortletRequest;
 
 /**
  * @author Leonardo Barros
@@ -55,9 +59,17 @@ public class DDMStructureManagerUtil {
 		throws PortalException {
 
 		return _ddmStructureManager.addStructure(
-			userId, groupId, parentStructureKey, classNameId, structureKey,
-			nameMap, descriptionMap, ddmForm, ddmFormLayout, storageType, type,
-			serviceContext);
+				userId, groupId, parentStructureKey, classNameId, structureKey,
+				nameMap, descriptionMap, ddmForm, ddmFormLayout, storageType,
+				type, serviceContext);
+	}
+
+	public static Fields convertDDMFormValues(
+			long structureId, DDMFormValues ddmFormValues)
+		throws PortalException {
+
+		return _ddmStructureManager.convertDDMFormValues(
+			structureId, ddmFormValues);
 	}
 
 	public static void deleteStructure(long structureId)
@@ -122,6 +134,18 @@ public class DDMStructureManagerUtil {
 			companyId, classNameId, start, end);
 	}
 
+	public static DDMForm getDDMForm(long classNameId, long classPk)
+		throws PortalException {
+
+		return _ddmStructureManager.getDDMForm(classNameId, classPk);
+	}
+
+	public static DDMForm getDDMForm(PortletRequest portletRequest)
+		throws PortalException {
+
+		return _ddmStructureManager.getDDMForm(portletRequest);
+	}
+
 	public static JSONArray getDDMFormFieldsJSONArray(
 			long structureId, String script)
 		throws PortalException {
@@ -136,6 +160,14 @@ public class DDMStructureManagerUtil {
 
 	public static DDMFormLayout getDefaultDDMFormLayout(DDMForm ddmForm) {
 		return _ddmStructureManager.getDefaultDDMFormLayout(ddmForm);
+	}
+
+	public static String getFieldRenderedValue(
+			Field field, Locale locale, int valueIndex)
+		throws PortalException {
+
+		return _ddmStructureManager.getFieldRenderedValue(
+			field, locale, valueIndex);
 	}
 
 	public static Serializable getIndexedFieldValue(
@@ -170,6 +202,10 @@ public class DDMStructureManagerUtil {
 		long[] groupIds, long classNameId) {
 
 		return _ddmStructureManager.getStructures(groupIds, classNameId);
+	}
+
+	public static int getStructureStorageLinksCount(long structureId) {
+		return _ddmStructureManager.getStructureStorageLinksCount(structureId);
 	}
 
 	public static DDMStructure updateStructure(

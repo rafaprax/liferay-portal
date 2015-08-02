@@ -19,6 +19,10 @@ import com.liferay.dynamic.data.lists.exception.RecordSetDuplicateRecordSetKeyEx
 import com.liferay.dynamic.data.lists.exception.RecordSetNameException;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.base.DDLRecordSetLocalServiceBaseImpl;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -28,11 +32,6 @@ import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.spring.extender.service.ServiceReference;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructureLink;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLinkLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
 
 import java.util.List;
 import java.util.Locale;
@@ -103,7 +102,7 @@ public class DDLRecordSetLocalServiceImpl
 		long classNameId = classNameLocalService.getClassNameId(
 			DDLRecordSet.class);
 
-		ddmStructureLinkLocalService.addStructureLink(
+		DDMStructureLinkLocalServiceUtil.addStructureLink(
 			classNameId, recordSetId, ddmStructureId);
 
 		return recordSet;
@@ -157,7 +156,7 @@ public class DDLRecordSetLocalServiceImpl
 
 		// Dynamic data mapping structure link
 
-		ddmStructureLinkLocalService.deleteStructureLinks(
+		DDMStructureLinkLocalServiceUtil.deleteStructureLinks(
 			classNameLocalService.getClassNameId(DDLRecordSet.class),
 			recordSet.getRecordSetId());
 
@@ -342,10 +341,10 @@ public class DDLRecordSetLocalServiceImpl
 				DDLRecordSet.class);
 
 			DDMStructureLink ddmStructureLink =
-				ddmStructureLinkLocalService.getUniqueStructureLink(
+				DDMStructureLinkLocalServiceUtil.getUniqueStructureLink(
 					classNameId, recordSet.getRecordSetId());
 
-			ddmStructureLinkLocalService.updateStructureLink(
+			DDMStructureLinkLocalServiceUtil.updateStructureLink(
 				ddmStructureLink.getStructureLinkId(), classNameId,
 				recordSet.getRecordSetId(), ddmStructureId);
 		}
@@ -380,7 +379,7 @@ public class DDLRecordSetLocalServiceImpl
 	protected void validateDDMStructureId(long ddmStructureId)
 		throws PortalException {
 
-		DDMStructure ddmStructure = ddmStructureLocalService.fetchStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(
 			ddmStructureId);
 
 		if (ddmStructure == null) {
@@ -397,11 +396,5 @@ public class DDLRecordSetLocalServiceImpl
 			throw new RecordSetNameException();
 		}
 	}
-
-	@ServiceReference(type = DDMStructureLinkLocalService.class)
-	protected DDMStructureLinkLocalService ddmStructureLinkLocalService;
-
-	@ServiceReference(type = DDMStructureLocalService.class)
-	protected DDMStructureLocalService ddmStructureLocalService;
 
 }

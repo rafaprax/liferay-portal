@@ -14,6 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.web.portlet.action;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.portal.PortletPreferencesException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -28,9 +30,7 @@ import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.PortletURLImpl;
 import com.liferay.portlet.StrictPortletPreferencesImpl;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
+import com.liferay.portlet.dynamicdatamapping.DDMTemplateManager;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletPreferences;
@@ -220,7 +220,7 @@ public abstract class DDMBaseMVCActionCommand extends BaseMVCActionCommand {
 
 		String templateType = template.getType();
 
-		if (templateType.equals(DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY)) {
+		if (templateType.equals(DDMTemplateManager.TEMPLATE_TYPE_DISPLAY)) {
 			portletPreferences.setValue(
 				"displayDDMTemplateId",
 				String.valueOf(template.getTemplateId()));

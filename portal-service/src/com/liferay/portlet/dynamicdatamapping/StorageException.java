@@ -17,7 +17,7 @@ package com.liferay.portlet.dynamicdatamapping;
 import com.liferay.portal.kernel.exception.PortalException;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Leonardo Barros
  */
 public class StorageException extends PortalException {
 

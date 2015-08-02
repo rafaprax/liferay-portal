@@ -31,7 +31,11 @@ public interface DDMTemplateManager {
 
 	public static final String TEMPLATE_MODE_CREATE = "create";
 
+	public static final String TEMPLATE_MODE_EDIT = "edit";
+
 	public static final String TEMPLATE_TYPE_DISPLAY = "display";
+
+	public static final String TEMPLATE_TYPE_FORM = "form";
 
 	public static final String TEMPLATE_VERSION_DEFAULT = "1.0";
 

@@ -14,6 +14,19 @@
 
 package com.liferay.journal.service.impl;
 
+import com.liferay.dynamic.data.mapping.exception.NoSuchTemplateException;
+import com.liferay.dynamic.data.mapping.exception.StorageFieldNameException;
+import com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException;
+import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
+import com.liferay.dynamic.data.mapping.util.DDMXMLUtil;
 import com.liferay.journal.configuration.JournalGroupServiceConfiguration;
 import com.liferay.journal.configuration.JournalServiceConfigurationValues;
 import com.liferay.journal.constants.JournalConstants;
@@ -124,7 +137,6 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextUtil;
 import com.liferay.portal.servlet.filters.cache.CacheUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.GroupSubscriptionCheckSubscriptionSender;
 import com.liferay.portal.util.PortalUtil;
@@ -136,23 +148,10 @@ import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.asset.model.AssetLinkConstants;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
-import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateException;
-import com.liferay.portlet.dynamicdatamapping.StorageFieldNameException;
-import com.liferay.portlet.dynamicdatamapping.StorageFieldRequiredException;
-import com.liferay.portlet.dynamicdatamapping.StructureDefinitionException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMForm;
 import com.liferay.portlet.dynamicdatamapping.model.DDMFormField;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStorageLink;
-import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
-import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.LocalizedValue;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLinkLocalService;
-import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalService;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
-import com.liferay.portlet.dynamicdatamapping.util.DDMUtil;
-import com.liferay.portlet.dynamicdatamapping.util.DDMXMLUtil;
 import com.liferay.portlet.expando.util.ExpandoBridgeUtil;
 import com.liferay.portlet.exportimport.lar.ExportImportThreadLocal;
 import com.liferay.portlet.social.model.SocialActivityConstants;
@@ -164,7 +163,6 @@ import com.liferay.util.xml.XMLUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -989,9 +987,9 @@ public class JournalArticleLocalServiceImpl
 		if (article.getClassNameId() !=
 				classNameLocalService.getClassNameId(DDMStructure.class)) {
 
-			ddmStorageLinkLocalService.deleteClassStorageLink(article.getId());
+			DDMStorageLinkLocalServiceUtil.deleteClassStorageLink(article.getId());
 
-			ddmTemplateLinkLocalService.deleteTemplateLink(
+			DDMTemplateLinkLocalServiceUtil.deleteTemplateLink(
 				classNameLocalService.getClassNameId(JournalArticle.class),
 				article.getId());
 		}
@@ -6868,7 +6866,7 @@ public class JournalArticleLocalServiceImpl
 			DDMTemplate ddmTemplate = null;
 
 			try {
-				ddmTemplate = ddmTemplateLocalService.getTemplate(
+				ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
 					PortalUtil.getSiteGroupId(article.getGroupId()),
 					classNameLocalService.getClassNameId(DDMStructure.class),
 					ddmTemplateKey, true);
@@ -6884,7 +6882,7 @@ public class JournalArticleLocalServiceImpl
 			}
 			catch (NoSuchTemplateException nste) {
 				if (!defaultDDMTemplateKey.equals(ddmTemplateKey)) {
-					ddmTemplate = ddmTemplateLocalService.getTemplate(
+					ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
 						PortalUtil.getSiteGroupId(article.getGroupId()),
 						classNameLocalService.getClassNameId(
 							DDMStructure.class),
@@ -6975,7 +6973,7 @@ public class JournalArticleLocalServiceImpl
 		long classNameId = classNameLocalService.getClassNameId(
 			JournalArticle.class);
 
-		DDMStructure ddmStructure = ddmStructureLocalService.fetchStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(
 			article.getGroupId(), classNameId, article.getDDMStructureKey(),
 			true);
 
@@ -7233,7 +7231,7 @@ public class JournalArticleLocalServiceImpl
 			}
 		}
 
-		DDMStructure ddmStructure = ddmStructureLocalService.getStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
 			article.getGroupId(),
 			classNameLocalService.getClassNameId(JournalArticle.class),
 			article.getDDMStructureKey(), true);
@@ -7436,34 +7434,34 @@ public class JournalArticleLocalServiceImpl
 			String ddmTemplateKey, boolean incrementVersion)
 		throws PortalException {
 
-		DDMStructure ddmStructure = ddmStructureLocalService.getStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
 			PortalUtil.getSiteGroupId(groupId),
 			classNameLocalService.getClassNameId(JournalArticle.class),
 			ddmStructureKey, true);
 
-		DDMTemplate ddmTemplate = ddmTemplateLocalService.getTemplate(
+		DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
 			PortalUtil.getSiteGroupId(groupId),
 			classNameLocalService.getClassNameId(DDMStructure.class),
 			ddmTemplateKey, true);
 
 		if (incrementVersion) {
-			ddmStorageLinkLocalService.addStorageLink(
+			DDMStorageLinkLocalServiceUtil.addStorageLink(
 				ddmStructure.getClassNameId(), id,
 				ddmStructure.getStructureId(), new ServiceContext());
 
-			ddmTemplateLinkLocalService.addTemplateLink(
+			DDMTemplateLinkLocalServiceUtil.addTemplateLink(
 				classNameLocalService.getClassNameId(JournalArticle.class), id,
 				ddmTemplate.getTemplateId());
 		}
 		else {
 			DDMStorageLink ddmStorageLink =
-				ddmStorageLinkLocalService.getClassStorageLink(id);
+				DDMStorageLinkLocalServiceUtil.getClassStorageLink(id);
 
 			ddmStorageLink.setStructureId(ddmStructure.getStructureId());
 
-			ddmStorageLinkLocalService.updateDDMStorageLink(ddmStorageLink);
+			DDMStorageLinkLocalServiceUtil.updateDDMStorageLink(ddmStorageLink);
 
-			ddmTemplateLinkLocalService.updateTemplateLink(
+			DDMTemplateLinkLocalServiceUtil.updateTemplateLink(
 				classNameLocalService.getClassNameId(JournalArticle.class), id,
 				ddmTemplate.getTemplateId());
 		}
@@ -7472,7 +7470,7 @@ public class JournalArticleLocalServiceImpl
 	protected void updateDDMStructurePredefinedValues(
 		long ddmStructureId, String content, ServiceContext serviceContext) {
 
-		DDMStructure ddmStructure = ddmStructureLocalService.fetchDDMStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(
 			ddmStructureId);
 
 		if (ddmStructure == null) {
@@ -7498,7 +7496,7 @@ public class JournalArticleLocalServiceImpl
 
 		ddmStructure.updateDDMForm(ddmForm);
 
-		ddmStructureLocalService.updateDDMStructure(ddmStructure);
+		DDMStructureLocalServiceUtil.updateDDMStructure(ddmStructure);
 	}
 
 	protected void updatePreviousApprovedArticle(JournalArticle article)
@@ -7583,7 +7581,7 @@ public class JournalArticleLocalServiceImpl
 
 		validateContent(content);
 
-		DDMStructure ddmStructure = ddmStructureLocalService.getStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
 			PortalUtil.getSiteGroupId(groupId),
 			classNameLocalService.getClassNameId(JournalArticle.class),
 			ddmStructureKey, true);
@@ -7591,7 +7589,7 @@ public class JournalArticleLocalServiceImpl
 		validateDDMStructureFields(ddmStructure, classNameId, content);
 
 		if (Validator.isNotNull(ddmTemplateKey)) {
-			DDMTemplate ddmTemplate = ddmTemplateLocalService.getTemplate(
+			DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
 				PortalUtil.getSiteGroupId(groupId),
 				classNameLocalService.getClassNameId(DDMStructure.class),
 				ddmTemplateKey, true);
@@ -7760,7 +7758,7 @@ public class JournalArticleLocalServiceImpl
 
 		int restrictionType = JournalUtil.getRestrictionType(folderId);
 
-		DDMStructure ddmStructure = ddmStructureLocalService.getStructure(
+		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
 			PortalUtil.getSiteGroupId(groupId),
 			classNameLocalService.getClassNameId(JournalArticle.class),
 			ddmStructureKey, true);
@@ -7782,18 +7780,6 @@ public class JournalArticleLocalServiceImpl
 			"Invalid structure " + ddmStructure.getStructureId() +
 				" for folder " + folderId);
 	}
-
-	@ServiceReference(type = DDMStorageLinkLocalService.class)
-	protected DDMStorageLinkLocalService ddmStorageLinkLocalService;
-
-	@ServiceReference(type = DDMStructureLocalService.class)
-	protected DDMStructureLocalService ddmStructureLocalService;
-
-	@ServiceReference(type = DDMTemplateLinkLocalService.class)
-	protected DDMTemplateLinkLocalService ddmTemplateLinkLocalService;
-
-	@ServiceReference(type = DDMTemplateLocalService.class)
-	protected DDMTemplateLocalService ddmTemplateLocalService;
 
 	private static final long _JOURNAL_ARTICLE_CHECK_INTERVAL =
 		JournalServiceConfigurationValues.JOURNAL_ARTICLE_CHECK_INTERVAL

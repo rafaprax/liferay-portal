@@ -91,6 +91,8 @@ public interface DDMStructure extends StagedGroupedModel {
 
 	public boolean hasField(String fieldName);
 
+	public boolean isFieldRepeatable(String fieldName) throws PortalException;
+
 	public boolean isFieldTransient(String fieldName) throws PortalException;
 
 	public void setDefinition(String definition);

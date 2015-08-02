@@ -54,13 +54,13 @@ import com.liferay.portlet.documentlibrary.service.DLFileEntryMetadataLocalServi
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileVersionLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.service.persistence.DLFileEntryMetadataUtil;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.portlet.documentlibrary.util.comparator.DLFileVersionVersionComparator;
 import com.liferay.portlet.documentlibrary.webdav.DLWebDAVStorageImpl;
 
 import java.io.InputStream;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -111,6 +111,10 @@ public class VerifyDocumentLibrary extends VerifyProcess {
 	}
 
 	protected void checkDLFileEntryMetadata() throws Exception {
+		if(DLFileEntryMetadataUtil.countAll() == 0){
+			return;
+		}
+
 		List<DLFileEntryMetadata> mismatchedCompanyIdDLFileEntryMetadatas =
 			DLFileEntryMetadataLocalServiceUtil.
 				getMismatchedCompanyIdFileEntryMetadatas();
