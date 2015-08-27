@@ -113,10 +113,9 @@
 		<property name="storageEngine" ref="com.liferay.dynamic.data.mapping.storage.StorageEngine" />
 	</bean>
 	<bean id="com.liferay.dynamic.data.mapping.util.DDM" class="com.liferay.dynamic.data.mapping.util.impl.DDMImpl" />
+	<bean id="com.liferay.dynamic.data.mapping.util.DDMFormValuesValidator" class="com.liferay.dynamic.data.mapping.util.impl.DDMFormValuesValidatorImpl" />
 	<bean id="com.liferay.dynamic.data.mapping.util.DDMFormValuesValidatorUtil" class="com.liferay.dynamic.data.mapping.util.DDMFormValuesValidatorUtil">
-		<property name="DDMFormValuesValidator">
-			<bean class="com.liferay.dynamic.data.mapping.util.impl.DDMFormValuesValidatorImpl" />
-		</property>
+		<property name="DDMFormValuesValidator" ref="com.liferay.dynamic.data.mapping.util.DDMFormValuesValidator" />
 	</bean>
 	<bean id="com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter" class="com.liferay.dynamic.data.mapping.util.impl.DDMFormValuesToFieldsConverterImpl" />
 	<bean id="com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil" class="com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverterUtil">
