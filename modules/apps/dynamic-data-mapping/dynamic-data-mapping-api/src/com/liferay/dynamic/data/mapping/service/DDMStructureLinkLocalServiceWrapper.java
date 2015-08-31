@@ -224,6 +224,11 @@ public class DDMStructureLinkLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> findAll() {
+		return _ddmStructureLinkLocalService.findAll();
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _ddmStructureLinkLocalService.getActionableDynamicQuery();
 	}

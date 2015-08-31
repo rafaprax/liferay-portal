@@ -69,6 +69,10 @@ public class DDMTemplateLinkLocalServiceImpl
 		return templateLink;
 	}
 
+	public List<DDMTemplateLink> findAll() {
+		return ddmTemplateLinkPersistence.findAll();
+	}
+
 	@Override
 	public DDMTemplateLink getTemplateLink(long templateLinkId)
 		throws PortalException {

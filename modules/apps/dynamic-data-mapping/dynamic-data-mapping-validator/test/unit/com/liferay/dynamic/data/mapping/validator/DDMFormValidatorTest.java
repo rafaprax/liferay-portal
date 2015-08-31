@@ -21,8 +21,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistry;
-import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeRegistryUtil;
+import com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeServicesTrackerUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.validator.internal.DDMFormValidatorImpl;
 import com.liferay.portal.bean.BeanPropertiesImpl;
@@ -36,21 +35,27 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author Marcellus Tavares
  */
+@PrepareForTest(DDMFormFieldTypeServicesTrackerUtil.class)
+@RunWith(PowerMockRunner.class)
+@SuppressStaticInitializationFor(
+	"com.liferay.dynamic.data.mapping.registry.DDMFormFieldTypeServicesTrackerUtil"
+)
 public class DDMFormValidatorTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-
 		setUpBeanPropertiesUtil();
-		setUpDDMFormFieldTypeRegistryUtil();
+		setUpDDMFormFieldTypeServicesTrackerUtil();
 	}
 
 	@Test(expected = DDMFormValidationException.class)
@@ -141,6 +146,18 @@ public class DDMFormValidatorTest {
 	}
 
 	@Test(expected = DDMFormValidationException.class)
+	public void testInvalidFieldType() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		DDMFormField ddmFormField = new DDMFormField("Name", "html-text_*");
+
+		ddmForm.addDDMFormField(ddmFormField);
+
+		_ddmFormValidator.validate(ddmForm);
+	}
+
+	@Test(expected = DDMFormValidationException.class)
 	public void testNoOptionsSetForFieldOptions() throws Exception {
 		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
 			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
@@ -173,25 +190,12 @@ public class DDMFormValidatorTest {
 	}
 
 	@Test
-	public void testRegisteredTextFieldType() throws Exception {
+	public void testValidFieldName() throws Exception {
 		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
 			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
 
 		DDMFormField ddmFormField = new DDMFormField(
-			"Text", DDMFormFieldType.TEXT);
-
-		ddmForm.addDDMFormField(ddmFormField);
-
-		_ddmFormValidator.validate(ddmForm);
-	}
-
-	@Test(expected = DDMFormValidationException.class)
-	public void testUnregisteredFieldType() throws Exception {
-		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
-			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
-
-		DDMFormField ddmFormField = new DDMFormField(
-			"Name", "Unregistered Type");
+			"valid_name", DDMFormFieldType.TEXT);
 
 		ddmForm.addDDMFormField(ddmFormField);
 
@@ -199,12 +203,11 @@ public class DDMFormValidatorTest {
 	}
 
 	@Test
-	public void testValidFieldName() throws Exception {
+	public void testValidFieldType() throws Exception {
 		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
 			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
 
-		DDMFormField ddmFormField = new DDMFormField(
-			"valid_name", DDMFormFieldType.TEXT);
+		DDMFormField ddmFormField = new DDMFormField("Name", "html-text_1");
 
 		ddmForm.addDDMFormField(ddmFormField);
 
@@ -297,9 +300,11 @@ public class DDMFormValidatorTest {
 		beanPropertiesUtil.setBeanProperties(new BeanPropertiesImpl());
 	}
 
-	protected void setUpDDMFormFieldTypeRegistryUtil() {
+	protected void setUpDDMFormFieldTypeServicesTrackerUtil() {
+		PowerMockito.mockStatic(DDMFormFieldTypeServicesTrackerUtil.class);
+
 		when(
-			_ddmFormFieldTypeRegistry.getDDMFormFieldTypeNames()
+			DDMFormFieldTypeServicesTrackerUtil.getDDMFormFieldTypeNames()
 		).thenReturn(
 			new HashSet<String>(
 				Arrays.asList(
@@ -307,16 +312,7 @@ public class DDMFormValidatorTest {
 						DDMFormFieldType.TEXT, DDMFormFieldType.SELECT
 					}))
 		);
-
-		DDMFormFieldTypeRegistryUtil ddmFormFieldTypeRegistryUtil =
-			new DDMFormFieldTypeRegistryUtil();
-
-		ddmFormFieldTypeRegistryUtil.setDDMFormFieldTypeRegistry(
-			_ddmFormFieldTypeRegistry);
 	}
-
-	@Mock
-	private DDMFormFieldTypeRegistry _ddmFormFieldTypeRegistry;
 
 	private final DDMFormValidator _ddmFormValidator =
 		new DDMFormValidatorImpl();
