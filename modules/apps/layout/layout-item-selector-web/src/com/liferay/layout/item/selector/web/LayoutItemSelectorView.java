@@ -21,6 +21,8 @@ import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
 import com.liferay.layout.item.selector.criterion.LayoutItemSelectorCriterion;
 import com.liferay.layout.item.selector.web.display.context.LayoutItemSelectorViewDisplayContext;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.theme.ThemeDisplay;
 
 import java.io.IOException;
 
@@ -66,8 +68,8 @@ public class LayoutItemSelectorView
 
 	@Override
 	public String getTitle(Locale locale) {
-		ResourceBundle resourceBundle = ResourceBundle.getBundle(
-			"content/Language", locale);
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			"content/Language", locale, getClass());
 
 		return resourceBundle.getString("layouts");
 	}
@@ -75,6 +77,11 @@ public class LayoutItemSelectorView
 	@Override
 	public boolean isShowSearch() {
 		return false;
+	}
+
+	@Override
+	public boolean isVisible(ThemeDisplay themeDisplay) {
+		return true;
 	}
 
 	@Override

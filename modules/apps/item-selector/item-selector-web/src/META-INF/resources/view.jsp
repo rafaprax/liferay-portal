@@ -36,7 +36,7 @@ List<String> titles = localizedItemSelectorRendering.getTitles();
 		<div class="alert alert-info">
 
 			<%
-			ResourceBundle resourceBundle = ResourceBundle.getBundle("content/Language", locale);
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle("content/Language", locale, getClass());
 			%>
 
 			<%= LanguageUtil.get(resourceBundle, "selection-is-not-available") %>
@@ -91,7 +91,7 @@ List<String> titles = localizedItemSelectorRendering.getTitles();
 					data.put("portletURL", currentURL);
 				}
 				else {
-					data.put("portletURL", itemSelectorViewRenderer.getPortletURL());
+					data.put("portletURL", curItemSelectorViewRenderer.getPortletURL());
 				}
 
 				data.put("showSearch", itemSelectorView.isShowSearch());

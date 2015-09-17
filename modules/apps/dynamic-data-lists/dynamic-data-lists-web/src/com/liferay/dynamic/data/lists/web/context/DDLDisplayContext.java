@@ -21,16 +21,17 @@ import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.permission.DDLPermission;
 import com.liferay.dynamic.data.lists.service.permission.DDLRecordSetPermission;
+import com.liferay.dynamic.data.lists.web.configuration.DDLWebConfigurationValues;
+import com.liferay.dynamic.data.lists.web.portlet.DDLPortletUtil;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.dynamic.data.mapping.service.permission.DDMPermission;
 import com.liferay.dynamic.data.mapping.service.permission.DDMTemplatePermission;
 import com.liferay.dynamic.data.mapping.util.DDMDisplay;
 import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistryUtil;
-import com.liferay.dynamic.data.mapping.util.DDMPermissionHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.PrefsParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.security.permission.ActionKeys;
@@ -77,6 +78,26 @@ public class DDLDisplayContext {
 
 		return ddmDisplay.getEditTemplateTitle(
 			_recordSet.getDDMStructure(), null, getLocale());
+	}
+
+	public String getDDLRecordSetDisplayStyle() {
+		if (_ddlRecordDisplayStyle == null) {
+			_ddlRecordDisplayStyle = DDLPortletUtil.getDDLRecordSetDisplayStyle(
+				_renderRequest, getDDLRecordSetDisplayViews());
+		}
+
+		return _ddlRecordDisplayStyle;
+	}
+
+	public String[] getDDLRecordSetDisplayViews() {
+		if (_ddlRecordDisplayViews == null) {
+			_ddlRecordDisplayViews = StringUtil.split(
+				PrefsParamUtil.getString(
+					_portletPreferences, _renderRequest, "displayViews",
+					StringUtil.merge(DDLWebConfigurationValues.DISPLAY_VIEWS)));
+		}
+
+		return _ddlRecordDisplayViews;
 	}
 
 	public long getDisplayDDMTemplateId() {
@@ -144,7 +165,7 @@ public class DDLDisplayContext {
 			_portletPreferences, _renderRequest, "editable", true);
 	}
 
-	public boolean isShowAddDDMTemplateIcon() {
+	public boolean isShowAddDDMTemplateIcon() throws PortalException {
 		if (_hasAddDDMTemplatePermission != null) {
 			return _hasAddDDMTemplatePermission;
 		}
@@ -157,12 +178,10 @@ public class DDLDisplayContext {
 			return _hasAddDDMTemplatePermission;
 		}
 
-		DDMPermissionHandler ddmPermissionHandler = getDDMPermissionHandler();
-
-		_hasAddDDMTemplatePermission = DDMPermission.contains(
-			getPermissionChecker(), getScopeGroupId(),
-			ddmPermissionHandler.getResourceName(getStructureTypeClassNameId()),
-			ddmPermissionHandler.getAddTemplateActionId());
+		_hasAddDDMTemplatePermission =
+			DDMTemplatePermission.containsAddTemplatePermission(
+				getPermissionChecker(), getScopeGroupId(),
+				getStructureTypeClassNameId(), getStructureTypeClassNameId());
 
 		return _hasAddDDMTemplatePermission;
 	}
@@ -295,12 +314,6 @@ public class DDLDisplayContext {
 			DDLPortletKeys.DYNAMIC_DATA_LISTS);
 	}
 
-	protected DDMPermissionHandler getDDMPermissionHandler() {
-		DDMDisplay ddmDisplay = getDDMDisplay();
-
-		return ddmDisplay.getDDMPermissionHandler();
-	}
-
 	protected Layout getLayout() {
 		ThemeDisplay themeDisplay = getThemeDisplay();
 
@@ -372,6 +385,8 @@ public class DDLDisplayContext {
 		return _hasViewPermission;
 	}
 
+	private String _ddlRecordDisplayStyle;
+	private String[] _ddlRecordDisplayViews;
 	private DDMTemplate _displayDDMTemplate;
 	private DDMTemplate _formDDMTemplate;
 	private Boolean _hasAddDDMTemplatePermission;

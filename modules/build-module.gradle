@@ -159,18 +159,6 @@ dependencies {
 	xmlFormatter group: "com.liferay", name: "com.liferay.xml.formatter", version: "default"
 }
 
-downloadNode {
-	doLast {
-		File npmrcFile = new File(nodeDir, "etc/npmrc")
-
-		npmrcFile << """
-fetch-retries = 10
-fetch-retry-maxtimeout = 120000
-fetch-retry-mintimeout = 60000
-"""
-	}
-}
-
 eclipse {
 	classpath {
 		file {
@@ -220,10 +208,10 @@ jsTranspiler {
 	lfrAmdLoaderVersion = project.properties["nodejs.lfr.amd.loader.version"]
 }
 
-if (System.getenv("JENKINS_HOME")) {
-	node {
-		nodeUrl = "https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
-	}
+node {
+	npmArgs "--fetch-retries", "10"
+	npmArgs "--fetch-retry-maxtimeout", "120000"
+	npmArgs "--fetch-retry-mintimeout", "60000"
 }
 
 repositories {
@@ -296,5 +284,23 @@ if (gradle.hasProperty("testClassGroupIndex")) {
 
 		jvmArgs "-Dtest.class.group.index=" + gradle.testClassGroupIndex
 		jvmArgs "-Dtest.class.groups=" + gradle.testClassGroups
+	}
+}
+
+if (System.getenv("JENKINS_HOME")) {
+	node {
+		nodeUrl = "https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}-linux-x64.tar.gz"
+	}
+
+	pluginManager.withPlugin("com.liferay.cache") {
+		cache {
+			forcedCache = true
+		}
+	}
+
+	startTestableTomcat {
+		ext {
+			deleteLiferayHome = false
+		}
 	}
 }

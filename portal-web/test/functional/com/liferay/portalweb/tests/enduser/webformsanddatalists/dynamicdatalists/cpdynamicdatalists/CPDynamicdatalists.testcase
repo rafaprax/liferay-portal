@@ -21,7 +21,7 @@
 		<execute macro="Page#tearDownPG" />
 	</tear-down>
 
-	<command name="AddDisplayTemplateFreeMarker" priority="5">
+	<command name="AddDisplayTemplateFreeMarker" priority="4">
 		<var name="ddlDataDefinitionName" value="Data Definition" />
 		<var name="ddlDisplayTemplateLanguage" value="FreeMarker (.ftl)" />
 		<var name="ddlDisplayTemplateName" value="Data Definition FreeMarker Display Template Name" />
@@ -58,7 +58,9 @@
 		</execute>
 	</command>
 
-	<command name="AddDisplayTemplateVelocity" priority="4">
+	<command name="AddDisplayTemplateVelocity" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<var name="ddlDataDefinitionName" value="Data Definition" />
 		<var name="ddlDisplayTemplateLanguage" value="Velocity (.vm)" />
 		<var name="ddlDisplayTemplateName" value="Data Definition Velocity Display Template Name" />
@@ -2533,7 +2535,6 @@
 		<execute macro="DDLDataDefinition#viewCP">
 			<var name="ddlDataDefinitionName" value="${ddlDataDefinitionName}" />
 			<var name="fieldFieldLabel" value="${fieldFieldLabelEdit}" />
-			<var name="fieldFieldLabel" value="${fieldFieldLabel}" />
 		</execute>
 
 		<execute macro="DynamicDataMapping#viewField">

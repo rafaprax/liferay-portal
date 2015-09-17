@@ -445,8 +445,6 @@ public interface PropsKeys {
 
 	public static final String CONTROL_PANEL_DEFAULT_ENTRY_CLASS = "control.panel.default.entry.class";
 
-	public static final String CONTROL_PANEL_HOME_PORTLET_ID = "control.panel.home.portlet.id";
-
 	public static final String CONTROL_PANEL_LAYOUT_FRIENDLY_URL = "control.panel.layout.friendly.url";
 
 	public static final String CONTROL_PANEL_LAYOUT_NAME = "control.panel.layout.name";
@@ -476,6 +474,8 @@ public interface PropsKeys {
 	public static final String DATABASE_MYSQL_ENGINE = "database.mysql.engine";
 
 	public static final String DATABASE_ORDER_BY_MAX_COLUMNS = "database.order.by.max.columns";
+
+	public static final String DATABASE_STRING_INDEX_MAX_LENGTH = "database.string.index.max.length";
 
 	public static final String DEFAULT_ADMIN_EMAIL_ADDRESS_PREFIX = "default.admin.email.address.prefix";
 

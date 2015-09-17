@@ -132,7 +132,7 @@ public class AppViewSearchEntryTag extends IncludeTag {
 		_containerType = null;
 		_cssClass = null;
 		_description = null;
-		_escape = false;
+		_escape = true;
 		_fileEntryRelatedSearchResults = null;
 		_highlightEnabled = _HIGHLIGHT_ENABLED;
 		_locked = false;
@@ -183,6 +183,8 @@ public class AppViewSearchEntryTag extends IncludeTag {
 			"liferay-ui:app-view-search-entry:cssClass", _cssClass);
 		request.setAttribute(
 			"liferay-ui:app-view-search-entry:description", _description);
+		request.setAttribute(
+			"liferay-ui:app-view-search-entry:escape", _escape);
 		request.setAttribute(
 			"liferay-ui:app-view-search-entry:fileEntryRelatedSearchResults",
 			_fileEntryRelatedSearchResults);
