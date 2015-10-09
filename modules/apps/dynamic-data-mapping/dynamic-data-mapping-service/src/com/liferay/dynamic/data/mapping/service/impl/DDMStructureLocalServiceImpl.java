@@ -490,6 +490,11 @@ public class DDMStructureLocalServiceImpl
 			}
 		}
 
+		//Structure Links
+
+		ddmStructureLinkPersistence.removeByStructureId(
+			structure.getStructureId());
+
 		// Structure
 
 		ddmStructurePersistence.remove(structure);
