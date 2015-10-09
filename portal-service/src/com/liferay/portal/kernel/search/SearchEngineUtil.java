@@ -691,6 +691,8 @@ public class SearchEngineUtil {
 		if (_log.isDebugEnabled()) {
 			_log.debug("Search query " + getQueryString(searchContext, query));
 		}
+		
+		System.out.println("Search query " + getQueryString(searchContext, query));
 
 		SearchEngine searchEngine = getSearchEngine(
 			searchContext.getSearchEngineId());

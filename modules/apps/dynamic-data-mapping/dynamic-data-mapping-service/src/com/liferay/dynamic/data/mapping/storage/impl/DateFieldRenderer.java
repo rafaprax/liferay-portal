@@ -16,14 +16,11 @@ package com.liferay.dynamic.data.mapping.storage.impl;
 
 import com.liferay.dynamic.data.mapping.storage.BaseFieldRenderer;
 import com.liferay.dynamic.data.mapping.storage.Field;
-import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
-
-import java.text.Format;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +34,6 @@ public class DateFieldRenderer extends BaseFieldRenderer {
 
 	@Override
 	protected String doRender(Field field, Locale locale) throws Exception {
-		Format format = FastDateFormatFactoryUtil.getDate(locale);
-
 		List<String> values = new ArrayList<>();
 
 		for (Serializable value : field.getValues(locale)) {
@@ -46,7 +41,7 @@ public class DateFieldRenderer extends BaseFieldRenderer {
 				continue;
 			}
 
-			values.add(format.format(value));
+			values.add(value.toString());
 		}
 
 		return StringUtil.merge(values, StringPool.COMMA_AND_SPACE);
@@ -60,9 +55,7 @@ public class DateFieldRenderer extends BaseFieldRenderer {
 			return StringPool.BLANK;
 		}
 
-		Format format = FastDateFormatFactoryUtil.getDate(locale);
-
-		return format.format(value);
+		return value.toString();
 	}
 
 }

@@ -53,11 +53,7 @@ public class DateDDMFormFieldValueRenderer
 					return StringPool.BLANK;
 				}
 
-				long valueLong = Long.valueOf(valueString);
-
-				Format format = FastDateFormatFactoryUtil.getDate(locale);
-
-				return format.format(valueLong);
+				return valueString;
 			}
 
 		};
