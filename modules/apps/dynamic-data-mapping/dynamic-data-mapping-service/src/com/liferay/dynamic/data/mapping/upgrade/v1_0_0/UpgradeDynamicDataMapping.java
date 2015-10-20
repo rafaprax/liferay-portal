@@ -47,6 +47,8 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeException;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -78,7 +80,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 
+import java.text.DateFormat;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -269,6 +274,8 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 
 		upgradeFileUploadReferences();
 
+		upgradeDateFieldValueFormat();
+
 		upgradeStructurePermissions();
 		upgradeTemplatePermissions();
 	}
@@ -361,6 +368,18 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 
 	protected String toJSON(DDMFormValues ddmFormValues) {
 		return DDMFormValuesJSONSerializerUtil.serialize(ddmFormValues);
+	}
+
+	protected void transformDateDDMFormFields(DDMFormValues ddmFormValues)
+		throws Exception {
+
+		DDMFormValuesTransformer ddmFormValuesTransformer =
+			new DDMFormValuesTransformer(ddmFormValues);
+
+		ddmFormValuesTransformer.addTransformer(
+			new DateDDMFormFieldValueTransformer());
+
+		ddmFormValuesTransformer.transform();
 	}
 
 	protected void transformFileUploadDDMFormFields(
@@ -467,6 +486,55 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 				"storageType = 'xml'");
 	}
 
+	protected void upgradeDateFieldValueFormat() throws Exception {
+		upgradeDDLDateFieldValueFormat();
+		upgradeDLDateFieldValueFormat();
+	}
+
+	protected void upgradeDDLDateFieldValueFormat() throws Exception {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			con = DataAccess.getUpgradeOptimizedConnection();
+
+			StringBundler sb = new StringBundler(8);
+
+			sb.append("select DDLRecordVersion.ddmStorageId, ");
+			sb.append("DDMContent.data_, DDMStructure.structureId ");
+			sb.append("from DDLRecordVersion inner ");
+			sb.append("join DDLRecordSet on DDLRecordVersion.recordSetId = ");
+			sb.append("DDLRecordSet.recordSetId inner join DDMContent on  ");
+			sb.append("DDLRecordVersion.DDMStorageId = DDMContent.contentId ");
+			sb.append("inner join DDMStructure on DDLRecordSet.");
+			sb.append("DDMStructureId = DDMStructure.structureId");
+
+			ps = con.prepareStatement(sb.toString());
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				long contentId = rs.getLong("ddmStorageId");
+				String data_ = rs.getString("data_");
+				long ddmStructureId = rs.getLong("structureId");
+
+				DDMForm ddmForm = getDDMForm(ddmStructureId);
+
+				DDMFormValues ddmFormValues =
+						DDMFormValuesJSONDeserializerUtil.deserialize(
+							ddmForm, data_);
+
+				transformDateDDMFormFields(ddmFormValues);
+
+				updateContent(contentId, toJSON(ddmFormValues));
+			}
+		}
+		finally {
+			DataAccess.cleanUp(con, ps, rs);
+		}
+	}
+
 	protected void upgradeDDLFileUploadReferences() throws Exception {
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -510,6 +578,52 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 				transformFileUploadDDMFormFields(
 					groupId, companyId, userId, userName, createDate, entryId,
 					entryVersion, ddmFormValues);
+
+				updateContent(contentId, toJSON(ddmFormValues));
+			}
+		}
+		finally {
+			DataAccess.cleanUp(con, ps, rs);
+		}
+	}
+
+	protected void upgradeDLDateFieldValueFormat() throws Exception {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			con = DataAccess.getUpgradeOptimizedConnection();
+
+			StringBundler sb = new StringBundler(8);
+
+			sb.append("select DDMContent.contentId, ");
+			sb.append("DDMContent.data_, DDMStructure.structureId from ");
+			sb.append("DLFileEntryMetadata inner join DDMContent on ");
+			sb.append("DLFileEntryMetadata.DDMStorageId = DDMContent.");
+			sb.append("contentId inner join DDMStructure on ");
+			sb.append("DLFileEntryMetadata.DDMStructureId = DDMStructure.");
+			sb.append("structureId inner join DLFileVersion on ");
+			sb.append("DLFileEntryMetadata.fileVersionId = DLFileVersion.");
+			sb.append("fileVersionId and DLFileEntryMetadata.fileEntryId = ");
+			sb.append("DLFileVersion.fileEntryId");
+
+			ps = con.prepareStatement(sb.toString());
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				long contentId = rs.getLong("contentId");
+				String data_ = rs.getString("data_");
+				long ddmStructureId = rs.getLong("structureId");
+
+				DDMForm ddmForm = getDDMForm(ddmStructureId);
+
+				DDMFormValues ddmFormValues =
+						DDMFormValuesJSONDeserializerUtil.deserialize(
+							ddmForm, data_);
+
+				transformDateDDMFormFields(ddmFormValues);
 
 				updateContent(contentId, toJSON(ddmFormValues));
 			}
@@ -932,6 +1046,40 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 	private final Map<Long, Long> _structureClassNameIds = new HashMap<>();
 	private final Map<Long, Long> _templateResourceClassNameIds =
 		new HashMap<>();
+
+	private class DateDDMFormFieldValueTransformer
+		implements DDMFormFieldValueTransformer {
+
+		@Override
+		public String getFieldType() {
+			return DDMImpl.TYPE_DDM_DATE;
+		}
+
+		@Override
+		public void transform(DDMFormFieldValue ddmFormFieldValue)
+			throws PortalException {
+
+			Value value = ddmFormFieldValue.getValue();
+
+			for (Locale locale : value.getAvailableLocales()) {
+				String valueString = value.getString(locale);
+
+				if (Validator.isNull(valueString) ||
+					!Validator.isNumber(valueString)) {
+
+					continue;
+				}
+
+				Date dateValue = new Date(GetterUtil.getLong(valueString));
+
+				value.addString(locale, _dateFormat.format(dateValue));
+			}
+		}
+
+		private final DateFormat _dateFormat =
+			DateFormatFactoryUtil.getSimpleDateFormat("yyyy-MM-dd");
+
+	}
 
 	private class DDMFormValuesXSDDeserializer {
 

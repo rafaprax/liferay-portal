@@ -15,6 +15,7 @@
 package com.liferay.asset.publisher.web.upgrade;
 
 import com.liferay.asset.publisher.web.constants.AssetPublisherPortletKeys;
+import com.liferay.asset.publisher.web.upgrade.v1_0_0.UpgradeDDMDateFieldValueFormatPreferences;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 import com.liferay.portal.upgrade.util.UpgradePortletId;
@@ -31,7 +32,7 @@ public class AssetPublisherWebUpgrade implements UpgradeStepRegistrator {
 	@Override
 	public void register(Registry registry) {
 		registry.register(
-			"com.liferay.asset.publisher.web", "0.0.1", "1.0.0",
+			"com.liferay.asset.publisher.web", "0.0.0", "1.0.0",
 			new UpgradePortletId() {
 
 				@Override
@@ -56,7 +57,8 @@ public class AssetPublisherWebUpgrade implements UpgradeStepRegistrator {
 					};
 				}
 
-			});
+			},
+			new UpgradeDDMDateFieldValueFormatPreferences());
 	}
 
 	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")

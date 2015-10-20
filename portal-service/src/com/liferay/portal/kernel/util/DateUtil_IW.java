@@ -100,6 +100,12 @@ public class DateUtil_IW {
 		java.util.Locale locale) throws java.text.ParseException {
 		return DateUtil.parseDate(dateString, locale);
 	}
+	
+	public java.util.Date parseDate(java.lang.String pattern,
+			java.lang.String dateString,
+			java.util.Locale locale) throws java.text.ParseException {
+		return DateUtil.parseDate(pattern, dateString, locale);
+	}
 
 	private DateUtil_IW() {
 	}

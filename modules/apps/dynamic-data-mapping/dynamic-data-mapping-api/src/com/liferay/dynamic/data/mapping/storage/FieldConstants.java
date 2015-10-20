@@ -136,7 +136,7 @@ public class FieldConstants {
 			return GetterUtil.getBoolean(value);
 		}
 		else if (type.equals(DATE) && Validator.isNotNull(value)) {
-			return new Date(GetterUtil.getLong(value));
+			return value;
 		}
 		else if (type.equals(DOUBLE)) {
 			return GetterUtil.getDouble(value);

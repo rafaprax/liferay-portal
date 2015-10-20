@@ -3,6 +3,8 @@ AUI.add(
 	function(A) {
 		var AArray = A.Array;
 
+		var DateMath = A.DataType.DateMath;
+
 		var Lang = A.Lang;
 
 		var INSTANCE_ID_PREFIX = '_INSTANCE_';
@@ -747,16 +749,38 @@ AUI.add(
 						return Liferay.component(inputNode.attr('id') + 'DatePicker');
 					},
 
+					_format : function(date) {
+						var instance = this;
+
+						var year = date.getFullYear();
+						var month = date.getMonth() + 1;
+						var dayOfMonth = date.getDate();
+
+						return year + '-' + Lang.String.padNumber(month, 2) + '-' + Lang.String.padNumber(dayOfMonth, 2);
+					},
+
+					_parse : function(formattedDate) {
+						var instance = this;
+
+						var dateParts = formattedDate.split('-');
+
+						var year = Lang.toInt(dateParts[0]);
+						var month = Lang.toInt(dateParts[1]) - 1;
+						var dayOfMonth = Lang.toInt(dateParts[2]);
+
+						return DateMath.getDate(year, month, dayOfMonth);
+					},
+
 					getValue: function() {
 						var instance = this;
 
 						var datePicker = instance.getDatePicker();
 
-						var timestamp = datePicker.getDate().getTime();
+						var formattedDate = instance._format(datePicker.getDate());
 
 						var inputNode = instance.getInputNode();
 
-						return inputNode.val() ? String(timestamp) : '';
+						return inputNode.val() ? formattedDate : '';
 					},
 
 					setValue: function(value) {
@@ -769,7 +793,7 @@ AUI.add(
 						datePicker.deselectDates();
 
 						if (value) {
-							datePicker.selectDates(new Date(Lang.toInt(value)));
+							datePicker.selectDates(instance._parse(value));
 						}
 					}
 				}
