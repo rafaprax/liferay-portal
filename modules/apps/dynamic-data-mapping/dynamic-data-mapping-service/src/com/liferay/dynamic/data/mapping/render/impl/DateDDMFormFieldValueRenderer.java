@@ -28,9 +28,10 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
+
 import java.text.DateFormat;
 import java.text.Format;
-import java.text.ParseException;
+
 import java.util.Date;
 import java.util.Locale;
 
@@ -61,37 +62,32 @@ public class DateDDMFormFieldValueRenderer
 				}
 
 				return format(valueString, locale);
-
 			}
 
 		};
 	}
-	
-	private String format(Serializable value, Locale locale){
-		
-		try {
-			
-			DateFormat rawFormat = DateFormatFactoryUtil.getSimpleDateFormat(
-					"yyyy-MM-dd", locale);
-			
-			Date valueDate = rawFormat.parse(value.toString());
-			
-			Format format = FastDateFormatFactoryUtil.getDate(locale);
-			
-			return format.format(valueDate);
-			
-		}catch(Exception e){
-			
-			if (_log.isWarnEnabled()) {
-				_log.warn(e,e);
-			}
-			
-			return LanguageUtil.format(
-					locale, "is-temporarily-unavailable", "content");
-		}
 
+	private String format(Serializable value, Locale locale) {
+		try {
+			DateFormat rawFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+				"yyyy-MM-dd", locale);
+
+			Date valueDate = rawFormat.parse(value.toString());
+
+			Format format = FastDateFormatFactoryUtil.getDate(locale);
+
+			return format.format(valueDate);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(e, e);
+			}
+
+			return LanguageUtil.format(
+				locale, "is-temporarily-unavailable", "content");
+		}
 	}
-	
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		DateDDMFormFieldValueRenderer.class);
 
