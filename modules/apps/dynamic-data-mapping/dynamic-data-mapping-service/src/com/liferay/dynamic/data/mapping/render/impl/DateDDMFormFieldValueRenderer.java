@@ -19,12 +19,20 @@ import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.render.BaseDDMFormFieldValueRenderer;
 import com.liferay.dynamic.data.mapping.render.ValueAccessor;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.io.Serializable;
+
+import java.text.DateFormat;
 import java.text.Format;
 
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -53,14 +61,34 @@ public class DateDDMFormFieldValueRenderer
 					return StringPool.BLANK;
 				}
 
-				long valueLong = Long.valueOf(valueString);
-
-				Format format = FastDateFormatFactoryUtil.getDate(locale);
-
-				return format.format(valueLong);
+				return format(valueString, locale);
 			}
 
 		};
 	}
+
+	private String format(Serializable value, Locale locale) {
+		try {
+			DateFormat rawFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+				"yyyy-MM-dd", locale);
+
+			Date valueDate = rawFormat.parse(value.toString());
+
+			Format format = FastDateFormatFactoryUtil.getDate(locale);
+
+			return format.format(valueDate);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(e, e);
+			}
+
+			return LanguageUtil.format(
+				locale, "is-temporarily-unavailable", "content");
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DateDDMFormFieldValueRenderer.class);
 
 }
