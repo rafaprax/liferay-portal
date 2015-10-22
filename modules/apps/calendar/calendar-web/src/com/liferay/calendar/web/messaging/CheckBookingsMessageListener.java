@@ -16,7 +16,6 @@ package com.liferay.calendar.web.messaging;
 
 import com.liferay.calendar.constants.CalendarPortletKeys;
 import com.liferay.calendar.service.CalendarBookingLocalService;
-import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.configuration.CalendarServiceConfigurationValues;
 import com.liferay.portal.kernel.messaging.BaseSchedulerEntryMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
@@ -54,12 +53,14 @@ public class CheckBookingsMessageListener
 
 	@Override
 	protected void doReceive(Message message) throws Exception {
-		CalendarBookingLocalServiceUtil.checkCalendarBookings();
+		_calendarBookingLocalService.checkCalendarBookings();
 	}
 
-	@Reference
+	@Reference(unbind = "-")
 	protected void setCalendarBookingLocalService(
 		CalendarBookingLocalService calendarBookingLocalService) {
+
+		_calendarBookingLocalService = calendarBookingLocalService;
 	}
 
 	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
@@ -76,5 +77,7 @@ public class CheckBookingsMessageListener
 	@Reference(unbind = "-")
 	protected void setTriggerFactory(TriggerFactory triggerFactory) {
 	}
+
+	private CalendarBookingLocalService _calendarBookingLocalService;
 
 }
