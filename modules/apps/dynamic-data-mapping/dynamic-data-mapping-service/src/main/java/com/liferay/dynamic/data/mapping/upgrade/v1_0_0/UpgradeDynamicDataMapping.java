@@ -383,9 +383,9 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 			new FileUploadDDMFormFieldValueTransformer(
 				groupId, companyId, userId, userName, createDate, entryId,
 				entryVersion));
-		
+
 		ddmFormValuesTransformer.addTransformer(
-				new DateDDMFormFieldValueTransformer());
+			new DateDDMFormFieldValueTransformer());
 
 		ddmFormValuesTransformer.transform();
 	}
