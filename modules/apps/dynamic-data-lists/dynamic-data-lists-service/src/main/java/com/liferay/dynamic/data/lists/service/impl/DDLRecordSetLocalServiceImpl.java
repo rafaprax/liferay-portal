@@ -314,22 +314,22 @@ public class DDLRecordSetLocalServiceImpl
 	}
 
 	@Override
-	public DDLRecordSet updateRecordSet(long recordSetId, String typeSettings)
+	public DDLRecordSet updateRecordSet(long recordSetId, String settings)
 		throws PortalException {
 
 		Date now = new Date();
 
-		UnicodeProperties typeSettingsProperties = new UnicodeProperties();
+		UnicodeProperties settingsProperties = new UnicodeProperties();
 
-		typeSettingsProperties.fastLoad(typeSettings);
+		settingsProperties.fastLoad(settings);
 
-		validateTypeSettingsProperties(typeSettingsProperties);
+		validateSettingsProperties(settingsProperties);
 
 		DDLRecordSet recordSet = ddlRecordSetPersistence.findByPrimaryKey(
 			recordSetId);
 
 		recordSet.setModifiedDate(now);
-		recordSet.setTypeSettings(typeSettingsProperties.toString());
+		recordSet.setSettings(settingsProperties.toString());
 
 		return ddlRecordSetPersistence.update(recordSet);
 	}
@@ -422,16 +422,15 @@ public class DDLRecordSetLocalServiceImpl
 		}
 	}
 
-	protected void validateTypeSettingsProperties(
-			UnicodeProperties typeSettingsProperties)
+	protected void validateSettingsProperties(
+			UnicodeProperties settingsProperties)
 		throws PortalException {
 
-		String requireCaptcha = typeSettingsProperties.getProperty(
-			"requireCaptcha");
+		String successURL = settingsProperties.getProperty("successURL");
 
-		if (!Validator.isBoolean(requireCaptcha)) {
+		if (Validator.isNotNull(successURL) && !Validator.isUrl(successURL)) {
 			throw new RecordSetSettingsException(
-				"The property \"requireCaptcha\" is not a boolean");
+				"The property \"successURL\" is not a URL");
 		}
 	}
 
