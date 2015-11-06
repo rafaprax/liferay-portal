@@ -26,6 +26,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -314,22 +315,22 @@ public class DDLRecordSetLocalServiceImpl
 	}
 
 	@Override
-	public DDLRecordSet updateRecordSet(long recordSetId, String typeSettings)
+	public DDLRecordSet updateRecordSet(long recordSetId, String settings)
 		throws PortalException {
 
 		Date now = new Date();
 
-		UnicodeProperties typeSettingsProperties = new UnicodeProperties();
+		UnicodeProperties settingsProperties = new UnicodeProperties();
 
-		typeSettingsProperties.fastLoad(typeSettings);
+		settingsProperties.fastLoad(settings);
 
-		validateTypeSettingsProperties(typeSettingsProperties);
+		validateSettingsProperties(settingsProperties);
 
 		DDLRecordSet recordSet = ddlRecordSetPersistence.findByPrimaryKey(
 			recordSetId);
 
 		recordSet.setModifiedDate(now);
-		recordSet.setTypeSettings(typeSettingsProperties.toString());
+		recordSet.setSettings(settingsProperties.toString());
 
 		return ddlRecordSetPersistence.update(recordSet);
 	}
@@ -422,16 +423,52 @@ public class DDLRecordSetLocalServiceImpl
 		}
 	}
 
-	protected void validateTypeSettingsProperties(
-			UnicodeProperties typeSettingsProperties)
+	protected void validateSettingsProperties(
+			UnicodeProperties settingsProperties)
 		throws PortalException {
 
-		String requireCaptcha = typeSettingsProperties.getProperty(
-			"requireCaptcha");
+		String successURL = settingsProperties.getProperty("successURL");
 
-		if (!Validator.isBoolean(requireCaptcha)) {
+		if (Validator.isNotNull(successURL) && !Validator.isUrl(successURL)) {
 			throw new RecordSetSettingsException(
-				"The property \"requireCaptcha\" is not a boolean");
+				"The property \"successURL\" is not a URL");
+		}
+
+		boolean sendEmailNotification = GetterUtil.getBoolean(
+			settingsProperties.getProperty("sendEmailNotification"));
+
+		if (sendEmailNotification) {
+			String emailFromName = GetterUtil.getString(
+				settingsProperties.getProperty("emailFromName"));
+
+			String emailFromAddress = GetterUtil.getString(
+				settingsProperties.getProperty("emailFromAddress"));
+
+			String emailToAddress = GetterUtil.getString(
+				settingsProperties.getProperty("emailToAddress"));
+
+			String emailSubject = GetterUtil.getString(
+				settingsProperties.getProperty("emailSubject"));
+
+			if (Validator.isNull(emailFromName)) {
+				throw new RecordSetSettingsException(
+					"The property \"emailFromName\" is empty");
+			}
+
+			if (!Validator.isEmailAddress(emailFromAddress)) {
+				throw new RecordSetSettingsException(
+					"The property \"emailFromAddress\" is not an email");
+			}
+
+			if (!Validator.isEmailAddress(emailToAddress)) {
+				throw new RecordSetSettingsException(
+					"The property \"emailToAddress\" is not an email");
+			}
+
+			if (Validator.isNull(emailSubject)) {
+				throw new RecordSetSettingsException(
+					"The property \"emailSubject\" is empty");
+			}
 		}
 	}
 

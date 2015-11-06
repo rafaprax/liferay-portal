@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.lists.form.web.portlet.action;
 
 import com.liferay.dynamic.data.lists.form.web.constants.DDLFormPortletKeys;
+import com.liferay.dynamic.data.lists.form.web.util.DDLFormEmailNotificationSenderUtil;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecordConstants;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
@@ -27,9 +28,15 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.util.PortalUtil;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -57,8 +64,11 @@ public class AddRecordMVCActionCommand extends BaseMVCActionCommand {
 
 		long groupId = ParamUtil.getLong(actionRequest, "groupId");
 		long recordSetId = ParamUtil.getLong(actionRequest, "recordSetId");
+		String portletId = PortalUtil.getPortletId(actionRequest);
 
-		DDMForm ddmForm = getDDMForm(recordSetId);
+		DDLRecordSet recordSet = _ddlRecordSetService.getRecordSet(recordSetId);
+
+		DDMForm ddmForm = getDDMForm(recordSet);
 
 		DDMFormValues ddmFormValues = _ddmFormValuesFactory.create(
 			actionRequest, ddmForm);
@@ -66,13 +76,35 @@ public class AddRecordMVCActionCommand extends BaseMVCActionCommand {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DDLRecord.class.getName(), actionRequest);
 
-		_ddlRecordService.addRecord(
+		DDLRecord ddlRecord = _ddlRecordService.addRecord(
 			groupId, recordSetId, DDLRecordConstants.DISPLAY_INDEX_DEFAULT,
 			ddmFormValues, serviceContext);
+
+		boolean sendEmailNotification = GetterUtil.getBoolean(
+			recordSet.getSettingsProperty(
+				"sendEmailNotification", StringPool.BLANK));
+
+		if (sendEmailNotification) {
+			DDLFormEmailNotificationSenderUtil.sendEmailNotification(
+				actionRequest, ddlRecord);
+		}
+
+		String successURL = GetterUtil.getString(
+			recordSet.getSettingsProperty("successURL", StringPool.BLANK));
+
+		if (SessionErrors.isEmpty(actionRequest) &&
+			Validator.isNotNull(successURL)) {
+
+			SessionMessages.add(
+				actionRequest, portletId,
+				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_SUCCESS_MESSAGE);
+
+			actionResponse.sendRedirect(successURL);
+		}
 	}
 
-	protected DDMForm getDDMForm(long recordSetId) throws PortalException {
-		DDLRecordSet recordSet = _ddlRecordSetService.getRecordSet(recordSetId);
+	protected DDMForm getDDMForm(DDLRecordSet recordSet)
+		throws PortalException {
 
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 

@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -50,6 +51,7 @@ public class UpdateRecordSetSettingsMVCActionCommand
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
+		updateRecordSetSettings(actionRequest);
 		updateWorkflowDefinitionLink(actionRequest);
 	}
 
@@ -66,6 +68,50 @@ public class UpdateRecordSetSettingsMVCActionCommand
 
 		_workflowDefinitionLinkLocalService =
 			workflowDefinitionLinkLocalService;
+	}
+
+	protected void updateRecordSetSettings(ActionRequest actionRequest)
+		throws PortalException {
+
+		long recordSetId = ParamUtil.getLong(actionRequest, "recordSetId");
+
+		String successURL = ParamUtil.getString(actionRequest, "successURL");
+
+		boolean sendEmailNotification = ParamUtil.getBoolean(
+			actionRequest, "sendEmailNotification");
+
+		String emailFromName = ParamUtil.getString(
+			actionRequest, "emailFromName");
+
+		String emailFromAddress = ParamUtil.getString(
+			actionRequest, "emailFromAddress");
+
+		String emailToAddress = ParamUtil.getString(
+			actionRequest, "emailToAddress");
+
+		String emailSubject = ParamUtil.getString(
+			actionRequest, "emailSubject");
+
+		UnicodeProperties settingsProperties = new UnicodeProperties(true);
+
+		settingsProperties.setProperty("successURL", successURL);
+
+		settingsProperties.setProperty(
+			"sendEmailNotification", String.valueOf(sendEmailNotification));
+
+		if (sendEmailNotification) {
+			settingsProperties.setProperty("emailFromName", emailFromName);
+
+			settingsProperties.setProperty(
+				"emailFromAddress", emailFromAddress);
+
+			settingsProperties.setProperty("emailToAddress", emailToAddress);
+
+			settingsProperties.setProperty("emailSubject", emailSubject);
+		}
+
+		_ddlRecordSetService.updateRecordSet(
+			recordSetId, settingsProperties.toString());
 	}
 
 	protected void updateWorkflowDefinitionLink(ActionRequest actionRequest)
