@@ -179,6 +179,27 @@ public class HTMLTag extends BaseHTMLTag {
 			request, "randomNamespace", getRandomNamespace());
 	}
 
+	private DDMFormValues getDDMFormValuesFromRequest() {
+		String serializedDDMFormValues = ParamUtil.getString(
+			request, getDDMFormValuesInputName());
+
+		if (Validator.isNotNull(serializedDDMFormValues)) {
+			DDMForm ddmForm = getDDMForm();
+
+			try {
+				return DDMFormValuesJSONDeserializerUtil.deserialize(
+					ddmForm, serializedDDMFormValues);
+			}
+			catch (PortalException e) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(e, e);
+				}
+			}
+		}
+
+		return null;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(HTMLTag.class);
 
 }
