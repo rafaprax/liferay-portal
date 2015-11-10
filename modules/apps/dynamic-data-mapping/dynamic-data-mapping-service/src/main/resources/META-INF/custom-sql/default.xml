@@ -1,6 +1,46 @@
 <?xml version="1.0"?>
 
 <custom-sql>
+	<sql id="com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderFinder.countByC_G_N_D">
+		<![CDATA[
+			SELECT
+				COUNT(DISTINCT DDMDataProvider.dataProviderId) AS COUNT_VALUE
+			FROM
+				DDMDataProvider
+			WHERE
+				(DDMDataProvider.companyId = ?) AND
+				[$GROUP_ID$]
+				(
+					(lower(CAST_TEXT(DDMDataProvider.name)) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+					(DDMDataProvider.description LIKE ? [$AND_OR_NULL_CHECK$])
+				)
+		]]>
+	</sql>
+	<sql id="com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderFinder.findByC_G_N_D">
+		<![CDATA[
+			SELECT
+				{DDMDataProvider.*}
+			FROM
+				(
+					SELECT DISTINCT
+						DDMDataProvider.dataProviderId
+					FROM
+						DDMDataProvider
+					WHERE
+						(DDMDataProvider.companyId = ?) AND
+						[$GROUP_ID$]
+						(
+							(lower(CAST_TEXT(DDMDataProvider.name)) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+							(DDMDataProvider.description LIKE ? [$AND_OR_NULL_CHECK$])
+						)
+				)
+				TEMP_TABLE
+					INNER JOIN DDMDataProvider ON
+						TEMP_TABLE.dataProviderId = DDMDataProvider.dataProviderId
+			ORDER BY
+				DDMDataProvider.dataProviderId DESC
+		]]>
+	</sql>
 	<sql id="com.liferay.dynamic.data.mapping.service.persistence.DDMStructureFinder.countByC_G_C_N_D_S_T_S">
 		<![CDATA[
 			SELECT

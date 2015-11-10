@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.dynamic.data.mapping.model.DDMDataProvider;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderModel;
+import com.liferay.dynamic.data.mapping.model.DDMDataProviderSoap;
 
 import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
@@ -45,8 +46,10 @@ import java.io.Serializable;
 
 import java.sql.Types;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +68,7 @@ import java.util.TreeSet;
  * @see DDMDataProviderModel
  * @generated
  */
+@JSON(strict = true)
 @ProviderType
 public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 	implements DDMDataProviderModel {
@@ -123,6 +127,56 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 	public static final long GROUPID_COLUMN_BITMASK = 2L;
 	public static final long UUID_COLUMN_BITMASK = 4L;
 	public static final long DATAPROVIDERID_COLUMN_BITMASK = 8L;
+
+	/**
+	 * Converts the soap model instance into a normal model instance.
+	 *
+	 * @param soapModel the soap model instance to convert
+	 * @return the normal model instance
+	 */
+	public static DDMDataProvider toModel(DDMDataProviderSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
+		DDMDataProvider model = new DDMDataProviderImpl();
+
+		model.setUuid(soapModel.getUuid());
+		model.setDataProviderId(soapModel.getDataProviderId());
+		model.setGroupId(soapModel.getGroupId());
+		model.setCompanyId(soapModel.getCompanyId());
+		model.setUserId(soapModel.getUserId());
+		model.setUserName(soapModel.getUserName());
+		model.setCreateDate(soapModel.getCreateDate());
+		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setName(soapModel.getName());
+		model.setDescription(soapModel.getDescription());
+		model.setDefinition(soapModel.getDefinition());
+
+		return model;
+	}
+
+	/**
+	 * Converts the soap model instances into normal model instances.
+	 *
+	 * @param soapModels the soap model instances to convert
+	 * @return the normal model instances
+	 */
+	public static List<DDMDataProvider> toModels(
+		DDMDataProviderSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
+		List<DDMDataProvider> models = new ArrayList<DDMDataProvider>(soapModels.length);
+
+		for (DDMDataProviderSoap soapModel : soapModels) {
+			models.add(toModel(soapModel));
+		}
+
+		return models;
+	}
+
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.dynamic.data.mapping.service.util.ServiceProps.get(
 				"lock.expiration.time.com.liferay.dynamic.data.mapping.model.DDMDataProvider"));
 
@@ -250,6 +304,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		}
 	}
 
+	@JSON
 	@Override
 	public String getUuid() {
 		if (_uuid == null) {
@@ -273,6 +328,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		return GetterUtil.getString(_originalUuid);
 	}
 
+	@JSON
 	@Override
 	public long getDataProviderId() {
 		return _dataProviderId;
@@ -283,6 +339,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		_dataProviderId = dataProviderId;
 	}
 
+	@JSON
 	@Override
 	public long getGroupId() {
 		return _groupId;
@@ -305,6 +362,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		return _originalGroupId;
 	}
 
+	@JSON
 	@Override
 	public long getCompanyId() {
 		return _companyId;
@@ -327,6 +385,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		return _originalCompanyId;
 	}
 
+	@JSON
 	@Override
 	public long getUserId() {
 		return _userId;
@@ -353,6 +412,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 	public void setUserUuid(String userUuid) {
 	}
 
+	@JSON
 	@Override
 	public String getUserName() {
 		if (_userName == null) {
@@ -368,6 +428,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		_userName = userName;
 	}
 
+	@JSON
 	@Override
 	public Date getCreateDate() {
 		return _createDate;
@@ -378,6 +439,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		_createDate = createDate;
 	}
 
+	@JSON
 	@Override
 	public Date getModifiedDate() {
 		return _modifiedDate;
@@ -394,6 +456,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 		_modifiedDate = modifiedDate;
 	}
 
+	@JSON
 	@Override
 	public String getName() {
 		if (_name == null) {
@@ -492,6 +555,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 				LocaleUtil.toLanguageId(defaultLocale)));
 	}
 
+	@JSON
 	@Override
 	public String getDescription() {
 		if (_description == null) {
@@ -594,6 +658,7 @@ public class DDMDataProviderModelImpl extends BaseModelImpl<DDMDataProvider>
 				LocaleUtil.toLanguageId(defaultLocale)));
 	}
 
+	@JSON
 	@Override
 	public String getDefinition() {
 		if (_definition == null) {

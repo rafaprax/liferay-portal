@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.dynamic.data.mapping.model.DDMDataProvider;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderLocalService;
+import com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderFinder;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMDataProviderPersistence;
 
 import com.liferay.portal.kernel.bean.BeanReference;
@@ -436,6 +437,25 @@ public abstract class DDMDataProviderLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the d d m data provider remote service.
+	 *
+	 * @return the d d m data provider remote service
+	 */
+	public com.liferay.dynamic.data.mapping.service.DDMDataProviderService getDDMDataProviderService() {
+		return ddmDataProviderService;
+	}
+
+	/**
+	 * Sets the d d m data provider remote service.
+	 *
+	 * @param ddmDataProviderService the d d m data provider remote service
+	 */
+	public void setDDMDataProviderService(
+		com.liferay.dynamic.data.mapping.service.DDMDataProviderService ddmDataProviderService) {
+		this.ddmDataProviderService = ddmDataProviderService;
+	}
+
+	/**
 	 * Returns the d d m data provider persistence.
 	 *
 	 * @return the d d m data provider persistence
@@ -452,6 +472,25 @@ public abstract class DDMDataProviderLocalServiceBaseImpl
 	public void setDDMDataProviderPersistence(
 		DDMDataProviderPersistence ddmDataProviderPersistence) {
 		this.ddmDataProviderPersistence = ddmDataProviderPersistence;
+	}
+
+	/**
+	 * Returns the d d m data provider finder.
+	 *
+	 * @return the d d m data provider finder
+	 */
+	public DDMDataProviderFinder getDDMDataProviderFinder() {
+		return ddmDataProviderFinder;
+	}
+
+	/**
+	 * Sets the d d m data provider finder.
+	 *
+	 * @param ddmDataProviderFinder the d d m data provider finder
+	 */
+	public void setDDMDataProviderFinder(
+		DDMDataProviderFinder ddmDataProviderFinder) {
+		this.ddmDataProviderFinder = ddmDataProviderFinder;
 	}
 
 	/**
@@ -639,8 +678,12 @@ public abstract class DDMDataProviderLocalServiceBaseImpl
 
 	@BeanReference(type = com.liferay.dynamic.data.mapping.service.DDMDataProviderLocalService.class)
 	protected DDMDataProviderLocalService ddmDataProviderLocalService;
+	@BeanReference(type = com.liferay.dynamic.data.mapping.service.DDMDataProviderService.class)
+	protected com.liferay.dynamic.data.mapping.service.DDMDataProviderService ddmDataProviderService;
 	@BeanReference(type = DDMDataProviderPersistence.class)
 	protected DDMDataProviderPersistence ddmDataProviderPersistence;
+	@BeanReference(type = DDMDataProviderFinder.class)
+	protected DDMDataProviderFinder ddmDataProviderFinder;
 	@BeanReference(type = com.liferay.counter.service.CounterLocalService.class)
 	protected com.liferay.counter.service.CounterLocalService counterLocalService;
 	@BeanReference(type = com.liferay.portal.service.GroupLocalService.class)
