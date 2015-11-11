@@ -269,8 +269,11 @@ public class CustomSQL {
 	public String[] keywords(
 		String keywords, boolean lowerCase, WildcardMode wildcardMode) {
 
-		if (Validator.isNull(keywords)) {
+		if (keywords == null) {
 			return new String[] {null};
+		}
+		else if(keywords.isEmpty()) {
+			return new String[]{ insertWildcard(keywords, wildcardMode) };
 		}
 
 		if (_CUSTOM_SQL_AUTO_ESCAPE_WILDCARDS_ENABLED) {
