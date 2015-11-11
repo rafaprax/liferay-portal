@@ -14,8 +14,6 @@
 
 package com.liferay.dynamic.data.lists.web.search;
 
-import com.liferay.portal.kernel.dao.search.DAOParamUtil;
-
 import javax.portlet.PortletRequest;
 
 /**
