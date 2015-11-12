@@ -14,8 +14,6 @@
 
 package com.liferay.dynamic.data.lists.web.search;
 
-import com.liferay.portal.kernel.dao.search.DAOParamUtil;
-
 import javax.portlet.PortletRequest;
 
 /**
@@ -25,9 +23,6 @@ public class RecordSetSearchTerms extends RecordSetDisplayTerms {
 
 	public RecordSetSearchTerms(PortletRequest portletRequest) {
 		super(portletRequest);
-
-		description = DAOParamUtil.getString(portletRequest, DESCRIPTION);
-		name = DAOParamUtil.getString(portletRequest, NAME);
 	}
 
 }
