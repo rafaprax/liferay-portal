@@ -210,6 +210,10 @@ public class DDMStructureLinkLocalServiceUtil {
 		return getService().fetchDDMStructureLink(structureLinkId);
 	}
 
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> findAll() {
+		return getService().findAll();
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return getService().getActionableDynamicQuery();
 	}

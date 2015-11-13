@@ -181,6 +181,8 @@ public interface DDMStructureLinkLocalService extends BaseLocalService,
 	public com.liferay.dynamic.data.mapping.model.DDMStructureLink fetchDDMStructureLink(
 		long structureLinkId);
 
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> findAll();
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery();
 
