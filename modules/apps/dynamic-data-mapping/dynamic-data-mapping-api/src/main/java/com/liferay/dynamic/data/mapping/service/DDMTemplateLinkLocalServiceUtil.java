@@ -202,6 +202,10 @@ public class DDMTemplateLinkLocalServiceUtil {
 		return getService().fetchDDMTemplateLink(templateLinkId);
 	}
 
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMTemplateLink> findAll() {
+		return getService().findAll();
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return getService().getActionableDynamicQuery();
 	}

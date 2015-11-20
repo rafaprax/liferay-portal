@@ -177,6 +177,8 @@ public interface DDMTemplateLinkLocalService extends BaseLocalService,
 	public com.liferay.dynamic.data.mapping.model.DDMTemplateLink fetchDDMTemplateLink(
 		long templateLinkId);
 
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMTemplateLink> findAll();
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery();
 

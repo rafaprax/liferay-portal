@@ -214,6 +214,11 @@ public class DDMTemplateLinkLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMTemplateLink> findAll() {
+		return _ddmTemplateLinkLocalService.findAll();
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _ddmTemplateLinkLocalService.getActionableDynamicQuery();
 	}

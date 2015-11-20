@@ -96,6 +96,10 @@ public class DDMStructureLinkLocalServiceImpl
 		}
 	}
 
+	public List<DDMStructureLink> findAll() {
+		return ddmStructureLinkPersistence.findAll();
+	}
+
 	@Override
 	public List<DDMStructureLink> getClassNameStructureLinks(long classNameId) {
 		return ddmStructureLinkPersistence.findByClassNameId(classNameId);
