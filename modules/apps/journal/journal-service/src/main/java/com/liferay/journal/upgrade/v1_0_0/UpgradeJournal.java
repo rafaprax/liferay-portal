@@ -54,9 +54,8 @@ import com.liferay.util.xml.XMLUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.text.DateFormat;
 
+import java.text.DateFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -340,9 +339,20 @@ public class UpgradeJournal extends UpgradeProcess {
 		return rootElement.elements("structure");
 	}
 
-	
+	protected String transformDateFieldValues(String content) throws Exception {
+		Document document = SAXReaderUtil.read(content);
 
-protected void updateBasicWebContentStructure() throws Exception {
+		Element rootElement = document.getRootElement();
+
+		List<Element> dynamicElementElements = rootElement.elements(
+			"dynamic-element");
+
+		transformDateFieldValues(dynamicElementElements);
+
+		return XMLUtil.formatXML(document);
+	}
+
+	protected void updateBasicWebContentStructure() throws Exception {
 		List<Company> companies = _companyLocalService.getCompanies();
 
 		for (Company company : companies) {
@@ -458,19 +468,6 @@ protected void updateBasicWebContentStructure() throws Exception {
 		}
 	}
 
-	protected String transformDateFieldValues(String content) throws Exception {
-		Document document = SAXReaderUtil.read(content);
-
-		Element rootElement = document.getRootElement();
-
-		List<Element> dynamicElementElements = rootElement.elements(
-			"dynamic-element");
-
-		transformDateFieldValues(dynamicElementElements);
-
-		return XMLUtil.formatXML(document);
-	}
-
 	private void transformDateFieldValue(Element dynamicContentElement) {
 		String valueString = dynamicContentElement.getText();
 
@@ -522,9 +519,10 @@ protected void updateBasicWebContentStructure() throws Exception {
 
 	private static final Log _log = LogFactoryUtil.getLog(UpgradeJournal.class);
 
-	private final CompanyLocalService _companyLocalService;
 	private static final DateFormat _dateFieldFormat =
 		DateFormatFactoryUtil.getSimpleDateFormat("yyyy-MM-dd");
+
+	private final CompanyLocalService _companyLocalService;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private final DDMTemplateLinkLocalService _ddmTemplateLinkLocalService;
 	private final DDMTemplateLocalService _ddmTemplateLocalService;
