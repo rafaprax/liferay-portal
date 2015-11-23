@@ -230,8 +230,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 			}
 
 			throw new UpgradeException(
-				"Unable to find dynamic data mapping structure with ID " +
-					structureId);
+				"Unable to find dynamic data mapping structure " + structureId);
 		}
 		finally {
 			DataAccess.cleanUp(con, ps, rs);
