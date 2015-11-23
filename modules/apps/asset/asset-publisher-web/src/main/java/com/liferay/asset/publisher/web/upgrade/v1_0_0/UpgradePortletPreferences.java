@@ -195,10 +195,11 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		return fieldJSONObject;
 	}
 
-	private JSONObject getStructureJSONObject(long structureId)
+	private JSONObject getDDMStructureJSONObject(long structureId)
 		throws Exception {
 
-		JSONObject ddmStructureJSONObject = _structures.get(structureId);
+		JSONObject ddmStructureJSONObject = _ddmSructureJSONObjects.get(
+			structureId);
 
 		if (ddmStructureJSONObject != null) {
 			return ddmStructureJSONObject;
@@ -224,7 +225,8 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 				ddmStructureJSONObject = JSONFactoryUtil.createJSONObject(
 					definition);
 
-				_structures.put(structureId, ddmStructureJSONObject);
+				_ddmSructureJSONObjects.put(
+					structureId, ddmStructureJSONObject);
 
 				return ddmStructureJSONObject;
 			}
@@ -247,7 +249,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 			fieldsJSONArray, selectedFieldName);
 
 		if ((fieldJSONObject != null) &&
-			fieldJSONObject.getString("type").equals("ddm-date")) {
+			Validator.equals(fieldJSONObject.getString("type"), "ddm-date")) {
 
 			return true;
 		}
@@ -281,7 +283,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		throws Exception {
 
 		long fileEntryTypeId = GetterUtil.getLong(
-			portletPreferences.getValue(_DL_CLASSTYPE, "0"));
+			portletPreferences.getValue(_DL_CLASS_TYPE, "0"));
 
 		if (fileEntryTypeId > 0) {
 			Connection con = null;
@@ -295,8 +297,8 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 				con = DataAccess.getUpgradeOptimizedConnection();
 
 				ps = con.prepareStatement(
-					"select structureId from DDMStructureLink where" +
-						" classNameId = ? and classPK = ?" );
+					"select structureId from DDMStructureLink where " +
+						"classNameId = ? and classPK = ?" );
 
 				ps.setLong(1, fileEntryTypeClassNameId);
 				ps.setLong(2, fileEntryTypeId);
@@ -310,8 +312,8 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 				while (rs.next()) {
 					long structureId = rs.getLong("structureId");
 
-					JSONObject ddmStructureJSONObject = getStructureJSONObject(
-						structureId);
+					JSONObject ddmStructureJSONObject =
+						getDDMStructureJSONObject(structureId);
 
 					if (isDateField(
 							ddmStructureJSONObject, selectedFieldName)) {
@@ -333,13 +335,13 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		throws Exception {
 
 		long structureId = GetterUtil.getLong(
-			portletPreferences.getValue(_JOURNAL_CLASSTYPE, "0"));
+			portletPreferences.getValue(_JOURNAL_CLASS_TYPE, "0"));
 
 		if (structureId > 0) {
 			String selectedFieldName = GetterUtil.getString(
 				portletPreferences.getValue(_DDM_STRUCTURE_FIELD_NAME, null));
 
-			JSONObject ddmStructureJSONObject = getStructureJSONObject(
+			JSONObject ddmStructureJSONObject = getDDMStructureJSONObject(
 				structureId);
 
 			if (isDateField(ddmStructureJSONObject, selectedFieldName)) {
@@ -354,19 +356,20 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 	private static final String _DDM_STRUCTURE_FIELD_VALUE =
 		"ddmStructureFieldValue";
 
-	private static final String _DL_CLASSTYPE =
+	private static final String _DL_CLASS_TYPE =
 		"anyClassTypeDLFileEntryAssetRendererFactory";
 
 	private static final String _DL_FILTER_BY_FIELD_ENABLED_KEY =
 		"subtypeFieldsFilterEnabledDLFileEntryAssetRendererFactory";
 
-	private static final String _JOURNAL_CLASSTYPE =
+	private static final String _JOURNAL_CLASS_TYPE =
 		"anyClassTypeJournalArticleAssetRendererFactory";
 
 	private static final String _JOURNAL_FILTER_BY_FIELD_ENABLED_KEY =
 		"subtypeFieldsFilterEnabledJournalArticleAssetRendererFactory";
 
-	private static final Map<Long, JSONObject> _structures = new HashMap<>();
+	private static final Map<Long, JSONObject> _ddmSructureJSONObjects =
+		new HashMap<>();
 
 	private final DateFormat _newDateFormat =
 		DateFormatFactoryUtil.getSimpleDateFormat("yyyy-MM-dd");
