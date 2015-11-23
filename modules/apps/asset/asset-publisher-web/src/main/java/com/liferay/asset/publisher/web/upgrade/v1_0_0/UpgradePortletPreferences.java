@@ -163,7 +163,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		}
 	}
 
-	protected JSONObject findFieldByName(
+	protected JSONObject getFieldJSONObject(
 		JSONArray fieldsJSONArray, String selectedFieldName) {
 
 		JSONObject fieldJSONObject = null;
@@ -183,7 +183,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 				JSONArray nestedFieldsJSONArray =
 					curFieldJSONObject.getJSONArray("nestedFields");
 
-				fieldJSONObject = findFieldByName(
+				fieldJSONObject = getFieldJSONObject(
 					nestedFieldsJSONArray, selectedFieldName);
 
 				if (fieldJSONObject != null) {
@@ -245,7 +245,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		JSONArray fieldsJSONArray = ddmStructureJSONObject.getJSONArray(
 			"fields");
 
-		JSONObject fieldJSONObject = findFieldByName(
+		JSONObject fieldJSONObject = getFieldJSONObject(
 			fieldsJSONArray, selectedFieldName);
 
 		if ((fieldJSONObject != null) &&
