@@ -248,10 +248,10 @@ public class UpgradeJournal extends UpgradeProcess {
 
 			while (rs.next()) {
 				long templateId = rs.getLong("templateId");
-				long id_ = rs.getLong("id_");
+				long id = rs.getLong("id_");
 
 				_ddmTemplateLinkLocalService.addTemplateLink(
-					classNameId, id_, templateId);
+					classNameId, id, templateId);
 			}
 		}
 		finally {
@@ -361,7 +361,7 @@ public class UpgradeJournal extends UpgradeProcess {
 	}
 
 	protected void updateJournalArticle(
-			long id_, String ddmStructureKey, String ddmTemplateKey,
+			long id, String ddmStructureKey, String ddmTemplateKey,
 			String content)
 		throws Exception {
 
@@ -378,7 +378,7 @@ public class UpgradeJournal extends UpgradeProcess {
 			ps.setString(1, ddmStructureKey);
 			ps.setString(2, ddmTemplateKey);
 			ps.setString(3, convertStaticContentToDynamic(content));
-			ps.setLong(4, id_);
+			ps.setLong(4, id);
 
 			ps.executeUpdate();
 		}
@@ -405,10 +405,10 @@ public class UpgradeJournal extends UpgradeProcess {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				long id_ = rs.getLong("id_");
+				long id = rs.getLong("id_");
 				String content = rs.getString("content");
 
-				updateJournalArticle(id_, name, name, content);
+				updateJournalArticle(id, name, name, content);
 			}
 		}
 		finally {
@@ -434,10 +434,10 @@ public class UpgradeJournal extends UpgradeProcess {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				long id_ = rs.getLong("id_");
+				long id = rs.getLong("id_");
 				String content = rs.getString("content");
 
-				updateJournalArticlesDateFieldValueFormat(id_, content);
+				updateJournalArticlesDateFieldValueFormat(id, content);
 			}
 		}
 		finally {
@@ -446,7 +446,7 @@ public class UpgradeJournal extends UpgradeProcess {
 	}
 
 	protected void updateJournalArticlesDateFieldValueFormat(
-			long id_, String content)
+			long id, String content)
 		throws Exception {
 
 		Connection con = null;
@@ -459,7 +459,7 @@ public class UpgradeJournal extends UpgradeProcess {
 				"update JournalArticle set content = ? where id_ = ?");
 
 			ps.setString(1, transformDateFieldValues(content));
-			ps.setLong(2, id_);
+			ps.setLong(2, id);
 
 			ps.executeUpdate();
 		}
