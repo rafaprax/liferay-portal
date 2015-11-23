@@ -163,7 +163,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		}
 	}
 
-	private JSONObject findFieldByName(
+	protected JSONObject findFieldByName(
 		JSONArray fieldsJSONArray, String selectedFieldName) {
 
 		JSONObject fieldJSONObject = null;
