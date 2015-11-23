@@ -175,6 +175,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 
 			if (fieldName.equals(selectedFieldName)) {
 				fieldJSONObject = curFieldJSONObject;
+
 				break;
 			}
 
@@ -194,7 +195,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 		return fieldJSONObject;
 	}
 
-	private JSONObject getStructureJSON(long structureId) throws Exception {
+	private JSONObject getStructureJSONObject(long structureId) throws Exception {
 		JSONObject ddmStructureJSONObject = _structures.get(structureId);
 
 		if (ddmStructureJSONObject != null) {
@@ -237,7 +238,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 	}
 
 	private boolean isDateField(
-		JSONObject ddmStructureJSON, String selectedFieldName) {
+		JSONObject ddmStructureJSONObject, String selectedFieldName) {
 
 		JSONArray fieldsJSONArray = ddmStructureJSON.getJSONArray("fields");
 
@@ -290,8 +291,8 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 				con = DataAccess.getUpgradeOptimizedConnection();
 
 				ps = con.prepareStatement(
-					"select structureId from DDMStructureLink " +
-					"where classNameId = ? and classPK = ?" );
+					"select structureId from DDMStructureLink where " +
+						"classNameId = ? and classPK = ?" );
 
 				ps.setLong(1, classNameId);
 				ps.setLong(2, fileEntryTypeId);
@@ -305,10 +306,14 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 				while (rs.next()) {
 					long structureId = rs.getLong("structureId");
 
-					JSONObject ddmStructureJSON = getStructureJSON(structureId);
+					JSONObject ddmStructureJSONObject = getStructureJSONObject(
+						structureId);
 
-					if (isDateField(ddmStructureJSON, selectedFieldName)) {
+					if (isDateField(
+							ddmStructureJSONObject, selectedFieldName)) {
+
 						transformDateFieldValue(portletPreferences);
+
 						break;
 					}
 				}
@@ -330,9 +335,10 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 			String selectedFieldName = GetterUtil.getString(
 				portletPreferences.getValue(_DDM_STRUCTURE_FIELD_NAME, null));
 
-			JSONObject ddmStructureJSON = getStructureJSON(structureId);
+			JSONObject ddmStructureJSONObject = getStructureJSONObject(
+				structureId);
 
-			if (isDateField(ddmStructureJSON, selectedFieldName)) {
+			if (isDateField(ddmStructureJSONObject, selectedFieldName)) {
 				transformDateFieldValue(portletPreferences);
 			}
 		}
