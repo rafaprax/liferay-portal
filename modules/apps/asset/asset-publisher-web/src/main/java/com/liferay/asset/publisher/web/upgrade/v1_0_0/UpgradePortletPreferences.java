@@ -51,6 +51,38 @@ import javax.portlet.PortletPreferences;
  */
 public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 
+	protected JSONObject getFieldJSONObject(
+		JSONArray fieldsJSONArray, String selectedFieldName) {
+
+		JSONObject fieldJSONObject = null;
+
+		for (int i = 0; i < fieldsJSONArray.length(); i++) {
+			JSONObject curFieldJSONObject = fieldsJSONArray.getJSONObject(i);
+
+			String fieldName = curFieldJSONObject.getString("name");
+
+			if (fieldName.equals(selectedFieldName)) {
+				fieldJSONObject = curFieldJSONObject;
+
+				break;
+			}
+
+			if (curFieldJSONObject.has("nestedFields")) {
+				JSONArray nestedFieldsJSONArray =
+					curFieldJSONObject.getJSONArray("nestedFields");
+
+				fieldJSONObject = getFieldJSONObject(
+					nestedFieldsJSONArray, selectedFieldName);
+
+				if (fieldJSONObject != null) {
+					break;
+				}
+			}
+		}
+
+		return fieldJSONObject;
+	}
+
 	protected String getJournalArticleResourceUuid(String journalArticleUuid)
 		throws Exception {
 
@@ -161,38 +193,6 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 
 			assetEntryXmls[i] = document.formattedString(StringPool.BLANK);
 		}
-	}
-
-	protected JSONObject getFieldJSONObject(
-		JSONArray fieldsJSONArray, String selectedFieldName) {
-
-		JSONObject fieldJSONObject = null;
-
-		for (int i = 0; i < fieldsJSONArray.length(); i++) {
-			JSONObject curFieldJSONObject = fieldsJSONArray.getJSONObject(i);
-
-			String fieldName = curFieldJSONObject.getString("name");
-
-			if (fieldName.equals(selectedFieldName)) {
-				fieldJSONObject = curFieldJSONObject;
-
-				break;
-			}
-
-			if (curFieldJSONObject.has("nestedFields")) {
-				JSONArray nestedFieldsJSONArray =
-					curFieldJSONObject.getJSONArray("nestedFields");
-
-				fieldJSONObject = getFieldJSONObject(
-					nestedFieldsJSONArray, selectedFieldName);
-
-				if (fieldJSONObject != null) {
-					break;
-				}
-			}
-		}
-
-		return fieldJSONObject;
 	}
 
 	private JSONObject getDDMStructureJSONObject(long structureId)
