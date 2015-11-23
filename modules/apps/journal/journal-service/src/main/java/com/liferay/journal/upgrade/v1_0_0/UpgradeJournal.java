@@ -479,7 +479,7 @@ public class UpgradeJournal extends UpgradeProcess {
 
 		dynamicContentElement.clearContent();
 
-		dynamicContentElement.addCDATA(_dateFieldFormat.format(dateValue));
+		dynamicContentElement.addCDATA(_dateFormat.format(dateValue));
 	}
 
 	private void transformDateFieldValues(
@@ -519,7 +519,7 @@ public class UpgradeJournal extends UpgradeProcess {
 
 	private static final Log _log = LogFactoryUtil.getLog(UpgradeJournal.class);
 
-	private static final DateFormat _dateFieldFormat =
+	private static final DateFormat _dateFormat =
 		DateFormatFactoryUtil.getSimpleDateFormat("yyyy-MM-dd");
 
 	private final CompanyLocalService _companyLocalService;

@@ -69,8 +69,8 @@ public class DDMFormFieldValueRendererTest extends BaseDDMTestCase {
 		super.setUp();
 
 		setUpCalendarFactoryUtil();
-		setUpDLAppLocalServiceUtil();
 		setUpDateFormatFactoryUtil();
+		setUpDLAppLocalServiceUtil();
 		setUpFastDateFormatFactoryUtil();
 		setUpHtmlUtil();
 		setUpJSONFactoryUtil();
