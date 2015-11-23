@@ -312,7 +312,7 @@ public class UpgradeJournal extends UpgradeProcess {
 	@Override
 	protected void doUpgrade() throws Exception {
 		updateBasicWebContentStructure();
-		updateJournalArticlesDateFieldValueFormat();
+		updateJournalArticlesDateFieldValues();
 
 		addDDMTemplateLinks();
 	}
@@ -416,9 +416,7 @@ public class UpgradeJournal extends UpgradeProcess {
 		}
 	}
 
-	protected void updateJournalArticlesDateFieldValueFormat()
-		throws Exception {
-
+	protected void updateJournalArticlesDateFieldValues() throws Exception {
 		Connection con = null;
 		PreparedStatement ps = null;
 
@@ -437,7 +435,7 @@ public class UpgradeJournal extends UpgradeProcess {
 				long id = rs.getLong("id_");
 				String content = rs.getString("content");
 
-				updateJournalArticlesDateFieldValueFormat(id, content);
+				updateJournalArticlesDateFieldValues(id, content);
 			}
 		}
 		finally {
@@ -445,8 +443,7 @@ public class UpgradeJournal extends UpgradeProcess {
 		}
 	}
 
-	protected void updateJournalArticlesDateFieldValueFormat(
-			long id, String content)
+	protected void updateJournalArticlesDateFieldValues(long id, String content)
 		throws Exception {
 
 		Connection con = null;
@@ -469,17 +466,17 @@ public class UpgradeJournal extends UpgradeProcess {
 	}
 
 	private void transformDateFieldValue(Element dynamicContentElement) {
-		String valueString = dynamicContentElement.getText();
+		String value = dynamicContentElement.getText();
 
-		if (Validator.isNull(valueString) || !Validator.isNumber(valueString)) {
+		if (Validator.isNull(value) || !Validator.isNumber(value)) {
 			return;
 		}
 
-		Date dateValue = new Date(GetterUtil.getLong(valueString));
+		Date date = new Date(GetterUtil.getLong(value));
 
 		dynamicContentElement.clearContent();
 
-		dynamicContentElement.addCDATA(_dateFormat.format(dateValue));
+		dynamicContentElement.addCDATA(_dateFormat.format(date));
 	}
 
 	private void transformDateFieldValues(
