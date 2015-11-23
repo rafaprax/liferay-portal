@@ -212,8 +212,7 @@ public class UpgradePortletPreferences extends BaseUpgradePortletPreferences {
 			con = DataAccess.getUpgradeOptimizedConnection();
 
 			ps = con.prepareStatement(
-					"select definition from DDMStructure where" +
-						" structureId = ?" );
+				"select definition from DDMStructure where structureId = ?" );
 
 			ps.setLong(1, structureId);
 
