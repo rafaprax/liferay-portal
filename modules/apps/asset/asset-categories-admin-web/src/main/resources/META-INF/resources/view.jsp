@@ -118,9 +118,11 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "vocabul
 	</liferay-frontend:management-bar>
 </c:if>
 
-<aui:form cssClass="container-fluid-1280" name="fm">
-	<aui:input name="deleteVocabularyIds" type="hidden" />
+<portlet:actionURL name="deleteVocabulary" var="deleteVocabularyURL">
+	<portlet:param name="redirect" value="<%= currentURL %>" />
+</portlet:actionURL>
 
+<aui:form action="<%= deleteVocabularyURL %>" cssClass="container-fluid-1280" name="fm">
 	<liferay-ui:breadcrumb
 		showCurrentGroup="<%= false %>"
 		showGuestGroup="<%= false %>"
@@ -151,7 +153,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "vocabul
 
 			<liferay-ui:search-container-column-text
 				name="description"
-				value="<%= vocabulary.getDescription(locale) %>"
+				value="<%= HtmlUtil.escape(vocabulary.getDescription(locale)) %>"
 			/>
 
 			<liferay-ui:search-container-column-date
@@ -237,21 +239,11 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "vocabul
 </c:if>
 
 <aui:script sandbox="<%= true %>">
-	var Util = Liferay.Util;
-
-	var form = $(document.<portlet:namespace />fm);
-
 	$('#<portlet:namespace />deleteSelectedVocabularies').on(
 		'click',
 		function() {
 			if (confirm('<liferay-ui:message key="are-you-sure-you-want-to-delete-this" />')) {
-				<portlet:actionURL name="deleteVocabulary" var="deleteVocabularyURL">
-					<portlet:param name="redirect" value="<%= currentURL %>" />
-				</portlet:actionURL>
-
-				form.fm('deleteVocabularyIds').val(Util.listCheckedExcept(form, '<portlet:namespace />allRowIds'));
-
-				submitForm(form, '<%= deleteVocabularyURL %>');
+				submitForm($(document.<portlet:namespace />fm));
 			}
 		}
 	);

@@ -16,10 +16,8 @@ package com.liferay.marketplace.app.manager.web.util;
 
 import com.liferay.marketplace.model.App;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.osgi.framework.Bundle;
+import javax.portlet.MimeResponse;
+import javax.portlet.PortletURL;
 
 /**
  * @author Ryan Park
@@ -34,20 +32,27 @@ public class MarketplaceAppDisplay extends BaseAppDisplay {
 		_app = app;
 	}
 
-	public void addBundle(Bundle bundle) {
-		_bundles.add(bundle);
-	}
-
 	public App getApp() {
 		return _app;
 	}
 
-	public List<Bundle> getBundles() {
-		return _bundles;
-	}
-
 	public String getDescription() {
 		return _app.getDescription();
+	}
+
+	public String getDisplayURL(MimeResponse mimeResponse) {
+		PortletURL portletURL = mimeResponse.createRenderURL();
+
+		if (hasModuleGroups()) {
+			portletURL.setParameter("mvcPath", "view_module_groups.jsp");
+		}
+		else {
+			portletURL.setParameter("mvcPath", "view_modules.jsp");
+		}
+
+		portletURL.setParameter("app", String.valueOf(_app.getAppId()));
+
+		return portletURL.toString();
 	}
 
 	public String getIconURL() {
@@ -63,6 +68,5 @@ public class MarketplaceAppDisplay extends BaseAppDisplay {
 	}
 
 	private final App _app;
-	private final List<Bundle> _bundles = new ArrayList<>();
 
 }

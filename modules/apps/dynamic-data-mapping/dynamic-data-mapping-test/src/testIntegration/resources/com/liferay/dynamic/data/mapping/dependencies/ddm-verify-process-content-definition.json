@@ -1,0 +1,15 @@
+{
+	"defaultLanguageId": "en_US",
+	"fieldValues": [
+		{
+			"name": "content_1",
+			"value": {
+				"en_US": "test"
+			},
+			"instanceId": "xbux"
+		}
+	],
+	"availableLanguageIds": [
+		"en_US"
+	]
+}

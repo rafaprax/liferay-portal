@@ -405,7 +405,7 @@
 </tr>
 <tr>
 	<td>METADATA_SETS</td>
-	<td>//li[contains(@class,'open')]//a[@role='menuitem' and contains(.,'Metadata Sets')]</td>
+	<td>//a[@role='menuitem']//span[contains(.,'Metadata Sets')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -461,6 +461,11 @@
 <tr>
 	<td>PERMISSIONS_LEXICON</td>
 	<td>//div[contains(@class,'dropdown') and contains(@class,'open')]//a[contains(.,'Permissions')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PLATFORM</td>
+	<td>//a[@role='menuitem' and contains(.,'Platform')]</td>
 	<td></td>
 </tr>
 <tr>

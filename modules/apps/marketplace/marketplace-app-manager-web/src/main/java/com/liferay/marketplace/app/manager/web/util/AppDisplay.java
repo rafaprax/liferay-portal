@@ -16,6 +16,8 @@ package com.liferay.marketplace.app.manager.web.util;
 
 import java.util.List;
 
+import javax.portlet.MimeResponse;
+
 import org.osgi.framework.Bundle;
 
 /**
@@ -31,12 +33,18 @@ public interface AppDisplay extends Comparable<AppDisplay> {
 
 	public String getDescription();
 
+	public String getDisplayURL(MimeResponse mimeResponse);
+
 	public String getIconURL();
+
+	public List<ModuleGroupDisplay> getModuleGroupDisplays();
 
 	public int getState();
 
 	public String getTitle();
 
 	public String getVersion();
+
+	public boolean hasModuleGroups();
 
 }
