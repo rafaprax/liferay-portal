@@ -75,14 +75,7 @@
 	<xs:complexType name="recipients-complex-type">
 		<xs:sequence>
 			<xs:element name="address" type="email-address-type" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="roles" minOccurs="0">
-				<xs:complexType>
-					<xs:choice minOccurs="0">
-						<xs:element name="role" type="role-complex-type" maxOccurs="unbounded" />
-					</xs:choice>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="user" type="user-complex-type" minOccurs="0" maxOccurs="unbounded" />
+			<xs:group ref="assignments-group" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="role-complex-type">
@@ -242,11 +235,11 @@
 						<xs:element name="task-timers" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="task-timer" type="task-timer-complex-type" maxOccurs="unbounded" />
+									<xs:element name="task-timer" type="task-timer-complex-type" minOccurs="0" maxOccurs="unbounded" />
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element ref="transitions" />
+						<xs:element ref="transitions" minOccurs="0"/>
 					</xs:sequence>
 				</xs:extension>
 			</xs:complexContent>

@@ -75,15 +75,7 @@
 	<xs:complexType name="recipients-complex-type">
 		<xs:sequence>
 			<xs:element maxOccurs="unbounded" minOccurs="0" name="address" type="email-address-type" />
-			<xs:element minOccurs="0" name="roles">
-				<xs:complexType>
-					<xs:choice minOccurs="0">
-						<xs:element maxOccurs="unbounded" name="role" type="role-complex-type" />
-					</xs:choice>
-				</xs:complexType>
-			</xs:element>
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="scripted-recipient" type="script-complex-type" />
-			<xs:element maxOccurs="unbounded" minOccurs="0" name="user" type="user-complex-type" />
+			<xs:group ref="assignments-group" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute default="to" name="receptionType" type="notification-reception-type" />
 	</xs:complexType>
@@ -251,11 +243,11 @@
 						<xs:element minOccurs="0" name="task-timers">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" name="task-timer" type="task-timer-complex-type" />
+									<xs:element minOccurs="0" maxOccurs="unbounded" name="task-timer" type="task-timer-complex-type" />
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
-						<xs:element ref="transitions" />
+						<xs:element ref="transitions" minOccurs="0" />
 					</xs:sequence>
 				</xs:extension>
 			</xs:complexContent>
