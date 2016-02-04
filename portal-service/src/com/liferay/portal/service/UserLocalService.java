@@ -16,6 +16,8 @@ package com.liferay.portal.service;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.exportimport.kernel.lar.PortletDataContext;
+
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
@@ -37,8 +39,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.PersistedModel;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroupRole;
-
-import com.liferay.portlet.exportimport.lar.PortletDataContext;
 
 import java.io.Serializable;
 
@@ -782,6 +782,18 @@ public interface UserLocalService extends BaseLocalService,
 	public User fetchUserByFacebookId(long companyId, long facebookId);
 
 	/**
+	* Returns the user with the Google user ID.
+	*
+	* @param companyId the primary key of the user's company
+	* @param googleUserId the user's Google user ID
+	* @return the user with the Google user ID, or <code>null</code> if a user
+	with the Google user ID could not be found
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public User fetchUserByGoogleUserId(long companyId,
+		java.lang.String googleUserId);
+
+	/**
 	* Returns the user with the primary key.
 	*
 	* @param userId the primary key of the user
@@ -1315,6 +1327,17 @@ public interface UserLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public User getUserByFacebookId(long companyId, long facebookId)
 		throws PortalException;
+
+	/**
+	* Returns the user with the Google user ID.
+	*
+	* @param companyId the primary key of the user's company
+	* @param googleUserId the user's Google user ID
+	* @return the user with the Google user ID
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public User getUserByGoogleUserId(long companyId,
+		java.lang.String googleUserId) throws PortalException;
 
 	/**
 	* Returns the user with the primary key from the company.
@@ -2083,6 +2106,16 @@ public interface UserLocalService extends BaseLocalService,
 	* @return the user
 	*/
 	public User updateFacebookId(long userId, long facebookId)
+		throws PortalException;
+
+	/**
+	* Updates the user's Google user ID.
+	*
+	* @param userId the primary key of the user
+	* @param googleUserId the new Google user ID
+	* @return the user
+	*/
+	public User updateGoogleUserId(long userId, java.lang.String googleUserId)
 		throws PortalException;
 
 	/**

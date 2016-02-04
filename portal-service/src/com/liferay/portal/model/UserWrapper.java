@@ -16,11 +16,12 @@ package com.liferay.portal.model;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.exportimport.kernel.lar.StagedModelType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
-import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.io.Serializable;
 
@@ -76,6 +77,7 @@ public class UserWrapper implements User, ModelWrapper<User> {
 		attributes.put("screenName", getScreenName());
 		attributes.put("emailAddress", getEmailAddress());
 		attributes.put("facebookId", getFacebookId());
+		attributes.put("googleUserId", getGoogleUserId());
 		attributes.put("ldapServerId", getLdapServerId());
 		attributes.put("openId", getOpenId());
 		attributes.put("portraitId", getPortraitId());
@@ -218,6 +220,12 @@ public class UserWrapper implements User, ModelWrapper<User> {
 
 		if (facebookId != null) {
 			setFacebookId(facebookId);
+		}
+
+		String googleUserId = (String)attributes.get("googleUserId");
+
+		if (googleUserId != null) {
+			setGoogleUserId(googleUserId);
 		}
 
 		Long ldapServerId = (Long)attributes.get("ldapServerId");
@@ -754,6 +762,16 @@ public class UserWrapper implements User, ModelWrapper<User> {
 	@Override
 	public java.lang.String getFullName(boolean usePrefix, boolean useSuffix) {
 		return _user.getFullName(usePrefix, useSuffix);
+	}
+
+	/**
+	* Returns the google user ID of this user.
+	*
+	* @return the google user ID of this user
+	*/
+	@Override
+	public java.lang.String getGoogleUserId() {
+		return _user.getGoogleUserId();
 	}
 
 	/**
@@ -1600,6 +1618,16 @@ public class UserWrapper implements User, ModelWrapper<User> {
 	@Override
 	public void setFirstName(java.lang.String firstName) {
 		_user.setFirstName(firstName);
+	}
+
+	/**
+	* Sets the google user ID of this user.
+	*
+	* @param googleUserId the google user ID of this user
+	*/
+	@Override
+	public void setGoogleUserId(java.lang.String googleUserId) {
+		_user.setGoogleUserId(googleUserId);
 	}
 
 	/**
