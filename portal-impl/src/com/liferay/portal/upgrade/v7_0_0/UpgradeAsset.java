@@ -120,11 +120,13 @@ public class UpgradeAsset extends UpgradeProcess {
 			sb.append("JournalArticle group by ");
 			sb.append("JournalArticle.resourcePrimkey) temp_table inner join ");
 			sb.append("JournalArticle on (JournalArticle.indexable = ");
-			sb.append("[$FALSE$]) and (JournalArticle.status = 0) and ");
+			sb.append("?) and (JournalArticle.status = 0) and ");
 			sb.append("(JournalArticle.resourcePrimkey = temp_table.primKey) ");
 			sb.append("and (JournalArticle.version = temp_table.maxVersion)");
 
 			ps = connection.prepareStatement(sb.toString());
+
+			ps.setBoolean(1, false);
 
 			rs = ps.executeQuery();
 
