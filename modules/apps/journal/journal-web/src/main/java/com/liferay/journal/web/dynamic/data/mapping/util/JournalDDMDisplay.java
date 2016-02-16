@@ -133,7 +133,10 @@ public class JournalDDMDisplay extends BaseDDMDisplay {
 			LiferayPortletResponse liferayPortletResponse, long classPK)
 		throws Exception {
 
-		if (classPK <= 0) {
+		boolean navStartOnTemplates = ParamUtil.getBoolean(
+			liferayPortletRequest, "navStartOnTemplates");
+
+		if (navStartOnTemplates) {
 			String backURL = ParamUtil.getString(
 				liferayPortletRequest, "backURL");
 
