@@ -35,6 +35,8 @@ public interface DDMDisplay {
 
 	public String getDefaultTemplateLanguage();
 
+	public DDMNavigationHelper getDDMNavigationHelper();
+
 	public String getEditStructureDefaultValuesURL(
 			LiferayPortletRequest liferayPortletRequest,
 			LiferayPortletResponse liferayPortletResponse,

@@ -39,7 +39,6 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +67,10 @@ public abstract class BaseDDMDisplay implements DDMDisplay {
 	public String getDefaultTemplateLanguage() {
 		return TemplateConstants.LANG_TYPE_FTL;
 	}
+	
+	public DDMNavigationHelper getDDMNavigationHelper(){
+		return new DDMNavigationHelperImpl();
+	}
 
 	@Override
 	public String getEditStructureDefaultValuesURL(
@@ -86,16 +89,9 @@ public abstract class BaseDDMDisplay implements DDMDisplay {
 			long classPK, long resourceClassNameId, String portletResource)
 		throws Exception {
 
-		String redirect = ParamUtil.getString(
-			liferayPortletRequest, "redirect");
-
-		if (Validator.isNull(redirect) || Validator.isNull(portletResource)) {
-			return getViewTemplatesURL(
-				liferayPortletRequest, liferayPortletResponse, classNameId,
-				classPK, resourceClassNameId);
-		}
-
-		return redirect;
+		return getViewTemplatesURL(
+			liferayPortletRequest, liferayPortletResponse, classNameId, classPK,
+			resourceClassNameId);
 	}
 
 	@Override
@@ -239,9 +235,7 @@ public abstract class BaseDDMDisplay implements DDMDisplay {
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse) throws Exception {
 
-		String backURL = ParamUtil.getString(liferayPortletRequest, "backURL");
-
-		return backURL;
+		return ParamUtil.getString(liferayPortletRequest, "backURL");
 	}
 
 	@Override
@@ -407,6 +401,7 @@ public abstract class BaseDDMDisplay implements DDMDisplay {
 
 		return portletURL.toString();
 	}
+
 
 	private static final Set<String> _templateLanguageTypes = SetUtil.fromArray(
 		new String[] {

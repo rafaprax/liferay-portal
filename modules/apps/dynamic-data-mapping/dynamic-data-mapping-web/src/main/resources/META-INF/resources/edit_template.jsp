@@ -17,7 +17,6 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String redirect = ParamUtil.getString(request, "redirect");
 String closeRedirect = ParamUtil.getString(request, "closeRedirect");
 
 String portletResource = ParamUtil.getString(request, "portletResource");
@@ -35,6 +34,7 @@ long resourceClassNameId = BeanParamUtil.getLong(template, request, "resourceCla
 
 boolean cacheable = BeanParamUtil.getBoolean(template, request, "cacheable", true);
 boolean smallImage = BeanParamUtil.getBoolean(template, request, "smallImage");
+boolean disableSelectTemplate = ParamUtil.getBoolean(request, "disableSelectTemplate");
 
 DDMStructure structure = (DDMStructure)request.getAttribute(DDMWebKeys.DYNAMIC_DATA_MAPPING_STRUCTURE);
 
@@ -172,7 +172,7 @@ String backURL = ddmDisplay.getEditTemplateBackURL(liferayPortletRequest, lifera
 				var toolbarChildren = [
 					<portlet:renderURL var="viewHistoryURL">
 						<portlet:param name="mvcPath" value="/view_template_history.jsp" />
-						<portlet:param name="redirect" value="<%= redirect %>" />
+						<portlet:param name="redirect" value="<%= backURL %>" />
 						<portlet:param name="templateId" value="<%= String.valueOf(template.getTemplateId()) %>" />
 					</portlet:renderURL>
 
@@ -208,7 +208,7 @@ String backURL = ddmDisplay.getEditTemplateBackURL(liferayPortletRequest, lifera
 							<div class="form-group">
 								<aui:input helpMessage="structure-help" name="structure" type="resource" value="<%= (structure != null) ? structure.getName(locale) : StringPool.BLANK %>" />
 
-								<c:if test="<%= (template == null) || (template.getClassPK() == 0) %>">
+								<c:if test="<%= !disableSelectTemplate && ((template == null) || (template.getClassPK() == 0)) %>">
 									<liferay-ui:icon
 										iconCssClass="icon-search"
 										label="<%= true %>"
