@@ -19,17 +19,17 @@ import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.util.BaseDDMDisplay;
 import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMNavigationHelper;
 import com.liferay.journal.configuration.JournalServiceConfigurationValues;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.portal.kernel.portlet.PortletProvider;
-import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Set;
@@ -85,16 +85,30 @@ public class JournalDDMDisplay extends BaseDDMDisplay {
 			long classPK, long resourceClassNameId, String portletResource)
 		throws Exception {
 
-		String redirect = ParamUtil.getString(
-			liferayPortletRequest, "redirect");
+		DDMNavigationHelper ddmNavigationHelper = getDDMNavigationHelper();
 
-		if (Validator.isNull(redirect)) {
-			return getViewTemplatesURL(
+		String editTemplateBackUrl = null;
+
+		if (ddmNavigationHelper.startsOnTemplates(liferayPortletRequest)) {
+			editTemplateBackUrl = ParamUtil.getString(
+				liferayPortletRequest, "redirect");
+
+			if (Validator.isNull(editTemplateBackUrl)) {
+				editTemplateBackUrl = getViewTemplatesURL(
+					liferayPortletRequest, liferayPortletResponse, classNameId,
+					0, resourceClassNameId);
+			}
+		}
+		else if(ddmNavigationHelper.startsOnEditTemplates(liferayPortletRequest)) {
+			editTemplateBackUrl = StringPool.BLANK;
+		}
+		else {
+			editTemplateBackUrl = getViewTemplatesURL(
 				liferayPortletRequest, liferayPortletResponse, classNameId,
 				classPK, resourceClassNameId);
 		}
 
-		return redirect;
+		return editTemplateBackUrl;
 	}
 
 	@Override
@@ -135,22 +149,20 @@ public class JournalDDMDisplay extends BaseDDMDisplay {
 			LiferayPortletResponse liferayPortletResponse, long classPK)
 		throws Exception {
 
-		if (classPK <= 0) {
-			String redirect = ParamUtil.getString(
-				liferayPortletRequest, "redirect");
+		DDMNavigationHelper ddmNavigationHelper = getDDMNavigationHelper();
 
-			return redirect;
+		if (ddmNavigationHelper.startsOnTemplates(liferayPortletRequest)) {
+			String backURL = ParamUtil.getString(
+				liferayPortletRequest, "backURL");
+
+			return backURL;
+		}
+		else if(ddmNavigationHelper.startsOnEditStructures(liferayPortletRequest)) {
+			return StringPool.BLANK;
 		}
 
-		String portletId = PortletProviderUtil.getPortletId(
-			DDMStructure.class.getName(), PortletProvider.Action.VIEW);
-
-		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
-			liferayPortletRequest, portletId, PortletRequest.RENDER_PHASE);
-
-		portletURL.setParameter("mvcPath", "/view.jsp");
-
-		return portletURL.toString();
+		return super.getViewTemplatesBackURL(
+			liferayPortletRequest, liferayPortletResponse, classPK);
 	}
 
 	@Override

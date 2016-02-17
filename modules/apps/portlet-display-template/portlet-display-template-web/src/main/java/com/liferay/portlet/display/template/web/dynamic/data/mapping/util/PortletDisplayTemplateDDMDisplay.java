@@ -25,16 +25,17 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.template.TemplateHandler;
 import com.liferay.portal.kernel.template.TemplateHandlerRegistryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.display.template.PortletDisplayTemplate;
 
 import java.util.Locale;
 import java.util.Set;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -55,16 +56,9 @@ public class PortletDisplayTemplateDDMDisplay extends BaseDDMDisplay {
 			long classPK, long resourceClassNameId, String portletResource)
 		throws Exception {
 
-		String redirect = ParamUtil.getString(
-			liferayPortletRequest, "redirect");
-
-		if (Validator.isNull(redirect)) {
-			return getViewTemplatesURL(
-				liferayPortletRequest, liferayPortletResponse, classNameId,
-				classPK, resourceClassNameId);
-		}
-
-		return redirect;
+		return getViewTemplatesURL(
+			liferayPortletRequest, liferayPortletResponse, classNameId, classPK,
+			resourceClassNameId);
 	}
 
 	@Override
@@ -160,6 +154,19 @@ public class PortletDisplayTemplateDDMDisplay extends BaseDDMDisplay {
 	@Override
 	protected String getDefaultViewTemplateTitle(Locale locale) {
 		return LanguageUtil.get(locale, "application-display-templates");
+	}
+
+	protected String getViewTemplatesURL(
+			LiferayPortletRequest liferayPortletRequest,
+			LiferayPortletResponse liferayPortletResponse, long classNameId,
+			long classPK, long resourceClassNameId)
+		throws Exception {
+
+		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
+			liferayPortletRequest, PortletKeys.PORTLET_DISPLAY_TEMPLATE,
+			PortletRequest.RENDER_PHASE);
+
+		return portletURL.toString();
 	}
 
 	@Reference(unbind = "-")

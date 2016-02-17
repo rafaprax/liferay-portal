@@ -1283,6 +1283,10 @@
 
 			ddmURL.setParameter('portletResourceNamespace', config.portletResourceNamespace);
 
+			if ('navStartsOn' in config) {
+				ddmURL.setParameter('navStartsOn', config.navStartsOn);
+			}
+
 			if ('redirect' in config) {
 				ddmURL.setParameter('redirect', config.redirect);
 			}
