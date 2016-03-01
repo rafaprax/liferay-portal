@@ -95,6 +95,7 @@ DDMStructure structure = (DDMStructure)row.getObject();
 
 	<c:if test="<%= DDMStructurePermission.contains(permissionChecker, structure, refererPortletName, ActionKeys.DELETE) %>">
 		<portlet:actionURL name="deleteStructure" var="deleteURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="classNameId" value="<%= String.valueOf(PortalUtil.getClassNameId(DDMStructure.class)) %>" />
 			<portlet:param name="classPK" value="<%= String.valueOf(structure.getStructureId()) %>" />
 		</portlet:actionURL>
