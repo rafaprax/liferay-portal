@@ -361,7 +361,7 @@ public class BaseTextExportImportContentProcessor
 
 					exceptionSB.append("Unable to process file entry ");
 					exceptionSB.append(fileEntry.getFileEntryId());
-					exceptionSB.append(" for ");
+					exceptionSB.append(" for staged model ");
 					exceptionSB.append(stagedModel.getModelClassName());
 					exceptionSB.append(" with primary key ");
 					exceptionSB.append(stagedModel.getPrimaryKeyObj());
@@ -671,6 +671,23 @@ public class BaseTextExportImportContentProcessor
 				portletDataContext.addReferenceElement(
 					stagedModel, entityElement, layout,
 					PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
+			}
+			catch (Exception e) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(e, e);
+				}
+				else if (_log.isWarnEnabled()) {
+					StringBundler exceptionSB = new StringBundler(6);
+
+					exceptionSB.append("Unable to process layout URL ");
+					exceptionSB.append(url);
+					exceptionSB.append(" for staged model ");
+					exceptionSB.append(stagedModel.getModelClassName());
+					exceptionSB.append(" with primary key ");
+					exceptionSB.append(stagedModel.getPrimaryKeyObj());
+
+					_log.warn(exceptionSB.toString());
+				}
 			}
 			finally {
 				if (urlSB.length() > 0) {

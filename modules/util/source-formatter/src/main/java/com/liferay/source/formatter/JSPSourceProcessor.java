@@ -411,6 +411,8 @@ public class JSPSourceProcessor extends BaseSourceProcessor {
 		checkLanguageKeys(
 			fileName, absolutePath, newContent, _taglibLanguageKeyPattern3);
 
+		newContent = formatStringBundler(fileName, newContent, -1);
+
 		checkXSS(fileName, newContent);
 
 		// LPS-47682
@@ -704,8 +706,6 @@ public class JSPSourceProcessor extends BaseSourceProcessor {
 						fileName, "chaining: " + fileName + " " + lineCount);
 				}
 
-				checkStringBundler(trimmedLine, fileName, lineCount);
-
 				checkEmptyCollection(trimmedLine, fileName, lineCount);
 
 				line = formatEmptyArray(line);
@@ -923,7 +923,7 @@ public class JSPSourceProcessor extends BaseSourceProcessor {
 							else if (trimmedLine.endsWith(StringPool.QUOTE) &&
 									 tag.contains(StringPool.COLON) &&
 									 (StringUtil.count(
-										 trimmedLine, StringPool.QUOTE) > 2)) {
+										 trimmedLine, CharPool.QUOTE) > 2)) {
 
 								processErrorMessage(
 									fileName,

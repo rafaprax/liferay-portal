@@ -39,12 +39,12 @@ Map<String, String[]> parameterMap = (Map<String, String[]>)GetterUtil.getObject
 			<c:choose>
 				<c:when test="<%= privateLayout %>">
 					<li>
-						<aui:button id="changeToPrivateLayoutsButton" value="change-to-public-pages" />
+						<aui:button id="changeToPublicLayoutsButton" value="change-to-public-pages" />
 					</li>
 				</c:when>
 				<c:otherwise>
 					<li>
-						<aui:button id="changeToPublicLayoutsButton" value="change-to-private-pages" />
+						<aui:button id="changeToPrivateLayoutsButton" value="change-to-private-pages" />
 					</li>
 				</c:otherwise>
 			</c:choose>
@@ -80,7 +80,7 @@ Map<String, String[]> parameterMap = (Map<String, String[]>)GetterUtil.getObject
 	</li>
 
 	<li class="layout-selector-options">
-		<aui:fieldset label="pages-to-export">
+		<aui:fieldset label="pages-to-publish">
 
 			<%
 			long selPlid = ParamUtil.getLong(request, "selPlid", LayoutConstants.DEFAULT_PLID);

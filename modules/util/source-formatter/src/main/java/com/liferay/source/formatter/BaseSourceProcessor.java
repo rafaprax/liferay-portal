@@ -174,7 +174,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	protected void checkIfClauseParentheses(
 		String ifClause, String fileName, int lineCount) {
 
-		int quoteCount = StringUtil.count(ifClause, StringPool.QUOTE);
+		int quoteCount = StringUtil.count(ifClause, CharPool.QUOTE);
 
 		if ((quoteCount % 2) == 1) {
 			return;
@@ -201,7 +201,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		ifClause = stripRedundantParentheses(ifClause);
 
 		int level = 0;
-		int max = StringUtil.count(ifClause, StringPool.OPEN_PARENTHESIS);
+		int max = StringUtil.count(ifClause, CharPool.OPEN_PARENTHESIS);
 		int previousParenthesisPos = -1;
 
 		int[] levels = new int[max];
@@ -433,36 +433,6 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		}
 	}
 
-	protected void checkStringBundler(
-		String line, String fileName, int lineCount) {
-
-		if ((!line.startsWith("sb.append(") && !line.contains("SB.append(")) ||
-			!line.endsWith(");")) {
-
-			return;
-		}
-
-		int pos = line.indexOf(".append(");
-
-		line = line.substring(pos + 8, line.length() - 2);
-
-		line = stripQuotes(line, CharPool.QUOTE);
-
-		if (!line.contains(" + ")) {
-			return;
-		}
-
-		String[] lineParts = StringUtil.split(line, " + ");
-
-		for (String linePart : lineParts) {
-			if ((getLevel(linePart) != 0) || Validator.isNumber(linePart)) {
-				return;
-			}
-		}
-
-		processErrorMessage(fileName, "plus: " + fileName + " " + lineCount);
-	}
-
 	protected void checkStringUtilReplace(String fileName, String content)
 		throws Exception {
 
@@ -489,33 +459,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 			String parameters = replaceCall.substring(
 				x + 1, replaceCall.length() - 1);
 
-			List<String> parametersList = new ArrayList<>();
-
-			x = -1;
-
-			while (true) {
-				x = parameters.indexOf(StringPool.COMMA, x + 1);
-
-				if (x == -1) {
-					parametersList.add(StringUtil.trim(parameters));
-
-					break;
-				}
-
-				if (ToolsUtil.isInsideQuotes(parameters, x)) {
-					continue;
-				}
-
-				String linePart = parameters.substring(0, x);
-
-				if (getLevel(linePart) == 0) {
-					parametersList.add(StringUtil.trim(linePart));
-
-					parameters = parameters.substring(x + 1);
-
-					x = -1;
-				}
-			}
+			List<String> parametersList = splitParameters(parameters);
 
 			if (parametersList.size() != 3) {
 				return;
@@ -944,6 +888,65 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return content;
 	}
 
+	protected String formatStringBundler(
+		String fileName, String content, int maxLineLength) {
+
+		Matcher matcher = sbAppendPattern.matcher(content);
+
+		matcherIteration:
+		while (matcher.find()) {
+			String appendValue = stripQuotes(matcher.group(2), CharPool.QUOTE);
+
+			appendValue = StringUtil.replace(appendValue, "+\n", "+ ");
+
+			if (!appendValue.contains(" + ")) {
+				continue;
+			}
+
+			String[] appendValueParts = StringUtil.split(appendValue, " + ");
+
+			for (String appendValuePart : appendValueParts) {
+				if ((getLevel(appendValuePart) != 0) ||
+					Validator.isNumber(appendValuePart)) {
+
+					continue matcherIteration;
+				}
+			}
+
+			processErrorMessage(
+				fileName,
+				"plus: " + fileName + " " +
+					getLineCount(content, matcher.start(1)));
+		}
+
+		matcher = sbAppendWithStartingSpacePattern.matcher(content);
+
+		while (matcher.find()) {
+			String firstLine = matcher.group(1);
+
+			if (firstLine.endsWith("\\n\");")) {
+				continue;
+			}
+
+			if ((maxLineLength != -1) &&
+				(getLineLength(firstLine) >= maxLineLength)) {
+
+				processErrorMessage(
+					fileName,
+					"leading space in sb: " + fileName + " " +
+						getLineCount(content, matcher.start(3)));
+			}
+			else {
+				content = StringUtil.replaceFirst(
+					content, "\");\n", " \");\n", matcher.start(2));
+				content = StringUtil.replaceFirst(
+					content, "(\" ", "(\"", matcher.start(3));
+			}
+		}
+
+		return content;
+	}
+
 	protected String formatTagAttributeType(
 			String line, String tag, String attributeAndValue)
 		throws Exception {
@@ -1166,7 +1169,8 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		_annotationsExclusions = SetUtil.fromArray(
 			new String[] {
 				"ArquillianResource", "BeanReference", "Captor", "Inject",
-				"Mock", "Reference", "ServiceReference", "SuppressWarnings"
+				"Mock", "Parameter", "Reference", "ServiceReference",
+				"SuppressWarnings"
 			});
 
 		return _annotationsExclusions;
@@ -2198,6 +2202,36 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return line;
 	}
 
+	protected List<String> splitParameters(String parameters) {
+		List<String> parametersList = new ArrayList<>();
+
+		int x = -1;
+
+		while (true) {
+			x = parameters.indexOf(StringPool.COMMA, x + 1);
+
+			if (x == -1) {
+				parametersList.add(StringUtil.trim(parameters));
+
+				return parametersList;
+			}
+
+			if (ToolsUtil.isInsideQuotes(parameters, x)) {
+				continue;
+			}
+
+			String linePart = parameters.substring(0, x);
+
+			if (getLevel(linePart) == 0) {
+				parametersList.add(StringUtil.trim(linePart));
+
+				parameters = parameters.substring(x + 1);
+
+				x = -1;
+			}
+		}
+	}
+
 	protected String stripQuotes(String s) {
 		return stripQuotes(s, CharPool.APOSTROPHE, CharPool.QUOTE);
 	}
@@ -2348,6 +2382,11 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	protected static Pattern principalExceptionPattern = Pattern.compile(
 		"SessionErrors\\.contains\\(\n?\t*(renderR|r)equest, " +
 			"PrincipalException\\.class\\.getName\\(\\)");
+	protected static Pattern sbAppendPattern = Pattern.compile(
+		"\\s*\\w*(sb|SB)[0-9]?\\.append\\(\\s*(\\S.*?)\\);\n", Pattern.DOTALL);
+	protected static Pattern sbAppendWithStartingSpacePattern = Pattern.compile(
+		"\n(\t*\\w*(sb|SB)[0-9]?\\.append\\(\".*\"\\);)\n\\s*\\w*(sb|SB)" +
+			"[0-9]?\\.append\\(\" .*\"\\);\n");
 	protected static Pattern sessionKeyPattern = Pattern.compile(
 		"SessionErrors.(?:add|contains|get)\\([^;%&|!]+|".concat(
 			"SessionMessages.(?:add|contains|get)\\([^;%&|!]+"),

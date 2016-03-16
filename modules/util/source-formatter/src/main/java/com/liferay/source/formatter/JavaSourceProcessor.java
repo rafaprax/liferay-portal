@@ -800,6 +800,9 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 		checkLanguageKeys(
 			fileName, absolutePath, newContent, languageKeyPattern);
 
+		newContent = formatStringBundler(
+			fileName, newContent, _MAX_LINE_LENGTH);
+
 		newContent = StringUtil.replace(
 			newContent, StringPool.TAB + "for (;;) {",
 			StringPool.TAB + "while (true) {");
@@ -969,6 +972,8 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 
 			checkStringUtilReplace(fileName, newContent);
 		}
+
+		newContent = formatAssertEquals(fileName, newContent);
 
 		newContent = formatReturnStatements(fileName, newContent);
 
@@ -1283,7 +1288,7 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 				return content;
 			}
 
-			if ((StringUtil.count(line, StringPool.TAB) == indent.length()) &&
+			if ((StringUtil.count(line, CharPool.TAB) == indent.length()) &&
 				!line.startsWith(indent + StringPool.CLOSE_PARENTHESIS)) {
 
 				if (Validator.isNotNull(annotation) &&
@@ -1354,6 +1359,49 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 
 				annotation += line + "\n";
 			}
+		}
+
+		return content;
+	}
+
+	protected String formatAssertEquals(String fileName, String content) {
+		if (!fileName.endsWith("Test.java")) {
+			return content;
+		}
+
+		Matcher matcher = _assertEqualsPattern.matcher(content);
+
+		while (matcher.find()) {
+			String parameters = StringUtil.trim(matcher.group(1));
+
+			List<String> parametersList = splitParameters(parameters);
+
+			if (parametersList.size() != 2) {
+				continue;
+			}
+
+			String actualParameter = parametersList.get(1);
+
+			String strippedQuotesActualParameter = stripQuotes(actualParameter);
+
+			if (!actualParameter.startsWith("expected") &&
+				!Validator.isDigit(actualParameter) &&
+				Validator.isNotNull(strippedQuotesActualParameter)) {
+
+				continue;
+			}
+
+			String assertEquals = matcher.group();
+			String expectedParameter = parametersList.get(0);
+
+			String newAssertEquals = StringUtil.replaceFirst(
+				assertEquals, expectedParameter, actualParameter,
+				assertEquals.indexOf(CharPool.OPEN_PARENTHESIS));
+
+			newAssertEquals = StringUtil.replaceLast(
+				newAssertEquals, actualParameter, expectedParameter);
+
+			return StringUtil.replace(content, assertEquals, newAssertEquals);
 		}
 
 		return content;
@@ -1892,8 +1940,6 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 							lineCount);
 				}
 
-				checkStringBundler(trimmedLine, fileName, lineCount);
-
 				checkEmptyCollection(trimmedLine, fileName, lineCount);
 
 				line = formatEmptyArray(line);
@@ -1919,7 +1965,7 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 						version = StringUtil.replace(
 							version, StringPool.COMMA, StringPool.BLANK);
 
-						if (StringUtil.count(version, StringPool.PERIOD) == 1) {
+						if (StringUtil.count(version, CharPool.PERIOD) == 1) {
 							line = StringUtil.replaceFirst(
 								line, version, version + ".0");
 						}
@@ -1927,7 +1973,7 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 				}
 
 				if (trimmedLine.startsWith("* @see ") &&
-					(StringUtil.count(trimmedLine, StringPool.AT) > 1)) {
+					(StringUtil.count(trimmedLine, CharPool.AT) > 1)) {
 
 					processErrorMessage(
 						fileName,
@@ -2004,7 +2050,7 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 
 					int strippedQuotesLineOpenParenthesisCount =
 						StringUtil.count(
-							strippedQuotesLine, StringPool.OPEN_PARENTHESIS);
+							strippedQuotesLine, CharPool.OPEN_PARENTHESIS);
 
 					if (!trimmedLine.startsWith(StringPool.OPEN_PARENTHESIS) &&
 						trimmedLine.endsWith(") {") &&
@@ -3167,7 +3213,7 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 			return null;
 		}
 
-		if (StringUtil.count(previousLine, StringPool.OPEN_PARENTHESIS) > 1) {
+		if (StringUtil.count(previousLine, CharPool.OPEN_PARENTHESIS) > 1) {
 			int pos = trimmedPreviousLine.lastIndexOf(
 				CharPool.OPEN_PARENTHESIS, trimmedPreviousLine.length() - 2);
 
@@ -3223,11 +3269,10 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 				classLine, StringPool.TAB + StringPool.SPACE, StringPool.TAB);
 		}
 
-		String classSingleLine = StringUtil.removeChar(
-			classLine.substring(1), CharPool.TAB);
-
-		classSingleLine = StringUtil.replace(
-			classSingleLine, CharPool.NEW_LINE, CharPool.SPACE);
+		String classSingleLine = StringUtil.replace(
+			classLine.substring(1),
+			new String[] {StringPool.TAB, StringPool.NEW_LINE},
+			new String[] {StringPool.BLANK, StringPool.SPACE});
 
 		classSingleLine = indent + classSingleLine;
 
@@ -3925,7 +3970,7 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 			return false;
 		}
 
-		int quoteCount = StringUtil.count(javaParameter, StringPool.QUOTE);
+		int quoteCount = StringUtil.count(javaParameter, CharPool.QUOTE);
 
 		if ((quoteCount % 2) == 1) {
 			return false;
@@ -4026,6 +4071,8 @@ public class JavaSourceProcessor extends BaseSourceProcessor {
 	private boolean _allowUseServiceUtilInServiceImpl;
 	private Pattern _annotationMetaTypePattern = Pattern.compile(
 		"\\s(name|description) = \"%");
+	private Pattern _assertEqualsPattern = Pattern.compile(
+		"Assert\\.assertEquals\\((.*?)\\);\n", Pattern.DOTALL);
 	private Map<String, Tuple> _bndInheritRequiredTupleMap = new HashMap<>();
 	private Pattern _catchExceptionPattern = Pattern.compile(
 		"\n(\t+)catch \\((.+Exception) (.+)\\) \\{\n");
