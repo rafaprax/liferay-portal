@@ -178,6 +178,11 @@ public class JournalDDMDisplay extends BaseDDMDisplay {
 	}
 
 	@Override
+	public boolean isShowConfirmSelectStructure() {
+		return true;
+	}
+
+	@Override
 	public boolean isShowStructureSelector() {
 		return true;
 	}
