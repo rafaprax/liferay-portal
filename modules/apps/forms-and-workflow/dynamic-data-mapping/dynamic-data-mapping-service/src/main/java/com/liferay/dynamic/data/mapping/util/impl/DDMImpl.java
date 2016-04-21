@@ -449,12 +449,7 @@ public class DDMImpl implements DDM {
 		throws Exception {
 
 		if (fieldValue instanceof Date) {
-			Date valueDate = (Date)fieldValue;
-
-			DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
-				"yyyyMMddHHmmss");
-
-			fieldValue = dateFormat.format(valueDate);
+			fieldValue = _getIndexedDateFieldValue(fieldValue);
 		}
 		else if (type.equals(DDMImpl.TYPE_RADIO) ||
 				 type.equals(DDMImpl.TYPE_SELECT)) {
@@ -466,6 +461,16 @@ public class DDMImpl implements DDM {
 			String[] stringArray = ArrayUtil.toStringArray(jsonArray);
 
 			fieldValue = stringArray[0];
+		}
+		else if (type.equals(DDMImpl.TYPE_DDM_DATE) &&
+				 Validator.isNotNull(fieldValue)) {
+
+			String dateString = (String)fieldValue;
+
+			Date dateValue = DateUtil.parseDate(
+				"yyyy-MM-dd", dateString, LocaleUtil.getDefault());
+
+			fieldValue = _getIndexedDateFieldValue(dateValue);
 		}
 
 		return fieldValue;
@@ -1318,6 +1323,15 @@ public class DDMImpl implements DDM {
 		}
 
 		localizedValue.setDefaultLocale(newDefaultLocale);
+	}
+
+	private Serializable _getIndexedDateFieldValue(Serializable fieldValue) {
+		Date valueDate = (Date)fieldValue;
+
+		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+			"yyyyMMddHHmmss");
+
+		return dateFormat.format(valueDate);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(DDMImpl.class);

@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.filter.QueryFilter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -91,6 +92,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 						ddmStructure.getStructureId(), field.getName(), locale,
 						indexType);
 
+					String type = field.getType();
 					Serializable value = field.getValue(locale);
 
 					if (value instanceof BigDecimal) {
@@ -157,10 +159,30 @@ public class DDMIndexerImpl implements DDMIndexer {
 							document.addTextSortable(name, valuesString);
 						}
 					}
+					else if (type.equals(DDMImpl.TYPE_DDM_DATE)) {
+						if (value instanceof String[]) {
+							String[] dateStringArray = (String[])value;
+
+							Date[] dateArray = new Date[dateStringArray.length];
+
+							for (int i = 0; i < dateStringArray.length; i++) {
+								dateArray[i] = DateUtil.parseDate(
+									"yyyy-MM-dd", dateStringArray[i], locale);
+							}
+
+							document.addDateSortable(name, dateArray);
+						}
+						else {
+							String dateString = String.valueOf(value);
+
+							Date dateValue = DateUtil.parseDate(
+								"yyyy-MM-dd", dateString, locale);
+
+							document.addDateSortable(name, dateValue);
+						}
+					}
 					else {
 						String valueString = String.valueOf(value);
-
-						String type = field.getType();
 
 						if (type.equals(DDMFormFieldType.GEOLOCATION)) {
 							JSONObject geolocationJSONObject =
