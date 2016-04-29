@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstanceLink;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLinkLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLocalServiceUtil;
@@ -150,6 +151,12 @@ public class DDMStructureStagedModelDataHandlerTest
 
 		DDMFormField selectDDMFormField = DDMFormTestUtil.createDDMFormField(
 			"Country", "Country", "select", "string", true, false, true);
+
+		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
+
+		ddmFormFieldOptions.addOptionLabel("Brazil", LocaleUtil.US, "Brazil");
+
+		selectDDMFormField.setDDMFormFieldOptions(ddmFormFieldOptions);
 
 		selectDDMFormField.setProperty(
 			"ddmDataProviderInstanceId",
