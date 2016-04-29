@@ -214,7 +214,7 @@ public class CXFEndpointPublisher {
 					AuthVerifierFilter.class.getName());
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_SERVLET,
-					"CXFServlet");
+					CXFServlet.class.getName());
 
 				for (String authVerifierProperty :
 						authVerifierPropertiesArray) {
