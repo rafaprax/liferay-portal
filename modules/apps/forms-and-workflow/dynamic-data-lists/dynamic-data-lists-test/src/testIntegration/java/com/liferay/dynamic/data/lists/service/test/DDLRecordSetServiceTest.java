@@ -85,7 +85,7 @@ public class DDLRecordSetServiceTest {
 	@Test
 	public void testAddRecordSetWithFailStorage() throws Exception {
 		DDMForm ddmStructureDDMForm = DDMFormTestUtil.createDDMForm(
-			_availableLocales, _defaultLocale);
+			"Text Field");
 
 		DDLRecordSet ddlRecordSet = addRecordSet(
 			ddmStructureDDMForm, FailStorageAdapter.STORAGE_TYPE);
@@ -99,7 +99,7 @@ public class DDLRecordSetServiceTest {
 	@Test
 	public void testUpdateRecordSetWithFailStorage() throws Exception {
 		DDMForm ddmStructureDDMForm = DDMFormTestUtil.createDDMForm(
-			_availableLocales, _defaultLocale);
+			"Text Field");
 
 		DDLRecordSet ddlRecordSet = addRecordSet(
 			ddmStructureDDMForm, FailStorageAdapter.STORAGE_TYPE);

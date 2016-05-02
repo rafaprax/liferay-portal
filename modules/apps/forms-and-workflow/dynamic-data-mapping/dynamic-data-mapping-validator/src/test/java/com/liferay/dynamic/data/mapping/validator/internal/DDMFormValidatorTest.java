@@ -25,6 +25,7 @@ import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.Mus
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetAvailableLocales;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetDefaultLocale;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetDefaultLocaleAsAvailableLocale;
+import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetFieldsForForm;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetOptionsForField;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidAvailableLocalesForProperty;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldName;
@@ -35,6 +36,7 @@ import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.Mus
 import com.liferay.portal.bean.BeanPropertiesImpl;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringPool;
 
 import java.util.Locale;
 import java.util.Set;
@@ -190,6 +192,14 @@ public class DDMFormValidatorTest {
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
 
+	@Test(expected = MustSetFieldsForForm.class)
+	public void testNoFieldsSetForForm() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+			createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+
 	@Test(expected = MustSetOptionsForField.class)
 	public void testNoOptionsSetForFieldOptions() throws Exception {
 		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
@@ -202,6 +212,21 @@ public class DDMFormValidatorTest {
 
 		ddmForm.addDDMFormField(ddmFormField);
 
+		_ddmFormValidatorImpl.validate(ddmForm);
+	}
+	
+	@Test(expected = MustSetOptionsForField.class)
+	public void testNoOptionsSetForFieldOptions2() throws Exception {
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
+				createAvailableLocales(LocaleUtil.US), LocaleUtil.US);
+		
+		DDMFormField ddmFormField = new DDMFormField(
+				"Select", DDMFormFieldType.SELECT);
+		
+		ddmFormField.setProperty("dataSourceType", StringPool.BLANK);
+		
+		ddmForm.addDDMFormField(ddmFormField);
+		
 		_ddmFormValidatorImpl.validate(ddmForm);
 	}
 
