@@ -88,8 +88,8 @@ public abstract class TestOrderHelper {
 
 	public void testOrderByDDMDateField() throws Exception {
 		testOrderByDDMField(
-			new String[] {"20160417192501", "20160417192510", "20160417192503"},
-			new String[] {"20160417192501", "20160417192503", "20160417192510"},
+			new String[] {"2016-04-01", "2016-04-10", "2016-04-03"},
+			new String[] {"2016-04-01", "2016-04-03", "2016-04-10"},
 			FieldConstants.DATE, DDMFormFieldType.DATE);
 	}
 
