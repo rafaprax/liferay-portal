@@ -37,6 +37,7 @@ import javax.servlet.ServletResponse;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.CXFBusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
+import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.felix.dm.DependencyManager;
 import org.apache.felix.dm.ServiceDependency;
 
@@ -179,7 +180,7 @@ public class CXFEndpointPublisher {
 				contextName);
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME,
-				"CXFServlet");
+				CXFServlet.class.getName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, "/*");
 
@@ -210,10 +211,10 @@ public class CXFEndpointPublisher {
 					contextName);
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_NAME,
-					"AuthVerifierFilter");
+					AuthVerifierFilter.class.getName());
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_SERVLET,
-					"CXFServlet");
+					CXFServlet.class.getName());
 
 				for (String authVerifierProperty :
 						authVerifierPropertiesArray) {
@@ -239,7 +240,7 @@ public class CXFEndpointPublisher {
 					contextName);
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_NAME,
-					"RemoteAccessFilter");
+					RemoteAccessFilter.class.getName());
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_SERVLET,
 					"CXFServlet");
