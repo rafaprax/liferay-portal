@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.exception.StructureNameException;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstanceLink;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
@@ -37,6 +38,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -151,6 +153,12 @@ public class DDMStructureLocalServiceTest extends BaseDDMServiceTestCase {
 		DDMFormField ddmFormField = new DDMFormField("Field", "select");
 
 		ddmFormField.setDataType("string");
+
+		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
+
+		ddmFormFieldOptions.addOptionLabel("Value", LocaleUtil.US, "Option");
+
+		ddmFormField.setDDMFormFieldOptions(ddmFormFieldOptions);
 
 		long ddmDataProviderInstanceId = RandomTestUtil.randomLong();
 
@@ -553,6 +561,12 @@ public class DDMStructureLocalServiceTest extends BaseDDMServiceTestCase {
 
 		ddmFormField1.setDataType("string");
 
+		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
+
+		ddmFormFieldOptions.addOptionLabel("Value", LocaleUtil.US, "Option");
+
+		ddmFormField1.setDDMFormFieldOptions(ddmFormFieldOptions);
+
 		long ddmDataProviderInstanceId1 = RandomTestUtil.randomLong();
 
 		ddmFormField1.setProperty(
@@ -563,6 +577,8 @@ public class DDMStructureLocalServiceTest extends BaseDDMServiceTestCase {
 		DDMFormField ddmFormField2 = new DDMFormField("Field2", "select");
 
 		ddmFormField2.setDataType("string");
+
+		ddmFormField2.setDDMFormFieldOptions(ddmFormFieldOptions);
 
 		long ddmDataProviderInstanceId2 = RandomTestUtil.randomLong();
 
