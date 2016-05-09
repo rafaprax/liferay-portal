@@ -1,3 +1,5 @@
+alter table kaleoDefinition add content TEXT null;
+
 create table KaleoTimer (
 	kaleoTimerId LONG not null primary key,
 	groupId LONG,
