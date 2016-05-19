@@ -371,6 +371,136 @@ public class DDMFormValuesToFieldsConverterTest extends BaseDDMTestCase {
 			fieldsDisplayField.getValue());
 	}
 
+	@Test
+	public void testConversionWithTransientField() throws Exception {
+		DDMForm ddmForm = createDDMForm();
+
+		addDDMFormFields(
+			ddmForm, createTextDDMFormField("Name", "", true, true, false));
+
+		DDMStructure ddmStructure = createStructure("Test Structure", ddmForm);
+
+		DDMForm templateDDMForm = createDDMForm();
+
+		DDMFormField paragraphDDMFormField = createParagraphDDMFormField(
+			"Paragraph");
+
+		paragraphDDMFormField.addNestedDDMFormField(
+			createTextDDMFormField("Name", "", true, true, false));
+
+		addDDMFormFields(templateDDMForm, paragraphDDMFormField);
+
+		DDMFormValues templateDDMFormValues = createDDMFormValues(
+			ddmForm, _availableLocales, LocaleUtil.US);
+
+		List<DDMFormFieldValue> ddmFormFieldValues =
+			templateDDMFormValues.getDDMFormFieldValues();
+
+		DDMFormFieldValue paragraphDDMFormFieldValue = createDDMFormFieldValue(
+			"rztm", "Paragraph", null);
+
+		DDMFormFieldValue nameDDMFormFieldValue1 = createDDMFormFieldValue(
+			"uayd", "Name",
+			createLocalizedValue("Name 1", "Nome 1", LocaleUtil.US));
+
+		DDMFormFieldValue nameDDMFormFieldValue2 = createDDMFormFieldValue(
+			"pamh", "Name",
+			createLocalizedValue("Name 2", "Nome 2", LocaleUtil.US));
+
+		paragraphDDMFormFieldValue.addNestedDDMFormFieldValue(
+			nameDDMFormFieldValue1);
+
+		paragraphDDMFormFieldValue.addNestedDDMFormFieldValue(
+			nameDDMFormFieldValue2);
+
+		ddmFormFieldValues.add(paragraphDDMFormFieldValue);
+
+		Fields fields = _ddmFormValuesToFieldsConverter.convert(
+			ddmStructure, templateDDMFormValues);
+
+		Assert.assertNotNull(fields);
+
+		Field nameField = fields.get("Name");
+
+		testField(
+			nameField, createValuesList("Name 1", "Name 2"),
+			createValuesList("Nome 1", "Nome 2"), _availableLocales,
+			LocaleUtil.US);
+
+		Field fieldsDisplayField = fields.get(DDMImpl.FIELDS_DISPLAY_NAME);
+
+		Assert.assertEquals(
+			"Name_INSTANCE_uayd,Name_INSTANCE_pamh",
+			fieldsDisplayField.getValue());
+	}
+
+	@Test
+	public void testConversionWithTransientField2() throws Exception {
+		DDMForm ddmForm = createDDMForm();
+
+		DDMFormField separatorDDMFormField = createSeparatorDDMFormField(
+			"Separator", true);
+
+		separatorDDMFormField.addNestedDDMFormField(
+			createTextDDMFormField("Name", "", true, true, false));
+
+		addDDMFormFields(ddmForm, separatorDDMFormField);
+
+		DDMStructure ddmStructure = createStructure("Test Structure", ddmForm);
+
+		DDMForm templateDDMForm = createDDMForm();
+
+		DDMFormField paragraphDDMFormField = createParagraphDDMFormField(
+			"Paragraph");
+
+		paragraphDDMFormField.addNestedDDMFormField(separatorDDMFormField);
+
+		addDDMFormFields(templateDDMForm, paragraphDDMFormField);
+
+		DDMFormValues templateDDMFormValues = createDDMFormValues(
+			ddmForm, _availableLocales, LocaleUtil.US);
+
+		List<DDMFormFieldValue> ddmFormFieldValues =
+			templateDDMFormValues.getDDMFormFieldValues();
+
+		DDMFormFieldValue paragraphDDMFormFieldValue = createDDMFormFieldValue(
+			"rztm", "Paragraph", null);
+
+		DDMFormFieldValue nameDDMFormFieldValue1 = createDDMFormFieldValue(
+			"uayd", "Name",
+			createLocalizedValue("Name 1", "Nome 1", LocaleUtil.US));
+
+		DDMFormFieldValue nameDDMFormFieldValue2 = createDDMFormFieldValue(
+			"pamh", "Name",
+			createLocalizedValue("Name 2", "Nome 2", LocaleUtil.US));
+
+		paragraphDDMFormFieldValue.addNestedDDMFormFieldValue(
+			nameDDMFormFieldValue1);
+
+		paragraphDDMFormFieldValue.addNestedDDMFormFieldValue(
+			nameDDMFormFieldValue2);
+
+		ddmFormFieldValues.add(paragraphDDMFormFieldValue);
+
+		Fields fields = _ddmFormValuesToFieldsConverter.convert(
+			ddmStructure, templateDDMFormValues);
+
+		Assert.assertNotNull(fields);
+
+		Field nameField = fields.get("Name");
+
+		testField(
+			nameField, createValuesList("Name 1", "Name 2"),
+			createValuesList("Nome 1", "Nome 2"), _availableLocales,
+			LocaleUtil.US);
+
+		Field fieldsDisplayField = fields.get(DDMImpl.FIELDS_DISPLAY_NAME);
+
+		Assert.assertEquals(
+			"Name_INSTANCE_uayd,Name_INSTANCE_pamh",
+			fieldsDisplayField.getValue());
+	}
+
 	@Override
 	protected List<Serializable> createValuesList(String... valuesString) {
 		List<Serializable> values = new ArrayList<>();
