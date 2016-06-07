@@ -162,17 +162,18 @@ public class LayoutModelImpl extends BaseModelImpl<Layout>
 				"value.object.column.bitmask.enabled.com.liferay.portal.kernel.model.Layout"),
 			true);
 	public static final long COMPANYID_COLUMN_BITMASK = 1L;
-	public static final long FRIENDLYURL_COLUMN_BITMASK = 2L;
-	public static final long GROUPID_COLUMN_BITMASK = 4L;
-	public static final long ICONIMAGEID_COLUMN_BITMASK = 8L;
-	public static final long LAYOUTID_COLUMN_BITMASK = 16L;
-	public static final long LAYOUTPROTOTYPEUUID_COLUMN_BITMASK = 32L;
-	public static final long PARENTLAYOUTID_COLUMN_BITMASK = 64L;
-	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 128L;
-	public static final long SOURCEPROTOTYPELAYOUTUUID_COLUMN_BITMASK = 256L;
-	public static final long TYPE_COLUMN_BITMASK = 512L;
-	public static final long UUID_COLUMN_BITMASK = 1024L;
-	public static final long PRIORITY_COLUMN_BITMASK = 2048L;
+	public static final long CREATEDATE_COLUMN_BITMASK = 2L;
+	public static final long FRIENDLYURL_COLUMN_BITMASK = 4L;
+	public static final long GROUPID_COLUMN_BITMASK = 8L;
+	public static final long ICONIMAGEID_COLUMN_BITMASK = 16L;
+	public static final long LAYOUTID_COLUMN_BITMASK = 32L;
+	public static final long LAYOUTPROTOTYPEUUID_COLUMN_BITMASK = 64L;
+	public static final long PARENTLAYOUTID_COLUMN_BITMASK = 128L;
+	public static final long PRIVATELAYOUT_COLUMN_BITMASK = 256L;
+	public static final long SOURCEPROTOTYPELAYOUTUUID_COLUMN_BITMASK = 512L;
+	public static final long TYPE_COLUMN_BITMASK = 1024L;
+	public static final long UUID_COLUMN_BITMASK = 2048L;
+	public static final long PRIORITY_COLUMN_BITMASK = 4096L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -649,7 +650,17 @@ public class LayoutModelImpl extends BaseModelImpl<Layout>
 
 	@Override
 	public void setCreateDate(Date createDate) {
+		_columnBitmask |= CREATEDATE_COLUMN_BITMASK;
+
+		if (_originalCreateDate == null) {
+			_originalCreateDate = _createDate;
+		}
+
 		_createDate = createDate;
+	}
+
+	public Date getOriginalCreateDate() {
+		return _originalCreateDate;
 	}
 
 	@JSON
@@ -1793,6 +1804,8 @@ public class LayoutModelImpl extends BaseModelImpl<Layout>
 
 		layoutModelImpl._setOriginalCompanyId = false;
 
+		layoutModelImpl._originalCreateDate = layoutModelImpl._createDate;
+
 		layoutModelImpl._setModifiedDate = false;
 
 		layoutModelImpl._originalPrivateLayout = layoutModelImpl._privateLayout;
@@ -2222,6 +2235,7 @@ public class LayoutModelImpl extends BaseModelImpl<Layout>
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
+	private Date _originalCreateDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private boolean _privateLayout;

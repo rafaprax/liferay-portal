@@ -990,6 +990,13 @@ public class LayoutLocalServiceWrapper implements LayoutLocalService,
 	}
 
 	@Override
+	public int countLayouts(long groupId, boolean privateLayout,
+		long parentLayoutId, java.util.Date lastCreateDate) {
+		return _layoutLocalService.countLayouts(groupId, privateLayout,
+			parentLayoutId, lastCreateDate);
+	}
+
+	@Override
 	public int getLayoutsByLayoutPrototypeUuidCount(
 		java.lang.String layoutPrototypeUuid) {
 		return _layoutLocalService.getLayoutsByLayoutPrototypeUuidCount(layoutPrototypeUuid);

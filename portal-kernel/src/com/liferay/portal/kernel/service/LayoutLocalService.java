@@ -785,6 +785,9 @@ public interface LayoutLocalService extends BaseLocalService,
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException;
 
+	public int countLayouts(long groupId, boolean privateLayout,
+		long parentLayoutId, Date lastCreateDate);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getLayoutsByLayoutPrototypeUuidCount(
 		java.lang.String layoutPrototypeUuid);

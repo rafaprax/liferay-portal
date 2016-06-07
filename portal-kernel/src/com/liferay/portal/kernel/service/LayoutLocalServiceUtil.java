@@ -957,6 +957,13 @@ public class LayoutLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
+	public static int countLayouts(long groupId, boolean privateLayout,
+		long parentLayoutId, java.util.Date lastCreateDate) {
+		return getService()
+				   .countLayouts(groupId, privateLayout, parentLayoutId,
+			lastCreateDate);
+	}
+
 	public static int getLayoutsByLayoutPrototypeUuidCount(
 		java.lang.String layoutPrototypeUuid) {
 		return getService()
