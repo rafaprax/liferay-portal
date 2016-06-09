@@ -52,7 +52,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							value = {
 								"validation", "showLabel", "repeatable",
 								"placeholder", "visibilityExpression",
-								"predefinedValue", "fieldNamespace",
+								"visible", "predefinedValue", "fieldNamespace",
 								"indexType", "localizable", "readOnly",
 								"dataType", "type", "name", "tooltip"
 							}
@@ -71,7 +71,7 @@ public interface KeyValueDDMFormFieldTypeSettings
 	@DDMFormField(dataType = "string", label = "%field-tip", type = "text")
 	public LocalizedValue placeholder();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	public LocalizedValue tooltip();
 
 }

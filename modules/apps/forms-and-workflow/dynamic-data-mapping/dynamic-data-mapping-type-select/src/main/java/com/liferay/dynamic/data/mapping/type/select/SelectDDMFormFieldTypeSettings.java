@@ -55,9 +55,10 @@ import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 							size = 12,
 							value = {
 								"predefinedValue", "visibilityExpression",
-								"validation", "fieldNamespace", "indexType",
-								"localizable", "readOnly", "dataType", "type",
-								"name", "showLabel", "repeatable", "multiple"
+								"visible", "validation", "fieldNamespace",
+								"indexType", "localizable", "readOnly",
+								"dataType", "type", "name", "showLabel",
+								"repeatable", "multiple"
 							}
 						)
 					}
@@ -77,12 +78,14 @@ public interface SelectDDMFormFieldTypeSettings
 		optionValues = {"manual", "data-provider"}, predefinedValue = "manual",
 		type = "radio"
 	)
+	@Deprecated
 	public String dataSourceType();
 
 	@DDMFormField(
 		label = "%choose-a-data-provider", type = "select",
 		visibilityExpression = "equals(dataSourceType, \"data-provider\")"
 	)
+	@Deprecated
 	public long ddmDataProviderInstanceId();
 
 	@DDMFormField(label = "%multiple", properties = {"showAsSwitcher=true"})
@@ -90,12 +93,12 @@ public interface SelectDDMFormFieldTypeSettings
 
 	@DDMFormField(
 		dataType = "ddm-options", label = "%options",
-		properties = {"showLabel=false"}, required = true, type = "options",
-		visibilityExpression = "equals(dataSourceType, \"manual\")"
+		properties = {"showLabel=false"}, required = true, type = "options"
 	)
 	public DDMFormFieldOptions options();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
+	@Deprecated
 	@Override
 	public DDMFormFieldValidation validation();
 

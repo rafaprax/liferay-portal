@@ -12,17 +12,18 @@
  * details.
  */
 
-package com.liferay.portal.lpkg.deployer;
+package com.liferay.portal.scripting.executor.provider;
+
+import aQute.bnd.annotation.ProviderType;
 
 import org.osgi.framework.Bundle;
 
 /**
- * @author Shuyang Zhou
+ * @author Michael C. Han
  */
-public interface LPKGWARBundleRegistry {
+@ProviderType
+public interface ScriptBundleProvider {
 
-	public Bundle register(Bundle warWrapperBundle, Bundle warBundle);
-
-	public Bundle unregister(Bundle warWrapperBundle);
+	public Bundle getBundle();
 
 }

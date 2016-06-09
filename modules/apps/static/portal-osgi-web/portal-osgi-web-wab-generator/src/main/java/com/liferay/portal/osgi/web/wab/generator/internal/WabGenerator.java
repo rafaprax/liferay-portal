@@ -14,6 +14,8 @@
 
 package com.liferay.portal.osgi.web.wab.generator.internal;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -101,16 +103,30 @@ public class WabGenerator
 			public Void addingBundle(Bundle bundle, BundleEvent bundleEvent) {
 				String location = StringUtil.toLowerCase(bundle.getLocation());
 
-				if (requiredForStartupLocations.remove(location) &&
-					requiredForStartupLocations.isEmpty()) {
+				if (_log.isDebugEnabled()) {
+					_log.debug("Activated bundle " + location);
+				}
 
-					countDownLatch.countDown();
+				if (requiredForStartupLocations.remove(location)) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							"Bundle " + location + " is required for startup");
+					}
+
+					if (requiredForStartupLocations.isEmpty()) {
+						countDownLatch.countDown();
+					}
 				}
 
 				return null;
 			}
 
 		};
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Bundles required for startup: " + requiredForStartupLocations);
+		}
 
 		bundleTracker.open();
 
@@ -132,7 +148,7 @@ public class WabGenerator
 		Set<String> locations = new HashSet<>();
 
 		try (DirectoryStream<Path> directoryStream =
-				Files.newDirectoryStream(path, "*.war")) {
+				Files.newDirectoryStream(path.toRealPath(), "*.war")) {
 
 			for (Path warPath : directoryStream) {
 				URI uri = warPath.toUri();
@@ -199,6 +215,8 @@ public class WabGenerator
 	protected void unsetModuleServiceLifecycle(
 		ModuleServiceLifecycle moduleServiceLifecycle) {
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(WabGenerator.class);
 
 	private ServiceRegistration<ArtifactUrlTransformer> _serviceRegistration;
 

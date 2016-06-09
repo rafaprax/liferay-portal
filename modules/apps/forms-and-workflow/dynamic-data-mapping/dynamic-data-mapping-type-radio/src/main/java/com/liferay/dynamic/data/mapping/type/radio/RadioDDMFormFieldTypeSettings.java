@@ -52,9 +52,10 @@ import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 							size = 12,
 							value = {
 								"predefinedValue", "visibilityExpression",
-								"validation", "fieldNamespace", "indexType",
-								"localizable", "readOnly", "dataType", "type",
-								"name", "showLabel", "repeatable", "inline"
+								"visible", "validation", "fieldNamespace",
+								"indexType", "localizable", "readOnly",
+								"dataType", "type", "name", "showLabel",
+								"repeatable", "inline"
 							}
 						)
 					}
@@ -77,7 +78,8 @@ public interface RadioDDMFormFieldTypeSettings
 	)
 	public DDMFormFieldOptions options();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
+	@Deprecated
 	@Override
 	public DDMFormFieldValidation validation();
 

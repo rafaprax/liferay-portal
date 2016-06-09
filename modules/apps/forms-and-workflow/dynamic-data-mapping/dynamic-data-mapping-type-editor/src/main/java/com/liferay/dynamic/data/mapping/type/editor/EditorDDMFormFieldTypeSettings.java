@@ -51,7 +51,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							size = 12,
 							value = {
 								"predefinedValue", "placeholder",
-								"visibilityExpression", "validation",
+								"visibilityExpression", "visible", "validation",
 								"fieldNamespace", "indexType", "localizable",
 								"readOnly", "dataType", "type", "name",
 								"showLabel", "repeatable"

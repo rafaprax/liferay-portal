@@ -52,9 +52,10 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							size = 12,
 							value = {
 								"predefinedValue", "visibilityExpression",
-								"validation", "fieldNamespace", "indexType",
-								"localizable", "readOnly", "dataType", "type",
-								"name", "showLabel", "repeatable"
+								"visible", "validation", "fieldNamespace",
+								"indexType", "localizable", "readOnly",
+								"dataType", "type", "name", "showLabel",
+								"repeatable"
 							}
 						)
 					}
@@ -75,9 +76,9 @@ public interface DateDDMFormFieldTypeSettings
 	public LocalizedValue predefinedValue();
 
 	@DDMFormField(
-		dataType = "ddm-validation", type = "validation",
-		visibilityExpression = "FALSE"
+		dataType = "ddm-validation", type = "validation", visible = false
 	)
+	@Deprecated
 	@Override
 	public DDMFormFieldValidation validation();
 

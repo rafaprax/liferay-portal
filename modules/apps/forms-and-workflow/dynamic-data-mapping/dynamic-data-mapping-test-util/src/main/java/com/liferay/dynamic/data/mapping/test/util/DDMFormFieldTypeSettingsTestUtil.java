@@ -47,7 +47,7 @@ public class DDMFormFieldTypeSettingsTestUtil {
 									"options", "predefinedValue", "readOnly",
 									"repeatable", "required", "showLabel",
 									"tip", "type", "validation",
-									"visibilityExpression"
+									"visibilityExpression", "visible"
 								}
 							)
 						}

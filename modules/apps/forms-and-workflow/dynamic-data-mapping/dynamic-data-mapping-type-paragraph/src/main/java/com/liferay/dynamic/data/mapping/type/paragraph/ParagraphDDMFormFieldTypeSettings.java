@@ -53,8 +53,9 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							value = {
 								"validation", "showLabel", "repeatable",
 								"predefinedValue", "visibilityExpression",
-								"fieldNamespace", "indexType", "localizable",
-								"readOnly", "dataType", "type", "name"
+								"visible", "fieldNamespace", "indexType",
+								"localizable", "readOnly", "dataType", "type",
+								"name"
 							}
 						)
 					}
@@ -75,19 +76,19 @@ public interface ParagraphDDMFormFieldTypeSettings
 	@Override
 	public LocalizedValue label();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	@Override
 	public LocalizedValue predefinedValue();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	@Override
 	public boolean repeatable();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	@Override
 	public boolean required();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	@Override
 	public boolean showLabel();
 
@@ -98,14 +99,14 @@ public interface ParagraphDDMFormFieldTypeSettings
 	)
 	public String text();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	@Override
 	public LocalizedValue tip();
 
 	@DDMFormField(
-		dataType = "ddm-validation", type = "validation",
-		visibilityExpression = "FALSE"
+		dataType = "ddm-validation", type = "validation", visible = false
 	)
+	@Deprecated
 	@Override
 	public DDMFormFieldValidation validation();
 

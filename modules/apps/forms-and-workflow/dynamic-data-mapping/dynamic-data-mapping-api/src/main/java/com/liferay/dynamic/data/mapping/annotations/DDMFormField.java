@@ -44,14 +44,21 @@ public @interface DDMFormField {
 
 	public boolean required() default false;
 
+	public DDMFormFieldRule[] rules() default {};
+
 	public String tip() default StringPool.BLANK;
 
 	public String type() default StringPool.BLANK;
 
+	@Deprecated
 	public String validationErrorMessage() default StringPool.BLANK;
 
+	@Deprecated
 	public String validationExpression() default StringPool.BLANK;
 
+	@Deprecated
 	public String visibilityExpression() default StringPool.BLANK;
+
+	public boolean visible() default true;
 
 }

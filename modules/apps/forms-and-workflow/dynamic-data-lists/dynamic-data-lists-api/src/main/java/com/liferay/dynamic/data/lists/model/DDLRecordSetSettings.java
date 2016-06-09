@@ -16,10 +16,12 @@ package com.liferay.dynamic.data.lists.model;
 
 import com.liferay.dynamic.data.mapping.annotations.DDMForm;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormField;
+import com.liferay.dynamic.data.mapping.annotations.DDMFormFieldRule;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutColumn;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutRow;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldRuleType;
 
 /**
  * @author Bruno Basto
@@ -66,40 +68,71 @@ public interface DDLRecordSetSettings {
 
 	@DDMFormField(
 		label = "%from-address",
-		validationErrorMessage = "%please-enter-a-valid-email-address",
-		validationExpression = "isEmailAddress(emailFromAddress)",
-		visibilityExpression = "sendEmailNotification == TRUE"
+		rules = {
+			@DDMFormFieldRule(
+				errorMessage = "%please-enter-a-valid-email-address",
+				expression = "isEmailAddress(emailFromAddress)",
+				type = DDMFormFieldRuleType.VALIDATION
+			),
+			@DDMFormFieldRule(
+				expression = "sendEmailNotification == TRUE",
+				type = DDMFormFieldRuleType.VISIBILITY
+			)
+		}
 	)
 	public String emailFromAddress();
 
 	@DDMFormField(
 		label = "%from-name",
-		visibilityExpression = "sendEmailNotification == TRUE"
+		rules = {
+			@DDMFormFieldRule(
+				expression = "sendEmailNotification == TRUE",
+				type = DDMFormFieldRuleType.VISIBILITY
+			)
+		}
 	)
 	public String emailFromName();
 
 	@DDMFormField(
 		label = "%subject",
-		visibilityExpression = "sendEmailNotification == TRUE"
+		rules = {
+			@DDMFormFieldRule(
+				expression = "sendEmailNotification == TRUE",
+				type = DDMFormFieldRuleType.VISIBILITY
+			)
+		}
 	)
 	public String emailSubject();
 
 	@DDMFormField(
 		label = "%to-address",
-		validationErrorMessage = "%please-enter-a-valid-email-address",
-		validationExpression = "isEmailAddress(emailToAddress)",
-		visibilityExpression = "sendEmailNotification == TRUE"
+		rules = {
+			@DDMFormFieldRule(
+				errorMessage = "%please-enter-a-valid-email-address",
+				expression = "isEmailAddress(emailToAddress)",
+				type = DDMFormFieldRuleType.VALIDATION
+			),
+			@DDMFormFieldRule(
+				expression = "sendEmailNotification == TRUE",
+				type = DDMFormFieldRuleType.VISIBILITY
+			)
+		}
 	)
 	public String emailToAddress();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField(visible = false)
 	public boolean published();
 
 	@DDMFormField(
 		label = "%redirect-url-on-success",
 		properties = {"placeholder=%enter-a-valid-url"},
-		validationErrorMessage = "%please-enter-a-valid-url",
-		validationExpression = "isURL(redirectURL)"
+		rules = {
+			@DDMFormFieldRule(
+				errorMessage = "%please-enter-a-valid-url",
+				expression = "isURL(redirectURL)",
+				type = DDMFormFieldRuleType.VALIDATION
+			)
+		}
 	)
 	public String redirectURL();
 
