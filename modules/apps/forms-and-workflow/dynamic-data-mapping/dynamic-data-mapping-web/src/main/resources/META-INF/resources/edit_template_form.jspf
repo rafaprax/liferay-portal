@@ -55,7 +55,7 @@ String fieldsJSONArrayString = fieldsJSONArray.toString();
 	);
 
 	function <portlet:namespace />setFieldsHiddenAttributes(formBuilder, mode, item, index) {
-		var hiddenAttributesMap = formBuilder.MAP_HIDDEN_FIELD_ATTRS;
+		var hiddenAttributesMap = formBuilder.MAP_TEMPLATE_HIDDEN_FIELD_ATTRS;
 
 		var hiddenAttributes = hiddenAttributesMap[item.get('type')] || hiddenAttributesMap.DEFAULT;
 

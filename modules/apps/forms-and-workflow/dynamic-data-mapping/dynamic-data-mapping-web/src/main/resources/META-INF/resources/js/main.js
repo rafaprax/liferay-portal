@@ -27,6 +27,14 @@ AUI.add(
 			separator: ['indexType', 'localizable', 'predefinedValue', 'readOnly', 'required']
 		};
 
+		var MAP_TEMPLATE_HIDDEN_FIELD_ATTRS = {
+			checkbox: ['readOnly'],
+			
+			DEFAULT: ['readOnly', 'width'],
+			
+			'ddm-separator':  ['indexType', 'localizable', 'predefinedValue', 'readOnly', 'repeatable', 'required', 'width'],
+		};
+
 		var SETTINGS_TAB_INDEX = 1;
 
 		var STR_BLANK = '';
@@ -231,7 +239,7 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
-						instance.MAP_HIDDEN_FIELD_ATTRS = A.clone(MAP_HIDDEN_FIELD_ATTRS);
+						instance.MAP_TEMPLATE_HIDDEN_FIELD_ATTRS = A.clone(MAP_TEMPLATE_HIDDEN_FIELD_ATTRS);
 
 						var translationManager = instance.translationManager = new Liferay.TranslationManager(instance.get('translationManager'));
 
@@ -268,20 +276,6 @@ AUI.add(
 						var field = LiferayFormBuilder.superclass.createField.apply(instance, arguments);
 
 						field.set('strings', instance.get('strings'));
-
-						var fieldHiddenAttributeMap = {
-							checkbox: instance.MAP_HIDDEN_FIELD_ATTRS.checkbox,
-							'ddm-separator': instance.MAP_HIDDEN_FIELD_ATTRS.separator,
-							default: instance.MAP_HIDDEN_FIELD_ATTRS.DEFAULT
-						};
-
-						var hiddenAtributes = fieldHiddenAttributeMap[field.get('type')];
-
-						if (!hiddenAtributes) {
-							hiddenAtributes = fieldHiddenAttributeMap.default;
-						}
-
-						field.set('hiddenAttributes', hiddenAtributes);
 
 						return field;
 					},
