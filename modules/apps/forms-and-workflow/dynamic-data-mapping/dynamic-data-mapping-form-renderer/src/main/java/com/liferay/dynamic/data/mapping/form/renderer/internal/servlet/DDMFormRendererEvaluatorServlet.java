@@ -12,13 +12,15 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.form.evaluator.internal.servlet;
+package com.liferay.dynamic.data.mapping.form.renderer.internal.servlet;
 
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluator;
+import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
+import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONDeserializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializer;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONSerializer;
@@ -26,10 +28,12 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.ParamUtil;
 
 import java.io.IOException;
+
+import java.util.Map;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -46,17 +50,40 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	immediate = true,
 	property = {
-		"osgi.http.whiteboard.context.path=/dynamic-data-mapping-form-evaluator",
-		"osgi.http.whiteboard.servlet.name=com.liferay.dynamic.data.mapping.form.evaluator.internal.servlet.DDMFormEvaluatorServlet",
-		"osgi.http.whiteboard.servlet.pattern=/dynamic-data-mapping-form-evaluator/*"
+		"osgi.http.whiteboard.context.path=/dynamic-data-mapping-form-renderer-evaluator",
+		"osgi.http.whiteboard.servlet.name=com.liferay.dynamic.data.mapping.form.renderer.internal.servlet.DDMFormRendererEvaluatorServlet",
+		"osgi.http.whiteboard.servlet.pattern=/dynamic-data-mapping-form-renderer-evaluator/*"
 	},
 	service = Servlet.class
 )
-public class DDMFormEvaluatorServlet extends HttpServlet {
+public class DDMFormRendererEvaluatorServlet extends HttpServlet {
 
-	protected DDMFormEvaluationResult doEvaluate(
-		String serializedDDMForm, String serializedDDMFormValues,
-		String languageId) {
+	protected DDMFormRenderingContext createDDMFormRenderingContext(
+		HttpServletRequest request, HttpServletResponse response) {
+
+		String portletNamespace = ParamUtil.getString(
+			request, "portletNamespace");
+
+		DDMFormRenderingContext ddmFormRenderingContext =
+			new DDMFormRenderingContext();
+
+		ddmFormRenderingContext.setHttpServletRequest(request);
+		ddmFormRenderingContext.setHttpServletResponse(response);
+		ddmFormRenderingContext.setLocale(request.getLocale());
+		ddmFormRenderingContext.setPortletNamespace(portletNamespace);
+
+		return ddmFormRenderingContext;
+	}
+
+	protected Object doEvaluate(
+		HttpServletRequest request, HttpServletResponse response) {
+
+		String serializedDDMForm = ParamUtil.getString(
+			request, "serializedDDMForm");
+		String serializedDDMFormLayout = ParamUtil.getString(
+			request, "serializedDDMFormLayout");
+		String serializedDDMFormValues = ParamUtil.getString(
+			request, "serializedDDMFormValues");
 
 		try {
 			DDMForm ddmForm = _ddmFormJSONDeserializer.deserialize(
@@ -66,8 +93,22 @@ public class DDMFormEvaluatorServlet extends HttpServlet {
 				_ddmFormValuesJSONDeserializer.deserialize(
 					ddmForm, serializedDDMFormValues);
 
-			return _ddmFormEvaluator.evaluate(
-				ddmForm, ddmFormValues, LocaleUtil.fromLanguageId(languageId));
+			DDMFormRenderingContext ddmFormRenderingContext =
+				createDDMFormRenderingContext(request, response);
+
+			ddmFormRenderingContext.setDDMFormValues(ddmFormValues);
+
+			DDMFormLayout ddmFormLayout =
+				_ddmFormLayoutJSONDeserializer.deserialize(
+					serializedDDMFormLayout);
+
+			LocaleThreadLocal.setThemeDisplayLocale(ddmForm.getDefaultLocale());
+
+			Map<String, Object> templateContext =
+				_ddmFormTemplateContextFactory.create(
+					ddmForm, ddmFormLayout, ddmFormRenderingContext);
+
+			return templateContext.get("pages");
 		}
 		catch (Exception e) {
 			if (_log.isDebugEnabled()) {
@@ -83,16 +124,9 @@ public class DDMFormEvaluatorServlet extends HttpServlet {
 			HttpServletRequest request, HttpServletResponse response)
 		throws IOException, ServletException {
 
-		String serializedDDMForm = ParamUtil.getString(
-			request, "serializedDDMForm");
-		String serializedDDMFormValues = ParamUtil.getString(
-			request, "serializedDDMFormValues");
-		String languageId = ParamUtil.getString(request, "languageId");
+		Object pages = doEvaluate(request, response);
 
-		DDMFormEvaluationResult ddmFormEvaluationResult = doEvaluate(
-			serializedDDMForm, serializedDDMFormValues, languageId);
-
-		if (ddmFormEvaluationResult == null) {
+		if (pages == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 
 			return;
@@ -104,41 +138,27 @@ public class DDMFormEvaluatorServlet extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 
 		ServletResponseUtil.write(
-			response, jsonSerializer.serializeDeep(ddmFormEvaluationResult));
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDMFormEvaluator(DDMFormEvaluator ddmFormEvaluator) {
-		_ddmFormEvaluator = ddmFormEvaluator;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDMFormJSONDeserializer(
-		DDMFormJSONDeserializer ddmFormJSONDeserializer) {
-
-		_ddmFormJSONDeserializer = ddmFormJSONDeserializer;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDMFormValuesJSONDeserializer(
-		DDMFormValuesJSONDeserializer ddmFormValuesJSONDeserializer) {
-
-		_ddmFormValuesJSONDeserializer = ddmFormValuesJSONDeserializer;
-	}
-
-	@Reference(unbind = "-")
-	protected void setJSONFactory(JSONFactory jsonFactory) {
-		_jsonFactory = jsonFactory;
+			response, jsonSerializer.serializeDeep(pages));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		DDMFormEvaluatorServlet.class);
+		DDMFormRendererEvaluatorServlet.class);
 
 	private static final long serialVersionUID = 1L;
 
-	private DDMFormEvaluator _ddmFormEvaluator;
+	@Reference
 	private DDMFormJSONDeserializer _ddmFormJSONDeserializer;
+
+	@Reference
+	private DDMFormLayoutJSONDeserializer _ddmFormLayoutJSONDeserializer;
+
+	@Reference
+	private DDMFormTemplateContextFactory _ddmFormTemplateContextFactory;
+
+	@Reference
 	private DDMFormValuesJSONDeserializer _ddmFormValuesJSONDeserializer;
+
+	@Reference
 	private JSONFactory _jsonFactory;
 
 }

@@ -315,7 +315,7 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 	}
 
 	@Reference(
-		target = "(osgi.http.whiteboard.servlet.name=com.liferay.dynamic.data.mapping.form.evaluator.internal.servlet.DDMFormEvaluatorServlet)",
+		target = "(osgi.http.whiteboard.servlet.name=com.liferay.dynamic.data.mapping.form.renderer.internal.servlet.DDMFormRendererEvaluatorServlet)",
 		unbind = "-"
 	)
 	protected void setDDMFormEvaluatorServlet(Servlet ddmFormEvaluatorServlet) {

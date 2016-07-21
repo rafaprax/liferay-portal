@@ -49,6 +49,11 @@ AUI.add(
 						valueFn: '_valueFieldTypes'
 					},
 
+					getFieldTypeSettingFormContextURL: {
+						validator: Lang.isString,
+						value: ''
+					},
+
 					layouts: {
 						valueFn: '_valueLayouts'
 					},
@@ -59,6 +64,10 @@ AUI.add(
 					},
 
 					portletNamespace: {
+					},
+
+					recordSetId: {
+						value: 0
 					},
 
 					strings: {
@@ -158,6 +167,7 @@ AUI.add(
 									builder: instance,
 									dataProviders: instance.get('dataProviders'),
 									evaluatorURL: instance.get('evaluatorURL'),
+									getFieldTypeSettingFormContextURL: instance.get('getFieldTypeSettingFormContextURL'),
 									portletNamespace: instance.get('portletNamespace'),
 									readOnly: true
 								}
@@ -414,9 +424,15 @@ AUI.add(
 					_renderField: function(field) {
 						var instance = this;
 
+						var activeLayout = instance.getActiveLayout();
+
 						field.set('builder', instance);
 
 						field.render();
+
+						var row = instance.getFieldRow(field);
+
+						activeLayout.normalizeColsHeight(new A.NodeList(row));
 					},
 
 					_renderFields: function() {

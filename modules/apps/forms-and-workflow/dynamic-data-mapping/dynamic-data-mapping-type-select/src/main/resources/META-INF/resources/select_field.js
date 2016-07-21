@@ -34,6 +34,7 @@ AUI.add(
 					},
 
 					strings: {
+						repaint: false,
 						value: {
 							chooseAnOption: Liferay.Language.get('choose-an-option'),
 							dynamicallyLoadedData: Liferay.Language.get('dynamically-loaded-data')
@@ -45,7 +46,7 @@ AUI.add(
 					},
 
 					value: {
-						setter: '_setValue',
+						repaint: false,
 						value: []
 					}
 				},
@@ -55,55 +56,6 @@ AUI.add(
 				NAME: 'liferay-ddm-form-field-select',
 
 				prototype: {
-					getContextValue: function() {
-						var instance = this;
-
-						var value = instance._getContextValue();
-
-						return value[0] || '';
-					},
-
-					getOptions: function() {
-						var instance = this;
-
-						var options = instance.get('options');
-
-						if (instance.get('dataSourceType') !== 'manual') {
-							options = instance.get('dataSourceOptions');
-						}
-
-						return A.map(
-							options,
-							function(item) {
-								var label = item.label;
-
-								if (Lang.isObject(label)) {
-									label = label[instance.get('locale')];
-								}
-
-								return {
-									label: label,
-									status: instance._getOptionStatus(item),
-									value: item.value
-								};
-							}
-						);
-					},
-
-					getTemplateContext: function() {
-						var instance = this;
-
-						return A.merge(
-							SelectField.superclass.getTemplateContext.apply(instance, arguments),
-							{
-								multiple: instance.get('multiple') ? 'multiple' : '',
-								options: instance.getOptions(),
-								strings: instance.get('strings'),
-								value: instance.getContextValue()
-							}
-						);
-					},
-
 					render: function() {
 						var instance = this;
 
@@ -144,21 +96,32 @@ AUI.add(
 						return instance;
 					},
 
-					_getContextValue: function() {
+					setValue: function(value) {
 						var instance = this;
 
-						var value = SelectField.superclass.getContextValue.apply(instance, arguments);
+						var inputNode = instance.getInputNode();
 
-						if (!Array.isArray(value)) {
-							try {
-								value = JSON.parse(value);
-							}
-							catch (e) {
-								value = [value];
-							}
-						}
+						var options = inputNode.all('option');
 
-						return value;
+						options.attr('selected', false);
+
+						options.filter(
+							function(option) {
+								return value.indexOf(option.val()) > -1;
+							}
+						).attr('selected', true);
+					},
+
+					showErrorMessage: function() {
+						var instance = this;
+
+						SelectField.superclass.showErrorMessage.apply(instance, arguments);
+
+						var container = instance.get('container');
+
+						var inputGroup = container.one('.input-select-wrapper');
+
+						inputGroup.insert(container.one('.help-block'), 'after');
 					},
 
 					_getDataSourceData: function(callback) {
@@ -184,36 +147,6 @@ AUI.add(
 								}
 							}
 						);
-					},
-
-					_getOptionStatus: function(option) {
-						var instance = this;
-
-						var status = '';
-
-						var value = instance._getContextValue();
-
-						if (value.indexOf(option.value) > -1) {
-							status = 'selected';
-						}
-
-						return status;
-					},
-
-					_renderErrorMessage: function() {
-						var instance = this;
-
-						SelectField.superclass._renderErrorMessage.apply(instance, arguments);
-
-						var container = instance.get('container');
-
-						var inputGroup = container.one('.input-select-wrapper');
-
-						inputGroup.insert(container.one('.help-block'), 'after');
-					},
-
-					_setValue: function(val) {
-						return val || [];
 					},
 
 					_valueDataProviderURL: function() {

@@ -13,9 +13,15 @@ AUI.add(
 
 		var TPL_SUBMIT_BUTTON = '<button class="hide" type="submit" />';
 
+		var RendererUtil = Liferay.DDM.Renderer.Util;
+
 		var FormBuilderSettingsForm = A.Component.create(
 			{
 				ATTRS: {
+					editMode: {
+						value: false
+					},
+
 					dataProviders: {
 					},
 
@@ -33,25 +39,36 @@ AUI.add(
 
 						instance._initDataProvider();
 
-						var labelField = instance.getField('label');
-						var nameField = instance.getField('name');
-
 						instance._eventHandlers.push(
 							instance.after('render', instance._afterSettingsFormRender),
-							instance.on('*:addField', instance.alignModal),
-							instance.on('*:removeField', instance.alignModal),
-							labelField.after(A.bind('_afterLabelFieldNormalizeKey', instance), labelField, 'normalizeKey'),
-							labelField.on('keyChange', instance._onLabelFieldKeyChange, instance),
-							nameField.on('valueChange', instance._onNameChange, instance)
+							instance.on('*:addOption', instance._afterAddOption),
+							instance.on('*:removeOption', instance.alignModal)
 						);
+
+						instance._fieldEventHandlers = [];
 					},
 
 					alignModal: function() {
 						var instance = this;
 
-						var modalSettings = instance.get('field').getSettingsModal();
+						var field = instance.get('field');
 
-						modalSettings._modal.align();
+						var settingsModal = field.getSettingsModal();
+
+						settingsModal.align();
+					},
+
+					getEvaluationPayload: function() {
+						var instance = this;
+
+						var field = instance.get('field');
+
+						return A.merge(
+							FormBuilderSettingsForm.superclass.getEvaluationPayload.apply(instance, arguments),
+							{
+								type: field.get('type')
+							}
+						);
 					},
 
 					getSubmitButton: function() {
@@ -72,7 +89,7 @@ AUI.add(
 
 									var settingsModal = field.getSettingsModal();
 
-									field.saveSettings();
+									field.saveSettings(instance);
 
 									settingsModal.fire(
 										'save',
@@ -80,10 +97,6 @@ AUI.add(
 											field: field
 										}
 									);
-
-									var builder = field.get('builder');
-
-									builder.appendChild(field);
 
 									settingsModal.hide();
 								}
@@ -109,12 +122,36 @@ AUI.add(
 						);
 					},
 
-					_afterDataSourceTypeFieldValueChanged: function(event) {
+					_afterAddOption: function(event) {
 						var instance = this;
 
-						var optionsField = instance.getField('options');
+						var optionsField = event.target;
 
-						optionsField.set('required', event.target.getValue() === 'manual');
+						var field = instance.get('field');
+
+						var builder = field.get('builder');
+
+						var definition = builder.get('definition');
+
+						var searchResults = RendererUtil.searchFieldsByKey(definition, field.get('fieldName'), 'fieldName');
+
+						if (searchResults.length) {
+							var definitionOptions = searchResults[0].options;
+
+							optionsField.eachOption(
+								function(option) {
+									var existingOption = definitionOptions.find(
+										function(definitionOption) {
+											return definitionOption.value === option.get('key');
+										}
+									);
+
+									option.set('keyInputEnabled', !existingOption);
+								}
+							);
+						}
+
+						instance.alignModal();
 					},
 
 					_afterDDMDataProviderInstanceIdFieldRender: function(event) {
@@ -144,19 +181,6 @@ AUI.add(
 								}
 							).join('')
 						);
-
-						var dataSourceTypeField = instance.getField('dataSourceType');
-
-						var dataSourceType = dataSourceTypeField.getValue();
-
-						ddmDataProviderInstanceIdField.set('visible', dataSourceType !== 'manual');
-
-						var optionsField = instance.getField('options');
-
-						var manualDataSourceType = dataSourceType === 'manual';
-
-						optionsField.set('required', manualDataSourceType);
-						optionsField.set('visible', manualDataSourceType);
 					},
 
 					_afterLabelFieldNormalizeKey: function(key) {
@@ -173,19 +197,20 @@ AUI.add(
 						container.append(TPL_SUBMIT_BUTTON);
 
 						instance._createModeToggler();
-
 						instance._syncModeToggler();
 
-						var formName = A.guid();
+						var labelField = instance.getField('label');
+						var nameField = instance.getField('name');
 
-						container.attr('id', formName);
-						container.attr('name', formName);
+						(new A.EventHandle(instance._fieldEventHandlers)).detach();
 
-						Liferay.Form.register(
-							{
-								id: formName
-							}
+						instance._fieldEventHandlers.push(
+							labelField.on('keyChange', A.bind('_onLabelFieldKeyChange', instance)),
+							labelField.after(A.bind('_afterLabelFieldNormalizeKey', instance), labelField, 'normalizeKey')
 						);
+
+						labelField.set('key', labelField.normalizeKey(nameField.getValue()));
+						labelField.set('keyInputEnabled', instance.get('editMode'));
 					},
 
 					_createModeToggler: function() {
@@ -219,16 +244,18 @@ AUI.add(
 
 						var name = key;
 
-						do {
-							if (counter > 0) {
-								name = key + counter;
+						if (name) {
+							do {
+								if (counter > 0) {
+									name = key + counter;
+								}
+
+								existingField = builder.getField(name);
+
+								counter++;
 							}
-
-							existingField = builder.getField(name);
-
-							counter++;
+							while (existingField !== undefined && existingField !== field);
 						}
-						while (existingField !== undefined && existingField !== field);
 
 						return name;
 					},
@@ -256,9 +283,6 @@ AUI.add(
 
 						if (!!sameNameField && sameNameField !== field) {
 							nameField.showErrorMessage(Liferay.Language.get('field-name-is-already-in-use'));
-							nameField.showValidationStatus();
-
-							nameField.focus();
 
 							hasErrors = true;
 						}
@@ -274,14 +298,6 @@ AUI.add(
 						if (ddmDataProviderInstanceIdField) {
 							instance._eventHandlers.push(
 								ddmDataProviderInstanceIdField.after('render', A.bind('_afterDDMDataProviderInstanceIdFieldRender', instance))
-							);
-						}
-
-						var dataSourceTypeField = instance.getField('dataSourceType');
-
-						if (dataSourceTypeField) {
-							instance._eventHandlers.push(
-								dataSourceTypeField.after('valueChanged', A.bind('_afterDataSourceTypeFieldValueChanged', instance))
 							);
 						}
 					},
@@ -359,6 +375,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['liferay-ddm-form-renderer', 'liferay-form']
+		requires: ['liferay-ddm-form-renderer', 'liferay-ddm-form-renderer-util', 'liferay-form']
 	}
 );

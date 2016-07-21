@@ -40,7 +40,7 @@ AUI.add(
 						return A.merge(
 							EditorField.superclass.getTemplateContext.apply(instance, arguments),
 							{
-								placeholder: instance.getLocalizedValue(instance.get('placeholder'))
+								placeholder: instance.get('placeholder')
 							}
 						);
 					},
@@ -67,7 +67,7 @@ AUI.add(
 						if (editorNode.inDoc() && !instance.get('readOnly')) {
 							var name = instance.getQualifiedName();
 
-							var value = instance.getContextValue();
+							var value = instance.get('value');
 
 							editorNode.html(value);
 
@@ -114,9 +114,13 @@ AUI.add(
 					_onChangeEditor: function() {
 						var instance = this;
 
+						var inputNode = instance.getInputNode();
+
 						var value = instance._alloyEditor.getHTML();
 
-						instance.getInputNode().val(value);
+						if (inputNode) {
+							inputNode.val(value);
+						}
 
 						instance.fire(
 							'valueChanged',

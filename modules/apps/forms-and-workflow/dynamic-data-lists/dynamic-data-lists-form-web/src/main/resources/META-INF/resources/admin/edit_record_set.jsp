@@ -173,6 +173,8 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 
 		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="publishRecordSet" var="publishRecordSetURL" />
 
+		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="getFieldSettingsDDMFormContext" var="getFieldSettingsDDMFormContext" />
+
 		<aui:script>
 			var initHandler = Liferay.after(
 				'form:registered',
@@ -207,6 +209,8 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 											description: '<%= HtmlUtil.escapeJS(description) %>',
 											editForm: event.form,
 											evaluatorURL: '<%= ddlFormAdminDisplayContext.getDDMFormEvaluatorServletURL() %>',
+											fieldTypesDefinitions: <%= ddlFormAdminDisplayContext.getDDMFormFieldTypesDefinitionsMap() %>,
+											getFieldTypeSettingFormContextURL: '<%= getFieldSettingsDDMFormContext.toString() %>',
 											layout: <%= ddlFormAdminDisplayContext.getSerializedDDMFormLayout() %>,
 											name: '<%= HtmlUtil.escapeJS(name) %>',
 											namespace: '<portlet:namespace />',
