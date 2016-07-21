@@ -1,7 +1,9 @@
 AUI.add(
 	'liferay-ddm-form-renderer-util',
 	function(A) {
-		var FieldTypes = Liferay.DDM.Renderer.FieldTypes;
+		var AObject = A.Object;
+
+		var Lang = A.Lang;
 
 		var MAP_DATA_TYPES = {
 			number: 'integer',
@@ -79,6 +81,64 @@ AUI.add(
 		};
 
 		var Util = {
+			compare: function(valueA, valueB) {
+				var instance = this;
+
+				if (typeof valueB !== typeof valueB) {
+					return false;
+				}
+				else if (Lang.isArray(valueA) && !Lang.isArray(valueB)) {
+					return false;
+				}
+				else if (!Lang.isArray(valueA) && Lang.isArray(valueB)) {
+					return false;
+				}
+				else if (Lang.isObject(valueA) && !Lang.isObject(valueB)) {
+					return false;
+				}
+				else if (!Lang.isObject(valueA) && Lang.isObject(valueB)) {
+					return false;
+				}
+				else if (Lang.isArray(valueA) && Lang.isArray(valueB)) {
+					if (valueA.length !== valueB.length) {
+						return false;
+					}
+
+					for (var i = 0; i < valueA.length; i++) {
+						if (!instance.compare(valueA[i], valueB[i])) {
+							return false;
+						}
+					}
+
+					return true;
+				}
+				else if (Lang.isObject(valueA) && Lang.isObject(valueB)) {
+					var keysA = AObject.keys(valueA);
+					var keysB = AObject.keys(valueB);
+
+					var sameKeys = keysA.filter(
+						function(keyA) {
+							return keysB.indexOf(keyA) > -1;
+						}
+					).length === keysB.length;
+
+					if (!sameKeys) {
+						return false;
+					}
+
+					for (var i = 0; i < keysA.length; i++) {
+						if (!instance.compare(valueA[keysA[i]], valueB[keysA[i]])) {
+							return false;
+						}
+					}
+
+					return true;
+				}
+				else {
+					return valueA === valueB;
+				}
+			},
+
 			generateInstanceId: function(length) {
 				var instance = this;
 
@@ -123,16 +183,6 @@ AUI.add(
 				var instance = this;
 
 				return instance.searchFieldsByKey(haystack, needle, searchKey)[0];
-			},
-
-			getFieldClass: function(type) {
-				var instance = this;
-
-				var fieldType = FieldTypes.get(type);
-
-				var fieldClassName = fieldType.get('className');
-
-				return A.Object.getValue(window, fieldClassName.split('.'));
 			},
 
 			getFieldNameFromQualifiedName: function(qualifiedName) {
@@ -189,6 +239,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['liferay-ddm-form-renderer-types', 'queue']
+		requires: ['liferay-ddm-form-renderer-types']
 	}
 );
