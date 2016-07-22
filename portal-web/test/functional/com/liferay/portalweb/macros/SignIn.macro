@@ -4,7 +4,13 @@
 	<var name="userPasswordReminderAnswer" value="test" />
 
 	<command name="_signIn">
-		<execute function="AssertClick" locator1="UserBar#USER_SIGN_IN" value1="Sign In" />
+		<if>
+			<condition function="IsElementNotPresent" locator1="TextInput#EMAIL_ADDRESS" />
+			<then>
+				<execute function="AssertClick" locator1="UserBar#USER_SIGN_IN" value1="Sign In" />
+			</then>
+		</if>
+
 		<execute function="Type" locator1="TextInput#EMAIL_ADDRESS" value1="${userEmailAddress}" />
 		<execute function="Type" locator1="TextInput#PASSWORD" value1="${userPassword}" />
 
@@ -118,6 +124,16 @@
 			<var name="portlet" value="Virtual Instances" />
 		</execute>
 
+		<while>
+			<condition function="IsElementPresent" locator1="PortalInstances#INSTANCE_TABLE_ACTIONS_GENERIC_2" />
+			<then>
+				<execute function="Click#waitForMenuToggleJSClick" locator1="PortalInstances#INSTANCE_TABLE_ACTIONS_GENERIC_2" />
+				<execute function="AssertClickNoError" locator1="MenuItem#DELETE" value1="Delete" />
+				<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+				<execute macro="Alert#viewSuccessMessage" />
+			</then>
+		</while>
+
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
 		<var method="StringUtil#replace('${portalURL}', 'http://', '')" name="portalURL" />
@@ -159,6 +175,18 @@
 
 		<execute macro="SignIn#signIn" />
 
+		<var method="TestPropsUtil#get('browser.type')" name="browserType" />
+
+		<if>
+			<or>
+				<equals arg1="${browserType}" arg2="edge" />
+				<equals arg1="${browserType}" arg2="internetexplorer" />
+			</or>
+			<then>
+				<execute function="Open" locator1="/web/guest/home" />
+			</then>
+		</if>
+
 		<if>
 			<condition function="IsElementPresent" locator1="Button#I_AGREE" />
 			<then>
@@ -187,5 +215,39 @@
 		</execute>
 
 		<execute macro="GoogleLogin#acceptConditions" />
+	</command>
+
+	<command name="viewSignInError">
+		<if>
+			<isset var="nodePort" />
+			<then>
+				<execute function="Open" locator1="http://localhost:${nodePort}" />
+			</then>
+			<elseif>
+				<isset var="specificURL" />
+				<then>
+					<execute macro="Navigator#openSpecificURL">
+						<var name="url" value="${specificURL}" />
+					</execute>
+				</then>
+			</elseif>
+			<else>
+				<execute macro="Navigator#openURL" />
+			</else>
+		</if>
+
+		<execute macro="SignIn#_signIn">
+			<var name="rememberMe" value="${rememberMe}" />
+			<var name="userEmailAddress" value="${userEmailAddress}" />
+			<var name="userPassword" value="${userPassword}" />
+		</execute>
+
+		<if>
+			<equals arg1="${error}" arg2="internalServerError" />
+			<then>
+				<execute function="AssertTextEquals" locator1="Home#ERROR_MESSAGE_ALERT_ERROR" value1="Internal Server Error" />
+				<execute function="AssertTextEquals#assertPartialText" locator1="Message#URL_ERROR" value1="${urlErrorMessage}" />
+			</then>
+		</if>
 	</command>
 </definition>

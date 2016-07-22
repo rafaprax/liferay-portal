@@ -18,6 +18,8 @@ import com.liferay.asset.kernel.model.AssetRendererFactory;
 
 import java.io.Serializable;
 
+import java.text.Collator;
+
 import java.util.Comparator;
 import java.util.Locale;
 
@@ -29,6 +31,8 @@ public class AssetRendererFactoryTypeNameComparator
 
 	public AssetRendererFactoryTypeNameComparator(Locale locale) {
 		_locale = locale;
+
+		_collator = Collator.getInstance(_locale);
 	}
 
 	@Override
@@ -41,9 +45,11 @@ public class AssetRendererFactoryTypeNameComparator
 		String assetRendererFactoryType2 = assetRendererFactory2.getTypeName(
 			_locale);
 
-		return assetRendererFactoryType1.compareTo(assetRendererFactoryType2);
+		return _collator.compare(
+			assetRendererFactoryType1, assetRendererFactoryType2);
 	}
 
+	private final Collator _collator;
 	private final Locale _locale;
 
 }

@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -59,6 +58,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -207,8 +207,7 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMDataProviderInstance ddmDataProviderInstance : list) {
-					if (!Validator.equals(uuid,
-								ddmDataProviderInstance.getUuid())) {
+					if (!Objects.equals(uuid, ddmDataProviderInstance.getUuid())) {
 						list = null;
 
 						break;
@@ -688,8 +687,8 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchDataProviderInstanceException(msg.toString());
@@ -733,7 +732,7 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 		if (result instanceof DDMDataProviderInstance) {
 			DDMDataProviderInstance ddmDataProviderInstance = (DDMDataProviderInstance)result;
 
-			if (!Validator.equals(uuid, ddmDataProviderInstance.getUuid()) ||
+			if (!Objects.equals(uuid, ddmDataProviderInstance.getUuid()) ||
 					(groupId != ddmDataProviderInstance.getGroupId())) {
 				result = null;
 			}
@@ -1030,8 +1029,7 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMDataProviderInstance ddmDataProviderInstance : list) {
-					if (!Validator.equals(uuid,
-								ddmDataProviderInstance.getUuid()) ||
+					if (!Objects.equals(uuid, ddmDataProviderInstance.getUuid()) ||
 							(companyId != ddmDataProviderInstance.getCompanyId())) {
 						list = null;
 
@@ -3564,8 +3562,8 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 					primaryKey);
 
 			if (ddmDataProviderInstance == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchDataProviderInstanceException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3815,8 +3813,8 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 		DDMDataProviderInstance ddmDataProviderInstance = fetchByPrimaryKey(primaryKey);
 
 		if (ddmDataProviderInstance == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchDataProviderInstanceException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3847,12 +3845,14 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 	 */
 	@Override
 	public DDMDataProviderInstance fetchByPrimaryKey(Serializable primaryKey) {
-		DDMDataProviderInstance ddmDataProviderInstance = (DDMDataProviderInstance)entityCache.getResult(DDMDataProviderInstanceModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(DDMDataProviderInstanceModelImpl.ENTITY_CACHE_ENABLED,
 				DDMDataProviderInstanceImpl.class, primaryKey);
 
-		if (ddmDataProviderInstance == _nullDDMDataProviderInstance) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		DDMDataProviderInstance ddmDataProviderInstance = (DDMDataProviderInstance)serializable;
 
 		if (ddmDataProviderInstance == null) {
 			Session session = null;
@@ -3868,8 +3868,7 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 				}
 				else {
 					entityCache.putResult(DDMDataProviderInstanceModelImpl.ENTITY_CACHE_ENABLED,
-						DDMDataProviderInstanceImpl.class, primaryKey,
-						_nullDDMDataProviderInstance);
+						DDMDataProviderInstanceImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -3924,18 +3923,20 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			DDMDataProviderInstance ddmDataProviderInstance = (DDMDataProviderInstance)entityCache.getResult(DDMDataProviderInstanceModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(DDMDataProviderInstanceModelImpl.ENTITY_CACHE_ENABLED,
 					DDMDataProviderInstanceImpl.class, primaryKey);
 
-			if (ddmDataProviderInstance == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, ddmDataProviderInstance);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (DDMDataProviderInstance)serializable);
+				}
 			}
 		}
 
@@ -3978,8 +3979,7 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(DDMDataProviderInstanceModelImpl.ENTITY_CACHE_ENABLED,
-					DDMDataProviderInstanceImpl.class, primaryKey,
-					_nullDDMDataProviderInstance);
+					DDMDataProviderInstanceImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -4236,23 +4236,4 @@ public class DDMDataProviderInstancePersistenceImpl extends BasePersistenceImpl<
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "type"
 			});
-	private static final DDMDataProviderInstance _nullDDMDataProviderInstance = new DDMDataProviderInstanceImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<DDMDataProviderInstance> toCacheModel() {
-				return _nullDDMDataProviderInstanceCacheModel;
-			}
-		};
-
-	private static final CacheModel<DDMDataProviderInstance> _nullDDMDataProviderInstanceCacheModel =
-		new CacheModel<DDMDataProviderInstance>() {
-			@Override
-			public DDMDataProviderInstance toEntityModel() {
-				return _nullDDMDataProviderInstance;
-			}
-		};
 }

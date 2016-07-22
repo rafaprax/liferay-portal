@@ -30,9 +30,10 @@
 				<liferay-ui:message key="users" />
 			</div>
 		</div>
+
 		<div class="panel-body">
 			<div class="<%= cssClass %>" data-facetFieldName="<%= HtmlUtil.escapeAttribute(facet.getFieldId()) %>" id="<%= randomNamespace %>facet">
-				<aui:input name="<%= HtmlUtil.escapeAttribute(facet.getFieldId()) %>" type="hidden" value="<%= fieldParam %>" />
+				<aui:input autocomplete="off" name="<%= HtmlUtil.escapeAttribute(facet.getFieldId()) %>" type="hidden" value="<%= fieldParam %>" />
 
 				<ul class="list-unstyled users">
 					<li class="default facet-value">
@@ -53,7 +54,7 @@
 					%>
 
 						<li class="facet-value">
-							<a class="<%= userName.equals(curUserName) ? "text-primary" : "text-default" %>" data-value="<%= curUserName %>" href="javascript:;">
+							<a class="<%= userName.equals(curUserName) ? "text-primary" : "text-default" %>" data-value="<%= HtmlUtil.escapeAttribute(curUserName) %>" href="javascript:;">
 								<%= HtmlUtil.escape(curUserName) %>
 
 								<c:if test="<%= showAssetCount %>">

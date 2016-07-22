@@ -30,11 +30,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>TOOLBAR_EDIT_LIST</td>
-	<td>//a[@title='Edit List']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>TOOLBAR_MANAGE_DATA_DEFINITIONS</td>
 	<td>//ul[contains(@aria-label,'Dynamic Data List')]//a[@role='menuitem']/span[contains(.,'Manage Data Definitions')]</td>
 	<td></td>
@@ -52,7 +47,7 @@
 <!--RECORD_TABLE-->
 <tr>
 	<td>RECORD_TABLE_ENTRY</td>
-	<td>//tr/th[contains(.,'${key_fieldFieldLabel}')]/../../../tbody/tr/td[contains(.,'${key_ddlRecordFieldData}')]</td>
+	<td>//tr/th[contains(.,'${key_fieldFieldLabel}')]/../../../tbody/tr/td/a[.='${key_ddlRecordFieldData}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -72,7 +67,7 @@
 </tr>
 <tr>
 	<td>RECORD_TABLE_COLUMN_ONE_RECORD_1</td>
-	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[2]/a)</td>
+	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[2]//a)</td>
 	<td></td>
 </tr>
 <tr>
@@ -82,22 +77,22 @@
 </tr>
 <tr>
 	<td>RECORD_TABLE_COLUMN_TWO_RECORD_1</td>
-	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[3]/a)</td>
+	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[3]//a)</td>
 	<td></td>
 </tr>
 <tr>
 	<td>RECORD_TABLE_COLUMN_TWO_RECORD_1_WORKFLOW_STATUS</td>
-	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[3]/span)</td>
+	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[3]//span)</td>
 	<td></td>
 </tr>
 <tr>
 	<td>RECORD_TABLE_COLUMN_TWO_RECORD_1_VIEW</td>
-	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[3]/span)</td>
+	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[3]//span)</td>
 	<td></td>
 </tr>
 <tr>
 	<td>RECORD_TABLE_COLUMN_ONE_PREVIEW_1</td>
-	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[2]/a[contains(.,'Preview')])</td>
+	<td>xpath=(//div[contains(@id,'ddlRecordSearchContainer')]//tr/td[2]//a[contains(.,'Preview')])</td>
 	<td></td>
 </tr>
 <tr>
@@ -140,7 +135,16 @@
 	<td>//img[@src='x']</td>
 	<td></td>
 </tr>
-
+<tr>
+	<td>RECORD_TABLE_WORKFLOW_STATUS</td>
+	<td>//tr/th[contains(.,'${key_fieldFieldLabel}')]/../../../tbody/tr[contains(.,'${key_workflowStatus}')]//strong[contains(.,'${key_workflowStatus}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>RECORD_TABLE_DISPLAY_FIELD</td>
+	<td>//div[@class='ddl-record' and contains(.,'${key_ddlRecordFieldData}')]</td>
+	<td></td>
+</tr>
 <tr>
 	<td></td>
 	<td></td>
@@ -149,37 +153,37 @@
 <!--LIST_TABLE-->
 <tr>
 	<td>LIST_TABLE_NAME</td>
-	<td>//div[contains(@id,'ddlRecordSetSearchContainer')]//tr[contains(.,'${key_ddlListName}')]/td[3]/a</td>
+	<td>//div[contains(@id,'ddlRecordSetSearchContainer')]//tr[contains(.,'${key_ddlListName}')]/td[3]//a</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LIST_TABLE_ELLIPSIS</td>
-	<td>//tr[contains(.,'${key_ddlListName}')]//td[contains(@class,'entry-action')]/div/a/span[contains(@class,'icon-ellipsis-vertical')]</td>
+	<td>//tr[contains(.,'${key_ddlListName}')]//td[contains(@class,'entry-action')]//div/a/span[contains(@class,'icon-ellipsis-vertical')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LIST_TABLE_ID_1</td>
-	<td>xpath=(//table[contains(@class,'table-list')]//tr[1]/td/following-sibling::td[1]/a)</td>
+	<td>xpath=(//table[contains(@class,'table-list')]//tr[1]/td//following-sibling::td[1]/a)</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LIST_TABLE_NAME_1</td>
-	<td>xpath=(//table[contains(@class,'table-list')]//tr[1]/td/following-sibling::td[2]/a)</td>
+	<td>xpath=(//table[contains(@class,'table-list')]//tr[1]/td//following-sibling::td[2]/a)</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LIST_TABLE_DESCRIPTION</td>
-	<td>//table[contains(@class,'table-list')]//tr[1]/td/following-sibling::td[contains(.,'${key_ddlListDescription}')]</td>
+	<td>//table[contains(@class,'table-list')]//tr[1]/td//following-sibling::td[contains(.,'${key_ddlListDescription}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LIST_TABLE_DESCRIPTION_1</td>
-	<td>xpath=(//table[contains(@class,'table-list')]//tr[1]/td/following-sibling::td[3])</td>
+	<td>xpath=(//table[contains(@class,'table-list')]//tr[1]/td//following-sibling::td[3])</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LIST_TABLE_ELLIPSIS_1</td>
-	<td>xpath=//td[contains(@class,'entry-action')]/div/a/span[contains(@class,'icon-ellipsis-vertical')][1]</td>
+	<td>xpath=//td[contains(@class,'entry-action')]//div/a/span[contains(@class,'icon-ellipsis-vertical')][1]</td>
 	<td></td>
 </tr>
 <tr>
@@ -211,6 +215,11 @@
 <tr>
 	<td>PORTLET_ACTIONS_ADD_LIST</td>
 	<td>//span[contains(@class,'lfr-icon-action')]/a[contains(.,'Add List')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PORTLET_ACTIONS_EDIT_LIST</td>
+	<td>//span[contains(@class,'lfr-icon-action')]/a[contains(.,'Edit List')]</td>
 	<td></td>
 </tr>
 <tr>

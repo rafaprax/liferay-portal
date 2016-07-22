@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
 
+import java.text.Collator;
+
 import java.util.Comparator;
 import java.util.Locale;
 
@@ -41,6 +43,8 @@ public class PortletTitleComparator
 
 		_servletContext = servletContext;
 		_locale = locale;
+
+		_collator = Collator.getInstance(_locale);
 	}
 
 	@Override
@@ -73,9 +77,10 @@ public class PortletTitleComparator
 			return -1;
 		}
 
-		return portletTitle1.compareTo(portletTitle2);
+		return _collator.compare(portletTitle1, portletTitle2);
 	}
 
+	private final Collator _collator;
 	private final Locale _locale;
 	private final ServletContext _servletContext;
 

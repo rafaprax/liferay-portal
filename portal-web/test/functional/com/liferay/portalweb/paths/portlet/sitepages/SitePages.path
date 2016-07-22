@@ -10,7 +10,7 @@
 <tbody>
 <tr>
 	<td>SITE_NAME</td>
-	<td>//span[contains(@class,'site-name') and contains(@title,'${key_siteName}')]</td>
+	<td>//span[contains(@class,'site-name') and contains(@title,'${key_siteName}')] | //div[contains(@class,'site-name') and contains(.,'${key_siteName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -42,6 +42,16 @@
 <tr>
 	<td>NAVIGATION_MY_DASHBOARD</td>
 	<td>//a[contains(@title,'Dashboard')]//span/*[name()='svg'][contains(@class,'icon-cog')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>NAVIGATION_SPECIFIC_PAGE</td>
+	<td>//ul[contains(.,'Navigation')]//li[contains(.,'${key_page}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>NAVIGATION_SPECIFIC_PAGE_X_DELETE</td>
+	<td>//ul[contains(.,'Navigation')]//li[contains(.,'${key_page}')]//span[@class='delete-tab']</td>
 	<td></td>
 </tr>
 <tr>
@@ -139,6 +149,11 @@
 <tr>
 	<td>PAGE_TREE_PAGE_ARROW_4</td>
 	<td>xpath=(//span[contains(@class,'tree-hitarea') and contains(@class,'icon-plus')])[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TREE_PAGE_EDIT_COG</td>
+	<td>xpath=(//a[contains(@id,'layoutsTree_layout_')])[1]</td>
 	<td></td>
 </tr>
 <tr>
@@ -271,7 +286,7 @@
 <!--STAGING-->
 <tr>
 	<td>STAGING_SITE_PAGES_VARIATION_BUTTON</td>
-	<td>//ul[contains(@aria-labelledby,'panel-manage-site_administration_navigation')]//div[contains(@class,'nav-equal-height-heading')]/span[2]/div/a</td>
+	<td>//ul[contains(@aria-labelledby,'panel-manage-site_administration_navigation')]//div[contains(@class,'scope-selector')]/span[2]/div/a</td>
 	<td></td>
 </tr>
 <tr>
@@ -314,6 +329,11 @@
 <tr>
 	<td>LOGO_UPLOAD_IMAGE_IFRAME</td>
 	<td>//iframe[contains(@id,'changeLogo_iframe_')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LOGO_UPLOAD_IMAGE_BUTTON</td>
+	<td>//label[contains(@for,'ImageUploaderPortlet')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -386,7 +406,7 @@
 </tr>
 <tr>
 	<td>EDIT_PUBLIC_PAGE_MENUITEM</td>
-	<td>//*[@data-qa-id='editPublicPage']</td>
+	<td>//*[@data-qa-id='editPublicPages']</td>
 	<td></td>
 </tr>
 <tr>
@@ -395,23 +415,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>EDIT_PUBLIC_PAGE_MENUITEM</td>
-	<td>//*[@data-qa-id='editPrivatePage']</td>
+	<td>EDIT_PRIVATE_PAGE_MENUITEM</td>
+	<td>//*[@data-qa-id='editPrivatePages']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ADD_CHILD_PAGE</td>
-	<td>//div[*[@aria-expanded='true']]//*[@data-qa-id='addChildPage']</td>
+	<td>//div[*[@aria-expanded='true']]//*[@data-qa-id='addChildPage']/span[contains(.,'Add Child Page of ${key_page}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>EDIT_SPECIFIC_PAGE</td>
-	<td>//li[contains(.,'${key_pageName}')]/*[@data-qa-id='editPage']</td>
+	<td>//li[contains(.,'${key_page}')]/*[@data-qa-id='editPage']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DELETE_SPECIFIC_PAGE</td>
-	<td>//li[contains(.,'${key_pageName}')]/*[@data-qa-id='deletePage']</td>
+	<td>//li[contains(.,'${key_page}')]/*[@data-qa-id='deletePage']</td>
 	<td></td>
 </tr>
 <!--ELLIPSIS-->
@@ -432,7 +452,7 @@
 </tr>
 <tr>
 	<td>SPECIFIC_PAGE_ELLIPSIS</td>
-	<td>//div[contains(.,'${key_pageName}')]/*[@data-qa-id='pageOptions']</td>
+	<td>//div[contains(.,'${key_page}')]/*[@data-qa-id='pageOptions']</td>
 	<td></td>
 </tr>
 </tbody>

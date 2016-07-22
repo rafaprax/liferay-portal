@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
 import com.liferay.portal.kernel.test.SwappableSecurityManager;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
+import com.liferay.portal.kernel.util.JavaDetector;
 import com.liferay.portal.kernel.util.ReflectionUtil;
 
 import java.io.File;
@@ -140,7 +141,12 @@ public class FileHelperUtilTest {
 			Assert.fail();
 		}
 		catch (Exception e) {
-			Assert.assertSame(ioException, e);
+			if (JavaDetector.isJDK8()) {
+				Assert.assertSame(ioException, e.getCause());
+			}
+			else {
+				Assert.assertSame(ioException, e);
+			}
 		}
 		finally {
 			Files.delete(undeleteableFilePath);
@@ -315,9 +321,12 @@ public class FileHelperUtilTest {
 	@Test
 	public void testMoveRegularDirectoryWithRegularFile() throws IOException {
 		Path regularFromDirectoryPath = Paths.get("RegularFromDirectory");
+
 		Path regularFromFilePath = regularFromDirectoryPath.resolve(
 			"RegularFromFile");
+
 		Path regularToDirectoryPath = Paths.get("RegularToDirectory");
+
 		Path regularToFilePath = regularToDirectoryPath.resolve(
 			regularFromDirectoryPath.relativize(regularFromFilePath));
 
@@ -427,7 +436,9 @@ public class FileHelperUtilTest {
 
 		Path regularFromFilePath = unmoveableFromDirectoryPath.resolve(
 			"RegularFromFile");
+
 		Path regularToDirectoryPath = Paths.get("RegularToDirectoryPath");
+
 		Path regularToFilePath = regularToDirectoryPath.resolve(
 			unmoveableFromDirectoryPath.relativize(regularFromFilePath));
 

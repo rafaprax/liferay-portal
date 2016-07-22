@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -55,6 +54,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -722,7 +722,7 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 
 			if ((list != null) && !list.isEmpty()) {
 				for (BookmarksFolder bookmarksFolder : list) {
-					if (!Validator.equals(uuid, bookmarksFolder.getUuid())) {
+					if (!Objects.equals(uuid, bookmarksFolder.getUuid())) {
 						list = null;
 
 						break;
@@ -1198,8 +1198,8 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFolderException(msg.toString());
@@ -1243,7 +1243,7 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 		if (result instanceof BookmarksFolder) {
 			BookmarksFolder bookmarksFolder = (BookmarksFolder)result;
 
-			if (!Validator.equals(uuid, bookmarksFolder.getUuid()) ||
+			if (!Objects.equals(uuid, bookmarksFolder.getUuid()) ||
 					(groupId != bookmarksFolder.getGroupId())) {
 				result = null;
 			}
@@ -1539,7 +1539,7 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 
 			if ((list != null) && !list.isEmpty()) {
 				for (BookmarksFolder bookmarksFolder : list) {
-					if (!Validator.equals(uuid, bookmarksFolder.getUuid()) ||
+					if (!Objects.equals(uuid, bookmarksFolder.getUuid()) ||
 							(companyId != bookmarksFolder.getCompanyId())) {
 						list = null;
 
@@ -7206,8 +7206,8 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 					primaryKey);
 
 			if (bookmarksFolder == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchFolderException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -7519,8 +7519,8 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 		BookmarksFolder bookmarksFolder = fetchByPrimaryKey(primaryKey);
 
 		if (bookmarksFolder == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchFolderException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -7551,12 +7551,14 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 	 */
 	@Override
 	public BookmarksFolder fetchByPrimaryKey(Serializable primaryKey) {
-		BookmarksFolder bookmarksFolder = (BookmarksFolder)entityCache.getResult(BookmarksFolderModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(BookmarksFolderModelImpl.ENTITY_CACHE_ENABLED,
 				BookmarksFolderImpl.class, primaryKey);
 
-		if (bookmarksFolder == _nullBookmarksFolder) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		BookmarksFolder bookmarksFolder = (BookmarksFolder)serializable;
 
 		if (bookmarksFolder == null) {
 			Session session = null;
@@ -7572,8 +7574,7 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 				}
 				else {
 					entityCache.putResult(BookmarksFolderModelImpl.ENTITY_CACHE_ENABLED,
-						BookmarksFolderImpl.class, primaryKey,
-						_nullBookmarksFolder);
+						BookmarksFolderImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -7627,18 +7628,20 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			BookmarksFolder bookmarksFolder = (BookmarksFolder)entityCache.getResult(BookmarksFolderModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(BookmarksFolderModelImpl.ENTITY_CACHE_ENABLED,
 					BookmarksFolderImpl.class, primaryKey);
 
-			if (bookmarksFolder == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, bookmarksFolder);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (BookmarksFolder)serializable);
+				}
 			}
 		}
 
@@ -7680,7 +7683,7 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(BookmarksFolderModelImpl.ENTITY_CACHE_ENABLED,
-					BookmarksFolderImpl.class, primaryKey, _nullBookmarksFolder);
+					BookmarksFolderImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -7927,23 +7930,4 @@ public class BookmarksFolderPersistenceImpl extends BasePersistenceImpl<Bookmark
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final BookmarksFolder _nullBookmarksFolder = new BookmarksFolderImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<BookmarksFolder> toCacheModel() {
-				return _nullBookmarksFolderCacheModel;
-			}
-		};
-
-	private static final CacheModel<BookmarksFolder> _nullBookmarksFolderCacheModel =
-		new CacheModel<BookmarksFolder>() {
-			@Override
-			public BookmarksFolder toEntityModel() {
-				return _nullBookmarksFolder;
-			}
-		};
 }

@@ -130,6 +130,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Provides the local service for accessing, adding, checking in/out, deleting,
@@ -168,8 +169,10 @@ public class DLFileEntryLocalServiceImpl
 		// File entry
 
 		User user = userPersistence.findByPrimaryKey(userId);
+
 		folderId = dlFolderLocalService.getFolderId(
 			user.getCompanyId(), folderId);
+
 		String name = String.valueOf(
 			counterLocalService.increment(DLFileEntry.class.getName()));
 		String extension = DLAppUtil.getExtension(title, sourceFileName);
@@ -407,7 +410,7 @@ public class DLFileEntryLocalServiceImpl
 				Lock lock = LockManagerUtil.getLock(
 					DLFileEntry.class.getName(), fileEntryId);
 
-				if (!Validator.equals(lock.getUuid(), lockUuid)) {
+				if (!Objects.equals(lock.getUuid(), lockUuid)) {
 					throw new InvalidLockException("UUIDs do not match");
 				}
 			}
@@ -1306,10 +1309,9 @@ public class DLFileEntryLocalServiceImpl
 			}
 		}
 
-		StringBundler sb = new StringBundler(8);
+		StringBundler sb = new StringBundler(7);
 
-		sb.append("No DLFileEntry exists with the key {");
-		sb.append("groupId=");
+		sb.append("No DLFileEntry exists with the key {groupId=");
 		sb.append(groupId);
 		sb.append(", folderId=");
 		sb.append(folderId);
@@ -1547,6 +1549,13 @@ public class DLFileEntryLocalServiceImpl
 			return;
 		}
 
+		dlFileEntry = dlFileEntryPersistence.fetchByPrimaryKey(
+			dlFileEntry.getFileEntryId());
+
+		if (dlFileEntry == null) {
+			return;
+		}
+
 		dlFileEntry.setModifiedDate(dlFileEntry.getModifiedDate());
 		dlFileEntry.setReadCount(dlFileEntry.getReadCount() + increment);
 
@@ -1593,7 +1602,7 @@ public class DLFileEntryLocalServiceImpl
 
 	/**
 	 * As of 7.0.0, replaced by {@link #isKeepFileVersionLabel(long, boolean,
-	 *              ServiceContext)}
+	 * ServiceContext)}
 	 */
 	@Deprecated
 	@Override
@@ -1982,7 +1991,7 @@ public class DLFileEntryLocalServiceImpl
 			// File entry
 
 			if ((status != WorkflowConstants.STATUS_IN_TRASH) &&
-				Validator.equals(
+				Objects.equals(
 					dlFileEntry.getVersion(), dlFileVersion.getVersion())) {
 
 				String newVersion = DLFileEntryConstants.VERSION_DEFAULT;
@@ -2003,7 +2012,7 @@ public class DLFileEntryLocalServiceImpl
 
 			// Indexer
 
-			if (Validator.equals(
+			if (Objects.equals(
 					dlFileVersion.getVersion(),
 					DLFileEntryConstants.VERSION_DEFAULT)) {
 
@@ -2101,7 +2110,7 @@ public class DLFileEntryLocalServiceImpl
 			Lock lock = LockManagerUtil.getLock(
 				DLFileEntry.class.getName(), fileEntryId);
 
-			if (Validator.equals(lock.getUuid(), lockUuid)) {
+			if (Objects.equals(lock.getUuid(), lockUuid)) {
 				lockVerified = true;
 			}
 		}
@@ -2509,7 +2518,7 @@ public class DLFileEntryLocalServiceImpl
 		boolean autoCheckIn = false;
 
 		if (!checkedOut && dlFileVersion.isApproved() &&
-			!Validator.equals(
+			!Objects.equals(
 				dlFileVersion.getUuid(),
 				serviceContext.getUuidWithoutReset())) {
 

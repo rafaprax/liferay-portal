@@ -28,14 +28,12 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 
 import com.liferay.portlet.social.model.impl.SocialActivityAchievementImpl;
 import com.liferay.portlet.social.model.impl.SocialActivityAchievementModelImpl;
@@ -52,6 +50,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -1276,7 +1275,7 @@ public class SocialActivityAchievementPersistenceImpl
 			if ((list != null) && !list.isEmpty()) {
 				for (SocialActivityAchievement socialActivityAchievement : list) {
 					if ((groupId != socialActivityAchievement.getGroupId()) ||
-							!Validator.equals(name,
+							!Objects.equals(name,
 								socialActivityAchievement.getName())) {
 						list = null;
 
@@ -2352,8 +2351,8 @@ public class SocialActivityAchievementPersistenceImpl
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchActivityAchievementException(msg.toString());
@@ -2402,7 +2401,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 			if ((groupId != socialActivityAchievement.getGroupId()) ||
 					(userId != socialActivityAchievement.getUserId()) ||
-					!Validator.equals(name, socialActivityAchievement.getName())) {
+					!Objects.equals(name, socialActivityAchievement.getName())) {
 				result = null;
 			}
 		}
@@ -3386,8 +3385,8 @@ public class SocialActivityAchievementPersistenceImpl
 					primaryKey);
 
 			if (socialActivityAchievement == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchActivityAchievementException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3632,8 +3631,8 @@ public class SocialActivityAchievementPersistenceImpl
 		SocialActivityAchievement socialActivityAchievement = fetchByPrimaryKey(primaryKey);
 
 		if (socialActivityAchievement == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchActivityAchievementException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3664,12 +3663,14 @@ public class SocialActivityAchievementPersistenceImpl
 	 */
 	@Override
 	public SocialActivityAchievement fetchByPrimaryKey(Serializable primaryKey) {
-		SocialActivityAchievement socialActivityAchievement = (SocialActivityAchievement)entityCache.getResult(SocialActivityAchievementModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(SocialActivityAchievementModelImpl.ENTITY_CACHE_ENABLED,
 				SocialActivityAchievementImpl.class, primaryKey);
 
-		if (socialActivityAchievement == _nullSocialActivityAchievement) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		SocialActivityAchievement socialActivityAchievement = (SocialActivityAchievement)serializable;
 
 		if (socialActivityAchievement == null) {
 			Session session = null;
@@ -3686,7 +3687,7 @@ public class SocialActivityAchievementPersistenceImpl
 				else {
 					entityCache.putResult(SocialActivityAchievementModelImpl.ENTITY_CACHE_ENABLED,
 						SocialActivityAchievementImpl.class, primaryKey,
-						_nullSocialActivityAchievement);
+						nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -3741,18 +3742,20 @@ public class SocialActivityAchievementPersistenceImpl
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			SocialActivityAchievement socialActivityAchievement = (SocialActivityAchievement)entityCache.getResult(SocialActivityAchievementModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(SocialActivityAchievementModelImpl.ENTITY_CACHE_ENABLED,
 					SocialActivityAchievementImpl.class, primaryKey);
 
-			if (socialActivityAchievement == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, socialActivityAchievement);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (SocialActivityAchievement)serializable);
+				}
 			}
 		}
 
@@ -3795,8 +3798,7 @@ public class SocialActivityAchievementPersistenceImpl
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(SocialActivityAchievementModelImpl.ENTITY_CACHE_ENABLED,
-					SocialActivityAchievementImpl.class, primaryKey,
-					_nullSocialActivityAchievement);
+					SocialActivityAchievementImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -4032,24 +4034,4 @@ public class SocialActivityAchievementPersistenceImpl
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No SocialActivityAchievement exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No SocialActivityAchievement exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(SocialActivityAchievementPersistenceImpl.class);
-	private static final SocialActivityAchievement _nullSocialActivityAchievement =
-		new SocialActivityAchievementImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<SocialActivityAchievement> toCacheModel() {
-				return _nullSocialActivityAchievementCacheModel;
-			}
-		};
-
-	private static final CacheModel<SocialActivityAchievement> _nullSocialActivityAchievementCacheModel =
-		new CacheModel<SocialActivityAchievement>() {
-			@Override
-			public SocialActivityAchievement toEntityModel() {
-				return _nullSocialActivityAchievement;
-			}
-		};
 }

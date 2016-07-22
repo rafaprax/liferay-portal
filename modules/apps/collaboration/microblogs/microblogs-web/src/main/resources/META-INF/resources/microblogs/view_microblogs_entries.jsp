@@ -83,11 +83,13 @@ if (microblogsEntries != null) {
 				<div class="content">
 
 					<%
-					String content = MicroblogsUtil.getProcessedContent(microblogsEntry, ServiceContextFactory.getInstance(request));
+					String content = HtmlUtil.replaceNewLine(MicroblogsUtil.getProcessedContent(microblogsEntry, ServiceContextFactory.getInstance(request)));
 					%>
 
 					<span>
-						<%= content %>
+						<p>
+							<%= content %>
+						</p>
 					</span>
 				</div>
 
@@ -97,7 +99,6 @@ if (microblogsEntries != null) {
 					<span class="modified-date">
 						<%= dateFormatDateTime.format(microblogsEntry.getModifiedDate()) %>
 					</span>
-
 					<span class="action-container">
 						<c:if test="<%= microblogsEntry.getType() != MicroblogsEntryConstants.TYPE_REPLY %>">
 

@@ -66,7 +66,17 @@
 			</then>
 		</if>
 
-		<execute macro="PortletEntry#save" />
+		<if>
+			<isset var="pastDate" />
+			<then>
+				<execute macro="Button#clickSave" />
+
+				<execute macro="Alert#viewRequestFailedToComplete" />
+			</then>
+			<else>
+				<execute macro="PortletEntry#save" />
+			</else>
+		</if>
 	</command>
 
 	<command name="deletePG">
@@ -104,6 +114,8 @@
 
 		<execute function="Click" locator1="MenuItem#EDIT" />
 
+		<execute function="AssertTextEquals#assertValue" locator1="TextInput#TITLE" value1="${entryTitle}" />
+
 		<execute function="Type" locator1="TextInput#TITLE" value1="${entryTitleEdit}" />
 		<execute function="Type" locator1="TextInput#URL" value1="${entryURLEdit}" />
 		<execute function="Type#typeCKEditorWaitForCKEditor" locator1="CKEditor#BODY_FIELD" value1="${entryContentEdit}" />
@@ -120,17 +132,11 @@
 		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#BODY_VERTICAL_ELLIPSIS" />
 
 		<execute function="AssertClick" locator1="MenuItem#MARK_AS_READ" value1="Mark as Read" />
+
+		<execute function="AssertElementNotPresent" locator1="Announcements#CARD_VIEW_ENTRY_CONTENT" />
 	</command>
 
 	<command name="tearDownPG">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
-			<var name="pageName" value="${pageName}" />
-			<var name="soDashboard" value="${soDashboard}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
 		<execute function="Click" locator1="Announcements#NAVIGATION_MANAGE_ENTRIES" />
 
 		<execute function="Select#selectAndWait" locator1="AnnouncementsManageEntries#DISTRIBUTION_SCOPE_SELECT" value1="General" />

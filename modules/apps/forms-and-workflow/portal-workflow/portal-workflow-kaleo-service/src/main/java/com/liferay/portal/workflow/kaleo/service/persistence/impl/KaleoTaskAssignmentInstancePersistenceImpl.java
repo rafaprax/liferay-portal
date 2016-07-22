@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -34,7 +33,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchTaskAssignmentInstanceException;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignmentInstance;
@@ -51,6 +49,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -2315,7 +2314,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance : list) {
-					if (!Validator.equals(assigneeClassName,
+					if (!Objects.equals(assigneeClassName,
 								kaleoTaskAssignmentInstance.getAssigneeClassName())) {
 						list = null;
 
@@ -3454,7 +3453,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance : list) {
-					if (!Validator.equals(assigneeClassName,
+					if (!Objects.equals(assigneeClassName,
 								kaleoTaskAssignmentInstance.getAssigneeClassName()) ||
 							(assigneeClassPK != kaleoTaskAssignmentInstance.getAssigneeClassPK())) {
 						list = null;
@@ -4074,8 +4073,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 					primaryKey);
 
 			if (kaleoTaskAssignmentInstance == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchTaskAssignmentInstanceException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -4392,8 +4391,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = fetchByPrimaryKey(primaryKey);
 
 		if (kaleoTaskAssignmentInstance == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchTaskAssignmentInstanceException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -4426,12 +4425,14 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	@Override
 	public KaleoTaskAssignmentInstance fetchByPrimaryKey(
 		Serializable primaryKey) {
-		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = (KaleoTaskAssignmentInstance)entityCache.getResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
 				KaleoTaskAssignmentInstanceImpl.class, primaryKey);
 
-		if (kaleoTaskAssignmentInstance == _nullKaleoTaskAssignmentInstance) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = (KaleoTaskAssignmentInstance)serializable;
 
 		if (kaleoTaskAssignmentInstance == null) {
 			Session session = null;
@@ -4448,7 +4449,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 				else {
 					entityCache.putResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
 						KaleoTaskAssignmentInstanceImpl.class, primaryKey,
-						_nullKaleoTaskAssignmentInstance);
+						nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -4503,18 +4504,21 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = (KaleoTaskAssignmentInstance)entityCache.getResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
 					KaleoTaskAssignmentInstanceImpl.class, primaryKey);
 
-			if (kaleoTaskAssignmentInstance == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, kaleoTaskAssignmentInstance);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey,
+						(KaleoTaskAssignmentInstance)serializable);
+				}
 			}
 		}
 
@@ -4557,8 +4561,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoTaskAssignmentInstanceImpl.class, primaryKey,
-					_nullKaleoTaskAssignmentInstance);
+					KaleoTaskAssignmentInstanceImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -4796,24 +4799,4 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No KaleoTaskAssignmentInstance exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No KaleoTaskAssignmentInstance exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(KaleoTaskAssignmentInstancePersistenceImpl.class);
-	private static final KaleoTaskAssignmentInstance _nullKaleoTaskAssignmentInstance =
-		new KaleoTaskAssignmentInstanceImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<KaleoTaskAssignmentInstance> toCacheModel() {
-				return _nullKaleoTaskAssignmentInstanceCacheModel;
-			}
-		};
-
-	private static final CacheModel<KaleoTaskAssignmentInstance> _nullKaleoTaskAssignmentInstanceCacheModel =
-		new CacheModel<KaleoTaskAssignmentInstance>() {
-			@Override
-			public KaleoTaskAssignmentInstance toEntityModel() {
-				return _nullKaleoTaskAssignmentInstance;
-			}
-		};
 }

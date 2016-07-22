@@ -59,19 +59,16 @@ public class EditRolePortletConfigurationIcon
 	public String getURL(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		try {
 			PortletURL portletURL = PortletURLFactoryUtil.create(
 				portletRequest, RolesAdminPortletKeys.ROLES_ADMIN,
-				themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
+				PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("mvcPath", "/edit_role.jsp");
 			portletURL.setParameter(
 				"redirect", PortalUtil.getCurrentURL(portletRequest));
 			portletURL.setParameter(
-				"roleId", String.valueOf(getRoleId(portletRequest)));
+				"roleId", String.valueOf(_getRoleId(portletRequest)));
 
 			return portletURL.toString();
 		}
@@ -94,7 +91,7 @@ public class EditRolePortletConfigurationIcon
 					WebKeys.THEME_DISPLAY);
 
 			return RolePermissionUtil.contains(
-				themeDisplay.getPermissionChecker(), getRoleId(portletRequest),
+				themeDisplay.getPermissionChecker(), _getRoleId(portletRequest),
 				ActionKeys.UPDATE);
 		}
 		catch (Exception e) {
@@ -103,7 +100,7 @@ public class EditRolePortletConfigurationIcon
 		return false;
 	}
 
-	private long getRoleId(PortletRequest portletRequest) {
+	private long _getRoleId(PortletRequest portletRequest) {
 		HttpServletRequest request = PortalUtil.getHttpServletRequest(
 			portletRequest);
 

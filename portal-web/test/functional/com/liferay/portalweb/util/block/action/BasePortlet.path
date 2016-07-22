@@ -35,7 +35,7 @@
 </tr>
 <tr>
 	<td>SPECIFIC_TITLE</td>
-	<td>//div[@id='main-content']//h2[contains(@class,'portlet-title') and contains(.,'${key_portletTitleName}')]</td>
+	<td>//div[@id='main-content']//h2[contains(@class,'portlet-title') and (.='${key_portletTitleName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -65,7 +65,7 @@
 </tr>
 <tr>
 	<td>SPECIFIC_PORTLET_BORDERLESS_ELLIPSIS_ICON</td>
-	<td>//div[span[contains(.,'${key_portletName}')]]/following-sibling::menu//i[contains(@class,'icon-ellipsis-vertical')]</td>
+	<td>//header[@class='portlet-topper' and contains(.,'${key_portletName}')]//div[contains(@class,'portlet-options')]/a</td>
 	<td></td>
 </tr>
 <tr>
@@ -86,11 +86,6 @@
 <tr>
 	<td>REMOVE</td>
 	<td>//li[contains(@class,'portlet-close-icon')]/a</td>
-	<td></td>
-</tr>
-<tr>
-	<td>IFRAME</td>
-	<td>//iframe[@class='dialog-iframe-node ']</td>
 	<td></td>
 </tr>
 <tr>

@@ -12,7 +12,11 @@
 	</command>
 
 	<command name="closeSpecificWindow">
-		<execute function="Close" locator1="title=${windowTitle}" />
+		<execute macro="Navigator#selectSpecificWindow">
+			<var name="windowTitle" value="${closeWindowTitle}" />
+		</execute>
+
+		<execute function="Close#closeAndSelectWindow" locator1="title=${selectWindowTitle}" />
 	</command>
 
 	<command name="closeWindow">
@@ -37,8 +41,33 @@
 		<execute function="AssertElementPresent" locator1="NavBar#ACTIVE_NAV_ITEM_LINK" />
 	</command>
 
+	<command name="gotoNavTab">
+		<var name="key_tab" value="${navTab}" />
+
+		<execute function="AssertClick" locator1="NavTab#TAB_LINK" value1="${navTab}" />
+	</command>
+
 	<command name="gotoPage" summary="Navigate to the page named '${pageName}'">
 		<execute macro="Navigator#openURL" />
+
+		<if>
+			<isset var="sitePagePrivacy" />
+			<then>
+				<execute macro="ProductMenu#gotoPrivatePages" />
+			</then>
+		</if>
+
+		<execute macro="Navigator#_gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+	</command>
+
+	<command name="gotoPrivateStagedSitePage" summary="Navigate to the page named '${pageName}'">
+		<execute macro="Navigator#openPrivateStagedSiteURL">
+			<var name="siteNameURL" value="${siteName}" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPrivatePages" />
 
 		<execute macro="Navigator#_gotoPage">
 			<var name="pageName" value="${pageName}" />
@@ -58,6 +87,16 @@
 	<command name="gotoSpecificURLPage">
 		<execute macro="Navigator#openSpecificURL">
 			<var name="url" value="${url}" />
+		</execute>
+
+		<execute macro="Navigator#_gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+	</command>
+
+	<command name="gotoStagedSitePage" summary="Navigate to the page named '${pageName}'">
+		<execute macro="Navigator#openStagingSiteURL">
+			<var name="siteName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Navigator#_gotoPage">
@@ -130,10 +169,11 @@
 	<command name="openPrivateSitePageURL">
 		<var method="StringUtil#replace('${siteName}', ' ', '-')" name="siteNameURL" />
 		<var method="StringUtil#lowerCase('${siteNameURL}')" name="siteNameURL" />
-		<var method="StringUtil#replace('${sitePageName}', ' ', '-')" name="sitePageNameURL" />
-		<var method="StringUtil#lowerCase('${sitePageNameURL}')" name="sitePageNameURL" />
 
-		<execute function="Open" locator1="/group/${siteNameURL}/${sitePageNameURL}" />
+		<var method="StringUtil#replace('${pageName}', ' ', '-')" name="pageNameURL" />
+		<var method="StringUtil#lowerCase('${pageNameURL}')" name="pageNameURL" />
+
+		<execute function="Open" locator1="/group/${siteNameURL}/${pageNameURL}" />
 	</command>
 
 	<command name="openPrivateSiteURL">
@@ -141,6 +181,13 @@
 		<var method="StringUtil#lowerCase('${siteNameURL}')" name="siteNameURL" />
 
 		<execute function="Open" locator1="/group/${siteNameURL}" />
+	</command>
+
+	<command name="openPrivateStagedSiteURL">
+		<var method="StringUtil#replace('${siteNameURL}', ' ', '-')" name="siteNameURL" />
+		<var method="StringUtil#lowerCase('${siteNameURL}')" name="siteNameURL" />
+
+		<execute function="Open" locator1="/group/${siteNameURL}-staging" />
 	</command>
 
 	<command name="openPrivateURL">

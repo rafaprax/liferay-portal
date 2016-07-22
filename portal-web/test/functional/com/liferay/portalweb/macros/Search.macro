@@ -15,7 +15,7 @@
 				<equals arg1="${searchScope}" arg2="This Site" />
 			</or>
 			<then>
-				<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+				<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 				<execute function="Select" locator1="Select#SCOPE" value1="${searchScope}" />
 			</then>
@@ -58,11 +58,20 @@
 
 	<command name="removeUserFacetDisplayPG">
 		<execute function="Click#makeVisibleClickAt" locator1="Search#SEARCH_PORTLET_OPTIONS_WRENCH" />
-		<execute function="AssertClick" locator1="BasePortlet#OPTIONS_MENULIST_CONFIGURATION" value1="Configuration" />
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="AssertClick" locator1="MenuItem#CONFIGURATION" value1="Configuration" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 		<execute function="Uncheck" locator1="SearchConfiguration#BASIC_DISPLAY_USER_FACET_CHECKBOX" />
 		<execute macro="Button#clickSave" />
 		<execute function="SelectFrame" value1="relative=top" />
+	</command>
+
+	<command name="searchCP">
+		<execute function="AssertElementPresent" locator1="NavBar#BASIC_SEARCH_FIELD" />
+		<execute function="AssertElementPresent" locator1="NavBar#SEARCH_BUTTON" />
+
+		<execute function="Type" locator1="NavBar#BASIC_SEARCH_FIELD" value1="${searchTerm}" />
+
+		<execute function="KeyPress" locator1="NavBar#BASIC_SEARCH_FIELD" value1="\RETURN" />
 	</command>
 
 	<command name="searchNoPG">
@@ -76,7 +85,7 @@
 				<execute function="KeyPress" locator1="Search#SEARCH_FIELD" value1="\RETURN" />
 			</then>
 			<else>
-				<execute function="Click" locator1="Search#SEARCH_BUTTON" />
+				<execute function="Click" locator1="Search#SEARCH_PORTLET_SEARCH_BUTTON" />
 			</else>
 		</if>
 
@@ -101,6 +110,9 @@
 	</command>
 
 	<command name="searchPG">
+		<execute function="AssertElementPresent" locator1="Search#SEARCH_FIELD" />
+		<execute function="AssertElementPresent" locator1="Search#SEARCH_PORTLET_SEARCH_BUTTON" />
+
 		<execute function="Type" locator1="Search#SEARCH_FIELD" value1="${searchTerm}" />
 
 		<if>
@@ -127,8 +139,6 @@
 				</then>
 			</elseif>
 		</if>
-
-		<var name="key_searchIDName" value="Search" />
 
 		<execute function="KeyPress" locator1="Search#SEARCH_FIELD" value1="\RETURN" />
 	</command>
@@ -275,7 +285,7 @@
 	</command>
 
 	<command name="viewUserSearchResultPG">
-		<execute function="AssertTextEquals" locator1="Home#SITE_NAME" value1="${siteName}" />
+		<execute function="AssertTextEquals" locator1="Home#USER_NAME_HEADER" value1="${userName}" />
 		<execute function="AssertTextEquals" locator1="Home#PAGE_1" value1="${pageName}" />
 	</command>
 </definition>

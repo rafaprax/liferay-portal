@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.upgrade.util.UpgradeColumn;
 import com.liferay.portal.kernel.upgrade.util.UpgradeTable;
 import com.liferay.portal.kernel.upgrade.util.UpgradeTableFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -212,7 +213,7 @@ public abstract class UpgradeProcess
 
 			sb.append("alter table ");
 			sb.append(tableName);
-			sb.append(" add column ");
+			sb.append(" add ");
 			sb.append(_columnName);
 
 			return sb.toString();
@@ -268,7 +269,8 @@ public abstract class UpgradeProcess
 				Set<String> primaryKeyNames = new HashSet<>();
 
 				while (rs1.next()) {
-					String primaryKeyName = rs1.getString("PK_NAME");
+					String primaryKeyName = StringUtil.toUpperCase(
+						rs1.getString("PK_NAME"));
 
 					if (primaryKeyName != null) {
 						primaryKeyNames.add(primaryKeyName);
@@ -278,7 +280,8 @@ public abstract class UpgradeProcess
 				Map<String, Set<String>> columnNamesMap = new HashMap<>();
 
 				while (rs2.next()) {
-					String indexName = rs2.getString("INDEX_NAME");
+					String indexName = StringUtil.toUpperCase(
+						rs2.getString("INDEX_NAME"));
 
 					if ((indexName == null) ||
 						primaryKeyNames.contains(indexName)) {
@@ -294,11 +297,13 @@ public abstract class UpgradeProcess
 						columnNamesMap.put(indexName, columnNames);
 					}
 
-					columnNames.add(rs2.getString("COLUMN_NAME"));
+					columnNames.add(
+						StringUtil.toUpperCase(rs2.getString("COLUMN_NAME")));
 				}
 
 				for (Alterable alterable : alterables) {
-					String columnName = alterable.getIndexedColumnName();
+					String columnName = StringUtil.toUpperCase(
+						alterable.getIndexedColumnName());
 
 					for (Map.Entry<String, Set<String>> entry :
 							columnNamesMap.entrySet()) {
@@ -329,7 +334,8 @@ public abstract class UpgradeProcess
 							objectValuePair.getValue();
 
 						if (!ArrayUtil.contains(
-								indexMetadata.getColumnNames(), columnName)) {
+								indexMetadata.getColumnNames(), columnName,
+								true)) {
 
 							continue;
 						}
@@ -448,6 +454,12 @@ public abstract class UpgradeProcess
 		return db.increment(name);
 	}
 
+	protected long increment(String name, int size) {
+		DB db = DBManagerUtil.getDB();
+
+		return db.increment(name, size);
+	}
+
 	protected boolean isSupportsAlterColumnName() {
 		DB db = DBManagerUtil.getDB();
 
@@ -497,17 +509,19 @@ public abstract class UpgradeProcess
 	}
 
 	protected void upgradeTable(
-			String tableName, Object[][] tableColumns, String sqlCreate,
-			String[] sqlAddIndexes)
+			String tableName, Object[][] tableColumns, String createSQL,
+			String[] indexesSQL, UpgradeColumn... upgradeColumns)
 		throws Exception {
 
-		UpgradeTable upgradeTable = UpgradeTableFactoryUtil.getUpgradeTable(
-			tableName, tableColumns);
+		try (LoggingTimer loggingTimer = new LoggingTimer(tableName)) {
+			UpgradeTable upgradeTable = UpgradeTableFactoryUtil.getUpgradeTable(
+				tableName, tableColumns, upgradeColumns);
 
-		upgradeTable.setCreateSQL(sqlCreate);
-		upgradeTable.setIndexesSQL(sqlAddIndexes);
+			upgradeTable.setCreateSQL(createSQL);
+			upgradeTable.setIndexesSQL(indexesSQL);
 
-		upgradeTable.updateTable();
+			upgradeTable.updateTable();
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(UpgradeProcess.class);

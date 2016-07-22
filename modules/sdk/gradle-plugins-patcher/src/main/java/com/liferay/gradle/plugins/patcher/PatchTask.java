@@ -19,8 +19,6 @@ import com.liferay.gradle.util.GradleUtil;
 import com.liferay.gradle.util.Validator;
 import com.liferay.gradle.util.copy.ReplaceLeadingPathAction;
 
-import groovy.lang.Closure;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
@@ -100,7 +98,7 @@ public class PatchTask extends DefaultTask {
 		return this;
 	}
 
-	public PatchTask args(Object ... args) {
+	public PatchTask args(Object... args) {
 		return args(Arrays.asList(args));
 	}
 
@@ -110,7 +108,7 @@ public class PatchTask extends DefaultTask {
 		return this;
 	}
 
-	public PatchTask fileNames(Object ... fileNames) {
+	public PatchTask fileNames(Object... fileNames) {
 		return fileNames(Arrays.asList(fileNames));
 	}
 
@@ -158,7 +156,7 @@ public class PatchTask extends DefaultTask {
 	}
 
 	@InputFile
-	public File getOriginalLibSrcFile() throws Exception {
+	public File getOriginalLibSrcFile() {
 		return GradleUtil.toFile(getProject(), _originalLibSrcFile);
 	}
 
@@ -234,33 +232,33 @@ public class PatchTask extends DefaultTask {
 
 		temporaryDir.mkdir();
 
-		Closure<Void> closure = new Closure<Void>(null) {
+		project.copy(
+			new Action<CopySpec>() {
 
-			@SuppressWarnings("unused")
-			public void doCall(CopySpec copySpec) throws Exception {
-				final String originalLibSrcDirName = getOriginalLibSrcDirName();
+				@Override
+				public void execute(CopySpec copySpec) {
+					String originalLibSrcDirName = getOriginalLibSrcDirName();
 
-				if (!originalLibSrcDirName.equals(".")) {
-					Map<Object, Object> leadingPathReplacementsMap =
-						new HashMap<>();
+					if (!originalLibSrcDirName.equals(".")) {
+						Map<Object, Object> leadingPathReplacementsMap =
+							new HashMap<>();
 
-					leadingPathReplacementsMap.put(originalLibSrcDirName, "");
+						leadingPathReplacementsMap.put(
+							originalLibSrcDirName, "");
 
-					copySpec.eachFile(
-						new ReplaceLeadingPathAction(
-							leadingPathReplacementsMap));
+						copySpec.eachFile(
+							new ReplaceLeadingPathAction(
+								leadingPathReplacementsMap));
+					}
+
+					copySpec.filter(FixCrLfFilter.class);
+					copySpec.from(project.zipTree(getOriginalLibSrcFile()));
+					copySpec.include(getFileNames());
+					copySpec.into(temporaryDir);
+					copySpec.setIncludeEmptyDirs(false);
 				}
 
-				copySpec.filter(FixCrLfFilter.class);
-				copySpec.from(project.zipTree(getOriginalLibSrcFile()));
-				copySpec.include(getFileNames());
-				copySpec.into(temporaryDir);
-				copySpec.setIncludeEmptyDirs(false);
-			}
-
-		};
-
-		project.copy(closure);
+			});
 
 		for (final File patchFile : getSortedPatchFiles()) {
 			final ByteArrayOutputStream byteArrayOutputStream =
@@ -328,7 +326,7 @@ public class PatchTask extends DefaultTask {
 		return this;
 	}
 
-	public PatchTask patchFiles(Object ... patchFiles) {
+	public PatchTask patchFiles(Object... patchFiles) {
 		return patchFiles(Arrays.asList(patchFiles));
 	}
 
@@ -338,7 +336,7 @@ public class PatchTask extends DefaultTask {
 		args(args);
 	}
 
-	public void setArgs(Object ... args) {
+	public void setArgs(Object... args) {
 		setArgs(Arrays.asList(args));
 	}
 
@@ -442,8 +440,7 @@ public class PatchTask extends DefaultTask {
 			ModuleVersionIdentifier moduleVersionIdentifier =
 				resolvedModuleVersion.getId();
 
-			if (moduleGroup.equals(
-					moduleVersionIdentifier.getGroup()) &&
+			if (moduleGroup.equals(moduleVersionIdentifier.getGroup()) &&
 				moduleName.equals(moduleVersionIdentifier.getName()) &&
 				moduleVersion.equals(
 					moduleVersionIdentifier.getVersion())) {

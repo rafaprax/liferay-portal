@@ -23,12 +23,14 @@
 	%>
 
 	<div class="closed lfr-admin-panel lfr-product-menu-panel lfr-simulation-panel sidenav-fixed sidenav-menu-slider sidenav-right" id="<%= portletNamespace %>simulationPanelId">
-		<div class="product-menu sidebar sidebar-body sidebar-inverse">
+		<div class="product-menu sidebar sidebar-inverse sidenav-menu">
 			<h4 class="sidebar-header">
 				<span><liferay-ui:message key="simulation" /></span>
 
-				<aui:icon cssClass="close icon-monospaced" id='<%= portletNamespace + "closeSimulationPanel" %>' image="times" markupView="lexicon" url="javascript:;" />
+				<aui:icon cssClass="icon-monospaced sidenav-close" image="times" markupView="lexicon" url="javascript:;" />
 			</h4>
+
+			<div class="sidebar-body"></div>
 		</div>
 	</div>
 
@@ -37,10 +39,19 @@
 
 		simulationToggle.sideNavigation();
 
-		A.one('#<%= portletNamespace %>closeSimulationPanel').on(
-			'click',
+		var simulationPanel = $('#<%= portletNamespace %>simulationPanelId');
+
+		simulationPanel.on(
+			'open.lexicon.sidenav',
 			function(event) {
-				simulationToggle.sideNavigation('hide');
+				Liferay.fire('SimulationMenu:openSimulationPanel');
+			}
+		);
+
+		simulationPanel.on(
+			'closed.lexicon.sidenav',
+			function(event) {
+				Liferay.fire('SimulationMenu:closeSimulationPanel');
 			}
 		);
 

@@ -15,6 +15,7 @@
 package com.liferay.portal.upgrade.v7_0_0;
 
 import com.liferay.portal.kernel.configuration.Filter;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -22,7 +23,6 @@ import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
 
@@ -112,8 +112,8 @@ public class UpgradeRatings extends UpgradeProcess {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			StringBundler sb = new StringBundler(4);
 
-			sb.append("select classNameId, classPK, count(1) as totalEntries,");
-			sb.append(" sum(RatingsEntry.score) as totalScore, ");
+			sb.append("select classNameId, classPK, count(1) as ");
+			sb.append("totalEntries, sum(RatingsEntry.score) as totalScore, ");
 			sb.append("sum(RatingsEntry.score) / count(1) as averageScore ");
 			sb.append("from RatingsEntry group by classNameId, classPK");
 

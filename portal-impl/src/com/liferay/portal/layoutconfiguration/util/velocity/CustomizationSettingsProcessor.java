@@ -21,8 +21,10 @@ import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.JSPSupportServlet;
+import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.sites.kernel.util.SitesUtil;
@@ -49,9 +51,20 @@ public class CustomizationSettingsProcessor implements ColumnProcessor {
 
 		JspFactory jspFactory = JspFactory.getDefaultFactory();
 
-		_pageContext = jspFactory.getPageContext(
-			new JSPSupportServlet(request.getServletContext()), request,
-			response, null, false, 0, false);
+		ClassLoader contextClassLoader =
+			ClassLoaderUtil.getContextClassLoader();
+
+		try {
+			ClassLoaderUtil.setContextClassLoader(
+				PortalClassLoaderUtil.getClassLoader());
+
+			_pageContext = jspFactory.getPageContext(
+				new JSPSupportServlet(request.getServletContext()), request,
+				response, null, false, 0, false);
+		}
+		finally {
+			ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+		}
 
 		_writer = _pageContext.getOut();
 
@@ -107,7 +120,7 @@ public class CustomizationSettingsProcessor implements ColumnProcessor {
 
 		inputTag.setDisabled(!_customizationEnabled);
 		inputTag.setDynamicAttribute(
-			StringPool.BLANK, "labelOff", "no-customizable");
+			StringPool.BLANK, "labelOff", "not-customizable");
 		inputTag.setDynamicAttribute(
 			StringPool.BLANK, "labelOn", "customizable");
 		inputTag.setLabel(StringPool.BLANK);
@@ -131,15 +144,6 @@ public class CustomizationSettingsProcessor implements ColumnProcessor {
 	@Override
 	public String processMax() throws Exception {
 		return StringPool.BLANK;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0, replaced by {@link #processMax()}
-	 */
-	@Deprecated
-	@Override
-	public String processMax(String classNames) throws Exception {
-		return processMax();
 	}
 
 	@Override

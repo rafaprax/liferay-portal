@@ -3,7 +3,7 @@
 /**
  * Prints the DDM form editor field.
  *
- * @param childElementsHTML
+ * @param? childElementsHTML
  * @param label
  * @param name
  * @param placeholder
@@ -11,10 +11,9 @@
  * @param showLabel
  * @param tip
  * @param value
- * @param visible
  */
-{template .editor}
-	<div class="form-group{$visible ? '' : ' hide'} liferay-ddm-form-field-editor" data-fieldname="{$name}">
+{template .editor autoescape="deprecated-contextual"}
+	<div class="form-group liferay-ddm-form-field-editor" data-fieldname="{$name}">
 		{if $showLabel}
 			<label class="control-label" for="{$name}">
 				{$label}
@@ -39,6 +38,8 @@
 			<input id="{$name}" name="{$name}" type="hidden" value="{$value}" />
 		</div>
 
-		{$childElementsHTML|noAutoescape}
+		{if $childElementsHTML}
+			{$childElementsHTML|noAutoescape}
+		{/if}
 	</div>
 {/template}

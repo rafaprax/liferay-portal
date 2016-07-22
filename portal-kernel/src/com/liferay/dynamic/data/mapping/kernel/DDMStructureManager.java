@@ -14,6 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.kernel;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.search.Document;
@@ -29,6 +31,7 @@ import java.util.Map;
 /**
  * @author Leonardo Barros
  */
+@ProviderType
 public interface DDMStructureManager {
 
 	public static final int STRUCTURE_COMPARATOR_STRUCTURE_KEY = 0;
@@ -112,8 +115,8 @@ public interface DDMStructureManager {
 			DDMForm ddmForm, ServiceContext serviceContext)
 		throws PortalException;
 
-	public void updateStructureDefinition(
-		long structureId, String definition) throws PortalException;
+	public void updateStructureDefinition(long structureId, String definition)
+		throws PortalException;
 
 	public void updateStructureKey(long structureId, String structureKey)
 		throws PortalException;

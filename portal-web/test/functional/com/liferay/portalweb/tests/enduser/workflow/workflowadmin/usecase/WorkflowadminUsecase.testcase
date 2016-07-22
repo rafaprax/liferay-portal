@@ -1,4 +1,5 @@
 <definition component-name="portal-workflow">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<set-up>
@@ -336,7 +337,7 @@
 	</command>
 
 	<command name="AddDDLRecordWithDoubleApproverDefinition" priority="5">
-		<property name="portal.acceptance" value="false" />
+		<property name="portal.acceptance" value="true" />
 
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Workflow Definition" />
@@ -367,7 +368,7 @@
 			<var name="fieldName" value="Boolean" />
 		</execute>
 
-		<execute macro="DDLDataDefinition#saveCP" />
+		<execute macro="DDLDataDefinition#save" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -381,7 +382,7 @@
 
 		<execute macro="DDLDataDefinition#selectCP" />
 
-		<execute macro="DDLList#saveCP" />
+		<execute macro="DDLList#save" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -512,6 +513,11 @@
 	</command>
 
 	<command name="AddDocumentsAndMediaWithScriptedAssignmentDefinition" priority="3">
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Workflow Definition" />
 		</execute>
@@ -619,7 +625,7 @@
 		</execute>
 
 		<execute macro="User#editUserSiteCP">
-			<var name="siteName" value="Liferay" />
+			<var name="siteName" value="${siteName}" />
 			<var name="userScreenName" value="usersn2" />
 		</execute>
 
@@ -644,6 +650,14 @@
 			<var name="workflowDefinition" value="Scripted Single Approver (Version 1)" />
 		</execute>
 
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="Organization Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Documents and Media" />
+		</execute>
+
 		<execute macro="DMDocument#addWithWorkflowCP">
 			<var name="dmDocumentDescription" value="DM Document Description" />
 			<var name="dmDocumentFile" value="Document_1.txt" />
@@ -658,6 +672,12 @@
 
 		<execute macro="Workflow#configureWorkflowViaPortlet">
 			<var name="workflowDefinition" value="Scripted Single Approver (Version 1)" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Documents and Media" />
 		</execute>
 
 		<execute macro="DMDocument#addWithWorkflowCP">
@@ -1002,6 +1022,11 @@
 		<var name="wikiPageTitle" value="Wiki Page Title" />
 		<var name="workflowAssetType" value="Wiki Page" />
 
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
@@ -1050,7 +1075,7 @@
 		</execute>
 
 		<execute macro="User#editUserSiteCP">
-			<var name="siteName" value="Liferay" />
+			<var name="siteName" value="${siteName}" />
 			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
@@ -1252,8 +1277,6 @@
 	</command>
 
 	<command name="ViewBlogsEntryWorkflowViaNotifications" priority="3">
-		<property name="portlet.plugins.includes" value="notifications-portlet" />
-
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
@@ -1305,12 +1328,18 @@
 		</execute>
 
 		<execute macro="Notifications#viewBadgeCount">
-			<var name="notificationCount" value="1" />
+			<var name="notificationCount" value="0" />
 		</execute>
 
-		<execute macro="WorkflowAsset#gotoViaNotification">
-			<var name="assetType" value="Blogs Entry" />
-			<var name="user" value="Test Test" />
+		<execute macro="Page#gotoMyAccount">
+			<var name="portletName" value="My Workflow Tasks" />
+		</execute>
+
+		<execute macro="Workflow#viewTaskAssignedToMeDetails">
+			<var name="workflowAssetContent" value="Blogs Entry Content" />
+			<var name="workflowAssetTitle" value="Blogs Entry Title" />
+			<var name="workflowAssignedTo" value="Test Test" />
+			<var name="workflowTask" value="Review" />
 		</execute>
 
 		<execute macro="Workflow#clickApproveByDetails" />
@@ -1411,7 +1440,7 @@
 			<var name="results" value="Showing 1 to 6 of 6 entries." />
 		</execute>
 
-		<execute function="AssertElementPresent" locator1="xpath=(//div[contains(@id,'workflowTasksSearchContainer')]//tr[contains(@class,'panel entry-display-style')])[6]" />
+		<execute function="AssertElementPresent" locator1="xpath=(//div[contains(@id,'workflowTasksSearchContainer')]//tr[contains(@class,'entry-display-style')])[6]" />
 
 		<execute macro="Pagination#changePagination">
 			<var name="itemsPerPage" value="5" />
@@ -1421,7 +1450,7 @@
 			<var name="results" value="Showing 1 to 5 of 6 entries." />
 		</execute>
 
-		<execute function="AssertElementNotPresent" locator1="xpath=(//div[contains(@id,'workflowTasksSearchContainer')]//tr[contains(@class,'panel entry-display-style')])[6]" />
+		<execute function="AssertElementNotPresent" locator1="xpath=(//div[contains(@id,'workflowTasksSearchContainer')]//tr[contains(@class,'entry-display-style')])[6]" />
 	</command>
 
 	<command name="ViewWebContentConfigurationCP" priority="3">
@@ -1523,6 +1552,11 @@
 	<command name="ViewWorkflowSubmissionsFromDifferentUsers" priority="4">
 		<description message="This is a use case for LRQA-13519." />
 
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Workflow Configuration" />
 		</execute>
@@ -1571,7 +1605,7 @@
 			</execute>
 
 			<execute macro="User#editUserSiteCP">
-				<var name="siteName" value="Liferay" />
+				<var name="siteName" value="${siteName}" />
 				<var name="userScreenName" value="usersn${n}" />
 			</execute>
 

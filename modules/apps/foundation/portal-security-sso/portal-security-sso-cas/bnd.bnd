@@ -1,17 +1,16 @@
 Bundle-Name: Liferay Portal Security SSO CAS
 Bundle-SymbolicName: com.liferay.portal.security.sso.cas
-Bundle-Version: 1.0.0
+Bundle-Version: 3.0.4
 Export-Package:\
-	com.liferay.portal.security.sso.cas.configuration.*;version=${plugin.full.version},\
-	com.liferay.portal.security.sso.cas.constants.*;version=${plugin.full.version}
+	com.liferay.portal.security.sso.cas.configuration,\
+	com.liferay.portal.security.sso.cas.constants
 Import-Package:\
 	!javax.microedition.*,\
 	\
 	!junit.*,\
 	*
-Include-Resource:\
-	@lib/cas-client-core.jar,\
-	@lib/opensaml.jar
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Security Frameworks
--include: ../../app.bnd
+-includeresource:\
+	@cas-client-core-[0-9]*.jar,\
+	@opensaml-[0-9]*.jar

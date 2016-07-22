@@ -58,6 +58,8 @@ public class PermissionServiceImpl extends PermissionServiceBaseImpl {
 
 	@Override
 	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+
 		Registry registry = RegistryUtil.getRegistry();
 
 		Filter filter = registry.getFilter(
@@ -153,7 +155,8 @@ public class PermissionServiceImpl extends PermissionServiceBaseImpl {
 				pos + PortletConstants.LAYOUT_SEPARATOR.length());
 
 			PortletPermissionUtil.check(
-				permissionChecker, plid, portletId, ActionKeys.CONFIGURATION);
+				permissionChecker, groupId, plid, portletId,
+				ActionKeys.CONFIGURATION);
 		}
 		else if (!permissionChecker.hasPermission(
 					groupId, name, primKey, ActionKeys.PERMISSIONS)) {

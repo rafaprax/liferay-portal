@@ -124,6 +124,8 @@ if (Validator.isNotNull(requestUpdateStructureURL)) {
 			<liferay-ui:message arguments="<%= mndfn.getFieldName() %>" key="the-definition-field-name-x-was-defined-more-than-once" translateArguments="<%= false %>" />
 		</liferay-ui:error>
 
+		<liferay-ui:error exception="<%= DDMFormValidationException.MustSetFieldsForForm.class %>" message="please-add-at-least-one-field" />
+
 		<liferay-ui:error exception="<%= DDMFormValidationException.MustSetOptionsForField.class %>">
 
 			<%
@@ -258,15 +260,15 @@ if (Validator.isNotNull(requestUpdateStructureURL)) {
 										<aui:field-wrapper>
 											<aui:select disabled="<%= structure != null %>" name="storageType">
 
-											<%
-											for (String storageType : ddmDisplayContext.getStorageTypes()) {
-											%>
+												<%
+												for (String storageType : ddmDisplayContext.getStorageTypes()) {
+												%>
 
-												<aui:option label="<%= storageType %>" value="<%= storageType %>" />
+													<aui:option label="<%= storageType %>" value="<%= storageType %>" />
 
-											<%
-											}
-											%>
+												<%
+												}
+												%>
 
 											</aui:select>
 										</aui:field-wrapper>
@@ -278,9 +280,9 @@ if (Validator.isNotNull(requestUpdateStructureURL)) {
 							</c:choose>
 						</aui:row>
 
-					<c:if test="<%= !ddmDisplayContext.autogenerateStructureKey() %>">
-						<aui:input disabled="<%= (structure != null) ? true : false %>" label='<%= LanguageUtil.format(request, "x-key", ddmDisplay.getStructureName(locale), false) %>' name="structureKey" />
-					</c:if>
+						<c:if test="<%= !ddmDisplayContext.autogenerateStructureKey() %>">
+							<aui:input disabled="<%= (structure != null) ? true : false %>" label='<%= LanguageUtil.format(request, "x-key", ddmDisplay.getStructureName(locale), false) %>' name="structureKey" />
+						</c:if>
 
 						<aui:input name="description" />
 
@@ -328,7 +330,7 @@ if (Validator.isNotNull(requestUpdateStructureURL)) {
 	function <portlet:namespace />openParentStructureSelector() {
 		Liferay.Util.openDDMPortlet(
 			{
-				basePortletURL: '<%= PortletURLFactoryUtil.create(request, DDMPortletKeys.DYNAMIC_DATA_MAPPING, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
+				basePortletURL: '<%= PortletURLFactoryUtil.create(request, DDMPortletKeys.DYNAMIC_DATA_MAPPING, PortletRequest.RENDER_PHASE) %>',
 				classPK: <%= (structure != null) ? structure.getPrimaryKey() : 0 %>,
 				dialog: {
 					destroyOnHide: true

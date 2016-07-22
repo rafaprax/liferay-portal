@@ -1,21 +1,14 @@
 <?xml version="1.0"?>
 
-<project name="util-slf4j" basedir="." default="compile">
+<project basedir="." default="compile" name="util-slf4j">
 	<import file="../build-common-java.xml" />
 
-	<property name="artifact.version" value="1.0.1" />
 	<property name="deploy.dir" value="${app.server.lib.portal.dir}" />
 	<property name="jar.file" value="${ant.project.name}" />
 	<property name="manifest.bundle.name" value="Liferay Util SLF4J" />
 	<property name="manifest.bundle.symbolic.name" value="com.liferay.util.slf4j" />
 
-	<macrodef name="jar-macro">
-		<sequential>
-			<jar-macro-cmd>
-				<jar-post>
-					<copy file="${jar.file}.jar" todir="${portal-impl.classes.dir}/com/liferay/portal/deploy/dependencies" preservelastmodified="true" />
-				</jar-post>
-			</jar-macro-cmd>
-		</sequential>
-	</macrodef>
+	<target depends="build-common-java.jar" name="jar">
+		<copy file="${jar.file}.jar" preservelastmodified="true" todir="${portal-impl.classes.dir}/com/liferay/portal/deploy/dependencies" />
+	</target>
 </project>

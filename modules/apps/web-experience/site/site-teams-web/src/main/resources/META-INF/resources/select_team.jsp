@@ -17,7 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String displayStyle = ParamUtil.getString(request, "displayStyle", "list");
+String displayStyle = portalPreferences.getValue(SiteTeamsPortletKeys.SITE_TEAMS, "display-style", "icon");
 String eventName = ParamUtil.getString(request, "eventName", liferayPortletResponse.getNamespace() + "selectTeam");
 
 PortletURL portletURL = renderResponse.createRenderURL();
@@ -51,7 +51,7 @@ teamSearch.setTotal(teamsCount);
 </aui:nav-bar>
 
 <liferay-frontend:management-bar
-	disabled="<%= teamsCount <= 0 %>"
+	disabled="<%= (teamsCount <= 0) && !searchTerms.isSearch() %>"
 >
 	<liferay-frontend:management-bar-buttons>
 		<liferay-frontend:management-bar-filters>
@@ -68,9 +68,13 @@ teamSearch.setTotal(teamsCount);
 			/>
 		</liferay-frontend:management-bar-filters>
 
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
+
 		<liferay-frontend:management-bar-display-buttons
-			displayViews='<%= new String[] {"list"} %>'
-			portletURL="<%= PortletURLUtil.clone(portletURL, liferayPortletResponse) %>"
+			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
+			portletURL="<%= changeDisplayStyleURL %>"
 			selectedDisplayStyle="<%= displayStyle %>"
 		/>
 	</liferay-frontend:management-bar-buttons>
@@ -80,7 +84,6 @@ teamSearch.setTotal(teamsCount);
 	<liferay-ui:search-container
 		searchContainer="<%= teamSearch %>"
 	>
-
 		<liferay-ui:search-container-results
 			results="<%= TeamLocalServiceUtil.search(scopeGroupId, searchTerms.getKeywords(), searchTerms.getDescription(), new LinkedHashMap<String, Object>(), searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator()) %>"
 		/>
@@ -91,34 +94,92 @@ teamSearch.setTotal(teamsCount);
 			modelVar="curTeam"
 			rowVar="row"
 		>
-			<liferay-ui:search-container-column-text
-				cssClass="text-strong"
-				name="name"
-			>
 
-				<%
-				Map<String, Object> data = new HashMap<String, Object>();
+			<%
+			Map<String, Object> data = new HashMap<String, Object>();
 
-				data.put("teamdescription", curTeam.getDescription());
-				data.put("teamid", curTeam.getTeamId());
-				data.put("teamname", curTeam.getName());
+			data.put("teamdescription", curTeam.getDescription());
+			data.put("teamid", curTeam.getTeamId());
+			data.put("teamname", curTeam.getName());
 
-				Group group = themeDisplay.getScopeGroup();
+			Group group = themeDisplay.getScopeGroup();
 
-				long[] defaultTeamIds = StringUtil.split(group.getTypeSettingsProperties().getProperty("defaultTeamIds"), 0L);
+			long[] defaultTeamIds = StringUtil.split(group.getTypeSettingsProperties().getProperty("defaultTeamIds"), 0L);
 
-				long[] teamIds = ParamUtil.getLongValues(request, "teamIds", defaultTeamIds);
+			long[] teamIds = ParamUtil.getLongValues(request, "teamIds", defaultTeamIds);
 
-				boolean disabled = ArrayUtil.contains(teamIds, curTeam.getTeamId());
-				%>
+			boolean disabled = ArrayUtil.contains(teamIds, curTeam.getTeamId());
+			%>
 
-				<aui:button cssClass="btn btn-link selector-button" data="<%= data %>" disabled="<%= disabled %>" value="<%= HtmlUtil.escape(curTeam.getName()) %>" />
-			</liferay-ui:search-container-column-text>
+			<c:choose>
+				<c:when test='<%= displayStyle.equals("descriptive") %>'>
+					<liferay-ui:search-container-column-icon
+						icon="users"
+						toggleRowChecker="<%= true %>"
+					/>
 
-			<liferay-ui:search-container-column-text
-				name="description"
-				value="<%= HtmlUtil.escape(curTeam.getDescription()) %>"
-			/>
+					<liferay-ui:search-container-column-text
+						colspan="<%= 2 %>"
+					>
+						<h5>
+							<c:choose>
+								<c:when test="<%= !disabled %>">
+									<aui:a cssClass="selector-button" data="<%= data %>" href="javascript:;">
+										<%= HtmlUtil.escape(curTeam.getName()) %>
+									</aui:a>
+								</c:when>
+								<c:otherwise>
+									<%= HtmlUtil.escape(curTeam.getName()) %>
+								</c:otherwise>
+							</c:choose>
+						</h5>
+
+						<h6 class="text-default">
+							<span><%= HtmlUtil.escape(curTeam.getDescription()) %></span>
+						</h6>
+					</liferay-ui:search-container-column-text>
+				</c:when>
+				<c:when test='<%= displayStyle.equals("icon") %>'>
+
+					<%
+					row.setCssClass("entry-card lfr-asset-item");
+					%>
+
+					<liferay-ui:search-container-column-text>
+						<liferay-frontend:icon-vertical-card
+							cssClass='<%= disabled ? StringPool.BLANK : "selector-button" %>'
+							data="<%= data %>"
+							icon="users"
+							resultRow="<%= row %>"
+							subtitle="<%= curTeam.getDescription() %>"
+							title="<%= curTeam.getName() %>"
+						/>
+					</liferay-ui:search-container-column-text>
+				</c:when>
+				<c:when test='<%= displayStyle.equals("list") %>'>
+					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
+						name="name"
+					>
+						<c:choose>
+							<c:when test="<%= !disabled %>">
+								<aui:a cssClass="selector-button" data="<%= data %>" href="javascript:;">
+									<%= HtmlUtil.escape(curTeam.getName()) %>
+								</aui:a>
+							</c:when>
+							<c:otherwise>
+								<%= HtmlUtil.escape(curTeam.getName()) %>
+							</c:otherwise>
+						</c:choose>
+					</liferay-ui:search-container-column-text>
+
+					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
+						name="description"
+						value="<%= HtmlUtil.escape(curTeam.getDescription()) %>"
+					/>
+				</c:when>
+			</c:choose>
 		</liferay-ui:search-container-row>
 
 		<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />

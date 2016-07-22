@@ -19,10 +19,12 @@ import com.liferay.portal.kernel.util.ProxyFactory;
 import java.util.Locale;
 
 /**
- * @author Marcellus Tavares
- * @author Bruno Basto
- * @author Leonardo Barros
+ * @author     Marcellus Tavares
+ * @author     Bruno Basto
+ * @author     Leonardo Barros
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 public class JournalConverterManagerUtil {
 
 	public static String getDDMXSD(String journalXSD, Locale defaultLocale)
@@ -31,7 +33,9 @@ public class JournalConverterManagerUtil {
 		return _journalConverterManager.getDDMXSD(journalXSD, defaultLocale);
 	}
 
-	private static final JournalConverterManager _journalConverterManager =
-		ProxyFactory.newServiceTrackedInstance(JournalConverterManager.class);
+	private static volatile JournalConverterManager _journalConverterManager =
+		ProxyFactory.newServiceTrackedInstance(
+			JournalConverterManager.class, JournalConverterManagerUtil.class,
+			"_journalConverterManager");
 
 }

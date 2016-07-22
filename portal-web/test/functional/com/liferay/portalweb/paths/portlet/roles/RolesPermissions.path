@@ -25,7 +25,7 @@
 </tr>
 <tr>
 	<td>SAVE_BUTTON</td>
-	<td>//button[contains(.,'Save')]</td>
+	<td>//button[@type='button']/span[contains(.,'Save')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -174,7 +174,7 @@
 <!--CONTROL_PANEL_SITES_SITES_RESOURCE_PERMISSIONS-->
 <tr>
 	<td>CONTROL_PANEL_SITES_SITES_RESOURCE_PERMISSIONS_SITE_MANAGE_PAGES_CHECKBOX</td>
-	<td>//input[contains(@value,'GroupMANAGE_LAYOUTS')]</td>
+	<td>//input[contains(@value,'GroupMANAGE_LAYOUTS') and contains(@title,'Select')] </td>
 	<td></td>
 </tr>
 <tr>
@@ -184,7 +184,7 @@
 </tr>
 <tr>
 	<td>CONTROL_PANEL_SITES_SITES_RESOURCE_PERMISSIONS_SITE_VIEW_CHECKBOX</td>
-	<td>//input[contains(@value,'GroupVIEW')]</td>
+	<td>//input[contains(@value,'GroupVIEW') and contains(@title,'Select')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -251,7 +251,7 @@
 </tr>
 <tr>
 	<td>SITE_ADMIN_PAGES_SITE_PAGES_RESOURCE_PERMISSIONS_SITE_MANAGE_SUBSITES_CHECKBOX</td>
-	<td>//input[contains(@value,'GroupMANAGE_SUBGROUPS')]</td>
+	<td>//input[contains(@value,'GroupMANAGE_SUBGROUPS') and contains(@title,'Select')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -273,6 +273,11 @@
 <tr>
 	<td>SITE_ADMIN_PAGES_SITE_PAGES_RESOURCE_PERMISSIONS_PAGE_CUSTOMIZE_CHECKBOX</td>
 	<td>//input[contains(@value,'LayoutCUSTOMIZE')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_PAGES_SITE_PAGES_RESOURCE_PERMISSIONS_PAGE_UPDATE_CHECKBOX</td>
+	<td>//input[contains(@value,'LayoutUPDATE')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -443,7 +448,7 @@
 </tr>
 <tr>
 	<td>SITE_ADMIN_CONTENT_DOCUMENTS_AND_MEDIA_RESOURCE_PERMISSIONS_DOCUMENTS_ADD_FOLDER_CHECKBOX</td>
-	<td>//input[contains(@value,'documentlibraryADD_FOLDER')]</td>
+	<td>//input[contains(@value,'document.libraryADD_FOLDER')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -517,7 +522,7 @@
 </tr>
 <tr>
 	<td>SITE_ADMIN_CONTENT_BLOGS_GENERAL_PERMISSIONS_ACCESS_IN_SITE_ADMINISTRATION_CHECKBOX</td>
-	<td>//input[contains(@value,'ACCESS_IN_CONTROL_PANEL')]</td>
+	<td>//tbody//input[contains(@value,'ACCESS_IN_CONTROL_PANEL')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -615,7 +620,7 @@
 </tr>
 <tr>
 	<td>SITE_ADMIN_CONTENT_BOOKMARKS_GENERAL_PERMISSIONS_ACCESS_IN_SITE_ADMINISTRATION_CHECKBOX</td>
-	<td>//input[contains(@value,'bookmarkswebACCESS_IN_CONTROL_PANEL')]</td>
+	<td>//input[contains(@value,'BookmarksAdminPortletACCESS_IN_CONTROL_PANEL')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -626,12 +631,48 @@
 <!--SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_GENERAL_PERMISSIONS-->
 <tr>
 	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_GENERAL_PERMISSIONS_ACTION_CHECKBOX</td>
-	<td>xpath=(//input[contains(@name,'allRowIds')])[1]</td>
+	<td>//input[contains(@name,'allRowIds')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_GENERAL_RESOURCE_PERMISSIONS_KALEO_FORMS_ALL_CHECKBOX</td>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_GENERAL_PERMISSIONS_VIEW</td>
+	<td>//input[contains(@value,'KaleoFormsAdminPortletVIEW')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--SITE_ADMIN_CONTENT_KALEO_FORMS_RESOURCE_PERMISSIONS-->
+<tr>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_ACTION_CHECKBOX</td>
 	<td>xpath=(//input[contains(@name,'allRowIds')])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_RESOURCE_PERMISSIONS_KALEO_FORMS_ACTION_CHECKBOX</td>
+	<td>xpath=(//input[contains(@name,'allRowIds')])[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_COMPLETE_FORM</td>
+	<td>//input[contains(@value,'KaleoProcessCOMPLETE_FORM')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_SUBMIT</td>
+	<td>//input[contains(@value,'KaleoProcessSUBMIT')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_UPDATE</td>
+	<td>//input[contains(@value,'KaleoProcessUPDATE')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_ADMIN_CONTENT_KALEO_FORMS_ADMIN_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_VIEW</td>
+	<td>//input[contains(@value,'KaleoProcessVIEW')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -647,7 +688,7 @@
 </tr>
 <tr>
 	<td>SITE_ADMIN_CONTENT_MESSAGE_BOARDS_GENERAL_PERMISSIONS_ACCESS_IN_SITE_ADMINISTRATION_CHECKBOX</td>
-	<td>//input[contains(@value,'ACCESS_IN_CONTROL_PANEL')]</td>
+	<td>//tbody//input[contains(@value,'ACCESS_IN_CONTROL_PANEL')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -658,17 +699,17 @@
 <!--SITE_ADMIN_CONTENT_MESSAGE_BOARDS_RESOURCE_PERMISSIONS_MESSAGES-->
 <tr>
 	<td>SITE_ADMIN_CONTENT_MESSAGE_BOARDS_RESOURCE_PERMISSIONS_MESSAGES_ADD_CATEGORY_CHECKBOX</td>
-	<td>//input[contains(@value,'messageboardsADD_CATEGORY')]</td>
+	<td>//input[contains(@value,'message.boardsADD_CATEGORY')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>SITE_ADMIN_CONTENT_MESSAGE_BOARDS_RESOURCE_PERMISSIONS_MESSAGES_ADD_MESSAGE_CHECKBOX</td>
-	<td>//input[contains(@value,'messageboardsADD_MESSAGE')]</td>
+	<td>//input[contains(@value,'message.boardsADD_MESSAGE')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>SITE_ADMIN_CONTENT_MESSAGE_BOARDS_RESOURCE_PERMISSIONS_MESSAGES_VIEW_CHECKBOX</td>
-	<td>//input[contains(@value,'messageboardsVIEW')]</td>
+	<td>//input[contains(@value,'message.boardsVIEW')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -743,7 +784,7 @@
 <!--SITE_ADMIN_CONTENT_CATEGORIES_RESOURCE_PERMISSIONS_ASSET_ENTRIES-->
 <tr>
 	<td>SITE_ADMIN_CONTENT_CATEGORIES_RESOURCE_PERMISSIONS_ASSET_ENTRIES_ADD_CATEGORY_CHECKBOX</td>
-	<td>//input[contains(@value,'assetADD_CATEGORY')]</td>
+	<td>//label/input[contains(@value,'assetADD_CATEGORY')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -775,7 +816,7 @@
 <!--SITE_ADMIN_CONTENT_CATEGORIES_RESOURCE_PERMISSIONS_CATEGORY-->
 <tr>
 	<td>SITE_ADMIN_CONTENT_CATEGORIES_RESOURCE_PERMISSIONS_CATEGORY_ADD_CATEGORY_CHECKBOX</td>
-	<td>//input[contains(@value,'AssetCategoryADD_CATEGORY')]</td>
+	<td>//label/input[contains(@value,'AssetCategoryADD_CATEGORY')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -929,12 +970,12 @@
 </tr>
 <tr>
 	<td>SITE_ADMIN_APPLICATIONS_DOCUMENTS_AND_MEDIA_RESOURCE_PERMISSIONS_DOCUMENTS_ADD_DOCUMENT_CHECKBOX</td>
-	<td>//input[contains(@value,'documentlibraryADD_DOCUMENT')]</td>
+	<td>//input[contains(@value,'document.libraryADD_DOCUMENT')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>SITE_ADMIN_APPLICATIONS_DOCUMENTS_AND_MEDIA_RESOURCE_PERMISSIONS_DOCUMENTS_ADD_REPOSITORY_CHECKBOX</td>
-	<td>//tbody//input[contains(@value,'documentlibraryADD_REPOSITORY')]</td>
+	<td>//tbody//input[contains(@value,'document.libraryADD_REPOSITORY')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -951,47 +992,6 @@
 <tr>
 	<td>SITE_ADMIN_APPLICATIONS_DOCUMENTS_AND_MEDIA_RESOURCE_PERMISSIONS_DOCUMENT_VIEW_CHECKBOX</td>
 	<td>//input[contains(@value,'DLFileEntryVIEW')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--SITE_ADMIN_APPLICATIONS_KALEO_FORMS-->
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_APPLICATION_PERMISSIONS_ALL_CHECKBOX</td>
-	<td>//input[contains(@name,'allRowIds')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_APPLICATION_PERMISSIONS_VIEW</td>
-	<td>//input[@value='1_WAR_kaleoformsportletVIEW']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_ALL_CHECKBOX</td>
-	<td>xpath=(//input[contains(@name,'allRowIds')])[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_COMPLETE_FORM</td>
-	<td>//input[contains(@value,'KaleoProcessCOMPLETE_FORM')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_SUBMIT</td>
-	<td>//input[contains(@value,'KaleoProcessSUBMIT')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_UPDATE</td>
-	<td>//input[contains(@value,'KaleoProcessUPDATE')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SITE_ADMIN_APPLICATIONS_KALEO_FORMS_RESOURCE_PERMISSIONS_KALEO_FORMS_PROCESS_VIEW</td>
-	<td>//input[contains(@value,'KaleoProcessVIEW')]</td>
 	<td></td>
 </tr>
 <tr>

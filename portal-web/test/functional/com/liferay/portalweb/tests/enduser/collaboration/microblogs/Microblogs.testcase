@@ -1,4 +1,5 @@
 <definition component-name="portal-collaboration">
+	<property name="portal.release" value="true" />
 	<property name="custom.properties" value="default.layout.template.id=1_column" />
 	<property name="testray.main.component.name" value="Microblogs" />
 
@@ -11,7 +12,7 @@
 			<var name="pageName" value="Microblogs Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Microblogs Page" />
 		</execute>
 
@@ -19,7 +20,7 @@
 			<var name="portletName" value="Microblogs" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Microblogs Page" />
 		</execute>
 
@@ -37,7 +38,10 @@
 		</if>
 	</tear-down>
 
-	<command name="AddEntry" priority="3">
+	<command name="AddEntry" priority="5">
+		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="Microblogs#AddEntry" />
+
 		<execute macro="Microblogs#updateStatus">
 			<var name="entryContent" value="Microblog Entry Content" />
 		</execute>
@@ -50,7 +54,10 @@
 		</execute>
 	</command>
 
-	<command name="DeleteEntry" priority="3">
+	<command name="DeleteEntry" priority="5">
+		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="Microblogs#DeleteEntry" />
+
 		<execute macro="Microblogs#updateStatus">
 			<var name="entryContent" value="Microblog Entry Content" />
 		</execute>
@@ -66,7 +73,10 @@
 		<execute function="AssertTextEquals" locator1="Message#INFO" value1="There are no microblog entries." />
 	</command>
 
-	<command name="EditEntry" priority="3">
+	<command name="EditEntry" priority="5">
+		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="Microblogs#EditEntry" />
+
 		<execute macro="Microblogs#updateStatus">
 			<var name="entryContent" value="Microblog Entry Content" />
 		</execute>

@@ -236,6 +236,9 @@ public class PortletBagFactory {
 		_warFile = warFile;
 	}
 
+	/**
+	 * @see FriendlyURLMapperTrackerImpl#getContent(ClassLoader, String)
+	 */
 	protected String getContent(String fileName) throws Exception {
 		String queryString = HttpUtil.getQueryString(fileName);
 
@@ -621,8 +624,8 @@ public class PortletBagFactory {
 			Portlet portlet, Filter filter, Map<String, Object> properties)
 		throws Exception {
 
-		ServiceTrackerList<PreferencesValidator>
-			preferencesValidatorInstances = ServiceTrackerCollections.openList(
+		ServiceTrackerList<PreferencesValidator> preferencesValidatorInstances =
+			ServiceTrackerCollections.openList(
 				PreferencesValidator.class, filter, properties);
 
 		if (Validator.isNotNull(portlet.getPreferencesValidator())) {

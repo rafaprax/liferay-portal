@@ -67,11 +67,9 @@ for (long defaultTeamId : defaultTeamIds) {
 
 <h4 class="text-default"><liferay-ui:message key="site-roles" /> <liferay-ui:icon-help message="default-site-roles-assignment-help" /></h4>
 
-<p class="text-muted <%= defaultSiteRoles.isEmpty() ? StringPool.BLANK : "hide" %>" id="<portlet:namespace />siteRolesEmptyResultMessage">
-	<%= StringUtil.lowerCase(LanguageUtil.get(request, "none")) %>
-</p>
-
 <liferay-ui:search-container
+	compactEmptyResultsMessage="<%= true %>"
+	emptyResultsMessage="none"
 	headerNames="title,null"
 	id="siteRolesSearchContainer"
 	total="<%= defaultSiteRoles.size() %>"
@@ -87,12 +85,11 @@ for (long defaultTeamId : defaultTeamIds) {
 	>
 		<liferay-ui:search-container-column-text
 			name="title"
+			truncate="<%= true %>"
 			value="<%= HtmlUtil.escape(role.getTitle(locale)) %>"
 		/>
 
-		<liferay-ui:search-container-column-text
-			cssClass="list-group-item-field"
-		>
+		<liferay-ui:search-container-column-text>
 			<a class="modify-link" data-rowId="<%= role.getRoleId() %>" href="javascript:;"><%= removeRoleIcon %></a>
 		</liferay-ui:search-container-column-text>
 	</liferay-ui:search-container-row>
@@ -101,16 +98,14 @@ for (long defaultTeamId : defaultTeamIds) {
 </liferay-ui:search-container>
 
 <div class="button-holder">
-	<aui:button cssClass="btn-lg modify-link" id="selectSiteRoleLink" value="select" />
+	<aui:button cssClass="modify-link" id="selectSiteRoleLink" value="select" />
 </div>
 
 <h4 class="text-default"><liferay-ui:message key="teams" /> <liferay-ui:icon-help message="default-teams-assignment-help" /></h4>
 
-<p class="text-muted <%= defaultTeams.isEmpty() ? StringPool.BLANK : "hide" %>" id="<portlet:namespace />teamsEmptyResultMessage">
-	<%= StringUtil.lowerCase(LanguageUtil.get(request, "none")) %>
-</p>
-
 <liferay-ui:search-container
+	compactEmptyResultsMessage="<%= true %>"
+	emptyResultsMessage="none"
 	headerNames="title,null"
 	id="teamsSearchContainer"
 	total="<%= defaultTeams.size() %>"
@@ -126,12 +121,11 @@ for (long defaultTeamId : defaultTeamIds) {
 	>
 		<liferay-ui:search-container-column-text
 			name="title"
+			truncate="<%= true %>"
 			value="<%= HtmlUtil.escape(team.getName()) %>"
 		/>
 
-		<liferay-ui:search-container-column-text
-			cssClass="list-group-item-field"
-		>
+		<liferay-ui:search-container-column-text>
 			<a class="modify-link" data-rowId="<%= team.getTeamId() %>" href="javascript:;"><%= removeRoleIcon %></a>
 		</liferay-ui:search-container-column-text>
 	</liferay-ui:search-container-row>
@@ -139,9 +133,9 @@ for (long defaultTeamId : defaultTeamIds) {
 	<liferay-ui:search-iterator markupView="lexicon" paginate="<%= false %>" />
 </liferay-ui:search-container>
 
-<aui:button-row>
-	<aui:button cssClass="btn-lg modify-link" id="selectTeamLink" value="select" />
-</aui:button-row>
+<div class="button-holder">
+	<aui:button cssClass="modify-link" id="selectTeamLink" value="select" />
+</div>
 
 <aui:script use="liferay-search-container,escape">
 	var bindModifyLink = function(config) {
@@ -153,14 +147,10 @@ for (long defaultTeamId : defaultTeamIds) {
 				var link = event.currentTarget;
 
 				searchContainer.deleteRow(link.ancestor('tr'), link.getAttribute('data-rowId'));
-
-				if (searchContainer.getSize() <= 0) {
-					A.one(config.emptyResultMessageId).show();
-				}
 			},
 			'.modify-link'
 		);
-	}
+	};
 
 	var bindSelectLink = function(config) {
 		var searchContainer = config.searchContainer;
@@ -192,13 +182,11 @@ for (long defaultTeamId : defaultTeamIds) {
 						searchContainer.addRow(rowColumns, event[config.idAttr]);
 
 						searchContainer.updateDataStore();
-
-						A.one(config.emptyResultMessageId).hide();
 					}
 				);
 			}
 		);
-	}
+	};
 
 	<%
 	PortletURL selectSiteRoleURL = PortletProviderUtil.getPortletURL(request, Role.class.getName(), PortletProvider.Action.BROWSE);
@@ -213,7 +201,6 @@ for (long defaultTeamId : defaultTeamIds) {
 	%>
 
 	var siteRolesConfig = {
-		emptyResultMessageId: '#<portlet:namespace />siteRolesEmptyResultMessage',
 		id: '<portlet:namespace />selectSiteRole',
 		idAttr: 'roleid',
 		inputId: '#<portlet:namespace />siteRolesSearchContainerPrimaryKeys',
@@ -239,7 +226,6 @@ for (long defaultTeamId : defaultTeamIds) {
 	%>
 
 	var teamsConfig = {
-		emptyResultMessageId: '#<portlet:namespace />teamsEmptyResultMessage',
 		id: '<portlet:namespace />selectTeam',
 		idAttr: 'teamid',
 		inputId: '#<portlet:namespace />teamsSearchContainerPrimaryKeys',

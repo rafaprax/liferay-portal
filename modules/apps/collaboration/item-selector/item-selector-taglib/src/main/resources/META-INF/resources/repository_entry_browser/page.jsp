@@ -169,7 +169,7 @@ if (Validator.isNotNull(keywords)) {
 	}
 	%>
 
-	<c:if test="<%= showDragAndDropZone && !showSearchInfo %>">
+	<c:if test="<%= showDragAndDropZone && !showSearchInfo && DLFolderPermission.contains(permissionChecker, scopeGroupId, folderId, ActionKeys.ADD_DOCUMENT) %>">
 		<liferay-util:buffer var="selectFileHTML">
 			<label class="btn btn-default" for="<%= randomNamespace %>InputFile"><liferay-ui:message key="select-file" /></label>
 
@@ -195,7 +195,6 @@ if (Validator.isNotNull(keywords)) {
 				className="com.liferay.portal.kernel.repository.model.RepositoryEntry"
 				modelVar="repositoryEntry"
 			>
-
 				<c:choose>
 					<c:when test='<%= displayStyle.equals("list") %>'>
 
@@ -251,6 +250,7 @@ if (Validator.isNotNull(keywords)) {
 
 						<%
 						}
+
 						if (folder != null) {
 							PortletURL viewFolderURL = PortletURLUtil.clone(portletURL, liferayPortletResponse);
 
@@ -259,7 +259,6 @@ if (Validator.isNotNull(keywords)) {
 
 							<liferay-ui:search-container-column-text name="title">
 								<a href="<%= HtmlUtil.escapeHREF(viewFolderURL.toString()) %>" title="<%= HtmlUtil.escapeAttribute(folder.getName()) %>">
-
 									<i class="icon-folder-open"></i>
 
 									<span class="taglib-text">
@@ -304,7 +303,7 @@ if (Validator.isNotNull(keywords)) {
 							<c:when test='<%= displayStyle.equals("icon") %>'>
 
 								<%
-								row.setCssClass("col-md-3 folder-entry");
+								row.setCssClass("entry-card lfr-asset-folder");
 
 								if (folder != null) {
 									PortletURL viewFolderURL = PortletURLUtil.clone(portletURL, liferayPortletResponse);
@@ -330,8 +329,6 @@ if (Validator.isNotNull(keywords)) {
 								}
 
 								if (fileEntry != null) {
-									row.setCssClass("col-lg-3 col-md-3 col-sm-4 col-xs-6");
-
 									FileVersion latestFileVersion = fileEntry.getLatestFileVersion();
 
 									String title = DLUtil.getTitleWithExtension(fileEntry);
@@ -471,6 +468,22 @@ if (Validator.isNotNull(keywords)) {
 	new Liferay.ItemSelectorRepositoryEntryBrowser(
 		{
 			closeCaption: '<%= UnicodeLanguageUtil.get(request, tabName) %>',
+
+			<c:if test="<%= uploadURL != null %>">
+
+				<%
+				String imageEditorPortletId = PortletProviderUtil.getPortletId(Image.class.getName(), PortletProvider.Action.EDIT);
+				%>
+
+				<c:if test="<%= Validator.isNotNull(imageEditorPortletId) %>">
+					<liferay-portlet:renderURL portletName="<%= imageEditorPortletId %>" var="viewImageEditorURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+						<liferay-portlet:param name="mvcRenderCommandName" value="/image_editor/view" />
+					</liferay-portlet:renderURL>
+
+					editItemURL: '<%= viewImageEditorURL.toString() %>',
+				</c:if>
+			</c:if>
+
 			maxFileSize: '<%= maxFileSize %>',
 			on: {
 				selectedItem: function(event) {
@@ -481,7 +494,7 @@ if (Validator.isNotNull(keywords)) {
 
 			<c:if test="<%= uploadURL != null %>">
 				, uploadItemReturnType: '<%= ClassUtil.getClassName(existingFileEntryReturnType) %>',
-				uploadItemUrl: '<%= uploadURL.toString() %>'
+				uploadItemURL: '<%= uploadURL.toString() %>'
 			</c:if>
 		}
 	);

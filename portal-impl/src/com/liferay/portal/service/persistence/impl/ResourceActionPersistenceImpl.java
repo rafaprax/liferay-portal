@@ -28,15 +28,12 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.NoSuchResourceActionException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.service.persistence.ResourceActionPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.impl.ResourceActionImpl;
 import com.liferay.portal.model.impl.ResourceActionModelImpl;
 
@@ -48,6 +45,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -196,7 +194,7 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ResourceAction resourceAction : list) {
-					if (!Validator.equals(name, resourceAction.getName())) {
+					if (!Objects.equals(name, resourceAction.getName())) {
 						list = null;
 
 						break;
@@ -670,8 +668,8 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchResourceActionException(msg.toString());
@@ -715,8 +713,8 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 		if (result instanceof ResourceAction) {
 			ResourceAction resourceAction = (ResourceAction)result;
 
-			if (!Validator.equals(name, resourceAction.getName()) ||
-					!Validator.equals(actionId, resourceAction.getActionId())) {
+			if (!Objects.equals(name, resourceAction.getName()) ||
+					!Objects.equals(actionId, resourceAction.getActionId())) {
 				result = null;
 			}
 		}
@@ -1106,8 +1104,8 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 					primaryKey);
 
 			if (resourceAction == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchResourceActionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1257,8 +1255,8 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 		ResourceAction resourceAction = fetchByPrimaryKey(primaryKey);
 
 		if (resourceAction == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchResourceActionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1289,12 +1287,14 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 	 */
 	@Override
 	public ResourceAction fetchByPrimaryKey(Serializable primaryKey) {
-		ResourceAction resourceAction = (ResourceAction)entityCache.getResult(ResourceActionModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(ResourceActionModelImpl.ENTITY_CACHE_ENABLED,
 				ResourceActionImpl.class, primaryKey);
 
-		if (resourceAction == _nullResourceAction) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		ResourceAction resourceAction = (ResourceAction)serializable;
 
 		if (resourceAction == null) {
 			Session session = null;
@@ -1310,8 +1310,7 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 				}
 				else {
 					entityCache.putResult(ResourceActionModelImpl.ENTITY_CACHE_ENABLED,
-						ResourceActionImpl.class, primaryKey,
-						_nullResourceAction);
+						ResourceActionImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -1365,18 +1364,20 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			ResourceAction resourceAction = (ResourceAction)entityCache.getResult(ResourceActionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(ResourceActionModelImpl.ENTITY_CACHE_ENABLED,
 					ResourceActionImpl.class, primaryKey);
 
-			if (resourceAction == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, resourceAction);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (ResourceAction)serializable);
+				}
 			}
 		}
 
@@ -1418,7 +1419,7 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(ResourceActionModelImpl.ENTITY_CACHE_ENABLED,
-					ResourceActionImpl.class, primaryKey, _nullResourceAction);
+					ResourceActionImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -1651,35 +1652,4 @@ public class ResourceActionPersistenceImpl extends BasePersistenceImpl<ResourceA
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No ResourceAction exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No ResourceAction exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(ResourceActionPersistenceImpl.class);
-	private static final ResourceAction _nullResourceAction = new ResourceActionImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<ResourceAction> toCacheModel() {
-				return _nullResourceActionCacheModel;
-			}
-		};
-
-	private static final CacheModel<ResourceAction> _nullResourceActionCacheModel =
-		new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<ResourceAction>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public ResourceAction toEntityModel() {
-			return _nullResourceAction;
-		}
-	}
 }

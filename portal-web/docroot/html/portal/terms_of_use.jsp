@@ -36,12 +36,12 @@ TermsOfUseContentProvider termsOfUseContentProvider = TermsOfUseContentProviderR
 		<c:when test="<%= termsOfUseContentProvider != null %>">
 
 			<%
-			termsOfUseContentProvider.includeView(request, response);
+			termsOfUseContentProvider.includeView(request, new PipingServletResponse(pageContext));
 			%>
 
 		</c:when>
 		<c:otherwise>
-			 <liferay-util:include page="/html/portal/terms_of_use_default.jsp" />
+			<liferay-util:include page="/html/portal/terms_of_use_default.jsp" />
 		</c:otherwise>
 	</c:choose>
 

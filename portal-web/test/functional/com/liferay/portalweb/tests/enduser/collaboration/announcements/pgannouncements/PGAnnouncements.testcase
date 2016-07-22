@@ -1,4 +1,5 @@
 <definition component-name="portal-collaboration">
+	<property name="portal.release" value="true" />
 	<property name="custom.properties" value="default.layout.template.id=1_column" />
 	<property name="testray.main.component.name" value="Announcements" />
 
@@ -28,9 +29,11 @@
 				<execute macro="PortalInstances#tearDownCP" />
 			</then>
 			<else>
-				<execute macro="AnnouncementsEntry#tearDownPG">
+				<execute macro="Navigator#gotoPage">
 					<var name="pageName" value="${pageName}" />
 				</execute>
+
+				<execute macro="AnnouncementsEntry#tearDownPG" />
 
 				<execute macro="Page#tearDownPG" />
 			</else>
@@ -126,6 +129,7 @@
 			<var name="entryTitle" value="${entryTitle}" />
 			<var name="entryURL" value="${entryURL}" />
 			<var name="expirationDate" value="${expirationDate}" />
+			<var name="pastDate" value="true" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -198,10 +202,9 @@
 			<var name="siteName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -215,10 +218,9 @@
 			<var name="entryURL" value="${entryURL}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="AnnouncementsEntry#viewPG">

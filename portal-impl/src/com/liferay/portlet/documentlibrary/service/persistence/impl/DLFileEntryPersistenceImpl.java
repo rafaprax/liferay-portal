@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -62,6 +61,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -207,7 +207,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileEntry dlFileEntry : list) {
-					if (!Validator.equals(uuid, dlFileEntry.getUuid())) {
+					if (!Objects.equals(uuid, dlFileEntry.getUuid())) {
 						list = null;
 
 						break;
@@ -680,8 +680,8 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFileEntryException(msg.toString());
@@ -725,7 +725,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 		if (result instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)result;
 
-			if (!Validator.equals(uuid, dlFileEntry.getUuid()) ||
+			if (!Objects.equals(uuid, dlFileEntry.getUuid()) ||
 					(groupId != dlFileEntry.getGroupId())) {
 				result = null;
 			}
@@ -1018,7 +1018,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileEntry dlFileEntry : list) {
-					if (!Validator.equals(uuid, dlFileEntry.getUuid()) ||
+					if (!Objects.equals(uuid, dlFileEntry.getUuid()) ||
 							(companyId != dlFileEntry.getCompanyId())) {
 						list = null;
 
@@ -3477,7 +3477,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileEntry dlFileEntry : list) {
-					if (!Validator.equals(mimeType, dlFileEntry.getMimeType())) {
+					if (!Objects.equals(mimeType, dlFileEntry.getMimeType())) {
 						list = null;
 
 						break;
@@ -7425,7 +7425,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileEntry dlFileEntry : list) {
 					if ((folderId != dlFileEntry.getFolderId()) ||
-							!Validator.equals(name, dlFileEntry.getName())) {
+							!Objects.equals(name, dlFileEntry.getName())) {
 						list = null;
 
 						break;
@@ -9453,8 +9453,8 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFileEntryException(msg.toString());
@@ -9502,7 +9502,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			if ((groupId != dlFileEntry.getGroupId()) ||
 					(folderId != dlFileEntry.getFolderId()) ||
-					!Validator.equals(name, dlFileEntry.getName())) {
+					!Objects.equals(name, dlFileEntry.getName())) {
 				result = null;
 			}
 		}
@@ -9733,8 +9733,8 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFileEntryException(msg.toString());
@@ -9783,7 +9783,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			if ((groupId != dlFileEntry.getGroupId()) ||
 					(folderId != dlFileEntry.getFolderId()) ||
-					!Validator.equals(fileName, dlFileEntry.getFileName())) {
+					!Objects.equals(fileName, dlFileEntry.getFileName())) {
 				result = null;
 			}
 		}
@@ -10014,8 +10014,8 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFileEntryException(msg.toString());
@@ -10063,7 +10063,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			if ((groupId != dlFileEntry.getGroupId()) ||
 					(folderId != dlFileEntry.getFolderId()) ||
-					!Validator.equals(title, dlFileEntry.getTitle())) {
+					!Objects.equals(title, dlFileEntry.getTitle())) {
 				result = null;
 			}
 		}
@@ -11775,6 +11775,644 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 	private static final String _FINDER_COLUMN_G_F_F_FOLDERID_2 = "dlFileEntry.folderId = ? AND ";
 	private static final String _FINDER_COLUMN_G_F_F_FOLDERID_7 = "dlFileEntry.folderId IN (";
 	private static final String _FINDER_COLUMN_G_F_F_FILEENTRYTYPEID_2 = "dlFileEntry.fileEntryTypeId = ?";
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_S_L_C1_C2 =
+		new FinderPath(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
+			DLFileEntryModelImpl.FINDER_CACHE_ENABLED, DLFileEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByS_L_C1_C2",
+			new String[] {
+				Long.class.getName(), Long.class.getName(), Long.class.getName(),
+				Long.class.getName(),
+				
+			Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			});
+	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_S_L_C1_C2 =
+		new FinderPath(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
+			DLFileEntryModelImpl.FINDER_CACHE_ENABLED, DLFileEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByS_L_C1_C2",
+			new String[] {
+				Long.class.getName(), Long.class.getName(), Long.class.getName(),
+				Long.class.getName()
+			},
+			DLFileEntryModelImpl.SMALLIMAGEID_COLUMN_BITMASK |
+			DLFileEntryModelImpl.LARGEIMAGEID_COLUMN_BITMASK |
+			DLFileEntryModelImpl.CUSTOM1IMAGEID_COLUMN_BITMASK |
+			DLFileEntryModelImpl.CUSTOM2IMAGEID_COLUMN_BITMASK |
+			DLFileEntryModelImpl.FOLDERID_COLUMN_BITMASK |
+			DLFileEntryModelImpl.NAME_COLUMN_BITMASK);
+	public static final FinderPath FINDER_PATH_COUNT_BY_S_L_C1_C2 = new FinderPath(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
+			DLFileEntryModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByS_L_C1_C2",
+			new String[] {
+				Long.class.getName(), Long.class.getName(), Long.class.getName(),
+				Long.class.getName()
+			});
+
+	/**
+	 * Returns all the document library file entries where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @return the matching document library file entries
+	 */
+	@Override
+	public List<DLFileEntry> findByS_L_C1_C2(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId) {
+		return findByS_L_C1_C2(smallImageId, largeImageId, custom1ImageId,
+			custom2ImageId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the document library file entries where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DLFileEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param start the lower bound of the range of document library file entries
+	 * @param end the upper bound of the range of document library file entries (not inclusive)
+	 * @return the range of matching document library file entries
+	 */
+	@Override
+	public List<DLFileEntry> findByS_L_C1_C2(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId, int start,
+		int end) {
+		return findByS_L_C1_C2(smallImageId, largeImageId, custom1ImageId,
+			custom2ImageId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the document library file entries where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DLFileEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param start the lower bound of the range of document library file entries
+	 * @param end the upper bound of the range of document library file entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching document library file entries
+	 */
+	@Override
+	public List<DLFileEntry> findByS_L_C1_C2(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId, int start,
+		int end, OrderByComparator<DLFileEntry> orderByComparator) {
+		return findByS_L_C1_C2(smallImageId, largeImageId, custom1ImageId,
+			custom2ImageId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the document library file entries where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link DLFileEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param start the lower bound of the range of document library file entries
+	 * @param end the upper bound of the range of document library file entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching document library file entries
+	 */
+	@Override
+	public List<DLFileEntry> findByS_L_C1_C2(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId, int start,
+		int end, OrderByComparator<DLFileEntry> orderByComparator,
+		boolean retrieveFromCache) {
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
+			pagination = false;
+			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_S_L_C1_C2;
+			finderArgs = new Object[] {
+					smallImageId, largeImageId, custom1ImageId, custom2ImageId
+				};
+		}
+		else {
+			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_S_L_C1_C2;
+			finderArgs = new Object[] {
+					smallImageId, largeImageId, custom1ImageId, custom2ImageId,
+					
+					start, end, orderByComparator
+				};
+		}
+
+		List<DLFileEntry> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<DLFileEntry>)finderCache.getResult(finderPath,
+					finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (DLFileEntry dlFileEntry : list) {
+					if ((smallImageId != dlFileEntry.getSmallImageId()) ||
+							(largeImageId != dlFileEntry.getLargeImageId()) ||
+							(custom1ImageId != dlFileEntry.getCustom1ImageId()) ||
+							(custom2ImageId != dlFileEntry.getCustom2ImageId())) {
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(6 +
+						(orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(6);
+			}
+
+			query.append(_SQL_SELECT_DLFILEENTRY_WHERE);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_SMALLIMAGEID_2);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_LARGEIMAGEID_2);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_CUSTOM1IMAGEID_2);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_CUSTOM2IMAGEID_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else
+			 if (pagination) {
+				query.append(DLFileEntryModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(smallImageId);
+
+				qPos.add(largeImageId);
+
+				qPos.add(custom1ImageId);
+
+				qPos.add(custom2ImageId);
+
+				if (!pagination) {
+					list = (List<DLFileEntry>)QueryUtil.list(q, getDialect(),
+							start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<DLFileEntry>)QueryUtil.list(q, getDialect(),
+							start, end);
+				}
+
+				cacheResult(list);
+
+				finderCache.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first document library file entry in the ordered set where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching document library file entry
+	 * @throws NoSuchFileEntryException if a matching document library file entry could not be found
+	 */
+	@Override
+	public DLFileEntry findByS_L_C1_C2_First(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId,
+		OrderByComparator<DLFileEntry> orderByComparator)
+		throws NoSuchFileEntryException {
+		DLFileEntry dlFileEntry = fetchByS_L_C1_C2_First(smallImageId,
+				largeImageId, custom1ImageId, custom2ImageId, orderByComparator);
+
+		if (dlFileEntry != null) {
+			return dlFileEntry;
+		}
+
+		StringBundler msg = new StringBundler(10);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("smallImageId=");
+		msg.append(smallImageId);
+
+		msg.append(", largeImageId=");
+		msg.append(largeImageId);
+
+		msg.append(", custom1ImageId=");
+		msg.append(custom1ImageId);
+
+		msg.append(", custom2ImageId=");
+		msg.append(custom2ImageId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchFileEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the first document library file entry in the ordered set where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching document library file entry, or <code>null</code> if a matching document library file entry could not be found
+	 */
+	@Override
+	public DLFileEntry fetchByS_L_C1_C2_First(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId,
+		OrderByComparator<DLFileEntry> orderByComparator) {
+		List<DLFileEntry> list = findByS_L_C1_C2(smallImageId, largeImageId,
+				custom1ImageId, custom2ImageId, 0, 1, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last document library file entry in the ordered set where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching document library file entry
+	 * @throws NoSuchFileEntryException if a matching document library file entry could not be found
+	 */
+	@Override
+	public DLFileEntry findByS_L_C1_C2_Last(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId,
+		OrderByComparator<DLFileEntry> orderByComparator)
+		throws NoSuchFileEntryException {
+		DLFileEntry dlFileEntry = fetchByS_L_C1_C2_Last(smallImageId,
+				largeImageId, custom1ImageId, custom2ImageId, orderByComparator);
+
+		if (dlFileEntry != null) {
+			return dlFileEntry;
+		}
+
+		StringBundler msg = new StringBundler(10);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("smallImageId=");
+		msg.append(smallImageId);
+
+		msg.append(", largeImageId=");
+		msg.append(largeImageId);
+
+		msg.append(", custom1ImageId=");
+		msg.append(custom1ImageId);
+
+		msg.append(", custom2ImageId=");
+		msg.append(custom2ImageId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchFileEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the last document library file entry in the ordered set where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching document library file entry, or <code>null</code> if a matching document library file entry could not be found
+	 */
+	@Override
+	public DLFileEntry fetchByS_L_C1_C2_Last(long smallImageId,
+		long largeImageId, long custom1ImageId, long custom2ImageId,
+		OrderByComparator<DLFileEntry> orderByComparator) {
+		int count = countByS_L_C1_C2(smallImageId, largeImageId,
+				custom1ImageId, custom2ImageId);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<DLFileEntry> list = findByS_L_C1_C2(smallImageId, largeImageId,
+				custom1ImageId, custom2ImageId, count - 1, count,
+				orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the document library file entries before and after the current document library file entry in the ordered set where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param fileEntryId the primary key of the current document library file entry
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next document library file entry
+	 * @throws NoSuchFileEntryException if a document library file entry with the primary key could not be found
+	 */
+	@Override
+	public DLFileEntry[] findByS_L_C1_C2_PrevAndNext(long fileEntryId,
+		long smallImageId, long largeImageId, long custom1ImageId,
+		long custom2ImageId, OrderByComparator<DLFileEntry> orderByComparator)
+		throws NoSuchFileEntryException {
+		DLFileEntry dlFileEntry = findByPrimaryKey(fileEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			DLFileEntry[] array = new DLFileEntryImpl[3];
+
+			array[0] = getByS_L_C1_C2_PrevAndNext(session, dlFileEntry,
+					smallImageId, largeImageId, custom1ImageId, custom2ImageId,
+					orderByComparator, true);
+
+			array[1] = dlFileEntry;
+
+			array[2] = getByS_L_C1_C2_PrevAndNext(session, dlFileEntry,
+					smallImageId, largeImageId, custom1ImageId, custom2ImageId,
+					orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected DLFileEntry getByS_L_C1_C2_PrevAndNext(Session session,
+		DLFileEntry dlFileEntry, long smallImageId, long largeImageId,
+		long custom1ImageId, long custom2ImageId,
+		OrderByComparator<DLFileEntry> orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(7 +
+					(orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(6);
+		}
+
+		query.append(_SQL_SELECT_DLFILEENTRY_WHERE);
+
+		query.append(_FINDER_COLUMN_S_L_C1_C2_SMALLIMAGEID_2);
+
+		query.append(_FINDER_COLUMN_S_L_C1_C2_LARGEIMAGEID_2);
+
+		query.append(_FINDER_COLUMN_S_L_C1_C2_CUSTOM1IMAGEID_2);
+
+		query.append(_FINDER_COLUMN_S_L_C1_C2_CUSTOM2IMAGEID_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(DLFileEntryModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		qPos.add(smallImageId);
+
+		qPos.add(largeImageId);
+
+		qPos.add(custom1ImageId);
+
+		qPos.add(custom2ImageId);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(dlFileEntry);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<DLFileEntry> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the document library file entries where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63; from the database.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 */
+	@Override
+	public void removeByS_L_C1_C2(long smallImageId, long largeImageId,
+		long custom1ImageId, long custom2ImageId) {
+		for (DLFileEntry dlFileEntry : findByS_L_C1_C2(smallImageId,
+				largeImageId, custom1ImageId, custom2ImageId,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+			remove(dlFileEntry);
+		}
+	}
+
+	/**
+	 * Returns the number of document library file entries where smallImageId = &#63; and largeImageId = &#63; and custom1ImageId = &#63; and custom2ImageId = &#63;.
+	 *
+	 * @param smallImageId the small image ID
+	 * @param largeImageId the large image ID
+	 * @param custom1ImageId the custom1 image ID
+	 * @param custom2ImageId the custom2 image ID
+	 * @return the number of matching document library file entries
+	 */
+	@Override
+	public int countByS_L_C1_C2(long smallImageId, long largeImageId,
+		long custom1ImageId, long custom2ImageId) {
+		FinderPath finderPath = FINDER_PATH_COUNT_BY_S_L_C1_C2;
+
+		Object[] finderArgs = new Object[] {
+				smallImageId, largeImageId, custom1ImageId, custom2ImageId
+			};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(5);
+
+			query.append(_SQL_COUNT_DLFILEENTRY_WHERE);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_SMALLIMAGEID_2);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_LARGEIMAGEID_2);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_CUSTOM1IMAGEID_2);
+
+			query.append(_FINDER_COLUMN_S_L_C1_C2_CUSTOM2IMAGEID_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(smallImageId);
+
+				qPos.add(largeImageId);
+
+				qPos.add(custom1ImageId);
+
+				qPos.add(custom2ImageId);
+
+				count = (Long)q.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_S_L_C1_C2_SMALLIMAGEID_2 = "dlFileEntry.smallImageId = ? AND ";
+	private static final String _FINDER_COLUMN_S_L_C1_C2_LARGEIMAGEID_2 = "dlFileEntry.largeImageId = ? AND ";
+	private static final String _FINDER_COLUMN_S_L_C1_C2_CUSTOM1IMAGEID_2 = "dlFileEntry.custom1ImageId = ? AND ";
+	private static final String _FINDER_COLUMN_S_L_C1_C2_CUSTOM2IMAGEID_2 = "dlFileEntry.custom2ImageId = ?";
 
 	public DLFileEntryPersistenceImpl() {
 		setModelClass(DLFileEntry.class);
@@ -12123,8 +12761,8 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 					primaryKey);
 
 			if (dlFileEntry == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchFileEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -12494,6 +13132,31 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_F_F,
 					args);
 			}
+
+			if ((dlFileEntryModelImpl.getColumnBitmask() &
+					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_S_L_C1_C2.getColumnBitmask()) != 0) {
+				Object[] args = new Object[] {
+						dlFileEntryModelImpl.getOriginalSmallImageId(),
+						dlFileEntryModelImpl.getOriginalLargeImageId(),
+						dlFileEntryModelImpl.getOriginalCustom1ImageId(),
+						dlFileEntryModelImpl.getOriginalCustom2ImageId()
+					};
+
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_S_L_C1_C2, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_S_L_C1_C2,
+					args);
+
+				args = new Object[] {
+						dlFileEntryModelImpl.getSmallImageId(),
+						dlFileEntryModelImpl.getLargeImageId(),
+						dlFileEntryModelImpl.getCustom1ImageId(),
+						dlFileEntryModelImpl.getCustom2ImageId()
+					};
+
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_S_L_C1_C2, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_S_L_C1_C2,
+					args);
+			}
 		}
 
 		entityCache.putResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
@@ -12565,8 +13228,8 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 		DLFileEntry dlFileEntry = fetchByPrimaryKey(primaryKey);
 
 		if (dlFileEntry == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchFileEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -12597,12 +13260,14 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 	 */
 	@Override
 	public DLFileEntry fetchByPrimaryKey(Serializable primaryKey) {
-		DLFileEntry dlFileEntry = (DLFileEntry)entityCache.getResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
 				DLFileEntryImpl.class, primaryKey);
 
-		if (dlFileEntry == _nullDLFileEntry) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		DLFileEntry dlFileEntry = (DLFileEntry)serializable;
 
 		if (dlFileEntry == null) {
 			Session session = null;
@@ -12618,7 +13283,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 				}
 				else {
 					entityCache.putResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
-						DLFileEntryImpl.class, primaryKey, _nullDLFileEntry);
+						DLFileEntryImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -12672,18 +13337,20 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			DLFileEntry dlFileEntry = (DLFileEntry)entityCache.getResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
 					DLFileEntryImpl.class, primaryKey);
 
-			if (dlFileEntry == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, dlFileEntry);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (DLFileEntry)serializable);
+				}
 			}
 		}
 
@@ -12725,7 +13392,7 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(DLFileEntryModelImpl.ENTITY_CACHE_ENABLED,
-					DLFileEntryImpl.class, primaryKey, _nullDLFileEntry);
+					DLFileEntryImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -12978,22 +13645,4 @@ public class DLFileEntryPersistenceImpl extends BasePersistenceImpl<DLFileEntry>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "size"
 			});
-	private static final DLFileEntry _nullDLFileEntry = new DLFileEntryImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<DLFileEntry> toCacheModel() {
-				return _nullDLFileEntryCacheModel;
-			}
-		};
-
-	private static final CacheModel<DLFileEntry> _nullDLFileEntryCacheModel = new CacheModel<DLFileEntry>() {
-			@Override
-			public DLFileEntry toEntityModel() {
-				return _nullDLFileEntry;
-			}
-		};
 }

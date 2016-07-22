@@ -99,6 +99,10 @@ public class UserInfoFactory {
 				UserAttributes.LIFERAY_USER_ID,
 				userAttributes.getValue(UserAttributes.LIFERAY_USER_ID));
 
+			userInfo.put(
+				UserAttributes.USER_NAME_FULL,
+				userAttributes.getValue(UserAttributes.USER_NAME_FULL));
+
 			// Portlet user attributes
 
 			for (String userAttributeName : portletApp.getUserAttributes()) {
@@ -154,7 +158,7 @@ public class UserInfoFactory {
 					}
 				}
 				else {
-					customUserAttributes = newInstance(
+					customUserAttributes = _newInstance(
 						customUserAttributesClassName);
 				}
 
@@ -177,7 +181,7 @@ public class UserInfoFactory {
 		return userInfo;
 	}
 
-	private static CustomUserAttributes newInstance(String className) {
+	private static CustomUserAttributes _newInstance(String className) {
 		try {
 			return (CustomUserAttributes)InstanceFactory.newInstance(className);
 		}

@@ -19,8 +19,14 @@ package com.liferay.poshi.runner.util;
  */
 public class PropsValues {
 
+	public static final String ACCESSIBILITY_STANDARDS_JSON = PropsUtil.get(
+		"accessibility.standards.json");
+
 	public static final String BROWSER_COMMANDS_DIR_NAME = PropsUtil.get(
 		"browser.commands.dir.name");
+
+	public static final String BROWSER_FIREFOX_BIN_FILE = PropsUtil.get(
+		"browser.firefox.bin.file");
 
 	public static final String BROWSER_TYPE = PropsUtil.get("browser.type");
 

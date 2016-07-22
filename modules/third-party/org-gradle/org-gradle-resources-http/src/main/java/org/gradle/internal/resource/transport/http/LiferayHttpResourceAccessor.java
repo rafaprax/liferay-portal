@@ -63,7 +63,7 @@ public class LiferayHttpResourceAccessor extends HttpResourceAccessor {
 
 	@Override
 	public ExternalResourceMetaData getMetaData(URI uri) {
-		if (!_FORCED_CACHE_ENABLED) {
+		if (!_isForcedCacheEnabled()) {
 			return super.getMetaData(uri);
 		}
 
@@ -88,7 +88,7 @@ public class LiferayHttpResourceAccessor extends HttpResourceAccessor {
 
 	@Override
 	public HttpResponseResource openResource(URI uri) {
-		if (!_FORCED_CACHE_ENABLED) {
+		if (!_isForcedCacheEnabled()) {
 			return super.openResource(uri);
 		}
 
@@ -208,6 +208,22 @@ public class LiferayHttpResourceAccessor extends HttpResourceAccessor {
 		String location = uri.toString();
 
 		for (String repositoryUrl : _REPOSITORY_URLS) {
+			if (location.startsWith(repositoryUrl)) {
+				return location.substring(repositoryUrl.length());
+			}
+		}
+
+		for (String key : _REPOSITORY_URL_PROPERTY_KEYS) {
+			String repositoryUrl = System.getProperty(key);
+
+			if ((repositoryUrl == null) || repositoryUrl.isEmpty()) {
+				continue;
+			}
+
+			if (repositoryUrl.charAt(repositoryUrl.length() - 1) != '/') {
+				repositoryUrl += '/';
+			}
+
 			if (location.startsWith(repositoryUrl)) {
 				return location.substring(repositoryUrl.length());
 			}
@@ -362,24 +378,25 @@ public class LiferayHttpResourceAccessor extends HttpResourceAccessor {
 		return new HttpResponseResource(HttpGet.METHOD_NAME, uri, httpResponse);
 	}
 
+	private boolean _isForcedCacheEnabled() {
+		return Boolean.getBoolean("forced.cache.enabled");
+	}
+
 	private static final String _FILES_CACHE_DIR_NAME =
 		"caches/modules-2/files-2.1";
 
-	private static final boolean _FORCED_CACHE_ENABLED = Boolean.getBoolean(
-		"forced.cache.enabled");
+	private static final String[] _REPOSITORY_URL_PROPERTY_KEYS = {
+		"repository.private.url", "repository.url"
+	};
 
 	private static final String[] _REPOSITORY_URLS = {
 		"http://cdn.repository.liferay.com/nexus/content/groups/public/",
-		"http://repository.liferay.com/nexus/content/groups/public/"
+		"http://repository.liferay.com/nexus/content/groups/public/",
+		"https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups" +
+			"/public/"
 	};
 
 	private static final Logger _logger = LoggerFactory.getLogger(
 		LiferayHttpResourceAccessor.class);
-
-	static {
-		if (_FORCED_CACHE_ENABLED) {
-			System.out.println("Forced cache is enabled.");
-		}
-	}
 
 }

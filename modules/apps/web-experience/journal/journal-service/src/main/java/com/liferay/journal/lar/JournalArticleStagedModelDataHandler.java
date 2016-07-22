@@ -25,7 +25,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
-import com.liferay.journal.exportimport.content.processor.JournalArticleExportImportContentProcessor;
+import com.liferay.journal.internal.exportimport.content.processor.JournalArticleExportImportContentProcessor;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalArticleImage;
@@ -39,6 +39,8 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Image;
 import com.liferay.portal.kernel.model.Layout;
@@ -125,9 +127,8 @@ public class JournalArticleStagedModelDataHandler
 	public JournalArticle fetchStagedModelByUuidAndGroupId(
 		String uuid, long groupId) {
 
-		return
-			_journalArticleLocalService.fetchJournalArticleByUuidAndGroupId(
-				uuid, groupId);
+		return _journalArticleLocalService.fetchJournalArticleByUuidAndGroupId(
+			uuid, groupId);
 	}
 
 	@Override
@@ -298,9 +299,6 @@ public class JournalArticleStagedModelDataHandler
 		}
 
 		if (article.isSmallImage()) {
-			Image smallImage = _imageLocalService.fetchImage(
-				article.getSmallImageId());
-
 			if (Validator.isNotNull(article.getSmallImageURL())) {
 				String smallImageURL =
 					_journalArticleExportImportContentProcessor.
@@ -311,18 +309,39 @@ public class JournalArticleStagedModelDataHandler
 
 				article.setSmallImageURL(smallImageURL);
 			}
-			else if (smallImage != null) {
-				String smallImagePath = ExportImportPathUtil.getModelPath(
-					article,
-					smallImage.getImageId() + StringPool.PERIOD +
-						smallImage.getType());
+			else {
+				Image smallImage = _imageLocalService.fetchImage(
+					article.getSmallImageId());
 
-				articleElement.addAttribute("small-image-path", smallImagePath);
+				if ((smallImage != null) && (smallImage.getTextObj() != null)) {
+					String smallImagePath = ExportImportPathUtil.getModelPath(
+						article,
+						smallImage.getImageId() + StringPool.PERIOD +
+							smallImage.getType());
 
-				article.setSmallImageType(smallImage.getType());
+					articleElement.addAttribute(
+						"small-image-path", smallImagePath);
 
-				portletDataContext.addZipEntry(
-					smallImagePath, smallImage.getTextObj());
+					article.setSmallImageType(smallImage.getType());
+
+					portletDataContext.addZipEntry(
+						smallImagePath, smallImage.getTextObj());
+				}
+				else {
+					if (_log.isWarnEnabled()) {
+						StringBundler sb = new StringBundler(4);
+
+						sb.append("Unable to export small image ");
+						sb.append(article.getSmallImageId());
+						sb.append(" to article ");
+						sb.append(article.getArticleId());
+
+						_log.warn(sb.toString());
+					}
+
+					article.setSmallImage(false);
+					article.setSmallImageId(0);
+				}
 			}
 		}
 
@@ -675,7 +694,7 @@ public class JournalArticleStagedModelDataHandler
 				if (existingArticle != null) {
 					existingArticleVersion = fetchExistingArticleVersion(
 						article.getUuid(), portletDataContext.getScopeGroupId(),
-						articleId, article.getVersion());
+						existingArticle.getArticleId(), article.getVersion());
 				}
 
 				if ((existingArticle != null) &&
@@ -720,14 +739,11 @@ public class JournalArticleStagedModelDataHandler
 						article.getSmallImageURL(), smallFile, images,
 						articleURL, serviceContext);
 
-					String existingArticleVersionUuid =
-						existingArticleVersion.getUuid();
+					String articleUuid = article.getUuid();
 					String importedArticleUuid = importedArticle.getUuid();
 
-					if (!existingArticleVersionUuid.equals(
-							importedArticleUuid)) {
-
-						importedArticle.setUuid(existingArticleVersionUuid);
+					if (!articleUuid.equals(importedArticleUuid)) {
+						importedArticle.setUuid(articleUuid);
 
 						_journalArticleLocalService.updateJournalArticle(
 							importedArticle);
@@ -758,6 +774,13 @@ public class JournalArticleStagedModelDataHandler
 				articleIds.put(
 					article.getArticleId(), importedArticle.getArticleId());
 			}
+
+			Map<Long, Long> articlePrimaryKeys =
+				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+					JournalArticle.class + ".primaryKey");
+
+			articlePrimaryKeys.put(
+				article.getPrimaryKey(), importedArticle.getPrimaryKey());
 		}
 		finally {
 			if (smallFile != null) {
@@ -957,6 +980,9 @@ public class JournalArticleStagedModelDataHandler
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		JournalArticleStagedModelDataHandler.class);
 
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private DDMTemplateLocalService _ddmTemplateLocalService;

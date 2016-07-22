@@ -38,6 +38,7 @@ import org.osgi.service.component.annotations.Component;
 		"com.liferay.portlet.css-class-wrapper=portlet-hello-world",
 		"com.liferay.portlet.display-category=category.sample",
 		"com.liferay.portlet.icon=/icons/hello_world.png",
+		"com.liferay.portlet.layout-cacheable=true",
 		"com.liferay.portlet.preferences-owned-by-group=true",
 		"com.liferay.portlet.private-request-attributes=false",
 		"com.liferay.portlet.private-session-attributes=false",
@@ -63,9 +64,10 @@ public class HelloWorldPortlet extends MVCPortlet {
 
 		renderResponse.setContentType(ContentTypes.TEXT_HTML_UTF8);
 
-		try (PrintWriter writer = renderResponse.getWriter()) {
-			writer.print("Welcome to " + ReleaseInfo.getReleaseInfo() + ".");
-		}
+		PrintWriter printWriter = renderResponse.getWriter();
+
+		printWriter.print(
+			"Welcome to ".concat(ReleaseInfo.getReleaseInfo()).concat("."));
 	}
 
 }

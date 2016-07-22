@@ -14,24 +14,28 @@
 
 package com.liferay.gradle.plugins;
 
-import com.liferay.gradle.plugins.extensions.AppServer;
 import com.liferay.gradle.plugins.extensions.LiferayExtension;
-import com.liferay.gradle.plugins.jasper.jspc.JspCExtension;
+import com.liferay.gradle.plugins.jasper.jspc.CompileJSPTask;
 import com.liferay.gradle.plugins.jasper.jspc.JspCPlugin;
+import com.liferay.gradle.plugins.tasks.WritePropertiesTask;
 import com.liferay.gradle.plugins.util.FileUtil;
 import com.liferay.gradle.plugins.util.GradleUtil;
+import com.liferay.gradle.util.Validator;
 
 import java.io.File;
+import java.io.IOException;
 
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.UncheckedIOException;
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.FileTree;
 import org.gradle.api.internal.plugins.osgi.OsgiHelper;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 
@@ -46,33 +50,7 @@ public class JspCDefaultsPlugin
 
 	public static final String UNZIP_JAR_TASK_NAME = "unzipJar";
 
-	protected void addDependenciesJspC(
-		Project project, LiferayExtension liferayExtension) {
-
-		GradleUtil.addDependency(
-			project, JspCPlugin.CONFIGURATION_NAME,
-			liferayExtension.getAppServerLibGlobalDir());
-
-		FileTree fileTree = FileUtil.getJarsFileTree(
-			project, liferayExtension.getAppServerLibGlobalDir());
-
-		GradleUtil.addDependency(
-			project, JspCPlugin.CONFIGURATION_NAME, fileTree);
-
-		fileTree = FileUtil.getJarsFileTree(
-			project,
-			new File(liferayExtension.getAppServerPortalDir(), "WEB-INF/lib"));
-
-		GradleUtil.addDependency(
-			project, JspCPlugin.CONFIGURATION_NAME, fileTree);
-
-		fileTree = FileUtil.getJarsFileTree(
-			project,
-			new File(liferayExtension.getLiferayHome(), "osgi/modules"));
-
-		GradleUtil.addDependency(
-			project, JspCPlugin.CONFIGURATION_NAME, fileTree);
-
+	protected void addDependenciesJspC(Project project) {
 		ConfigurableFileCollection configurableFileCollection = project.files(
 			getUnzippedJarDir(project));
 
@@ -80,10 +58,6 @@ public class JspCDefaultsPlugin
 
 		GradleUtil.addDependency(
 			project, JspCPlugin.CONFIGURATION_NAME, configurableFileCollection);
-
-		AppServer appServer = liferayExtension.getAppServer();
-
-		appServer.addAdditionalDependencies(JspCPlugin.CONFIGURATION_NAME);
 	}
 
 	@Override
@@ -124,44 +98,82 @@ public class JspCDefaultsPlugin
 	protected void configureDefaults(Project project, JspCPlugin jspCPlugin) {
 		super.configureDefaults(project, jspCPlugin);
 
-		final LiferayExtension liferayExtension = GradleUtil.getExtension(
-			project, LiferayExtension.class);
-
 		addTaskUnzipJar(project);
 
-		configureJspCExtension(project, liferayExtension);
+		configureTaskGenerateJSPJava(project);
 
 		project.afterEvaluate(
 			new Action<Project>() {
 
 				@Override
 				public void execute(Project project) {
-					addDependenciesJspC(project, liferayExtension);
-					configureTaskCompileJSP(project, liferayExtension);
+					addDependenciesJspC(project);
+					configureTaskCompileJSP(project);
 				}
 
 			});
 	}
 
-	protected void configureJspCExtension(
-		final Project project, final LiferayExtension liferayExtension) {
+	protected void configureTaskCompileJSP(Project project) {
+		boolean jspPrecompileEnabled = GradleUtil.getProperty(
+			project, JSP_PRECOMPILE_ENABLED_PROPERTY_NAME, false);
 
-		JspCExtension jspCExtension = GradleUtil.getExtension(
-			project, JspCExtension.class);
+		if (!jspPrecompileEnabled) {
+			return;
+		}
 
-		jspCExtension.setModuleWeb(true);
+		JavaCompile javaCompile = (JavaCompile)GradleUtil.getTask(
+			project, JspCPlugin.COMPILE_JSP_TASK_NAME);
 
-		jspCExtension.setPortalDir(
-			new Callable<File>() {
+		String dirName = null;
 
-				@Override
-				public File call() throws Exception {
-					return liferayExtension.getAppServerPortalDir();
-				}
+		TaskContainer taskContainer = project.getTasks();
 
-			});
+		WritePropertiesTask recordArtifactTask =
+			(WritePropertiesTask)taskContainer.findByName(
+				LiferayRelengPlugin.RECORD_ARTIFACT_TASK_NAME);
 
-		jspCExtension.setWebAppDir(
+		if (recordArtifactTask != null) {
+			Properties artifactProperties;
+
+			try {
+				artifactProperties = FileUtil.readProperties(
+					recordArtifactTask.getOutputFile());
+			}
+			catch (IOException ioe) {
+				throw new UncheckedIOException(ioe);
+			}
+
+			String artifactURL = artifactProperties.getProperty("artifact.url");
+
+			if (Validator.isNotNull(artifactURL)) {
+				int index = artifactURL.lastIndexOf('/');
+
+				dirName = artifactURL.substring(
+					index + 1, artifactURL.length() - 4);
+			}
+		}
+
+		if (Validator.isNull(dirName)) {
+			dirName =
+				_osgiHelper.getBundleSymbolicName(project) + "-" +
+					project.getVersion();
+		}
+
+		LiferayExtension liferayExtension = GradleUtil.getExtension(
+			project, LiferayExtension.class);
+
+		File dir = new File(
+			liferayExtension.getLiferayHome(), "work/" + dirName);
+
+		javaCompile.setDestinationDir(dir);
+	}
+
+	protected void configureTaskGenerateJSPJava(final Project project) {
+		CompileJSPTask compileJSPTask = (CompileJSPTask)GradleUtil.getTask(
+			project, JspCPlugin.GENERATE_JSP_JAVA_TASK_NAME);
+
+		compileJSPTask.setWebAppDir(
 			new Callable<File>() {
 
 				@Override
@@ -179,29 +191,6 @@ public class JspCDefaultsPlugin
 				}
 
 			});
-	}
-
-	protected void configureTaskCompileJSP(
-		Project project, LiferayExtension liferayExtension) {
-
-		boolean jspPrecompileEnabled = GradleUtil.getProperty(
-			project, JSP_PRECOMPILE_ENABLED_PROPERTY_NAME, false);
-
-		if (!jspPrecompileEnabled) {
-			return;
-		}
-
-		JavaCompile javaCompile = (JavaCompile)GradleUtil.getTask(
-			project, JspCPlugin.COMPILE_JSP_TASK_NAME);
-
-		String dirName =
-			_osgiHelper.getBundleSymbolicName(project) + "-" +
-				project.getVersion();
-
-		File dir = new File(
-			liferayExtension.getLiferayHome(), "work/" + dirName);
-
-		javaCompile.setDestinationDir(dir);
 	}
 
 	@Override

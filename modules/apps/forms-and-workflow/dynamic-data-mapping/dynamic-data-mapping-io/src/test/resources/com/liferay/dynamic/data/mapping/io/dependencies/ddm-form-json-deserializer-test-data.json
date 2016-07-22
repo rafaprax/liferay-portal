@@ -1,6 +1,6 @@
 {
-	"defaultLanguageId": "en_US",
 	"availableLanguageIds": ["en_US", "pt_BR"],
+	"defaultLanguageId": "en_US",
 	"fields": [
 		{
 			"dataType": "boolean",
@@ -19,6 +19,16 @@
 			"readOnly": false,
 			"repeatable": true,
 			"required": false,
+			"rules": [
+				{
+					"expression": "1 + 2 > 3",
+					"type": "VISIBILITY"
+				},
+				{
+					"expression": "isReadOnly(Date2510) && isVisible(Decimal3479)",
+					"type": "READ_ONLY"
+				}
+			],
 			"showLabel": false,
 			"tip": {
 				"en_US": "",
@@ -513,8 +523,8 @@
 						}
 					],
 					"predefinedValue": {
-						"pt_BR": "",
-						"en_US": ""
+						"en_US": "",
+						"pt_BR": ""
 					},
 					"readOnly": false,
 					"repeatable": false,

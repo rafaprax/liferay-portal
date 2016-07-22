@@ -20,6 +20,7 @@ import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.message.boards.kernel.model.MBCategory;
 import com.liferay.message.boards.kernel.model.MBThread;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -169,37 +170,47 @@ public class UpgradeSubscription extends UpgradeProcess {
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	protected void updateSubscriptionGroupId(
 			long subscriptionId, long classNameId, long classPK)
 		throws Exception {
-
-		long groupId = getGroupId(classNameId, classPK);
-
-		if ((groupId == 0) && hasGroup(classPK)) {
-			groupId = classPK;
-		}
-
-		if (groupId != 0) {
-			runSQL(
-				"update Subscription set groupId = " + groupId + " where " +
-					"subscriptionId = " + subscriptionId);
-		}
 	}
 
 	protected void updateSubscriptionGroupIds() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer();
-			PreparedStatement ps = connection.prepareStatement(
+			PreparedStatement ps1 = connection.prepareStatement(
 				"select subscriptionId, classNameId, classPK from " +
 					"Subscription");
-			ResultSet rs = ps.executeQuery()) {
+			PreparedStatement ps2 =
+				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+					connection,
+					"update Subscription set groupId = ? where " +
+						"subscriptionId = ?");
+			ResultSet rs = ps1.executeQuery()) {
 
 			while (rs.next()) {
 				long subscriptionId = rs.getLong("subscriptionId");
 				long classNameId = rs.getLong("classNameId");
 				long classPK = rs.getLong("classPK");
 
-				updateSubscriptionGroupId(subscriptionId, classNameId, classPK);
+				long groupId = getGroupId(classNameId, classPK);
+
+				if ((groupId == 0) && hasGroup(classPK)) {
+					groupId = classPK;
+				}
+
+				if (groupId != 0) {
+					ps2.setLong(1, groupId);
+					ps2.setLong(2, subscriptionId);
+
+					ps2.addBatch();
+				}
 			}
+
+			ps2.executeBatch();
 		}
 	}
 

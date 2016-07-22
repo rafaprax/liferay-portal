@@ -31,14 +31,12 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -49,6 +47,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -1244,7 +1243,7 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalArticleImage journalArticleImage : list) {
 					if ((groupId != journalArticleImage.getGroupId()) ||
-							!Validator.equals(articleId,
+							!Objects.equals(articleId,
 								journalArticleImage.getArticleId()) ||
 							(version != journalArticleImage.getVersion())) {
 						list = null;
@@ -1811,8 +1810,8 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchArticleImageException(msg.toString());
@@ -1871,13 +1870,13 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 			JournalArticleImage journalArticleImage = (JournalArticleImage)result;
 
 			if ((groupId != journalArticleImage.getGroupId()) ||
-					!Validator.equals(articleId,
+					!Objects.equals(articleId,
 						journalArticleImage.getArticleId()) ||
 					(version != journalArticleImage.getVersion()) ||
-					!Validator.equals(elInstanceId,
+					!Objects.equals(elInstanceId,
 						journalArticleImage.getElInstanceId()) ||
-					!Validator.equals(elName, journalArticleImage.getElName()) ||
-					!Validator.equals(languageId,
+					!Objects.equals(elName, journalArticleImage.getElName()) ||
+					!Objects.equals(languageId,
 						journalArticleImage.getLanguageId())) {
 				result = null;
 			}
@@ -2412,8 +2411,8 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 					primaryKey);
 
 			if (journalArticleImage == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchArticleImageException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2610,8 +2609,8 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 		JournalArticleImage journalArticleImage = fetchByPrimaryKey(primaryKey);
 
 		if (journalArticleImage == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchArticleImageException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2642,12 +2641,14 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	 */
 	@Override
 	public JournalArticleImage fetchByPrimaryKey(Serializable primaryKey) {
-		JournalArticleImage journalArticleImage = (JournalArticleImage)entityCache.getResult(JournalArticleImageModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(JournalArticleImageModelImpl.ENTITY_CACHE_ENABLED,
 				JournalArticleImageImpl.class, primaryKey);
 
-		if (journalArticleImage == _nullJournalArticleImage) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		JournalArticleImage journalArticleImage = (JournalArticleImage)serializable;
 
 		if (journalArticleImage == null) {
 			Session session = null;
@@ -2663,8 +2664,7 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 				}
 				else {
 					entityCache.putResult(JournalArticleImageModelImpl.ENTITY_CACHE_ENABLED,
-						JournalArticleImageImpl.class, primaryKey,
-						_nullJournalArticleImage);
+						JournalArticleImageImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2718,18 +2718,20 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			JournalArticleImage journalArticleImage = (JournalArticleImage)entityCache.getResult(JournalArticleImageModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(JournalArticleImageModelImpl.ENTITY_CACHE_ENABLED,
 					JournalArticleImageImpl.class, primaryKey);
 
-			if (journalArticleImage == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, journalArticleImage);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (JournalArticleImage)serializable);
+				}
 			}
 		}
 
@@ -2772,8 +2774,7 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(JournalArticleImageModelImpl.ENTITY_CACHE_ENABLED,
-					JournalArticleImageImpl.class, primaryKey,
-					_nullJournalArticleImage);
+					JournalArticleImageImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3010,23 +3011,4 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No JournalArticleImage exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No JournalArticleImage exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(JournalArticleImagePersistenceImpl.class);
-	private static final JournalArticleImage _nullJournalArticleImage = new JournalArticleImageImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<JournalArticleImage> toCacheModel() {
-				return _nullJournalArticleImageCacheModel;
-			}
-		};
-
-	private static final CacheModel<JournalArticleImage> _nullJournalArticleImageCacheModel =
-		new CacheModel<JournalArticleImage>() {
-			@Override
-			public JournalArticleImage toEntityModel() {
-				return _nullJournalArticleImage;
-			}
-		};
 }

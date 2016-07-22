@@ -20,8 +20,8 @@
 	cssClass="portlet-options"
 	direction="<%= direction %>"
 	extended="<%= false %>"
-	icon='<%= (markupView != null) && markupView.equals("lexicon") ? StringPool.BLANK : "../aui/ellipsis-vertical" %>'
-	markupView="<%= markupView %>"
+	icon="ellipsis-v"
+	markupView="lexicon"
 	message="options"
 	showArrow="<%= false %>"
 	showWhenSingleIcon="<%= true %>"
@@ -33,7 +33,7 @@
 		boolean include = portletConfigurationIcon.include(request, new PipingServletResponse(pageContext));
 
 		if (!include) {
-		%>
+	%>
 
 			<liferay-ui:icon
 				alt="<%= portletConfigurationIcon.getAlt() %>"
@@ -59,7 +59,7 @@
 				useDialog="<%= portletConfigurationIcon.isUseDialog() %>"
 			/>
 
-		<%
+	<%
 		}
 	}
 	%>

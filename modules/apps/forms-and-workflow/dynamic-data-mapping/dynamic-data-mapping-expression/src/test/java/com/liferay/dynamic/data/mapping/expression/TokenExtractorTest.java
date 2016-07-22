@@ -16,10 +16,10 @@ package com.liferay.dynamic.data.mapping.expression;
 
 import com.liferay.dynamic.data.mapping.expression.internal.TokenExtractor;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 3);
+		Assert.assertEquals(3, variableMap.size());
 
 		Collection<String> values = variableMap.values();
 
@@ -60,7 +60,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 3);
+		Assert.assertEquals(3, variableMap.size());
 
 		Assert.assertEquals("name", variableMap.get("name"));
 		Assert.assertEquals("email", variableMap.get("email"));
@@ -80,7 +80,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 5);
+		Assert.assertEquals(5, variableMap.size());
 
 		Assert.assertEquals("a", variableMap.get("a"));
 		Assert.assertEquals("b", variableMap.get("b"));
@@ -100,7 +100,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 3);
+		Assert.assertEquals(3, variableMap.size());
 
 		Assert.assertEquals("a", variableMap.get("a"));
 		Assert.assertEquals("b", variableMap.get("b"));
@@ -124,7 +124,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 0);
+		Assert.assertEquals(0, variableMap.size());
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 2);
+		Assert.assertEquals(2, variableMap.size());
 
 		Assert.assertEquals("name", variableMap.get("name"));
 
@@ -175,7 +175,7 @@ public class TokenExtractorTest {
 
 		Map<String, String> variableMap = tokenExtractor.getVariableMap();
 
-		Assert.assertEquals(variableMap.size(), 5);
+		Assert.assertEquals(5, variableMap.size());
 		Assert.assertEquals("a", variableMap.get("a"));
 		Assert.assertEquals("b", variableMap.get("b"));
 		Assert.assertEquals("variable_3", variableMap.get("variable_3"));
@@ -190,7 +190,7 @@ public class TokenExtractorTest {
 		Map<String, String> variableMap, String value) {
 
 		for (Map.Entry<String, String> entry : variableMap.entrySet()) {
-			if (Validator.equals(entry.getValue(), value)) {
+			if (Objects.equals(entry.getValue(), value)) {
 				return entry.getKey();
 			}
 		}

@@ -15,9 +15,9 @@
 package com.liferay.item.selector.taglib.servlet.taglib;
 
 import com.liferay.item.selector.ItemSelectorReturnType;
+import com.liferay.item.selector.constants.ItemSelectorPortletKeys;
 import com.liferay.item.selector.taglib.ItemSelectorRepositoryEntryBrowserReturnTypeUtil;
-import com.liferay.item.selector.taglib.servlet.ServletContextUtil;
-import com.liferay.item.selector.web.constants.ItemSelectorPortletKeys;
+import com.liferay.item.selector.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
@@ -165,7 +165,7 @@ public class RepositoryEntryBrowserTag extends IncludeTag {
 		request.setAttribute(
 			"liferay-item-selector:repository-entry-browser:" +
 				"emptyResultsMessage",
-			getEmptyResultsMessage(request));
+			_getEmptyResultsMessage(request));
 		request.setAttribute(
 			"liferay-item-selector:repository-entry-browser:" +
 				"existingFileEntryReturnType",
@@ -203,7 +203,7 @@ public class RepositoryEntryBrowserTag extends IncludeTag {
 			_uploadURL);
 	}
 
-	private String getEmptyResultsMessage(HttpServletRequest request) {
+	private String _getEmptyResultsMessage(HttpServletRequest request) {
 		if (Validator.isNotNull(_emptyResultsMessage)) {
 			return _emptyResultsMessage;
 		}
@@ -219,7 +219,7 @@ public class RepositoryEntryBrowserTag extends IncludeTag {
 		PropsValues.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE;
 	private PortletURL _portletURL;
 	private List<RepositoryEntry> _repositoryEntries = new ArrayList<>();
-	private int _repositoryEntriesCount = 0;
+	private int _repositoryEntriesCount;
 	private boolean _showBreadcrumb;
 	private boolean _showDragAndDropZone = true;
 	private String _tabName;

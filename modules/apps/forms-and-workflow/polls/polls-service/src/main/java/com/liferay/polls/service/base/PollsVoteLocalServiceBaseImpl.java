@@ -25,6 +25,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.polls.model.PollsVote;
 import com.liferay.polls.service.PollsVoteLocalService;
 import com.liferay.polls.service.persistence.PollsChoicePersistence;
+import com.liferay.polls.service.persistence.PollsQuestionFinder;
 import com.liferay.polls.service.persistence.PollsQuestionPersistence;
 import com.liferay.polls.service.persistence.PollsVotePersistence;
 
@@ -246,7 +247,7 @@ public abstract class PollsVoteLocalServiceBaseImpl extends BaseLocalServiceImpl
 	public ActionableDynamicQuery getActionableDynamicQuery() {
 		ActionableDynamicQuery actionableDynamicQuery = new DefaultActionableDynamicQuery();
 
-		actionableDynamicQuery.setBaseLocalService(com.liferay.polls.service.PollsVoteLocalServiceUtil.getService());
+		actionableDynamicQuery.setBaseLocalService(pollsVoteLocalService);
 		actionableDynamicQuery.setClassLoader(getClassLoader());
 		actionableDynamicQuery.setModelClass(PollsVote.class);
 
@@ -259,7 +260,7 @@ public abstract class PollsVoteLocalServiceBaseImpl extends BaseLocalServiceImpl
 	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		IndexableActionableDynamicQuery indexableActionableDynamicQuery = new IndexableActionableDynamicQuery();
 
-		indexableActionableDynamicQuery.setBaseLocalService(com.liferay.polls.service.PollsVoteLocalServiceUtil.getService());
+		indexableActionableDynamicQuery.setBaseLocalService(pollsVoteLocalService);
 		indexableActionableDynamicQuery.setClassLoader(getClassLoader());
 		indexableActionableDynamicQuery.setModelClass(PollsVote.class);
 
@@ -270,7 +271,7 @@ public abstract class PollsVoteLocalServiceBaseImpl extends BaseLocalServiceImpl
 
 	protected void initActionableDynamicQuery(
 		ActionableDynamicQuery actionableDynamicQuery) {
-		actionableDynamicQuery.setBaseLocalService(com.liferay.polls.service.PollsVoteLocalServiceUtil.getService());
+		actionableDynamicQuery.setBaseLocalService(pollsVoteLocalService);
 		actionableDynamicQuery.setClassLoader(getClassLoader());
 		actionableDynamicQuery.setModelClass(PollsVote.class);
 
@@ -562,6 +563,24 @@ public abstract class PollsVoteLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
+	 * Returns the polls question finder.
+	 *
+	 * @return the polls question finder
+	 */
+	public PollsQuestionFinder getPollsQuestionFinder() {
+		return pollsQuestionFinder;
+	}
+
+	/**
+	 * Sets the polls question finder.
+	 *
+	 * @param pollsQuestionFinder the polls question finder
+	 */
+	public void setPollsQuestionFinder(PollsQuestionFinder pollsQuestionFinder) {
+		this.pollsQuestionFinder = pollsQuestionFinder;
+	}
+
+	/**
 	 * Returns the user local service.
 	 *
 	 * @return the user local service
@@ -650,7 +669,7 @@ public abstract class PollsVoteLocalServiceBaseImpl extends BaseLocalServiceImpl
 		}
 	}
 
-	@BeanReference(type = com.liferay.polls.service.PollsVoteLocalService.class)
+	@BeanReference(type = PollsVoteLocalService.class)
 	protected PollsVoteLocalService pollsVoteLocalService;
 	@BeanReference(type = PollsVotePersistence.class)
 	protected PollsVotePersistence pollsVotePersistence;
@@ -664,6 +683,8 @@ public abstract class PollsVoteLocalServiceBaseImpl extends BaseLocalServiceImpl
 	protected com.liferay.polls.service.PollsQuestionLocalService pollsQuestionLocalService;
 	@BeanReference(type = PollsQuestionPersistence.class)
 	protected PollsQuestionPersistence pollsQuestionPersistence;
+	@BeanReference(type = PollsQuestionFinder.class)
+	protected PollsQuestionFinder pollsQuestionFinder;
 	@ServiceReference(type = com.liferay.portal.kernel.service.UserLocalService.class)
 	protected com.liferay.portal.kernel.service.UserLocalService userLocalService;
 	@ServiceReference(type = UserPersistence.class)

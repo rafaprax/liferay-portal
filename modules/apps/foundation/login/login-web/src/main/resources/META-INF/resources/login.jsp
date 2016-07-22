@@ -60,7 +60,15 @@
 			<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 			<aui:input name="doActionAfterLogin" type="hidden" value="<%= portletName.equals(PortletKeys.FAST_LOGIN) ? true : false %>" />
 
+			<div class="inline-alert-container lfr-alert-container"></div>
+
 			<c:choose>
+				<c:when test='<%= SessionMessages.contains(request, "passwordSent") %>'>
+
+					<div class="alert alert-success">
+						<liferay-ui:message key="your-password-was-sent-to-the-provided-email-address" />
+					</div>
+				</c:when>
 				<c:when test='<%= SessionMessages.contains(request, "userAdded") %>'>
 
 					<%
@@ -74,7 +82,7 @@
 								<liferay-ui:message key="thank-you-for-creating-an-account" />
 
 								<c:if test="<%= company.isStrangersVerify() %>">
-									<liferay-ui:message arguments="<%= userEmailAddress %>" key="your-email-verification-code-has-been-sent-to-x" translateArguments="<%= false %>" />
+									<liferay-ui:message arguments="<%= userEmailAddress %>" key="your-email-verification-code-was-sent-to-x" translateArguments="<%= false %>" />
 								</c:if>
 							</c:when>
 							<c:otherwise>
@@ -83,7 +91,7 @@
 						</c:choose>
 
 						<c:if test="<%= PrefsPropsUtil.getBoolean(company.getCompanyId(), PropsKeys.ADMIN_EMAIL_USER_ADDED_ENABLED) %>">
-							<liferay-ui:message arguments="<%= userEmailAddress %>" key="your-password-has-been-sent-to-x" translateArguments="<%= false %>" />
+							<liferay-ui:message arguments="<%= userEmailAddress %>" key="your-password-was-sent-to-x" translateArguments="<%= false %>" />
 						</c:if>
 					</div>
 				</c:when>
@@ -163,13 +171,15 @@
 			form.on(
 				'submit',
 				function(event) {
-					var redirect = form.fm('redirect');
+					<c:if test="<%= Validator.isNotNull(redirect) %>">
+						var redirect = form.fm('redirect');
 
-					if (redirect) {
-						var redirectVal = redirect.val();
+						if (redirect) {
+							var redirectVal = redirect.val();
 
-						redirect.val(redirectVal + window.location.hash);
-					}
+							redirect.val(redirectVal + window.location.hash);
+						}
+					</c:if>
 
 					submitForm(form);
 				}

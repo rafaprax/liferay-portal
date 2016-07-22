@@ -1,4 +1,5 @@
 <definition component-name="portal-user-management-and-portal-configuration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Portal Settings" />
 
 	<set-up>
@@ -35,7 +36,7 @@
 		</if>
 	</tear-down>
 
-	<command name="EditDefaultUserAssociationsOrganizationSites" priority="4">
+	<command name="EditDefaultUserAssociationsOrganizationSites" priority="5">
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
@@ -243,7 +244,9 @@
 		</execute>
 	</command>
 
-	<command name="EnterReservedEmailAddress" priority="4">
+	<command name="EnterReservedEmailAddress" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Instance Settings" />
 		</execute>
@@ -264,7 +267,9 @@
 		</execute>
 	</command>
 
-	<command name="EnterReservedScreenName" priority="4">
+	<command name="EnterReservedScreenName" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Instance Settings" />
 		</execute>
@@ -380,10 +385,6 @@
 			<var name="portletName" value="Asset Publisher" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
 		<execute macro="Page#add">
 			<var name="pageName" value="WC Test Page" />
 			<var name="siteName" value="Child SiteName" />
@@ -400,6 +401,10 @@
 		<execute macro="WebContent#addPGViaWCD">
 			<var name="webContentContent" value="WC WebContent Content" />
 			<var name="webContentTitle" value="WC WebContent Title" />
+		</execute>
+
+		<execute macro="WebContent#viewPGViaWCD">
+			<var name="webContentContent" value="WC WebContent Content" />
 		</execute>
 
 		<execute macro="Navigator#openSiteURL">
@@ -438,7 +443,7 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Blogs#addViaAP">
+		<execute macro="Blogs#addViaAPSelectScope">
 			<var name="entryContent" value="Blogs Entry Content" />
 			<var name="entryTitle" value="Blogs Entry Title" />
 			<var name="siteScope" value="Site Name" />

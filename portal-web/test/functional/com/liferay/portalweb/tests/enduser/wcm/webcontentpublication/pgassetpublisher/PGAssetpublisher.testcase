@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Asset Publisher" />
 
 	<set-up>
@@ -103,7 +104,7 @@
 			<var name="bookmarkDescription" value="Test Bookmark Description" />
 			<var name="bookmarkFolderName" value="Test Folder Name" />
 			<var name="bookmarkName" value="Test Bookmark Name" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -176,7 +177,7 @@
 		<execute macro="Bookmark#addPG">
 			<var name="bookmarkDescription" value="Test Bookmark Description" />
 			<var name="bookmarkName" value="Test Bookmark Name" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -248,6 +249,19 @@
 	</command>
 
 	<command name="ConfigureAPPortletEnableRatings" priority="4">
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="${siteName}" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Asset Publisher Page" />
+		</execute>
+
 		<execute macro="AssetPublisherPortlet#configureFlaggableDisplaySettingsPG">
 			<var name="enableRatings" value="true" />
 		</execute>
@@ -297,6 +311,11 @@
 	</command>
 
 	<command name="ConfigureAPPortletScopeMultipleSites" priority="4">
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="ProductMenu#gotoControlPanelSites">
 			<var name="portlet" value="Sites" />
 		</execute>
@@ -326,7 +345,7 @@
 		</execute>
 
 		<execute macro="AssetPublisherPortlet#viewMultipleSiteScopesAddDropdowns">
-			<var name="siteName1" value="Liferay" />
+			<var name="siteName1" value="${siteName}" />
 			<var name="siteName2" value="Test Site" />
 		</execute>
 	</command>
@@ -371,7 +390,7 @@
 		</execute>
 
 		<execute macro="AssetPublisherPortlet#viewSelectedPG">
-			<var name="selectedAsset" value="Document" />
+			<var name="selectedAsset" value="Basic Document" />
 			<var name="selectedAssetConfiguration" value="Document" />
 		</execute>
 	</command>
@@ -436,7 +455,7 @@
 		<execute macro="Bookmark#addPG">
 			<var name="bookmarkDescription" value="Test Bookmark Description" />
 			<var name="bookmarkName" value="Test Bookmark Name" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -679,7 +698,6 @@
 		</execute>
 
 		<execute macro="WebContent#addPGViaAP" >
-			<var name="assetTypeConfigured" value="true" />
 			<var name="webContentContent" value="WebContent Content 1" />
 			<var name="webContentTitle" value="WebContent Title 1" />
 		</execute>
@@ -689,7 +707,6 @@
 		</execute>
 
 		<execute macro="WebContent#addPGViaAP" >
-			<var name="assetTypeConfigured" value="true" />
 			<var name="webContentContent" value="WebContent Content 2" />
 			<var name="webContentTitle" value="WebContent Title 2" />
 		</execute>
@@ -699,7 +716,6 @@
 		</execute>
 
 		<execute macro="WebContent#addPGViaAP" >
-			<var name="assetTypeConfigured" value="true" />
 			<var name="webContentContent" value="WebContent Content 3" />
 			<var name="webContentTitle" value="WebContent Title 3" />
 		</execute>
@@ -755,7 +771,6 @@
 		</execute>
 
 		<execute macro="WebContent#addPGViaAP" >
-			<var name="assetTypeConfigured" value="true" />
 			<var name="webContentContent" value="WebContent Content 1" />
 			<var name="webContentTitle" value="WebContent Title 1" />
 		</execute>
@@ -767,7 +782,6 @@
 		</execute>
 
 		<execute macro="WebContent#addPGViaAP" >
-			<var name="assetTypeConfigured" value="true" />
 			<var name="webContentContent" value="WebContent Content 2" />
 			<var name="webContentTitle" value="WebContent Title 2" />
 		</execute>
@@ -779,7 +793,6 @@
 		</execute>
 
 		<execute macro="WebContent#addPGViaAP" >
-			<var name="assetTypeConfigured" value="true" />
 			<var name="webContentContent" value="WebContent Content 3" />
 			<var name="webContentTitle" value="WebContent Title 3" />
 		</execute>

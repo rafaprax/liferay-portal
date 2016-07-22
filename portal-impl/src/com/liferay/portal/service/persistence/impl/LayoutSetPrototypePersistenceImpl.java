@@ -30,9 +30,7 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.NoSuchLayoutSetPrototypeException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
-import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -58,6 +56,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -205,7 +204,7 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 
 			if ((list != null) && !list.isEmpty()) {
 				for (LayoutSetPrototype layoutSetPrototype : list) {
-					if (!Validator.equals(uuid, layoutSetPrototype.getUuid())) {
+					if (!Objects.equals(uuid, layoutSetPrototype.getUuid())) {
 						list = null;
 
 						break;
@@ -1173,7 +1172,7 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 
 			if ((list != null) && !list.isEmpty()) {
 				for (LayoutSetPrototype layoutSetPrototype : list) {
-					if (!Validator.equals(uuid, layoutSetPrototype.getUuid()) ||
+					if (!Objects.equals(uuid, layoutSetPrototype.getUuid()) ||
 							(companyId != layoutSetPrototype.getCompanyId())) {
 						list = null;
 
@@ -4003,8 +4002,8 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 					primaryKey);
 
 			if (layoutSetPrototype == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchLayoutSetPrototypeException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -4249,8 +4248,8 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 		LayoutSetPrototype layoutSetPrototype = fetchByPrimaryKey(primaryKey);
 
 		if (layoutSetPrototype == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchLayoutSetPrototypeException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -4281,12 +4280,14 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 	 */
 	@Override
 	public LayoutSetPrototype fetchByPrimaryKey(Serializable primaryKey) {
-		LayoutSetPrototype layoutSetPrototype = (LayoutSetPrototype)entityCache.getResult(LayoutSetPrototypeModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(LayoutSetPrototypeModelImpl.ENTITY_CACHE_ENABLED,
 				LayoutSetPrototypeImpl.class, primaryKey);
 
-		if (layoutSetPrototype == _nullLayoutSetPrototype) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		LayoutSetPrototype layoutSetPrototype = (LayoutSetPrototype)serializable;
 
 		if (layoutSetPrototype == null) {
 			Session session = null;
@@ -4302,8 +4303,7 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 				}
 				else {
 					entityCache.putResult(LayoutSetPrototypeModelImpl.ENTITY_CACHE_ENABLED,
-						LayoutSetPrototypeImpl.class, primaryKey,
-						_nullLayoutSetPrototype);
+						LayoutSetPrototypeImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -4357,18 +4357,20 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			LayoutSetPrototype layoutSetPrototype = (LayoutSetPrototype)entityCache.getResult(LayoutSetPrototypeModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(LayoutSetPrototypeModelImpl.ENTITY_CACHE_ENABLED,
 					LayoutSetPrototypeImpl.class, primaryKey);
 
-			if (layoutSetPrototype == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, layoutSetPrototype);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (LayoutSetPrototype)serializable);
+				}
 			}
 		}
 
@@ -4411,8 +4413,7 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(LayoutSetPrototypeModelImpl.ENTITY_CACHE_ENABLED,
-					LayoutSetPrototypeImpl.class, primaryKey,
-					_nullLayoutSetPrototype);
+					LayoutSetPrototypeImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -4665,35 +4666,4 @@ public class LayoutSetPrototypePersistenceImpl extends BasePersistenceImpl<Layou
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "settings", "active"
 			});
-	private static final LayoutSetPrototype _nullLayoutSetPrototype = new LayoutSetPrototypeImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<LayoutSetPrototype> toCacheModel() {
-				return _nullLayoutSetPrototypeCacheModel;
-			}
-		};
-
-	private static final CacheModel<LayoutSetPrototype> _nullLayoutSetPrototypeCacheModel =
-		new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<LayoutSetPrototype>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public LayoutSetPrototype toEntityModel() {
-			return _nullLayoutSetPrototype;
-		}
-	}
 }

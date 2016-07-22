@@ -17,7 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String displayStyle = ParamUtil.getString(request, "displayStyle", "icon");
+String displayStyle = portalPreferences.getValue(SiteMembershipsPortletKeys.SITE_MEMBERSHIPS_ADMIN, "display-style", "icon");
 String orderByCol = ParamUtil.getString(request, "orderByCol", "name");
 String orderByType = ParamUtil.getString(request, "orderByType", "asc");
 
@@ -35,6 +35,12 @@ userGroupSearch.setEmptyResultsMessage("no-user-group-was-found-that-is-a-member
 RowChecker rowChecker = new EmptyOnClickRowChecker(renderResponse);
 
 UserGroupDisplayTerms searchTerms = (UserGroupDisplayTerms)userGroupSearch.getSearchTerms();
+
+boolean hasAssignMembersPermission = GroupPermissionUtil.contains(permissionChecker, siteMembershipsDisplayContext.getGroupId(), ActionKeys.ASSIGN_MEMBERS);
+
+if (!searchTerms.isSearch() && hasAssignMembersPermission) {
+	userGroupSearch.setEmptyResultsMessageCssClass("taglib-empty-result-message-header-has-plus-btn");
+}
 
 LinkedHashMap<String, Object> userGroupParams = new LinkedHashMap<String, Object>();
 
@@ -59,9 +65,13 @@ userGroupSearch.setResults(userGroups);
 	searchContainerId="userGroups"
 >
 	<liferay-frontend:management-bar-buttons>
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
+
 		<liferay-frontend:management-bar-display-buttons
 			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
-			portletURL="<%= PortletURLUtil.clone(viewUserGroupsURL, renderResponse) %>"
+			portletURL="<%= changeDisplayStyleURL %>"
 			selectedDisplayStyle="<%= displayStyle %>"
 		/>
 	</liferay-frontend:management-bar-buttons>
@@ -81,17 +91,19 @@ userGroupSearch.setResults(userGroups);
 	</liferay-frontend:management-bar-filters>
 
 	<liferay-frontend:management-bar-action-buttons>
-		<liferay-frontend:management-bar-button href="javascript:;" icon="trash" id="deleteSelectedUserGroups" label="delete" />
+		<c:if test="<%= GroupPermissionUtil.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_USER_ROLES) %>">
+			<liferay-frontend:management-bar-button href="javascript:;" icon="users" id="selectSiteRole" label="assign-site-roles" />
+		</c:if>
+
+		<liferay-frontend:management-bar-button href="javascript:;" icon="trash" id="deleteSelectedUserGroups" label="remove-membership" />
 	</liferay-frontend:management-bar-action-buttons>
 </liferay-frontend:management-bar>
-
-<liferay-util:include page="/info_message.jsp" servletContext="<%= application %>" />
 
 <portlet:actionURL name="deleteGroupUserGroups" var="deleteGroupUserGroupsURL">
 	<portlet:param name="redirect" value="<%= currentURL %>" />
 </portlet:actionURL>
 
-<aui:form action="<%= deleteGroupUserGroupsURL %>" cssClass="container-fluid-1280" name="fm">
+<aui:form action="<%= deleteGroupUserGroupsURL %>" cssClass="container-fluid-1280 portlet-site-memberships-user-groups" name="fm">
 	<aui:input name="tabs1" type="hidden" value="user-groups" />
 
 	<liferay-ui:search-container
@@ -99,7 +111,6 @@ userGroupSearch.setResults(userGroups);
 		rowChecker="<%= rowChecker %>"
 		searchContainer="<%= userGroupSearch %>"
 	>
-
 		<liferay-ui:search-container-row
 			className="com.liferay.portal.kernel.model.UserGroup"
 			escapedModel="<%= true %>"
@@ -131,15 +142,13 @@ userGroupSearch.setResults(userGroups);
 	<aui:input name="userGroupId" type="hidden" />
 </aui:form>
 
-<c:if test="<%= GroupPermissionUtil.contains(permissionChecker, siteMembershipsDisplayContext.getGroupId(), ActionKeys.ASSIGN_MEMBERS) %>">
+<c:if test="<%= hasAssignMembersPermission %>">
 	<liferay-frontend:add-menu>
 		<liferay-frontend:add-menu-item id="selectUserGroups" title='<%= LanguageUtil.get(request, "assign-user-groups") %>' url="javascript:;" />
 	</liferay-frontend:add-menu>
 </c:if>
 
 <aui:script use="liferay-item-selector-dialog">
-	var Util = Liferay.Util;
-
 	var form = $(document.<portlet:namespace />fm);
 
 	$('#<portlet:namespace />deleteSelectedUserGroups').on(
@@ -151,40 +160,39 @@ userGroupSearch.setResults(userGroups);
 		}
 	);
 
-	form.on(
-		'click',
-		'.assign-site-roles a',
-		function(event) {
-			event.preventDefault();
+	<c:if test="<%= GroupPermissionUtil.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_USER_ROLES) %>">
+		<portlet:renderURL var="selectSiteRoleURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+			<portlet:param name="mvcPath" value="/site_roles.jsp" />
+			<portlet:param name="groupId" value="<%= String.valueOf(siteMembershipsDisplayContext.getGroupId()) %>" />
+		</portlet:renderURL>
 
-			var currentTarget = $(event.currentTarget);
+		$('#<portlet:namespace />selectSiteRole').on(
+			'click',
+			function() {
+				var itemSelectorDialog = new A.LiferayItemSelectorDialog(
+					{
+						eventName: '<portlet:namespace />selectSiteRole',
+						on: {
+							selectedItemChange: function(event) {
+								var selectedItem = event.newVal;
 
-			var editUserGroupGroupRoleFm = $(document.<portlet:namespace />editUserGroupGroupRoleFm);
+								if (selectedItem) {
+									form.append(selectedItem);
 
-			editUserGroupGroupRoleFm.fm('userGroupId').val(currentTarget.data('usergroupid'));
-
-			var itemSelectorDialog = new A.LiferayItemSelectorDialog(
-				{
-					eventName: '<portlet:namespace />selectUserGroupsRoles',
-					on: {
-						selectedItemChange: function(event) {
-							var selectedItem = event.newVal;
-
-							if (selectedItem) {
-								editUserGroupGroupRoleFm.append(selectedItem);
-
-								submitForm(editUserGroupGroupRoleFm);
+									submitForm(form, '<portlet:actionURL name="editUserGroupsSiteRoles"><portlet:param name="tabs1" value="user-groups" /></portlet:actionURL>');
+								}
 							}
-						}
-					},
-					title: '<liferay-ui:message key="assign-site-roles" />',
-					url: currentTarget.data('href')
-				}
-			);
+						},
+						'strings.add': '<liferay-ui:message key="done" />',
+						title: '<liferay-ui:message key="assign-site-roles" />',
+						url: '<%= selectSiteRoleURL %>'
+					}
+				);
 
-			itemSelectorDialog.open();
-		}
-	);
+				itemSelectorDialog.open();
+			}
+		);
+	</c:if>
 
 	$('#<portlet:namespace />selectUserGroups').on(
 		'click',
@@ -207,7 +215,8 @@ userGroupSearch.setResults(userGroups);
 							}
 						}
 					},
-					title: '<liferay-ui:message key="add-user-groups-to-this-site" />',
+					'strings.add': '<liferay-ui:message key="done" />',
+					title: '<liferay-ui:message key="assign-user-groups-to-this-site" />',
 					url: '<portlet:renderURL windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcPath" value="/select_user_groups.jsp" /></portlet:renderURL>'
 				}
 			);

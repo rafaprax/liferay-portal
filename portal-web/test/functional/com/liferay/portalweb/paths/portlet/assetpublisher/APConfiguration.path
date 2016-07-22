@@ -78,7 +78,7 @@
 </tr>
 <tr>
 	<td>SOURCE_SCOPE_DELETE</td>
-	<td>//div[contains(@id,'groupsSearchContainer')]//tr[contains(.,'${key_siteName}')]/td[3]/span/a</td>
+	<td>//div[contains(@id,'groupsSearchContainer')]//tr[contains(.,'${key_siteName}')]/td[3]//span/a</td>
 	<td></td>
 </tr>
 <tr>
@@ -238,7 +238,7 @@
 <!--ASSET_SELECTION_MANUAL_ASSET_ENTRIES-->
 <tr>
 	<td>ASSET_SELECTION_MANUAL_ASSET_ENTRIES_SELECT_BUTTON</td>
-	<td>//div[contains(@id,'asset-kernelContent')]//a[contains(.,'Select')]</td>
+	<td>//div[contains(.,'Asset Entries')]/following-sibling::div//a[@title='Select']</td>
 	<td></td>
 </tr>
 <tr>

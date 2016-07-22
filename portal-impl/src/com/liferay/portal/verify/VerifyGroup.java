@@ -14,8 +14,9 @@
 
 package com.liferay.portal.verify;
 
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.GroupFriendlyURLException;
 import com.liferay.portal.kernel.log.Log;
@@ -92,16 +93,6 @@ public class VerifyGroup extends VerifyProcess {
 			RobotsUtil.getDefaultRobots(virtualHostname));
 	}
 
-	protected void updateName(long groupId, String name) throws Exception {
-		try (PreparedStatement ps = connection.prepareStatement(
-				"update Group_ set name = ? where groupId= " + groupId)) {
-
-			ps.setString(1, name);
-
-			ps.executeUpdate();
-		}
-	}
-
 	protected void verifyCompanyGroups() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			List<Company> companies = CompanyLocalServiceUtil.getCompanies();
@@ -176,9 +167,13 @@ public class VerifyGroup extends VerifyProcess {
 			sb.append(GroupLocalServiceImpl.ORGANIZATION_NAME_SUFFIX);
 			sb.append("'");
 
-			try (PreparedStatement ps = connection.prepareStatement(
+			try (PreparedStatement ps1 = connection.prepareStatement(
 					sb.toString());
-				ResultSet rs = ps.executeQuery()) {
+				PreparedStatement ps2 =
+					AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+						connection,
+						"update Group_ set name = ? where groupId = ?");
+				ResultSet rs = ps1.executeQuery()) {
 
 				while (rs.next()) {
 					long groupId = rs.getLong("groupId");
@@ -202,8 +197,13 @@ public class VerifyGroup extends VerifyProcess {
 						name.substring(pos + 1) +
 							GroupLocalServiceImpl.ORGANIZATION_NAME_SUFFIX;
 
-					updateName(groupId, newName);
+					ps2.setString(1, newName);
+					ps2.setLong(2, groupId);
+
+					ps2.addBatch();
 				}
+
+				ps2.executeBatch();
 			}
 		}
 	}
@@ -235,27 +235,41 @@ public class VerifyGroup extends VerifyProcess {
 
 	protected void verifySites() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
-				Group.class);
+			ActionableDynamicQuery actionableDynamicQuery =
+				GroupLocalServiceUtil.getActionableDynamicQuery();
 
-			dynamicQuery.add(
-				RestrictionsFactoryUtil.eq(
-					"classNameId",
-					PortalUtil.getClassNameId(Organization.class)));
-			dynamicQuery.add(RestrictionsFactoryUtil.eq("site", false));
+			actionableDynamicQuery.setAddCriteriaMethod(
+				new ActionableDynamicQuery.AddCriteriaMethod() {
 
-			List<Group> groups = GroupLocalServiceUtil.dynamicQuery(
-				dynamicQuery);
+					@Override
+					public void addCriteria(DynamicQuery dynamicQuery) {
+						dynamicQuery.add(
+							RestrictionsFactoryUtil.eq(
+								"classNameId",
+								PortalUtil.getClassNameId(Organization.class)));
+						dynamicQuery.add(
+							RestrictionsFactoryUtil.eq("site", false));
+					}
 
-			for (Group group : groups) {
-				if ((group.getPrivateLayoutsPageCount() > 0) ||
-					(group.getPublicLayoutsPageCount() > 0)) {
+				});
+			actionableDynamicQuery.setParallel(true);
+			actionableDynamicQuery.setPerformActionMethod(
+				new ActionableDynamicQuery.PerformActionMethod<Group>() {
 
-					group.setSite(true);
+					@Override
+					public void performAction(Group group) {
+						if ((group.getPrivateLayoutsPageCount() > 0) ||
+							(group.getPublicLayoutsPageCount() > 0)) {
 
-					GroupLocalServiceUtil.updateGroup(group);
-				}
-			}
+							group.setSite(true);
+
+							GroupLocalServiceUtil.updateGroup(group);
+						}
+					}
+
+				});
+
+			actionableDynamicQuery.performActions();
 		}
 	}
 

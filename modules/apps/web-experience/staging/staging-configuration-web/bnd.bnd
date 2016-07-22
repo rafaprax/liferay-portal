@@ -1,6 +1,5 @@
-Bundle-Name: Staging Configuration
+Bundle-Name: Liferay Staging Configuration Web
 Bundle-SymbolicName: com.liferay.staging.configuration.web
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.5
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Data Management
--include: ../../app.bnd

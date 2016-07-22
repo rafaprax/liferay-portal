@@ -138,6 +138,10 @@ public class ConfigurationModelRetrieverImpl
 		Bundle[] bundles = _bundleContext.getBundles();
 
 		for (Bundle bundle : bundles) {
+			if (bundle.getState() != Bundle.ACTIVE) {
+				continue;
+			}
+
 			collectConfigurationModels(
 				bundle, configurationModels, true, locale);
 			collectConfigurationModels(
@@ -360,9 +364,8 @@ public class ConfigurationModelRetrieverImpl
 				}
 			}
 			else if (configurationCategory1.equals("productivity")) {
-				if (configurationCategory2.equals(
-						"web-experience") ||
-					configurationCategory2.equals("collaboration")) {
+				if (configurationCategory2.equals("collaboration") ||
+					configurationCategory2.equals("web-experience")) {
 
 					return 1;
 				}

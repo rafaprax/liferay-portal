@@ -53,12 +53,12 @@ if (ddmStructureId > 0) {
 	ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(ddmStructureId);
 }
 else if (Validator.isNotNull(ddmStructureKey)) {
-	ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(themeDisplay.getSiteGroupId(), PortalUtil.getClassNameId(JournalArticle.class), ddmStructureKey, true);
+	ddmStructure = DDMStructureLocalServiceUtil.fetchStructure((article != null) ? article.getGroupId() : themeDisplay.getSiteGroupId(), PortalUtil.getClassNameId(JournalArticle.class), ddmStructureKey, true);
 }
 
 String ddmTemplateKey = ParamUtil.getString(request, "ddmTemplateKey");
 
-if (Validator.isNull(ddmTemplateKey) && (article != null)) {
+if (Validator.isNull(ddmTemplateKey) && (article != null) && Objects.equals(article.getDDMStructureKey(), ddmStructureKey)) {
 	ddmTemplateKey = article.getDDMTemplateKey();
 }
 
@@ -70,11 +70,11 @@ if (ddmTemplateId > 0) {
 	ddmTemplate = DDMTemplateLocalServiceUtil.fetchDDMTemplate(ddmTemplateId);
 }
 else if (Validator.isNotNull(ddmTemplateKey)) {
-	ddmTemplate = DDMTemplateLocalServiceUtil.fetchTemplate(groupId, PortalUtil.getClassNameId(DDMStructure.class), ddmTemplateKey, true);
+	ddmTemplate = DDMTemplateLocalServiceUtil.fetchTemplate((article != null) ? article.getGroupId() : themeDisplay.getSiteGroupId(), PortalUtil.getClassNameId(DDMStructure.class), ddmTemplateKey, true);
 }
 
 if (ddmTemplate == null) {
-	List<DDMTemplate> ddmTemplates = DDMTemplateServiceUtil.getTemplates(company.getCompanyId(), groupId, PortalUtil.getClassNameId(DDMStructure.class), ddmStructure.getStructureId(), PortalUtil.getClassNameId(JournalArticle.class), true, WorkflowConstants.STATUS_APPROVED);
+	List<DDMTemplate> ddmTemplates = DDMTemplateServiceUtil.getTemplates(company.getCompanyId(), ddmStructure.getGroupId(), PortalUtil.getClassNameId(DDMStructure.class), ddmStructure.getStructureId(), PortalUtil.getClassNameId(JournalArticle.class), true, WorkflowConstants.STATUS_APPROVED);
 
 	if (!ddmTemplates.isEmpty()) {
 		ddmTemplate = ddmTemplates.get(0);
@@ -88,7 +88,7 @@ boolean changeableDefaultLanguage = journalWebConfiguration.changeableDefaultLan
 if (article != null) {
 	String articleDefaultLanguageId = LocalizationUtil.getDefaultLanguageId(article.getContent(), LocaleUtil.getSiteDefault());
 
-	if (!Validator.equals(defaultLanguageId, articleDefaultLanguageId)) {
+	if (!Objects.equals(defaultLanguageId, articleDefaultLanguageId)) {
 		changeableDefaultLanguage = true;
 	}
 
@@ -171,6 +171,7 @@ request.setAttribute("edit_article.jsp-changeStructure", changeStructure);
 
 <portlet:actionURL var="editArticleActionURL" windowState="<%= WindowState.MAXIMIZED.toString() %>">
 	<portlet:param name="mvcPath" value="/edit_article.jsp" />
+	<portlet:param name="ddmStructureKey" value="<%= ddmStructureKey %>" />
 </portlet:actionURL>
 
 <portlet:renderURL var="editArticleRenderURL" windowState="<%= WindowState.MAXIMIZED.toString() %>">
@@ -179,6 +180,7 @@ request.setAttribute("edit_article.jsp-changeStructure", changeStructure);
 
 <aui:form action="<%= editArticleActionURL %>" cssClass="container-fluid-1280" enctype="multipart/form-data" method="post" name="fm1" onSubmit="event.preventDefault();">
 	<aui:input name="<%= ActionRequest.ACTION_NAME %>" type="hidden" />
+	<aui:input name="hideDefaultSuccessMessage" type="hidden" value="<%= classNameId == PortalUtil.getClassNameId(DDMStructure.class) %>" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 	<aui:input name="portletResource" type="hidden" value="<%= portletResource %>" />
 	<aui:input name="referringPlid" type="hidden" value="<%= referringPlid %>" />
@@ -227,7 +229,7 @@ request.setAttribute("edit_article.jsp-changeStructure", changeStructure);
 	if ((article != null) && (version > 0)) {
 		approved = article.isApproved();
 
-		 if (workflowEnabled) {
+		if (workflowEnabled) {
 			pending = article.isPending();
 		}
 	}
@@ -269,7 +271,7 @@ request.setAttribute("edit_article.jsp-changeStructure", changeStructure);
 
 		String saveButtonLabel = "save";
 
-		if ((article == null) || article.isApproved() || article.isDraft() || article.isExpired()) {
+		if ((article == null) || article.isApproved() || article.isDraft() || article.isExpired() || article.isScheduled()) {
 			saveButtonLabel = "save-as-draft";
 		}
 

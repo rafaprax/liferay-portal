@@ -1,6 +1,6 @@
 Bundle-Name: Liferay Export Import Service
 Bundle-SymbolicName: com.liferay.exportimport.service
-Bundle-Version: 1.0.0
+Bundle-Version: 3.0.2
 Export-Package:\
 	com.liferay.exportimport.content.processor.base,\
 	com.liferay.exportimport.controller,\
@@ -13,7 +13,6 @@ Export-Package:\
 	com.liferay.exportimport.staged.model.repository.base,\
 	com.liferay.exportimport.staging,\
 	com.liferay.exportimport.xstream
-Include-Resource: @../../../../../util-java/util-java.jar!/com/liferay/util/xml/DocUtil.class
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Data Management
--include: ../../app.bnd
+Liferay-Require-SchemaVersion: 1.0.0

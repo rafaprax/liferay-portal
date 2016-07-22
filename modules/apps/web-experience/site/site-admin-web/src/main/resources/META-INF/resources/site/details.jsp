@@ -104,7 +104,7 @@ else if (group != null) {
 
 <aui:input name="description" placeholder="description" />
 
-<c:if test="<%= (group == null) || !group.isCompany() %>">
+<c:if test="<%= (group == null) || (!group.isCompany() && !group.isGuest()) %>">
 	<aui:input name="active" type="toggle-switch" value="<%= (group == null) ? true : group.isActive() %>" />
 </c:if>
 
@@ -112,13 +112,19 @@ else if (group != null) {
 
 	<%
 	boolean disabled = false;
+	boolean value = false;
+
+	if (group != null) {
+		value = group.isInheritContent();
+	}
 
 	if ((parentGroup != null) && parentGroup.isInheritContent()) {
 		disabled = true;
+		value = false;
 	}
 	%>
 
-	<aui:input disabled="<%= disabled %>" helpMessage='<%= disabled ? "this-site-cannot-inherit-the-content-from-its-parent-site-since-the-parent-site-is-already-inheriting-the-content-from-its-parent" : StringPool.BLANK %>' name="inheritContent" value="<%= false %>" />
+	<aui:input disabled="<%= disabled %>" helpMessage='<%= disabled ? "this-site-cannot-inherit-the-content-from-its-parent-site-since-the-parent-site-is-already-inheriting-the-content-from-its-parent" : StringPool.BLANK %>' name="inheritContent" type="toggle-switch" value="<%= value %>" />
 </c:if>
 
 <h4 class="text-default"><liferay-ui:message key="membership-options" /></h4>
@@ -161,11 +167,9 @@ else if (group != null) {
 
 	<h4 class="text-default"><liferay-ui:message key="parent-site" /></h4>
 
-	<p class="text-muted <%= parentGroups.isEmpty() ? StringPool.BLANK : "hide" %>" id="<portlet:namespace />parentSiteEmptyResultMessage">
-		<%= StringUtil.toLowerCase(LanguageUtil.get(request, "none")) %>
-	</p>
-
 	<liferay-ui:search-container
+		compactEmptyResultsMessage="<%= true %>"
+		emptyResultsMessage="none"
 		headerNames="name,type,null"
 		id="parentGroupSearchContainer"
 		total="<%= parentGroups.size() %>"
@@ -182,6 +186,7 @@ else if (group != null) {
 		>
 			<liferay-ui:search-container-column-text
 				name="name"
+				truncate="<%= true %>"
 				value="<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>"
 			/>
 
@@ -190,9 +195,7 @@ else if (group != null) {
 				value="<%= LanguageUtil.get(request, curGroup.getTypeLabel()) %>"
 			/>
 
-			<liferay-ui:search-container-column-text
-				cssClass="list-group-item-field"
-			>
+			<liferay-ui:search-container-column-text>
 				<a class="modify-link" data-rowId="<%= curGroup.getGroupId() %>" href="javascript:;"><%= removeGroupIcon %></a>
 			</liferay-ui:search-container-column-text>
 		</liferay-ui:search-container-row>
@@ -201,7 +204,7 @@ else if (group != null) {
 	</liferay-ui:search-container>
 
 	<div class="button-holder">
-		<aui:button cssClass="btn-lg modify-link" id="selectParentSiteLink" value="select" />
+		<aui:button cssClass="modify-link" id="selectParentSiteLink" value="select" />
 	</div>
 
 	<div class="<%= parentGroups.isEmpty() ? "membership-restriction-container hide" : "membership-restriction-container" %>" id="<portlet:namespace />membershipRestrictionContainer">
@@ -267,8 +270,6 @@ else if (group != null) {
 						searchContainer.updateDataStore(event.groupid);
 
 						A.one('#<portlet:namespace />membershipRestrictionContainer').show();
-
-						A.one('#<portlet:namespace />parentSiteEmptyResultMessage').hide();
 					}
 				);
 			}
@@ -286,8 +287,6 @@ else if (group != null) {
 				searchContainer.deleteRow(tr, link.getAttribute('data-rowId'));
 
 				A.one('#<portlet:namespace />membershipRestrictionContainer').hide();
-
-				A.one('#<portlet:namespace />parentSiteEmptyResultMessage').show();
 			},
 			'.modify-link'
 		);

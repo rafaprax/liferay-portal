@@ -51,11 +51,11 @@ import com.liferay.wiki.exception.ImportFilesException;
 import com.liferay.wiki.exception.NoSuchPageException;
 import com.liferay.wiki.importer.WikiImporter;
 import com.liferay.wiki.importer.impl.WikiImporterKeys;
+import com.liferay.wiki.internal.translator.MediaWikiToCreoleTranslator;
 import com.liferay.wiki.model.WikiNode;
 import com.liferay.wiki.model.WikiPage;
 import com.liferay.wiki.model.WikiPageConstants;
 import com.liferay.wiki.service.WikiPageLocalService;
-import com.liferay.wiki.translator.MediaWikiToCreoleTranslator;
 import com.liferay.wiki.validator.WikiPageTitleValidator;
 
 import java.io.IOException;
@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -199,7 +200,7 @@ public class MediaWikiImporter implements WikiImporter {
 				format = FORMAT_CREOLE;
 			}
 			else if (supportedFormats.contains(FORMAT_MEDIAWIKI) &&
-					 Validator.equals(
+					 Objects.equals(
 						 _wikiGroupServiceConfiguration.defaultFormat(),
 						 FORMAT_MEDIAWIKI)) {
 

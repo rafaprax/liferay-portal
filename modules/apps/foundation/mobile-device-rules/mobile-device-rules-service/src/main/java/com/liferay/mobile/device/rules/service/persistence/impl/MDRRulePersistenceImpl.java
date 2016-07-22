@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -54,6 +53,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -197,7 +197,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MDRRule mdrRule : list) {
-					if (!Validator.equals(uuid, mdrRule.getUuid())) {
+					if (!Objects.equals(uuid, mdrRule.getUuid())) {
 						list = null;
 
 						break;
@@ -670,8 +670,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRuleException(msg.toString());
@@ -715,7 +715,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 		if (result instanceof MDRRule) {
 			MDRRule mdrRule = (MDRRule)result;
 
-			if (!Validator.equals(uuid, mdrRule.getUuid()) ||
+			if (!Objects.equals(uuid, mdrRule.getUuid()) ||
 					(groupId != mdrRule.getGroupId())) {
 				result = null;
 			}
@@ -1007,7 +1007,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MDRRule mdrRule : list) {
-					if (!Validator.equals(uuid, mdrRule.getUuid()) ||
+					if (!Objects.equals(uuid, mdrRule.getUuid()) ||
 							(companyId != mdrRule.getCompanyId())) {
 						list = null;
 
@@ -2162,8 +2162,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 			MDRRule mdrRule = (MDRRule)session.get(MDRRuleImpl.class, primaryKey);
 
 			if (mdrRule == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchRuleException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2385,8 +2385,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 		MDRRule mdrRule = fetchByPrimaryKey(primaryKey);
 
 		if (mdrRule == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchRuleException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2416,12 +2416,14 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	 */
 	@Override
 	public MDRRule fetchByPrimaryKey(Serializable primaryKey) {
-		MDRRule mdrRule = (MDRRule)entityCache.getResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
 				MDRRuleImpl.class, primaryKey);
 
-		if (mdrRule == _nullMDRRule) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		MDRRule mdrRule = (MDRRule)serializable;
 
 		if (mdrRule == null) {
 			Session session = null;
@@ -2436,7 +2438,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 				}
 				else {
 					entityCache.putResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-						MDRRuleImpl.class, primaryKey, _nullMDRRule);
+						MDRRuleImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2490,18 +2492,20 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			MDRRule mdrRule = (MDRRule)entityCache.getResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
 					MDRRuleImpl.class, primaryKey);
 
-			if (mdrRule == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, mdrRule);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (MDRRule)serializable);
+				}
 			}
 		}
 
@@ -2543,7 +2547,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-					MDRRuleImpl.class, primaryKey, _nullMDRRule);
+					MDRRuleImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2787,22 +2791,4 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "type"
 			});
-	private static final MDRRule _nullMDRRule = new MDRRuleImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<MDRRule> toCacheModel() {
-				return _nullMDRRuleCacheModel;
-			}
-		};
-
-	private static final CacheModel<MDRRule> _nullMDRRuleCacheModel = new CacheModel<MDRRule>() {
-			@Override
-			public MDRRule toEntityModel() {
-				return _nullMDRRule;
-			}
-		};
 }

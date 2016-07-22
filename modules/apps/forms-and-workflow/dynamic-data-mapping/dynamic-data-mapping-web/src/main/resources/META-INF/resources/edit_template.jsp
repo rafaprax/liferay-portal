@@ -243,9 +243,9 @@ DDMNavigationHelper ddmNavigationHelper = ddmDisplay.getDDMNavigationHelper();
 							</aui:select>
 						</c:if>
 
-					<c:if test="<%= !ddmDisplayContext.autogenerateTemplateKey() %>">
-						<aui:input disabled="<%= (template != null) ? true : false %>" name="templateKey" />
-					</c:if>
+						<c:if test="<%= !ddmDisplayContext.autogenerateTemplateKey() %>">
+							<aui:input disabled="<%= (template != null) ? true : false %>" name="templateKey" />
+						</c:if>
 
 						<aui:input name="description" />
 
@@ -388,7 +388,7 @@ DDMNavigationHelper ddmNavigationHelper = ddmDisplay.getDDMNavigationHelper();
 			function <portlet:namespace />openDDMStructureSelector() {
 				Liferay.Util.openDDMPortlet(
 					{
-						basePortletURL: '<%= PortletURLFactoryUtil.create(request, DDMPortletKeys.DYNAMIC_DATA_MAPPING, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
+						basePortletURL: '<%= PortletURLFactoryUtil.create(request, DDMPortletKeys.DYNAMIC_DATA_MAPPING, PortletRequest.RENDER_PHASE) %>',
 						classNameId: '<%= PortalUtil.getClassNameId(DDMStructure.class) %>',
 						classPK: 0,
 						eventName: '<portlet:namespace />selectStructure',
@@ -399,7 +399,7 @@ DDMNavigationHelper ddmNavigationHelper = ddmDisplay.getDDMNavigationHelper();
 						title: '<%= UnicodeLanguageUtil.get(request, "structures") %>'
 					},
 					function(event) {
-						if (confirm('<%= UnicodeLanguageUtil.get(request, "selecting-a-new-structure-changes-the-available-input-fields-and-available-templates") %>') && (document.<portlet:namespace />fm.<portlet:namespace />classPK.value != event.ddmstructureid)) {
+						if (document.<portlet:namespace />fm.<portlet:namespace />classPK.value != event.ddmstructureid) {
 							document.<portlet:namespace />fm.<portlet:namespace />classPK.value = event.ddmstructureid;
 
 							Liferay.fire('<portlet:namespace />refreshEditor');

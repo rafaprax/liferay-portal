@@ -49,8 +49,8 @@ ItemSelectorUploadViewDisplayContext itemSelectorUploadViewDisplayContext = (Ite
 				}
 			},
 			rootNode: '#itemSelectorUploadContainer',
-			uploadItemReturnType: '<%= HtmlUtil.escapeAttribute(UploadableFileReturnType.class.getName()) %>',
-			uploadItemUrl: '<%= itemSelectorUploadViewDisplayContext.getURL() %>'
+			uploadItemReturnType: '<%= HtmlUtil.escapeAttribute(FileEntryItemSelectorReturnType.class.getName()) %>',
+			uploadItemURL: '<%= itemSelectorUploadViewDisplayContext.getURL() %>'
 		}
 	);
 </aui:script>

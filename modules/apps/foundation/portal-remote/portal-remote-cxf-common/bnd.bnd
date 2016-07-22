@@ -11,7 +11,7 @@ Bundle-ClassPath:\
 	lib/xmlschema-core.jar
 Bundle-Name: Liferay Portal Remote CXF Common
 Bundle-SymbolicName: com.liferay.portal.remote.cxf.common
-Bundle-Version: 1.0.1
+Bundle-Version: 2.0.6
 Export-Package:\
 	javax.wsdl.*;version="1.2",\
 	\
@@ -46,16 +46,15 @@ Import-Package:\
 	\
 	!org.springframework.*,\
 	*
-Include-Resource:\
-	lib/=lib/cxf-core.jar,\
-	lib/=lib/cxf-rt-bindings-soap.jar,\
-	lib/=lib/cxf-rt-databinding-jaxb.jar,\
-	lib/=lib/cxf-rt-transports-http.jar,\
-	lib/=lib/cxf-rt-wsdl.jar,\
-	lib/=lib/cxf-tools-common.jar,\
-	lib/=lib/cxf-tools-validator.jar,\
-	lib/=lib/wsdl4j.jar,\
-	lib/=lib/xmlschema-core.jar
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Remote Service Engines
--include: ../../app.bnd
+-includeresource:\
+	lib/cxf-core.jar=cxf-core-[0-9]*.jar,\
+	lib/cxf-rt-bindings-soap.jar=cxf-rt-bindings-soap-[0-9]*.jar,\
+	lib/cxf-rt-databinding-jaxb.jar=cxf-rt-databinding-jaxb-[0-9]*.jar,\
+	lib/cxf-rt-transports-http.jar=cxf-rt-transports-http-[0-9]*.jar,\
+	lib/cxf-rt-wsdl.jar=cxf-rt-wsdl-[0-9]*.jar,\
+	lib/cxf-tools-common.jar=cxf-tools-common-[0-9]*.jar,\
+	lib/cxf-tools-validator.jar=cxf-tools-validator-[0-9]*.jar,\
+	lib/wsdl4j.jar=wsdl4j-[0-9]*.jar,\
+	lib/xmlschema-core.jar=xmlschema-core-[0-9]*.jar

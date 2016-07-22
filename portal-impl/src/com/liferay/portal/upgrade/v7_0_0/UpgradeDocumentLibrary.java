@@ -17,6 +17,7 @@ package com.liferay.portal.upgrade.v7_0_0;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFileEntryTypeConstants;
 import com.liferay.document.library.kernel.util.DLUtil;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -31,17 +32,19 @@ import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.repository.liferayrepository.LiferayRepository;
 import com.liferay.portal.repository.portletrepository.PortletRepository;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.upgrade.v7_0_0.util.DLFolderTable;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Michael Young
@@ -114,16 +117,21 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 		updateRepositoryClassNameIds();
 	}
 
-	protected boolean hasFileEntry(long groupId, long folderId, String fileName)
+	protected boolean hasFileEntry(
+			long groupId, long folderId, long fileEntryId, String title,
+			String fileName)
 		throws Exception {
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				"select count(*) from DLFileEntry where groupId = ? and " +
-					"folderId = ? and fileName = ?")) {
+					"folderId = ? and ((fileEntryId <> ? and title = ?) or " +
+						"fileName = ?)")) {
 
 			ps.setLong(1, groupId);
 			ps.setLong(2, folderId);
-			ps.setString(3, fileName);
+			ps.setLong(3, fileEntryId);
+			ps.setString(4, title);
+			ps.setString(5, fileName);
 
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
@@ -139,28 +147,37 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #hasFileEntry(long, long,
+	 *             long, String, String)}
+	 */
+	@Deprecated
+	protected boolean hasFileEntry(long groupId, long folderId, String fileName)
+		throws Exception {
+
+		throw new UnsupportedOperationException();
+	}
+
 	protected void updateFileEntryFileNames() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			runSQL("alter table DLFileEntry add fileName VARCHAR(255) null");
+
+			Set<String> generatedUniqueFileNames = new HashSet<>();
+			Set<String> generatedUniqueTitles = new HashSet<>();
 
 			try (PreparedStatement ps1 = connection.prepareStatement(
 					"select fileEntryId, groupId, folderId, extension, title," +
 						" version from DLFileEntry");
 				PreparedStatement ps2 =
-					AutoBatchPreparedStatementUtil.concurrentAutoBatch(
-						connection,
-						"update DLFileEntry set fileName = ? where " +
-							"fileEntryId = ?");
+					AutoBatchPreparedStatementUtil.autoBatch(
+						connection.prepareStatement(
+							"update DLFileEntry set fileName = ?, title = ? " +
+								"where fileEntryId = ?"));
 				PreparedStatement ps3 =
 					AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 						connection,
-						"update DLFileEntry set title = ? where fileEntryId " +
-							"= ?");
-				PreparedStatement ps4 =
-					AutoBatchPreparedStatementUtil.concurrentAutoBatch(
-						connection,
 						"update DLFileVersion set title = ? where " +
-							"fileEntryId = " + "? and version = ?");
+							"fileEntryId = ? and version = ? and status != ?");
 				ResultSet rs = ps1.executeQuery()) {
 
 				while (rs.next()) {
@@ -183,12 +200,21 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 						titleWithoutExtension = FileUtil.stripExtension(title);
 					}
 
-					String uniqueTitle = StringPool.BLANK;
+					boolean generatedUniqueFileName = false;
+					String uniqueTitle = title;
 
 					for (int i = 1;; i++) {
-						if (!hasFileEntry(groupId, folderId, uniqueFileName)) {
+						if (!generatedUniqueFileNames.contains(
+								uniqueFileName) &&
+							!generatedUniqueTitles.contains(uniqueTitle) &&
+							!hasFileEntry(
+								groupId, folderId, fileEntryId, uniqueTitle,
+								uniqueFileName)) {
+
 							break;
 						}
+
+						generatedUniqueFileName = true;
 
 						uniqueTitle =
 							titleWithoutExtension + StringPool.UNDERLINE +
@@ -203,30 +229,37 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 							uniqueTitle, extension);
 					}
 
+					if (generatedUniqueFileName) {
+						generatedUniqueFileNames.add(uniqueFileName);
+						generatedUniqueTitles.add(uniqueTitle);
+					}
+
 					ps2.setString(1, uniqueFileName);
-					ps2.setLong(2, fileEntryId);
+
+					if (Validator.isNotNull(uniqueTitle)) {
+						ps2.setString(2, uniqueTitle);
+					}
+					else {
+						ps2.setString(2, title);
+					}
+
+					ps2.setLong(3, fileEntryId);
 
 					ps2.addBatch();
 
 					if (Validator.isNotNull(uniqueTitle)) {
-						ps3.setString(1, title);
+						ps3.setString(1, uniqueTitle);
 						ps3.setLong(2, fileEntryId);
+						ps3.setString(3, version);
+						ps3.setInt(4, WorkflowConstants.STATUS_IN_TRASH);
 
 						ps3.addBatch();
-
-						ps4.setString(1, title);
-						ps4.setLong(2, fileEntryId);
-						ps4.setString(3, version);
-
-						ps4.addBatch();
 					}
 				}
 
 				ps2.executeBatch();
 
 				ps3.executeBatch();
-
-				ps4.executeBatch();
 			}
 		}
 	}
@@ -349,35 +382,27 @@ public class UpgradeDocumentLibrary extends UpgradeProcess {
 		Locale defaultLocale = LocaleUtil.fromLanguageId(
 			UpgradeProcessUtil.getDefaultLanguageId(companyId));
 
-		String defaultValue = LanguageUtil.get(defaultLocale, nameLanguageKey);
-
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			nameXML);
 		Map<Locale, String> descriptionMap =
 			LocalizationUtil.getLocalizationMap(descriptionXML);
 
-		for (Locale locale : LanguageUtil.getSupportedLocales()) {
-			String value = LanguageUtil.get(locale, nameLanguageKey);
+		String value = LanguageUtil.get(defaultLocale, nameLanguageKey);
 
-			if (!locale.equals(defaultLocale) && value.equals(defaultValue)) {
-				continue;
-			}
+		String description = descriptionMap.get(defaultLocale);
 
-			String description = descriptionMap.get(locale);
+		if (description == null) {
+			descriptionMap.put(defaultLocale, value);
 
-			if (description == null) {
-				descriptionMap.put(locale, value);
+			update = true;
+		}
 
-				update = true;
-			}
+		String name = nameMap.get(defaultLocale);
 
-			String name = nameMap.get(locale);
+		if (name == null) {
+			nameMap.put(defaultLocale, value);
 
-			if (name == null) {
-				nameMap.put(locale, value);
-
-				update = true;
-			}
+			update = true;
 		}
 
 		if (update) {

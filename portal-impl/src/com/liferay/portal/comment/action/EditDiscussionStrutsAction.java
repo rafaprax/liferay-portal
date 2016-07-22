@@ -29,7 +29,6 @@ import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFunction;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
-import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.struts.BaseStrutsAction;
@@ -129,7 +128,7 @@ public class EditDiscussionStrutsAction extends BaseStrutsAction {
 
 		long commentId = ParamUtil.getLong(request, "commentId");
 
-		DiscussionPermission discussionPermission = getDiscussionPermission(
+		DiscussionPermission discussionPermission = _getDiscussionPermission(
 			themeDisplay);
 
 		discussionPermission.checkDeletePermission(commentId);
@@ -173,7 +172,7 @@ public class EditDiscussionStrutsAction extends BaseStrutsAction {
 		Function<String, ServiceContext> serviceContextFunction =
 			new ServiceContextFunction(request);
 
-		DiscussionPermission discussionPermission = getDiscussionPermission(
+		DiscussionPermission discussionPermission = _getDiscussionPermission(
 			themeDisplay);
 
 		if (commentId <= 0) {
@@ -254,20 +253,14 @@ public class EditDiscussionStrutsAction extends BaseStrutsAction {
 			Object json)
 		throws IOException {
 
-		String contentType = ContentTypes.APPLICATION_JSON;
-
-		if (BrowserSnifferUtil.isIe(request)) {
-			contentType = ContentTypes.TEXT_HTML;
-		}
-
-		response.setContentType(contentType);
+		response.setContentType(ContentTypes.APPLICATION_JSON);
 
 		ServletResponseUtil.write(response, json.toString());
 
 		response.flushBuffer();
 	}
 
-	private DiscussionPermission getDiscussionPermission(
+	private DiscussionPermission _getDiscussionPermission(
 			ThemeDisplay themeDisplay)
 		throws PrincipalException {
 

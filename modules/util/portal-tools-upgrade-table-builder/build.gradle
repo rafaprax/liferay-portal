@@ -11,13 +11,9 @@ buildPluginDescriptor {
 	goalPrefix = "liferay"
 }
 
-copyLibs {
-	enabled = false
-}
-
 dependencies {
-	provided group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "1.0.1"
-	provided group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "1.0.3"
+	provided group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "2.0.0"
+	provided group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.0.0"
 	provided group: "org.apache.ant", name: "ant", transitive: false, version: "1.9.4"
 	provided group: "org.apache.maven", name: "maven-plugin-api", transitive: false, version: "3.0.4"
 }
@@ -27,7 +23,7 @@ formatSource {
 }
 
 liferay {
-	deployDir = "../../../tools/sdk/tmp/portal-tools/portal-tools-upgrade-table-builder"
+	deployDir = "../../../tools/sdk/dependencies/com.liferay.portal.tools.upgrade.table.builder/lib"
 }
 
 updateFileVersions {

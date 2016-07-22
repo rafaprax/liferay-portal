@@ -56,6 +56,32 @@
 		<execute macro="PortletEntry#publish" />
 	</command>
 
+	<command name="addEntryWithCoverImageFromDMFolders">
+		<execute macro="BlogsNavigator#gotoAddEntry" />
+
+		<execute macro="BlogsEntry#addTitle">
+			<var name="entryTitle" value="${entryTitle}" />
+		</execute>
+
+		<execute macro="BlogsEntry#addEntryContent">
+			<var name="entryContent" value="${entryContent}" />
+			<var name="entrySubtitle" value="${entrySubtitle}" />
+			<var name="entryTitle" value="${entryTitle}" />
+		</execute>
+
+		<execute function="AssertClick" locator1="BlogsEntry#ENTRY_COVER_IMAGE_SELECT_FILE" value1="Select File" />
+
+		<execute macro="ItemSelector#selectDMImage">
+			<var name="dmFolderName" value="${dmFolderName}" />
+			<var name="dmSubFolderName" value="${dmSubFolderName}" />
+			<var name="imageFileName" value="${imageFileName}" />
+		</execute>
+
+		<execute function="Pause" locator1="1000" />
+
+		<execute macro="PortletEntry#publish" />
+	</command>
+
 	<command name="addEntryWithHTML">
 		<execute macro="BlogsNavigator#gotoAddEntry" />
 
@@ -151,8 +177,6 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute function="Click" locator1="BlogsEditEntry#COVER_IMAGE" />
-
 		<execute function="AssertClick" locator1="BlogsEntry#ENTRY_COVER_IMAGE_SELECT_FILE" value1="Select File" />
 
 		<execute macro="ItemSelector#uploadFile">
@@ -160,7 +184,7 @@
 			<var name="uploadFileName" value="${uploadFileName}" />
 		</execute>
 
-		<execute function="Pause" locator1="1000" />
+		<execute function="Pause" locator1="5000" />
 	</command>
 
 	<command name="addViaAP">
@@ -169,6 +193,32 @@
 		<execute function="AssertClick" locator1="MenuItem#BLOGS_ENTRY" value1="Blogs Entry" />
 
 		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+
+		<execute function="Type#typeEditor" locator1="AlloyEditor#TITLE_FIELD" value1="${entryTitle}" />
+		<execute function="Type#typeEditor" locator1="AlloyEditor#CONTENT_FIELD" value1="${entryContent}" />
+
+		<execute function="AssertClick" locator1="Button#PUBLISH" value1="Publish" />
+
+		<execute function="SelectFrameTop" value1="relative=top" />
+
+		<execute function="Pause" locator1="5000" />
+
+		<var name="key_assetTitle" value="${entryTitle}" />
+
+		<execute function="AssertTextEquals" locator1="AP#ASSET_ABSTRACT_TITLE" value1="${entryTitle}" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="AP#ASSET_ABSTRACT_DESCRIPTION" value1="${entryContent}" />
+	</command>
+
+	<command name="addViaAPSelectScope">
+		<execute function="Click#makeVisibleClickAt" locator1="AP#ADD_ASSET_PLUS_ICON" />
+
+		<execute function="Click" locator1="AP#ADD_ASSET_SCOPED" />
+
+		<execute function="SelectFrame" locator1="IFrame#MODAL_IFRAME" />
+
+		<execute function="Select" locator1="Select#TYPE" value1="Blogs Entry" />
+
+		<execute function="AssertClick" locator1="Button#ADD" value1="Add" />
 
 		<execute function="Type#typeEditor" locator1="AlloyEditor#TITLE_FIELD" value1="${entryTitle}" />
 		<execute function="Type#typeEditor" locator1="AlloyEditor#CONTENT_FIELD" value1="${entryContent}" />
@@ -205,8 +255,6 @@
 		<execute function="Type#typeEditor" locator1="AlloyEditor#DESCRIPTION_FIELD" value1="${entryAbstractDescription}" />
 
 		<execute macro="PortletEntry#publish" />
-
-		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
 	<command name="addWithCustomAbstractImage">
@@ -320,9 +368,7 @@
 	</command>
 
 	<command name="disableSocialBookmarkSites">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 
@@ -375,9 +421,7 @@
 	</command>
 
 	<command name="enableSocialBookmarkSites">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 
@@ -421,9 +465,7 @@
 	</command>
 
 	<command name="tearDownConfigurationDisplaySettingsPG">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -437,9 +479,7 @@
 	</command>
 
 	<command name="tearDownConfigurationScopePG">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -480,9 +520,7 @@
 	</command>
 
 	<command name="tearDownSubscribePG">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -515,7 +553,7 @@
 	<command name="viewNoPermissionPG">
 		<execute function="AssertTextEquals" locator1="BasePortlet#CONTROL_PANEL_TITLE" value1="Blogs" />
 		<execute function="AssertElementNotPresent" locator1="Blogs#ADD_BLOGS_ENTRY" value1="Add Blog Entry" />
-		<execute function="AssertElementNotPresent" locator1="Button#PERMISSIONS" value1="Permissions" />
+		<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
 		<execute function="AssertElementNotPresent" locator1="Link#SUBSCRIBE" />
 		<execute function="AssertTextEquals" locator1="Link#RSS" value1="RSS" />
 	</command>

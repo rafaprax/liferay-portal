@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.servlet.PortalWebResourcesUtil;
 import com.liferay.portal.kernel.servlet.PortletResourcesUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -77,10 +78,16 @@ public class DynamicCSSFilter extends IgnoreModuleRequestFilter {
 		cacheKeyGenerator.append(StringPool.UNDERLINE);
 		cacheKeyGenerator.append(request.getRequestURI());
 
-		String queryString = request.getQueryString();
+		String requestURL = String.valueOf(request.getRequestURL());
 
-		if (queryString != null) {
-			cacheKeyGenerator.append(sterilizeQueryString(queryString));
+		if (requestURL != null) {
+			requestURL = HttpUtil.removeParameter(requestURL, "zx");
+
+			String queryString = HttpUtil.getQueryString(requestURL);
+
+			if (queryString != null) {
+				cacheKeyGenerator.append(sterilizeQueryString(queryString));
+			}
 		}
 
 		if (PortalUtil.isRightToLeft(request)) {
@@ -275,8 +282,8 @@ public class DynamicCSSFilter extends IgnoreModuleRequestFilter {
 
 	protected String sterilizeQueryString(String queryString) {
 		return StringUtil.replace(
-			queryString, new String[] {StringPool.SLASH, StringPool.BACK_SLASH},
-			new String[] {StringPool.UNDERLINE, StringPool.UNDERLINE});
+			queryString, new char[] {CharPool.SLASH, CharPool.BACK_SLASH},
+			new char[] {CharPool.UNDERLINE, CharPool.UNDERLINE});
 	}
 
 	private static final String _CSS_EXTENSION = ".css";

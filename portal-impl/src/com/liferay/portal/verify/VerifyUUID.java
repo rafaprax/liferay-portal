@@ -16,12 +16,12 @@ package com.liferay.portal.verify;
 
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.concurrent.ThrowableAwareRunnable;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.verify.model.VerifiableUUIDModel;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class VerifyUUID extends VerifyProcess {
 
-	public static void verify(VerifiableUUIDModel ... verifiableUUIDModels)
+	public static void verify(VerifiableUUIDModel... verifiableUUIDModels)
 		throws Exception {
 
 		VerifyUUID verifyUUID = new VerifyUUID();
@@ -77,12 +77,11 @@ public class VerifyUUID extends VerifyProcess {
 	protected void verifyUUID(VerifiableUUIDModel verifiableUUIDModel)
 		throws Exception {
 
-		StringBundler sb = new StringBundler(6);
+		StringBundler sb = new StringBundler(5);
 
 		sb.append("update ");
 		sb.append(verifiableUUIDModel.getTableName());
-		sb.append(" set uuid_ = ?");
-		sb.append(" where ");
+		sb.append(" set uuid_ = ? where ");
 		sb.append(verifiableUUIDModel.getPrimaryKeyColumnName());
 		sb.append(" = ?");
 

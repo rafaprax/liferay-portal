@@ -14,6 +14,7 @@
 
 package com.liferay.portal.servlet.filters.secure;
 
+import com.liferay.portal.kernel.exception.NoSuchUserException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
@@ -213,21 +214,19 @@ public class SecureFilter extends BasePortalFilter {
 			FilterChain filterChain)
 		throws Exception {
 
-		String remoteAddr = request.getRemoteAddr();
-
 		if (AccessControlUtil.isAccessAllowed(request, _hostsAllowed)) {
 			if (_log.isDebugEnabled()) {
-				_log.debug("Access allowed for " + remoteAddr);
+				_log.debug("Access allowed for " + request.getRemoteAddr());
 			}
 		}
 		else {
 			if (_log.isWarnEnabled()) {
-				_log.warn("Access denied for " + remoteAddr);
+				_log.warn("Access denied for " + request.getRemoteAddr());
 			}
 
 			response.sendError(
 				HttpServletResponse.SC_FORBIDDEN,
-				"Access denied for " + remoteAddr);
+				"Access denied for " + request.getRemoteAddr());
 
 			return;
 		}
@@ -269,15 +268,18 @@ public class SecureFilter extends BasePortalFilter {
 		}
 		else {
 			if (_log.isDebugEnabled()) {
-				String completeURL = HttpUtil.getCompleteURL(request);
-
-				_log.debug("Not securing " + completeURL);
+				_log.debug("Not securing " + HttpUtil.getCompleteURL(request));
 			}
 
-			User user = PortalUtil.getUser(request);
+			User user = null;
 
-			if (user == null) {
+			try {
 				user = PortalUtil.initUser(request);
+			}
+			catch (NoSuchUserException nsue) {
+				response.sendRedirect(HttpUtil.getCompleteURL(request));
+
+				return;
 			}
 
 			initThreadLocals(user);
@@ -314,8 +316,8 @@ public class SecureFilter extends BasePortalFilter {
 
 		request = new ProtectedServletRequest(request, userIdString, authType);
 
-		session.setAttribute(WebKeys.USER, user);
 		session.setAttribute(_AUTHENTICATED_USER, userIdString);
+		session.setAttribute(WebKeys.USER, user);
 
 		initThreadLocals(request);
 

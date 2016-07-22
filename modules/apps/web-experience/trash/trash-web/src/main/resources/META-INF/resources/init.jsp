@@ -28,11 +28,9 @@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker" %><%@
 page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@
-page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
 page import="com.liferay.portal.kernel.exception.TrashPermissionException" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil" %><%@
-page import="com.liferay.portal.kernel.model.ContainerModel" %><%@
 page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
 page import="com.liferay.portal.kernel.search.BaseModelSearchResult" %><%@
 page import="com.liferay.portal.kernel.search.Sort" %><%@
@@ -42,6 +40,7 @@ page import="com.liferay.portal.kernel.servlet.SessionMessages" %><%@
 page import="com.liferay.portal.kernel.trash.TrashHandler" %><%@
 page import="com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil" %><%@
 page import="com.liferay.portal.kernel.trash.TrashRenderer" %><%@
+page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.FastDateFormatFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ListUtil" %><%@
@@ -54,16 +53,18 @@ page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portlet.trash.model.impl.TrashEntryImpl" %><%@
 page import="com.liferay.trash.kernel.exception.RestoreEntryException" %><%@
+page import="com.liferay.trash.kernel.exception.TrashEntryException" %><%@
 page import="com.liferay.trash.kernel.model.TrashEntry" %><%@
 page import="com.liferay.trash.kernel.model.TrashEntryList" %><%@
 page import="com.liferay.trash.kernel.service.TrashEntryLocalServiceUtil" %><%@
 page import="com.liferay.trash.kernel.service.TrashEntryServiceUtil" %><%@
 page import="com.liferay.trash.kernel.util.TrashUtil" %><%@
-page import="com.liferay.trash.web.constants.TrashWebKeys" %><%@
-page import="com.liferay.trash.web.dao.search.TrashResultRowSplitter" %><%@
-page import="com.liferay.trash.web.display.context.TrashDisplayContext" %><%@
-page import="com.liferay.trash.web.search.EntrySearch" %><%@
-page import="com.liferay.trash.web.search.EntrySearchTerms" %>
+page import="com.liferay.trash.web.internal.constants.TrashWebKeys" %><%@
+page import="com.liferay.trash.web.internal.dao.search.TrashResultRowSplitter" %><%@
+page import="com.liferay.trash.web.internal.display.context.TrashContainerModelDisplayContext" %><%@
+page import="com.liferay.trash.web.internal.display.context.TrashDisplayContext" %><%@
+page import="com.liferay.trash.web.internal.search.EntrySearch" %><%@
+page import="com.liferay.trash.web.internal.search.EntrySearchTerms" %>
 
 <%@ page import="java.text.Format" %>
 

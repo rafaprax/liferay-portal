@@ -22,6 +22,8 @@ import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldRule;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldRuleType;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
@@ -38,6 +40,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
@@ -113,14 +116,14 @@ public class DDMFormJSONDeserializerImpl implements DDMFormJSONDeserializer {
 
 		String dataType = ddmFormFieldTypeSetting.getDataType();
 
-		if (Validator.equals(dataType, "boolean")) {
+		if (Objects.equals(dataType, "boolean")) {
 			return Boolean.valueOf(serializedDDMFormFieldProperty);
 		}
-		else if (Validator.equals(dataType, "ddm-options")) {
+		else if (Objects.equals(dataType, "ddm-options")) {
 			return deserializeDDMFormFieldOptions(
 				serializedDDMFormFieldProperty);
 		}
-		else if (Validator.equals(dataType, "ddm-validation")) {
+		else if (Objects.equals(dataType, "ddm-validation")) {
 			return deserializeDDMFormFieldValidation(
 				serializedDDMFormFieldProperty);
 		}
@@ -223,6 +226,28 @@ public class DDMFormJSONDeserializerImpl implements DDMFormJSONDeserializer {
 		return ddmFormFieldOptions;
 	}
 
+	protected DDMFormFieldRule getDDMFormFieldRule(JSONObject jsonObject) {
+		String expression = jsonObject.getString("expression");
+
+		DDMFormFieldRuleType ddmFormFieldRuleType = DDMFormFieldRuleType.parse(
+			jsonObject.getString("type"));
+
+		return new DDMFormFieldRule(expression, ddmFormFieldRuleType);
+	}
+
+	protected List<DDMFormFieldRule> getDDMFormFieldRules(JSONArray jsonArray) {
+		List<DDMFormFieldRule> ddmFormFieldRules = new ArrayList<>();
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			DDMFormFieldRule ddmFormFieldRule = getDDMFormFieldRule(
+				jsonArray.getJSONObject(i));
+
+			ddmFormFieldRules.add(ddmFormFieldRule);
+		}
+
+		return ddmFormFieldRules;
+	}
+
 	protected List<DDMFormField> getDDMFormFields(JSONArray jsonArray)
 		throws PortalException {
 
@@ -322,6 +347,8 @@ public class DDMFormJSONDeserializerImpl implements DDMFormJSONDeserializer {
 			setDDMFormFieldProperty(
 				jsonObject, ddmFormField, ddmFormFieldTypeSetting);
 		}
+
+		setDDMFormFieldRules(jsonObject.getJSONArray("rules"), ddmFormField);
 	}
 
 	protected void setDDMFormFieldProperty(
@@ -336,6 +363,19 @@ public class DDMFormJSONDeserializerImpl implements DDMFormJSONDeserializer {
 				jsonObject.getString(settingName), ddmFormFieldTypeSetting);
 
 		ddmFormField.setProperty(settingName, deserializedDDMFormFieldProperty);
+	}
+
+	protected void setDDMFormFieldRules(
+		JSONArray jsonArray, DDMFormField ddmFormField) {
+
+		if ((jsonArray == null) || (jsonArray.length() == 0)) {
+			return;
+		}
+
+		List<DDMFormFieldRule> ddmFormFieldRules = getDDMFormFieldRules(
+			jsonArray);
+
+		ddmFormField.setDDMFormFieldRules(ddmFormFieldRules);
 	}
 
 	protected void setDDMFormFields(JSONArray jsonArray, DDMForm ddmForm)

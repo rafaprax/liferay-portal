@@ -14,7 +14,7 @@
 
 package com.liferay.portal.search.internal.buffer;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ClassUtil;
@@ -80,7 +80,7 @@ public class IndexerRequestBufferExecutorWatcher {
 		IndexerRequestBufferExecutor indexerRequestBufferExecutor,
 		Map<String, Object> properties) {
 
-		String bufferedExecutionMode = getBufferedExecutionMode(properties);
+		String bufferedExecutionMode = _getBufferedExecutionMode(properties);
 
 		_indexerRequestBufferExecutors.put(
 			bufferedExecutionMode, indexerRequestBufferExecutor);
@@ -90,12 +90,12 @@ public class IndexerRequestBufferExecutorWatcher {
 		IndexerRequestBufferExecutor indexerRequestBufferExecutor,
 		Map<String, Object> properties) {
 
-		String bufferedExecutionMode = getBufferedExecutionMode(properties);
+		String bufferedExecutionMode = _getBufferedExecutionMode(properties);
 
 		_indexerRequestBufferExecutors.remove(bufferedExecutionMode);
 	}
 
-	private String getBufferedExecutionMode(Map<String, Object> properties) {
+	private String _getBufferedExecutionMode(Map<String, Object> properties) {
 		String bufferedExecutionMode = GetterUtil.getString(
 			properties.get("buffered.execution.mode"));
 

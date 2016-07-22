@@ -14,7 +14,7 @@
 
 package com.liferay.staging.taglib.servlet.taglib;
 
-import com.liferay.staging.taglib.servlet.ServletContextUtil;
+import com.liferay.staging.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +33,12 @@ public class DeletionsTag extends IncludeTag {
 		_disableInputs = disableInputs;
 	}
 
+	public void setExportImportConfigurationId(
+		long exportImportConfigurationId) {
+
+		_exportImportConfigurationId = exportImportConfigurationId;
+	}
+
 	@Override
 	public void setPageContext(PageContext pageContext) {
 		super.setPageContext(pageContext);
@@ -44,6 +50,7 @@ public class DeletionsTag extends IncludeTag {
 	protected void cleanUp() {
 		_cmd = null;
 		_disableInputs = false;
+		_exportImportConfigurationId = 0;
 	}
 
 	@Override
@@ -56,11 +63,15 @@ public class DeletionsTag extends IncludeTag {
 		request.setAttribute("liferay-staging:deletions:cmd", _cmd);
 		request.setAttribute(
 			"liferay-staging:deletions:disableInputs", _disableInputs);
+		request.setAttribute(
+			"liferay-staging:deletions:exportImportConfigurationId",
+			_exportImportConfigurationId);
 	}
 
 	private static final String _PAGE = "/deletions/page.jsp";
 
 	private String _cmd;
 	private boolean _disableInputs;
+	private long _exportImportConfigurationId;
 
 }

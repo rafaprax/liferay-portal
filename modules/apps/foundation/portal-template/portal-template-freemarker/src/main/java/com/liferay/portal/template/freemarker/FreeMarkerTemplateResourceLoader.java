@@ -14,7 +14,7 @@
 
 package com.liferay.portal.template.freemarker;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.SingleVMPool;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -28,6 +28,7 @@ import java.util.Map;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
@@ -54,6 +55,7 @@ public class FreeMarkerTemplateResourceLoader
 		_defaultTemplateResourceLoader.clearCache(templateId);
 	}
 
+	@Deactivate
 	@Override
 	public void destroy() {
 		_defaultTemplateResourceLoader.destroy();
@@ -81,8 +83,7 @@ public class FreeMarkerTemplateResourceLoader
 			FreeMarkerEngineConfiguration.class, properties);
 
 		_defaultTemplateResourceLoader = new DefaultTemplateResourceLoader(
-			TemplateConstants.LANG_TYPE_FTL,
-			_freemarkerEngineConfiguration.templateParsers(),
+			TemplateConstants.LANG_TYPE_FTL, null,
 			_freemarkerEngineConfiguration.resourceModificationCheck(),
 			_multiVMPool, _singleVMPool);
 	}

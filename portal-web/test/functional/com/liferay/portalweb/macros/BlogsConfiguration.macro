@@ -1,6 +1,6 @@
 <definition>
 	<command name="checkSocialBookmarks">
-		<execute function="Check" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
+		<execute function="Check#checkToggleSwitch" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
 	</command>
 
 	<command name="configureScopePG">
@@ -20,7 +20,7 @@
 			</else>
 		</if>
 
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute function="AssertClick" locator1="NavBar#SCOPE" value1="Scope" />
 
@@ -44,7 +44,7 @@
 	</command>
 
 	<command name="selectConfigurationIFrame">
-		<execute function="SelectFrame" locator1="Configuration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 	</command>
 
 	<command name="selectDisplayTemplate">
@@ -92,17 +92,26 @@
 	</command>
 
 	<command name="uncheckRSSSubscriptionCheckbox">
-		<execute function="Uncheck" locator1="Checkbox#ENABLE_RSS_SUBSCRIPTION" />
+		<execute function="Uncheck#uncheckToggleSwitch" locator1="Checkbox#ENABLE_RSS_SUBSCRIPTION" />
 	</command>
 
 	<command name="uncheckSocialBookmarks">
-		<execute function="Uncheck" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
+		<execute function="Uncheck#uncheckToggleSwitch" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
 	</command>
 
 	<command name="viewAsSiteMemberPG">
 		<execute function="AssertElementNotPresent" locator1="Portlet#TITLE" />
 		<execute function="AssertElementNotPresent" locator1="Blogs#ADD_BLOGS_ENTRY" value1="Add Blog Entry" />
-		<execute function="AssertElementNotPresent" locator1="Button#PERMISSIONS" value1="Permissions" />
+
+		<if>
+			<condition function="IsElementPresent" locator1="BasePortlet#OPTIONS_ICON" />
+			<then>
+				<execute function="Click#mouseOverClick" locator1="BasePortlet#OPTIONS_ICON" />
+
+				<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
+			</then>
+		</if>
+
 		<execute function="AssertTextEquals" locator1="Link#SUBSCRIBE" value1="Subscribe" />
 		<execute function="AssertTextEquals" locator1="Link#RSS" value1="RSS" />
 	</command>
@@ -115,7 +124,7 @@
 		<execute function="AssertChecked" locator1="Checkbox#ENABLE_RATINGS" />
 		<execute function="AssertChecked" locator1="Checkbox#ENABLE_COMMENTS" />
 		<execute function="AssertChecked" locator1="Checkbox#ENABLE_COMMENT_RATINGS" />
-		<execute function="AssertChecked" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
+		<execute function="Check#checkToggleSwitch" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_SOCIAL_BOOKMARKS_DISPLAY_STYLE_SELECT" value1="menu" />
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_SOCIAL_BOOKMARKS_DISPLAY_POSITION_SELECT" value1="bottom" />
 		<execute function="AssertChecked" locator1="Checkbox#TWITTER" />
@@ -124,7 +133,7 @@
 	</command>
 
 	<command name="viewDefaultConfigurationRSS">
-		<execute function="AssertChecked" locator1="Checkbox#ENABLE_RSS_SUBSCRIPTION" />
+		<execute function="Check#checkToggleSwitch" locator1="Checkbox#ENABLE_RSS_SUBSCRIPTION" />
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_RSS_MAXIMUM_ITEMS_TO_DISPLAY_SELECT" value1="20" />
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_RSS_DISPLAY_STYLE_SELECT" value1="full-content" />
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_RSS_FORMAT_SELECT" value1="atom_1.0" />
@@ -148,16 +157,16 @@
 			<then>
 				<execute function="Click#mouseOverClick" locator1="BasePortlet#OPTIONS_ICON" />
 
-				<execute function="AssertElementNotPresent" locator1="Button#PERMISSIONS" value1="Permissions" />
+				<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
 
 				<if>
 					<condition function="IsElementPresent" locator1="BasePortlet#OPTIONS_MENULIST_CONFIGURATION" />
 					<then>
 						<execute function="Click" locator1="BasePortlet#OPTIONS_MENULIST_CONFIGURATION" />
 
-						<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+						<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
-						<execute function="AssertElementNotPresent" locator1="Button#PERMISSIONS" value1="Permissions" />
+						<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
 					</then>
 				</if>
 			</then>
@@ -180,7 +189,7 @@
 			</then>
 		</if>
 
-		<execute function="AssertElementPresent" locator1="Button#PERMISSIONS" />
+		<execute function="AssertElementPresent" locator1="MenuItem#PERMISSIONS" />
 	</command>
 
 	<command name="viewScopeCP">

@@ -203,12 +203,12 @@ public class LayoutsTreeTag extends IncludeTag {
 			return jsonArray;
 		}
 
-		for (String name : portletURLs.keySet()) {
+		for (Map.Entry<String, PortletURL> entry : portletURLs.entrySet()) {
 			JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-			jsonObject.put("name", name);
+			jsonObject.put("name", entry.getKey());
 
-			PortletURL portletURL = portletURLs.get(name);
+			PortletURL portletURL = entry.getValue();
 
 			portletURL.setParameter("selPlid", "{selPlid}");
 
@@ -232,10 +232,10 @@ public class LayoutsTreeTag extends IncludeTag {
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
 		request.setAttribute(
-			"liferay-layout:layouts-tree:checkedNodes", getCheckedNodes());
-		request.setAttribute(
 			"liferay-layout:layouts-tree:checkContentDisplayPage",
 			String.valueOf(_checkContentDisplayPage));
+		request.setAttribute(
+			"liferay-layout:layouts-tree:checkedNodes", getCheckedNodes());
 		request.setAttribute(
 			"liferay-layout:layouts-tree:defaultStateChecked",
 			String.valueOf(_defaultStateChecked));

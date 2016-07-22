@@ -33,7 +33,7 @@ downloadSrc {
 				filter {
 					String line ->
 
-					line.replace("sample.appsforyourdomain", "com.google.gdata.sample.appsforyourdomain")
+					line.replace "sample.appsforyourdomain", "com.google.gdata.sample.appsforyourdomain"
 				}
 			}
 
@@ -62,8 +62,4 @@ downloadSrc {
 	onlyIf {
 		!FileUtil.exists(project, "src/main/java")
 	}
-}
-
-liferay {
-	deployDir = file("${liferayHome}/osgi/modules")
 }

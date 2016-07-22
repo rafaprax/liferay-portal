@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.staging.taglib.servlet.ServletContextUtil;
+import com.liferay.staging.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
@@ -87,12 +87,21 @@ public class DefineObjectsTag extends IncludeTag {
 		}
 
 		Group liveGroup = StagingUtil.getLiveGroup(group.getGroupId());
-		Group stagingGroup = StagingUtil.getStagingGroup(group.getGroupId());
 
 		pageContext.setAttribute("liveGroup", liveGroup);
 		pageContext.setAttribute("liveGroupId", liveGroup.getGroupId());
-		pageContext.setAttribute("stagingGroup", stagingGroup);
-		pageContext.setAttribute("stagingGroupId", stagingGroup.getGroupId());
+
+		Group stagingGroup = null;
+
+		if (!group.hasRemoteStagingGroup() || group.isStagedRemotely()) {
+			stagingGroup = StagingUtil.getStagingGroup(group.getGroupId());
+		}
+
+		if (stagingGroup != null) {
+			pageContext.setAttribute("stagingGroup", stagingGroup);
+			pageContext.setAttribute(
+				"stagingGroupId", stagingGroup.getGroupId());
+		}
 
 		if (Validator.isNotNull(_portletId)) {
 			boolean stagedPortlet = liveGroup.isStagedPortlet(_portletId);

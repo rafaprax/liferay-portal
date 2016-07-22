@@ -58,6 +58,7 @@ import com.liferay.portal.kernel.search.filter.TermsFilter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.search.generic.MatchAllQuery;
 import com.liferay.portal.kernel.search.hits.HitsProcessorRegistryUtil;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CountryServiceUtil;
@@ -98,6 +99,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.portlet.PortletRequest;
@@ -154,7 +156,7 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 
 		Indexer<?> indexer = (Indexer<?>)object;
 
-		return Validator.equals(getClassName(), indexer.getClassName());
+		return Objects.equals(getClassName(), indexer.getClassName());
 	}
 
 	/**
@@ -214,18 +216,9 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 			SearchPermissionChecker searchPermissionChecker =
 				SearchEngineHelperUtil.getSearchPermissionChecker();
 
-			long[] groupIds = searchContext.getGroupIds();
-
-			long groupId = GetterUtil.getLong(
-				searchContext.getAttribute("groupId"));
-
-			if (groupId > 0) {
-				groupIds = new long[] {groupId};
-			}
-
 			facetBooleanFilter =
 				searchPermissionChecker.getPermissionBooleanFilter(
-					searchContext.getCompanyId(), groupIds,
+					searchContext.getCompanyId(), searchContext.getGroupIds(),
 					searchContext.getUserId(), className, facetBooleanFilter,
 					searchContext);
 		}
@@ -536,9 +529,7 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 				reindex(element);
 			}
 			catch (SearchException se) {
-				if (_log.isErrorEnabled()) {
-					_log.error("Unable to index object: " + element);
-				}
+				_log.error("Unable to index object: " + element);
 			}
 		}
 	}
@@ -569,11 +560,19 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 
 	@Override
 	public void reindex(String[] ids) throws SearchException {
+		long companyThreadLocalCompanyId = CompanyThreadLocal.getCompanyId();
+
 		try {
 			if (IndexWriterHelperUtil.isIndexReadOnly() ||
 				!isIndexerEnabled()) {
 
 				return;
+			}
+
+			if (ids.length > 0) {
+				long companyId = GetterUtil.getLong(ids[0]);
+
+				CompanyThreadLocal.setCompanyId(companyId);
 			}
 
 			doReindex(ids);
@@ -583,6 +582,9 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 		}
 		catch (Exception e) {
 			throw new SearchException(e);
+		}
+		finally {
+			CompanyThreadLocal.setCompanyId(companyThreadLocalCompanyId);
 		}
 	}
 
@@ -1020,22 +1022,29 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 			int indexType = GetterUtil.getInteger(
 				properties.getProperty(ExpandoColumnConstants.INDEX_TYPE));
 
-			if (indexType != ExpandoColumnConstants.INDEX_TYPE_NONE) {
+			if ((indexType != ExpandoColumnConstants.INDEX_TYPE_NONE) &&
+				Validator.isNotNull(keywords)) {
+
 				String fieldName = getExpandoFieldName(
 					searchContext, expandoBridge, attributeName);
 
-				if (Validator.isNotNull(keywords)) {
-					if (searchContext.isAndSearch()) {
-						Query query = searchQuery.addRequiredTerm(
-							fieldName, keywords);
+				boolean like = false;
 
-						expandoQueries.put(attributeName, query);
-					}
-					else {
-						Query query = searchQuery.addTerm(fieldName, keywords);
+				if (indexType == ExpandoColumnConstants.INDEX_TYPE_TEXT) {
+					like = true;
+				}
 
-						expandoQueries.put(attributeName, query);
-					}
+				if (searchContext.isAndSearch()) {
+					Query query = searchQuery.addRequiredTerm(
+						fieldName, keywords, like);
+
+					expandoQueries.put(attributeName, query);
+				}
+				else {
+					Query query = searchQuery.addTerm(
+						fieldName, keywords, like);
+
+					expandoQueries.put(attributeName, query);
 				}
 			}
 		}

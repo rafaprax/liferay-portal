@@ -24,8 +24,8 @@ import com.liferay.blogs.kernel.exception.EntrySmallImageScaleException;
 import com.liferay.blogs.kernel.exception.EntryTitleException;
 import com.liferay.blogs.kernel.model.BlogsEntry;
 import com.liferay.blogs.kernel.util.comparator.EntryDisplayDateComparator;
+import com.liferay.blogs.kernel.util.comparator.EntryIdComparator;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
-import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.comment.CommentManagerUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -91,6 +91,8 @@ import com.liferay.portlet.blogs.social.BlogsActivityKeys;
 import com.liferay.portlet.blogs.util.BlogsUtil;
 import com.liferay.portlet.blogs.util.LinkbackProducerUtil;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.trash.kernel.exception.RestoreEntryException;
+import com.liferay.trash.kernel.exception.TrashEntryException;
 import com.liferay.trash.kernel.model.TrashEntry;
 
 import java.io.IOException;
@@ -215,9 +217,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 						MimeTypesUtil.getContentType(smallImageFileName), null);
 				}
 				catch (IOException ioe) {
-					if (_log.isErrorEnabled()) {
-						_log.error("Unable to create image selector", ioe);
-					}
+					_log.error("Unable to create image selector", ioe);
 				}
 			}
 			else if (Validator.isNotNull(smallImageURL)) {
@@ -684,10 +684,25 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		BlogsEntry entry = blogsEntryPersistence.findByPrimaryKey(entryId);
 
-		return blogsEntryPersistence.findByG_S_PrevAndNext(
-			entry.getEntryId(), entry.getGroupId(),
-			WorkflowConstants.STATUS_APPROVED,
-			new EntryDisplayDateComparator(true));
+		BlogsEntry[] entries = blogsEntryPersistence.findByG_D_S_PrevAndNext(
+			entryId, entry.getGroupId(), entry.getDisplayDate(),
+			WorkflowConstants.STATUS_APPROVED, new EntryIdComparator(true));
+
+		if (entries[0] == null) {
+			entries[0] = blogsEntryPersistence.fetchByG_LtD_S_Last(
+				entry.getGroupId(), entry.getDisplayDate(),
+				WorkflowConstants.STATUS_APPROVED,
+				new EntryDisplayDateComparator(true));
+		}
+
+		if (entries[2] == null) {
+			entries[2] = blogsEntryPersistence.fetchByG_GtD_S_First(
+				entry.getGroupId(), entry.getDisplayDate(),
+				WorkflowConstants.STATUS_APPROVED,
+				new EntryDisplayDateComparator(true));
+		}
+
+		return entries;
 	}
 
 	@Override
@@ -860,6 +875,10 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		// Entry
 
+		if (entry.isInTrash()) {
+			throw new TrashEntryException();
+		}
+
 		int oldStatus = entry.getStatus();
 
 		if (oldStatus == WorkflowConstants.STATUS_PENDING) {
@@ -924,10 +943,17 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		// Entry
 
+		BlogsEntry entry = blogsEntryPersistence.findByPrimaryKey(entryId);
+
+		if (!entry.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
+
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			BlogsEntry.class.getName(), entryId);
 
-		BlogsEntry entry = updateStatus(
+		entry = updateStatus(
 			userId, entryId, trashEntry.getStatus(), new ServiceContext());
 
 		// Social
@@ -974,7 +1000,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			userId, entry.getGroupId(), entry.getCreateDate(),
 			entry.getModifiedDate(), BlogsEntry.class.getName(),
 			entry.getEntryId(), entry.getUuid(), 0, assetCategoryIds,
-			assetTagNames, true, visible, null, null, null,
+			assetTagNames, true, visible, null, null, null, null,
 			ContentTypes.TEXT_HTML, entry.getTitle(), entry.getDescription(),
 			summary, null, null, 0, 0, priority);
 
@@ -1031,9 +1057,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 						MimeTypesUtil.getContentType(smallImageFileName), null);
 				}
 				catch (IOException ioe) {
-					if (_log.isErrorEnabled()) {
-						_log.error("Unable to create image selector", ioe);
-					}
+					_log.error("Unable to create image selector", ioe);
 				}
 			}
 			else if (Validator.isNotNull(smallImageURL)) {
@@ -1091,14 +1115,6 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		entry.setExpandoBridgeAttributes(serviceContext);
 
 		blogsEntryPersistence.update(entry);
-
-		// Resources
-
-		if ((serviceContext.getGroupPermissions() != null) ||
-			(serviceContext.getGuestPermissions() != null)) {
-
-			updateEntryResources(entry, serviceContext.getModelPermissions());
-		}
 
 		// Asset
 
@@ -1340,7 +1356,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 			if (oldStatus == WorkflowConstants.STATUS_IN_TRASH) {
 				if (PropsValues.BLOGS_ENTRY_COMMENTS_ENABLED) {
-					commentManager.restoreDiscussionFromTrash(
+					CommentManagerUtil.restoreDiscussionFromTrash(
 						BlogsEntry.class.getName(), entryId);
 				}
 
@@ -1396,7 +1412,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 			if (status == WorkflowConstants.STATUS_IN_TRASH) {
 				if (PropsValues.BLOGS_ENTRY_COMMENTS_ENABLED) {
-					commentManager.moveDiscussionToTrash(
+					CommentManagerUtil.moveDiscussionToTrash(
 						BlogsEntry.class.getName(), entryId);
 				}
 
@@ -1407,7 +1423,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			}
 			else if (oldStatus == WorkflowConstants.STATUS_IN_TRASH) {
 				if (PropsValues.BLOGS_ENTRY_COMMENTS_ENABLED) {
-					commentManager.restoreDiscussionFromTrash(
+					CommentManagerUtil.restoreDiscussionFromTrash(
 						BlogsEntry.class.getName(), entryId);
 				}
 
@@ -1463,7 +1479,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		throws PortalException {
 
 		if (PropsValues.BLOGS_ENTRY_COMMENTS_ENABLED) {
-			commentManager.addDiscussion(
+			CommentManagerUtil.addDiscussion(
 				userId, groupId, BlogsEntry.class.getName(), entry.getEntryId(),
 				entry.getUserName());
 		}
@@ -1534,7 +1550,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 	}
 
 	protected void deleteDiscussion(BlogsEntry entry) throws PortalException {
-		commentManager.deleteDiscussion(
+		CommentManagerUtil.deleteDiscussion(
 			BlogsEntry.class.getName(), entry.getEntryId());
 	}
 
@@ -1864,8 +1880,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 	protected void pingPingback(BlogsEntry entry, ServiceContext serviceContext)
 		throws PortalException {
 
-		if (!PropsValues.BLOGS_PINGBACK_ENABLED ||
-			!entry.isAllowPingbacks() || !entry.isApproved()) {
+		if (!PropsValues.BLOGS_PINGBACK_ENABLED || !entry.isAllowPingbacks() ||
+			!entry.isApproved()) {
 
 			return;
 		}
@@ -2084,9 +2100,6 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 				"Content has more than " + contentMaxLength + " characters");
 		}
 	}
-
-	protected CommentManager commentManager =
-		CommentManagerUtil.getCommentManager();
 
 	private static final String _COVER_IMAGE_FOLDER_NAME = "Cover Image";
 

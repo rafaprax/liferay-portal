@@ -28,17 +28,17 @@ boolean emailAssetEntryAddedEnabled = ParamUtil.getBoolean(request, "preferences
 
 <aui:input id="enableEmailSubscription" label="enable-email-subscription" name="preferences--emailAssetEntryAddedEnabled--" type="toggle-switch" value="<%= emailAssetEntryAddedEnabled %>" />
 
-<div class='<%= emailAssetEntryAddedEnabled ? StringPool.BLANK : "hide" %>' id="<portlet:namespace />emailSubscriptionSettings">
+<div class="<%= emailAssetEntryAddedEnabled ? StringPool.BLANK : "hide" %>" id="<portlet:namespace />emailSubscriptionSettings">
 	<aui:input cssClass="lfr-input-text-container" label="name" name="preferences--emailFromName--" value="<%= emailFromName %>" />
 
 	<aui:input cssClass="lfr-input-text-container" label="address" name="preferences--emailFromAddress--" value="<%= emailFromAddress %>" />
 
 	<liferay-frontend:email-notification-settings
-		emailBody='<%= LocalizationUtil.getLocalizationXmlFromPreferences(portletPreferences, renderRequest, "emailAssetEntryAddedBody", "preferences", ContentUtil.get(AssetPublisherWebConfigurationValues.EMAIL_ASSET_ENTRY_ADDED_BODY)) %>'
+		emailBody='<%= LocalizationUtil.getLocalizationXmlFromPreferences(portletPreferences, renderRequest, "emailAssetEntryAddedBody", "preferences", ContentUtil.get(AssetPublisherWebConfigurationValues.class.getClassLoader(), AssetPublisherWebConfigurationValues.EMAIL_ASSET_ENTRY_ADDED_BODY)) %>'
 		emailDefinitionTerms="<%= AssetPublisherUtil.getEmailDefinitionTerms(renderRequest, emailFromAddress, emailFromName) %>"
 		emailEnabled="<%= emailAssetEntryAddedEnabled %>"
 		emailParam="emailAssetEntryAdded"
-		emailSubject='<%= LocalizationUtil.getLocalizationXmlFromPreferences(portletPreferences, renderRequest, "emailAssetEntryAddedSubject", "preferences", ContentUtil.get(AssetPublisherWebConfigurationValues.EMAIL_ASSET_ENTRY_ADDED_SUBJECT)) %>'
+		emailSubject='<%= LocalizationUtil.getLocalizationXmlFromPreferences(portletPreferences, renderRequest, "emailAssetEntryAddedSubject", "preferences", ContentUtil.get(AssetPublisherWebConfigurationValues.class.getClassLoader(), AssetPublisherWebConfigurationValues.EMAIL_ASSET_ENTRY_ADDED_SUBJECT)) %>'
 		showEmailEnabled="<%= false %>"
 	/>
 </div>

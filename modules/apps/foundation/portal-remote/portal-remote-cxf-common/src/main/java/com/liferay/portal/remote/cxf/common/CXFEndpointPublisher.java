@@ -14,7 +14,7 @@
 
 package com.liferay.portal.remote.cxf.common;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.security.access.control.AccessControlThreadLocal;
 import com.liferay.portal.remote.cxf.common.configuration.CXFEndpointPublisherConfiguration;
 import com.liferay.portal.servlet.filters.authverifier.AuthVerifierFilter;
@@ -179,7 +179,7 @@ public class CXFEndpointPublisher {
 				contextName);
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME,
-				"CXFServlet");
+				CXFNonSpringServlet.class.getName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, "/*");
 
@@ -192,8 +192,16 @@ public class CXFEndpointPublisher {
 				"authVerifierProperties");
 
 			if (authVerifierPropertiesObject != null) {
-				String[] authVerifierPropertiesArray =
-					(String[])authVerifierPropertiesObject;
+				String[] authVerifierPropertiesArray = null;
+
+				if (authVerifierPropertiesObject instanceof String) {
+					authVerifierPropertiesArray =
+						new String[] {(String)authVerifierPropertiesObject};
+				}
+				else {
+					authVerifierPropertiesArray =
+						(String[])authVerifierPropertiesObject;
+				}
 
 				properties = new Hashtable<>();
 
@@ -202,10 +210,10 @@ public class CXFEndpointPublisher {
 					contextName);
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_NAME,
-					"AuthVerifierFilter");
+					AuthVerifierFilter.class.getName());
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_SERVLET,
-					"CXFServlet");
+					CXFNonSpringServlet.class.getName());
 
 				for (String authVerifierProperty :
 						authVerifierPropertiesArray) {
@@ -231,10 +239,10 @@ public class CXFEndpointPublisher {
 					contextName);
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_NAME,
-					"RemoteAccessFilter");
+					RemoteAccessFilter.class.getName());
 				properties.put(
 					HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_SERVLET,
-					"CXFServlet");
+					CXFNonSpringServlet.class.getName());
 
 				_remoteAccessFilterServiceRegistration =
 					_bundleContext.registerService(

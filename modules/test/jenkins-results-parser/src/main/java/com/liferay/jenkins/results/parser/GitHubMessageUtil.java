@@ -148,9 +148,9 @@ public class GitHubMessageUtil {
 				sb.append("s");
 			}
 
-			sb.append(" Failed.</p><pre>Completed with the status of ");
+			sb.append(" Failed.</p><pre><code>Completed with the status of ");
 			sb.append(topLevelResult);
-			sb.append(".</pre></li>");
+			sb.append(".</code></pre></li>");
 
 			List<String> highPriorityJobFailureContents = new ArrayList<>();
 			List<String> normalPriorityJobFailureContents = new ArrayList<>();
@@ -196,9 +196,8 @@ public class GitHubMessageUtil {
 	}
 
 	protected static boolean isHighPriorityJobFailure(String content) {
-		String[] contentFlags = new String[] {
-			"compileJSP", "Unable to compile JSPs"
-		};
+		String[] contentFlags =
+			new String[] {"compileJSP", "Unable to compile JSPs"};
 
 		for (String contentFlag : contentFlags) {
 			if (content.contains(contentFlag)) {

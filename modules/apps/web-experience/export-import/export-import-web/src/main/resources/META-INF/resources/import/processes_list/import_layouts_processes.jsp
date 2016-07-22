@@ -115,9 +115,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 						</h6>
 
 						<h5 id="<portlet:namespace />backgroundTaskName<%= backgroundTask.getBackgroundTaskId() %>">
-
 							<%= HtmlUtil.escape(backgroundTask.getName()) %>
-
 						</h5>
 
 						<c:if test="<%= backgroundTask.isInProgress() %>">
@@ -184,7 +182,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 				</c:when>
 				<c:when test='<%= displayStyle.equals("list") %>'>
 					<liferay-ui:search-container-column-text
-						cssClass="background-task-user-column"
+						cssClass="table-cell-content"
 						name="user"
 					>
 						<liferay-ui:user-display
@@ -196,18 +194,20 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-jsp
-						cssClass="background-task-status-column"
+						cssClass="table-cell-content"
 						name="status"
 						path="/publish_process_message.jsp"
 					/>
 
 					<liferay-ui:search-container-column-date
+						cssClass="table-cell-content"
 						name="create-date"
 						orderable="<%= true %>"
 						value="<%= backgroundTask.getCreateDate() %>"
 					/>
 
 					<liferay-ui:search-container-column-date
+						cssClass="table-cell-content"
 						name="completion-date"
 						orderable="<%= true %>"
 						value="<%= backgroundTask.getCompletionDate() %>"
@@ -215,9 +215,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 				</c:when>
 			</c:choose>
 
-			<liferay-ui:search-container-column-text
-				align="right"
-			>
+			<liferay-ui:search-container-column-text>
 				<c:if test="<%= !backgroundTask.isInProgress() %>">
 
 					<%

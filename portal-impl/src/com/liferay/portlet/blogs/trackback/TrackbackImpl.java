@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.Function;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.blogs.linkback.LinkbackConsumer;
@@ -52,31 +52,36 @@ public class TrackbackImpl implements Trackback {
 
 		String body = buildBody(themeDisplay, excerpt, url);
 
-		long commentId = _commentManager.addComment(
+		long commentId = CommentManagerUtil.addComment(
 			userId, groupId, className, classPK, blogName, title, body,
 			serviceContextFunction);
 
 		String entryURL = buildEntryURL(entry, themeDisplay);
 
-		_linkbackConsumer.addNewTrackback(commentId, url, entryURL);
+		LinkbackConsumerUtil.addNewTrackback(commentId, url, entryURL);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public void setCommentManager(CommentManager commentManager) {
-		_commentManager = commentManager;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public void setLinkbackConsumer(LinkbackConsumer linkbackConsumer) {
-		_linkbackConsumer = linkbackConsumer;
 	}
 
 	protected String buildBBCodeBody(
 		ThemeDisplay themeDisplay, String excerpt, String url) {
 
 		url = StringUtil.replace(
-			url,
-			new String[] {StringPool.CLOSE_BRACKET, StringPool.OPEN_BRACKET},
+			url, new char[] {CharPool.CLOSE_BRACKET, CharPool.OPEN_BRACKET},
 			new String[] {"%5D", "%5B"});
 
 		StringBundler sb = new StringBundler(7);
@@ -130,10 +135,5 @@ public class TrackbackImpl implements Trackback {
 
 		return sb.toString();
 	}
-
-	private CommentManager _commentManager =
-		CommentManagerUtil.getCommentManager();
-	private LinkbackConsumer _linkbackConsumer =
-		LinkbackConsumerUtil.getLinkbackConsumer();
 
 }

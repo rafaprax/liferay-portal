@@ -26,7 +26,7 @@ WikiPageInfoPanelDisplayContext wikiPageInfoPanelDisplayContext = wikiDisplayCon
 	<div class="sidebar-header">
 		<c:choose>
 			<c:when test="<%= wikiPageInfoPanelDisplayContext.isSinglePageSelection() %>">
-				<ul class="list-inline list-unstyled sidebar-header-actions">
+				<ul class="sidebar-header-actions">
 
 					<%
 					request.setAttribute("page_info_panel.jsp-wikiPage", wikiPageInfoPanelDisplayContext.getFirstPage());
@@ -35,7 +35,6 @@ WikiPageInfoPanelDisplayContext wikiPageInfoPanelDisplayContext = wikiDisplayCon
 					<li>
 						<liferay-util:include page="/wiki/subscribe.jsp" servletContext="<%= application %>" />
 					</li>
-
 					<li>
 						<liferay-util:include page="/wiki/page_action.jsp" servletContext="<%= application %>" />
 					</li>
@@ -205,7 +204,7 @@ if (wikiPageInfoPanelDisplayContext.isSinglePageSelection()) {
 				%>
 
 					<div>
-						<ul class="list-inline list-unstyled sidebar-header-actions">
+						<ul class="sidebar-header-actions">
 							<li>
 
 								<%
@@ -246,12 +245,12 @@ if (wikiPageInfoPanelDisplayContext.isSinglePageSelection()) {
 
 					<c:if test="<%= Validator.isNotNull(path) %>">
 						<div>
-							<ul class="list-inline list-unstyled sidebar-header-actions">
+							<ul class="sidebar-header-actions">
 								<li>
 
 									<%
-									request.setAttribute("page_info_panel.jsp-socialActivity", socialActivity);
 									request.setAttribute(WikiWebKeys.WIKI_PAGE, wikiPage);
+									request.setAttribute("page_info_panel.jsp-socialActivity", socialActivity);
 									%>
 
 									<liferay-util:include page="<%= path %>" servletContext="<%= application %>" />

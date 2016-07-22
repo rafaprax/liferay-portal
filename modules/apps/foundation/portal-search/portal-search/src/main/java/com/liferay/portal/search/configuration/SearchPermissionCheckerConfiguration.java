@@ -14,19 +14,23 @@
 
 package com.liferay.portal.search.configuration;
 
+import aQute.bnd.annotation.ProviderType;
 import aQute.bnd.annotation.metatype.Meta;
 
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
 
 /**
  * @author Michael C. Han
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 @ExtendedObjectClassDefinition(category = "foundation")
 @Meta.OCD(
 	id = "com.liferay.portal.search.configuration.SearchPermissionCheckerConfiguration",
 	localization = "content/Language",
 	name = "search.permission.checker.configuration.name"
 )
+@ProviderType
 public interface SearchPermissionCheckerConfiguration {
 
 	@Meta.AD(

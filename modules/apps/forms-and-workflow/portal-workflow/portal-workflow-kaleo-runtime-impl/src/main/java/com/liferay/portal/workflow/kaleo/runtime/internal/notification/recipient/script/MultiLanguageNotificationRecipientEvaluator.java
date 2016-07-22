@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.workflow.kaleo.definition.ScriptLanguage;
 import com.liferay.portal.workflow.kaleo.model.KaleoNotificationRecipient;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
@@ -45,16 +46,19 @@ public class MultiLanguageNotificationRecipientEvaluator
 			ExecutionContext executionContext)
 		throws PortalException {
 
-		ScriptLanguage scriptLanguage = ScriptLanguage.parse(
-			kaleoNotificationRecipient.getRecipientScriptLanguage());
+		String notificationRecipientEvaluatorKey =
+			getNotificationRecipientEvaluatorKey(
+				kaleoNotificationRecipient.getRecipientScriptLanguage(),
+				kaleoNotificationRecipient.getRecipientScript());
 
 		NotificationRecipientEvaluator notificationRecipientEvaluator =
-			_notificationRecipientEvaluators.get(scriptLanguage);
+			_notificationRecipientEvaluators.get(
+				notificationRecipientEvaluatorKey);
 
 		if (notificationRecipientEvaluator == null) {
 			throw new IllegalArgumentException(
 				"No notification recipient evaluator for script language " +
-					scriptLanguage);
+					notificationRecipientEvaluatorKey);
 		}
 
 		return notificationRecipientEvaluator.evaluate(
@@ -72,34 +76,53 @@ public class MultiLanguageNotificationRecipientEvaluator
 		NotificationRecipientEvaluator notificationRecipientEvaluator,
 		Map<String, Object> properties) {
 
-		String[] scriptingLanguages = getScriptingLanguages(
+		String[] scriptingLanguages = _getScriptingLanguages(
 			notificationRecipientEvaluator, properties);
 
 		for (String scriptingLanguage : scriptingLanguages) {
-			ScriptLanguage scriptLanguage = ScriptLanguage.parse(
-				scriptingLanguage);
+			String notificationRecipientEvaluatorKey =
+				getNotificationRecipientEvaluatorKey(
+					scriptingLanguage,
+					ClassUtil.getClassName(notificationRecipientEvaluator));
 
 			_notificationRecipientEvaluators.put(
-				scriptLanguage, notificationRecipientEvaluator);
+				notificationRecipientEvaluatorKey,
+				notificationRecipientEvaluator);
 		}
+	}
+
+	protected String getNotificationRecipientEvaluatorKey(
+		String language, String notificationRecipientEvaluatorClassName) {
+
+		ScriptLanguage scriptLanguage = ScriptLanguage.parse(language);
+
+		if (scriptLanguage.equals(ScriptLanguage.JAVA)) {
+			return language + StringPool.COLON +
+				notificationRecipientEvaluatorClassName;
+		}
+
+		return language;
 	}
 
 	protected void removeNotificationRecipientEvaluator(
 		NotificationRecipientEvaluator notificationRecipientEvaluator,
 		Map<String, Object> properties) {
 
-		String[] scriptingLanguages = getScriptingLanguages(
+		String[] scriptingLanguages = _getScriptingLanguages(
 			notificationRecipientEvaluator, properties);
 
 		for (String scriptingLanguage : scriptingLanguages) {
-			ScriptLanguage scriptLanguage = ScriptLanguage.parse(
-				scriptingLanguage);
+			String notificationRecipientEvaluatorKey =
+				getNotificationRecipientEvaluatorKey(
+					scriptingLanguage,
+					ClassUtil.getClassName(notificationRecipientEvaluator));
 
-			_notificationRecipientEvaluators.remove(scriptLanguage);
+			_notificationRecipientEvaluators.remove(
+				notificationRecipientEvaluatorKey);
 		}
 	}
 
-	private String[] getScriptingLanguages(
+	private String[] _getScriptingLanguages(
 		NotificationRecipientEvaluator notificationRecipientEvaluator,
 		Map<String, Object> properties) {
 
@@ -117,7 +140,7 @@ public class MultiLanguageNotificationRecipientEvaluator
 		return scriptingLanguages;
 	}
 
-	private final Map<ScriptLanguage, NotificationRecipientEvaluator>
+	private final Map<String, NotificationRecipientEvaluator>
 		_notificationRecipientEvaluators = new HashMap<>();
 
 }

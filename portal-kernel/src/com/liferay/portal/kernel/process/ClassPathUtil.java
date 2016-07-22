@@ -20,7 +20,9 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.process.ProcessConfig.Builder;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -51,6 +53,23 @@ import javax.servlet.ServletException;
  */
 @ProviderType
 public class ClassPathUtil {
+
+	public static String buildClassPath(Class<?>... classes) {
+		if (ArrayUtil.isEmpty(classes)) {
+			return StringPool.BLANK;
+		}
+
+		StringBundler sb = new StringBundler(classes.length * 2);
+
+		for (Class<?> clazz : classes) {
+			sb.append(_buildClassPath(clazz.getClassLoader(), clazz.getName()));
+			sb.append(File.pathSeparator);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
+	}
 
 	public static Set<URL> getClassPathURLs(ClassLoader classLoader) {
 		Set<URL> urls = new LinkedHashSet<>();
@@ -115,9 +134,7 @@ public class ClassPathUtil {
 		ClassLoader classLoader = PortalClassLoaderUtil.getClassLoader();
 
 		if (classLoader == null) {
-			_log.error("Portal ClassLoader is null");
-
-			return;
+			classLoader = ClassLoaderUtil.getContextClassLoader();
 		}
 
 		StringBundler sb = new StringBundler(8);
@@ -139,9 +156,12 @@ public class ClassPathUtil {
 		sb.append(
 			_buildClassPath(
 				classLoader, "com.liferay.portal.servlet.MainServlet"));
-		sb.append(File.pathSeparator);
-		sb.append(servletContext.getRealPath(""));
-		sb.append("/WEB-INF/classes");
+
+		if (servletContext != null) {
+			sb.append(File.pathSeparator);
+			sb.append(servletContext.getRealPath(""));
+			sb.append("/WEB-INF/classes");
+		}
 
 		_portalClassPath = sb.toString();
 
@@ -149,7 +169,7 @@ public class ClassPathUtil {
 
 		builder.setArguments(Arrays.asList("-Djava.awt.headless=true"));
 		builder.setBootstrapClassPath(_globalClassPath);
-		builder.setReactClassLoader(PortalClassLoaderUtil.getClassLoader());
+		builder.setReactClassLoader(classLoader);
 		builder.setRuntimeClassPath(_portalClassPath);
 
 		_portalProcessConfig = builder.build();
@@ -208,7 +228,8 @@ public class ClassPathUtil {
 		}
 
 		if ((ServerDetector.isJBoss() || ServerDetector.isWildfly()) &&
-			(protocol.equals("vfs") || protocol.equals("vfsfile"))) {
+			(protocol.equals("vfs") || protocol.equals("vfsfile") ||
+			 protocol.equals("vfszip"))) {
 
 			int pos = path.indexOf(".jar/");
 
@@ -280,7 +301,11 @@ public class ClassPathUtil {
 
 					String name = file.getName();
 
-					return name.endsWith(".jar");
+					if (name.equals("bundleFile") || name.endsWith(".jar")) {
+						return true;
+					}
+
+					return false;
 				}
 
 			});

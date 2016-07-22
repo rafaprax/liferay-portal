@@ -29,7 +29,6 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
-import com.liferay.portal.kernel.model.TreeModel;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -37,14 +36,16 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.tree.TreeModelTasksAdapter;
+import com.liferay.portal.kernel.tree.TreePathUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.TreeModelTasksAdapter;
-import com.liferay.portal.kernel.util.TreePathUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.trash.kernel.exception.RestoreEntryException;
+import com.liferay.trash.kernel.exception.TrashEntryException;
 import com.liferay.trash.kernel.model.TrashEntry;
 import com.liferay.trash.kernel.model.TrashVersion;
 
@@ -386,6 +387,11 @@ public class BookmarksFolderLocalServiceImpl
 		BookmarksFolder folder = bookmarksFolderPersistence.findByPrimaryKey(
 			folderId);
 
+		if (!folder.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
+
 		if (folder.isInTrashExplicitly()) {
 			restoreFolderFromTrash(userId, folderId);
 		}
@@ -432,6 +438,10 @@ public class BookmarksFolderLocalServiceImpl
 
 		BookmarksFolder folder = bookmarksFolderPersistence.findByPrimaryKey(
 			folderId);
+
+		if (folder.isInTrash()) {
+			throw new TrashEntryException();
+		}
 
 		int oldStatus = folder.getStatus();
 
@@ -504,26 +514,6 @@ public class BookmarksFolderLocalServiceImpl
 						parentPrimaryKey, treePath, false);
 				}
 
-				@Override
-				public void reindexTreeModels(List<TreeModel> treeModels)
-					throws PortalException {
-
-					if (!reindex) {
-						return;
-					}
-
-					Indexer<BookmarksFolder> indexer =
-						IndexerRegistryUtil.nullSafeGetIndexer(
-							BookmarksFolder.class);
-
-					for (TreeModel treeModel : treeModels) {
-						BookmarksFolder bookmarkFolder =
-							(BookmarksFolder)treeModel;
-
-						indexer.reindex(bookmarkFolder);
-					}
-				}
-
 			});
 	}
 
@@ -536,6 +526,11 @@ public class BookmarksFolderLocalServiceImpl
 
 		BookmarksFolder folder = bookmarksFolderPersistence.findByPrimaryKey(
 			folderId);
+
+		if (!folder.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			BookmarksFolder.class.getName(), folderId);
@@ -604,7 +599,7 @@ public class BookmarksFolderLocalServiceImpl
 			userId, folder.getGroupId(), folder.getCreateDate(),
 			folder.getModifiedDate(), BookmarksFolder.class.getName(),
 			folder.getFolderId(), folder.getUuid(), 0, assetCategoryIds,
-			assetTagNames, true, true, null, null, null,
+			assetTagNames, true, true, null, null, folder.getCreateDate(), null,
 			ContentTypes.TEXT_PLAIN, folder.getName(), folder.getDescription(),
 			null, null, null, 0, 0, priority);
 
@@ -717,7 +712,7 @@ public class BookmarksFolderLocalServiceImpl
 				BookmarksFolder.class.getName(), folder.getFolderId(), false);
 		}
 
-		// Index
+		// Indexer
 
 		Indexer<BookmarksFolder> indexer =
 			IndexerRegistryUtil.nullSafeGetIndexer(BookmarksFolder.class);
@@ -892,7 +887,7 @@ public class BookmarksFolderLocalServiceImpl
 					BookmarksFolder.class.getName(), folder.getFolderId(),
 					false);
 
-				// Index
+				// Indexer
 
 				Indexer<BookmarksFolder> indexer =
 					IndexerRegistryUtil.nullSafeGetIndexer(
@@ -997,7 +992,7 @@ public class BookmarksFolderLocalServiceImpl
 					BookmarksFolder.class.getName(), folder.getFolderId(),
 					true);
 
-				// Index
+				// Indexer
 
 				Indexer<BookmarksFolder> indexer =
 					IndexerRegistryUtil.nullSafeGetIndexer(

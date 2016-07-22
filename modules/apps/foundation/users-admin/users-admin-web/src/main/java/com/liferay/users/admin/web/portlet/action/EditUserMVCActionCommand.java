@@ -362,6 +362,7 @@ public class EditUserMVCActionCommand extends BaseMVCActionCommand {
 
 				if (updateLanguageId && themeDisplay.isI18n()) {
 					String i18nLanguageId = user.getLanguageId();
+
 					int pos = i18nLanguageId.indexOf(CharPool.UNDERLINE);
 
 					if (pos != -1) {
@@ -382,8 +383,8 @@ public class EditUserMVCActionCommand extends BaseMVCActionCommand {
 			Group scopeGroup = themeDisplay.getScopeGroup();
 
 			if (scopeGroup.isUser() &&
-				(userLocalService.fetchUserById(
-					scopeGroup.getClassPK()) == null)) {
+				(userLocalService.fetchUserById(scopeGroup.getClassPK()) ==
+					null)) {
 
 				redirect = HttpUtil.setParameter(redirect, "doAsGroupId", 0);
 				redirect = HttpUtil.setParameter(redirect, "refererPlid", 0);

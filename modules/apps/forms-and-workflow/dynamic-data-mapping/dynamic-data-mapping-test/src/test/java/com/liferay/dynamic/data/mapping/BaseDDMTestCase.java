@@ -346,6 +346,20 @@ public abstract class BaseDDMTestCase extends PowerMockito {
 		return value;
 	}
 
+	protected DDMFormField createParagraphDDMFormField(String name) {
+		DDMFormField ddmFormField = new DDMFormField(name, "paragraph");
+
+		ddmFormField.setLocalizable(false);
+		ddmFormField.setRepeatable(false);
+		ddmFormField.setRequired(false);
+
+		LocalizedValue localizedValue = ddmFormField.getLabel();
+
+		localizedValue.addString(LocaleUtil.US, name);
+
+		return ddmFormField;
+	}
+
 	protected Document createSampleDocument() {
 		Document document = createEmptyDocument();
 
@@ -695,6 +709,10 @@ public abstract class BaseDDMTestCase extends PowerMockito {
 		whenLanguageIsAvailableLocale("es_ES");
 		whenLanguageIsAvailableLocale("pt_BR");
 
+		whenLanguageIsAvailableLocale(LocaleUtil.BRAZIL);
+		whenLanguageIsAvailableLocale(LocaleUtil.SPAIN);
+		whenLanguageIsAvailableLocale(LocaleUtil.US);
+
 		LanguageUtil languageUtil = new LanguageUtil();
 
 		languageUtil.setLanguage(language);
@@ -857,6 +875,14 @@ public abstract class BaseDDMTestCase extends PowerMockito {
 			language.getLanguageId(Matchers.eq(locale))
 		).thenReturn(
 			languageId
+		);
+	}
+
+	protected void whenLanguageIsAvailableLocale(Locale locale) {
+		when(
+			language.isAvailableLocale(Matchers.eq(locale))
+		).thenReturn(
+			true
 		);
 	}
 

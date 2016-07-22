@@ -78,6 +78,8 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.tree.TreeModelTasksAdapter;
+import com.liferay.portal.kernel.tree.TreePathUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -95,8 +97,6 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.TreeModelTasksAdapter;
-import com.liferay.portal.kernel.util.TreePathUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.comparator.GroupIdComparator;
@@ -126,6 +126,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -287,14 +288,15 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		if (staging) {
 			groupKey = groupKey.concat("-staging");
 
-			for (Locale locale : nameMap.keySet()) {
-				String name = nameMap.get(locale);
+			for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
+				String name = entry.getValue();
 
 				if (Validator.isNull(name)) {
 					continue;
 				}
 
-				nameMap.put(locale, name.concat(ORGANIZATION_STAGING_SUFFIX));
+				nameMap.put(
+					entry.getKey(), name.concat(ORGANIZATION_STAGING_SUFFIX));
 			}
 
 			friendlyURL = getFriendlyURL(friendlyURL.concat("-staging"));
@@ -832,7 +834,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 							scopeableWorkflowHandler.getClassName(), 0, 0,
 							true);
 
-				if (workflowDefinitionLink == null) {
+				if ((workflowDefinitionLink == null) ||
+					(workflowDefinitionLink.getGroupId() ==
+						group.getLiveGroupId())) {
+
 					continue;
 				}
 
@@ -860,25 +865,30 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					group.getGroupId(), RoleConstants.TYPE_SITE);
 			}
 			else {
-				if (!group.isStagingGroup() || group.isStagedRemotely()) {
 
-					// Group roles
+				// Group roles
 
-					userGroupRoleLocalService.deleteUserGroupRolesByGroupId(
-						group.getGroupId());
+				userGroupRoleLocalService.deleteUserGroupRolesByGroupId(
+					group.getGroupId());
 
-					// User group roles
+				// User group roles
 
-					userGroupGroupRoleLocalService.
-						deleteUserGroupGroupRolesByGroupId(group.getGroupId());
-				}
+				userGroupGroupRoleLocalService.
+					deleteUserGroupGroupRolesByGroupId(group.getGroupId());
 
-				if (!group.isStagingGroup() &&
-					(group.isOrganization() || group.isRegularSite())) {
+				// Resources
 
+				try {
 					resourceLocalService.deleteResource(
 						group.getCompanyId(), Group.class.getName(),
 						ResourceConstants.SCOPE_INDIVIDUAL, group.getGroupId());
+				}
+				catch (Exception e) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"No resources found for group " +
+								group.getGroupId());
+					}
 				}
 
 				groupPersistence.remove(group);
@@ -3076,8 +3086,8 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			userId, companyGroup.getGroupId(), null, null,
 			Group.class.getName(), group.getGroupId(), null, 0,
 			assetCategoryIds, assetTagNames, true, false, null, null, null,
-			null, group.getDescriptiveName(), group.getDescription(), null,
-			null, null, 0, 0, null);
+			null, null, group.getDescriptiveName(), group.getDescription(),
+			null, null, null, 0, 0, null);
 	}
 
 	/**
@@ -3299,7 +3309,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 			validateLanguageIds(defaultLanguageId, newLanguageIds);
 
-			if (!Validator.equals(oldLanguageIds, newLanguageIds)) {
+			if (!Objects.equals(oldLanguageIds, newLanguageIds)) {
 				LanguageUtil.resetAvailableGroupLocales(groupId);
 			}
 		}
@@ -3733,7 +3743,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 						if ((resourceTypePermission.getCompanyId() ==
 								companyId) &&
-							Validator.equals(
+							Objects.equals(
 								rolePermissions.getName(),
 								resourceTypePermission.getName()) &&
 							resourceTypePermission.hasAction(resourceAction)) {
@@ -4286,7 +4296,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			}
 		}
 
-		if (StringUtil.count(friendlyURL, StringPool.SLASH) > 1) {
+		if (StringUtil.count(friendlyURL, CharPool.SLASH) > 1) {
 			throw new GroupFriendlyURLException(
 				GroupFriendlyURLException.TOO_DEEP);
 		}

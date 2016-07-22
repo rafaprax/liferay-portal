@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
@@ -100,7 +101,7 @@ public class I18nServlet extends HttpServlet {
 				request.setAttribute(WebKeys.I18N_PATH, i18nData.getI18nPath());
 
 				Locale locale = LocaleUtil.fromLanguageId(
-					i18nData.getLanguageId(), true, false);
+					i18nData.getLanguageId(), false, false);
 
 				HttpSession session = request.getSession();
 
@@ -213,11 +214,10 @@ public class I18nServlet extends HttpServlet {
 
 			I18nData i18nData = (I18nData)obj;
 
-			if (Validator.equals(getI18nPath(), i18nData.getI18nPath()) &&
-				Validator.equals(
-					getLanguageCode(), i18nData.getLanguageCode()) &&
-				Validator.equals(getLanguageId(), i18nData.getLanguageId()) &&
-				Validator.equals(getPath(), i18nData.getPath())) {
+			if (Objects.equals(getI18nPath(), i18nData.getI18nPath()) &&
+				Objects.equals(getLanguageCode(), i18nData.getLanguageCode()) &&
+				Objects.equals(getLanguageId(), i18nData.getLanguageId()) &&
+				Objects.equals(getPath(), i18nData.getPath())) {
 
 				return true;
 			}

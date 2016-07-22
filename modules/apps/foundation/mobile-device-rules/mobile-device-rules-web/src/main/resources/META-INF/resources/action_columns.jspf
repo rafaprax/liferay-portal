@@ -14,22 +14,19 @@
  */
 --%>
 
-<%
-Group group = GroupLocalServiceUtil.getGroup(action.getGroupId());
-%>
-
 <liferay-ui:search-container-column-text
-	cssClass="text-strong"
 	name="scope"
 	value="<%= LanguageUtil.get(resourceBundle, group.getScopeLabel(themeDisplay)) %>"
 />
 
 <liferay-ui:search-container-column-text
+	cssClass="table-cell-content"
 	name="name"
 	value="<%= action.getName(locale) %>"
 />
 
 <liferay-ui:search-container-column-text
+	cssClass="table-cell-content"
 	name="description"
 	value="<%= action.getDescription(locale) %>"
 />
@@ -46,7 +43,5 @@ Group group = GroupLocalServiceUtil.getGroup(action.getGroupId());
 />
 
 <liferay-ui:search-container-column-jsp
-	align="right"
-	cssClass="entry-action"
 	path="/action_actions.jsp"
 />

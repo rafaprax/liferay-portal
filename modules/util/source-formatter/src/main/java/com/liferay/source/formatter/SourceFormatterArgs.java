@@ -33,10 +33,16 @@ public class SourceFormatterArgs {
 
 	public static final boolean FORMAT_LOCAL_CHANGES = false;
 
+	public static final String GIT_WORKING_BRANCH_NAME = "master";
+
+	public static final int MAX_LINE_LENGTH = 80;
+
 	public static final String OUTPUT_KEY_MODIFIED_FILES =
 		"source.formatter.modified.files";
 
 	public static final boolean PRINT_ERRORS = true;
+
+	public static final int PROCESSOR_THREAD_COUNT = 5;
 
 	public static final boolean THROW_EXCEPTION = false;
 
@@ -52,6 +58,18 @@ public class SourceFormatterArgs {
 
 	public List<String> getFileNames() {
 		return _fileNames;
+	}
+
+	public String getGitWorkingBranchName() {
+		return _gitWorkingBranchName;
+	}
+
+	public int getMaxLineLength() {
+		return _maxLineLength;
+	}
+
+	public int getProcessorThreadCount() {
+		return _processorThreadCount;
 	}
 
 	public List<String> getRecentChangesFileNames() {
@@ -131,8 +149,20 @@ public class SourceFormatterArgs {
 		_formatLocalChanges = formatLocalChanges;
 	}
 
+	public void setGitWorkingBranchName(String gitWorkingBranchName) {
+		_gitWorkingBranchName = gitWorkingBranchName;
+	}
+
+	public void setMaxLineLength(int maxLineLength) {
+		_maxLineLength = maxLineLength;
+	}
+
 	public void setPrintErrors(boolean printErrors) {
 		_printErrors = printErrors;
+	}
+
+	public void setProcessorThreadCount(int processorThreadCount) {
+		_processorThreadCount = processorThreadCount;
 	}
 
 	public void setRecentChangesFileNames(List<String> recentChangesFileNames) {
@@ -154,7 +184,10 @@ public class SourceFormatterArgs {
 	private boolean _formatCurrentBranch = FORMAT_CURRENT_BRANCH;
 	private boolean _formatLatestAuthor = FORMAT_LATEST_AUTHOR;
 	private boolean _formatLocalChanges = FORMAT_LOCAL_CHANGES;
+	private String _gitWorkingBranchName = GIT_WORKING_BRANCH_NAME;
+	private int _maxLineLength = MAX_LINE_LENGTH;
 	private boolean _printErrors = PRINT_ERRORS;
+	private int _processorThreadCount = PROCESSOR_THREAD_COUNT;
 	private List<String> _recentChangesFileNames;
 	private boolean _throwException = THROW_EXCEPTION;
 	private boolean _useProperties = USE_PROPERTIES;

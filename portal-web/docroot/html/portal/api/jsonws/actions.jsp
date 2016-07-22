@@ -72,14 +72,16 @@ Set<String> contextNames = JSONWebServiceActionsManagerUtil.getContextNames();
 		jsonWebServiceMappings.add(jsonWebServiceActionMapping);
 	}
 
-	for (String jsonWebServiceClassName : jsonWebServiceClasses.keySet()) {
-		Set<JSONWebServiceActionMapping> jsonWebServiceMappings = jsonWebServiceClasses.get(jsonWebServiceClassName);
+	for (Map.Entry<String, Set> entry : jsonWebServiceClasses.entrySet()) {
+		String jsonWebServiceClassName = entry.getKey();
+		Set<JSONWebServiceActionMapping> jsonWebServiceMappings = entry.getValue();
 
 		String panelTitle = jsonWebServiceClassName;
 
 		if (panelTitle.endsWith("Impl")) {
 			panelTitle = panelTitle.substring(0, panelTitle.length() - 4);
 		}
+
 		if (panelTitle.endsWith("Service")) {
 			panelTitle = panelTitle.substring(0, panelTitle.length() - 7);
 		}

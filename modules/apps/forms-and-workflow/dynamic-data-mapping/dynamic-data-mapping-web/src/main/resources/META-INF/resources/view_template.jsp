@@ -109,13 +109,11 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 	<aui:input name="deleteTemplateIds" type="hidden" />
 
 	<div class="container-fluid-1280" id="<portlet:namespace />entriesContainer">
-
 		<liferay-ui:search-container
 			id="ddmTemplates"
 			rowChecker="<%= new EmptyOnClickRowChecker(renderResponse) %>"
 			searchContainer="<%= templateSearch %>"
 		>
-
 			<liferay-ui:search-container-results>
 				<%@ include file="/template_search_results.jspf" %>
 			</liferay-ui:search-container-results>
@@ -155,7 +153,6 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 
 				<c:if test='<%= !excludedColumnNames.contains("id") %>'>
 					<liferay-ui:search-container-column-text
-						cssClass="text-strong"
 						href="<%= rowHREF %>"
 						name="id"
 						orderable="<%= true %>"
@@ -166,7 +163,7 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 
 				<c:if test='<%= !excludedColumnNames.contains("name") %>'>
 					<liferay-ui:search-container-column-text
-						cssClass="text-strong"
+						cssClass="table-cell-content"
 						href="<%= rowHREF %>"
 						name="name"
 						value="<%= HtmlUtil.escape(template.getName(locale)) %>"
@@ -174,6 +171,7 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 				</c:if>
 
 				<liferay-ui:search-container-column-jsp
+					cssClass="table-cell-content"
 					name="description"
 					path="/template_description.jsp"
 				/>
@@ -193,7 +191,7 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 					<liferay-ui:search-container-column-text
 						href="<%= rowHREF %>"
 						name="structure"
-						value="<%= structureName %>"
+						value="<%= HtmlUtil.escape(structureName) %>"
 					/>
 				</c:if>
 
@@ -201,7 +199,7 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 					<liferay-ui:search-container-column-text
 						href="<%= rowHREF %>"
 						name="type"
-						value="<%= ddmDisplay.getTemplateType(template, locale) %>"
+						value="<%= HtmlUtil.escape(ddmDisplay.getTemplateType(template, locale)) %>"
 					/>
 				</c:if>
 
@@ -244,8 +242,6 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 				</c:if>
 
 				<liferay-ui:search-container-column-jsp
-					align="right"
-					cssClass="entry-action"
 					path="/template_action.jsp"
 				/>
 			</liferay-ui:search-container-row>

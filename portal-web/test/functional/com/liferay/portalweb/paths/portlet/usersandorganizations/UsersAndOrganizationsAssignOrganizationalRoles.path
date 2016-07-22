@@ -77,17 +77,17 @@
 <!--ROLE_TABLE-->
 <tr>
 	<td>ROLE_TABLE_TITLE_1</td>
-	<td>xpath=(//div[contains(@id,'ocerSearchContainer')]//tr/td[1]/a)[1]</td>
+	<td>xpath=(//div[contains(@id,'ocerSearchContainer')]//tr/td[1]//a)[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ROLE_TABLE_TYPE_1</td>
-	<td>xpath=(//div[contains(@id,'ocerSearchContainer')]//tr/td[2]/a)[1]</td>
+	<td>xpath=(//div[contains(@id,'ocerSearchContainer')]//tr/td[2]//a)[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ROLE_TABLE_DESCRIPTION_1</td>
-	<td>xpath=(//div[contains(@id,'ocerSearchContainer')]//tr/td[3]/a)[1]</td>
+	<td>xpath=(//div[contains(@id,'ocerSearchContainer')]//tr/td[3]//a)[1]</td>
 	<td></td>
 </tr>
 <tr>
@@ -109,6 +109,11 @@
 <tr>
 	<td>USER_TABLE_SCREEN_NAME_1</td>
 	<td>xpath=(//tr/td[3])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>USER_TABLE_SCREEN_NAME_2</td>
+	<td>xpath=(//tr/td[3])[2]</td>
 	<td></td>
 </tr>
 </tbody>

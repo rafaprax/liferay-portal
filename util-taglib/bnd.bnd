@@ -1,8 +1,8 @@
 Bundle-Name: ${manifest.bundle.name}
 Bundle-SymbolicName: ${manifest.bundle.symbolic.name}
-Bundle-Version: 1.0.1
+Bundle-Version: 2.4.0
 Export-Package:\
-	com.liferay.alloy.taglib.*,\
+	com.liferay.alloy.taglib.*;version="2.0.0",\
 	com.liferay.taglib.*
 Import-Package:\
 	!com.liferay.portal.freemarker,\
@@ -12,6 +12,8 @@ Import-Package:\
 	!org.dom4j.*,\
 	\
 	!org.json.*,\
+	\
+	com.ibm.crypto.provider;resolution:=optional,\
 	\
 	com.liferay.*,\
 	*
@@ -23,8 +25,6 @@ Include-Resource:\
 	@../util-java/util-java.jar!/com/liferay/util/JS.class,\
 	@../util-java/util-java.jar!/com/liferay/util/PwdGenerator.class,\
 	@../util-java/util-java.jar!/com/liferay/util/RSSUtil.class
-Liferay-Releng-Module-Group-Description:
-Liferay-Releng-Module-Group-Title:
 Provide-Capability:\
 	osgi.extender;\
 		osgi.extender="jsp.taglib";\
@@ -70,5 +70,4 @@ Provide-Capability:\
 		osgi.extender="jsp.taglib";\
 		uri="http://liferay.com/tld/util";\
 		version:Version="${Bundle-Version}"
--baseline: *;version="6.2.0"
--include: ../modules/apps/foundation/app.bnd
+-baseline: *;file=${project.dir}/.bnd/ant-baseline-cache/com.liferay.util.taglib-2.3.0.jar

@@ -106,11 +106,12 @@ Ticket ticket = TicketLocalServiceUtil.addTicket(user.getCompanyId(), User.class
 				var rowColumns = [];
 
 				var deleteURL = Liferay.PortletURL.createURL('<%= deleteURL.toString() %>');
+
 				deleteURL.setParameter('fileName', event.name);
 
 				rowColumns.push(event.name);
-				rowColumns.push(event.size);
-				rowColumns.push('<a href="' + deleteURL + '"><%= UnicodeFormatter.toString(removeAttachmentIcon) %></a>');
+				rowColumns.push(uploader.formatStorage(event.size));
+				rowColumns.push('<a href="' + deleteURL + '"><%= TrashUtil.isTrashEnabled(scopeGroupId) ? UnicodeLanguageUtil.get(resourceBundle, "move-to-the-recycle-bin") : UnicodeFormatter.toString(removeAttachmentIcon) %></a>');
 
 				searchContainer.addRow(rowColumns, event.id);
 

@@ -14,33 +14,15 @@
  */
 --%>
 
-<%
-Group group = GroupLocalServiceUtil.getGroup(ruleGroup.getGroupId());
-
-String rowHREF = null;
-
-if (MDRRuleGroupPermission.contains(permissionChecker, ruleGroup.getRuleGroupId(), ActionKeys.VIEW) && MDRPermission.contains(permissionChecker, groupId, ActionKeys.ADD_RULE_GROUP)) {
-%>
-
-	<portlet:renderURL var="editRulesURL">
-		<portlet:param name="mvcPath" value="/view_rules.jsp" />
-		<portlet:param name="ruleGroupId" value="<%= String.valueOf(ruleGroup.getRuleGroupId()) %>" />
-		<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-	</portlet:renderURL>
-
-<%
-	rowHREF = editRulesURL;
-}
-%>
-
 <liferay-ui:search-container-column-text
-	cssClass="text-strong"
+	cssClass="table-cell-content"
 	href="<%= rowHREF %>"
 	name="name"
 	value="<%= ruleGroup.getName(locale) %>"
 />
 
 <liferay-ui:search-container-column-text
+	cssClass="table-cell-content"
 	name="description"
 	value="<%= ruleGroup.getDescription(locale) %>"
 />
@@ -56,6 +38,5 @@ if (MDRRuleGroupPermission.contains(permissionChecker, ruleGroup.getRuleGroupId(
 />
 
 <liferay-ui:search-container-column-jsp
-	cssClass="list-group-item-field"
 	path="/rule_group_actions.jsp"
 />

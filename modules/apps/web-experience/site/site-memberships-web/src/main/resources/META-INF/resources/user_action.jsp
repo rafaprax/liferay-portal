@@ -43,6 +43,7 @@ boolean userGroupUser = GetterUtil.getBoolean(row.getParameter("userGroupUser"))
 		<liferay-ui:icon
 			cssClass="assign-site-roles"
 			data="<%= data %>"
+			id='<%= row.getRowId() + "assignSiteRoles" %>'
 			message="assign-site-roles"
 			url="javascript:;"
 		/>
@@ -55,9 +56,46 @@ boolean userGroupUser = GetterUtil.getBoolean(row.getParameter("userGroupUser"))
 			<portlet:param name="removeUserId" value="<%= String.valueOf(user2.getUserId()) %>" />
 		</portlet:actionURL>
 
-		<liferay-ui:icon
+		<liferay-ui:icon-delete
 			message="remove-membership"
 			url="<%= deleteGroupUsersURL %>"
 		/>
 	</c:if>
 </liferay-ui:icon-menu>
+
+<aui:script use="liferay-item-selector-dialog">
+	$('#<portlet:namespace /><%= row.getRowId() %>assignSiteRoles').on(
+		'click',
+		function(event) {
+			event.preventDefault();
+
+			var currentTarget = $(event.currentTarget);
+
+			var editUserGroupRoleFm = $(document.<portlet:namespace />editUserGroupRoleFm);
+
+			editUserGroupRoleFm.fm('p_u_i_d').val(currentTarget.data('userid'));
+
+			var itemSelectorDialog = new A.LiferayItemSelectorDialog(
+				{
+					eventName: '<portlet:namespace />selectUsersRoles',
+					on: {
+						selectedItemChange: function(event) {
+							var selectedItem = event.newVal;
+
+							if (selectedItem) {
+								editUserGroupRoleFm.append(selectedItem);
+
+								submitForm(editUserGroupRoleFm);
+							}
+						}
+					},
+					'strings.add': '<liferay-ui:message key="done" />',
+					title: '<liferay-ui:message key="assign-site-roles" />',
+					url: currentTarget.data('href')
+				}
+			);
+
+			itemSelectorDialog.open();
+		}
+	);
+</aui:script>

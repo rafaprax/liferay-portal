@@ -87,7 +87,7 @@ recordSearchContainer.setOrderByType(ddlViewRecordsDisplayContext.getOrderByType
 <aui:nav-bar cssClass="collapse-basic-search" markupView="lexicon">
 	<c:if test="<%= ddlDisplayContext.isAdminPortlet() %>">
 		<aui:nav cssClass="navbar-nav">
-			<aui:nav-item label="<%= recordSet.getName(locale) %>" selected="<%= true %>" />
+			<aui:nav-item label="<%= HtmlUtil.escape(recordSet.getName(locale)) %>" selected="<%= true %>" />
 		</aui:nav>
 	</c:if>
 
@@ -108,9 +108,7 @@ recordSearchContainer.setOrderByType(ddlViewRecordsDisplayContext.getOrderByType
 	includeCheckBox="<%= !user.isDefaultUser() %>"
 	searchContainerId="ddlRecord"
 >
-
 	<liferay-frontend:management-bar-filters>
-
 		<liferay-frontend:management-bar-navigation
 			navigationKeys='<%= new String[] {"all"} %>'
 			portletURL="<%= portletURL %>"
@@ -125,12 +123,7 @@ recordSearchContainer.setOrderByType(ddlViewRecordsDisplayContext.getOrderByType
 	</liferay-frontend:management-bar-filters>
 
 	<liferay-frontend:management-bar-action-buttons>
-
-		<%
-		String taglibURL = "javascript:" + renderResponse.getNamespace() + "deleteRecords();";
-		%>
-
-		<liferay-frontend:management-bar-button href="<%= taglibURL %>" icon="trash" label="delete" />
+		<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "deleteRecords();" %>' icon="trash" label="delete" />
 	</liferay-frontend:management-bar-action-buttons>
 </liferay-frontend:management-bar>
 
@@ -158,9 +151,7 @@ recordSearchContainer.setOrderByType(ddlViewRecordsDisplayContext.getOrderByType
 					recordVersion = record.getLatestRecordVersion();
 				}
 
-				DDMFormValues ddmFormValues = ddlDisplayContext.getDDMFormValues(recordVersion.getDDMStorageId());
-
-				Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap = ddmFormValues.getDDMFormFieldValuesMap();
+				Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap = ddlViewRecordsDisplayContext.getDDMFormFieldValuesMap(recordVersion);
 
 				ResultRow row = new ResultRow(record, record.getRecordId(), i);
 
@@ -183,11 +174,11 @@ recordSearchContainer.setOrderByType(ddlViewRecordsDisplayContext.getOrderByType
 				// Columns
 
 				for (DDMFormField ddmFormField : ddmFormfields) {
-				%>
+			%>
 
 					<%@ include file="/record_row_value.jspf" %>
 
-				<%
+			<%
 				}
 
 				if (hasUpdatePermission) {

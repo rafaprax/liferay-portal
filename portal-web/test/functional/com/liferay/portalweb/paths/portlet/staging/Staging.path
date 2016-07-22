@@ -9,11 +9,6 @@
 </thead>
 <tbody>
 <tr>
-	<td>EDITED_SITE_PAGES_VARIATION</td>
-	<td>//span[contains(@class,'layout-set-branch-selector')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>STAGING_NAVIGATION</td>
 	<td>//ul[contains(@class,'nav-tabs')]/li/a[contains(.,'Staging')]</td>
 	<td></td>
@@ -39,10 +34,25 @@
 	<td>//h6[contains(.,'Successful')]</td>
 	<td></td>
 </tr>
+<tr>
+	<td>PROCESS_FAILED</td>
+	<td>//h6[contains(.,'Failed')]</td>
+	<td></td>
+</tr>
 <!--STAGING-->
 <tr>
 	<td>STAGING_NEW_PUBLICATION_PROCESS_NAVIGATION</td>
 	<td>//ul[contains(@class,'nav-tabs')]/li/a[contains(.,'New Publication Process')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_CONTENT_COUNT</td>
+	<td>//span[contains(@class,'badge-info')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_CONTENT_INFO</td>
+	<td>//span[contains(@id,'selectedContent')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -52,7 +62,17 @@
 </tr>
 <tr>
 	<td>STAGING_STATUS</td>
-	<td>//tr/td[contains(@class,'status-column')]</td>
+	<td>xpath=(//h6[contains(text(),'Successful')])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_STATUS</td>
+	<td>xpath=(//h6[contains(text(),'Successful')])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_STATUS_PORTLET</td>
+	<td>//h5[contains(text(),'Successful')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -122,6 +142,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>VARIATIONS_SELECTOR</td>
+	<td>//select[contains(@id,'variationsSelector')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td></td>
 	<td></td>
 	<td></td>
@@ -140,7 +165,7 @@
 <!--PAGE_VARIATION_MENULIST-->
 <tr>
 	<td>PAGE_VARIATION_MENULIST_NAME</td>
-	<td>//ul//li//a[contains(.,'${key_pageVariationName}') and contains(@class,'disabled')]</td>
+	<td>//a[contains(.,'${key_pageVariationName}') and contains(@href,'layoutBranchId')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -151,7 +176,12 @@
 <!--HISTORY-->
 <tr>
 	<td>HISTORY_VERSION</td>
-	<td>//td/span[@class='layout-revision-current']</td>
+	<td>//span[contains(@class,'layout-revision')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>HISTORY_VERSION_ANCHOR</td>
+	<td>//a[contains(@class,'layout-revision')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -187,13 +217,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>STAGING_MENU_MARK_AS_READY_FOR_PUBLICATION_BUTTON</td>
-	<td>//span[@class='staging-bar-control-toggle']//span[@class='toggle-switch-bar' and not (@aria-hidden='true')] </td>
-	<td></td>
-</tr>
-<tr>
 	<td>STAGING_MENU_READY_FOR_PUBLICATION</td>
-	<td>//span[@class='workflow-status']/strong[contains(.,'Ready for Publication')]</td>
+	<td>//span[@class='toggle-switch-handle' and @data-label-on='Ready for Publication']</td>
 	<td></td>
 </tr>
 <tr>

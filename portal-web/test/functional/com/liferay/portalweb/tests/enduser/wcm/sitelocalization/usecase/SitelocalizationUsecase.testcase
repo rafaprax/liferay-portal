@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Site Localization" />
 
 	<set-up>
@@ -67,6 +68,7 @@
 		</execute>
 
 		<execute macro="Page#viewPageLocalization">
+			<var name="category" value="Navigation" />
 			<var name="defaultSiteLanguageKey" value="es_ES" />
 			<var name="page" value="Language Test Page" />
 		</execute>
@@ -75,19 +77,16 @@
 	<command name="LocalizationStyle0" priority="3">
 		<property name="custom.properties" value="locale.prepend.friendly.url.style=0" />
 
-		<var name="pageName" value="Language Test Page" />
-		<var name="portletName" value="Language Selector" />
-
 		<execute macro="Page#add">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
-			<var name="portletName" value="${portletName}" />
+			<var name="portletName" value="Language Selector" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 
 		<execute macro="LanguagePortlet#selectLanguagePG">
@@ -113,26 +112,23 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 	</command>
 
 	<command name="LocalizationStyle1" priority="3">
 		<property name="custom.properties" value="locale.prepend.friendly.url.style=1" />
 
-		<var name="pageName" value="Language Test Page" />
-		<var name="portletName" value="Language Selector" />
-
 		<execute macro="Page#add">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
-			<var name="portletName" value="${portletName}" />
+			<var name="portletName" value="Language Selector" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 
 		<execute macro="LanguagePortlet#selectLanguagePG">
@@ -158,26 +154,23 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 	</command>
 
 	<command name="LocalizationStyle2" priority="3">
 		<property name="custom.properties" value="locale.prepend.friendly.url.style=2" />
 
-		<var name="pageName" value="Language Test Page" />
-		<var name="portletName" value="Language Selector" />
-
 		<execute macro="Page#add">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
-			<var name="portletName" value="${portletName}" />
+			<var name="portletName" value="Language Selector" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 
 		<execute macro="LanguagePortlet#selectLanguagePG">
@@ -203,7 +196,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Language Test Page" />
 		</execute>
 	</command>
 
@@ -414,7 +407,7 @@
 		</execute>
 
 		<execute macro="Page#viewPageLocalization">
-			<var name="category" value="Páginas" />
+			<var name="category" value="Navegación" />
 			<var name="defaultSiteLanguageKey" value="es_ES" />
 			<var name="page" value="Site Page 1" />
 		</execute>
@@ -425,7 +418,7 @@
 		</execute>
 
 		<execute macro="Page#viewPageLocalization">
-			<var name="category" value="Páginas" />
+			<var name="category" value="Navegación" />
 			<var name="defaultSiteLanguageKey" value="es_ES" />
 			<var name="page" value="Site Page 2" />
 		</execute>
@@ -609,8 +602,6 @@
 
 		<execute macro="Site#addCP">
 			<var name="siteName" value="Site Name" />
-			<var name="siteTemplateActive" value="${siteTemplateActive}" />
-			<var name="siteTemplateName" value="${siteTemplateName}" />
 			<var name="siteType" value="Blank" />
 		</execute>
 
@@ -636,10 +627,9 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute function="AssertTextEquals" locator1="Home#PORTAL_LOCALIZATION_INFO_MESSAGE" value1="× Esta página se muestra en inglés (Estados Unidos). Mostrar la página en español (España). Establecer inglés (Estados Unidos) como su idioma preferido." />
@@ -650,6 +640,94 @@
 		<execute macro="User#logoutPG" />
 
 		<execute macro="User#loginPG" />
+	</command>
+
+	<command name="ViewEditURLLocale" priority="4">
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Site Settings" />
+		</execute>
+
+		<execute macro="Site#configureCurrentLanguagesCP">
+			<var name="currentSiteLanguages" value="English (United States),Hungarian (Hungary)" />
+			<var name="defaultSiteLanguage" value="English (United States)" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoControlPanelSites">
+			<var name="portlet" value="Sites" />
+		</execute>
+
+		<execute macro="Site#addBlankCP">
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoControlPanelSites">
+			<var name="portlet" value="Sites" />
+		</execute>
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Language Page" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Site Settings" />
+		</execute>
+
+		<execute macro="Site#configureCurrentLanguagesCP">
+			<var name="currentSiteLanguages" value="English (United States),Hungarian (Hungary)" />
+			<var name="defaultSiteLanguage" value="English (United States)" />
+		</execute>
+
+		<execute macro="User#logoutPG" />
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="http://localhost:8080/fr/web/site-name/language-page" />
+		</execute>
+
+		<execute function="Pause" locator1="2000" />
+
+		<execute macro="Alert#closePortalLocalizationWarning" />
+
+		<execute function="AssertLocation" value1="http://localhost:8080/en/web/site-name/language-page" />
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="http://localhost:8080/fr" />
+		</execute>
+
+		<execute macro="Alert#closePortalLocalizationWarning" />
+
+		<execute function="Pause" locator1="2000" />
+
+		<execute function="AssertLocation" value1="http://localhost:8080/en/web/guest" />
+
+		<execute macro="User#loginPG">
+			<var name="specificURL" value="http://localhost:8080/fr" />
+		</execute>
+
+		<execute function="AssertLocation" value1="http://localhost:8080/web/guest" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Site Settings" />
+		</execute>
+
+		<execute macro="Site#addVirtualHostsURLCP">
+			<var name="publicPageVirtualHostURL" value="www.able.com" />
+			<var name="publicVirtualHosts" value="true" />
+		</execute>
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="http://www.able.com:8080/fr/" />
+		</execute>
+
+		<execute macro="Site#viewVirtualHostsURLPG">
+			<var name="pageName" value="Language Page" />
+			<var name="siteName" value="Site Name" />
+			<var name="sitePageURL" value="http://www.able.com:8080/en/" />
+		</execute>
 	</command>
 
 	<command name="ViewSiteLocalizationAfterDeletingOriginalLocale" priority="5">
@@ -689,10 +767,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoLocalizedEditPage">
@@ -702,8 +779,8 @@
 
 		<execute macro="Page#viewFriendlyURLLanguageOptionsPG">
 			<var name="assertUnavailableLanguages" value="true" />
-			<var name="currentLanguageList" value="DETAILS_FRIENDLY_URL_PORTUGUESE_BRAZIL,DETAILS_FRIENDLY_URL_SPANISH_SPAIN" />
-			<var name="unavailableLanguageList" value="DETAILS_FRIENDLY_URL_ENGLISH_UNITED_STATES" />
+			<var name="currentLanguageList" value="FRIENDLY_URL_PORTUGUESE_BRAZIL,FRIENDLY_URL_SPANISH_SPAIN" />
+			<var name="unavailableLanguageList" value="FRIENDLY_URL_ENGLISH_UNITED_STATES" />
 		</execute>
 	</command>
 </definition>

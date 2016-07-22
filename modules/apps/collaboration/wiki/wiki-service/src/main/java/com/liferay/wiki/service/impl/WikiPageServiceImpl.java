@@ -34,7 +34,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.spring.extender.service.ServiceReference;
-import com.liferay.util.RSSUtil;
+import com.liferay.rss.util.RSSUtil;
 import com.liferay.wiki.configuration.WikiGroupServiceOverriddenConfiguration;
 import com.liferay.wiki.constants.WikiConstants;
 import com.liferay.wiki.constants.WikiPortletKeys;
@@ -424,7 +424,7 @@ public class WikiPageServiceImpl extends WikiPageServiceBaseImpl {
 		throws PortalException {
 
 		WikiPagePermissionChecker.check(
-			getPermissionChecker(), nodeId, title, ActionKeys.VIEW);
+			getPermissionChecker(), nodeId, title, version, ActionKeys.VIEW);
 
 		return wikiPageLocalService.getPage(nodeId, title, version);
 	}

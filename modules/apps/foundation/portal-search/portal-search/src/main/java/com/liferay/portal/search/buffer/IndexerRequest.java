@@ -21,9 +21,10 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.lang.reflect.Method;
+
+import java.util.Objects;
 
 /**
  * @author Michael C. Han
@@ -67,13 +68,13 @@ public class IndexerRequest {
 
 		IndexerRequest indexerRequest = (IndexerRequest)object;
 
-		if (Validator.equals(_indexer, indexerRequest._indexer) &&
-			(Validator.equals(_method, indexerRequest._method) ||
-			 (Validator.equals(
+		if (Objects.equals(_indexer, indexerRequest._indexer) &&
+			(Objects.equals(_method, indexerRequest._method) ||
+			 (Objects.equals(
 				 _method.getName(), indexerRequest._method.getName()) &&
-			  Validator.equals(
+			  Objects.equals(
 				  _modelPrimaryKey, indexerRequest._modelPrimaryKey))) &&
-			Validator.equals(_modelClassName, indexerRequest._modelClassName)) {
+			Objects.equals(_modelClassName, indexerRequest._modelClassName)) {
 
 			return true;
 		}
@@ -112,16 +113,20 @@ public class IndexerRequest {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(9);
+		StringBundler sb = new StringBundler(13);
 
 		sb.append("{classModel=");
 		sb.append(_classedModel);
+		sb.append(", forceSync=");
+		sb.append(_forceSync);
 		sb.append(", indexer=");
 		sb.append(ClassUtil.getClassName(_indexer));
 		sb.append(", method=");
 		sb.append(_method);
 		sb.append(", modelClassName=");
 		sb.append(_modelClassName);
+		sb.append(", modelPrimaryKey=");
+		sb.append(_modelPrimaryKey);
 		sb.append("}");
 
 		return sb.toString();

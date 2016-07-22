@@ -20,11 +20,12 @@ import com.liferay.asset.kernel.exception.DuplicateQueryRuleException;
 import com.liferay.asset.kernel.model.AssetQueryRule;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
-import com.liferay.asset.publisher.web.configuration.AssetPublisherWebConfigurationValues;
 import com.liferay.asset.publisher.web.constants.AssetPublisherPortletKeys;
+import com.liferay.asset.publisher.web.internal.configuration.AssetPublisherWebConfigurationValues;
 import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
 import com.liferay.exportimport.kernel.staging.LayoutStagingUtil;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
+import com.liferay.petra.content.ContentUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
@@ -52,7 +53,6 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.PortletPreferencesImpl;
-import com.liferay.util.ContentUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,12 +100,14 @@ public class AssetPublisherConfigurationAction
 			portletRequest, portletPreferences,
 			"emailAssetEntryAddedBody_" + languageId,
 			ContentUtil.get(
+				AssetPublisherConfigurationAction.class.getClassLoader(),
 				AssetPublisherWebConfigurationValues.
 					EMAIL_ASSET_ENTRY_ADDED_BODY));
 		removeDefaultValue(
 			portletRequest, portletPreferences,
 			"emailAssetEntryAddedSubject_" + languageId,
 			ContentUtil.get(
+				AssetPublisherConfigurationAction.class.getClassLoader(),
 				AssetPublisherWebConfigurationValues.
 					EMAIL_ASSET_ENTRY_ADDED_SUBJECT));
 	}
@@ -317,9 +319,9 @@ public class AssetPublisherConfigurationAction
 		}
 
 		long defaultAssetClassTypeId = GetterUtil.getLong(
-			anyAssetClassTypeString);
+			anyAssetClassTypeString, -1);
 
-		if (defaultAssetClassTypeId > 0) {
+		if (defaultAssetClassTypeId > -1) {
 			return new String[] {String.valueOf(defaultAssetClassTypeId)};
 		}
 		else {

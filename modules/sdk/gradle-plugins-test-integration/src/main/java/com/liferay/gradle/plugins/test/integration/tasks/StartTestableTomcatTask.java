@@ -14,12 +14,19 @@
 
 package com.liferay.gradle.plugins.test.integration.tasks;
 
-import com.liferay.gradle.util.GradleUtil;
+import com.liferay.gradle.plugins.test.integration.util.GradleUtil;
 
 import java.io.File;
+import java.io.OutputStream;
 
+import java.util.concurrent.Callable;
+
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
+
+import org.zeroturnaround.exec.StartedProcess;
 
 /**
  * @author Andrea Di Giorgi
@@ -27,6 +34,7 @@ import org.gradle.api.tasks.Input;
 public class StartTestableTomcatTask extends StartAppServerTask {
 
 	@Input
+	@Optional
 	public File getLiferayHome() {
 		return GradleUtil.toFile(getProject(), _liferayHome);
 	}
@@ -58,10 +66,36 @@ public class StartTestableTomcatTask extends StartAppServerTask {
 
 		File liferayHome = getLiferayHome();
 
+		if (liferayHome == null) {
+			throw new InvalidUserDataException(
+				"No value has been specified for property 'liferayHome'.");
+		}
+
 		project.delete(
 			new File(liferayHome, "data"), new File(liferayHome, "logs"),
 			new File(liferayHome, "osgi/state"),
 			new File(liferayHome, "portal-setup-wizard.properties"));
+	}
+
+	@Override
+	protected void waitForStarted(
+		StartedProcess startedProcess, final OutputStream outputStream) {
+
+		waitFor(
+			new Callable<Boolean>() {
+
+				@Override
+				public Boolean call() throws Exception {
+					String output = outputStream.toString();
+
+					if (output.contains("Server startup in")) {
+						return true;
+					}
+
+					return false;
+				}
+
+			});
 	}
 
 	private boolean _deleteLiferayHome = true;

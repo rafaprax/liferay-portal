@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -59,6 +58,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -202,7 +202,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMTemplate ddmTemplate : list) {
-					if (!Validator.equals(uuid, ddmTemplate.getUuid())) {
+					if (!Objects.equals(uuid, ddmTemplate.getUuid())) {
 						list = null;
 
 						break;
@@ -675,8 +675,8 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchTemplateException(msg.toString());
@@ -720,7 +720,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 		if (result instanceof DDMTemplate) {
 			DDMTemplate ddmTemplate = (DDMTemplate)result;
 
-			if (!Validator.equals(uuid, ddmTemplate.getUuid()) ||
+			if (!Objects.equals(uuid, ddmTemplate.getUuid()) ||
 					(groupId != ddmTemplate.getGroupId())) {
 				result = null;
 			}
@@ -1011,7 +1011,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMTemplate ddmTemplate : list) {
-					if (!Validator.equals(uuid, ddmTemplate.getUuid()) ||
+					if (!Objects.equals(uuid, ddmTemplate.getUuid()) ||
 							(companyId != ddmTemplate.getCompanyId())) {
 						list = null;
 
@@ -2949,7 +2949,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMTemplate ddmTemplate : list) {
-					if (!Validator.equals(templateKey,
+					if (!Objects.equals(templateKey,
 								ddmTemplate.getTemplateKey())) {
 						list = null;
 
@@ -3496,7 +3496,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMTemplate ddmTemplate : list) {
-					if (!Validator.equals(type, ddmTemplate.getType())) {
+					if (!Objects.equals(type, ddmTemplate.getType())) {
 						list = null;
 
 						break;
@@ -4041,7 +4041,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMTemplate ddmTemplate : list) {
-					if (!Validator.equals(language, ddmTemplate.getLanguage())) {
+					if (!Objects.equals(language, ddmTemplate.getLanguage())) {
 						list = null;
 
 						break;
@@ -4512,8 +4512,8 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchTemplateException(msg.toString());
@@ -8601,8 +8601,8 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchTemplateException(msg.toString());
@@ -8651,7 +8651,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			if ((groupId != ddmTemplate.getGroupId()) ||
 					(classNameId != ddmTemplate.getClassNameId()) ||
-					!Validator.equals(templateKey, ddmTemplate.getTemplateKey())) {
+					!Objects.equals(templateKey, ddmTemplate.getTemplateKey())) {
 				result = null;
 			}
 		}
@@ -8970,7 +8970,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 				for (DDMTemplate ddmTemplate : list) {
 					if ((classNameId != ddmTemplate.getClassNameId()) ||
 							(classPK != ddmTemplate.getClassPK()) ||
-							!Validator.equals(type, ddmTemplate.getType())) {
+							!Objects.equals(type, ddmTemplate.getType())) {
 						list = null;
 
 						break;
@@ -9606,7 +9606,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 					if ((groupId != ddmTemplate.getGroupId()) ||
 							(classNameId != ddmTemplate.getClassNameId()) ||
 							(classPK != ddmTemplate.getClassPK()) ||
-							!Validator.equals(type, ddmTemplate.getType())) {
+							!Objects.equals(type, ddmTemplate.getType())) {
 						list = null;
 
 						break;
@@ -10743,8 +10743,8 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 					if ((groupId != ddmTemplate.getGroupId()) ||
 							(classNameId != ddmTemplate.getClassNameId()) ||
 							(classPK != ddmTemplate.getClassPK()) ||
-							!Validator.equals(type, ddmTemplate.getType()) ||
-							!Validator.equals(mode, ddmTemplate.getMode())) {
+							!Objects.equals(type, ddmTemplate.getType()) ||
+							!Objects.equals(mode, ddmTemplate.getMode())) {
 						list = null;
 
 						break;
@@ -12148,8 +12148,8 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 					primaryKey);
 
 			if (ddmTemplate == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchTemplateException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -12594,8 +12594,8 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 		DDMTemplate ddmTemplate = fetchByPrimaryKey(primaryKey);
 
 		if (ddmTemplate == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchTemplateException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -12626,12 +12626,14 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 	 */
 	@Override
 	public DDMTemplate fetchByPrimaryKey(Serializable primaryKey) {
-		DDMTemplate ddmTemplate = (DDMTemplate)entityCache.getResult(DDMTemplateModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(DDMTemplateModelImpl.ENTITY_CACHE_ENABLED,
 				DDMTemplateImpl.class, primaryKey);
 
-		if (ddmTemplate == _nullDDMTemplate) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		DDMTemplate ddmTemplate = (DDMTemplate)serializable;
 
 		if (ddmTemplate == null) {
 			Session session = null;
@@ -12647,7 +12649,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 				}
 				else {
 					entityCache.putResult(DDMTemplateModelImpl.ENTITY_CACHE_ENABLED,
-						DDMTemplateImpl.class, primaryKey, _nullDDMTemplate);
+						DDMTemplateImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -12701,18 +12703,20 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			DDMTemplate ddmTemplate = (DDMTemplate)entityCache.getResult(DDMTemplateModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(DDMTemplateModelImpl.ENTITY_CACHE_ENABLED,
 					DDMTemplateImpl.class, primaryKey);
 
-			if (ddmTemplate == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, ddmTemplate);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (DDMTemplate)serializable);
+				}
 			}
 		}
 
@@ -12754,7 +12758,7 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(DDMTemplateModelImpl.ENTITY_CACHE_ENABLED,
-					DDMTemplateImpl.class, primaryKey, _nullDDMTemplate);
+					DDMTemplateImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -13009,22 +13013,4 @@ public class DDMTemplatePersistenceImpl extends BasePersistenceImpl<DDMTemplate>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "type", "mode"
 			});
-	private static final DDMTemplate _nullDDMTemplate = new DDMTemplateImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<DDMTemplate> toCacheModel() {
-				return _nullDDMTemplateCacheModel;
-			}
-		};
-
-	private static final CacheModel<DDMTemplate> _nullDDMTemplateCacheModel = new CacheModel<DDMTemplate>() {
-			@Override
-			public DDMTemplate toEntityModel() {
-				return _nullDDMTemplate;
-			}
-		};
 }

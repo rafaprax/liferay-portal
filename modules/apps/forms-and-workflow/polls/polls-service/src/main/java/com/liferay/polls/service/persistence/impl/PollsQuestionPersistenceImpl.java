@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -56,6 +55,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -203,7 +203,7 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 
 			if ((list != null) && !list.isEmpty()) {
 				for (PollsQuestion pollsQuestion : list) {
-					if (!Validator.equals(uuid, pollsQuestion.getUuid())) {
+					if (!Objects.equals(uuid, pollsQuestion.getUuid())) {
 						list = null;
 
 						break;
@@ -676,8 +676,8 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchQuestionException(msg.toString());
@@ -721,7 +721,7 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 		if (result instanceof PollsQuestion) {
 			PollsQuestion pollsQuestion = (PollsQuestion)result;
 
-			if (!Validator.equals(uuid, pollsQuestion.getUuid()) ||
+			if (!Objects.equals(uuid, pollsQuestion.getUuid()) ||
 					(groupId != pollsQuestion.getGroupId())) {
 				result = null;
 			}
@@ -1015,7 +1015,7 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 
 			if ((list != null) && !list.isEmpty()) {
 				for (PollsQuestion pollsQuestion : list) {
-					if (!Validator.equals(uuid, pollsQuestion.getUuid()) ||
+					if (!Objects.equals(uuid, pollsQuestion.getUuid()) ||
 							(companyId != pollsQuestion.getCompanyId())) {
 						list = null;
 
@@ -2539,8 +2539,8 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 					primaryKey);
 
 			if (pollsQuestion == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchQuestionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2765,8 +2765,8 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 		PollsQuestion pollsQuestion = fetchByPrimaryKey(primaryKey);
 
 		if (pollsQuestion == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchQuestionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2797,12 +2797,14 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 	 */
 	@Override
 	public PollsQuestion fetchByPrimaryKey(Serializable primaryKey) {
-		PollsQuestion pollsQuestion = (PollsQuestion)entityCache.getResult(PollsQuestionModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(PollsQuestionModelImpl.ENTITY_CACHE_ENABLED,
 				PollsQuestionImpl.class, primaryKey);
 
-		if (pollsQuestion == _nullPollsQuestion) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		PollsQuestion pollsQuestion = (PollsQuestion)serializable;
 
 		if (pollsQuestion == null) {
 			Session session = null;
@@ -2818,7 +2820,7 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 				}
 				else {
 					entityCache.putResult(PollsQuestionModelImpl.ENTITY_CACHE_ENABLED,
-						PollsQuestionImpl.class, primaryKey, _nullPollsQuestion);
+						PollsQuestionImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2872,18 +2874,20 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			PollsQuestion pollsQuestion = (PollsQuestion)entityCache.getResult(PollsQuestionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(PollsQuestionModelImpl.ENTITY_CACHE_ENABLED,
 					PollsQuestionImpl.class, primaryKey);
 
-			if (pollsQuestion == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, pollsQuestion);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (PollsQuestion)serializable);
+				}
 			}
 		}
 
@@ -2925,7 +2929,7 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(PollsQuestionModelImpl.ENTITY_CACHE_ENABLED,
-					PollsQuestionImpl.class, primaryKey, _nullPollsQuestion);
+					PollsQuestionImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3180,22 +3184,4 @@ public class PollsQuestionPersistenceImpl extends BasePersistenceImpl<PollsQuest
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final PollsQuestion _nullPollsQuestion = new PollsQuestionImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<PollsQuestion> toCacheModel() {
-				return _nullPollsQuestionCacheModel;
-			}
-		};
-
-	private static final CacheModel<PollsQuestion> _nullPollsQuestionCacheModel = new CacheModel<PollsQuestion>() {
-			@Override
-			public PollsQuestion toEntityModel() {
-				return _nullPollsQuestion;
-			}
-		};
 }

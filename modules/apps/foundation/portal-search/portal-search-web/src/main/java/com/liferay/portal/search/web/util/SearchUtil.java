@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
+import com.liferay.petra.xml.XMLUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -41,7 +42,6 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portlet.asset.util.AssetUtil;
-import com.liferay.util.xml.XMLUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,9 +85,7 @@ public class SearchUtil {
 								"scopeGroupId",
 								OpenSearchUtil.LIFERAY_NAMESPACE)));
 
-					if (Validator.isNotNull(entryScopeGroupId) &&
-						(inactiveGroupsCount > 0)) {
-
+					if ((entryScopeGroupId != 0) && (inactiveGroupsCount > 0)) {
 						Group entryGroup = GroupServiceUtil.getGroup(
 							entryScopeGroupId);
 
@@ -161,54 +159,66 @@ public class SearchUtil {
 			String currentURL)
 		throws Exception {
 
-		PortletURL viewContentURL = renderResponse.createRenderURL();
+		try {
+			PortletURL viewContentURL = renderResponse.createRenderURL();
 
-		viewContentURL.setParameter("mvcPath", "/view_content.jsp");
-		viewContentURL.setParameter("redirect", currentURL);
-		viewContentURL.setPortletMode(PortletMode.VIEW);
-		viewContentURL.setWindowState(WindowState.MAXIMIZED);
+			viewContentURL.setParameter("mvcPath", "/view_content.jsp");
+			viewContentURL.setParameter("redirect", currentURL);
+			viewContentURL.setPortletMode(PortletMode.VIEW);
+			viewContentURL.setWindowState(WindowState.MAXIMIZED);
 
-		if (Validator.isNull(className) || (classPK <= 0)) {
+			if (Validator.isNull(className) || (classPK <= 0)) {
+				return viewContentURL.toString();
+			}
+
+			AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(
+				className, classPK);
+
+			AssetRendererFactory<?> assetRendererFactory =
+				AssetRendererFactoryRegistryUtil.
+					getAssetRendererFactoryByClassName(className);
+
+			if (assetRendererFactory == null) {
+				return viewContentURL.toString();
+			}
+
+			viewContentURL.setParameter(
+				"assetEntryId", String.valueOf(assetEntry.getEntryId()));
+			viewContentURL.setParameter("type", assetRendererFactory.getType());
+
+			if (viewInContext) {
+				String viewFullContentURLString = viewContentURL.toString();
+
+				viewFullContentURLString = HttpUtil.setParameter(
+					viewFullContentURLString, "redirect", currentURL);
+
+				AssetRenderer<?> assetRenderer =
+					assetRendererFactory.getAssetRenderer(classPK);
+
+				String viewURL = assetRenderer.getURLViewInContext(
+					(LiferayPortletRequest)renderRequest,
+					(LiferayPortletResponse)renderResponse,
+					viewFullContentURLString);
+
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)renderRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
+
+				return AssetUtil.checkViewURL(
+					assetEntry, viewInContext, viewURL, currentURL,
+					themeDisplay);
+			}
+
 			return viewContentURL.toString();
 		}
+		catch (Exception e) {
+			_log.error(
+				"Unable to get search result  view URL for class " + className +
+					" with primary key " + classPK,
+				e);
 
-		AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(
-			className, classPK);
-
-		AssetRendererFactory<?> assetRendererFactory =
-			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(
-				className);
-
-		if (assetRendererFactory == null) {
-			return viewContentURL.toString();
+			return "";
 		}
-
-		viewContentURL.setParameter(
-			"assetEntryId", String.valueOf(assetEntry.getEntryId()));
-		viewContentURL.setParameter("type", assetRendererFactory.getType());
-
-		if (viewInContext) {
-			String viewFullContentURLString = viewContentURL.toString();
-
-			viewFullContentURLString = HttpUtil.setParameter(
-				viewFullContentURLString, "redirect", currentURL);
-
-			AssetRenderer<?> assetRenderer =
-				assetRendererFactory.getAssetRenderer(classPK);
-
-			String viewURL = assetRenderer.getURLViewInContext(
-				(LiferayPortletRequest)renderRequest,
-				(LiferayPortletResponse)renderResponse,
-				viewFullContentURLString);
-
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
-
-			return AssetUtil.checkViewURL(
-				assetEntry, viewInContext, viewURL, currentURL, themeDisplay);
-		}
-
-		return viewContentURL.toString();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(SearchUtil.class);

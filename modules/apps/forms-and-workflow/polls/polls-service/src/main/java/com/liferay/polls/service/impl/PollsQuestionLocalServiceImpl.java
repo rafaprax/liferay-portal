@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -67,7 +68,7 @@ public class PollsQuestionLocalServiceImpl
 				QuestionExpirationDateException.class);
 		}
 
-		validate(titleMap, descriptionMap, choices);
+		validate(titleMap, descriptionMap, choices, expirationDate);
 
 		long questionId = counterLocalService.increment();
 
@@ -226,6 +227,41 @@ public class PollsQuestionLocalServiceImpl
 	}
 
 	@Override
+	public List<PollsQuestion> search(
+		long companyId, long[] groupIds, String keywords, int start, int end,
+		OrderByComparator<PollsQuestion> orderByComparator) {
+
+		return pollsQuestionFinder.findByKeywords(
+			companyId, groupIds, keywords, start, end, orderByComparator);
+	}
+
+	@Override
+	public List<PollsQuestion> search(
+		long companyId, long[] groupIds, String name, String description,
+		boolean andOperator, int start, int end,
+		OrderByComparator<PollsQuestion> orderByComparator) {
+
+		return pollsQuestionFinder.findByC_G_T_D(
+			companyId, groupIds, name, description, andOperator, start, end,
+			orderByComparator);
+	}
+
+	@Override
+	public int searchCount(long companyId, long[] groupIds, String keywords) {
+		return pollsQuestionFinder.countByKeywords(
+			companyId, groupIds, keywords);
+	}
+
+	@Override
+	public int searchCount(
+		long companyId, long[] groupIds, String title, String description,
+		boolean andOperator) {
+
+		return pollsQuestionFinder.countByC_G_T_D(
+			companyId, groupIds, title, description, andOperator);
+	}
+
+	@Override
 	public PollsQuestion updateQuestion(
 			long userId, long questionId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, int expirationDateMonth,
@@ -248,7 +284,7 @@ public class PollsQuestionLocalServiceImpl
 				QuestionExpirationDateException.class);
 		}
 
-		validate(titleMap, descriptionMap, choices);
+		validate(titleMap, descriptionMap, choices, expirationDate);
 
 		PollsQuestion question = pollsQuestionPersistence.findByPrimaryKey(
 			questionId);
@@ -295,7 +331,7 @@ public class PollsQuestionLocalServiceImpl
 
 	protected void validate(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			List<PollsChoice> choices)
+			List<PollsChoice> choices, Date expirationDate)
 		throws PortalException {
 
 		Locale locale = LocaleUtil.getSiteDefault();
@@ -324,6 +360,11 @@ public class PollsQuestionLocalServiceImpl
 					throw new QuestionChoiceException();
 				}
 			}
+		}
+
+		if ((expirationDate != null) && expirationDate.before(new Date())) {
+			throw new QuestionExpirationDateException(
+				"Expiration date " + expirationDate + " is in the past");
 		}
 	}
 

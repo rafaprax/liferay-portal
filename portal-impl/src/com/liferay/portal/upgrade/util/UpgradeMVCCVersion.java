@@ -14,7 +14,6 @@
 
 package com.liferay.portal.upgrade.util;
 
-import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -32,8 +31,11 @@ import java.sql.ResultSet;
 import java.util.List;
 
 /**
- * @author Shuyang Zhou
+ * @author     Shuyang Zhou
+ * @deprecated As of 7.0.0, replaced by {@link
+ *             com.liferay.portal.kernel.upgrade.UpgradeMVCCVersion}
  */
+@Deprecated
 public class UpgradeMVCCVersion extends UpgradeProcess {
 
 	public void upgradeMVCCVersion(
@@ -48,21 +50,19 @@ public class UpgradeMVCCVersion extends UpgradeProcess {
 
 		tableName = normalizeName(tableName, databaseMetaData);
 
-		ResultSet tableResultSet = databaseMetaData.getTables(
-			null, null, tableName, null);
+		try (ResultSet tableResultSet = databaseMetaData.getTables(
+				null, null, tableName, null)) {
 
-		try {
 			if (!tableResultSet.next()) {
 				_log.error("Table " + tableName + " does not exist");
 
 				return;
 			}
 
-			ResultSet columnResultSet = databaseMetaData.getColumns(
-				null, null, tableName,
-				normalizeName("mvccVersion", databaseMetaData));
+			try (ResultSet columnResultSet = databaseMetaData.getColumns(
+					null, null, tableName,
+					normalizeName("mvccVersion", databaseMetaData))) {
 
-			try {
 				if (columnResultSet.next()) {
 					return;
 				}
@@ -76,12 +76,6 @@ public class UpgradeMVCCVersion extends UpgradeProcess {
 						"Added column mvccVersion to table " + tableName);
 				}
 			}
-			finally {
-				DataAccess.cleanUp(columnResultSet);
-			}
-		}
-		finally {
-			DataAccess.cleanUp(tableResultSet);
 		}
 	}
 

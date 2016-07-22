@@ -14,6 +14,8 @@
 
 package com.liferay.dynamic.data.mapping.kernel;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.search.Document;
@@ -29,6 +31,7 @@ import java.util.Map;
 /**
  * @author Leonardo Barros
  */
+@ProviderType
 public class DDMStructureManagerUtil {
 
 	public static void addAttributes(
@@ -178,7 +181,9 @@ public class DDMStructureManagerUtil {
 		_ddmStructureManager.updateStructureKey(structureId, structureKey);
 	}
 
-	private static final DDMStructureManager _ddmStructureManager =
-		ProxyFactory.newServiceTrackedInstance(DDMStructureManager.class);
+	private static volatile DDMStructureManager _ddmStructureManager =
+		ProxyFactory.newServiceTrackedInstance(
+			DDMStructureManager.class, DDMStructureManagerUtil.class,
+			"_ddmStructureManager");
 
 }

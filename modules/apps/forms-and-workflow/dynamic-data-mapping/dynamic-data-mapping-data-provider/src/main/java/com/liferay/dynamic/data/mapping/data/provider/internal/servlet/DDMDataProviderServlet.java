@@ -16,6 +16,7 @@ package com.liferay.dynamic.data.mapping.data.provider.internal.servlet;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderContext;
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderContextContributor;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderTracker;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializer;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
@@ -35,67 +36,54 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.servlet.filters.authverifier.AuthVerifierFilter;
 
 import java.io.IOException;
 
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
 /**
  * @author Bruno Basto
  */
-@Component(immediate = true)
+@Component(
+	immediate = true,
+	property = {
+		"osgi.http.whiteboard.servlet.name=com.liferay.dynamic.data.mapping.data.provider.internal.servlet.DDMDataProviderServlet",
+		"osgi.http.whiteboard.servlet.pattern=/dynamic-data-mapping-data-provider/*",
+		"servlet.init.httpMethods=GET,POST,HEAD"
+	},
+	service = Servlet.class
+)
 public class DDMDataProviderServlet extends HttpServlet {
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
-		Hashtable<String, String> properties = new Hashtable<>();
+	protected void addDDMDataProviderContextParameters(
+		HttpServletRequest request,
+		DDMDataProviderContext ddmDataProviderContext,
+		List<DDMDataProviderContextContributor>
+			ddmDataProviderContextContributors) {
 
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_PATH,
-			"/dynamic-data-mapping-data-provider");
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_INIT_PARAM_PREFIX +
-				"auth.verifier.PortalSessionAuthVerifier.urls.includes",
-			"/dynamic-data-mapping-data-provider/*");
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_NAME,
-			"AuthVerifierFilter");
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_PATTERN,
-			"/dynamic-data-mapping-data-provider/*");
+		for (DDMDataProviderContextContributor
+				ddmDataProviderContextContributor :
+					ddmDataProviderContextContributors) {
 
-		bundleContext.registerService(
-			Filter.class, new AuthVerifierFilter(), properties);
+			Map<String, String> parameters =
+				ddmDataProviderContextContributor.getParameters(request);
 
-		properties = new Hashtable<>();
+			if (parameters == null) {
+				continue;
+			}
 
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_PATH,
-			"/dynamic-data-mapping-data-provider");
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME,
-			"DDMDataProviderServlet");
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN,
-			"/dynamic-data-mapping-data-provider/*");
-		properties.put("servlet.init.httpMethods", "GET,POST,HEAD");
-
-		bundleContext.registerService(Servlet.class, this, properties);
+			ddmDataProviderContext.addParameters(parameters);
+		}
 	}
 
 	@Override
@@ -103,10 +91,7 @@ public class DDMDataProviderServlet extends HttpServlet {
 			HttpServletRequest request, HttpServletResponse response)
 		throws IOException, ServletException {
 
-		long ddmDataProviderInstanceId = ParamUtil.getLong(
-			request, "ddmDataProviderInstanceId");
-
-		String data = doGetData(ddmDataProviderInstanceId);
+		String data = doGetData(request);
 
 		if (data == null) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -120,8 +105,11 @@ public class DDMDataProviderServlet extends HttpServlet {
 		ServletResponseUtil.write(response, data);
 	}
 
-	protected String doGetData(long ddmDataProviderInstanceId) {
+	protected String doGetData(HttpServletRequest request) {
 		try {
+			long ddmDataProviderInstanceId = ParamUtil.getLong(
+				request, "ddmDataProviderInstanceId");
+
 			DDMDataProviderInstance ddmDataProviderInstance =
 				_ddmDataProviderInstanceService.getDataProviderInstance(
 					ddmDataProviderInstanceId);
@@ -139,6 +127,16 @@ public class DDMDataProviderServlet extends HttpServlet {
 
 			DDMDataProviderContext ddmDataProviderContext =
 				new DDMDataProviderContext(ddmFormValues);
+
+			List<DDMDataProviderContextContributor>
+				ddmDataProviderContextContributors =
+					_ddmDataProviderTracker.
+						getDDMDataProviderContextContributors(
+							ddmDataProviderInstance.getType());
+
+			addDDMDataProviderContextParameters(
+				request, ddmDataProviderContext,
+				ddmDataProviderContextContributors);
 
 			JSONArray jsonArray = toJSONArray(
 				ddmDataProvider.getData(ddmDataProviderContext));

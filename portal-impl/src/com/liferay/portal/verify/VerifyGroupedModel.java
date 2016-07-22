@@ -16,6 +16,7 @@ package com.liferay.portal.verify;
 
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.concurrent.ThrowableAwareRunnable;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -23,7 +24,6 @@ import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.verify.model.VerifiableGroupedModel;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class VerifyGroupedModel extends VerifyProcess {
 
-	public void verify(VerifiableGroupedModel ... verifiableGroupedModels)
+	public void verify(VerifiableGroupedModel... verifiableGroupedModels)
 		throws Exception {
 
 		List<String> unverifiedTableNames = new ArrayList<>();
@@ -151,12 +151,11 @@ public class VerifyGroupedModel extends VerifyProcess {
 				PreparedStatement ps1 = con.prepareStatement(sb.toString());
 				ResultSet rs = ps1.executeQuery()) {
 
-				sb = new StringBundler(6);
+				sb = new StringBundler(5);
 
 				sb.append("update ");
 				sb.append(verifiableGroupedModel.getTableName());
-				sb.append(" set groupId = ?");
-				sb.append(" where ");
+				sb.append(" set groupId = ? where ");
 				sb.append(verifiableGroupedModel.getPrimaryKeyColumnName());
 				sb.append(" = ?");
 

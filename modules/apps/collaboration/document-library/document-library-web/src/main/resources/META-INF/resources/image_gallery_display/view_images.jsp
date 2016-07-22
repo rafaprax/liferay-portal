@@ -30,7 +30,6 @@ DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletI
 		className="Object"
 		modelVar="result"
 	>
-
 		<%@ include file="/document_library/cast_result.jspf" %>
 
 		<c:choose>
@@ -84,7 +83,7 @@ DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletI
 					}
 				}
 
-				row.setClassName("col-md-4 col-sm-4 col-xs-6");
+				row.setCssClass("lfr-asset-item");
 				%>
 
 				<liferay-ui:search-container-column-text>
@@ -122,7 +121,7 @@ DLPortletInstanceSettingsHelper dlPortletInstanceSettingsHelper = new DLPortletI
 				</portlet:renderURL>
 
 				<%
-				row.setCssClass("col-md-4 col-sm-4 col-xs-6");
+				row.setCssClass("lfr-asset-folder");
 				%>
 
 				<liferay-ui:search-container-column-text>

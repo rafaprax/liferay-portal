@@ -117,7 +117,7 @@
 
 		<execute macro="PortletEntry#publish" />
 
-		<execute function="Click" locator1="Icon#BACK" />
+		<execute function="Click" locator1="Icon#ANGLE_LEFT_BACK" />
 
 		<execute macro="MessageboardsThread#viewMarkedAsQuestionPG">
 			<var name="threadSubject" value="${threadSubject}" />
@@ -237,13 +237,6 @@
 	<command name="banUser">
 		<var name="key_userName" value="${userName}" />
 
-		<if>
-			<condition function="IsNotVisible" locator1="MessageBoardsThread#MESSAGE_USER_DETAILS" />
-			<then>
-				<execute function="MakeVisible" locator1="MessageBoardsThread#MESSAGE_USER_DETAILS" />
-			</then>
-		</if>
-
 		<execute function="AssertClick" locator1="MessageBoardsThread#MESSAGE_BAN_THIS_USER" value1="Ban This User" />
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
@@ -301,7 +294,7 @@
 		<if>
 			<isset var="threadBodyEdit" />
 			<then>
-				<execute function="Type#typeCKEditor" locator1="CKEditor#BODY_FIELD" value1="${threadBodyEdit}" />
+				<execute function="Type#typeCKEditorWaitForCKEditor" locator1="CKEditor#BODY_FIELD" value1="${threadBodyEdit}" />
 			</then>
 		</if>
 
@@ -403,13 +396,13 @@
 		<if>
 			<isset var="messageBoardsThreadURL" />
 			<then>
-				<execute function="AssertLocation" value1="http://localhost:8080/web/guest/message-boards/-/${messageBoardsThreadURL}/" />
+				<execute function="AssertLocation" value1="${messageBoardsThreadURL}" />
 			</then>
 			<else>
 				<execute function="AssertTextEquals" locator1="MessageBoards#THREAD_LIST_THREAD" value1="${threadSubject}" />
 				<execute function="AssertTextEquals#assertPartialText" locator1="MessageBoards#THREAD_LIST_POSTS" value1="${postCount} Post" />
 				<execute function="AssertTextEquals#assertPartialText" locator1="MessageBoards#THREAD_LIST_LAST_POST" value1="${lastPostUserName}" />
-				<execute function="Click" locator1="MessageBoards#THREAD_LIST_THREAD" value1="${threadSubject}" />
+				<execute function="AssertClick" locator1="MessageBoards#THREAD_LIST_THREAD" value1="${threadSubject}" />
 			</else>
 		</if>
 	</command>
@@ -473,15 +466,17 @@
 			<then>
 				<execute function="SelectFrame" value1="relative=top" />
 				<execute function="AssertElementPresent" locator1="MessageBoardsMoveThread#CATEGORY_FIELD" />
-				<execute function="Check" locator1="MessageBoardsMoveThread#ADD_EXPLANATION_POST_CHECKBOX" />
-				<execute function="Type" locator1="MessageBoardsMoveThread#ADD_EXPLANATION_POST_SUBJECT_FIELD" value1="${explanationSubject}" />
-				<execute function="Type#typeCKEditor" locator1="MessageBoardsMoveThread#ADD_EXPLANATION_POST_BODY_FIELD" value1="${explanationBody}" />
+				<execute function="Check" locator1="Checkbox#ADD_EXPLANATION_POST" />
+				<execute function="Type" locator1="TextInput#SUBJECT" value1="${explanationSubject}" />
+				<execute function="Type#typeCKEditorWaitForCKEditor" locator1="CKEditor#BODY_FIELD" value1="${explanationBody}" />
 			</then>
 		</if>
 
 		<execute function="SelectFrame" value1="relative=top" />
 		<execute function="AssertElementPresent" locator1="MessageBoardsMoveThread#CATEGORY_FIELD" />
 		<execute function="AssertClick" locator1="Button#MOVE_THREAD" value1="Move Thread" />
+
+		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
 	<command name="moveToHomePG">
@@ -522,9 +517,9 @@
 			<then>
 				<execute function="SelectFrame" value1="relative=top" />
 				<execute function="AssertElementPresent" locator1="MessageBoardsMoveThread#CATEGORY_FIELD" />
-				<execute function="Check" locator1="MessageBoardsMoveThread#ADD_EXPLANATION_POST_CHECKBOX" />
-				<execute function="Type" locator1="MessageBoardsMoveThread#ADD_EXPLANATION_POST_SUBJECT_FIELD" value1="${explanationSubject}" />
-				<execute function="Type#typeCKEditor" locator1="MessageBoardsMoveThread#ADD_EXPLANATION_POST_BODY_FIELD" value1="${explanationBody}" />
+				<execute function="Check" locator1="Checkbox#ADD_EXPLANATION_POST" />
+				<execute function="Type" locator1="TextInput#SUBJECT" value1="${explanationSubject}" />
+				<execute function="Type#typeCKEditorWaitForCKEditor" locator1="CKEditor#BODY_FIELD" value1="${explanationBody}" />
 			</then>
 		</if>
 
@@ -625,7 +620,8 @@
 
 		<execute function="Click" locator1="MessageBoardsThread#THREAD_REPLY_BUTTON" />
 
-		<execute function="Type#typeCKEditor" locator1="CKEditor#BODY_FIELD" value1="${threadReplyBody}" />
+		<execute function="Type#typeCKEditorWaitForCKEditor" locator1="CKEditor#BODY_FIELD" value1="${threadReplyBody}" />
+
 		<execute macro="PortletEntry#publish" />
 
 		<if>
@@ -800,42 +796,6 @@
 				<execute function="AssertElementPresent" locator1="Message#SUCCESS" />
 			</then>
 		</if>
-
-		<execute macro="Navigator#openURL" />
-
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Recycle Bin" />
-		</execute>
-
-		<execute macro="RecycleBin#emptyCP" />
-	</command>
-
-	<command name="tearDownPG">
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
-			<var name="pageName" value="${pageName}" />
-			<var name="soDashboard" value="${soDashboard}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<while>
-			<condition function="IsElementPresent" locator1="MessageBoards#VERTICAL_ELLIPSIS_GENERIC" />
-			<then>
-				<execute function="Click" locator1="MessageBoards#VERTICAL_ELLIPSIS_GENERIC" />
-				<execute macro="PortletEntry#clickMoveToRecycleBin" />
-			</then>
-		</while>
-
-		<execute function="AssertClick" locator1="MessageBoards#NAVIGATION_MY_POSTS" value1="My Posts" />
-
-		<while>
-			<condition function="IsElementPresent" locator1="MessageBoardsMyPosts#THREAD_TABLE_ACTIONS_GENERIC" />
-			<then>
-				<execute function="Click" locator1="MessageBoardsMyPosts#THREAD_TABLE_ACTIONS_GENERIC" />
-				<execute macro="PortletEntry#clickMoveToRecycleBin" />
-			</then>
-		</while>
 
 		<execute macro="Navigator#openURL" />
 
@@ -1220,12 +1180,8 @@
 		<execute function="AssertTextEquals" locator1="MessageBoardsThread#THREAD_SUBJECT" value1="Thread Split" />
 		<execute function="AssertTextEquals#assertPartialText" locator1="MessageBoardsThread#THREAD_BODY" value1="${threadSplitReplyBody}" />
 
-		<execute macro="Page#gotoPG">
-			<var name="defaultURL" value="${defaultURL}" />
-			<var name="nodePort" value="${nodePort}" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
-			<var name="soDashboard" value="${soDashboard}" />
-			<var name="soPage" value="${soPage}" />
 		</execute>
 
 		<var name="key_postsNumber" value="1" />
@@ -1256,7 +1212,7 @@
 		<execute function="AssertTextEquals" locator1="MessageBoardsStatistics#GENERAL_NUMBER_OF_CATEGORIES" value1="0" />
 		<execute function="AssertTextEquals" locator1="MessageBoardsStatistics#GENERAL_NUMBER_OF_POSTS" value1="0" />
 		<execute function="AssertTextEquals" locator1="MessageBoardsStatistics#GENERAL_NUMBER_OF_PARTICIPANTS" value1="0" />
-		<execute function="AssertTextEquals" locator1="Message#NO_TOP_POSTERS" value1="There are no top posters." />
+		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="There are no top posters." />
 	</command>
 
 	<command name="viewStatisticsPostsCountPG">

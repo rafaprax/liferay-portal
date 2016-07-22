@@ -167,26 +167,26 @@ for (Group group : allGroups) {
 	<portlet:param name="backURL" value="<%= backURL %>" />
 </portlet:renderURL>
 
-<aui:form action="<%= editUserActionURL %>" cssClass="container-fluid-1280" method="post" name="fm">
+<aui:form action="<%= editUserActionURL %>" cssClass="container-fluid-1280 portlet-users-admin-edit-user" method="post" name="fm">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= (selUser == null) ? Constants.ADD : Constants.UPDATE %>" />
 	<aui:input name="redirect" type="hidden" value="<%= editUserRenderURL %>" />
 	<aui:input name="backURL" type="hidden" value="<%= backURL %>" />
 	<aui:input name="p_u_i_d" type="hidden" value="<%= (selUser != null) ? selUser.getUserId() : 0 %>" />
 
 	<%
-	request.setAttribute("user.selUser", selUser);
-	request.setAttribute("user.selContact", selContact);
-	request.setAttribute("user.passwordPolicy", passwordPolicy);
-	request.setAttribute("user.groups", groups);
-	request.setAttribute("user.inheritedSites", inheritedSites);
-	request.setAttribute("user.organizations", organizations);
-	request.setAttribute("user.roles", roles);
-	request.setAttribute("user.organizationRoles", organizationRoles);
-	request.setAttribute("user.siteRoles", siteRoles);
-	request.setAttribute("user.inheritedSiteRoles", inheritedSiteRoles);
-	request.setAttribute("user.userGroups", userGroups);
 	request.setAttribute("user.allGroups", allGroups);
+	request.setAttribute("user.groups", groups);
+	request.setAttribute("user.inheritedSiteRoles", inheritedSiteRoles);
+	request.setAttribute("user.inheritedSites", inheritedSites);
+	request.setAttribute("user.organizationRoles", organizationRoles);
+	request.setAttribute("user.organizations", organizations);
+	request.setAttribute("user.passwordPolicy", passwordPolicy);
 	request.setAttribute("user.roleGroups", roleGroups);
+	request.setAttribute("user.roles", roles);
+	request.setAttribute("user.selContact", selContact);
+	request.setAttribute("user.selUser", selUser);
+	request.setAttribute("user.siteRoles", siteRoles);
+	request.setAttribute("user.userGroups", userGroups);
 
 	request.setAttribute("addresses.className", Contact.class.getName());
 	request.setAttribute("emailAddresses.className", Contact.class.getName());

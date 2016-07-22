@@ -28,7 +28,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
@@ -36,7 +35,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 import com.liferay.portlet.social.model.impl.SocialActivitySettingImpl;
 import com.liferay.portlet.social.model.impl.SocialActivitySettingModelImpl;
@@ -53,6 +51,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -2350,8 +2349,8 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchActivitySettingException(msg.toString());
@@ -2405,7 +2404,7 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 			if ((groupId != socialActivitySetting.getGroupId()) ||
 					(classNameId != socialActivitySetting.getClassNameId()) ||
 					(activityType != socialActivitySetting.getActivityType()) ||
-					!Validator.equals(name, socialActivitySetting.getName())) {
+					!Objects.equals(name, socialActivitySetting.getName())) {
 				result = null;
 			}
 		}
@@ -2819,8 +2818,8 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 					primaryKey);
 
 			if (socialActivitySetting == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchActivitySettingException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3040,8 +3039,8 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 		SocialActivitySetting socialActivitySetting = fetchByPrimaryKey(primaryKey);
 
 		if (socialActivitySetting == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchActivitySettingException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3072,12 +3071,14 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 	 */
 	@Override
 	public SocialActivitySetting fetchByPrimaryKey(Serializable primaryKey) {
-		SocialActivitySetting socialActivitySetting = (SocialActivitySetting)entityCache.getResult(SocialActivitySettingModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(SocialActivitySettingModelImpl.ENTITY_CACHE_ENABLED,
 				SocialActivitySettingImpl.class, primaryKey);
 
-		if (socialActivitySetting == _nullSocialActivitySetting) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		SocialActivitySetting socialActivitySetting = (SocialActivitySetting)serializable;
 
 		if (socialActivitySetting == null) {
 			Session session = null;
@@ -3093,8 +3094,7 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 				}
 				else {
 					entityCache.putResult(SocialActivitySettingModelImpl.ENTITY_CACHE_ENABLED,
-						SocialActivitySettingImpl.class, primaryKey,
-						_nullSocialActivitySetting);
+						SocialActivitySettingImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -3148,18 +3148,20 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			SocialActivitySetting socialActivitySetting = (SocialActivitySetting)entityCache.getResult(SocialActivitySettingModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(SocialActivitySettingModelImpl.ENTITY_CACHE_ENABLED,
 					SocialActivitySettingImpl.class, primaryKey);
 
-			if (socialActivitySetting == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, socialActivitySetting);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (SocialActivitySetting)serializable);
+				}
 			}
 		}
 
@@ -3202,8 +3204,7 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(SocialActivitySettingModelImpl.ENTITY_CACHE_ENABLED,
-					SocialActivitySettingImpl.class, primaryKey,
-					_nullSocialActivitySetting);
+					SocialActivitySettingImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3438,23 +3439,4 @@ public class SocialActivitySettingPersistenceImpl extends BasePersistenceImpl<So
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No SocialActivitySetting exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No SocialActivitySetting exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(SocialActivitySettingPersistenceImpl.class);
-	private static final SocialActivitySetting _nullSocialActivitySetting = new SocialActivitySettingImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<SocialActivitySetting> toCacheModel() {
-				return _nullSocialActivitySettingCacheModel;
-			}
-		};
-
-	private static final CacheModel<SocialActivitySetting> _nullSocialActivitySettingCacheModel =
-		new CacheModel<SocialActivitySetting>() {
-			@Override
-			public SocialActivitySetting toEntityModel() {
-				return _nullSocialActivitySetting;
-			}
-		};
 }

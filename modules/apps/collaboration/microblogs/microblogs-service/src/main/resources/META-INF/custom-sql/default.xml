@@ -7,7 +7,7 @@
 				COUNT(DISTINCT MicroblogsEntry.microblogsEntryId) AS COUNT_VALUE
 			FROM
 				MicroblogsEntry
-			LEFT JOIN
+			LEFT OUTER JOIN
 				SocialRelation ON
 					(MicroblogsEntry.userId = SocialRelation.userId2)
 			WHERE
@@ -23,6 +23,9 @@
 					) OR
 					(
 						MicroblogsEntry.userId = ?
+					) OR
+					(
+						MicroblogsEntry.socialRelationType = 0
 					)
 				) AND
 				(
@@ -37,7 +40,7 @@
 			FROM
 				MicroblogsEntry
 			LEFT JOIN
-				MicroblogsEntry AS TEMP_TABLE ON
+				MicroblogsEntry TEMP_TABLE ON
 					(MicroblogsEntry.parentMicroblogsEntryId = TEMP_TABLE.microblogsEntryId)
 			LEFT JOIN
 				SocialRelation ON
@@ -63,7 +66,7 @@
 			FROM
 				MicroblogsEntry
 			LEFT JOIN
-				MicroblogsEntry AS TEMP_TABLE ON
+				MicroblogsEntry TEMP_TABLE ON
 					(MicroblogsEntry.parentMicroblogsEntryId = TEMP_TABLE.microblogsEntryId)
 			LEFT JOIN
 				SocialRelation ON
@@ -121,7 +124,7 @@
 			FROM
 				MicroblogsEntry
 			LEFT JOIN
-				MicroblogsEntry AS TEMP_TABLE ON
+				MicroblogsEntry TEMP_TABLE ON
 					(MicroblogsEntry.parentMicroblogsEntryId = TEMP_TABLE.microblogsEntryId)
 			LEFT JOIN
 				SocialRelation ON
@@ -169,7 +172,7 @@
 				DISTINCT MicroblogsEntry.microblogsEntryId, MicroblogsEntry.createDate
 			FROM
 				MicroblogsEntry
-			LEFT JOIN
+			LEFT OUTER JOIN
 				SocialRelation ON
 					(MicroblogsEntry.userId = SocialRelation.userId2)
 			WHERE
@@ -185,6 +188,9 @@
 					) OR
 					(
 						MicroblogsEntry.userId = ?
+					) OR
+					(
+						MicroblogsEntry.socialRelationType = 0
 					)
 				) AND
 				(
@@ -201,7 +207,7 @@
 			FROM
 				MicroblogsEntry
 			LEFT JOIN
-				MicroblogsEntry AS TEMP_TABLE ON
+				MicroblogsEntry TEMP_TABLE ON
 					(MicroblogsEntry.parentMicroblogsEntryId = TEMP_TABLE.microblogsEntryId)
 			LEFT JOIN
 				SocialRelation ON
@@ -229,7 +235,7 @@
 			FROM
 				MicroblogsEntry
 			LEFT JOIN
-				MicroblogsEntry AS TEMP_TABLE ON
+				MicroblogsEntry TEMP_TABLE ON
 					(MicroblogsEntry.parentMicroblogsEntryId = TEMP_TABLE.microblogsEntryId)
 			LEFT JOIN
 				SocialRelation ON
@@ -291,7 +297,7 @@
 			FROM
 				MicroblogsEntry
 			LEFT JOIN
-				MicroblogsEntry AS TEMP_TABLE ON
+				MicroblogsEntry TEMP_TABLE ON
 					(MicroblogsEntry.parentMicroblogsEntryId = TEMP_TABLE.microblogsEntryId)
 			LEFT JOIN
 				SocialRelation ON

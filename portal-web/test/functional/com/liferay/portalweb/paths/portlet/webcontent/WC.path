@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td>LINK_TO_PAGE_SELECT_PAGE_RADIO</td>
-	<td>//label[contains(.,'${key_pageName}')]//input[@type='radio']</td>
+	<td>//li[contains(.,'${key_pageName}')]/input[@type='radio']</td>
 	<td></td>
 </tr>
 <!--SEARCH-->
@@ -140,6 +140,11 @@
 <tr>
 	<td>ENTRY_DESCRIPTIVE_TITLE_COPY</td>
 	<td>xpath=(//li[contains(@data-title,'${key_webContentTitle}')]//div[@class=' list-group-item-content']//a)[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ENTRY_DESCRIPTIVE_TITLE_ON_LIVE</td>
+	<td>//li[contains(@data-title,'${key_webContentTitle}')]//div[@class=' list-group-item-content']</td>
 	<td></td>
 </tr>
 <tr>

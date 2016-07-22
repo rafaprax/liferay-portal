@@ -30,7 +30,7 @@ if (Validator.isNotNull(scriptContent)) {
 			<c:if test="<%= ddmDisplayContext.isAutocompleteEnabled(language) %>">
 				<div class="lfr-template-palette-container pull-left" id="<portlet:namespace />templatePaletteContainer">
 					<div class="search" id="<portlet:namespace />paletteSearchContainer">
-						<input class="col-md-12 field form-control search-query" id="<portlet:namespace />paletteSearch" placeholder="<liferay-ui:message key="search" />" type="text">
+						<input class="col-md-12 field form-control search-query" id="<portlet:namespace />paletteSearch" placeholder="<liferay-ui:message key="search" />" type="text" />
 					</div>
 
 					<div class="lfr-template-palette" id="<portlet:namespace />paletteDataContainer">
@@ -566,8 +566,8 @@ private String _getPaletteItemTitle(HttpServletRequest request, String label, Cl
 
 	String javadocURL = null;
 
-	if (className.startsWith("com.liferay.portal")) {
-		javadocURL = "http://docs.liferay.com/portal/7.0/javadocs/";
+	if (className.startsWith("com.liferay.portal.kernel")) {
+		javadocURL = "http://docs.liferay.com/portal/7.0/javadocs/portal-kernel/";
 	}
 
 	if (Validator.isNotNull(javadocURL)) {
@@ -608,7 +608,7 @@ private String _getPaletteItemTitle(HttpServletRequest request, ResourceBundle r
 		sb.append("</i></p>");
 	}
 
-	if (!Validator.equals(templateVariableDefinition.getDataType(), "service-locator")) {
+	if (!Objects.equals(templateVariableDefinition.getDataType(), "service-locator")) {
 		sb.append(LanguageUtil.get(request, "variable"));
 		sb.append(StringPool.COLON);
 		sb.append("&nbsp;");

@@ -145,7 +145,7 @@
 			margin-bottom: 30px;
 
 			h4 p {
-			  line-height: 45px;
+				line-height: 45px;
 			}
 		}
 
@@ -168,6 +168,8 @@
 	}
 
 	.entry-content {
+		margin-bottom: 60px;
+
 		h4 {
 			margin-top: 0;
 
@@ -196,6 +198,14 @@
 
 		.small-image {
 			height: 140px;
+		}
+	}
+
+	.entry-card {
+		.aspect-ratio.aspect-ratio-bg-cover {
+			@include media-query(null, $screen-xs-max) {
+				padding-bottom: 50%;
+			}
 		}
 	}
 

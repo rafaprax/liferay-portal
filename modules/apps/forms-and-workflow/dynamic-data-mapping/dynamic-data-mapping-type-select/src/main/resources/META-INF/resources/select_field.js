@@ -16,8 +16,8 @@ AUI.add(
 						value: 'manual'
 					},
 
-					dataSourceURL: {
-						value: '/o/dynamic-data-mapping-data-provider/'
+					dataProviderURL: {
+						valueFn: '_valueDataProviderURL'
 					},
 
 					ddmDataProviderInstanceId: {
@@ -58,16 +58,7 @@ AUI.add(
 					getContextValue: function() {
 						var instance = this;
 
-						var value = SelectField.superclass.getContextValue.apply(instance, arguments);
-
-						if (!Array.isArray(value)) {
-							try {
-								value = JSON.parse(value);
-							}
-							catch (e) {
-								value = [value];
-							}
-						}
+						var value = instance._getContextValue();
 
 						return value[0] || '';
 					},
@@ -153,13 +144,28 @@ AUI.add(
 						return instance;
 					},
 
+					_getContextValue: function() {
+						var instance = this;
+
+						var value = SelectField.superclass.getContextValue.apply(instance, arguments);
+
+						if (!Array.isArray(value)) {
+							try {
+								value = JSON.parse(value);
+							}
+							catch (e) {
+								value = [value];
+							}
+						}
+
+						return value;
+					},
+
 					_getDataSourceData: function(callback) {
 						var instance = this;
 
-						var form = instance.getRoot();
-
 						A.io.request(
-							instance.get('dataSourceURL'),
+							instance.get('dataProviderURL'),
 							{
 								data: {
 									ddmDataProviderInstanceId: instance.get('ddmDataProviderInstanceId')
@@ -185,7 +191,9 @@ AUI.add(
 
 						var status = '';
 
-						if (instance.getContextValue() === option.value) {
+						var value = instance._getContextValue();
+
+						if (value.indexOf(option.value) > -1) {
 							status = 'selected';
 						}
 
@@ -206,6 +214,20 @@ AUI.add(
 
 					_setValue: function(val) {
 						return val || [];
+					},
+
+					_valueDataProviderURL: function() {
+						var instance = this;
+
+						var dataProviderURL;
+
+						var form = instance.getRoot();
+
+						if (form) {
+							dataProviderURL = form.get('dataProviderURL');
+						}
+
+						return dataProviderURL;
 					}
 				}
 			}

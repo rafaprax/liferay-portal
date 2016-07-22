@@ -28,6 +28,12 @@ SearchContainer searchContainer = new UserSearch(renderRequest, "cur2", currentU
 
 UserSearchTerms searchTerms = (UserSearchTerms)searchContainer.getSearchTerms();
 
+boolean hasAddUserPermission = PortalPermissionUtil.contains(permissionChecker, ActionKeys.ADD_USER);
+
+if (!searchTerms.isSearch() && hasAddUserPermission) {
+	searchContainer.setEmptyResultsMessageCssClass("taglib-empty-result-message-header-has-plus-btn");
+}
+
 RowChecker rowChecker = new EmptyOnClickRowChecker(renderResponse);
 
 rowChecker.setRowIds("rowIdsUser");
@@ -116,6 +122,7 @@ boolean showRestoreButton = (searchTerms.getStatus() != WorkflowConstants.STATUS
 	</c:if>
 
 	<liferay-ui:search-container
+		cssClass="users-search-container"
 		id="users"
 		searchContainer="<%= searchContainer %>"
 		var="userSearchContainer"
@@ -259,7 +266,13 @@ boolean showRestoreButton = (searchTerms.getStatus() != WorkflowConstants.STATUS
 		}
 		else {
 			if (filterManageableOrganizations && !UserPermissionUtil.contains(permissionChecker, ResourceConstants.PRIMKEY_DNE, ActionKeys.VIEW)) {
-				userParams.put("usersOrgs", ArrayUtil.toLongArray(user.getOrganizationIds()));
+				long[] organizationIds = user.getOrganizationIds();
+
+				if (ArrayUtil.isEmpty(organizationIds)) {
+					organizationIds = new long[] {0};
+				}
+
+				userParams.put("usersOrgs", ArrayUtil.toLongArray(organizationIds));
 			}
 		}
 
@@ -299,8 +312,7 @@ boolean showRestoreButton = (searchTerms.getStatus() != WorkflowConstants.STATUS
 			<%@ include file="/user/search_columns.jspf" %>
 
 			<liferay-ui:search-container-column-jsp
-				align="right"
-				cssClass="entry-action"
+				cssClass="entry-action-column"
 				path="/user_action.jsp"
 			/>
 		</liferay-ui:search-container-row>
@@ -322,7 +334,7 @@ boolean showRestoreButton = (searchTerms.getStatus() != WorkflowConstants.STATUS
 	</liferay-ui:search-container>
 </aui:form>
 
-<c:if test="<%= PortalPermissionUtil.contains(permissionChecker, ActionKeys.ADD_USER) %>">
+<c:if test="<%= hasAddUserPermission %>">
 	<liferay-frontend:add-menu>
 		<portlet:renderURL var="viewUsersURL">
 			<portlet:param name="toolbarItem" value="<%= toolbarItem %>" />

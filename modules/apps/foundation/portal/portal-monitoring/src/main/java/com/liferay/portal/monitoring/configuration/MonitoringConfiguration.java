@@ -28,6 +28,9 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface MonitoringConfiguration {
 
+	@Meta.AD(deflt = "true", required = false)
+	public boolean monitorEnabled();
+
 	@Meta.AD(deflt = "200", required = false)
 	public int monitoringMessageMaxQueueSize();
 
@@ -49,7 +52,7 @@ public interface MonitoringConfiguration {
 	@Meta.AD(deflt = "true", required = false)
 	public boolean monitorServiceRequest();
 
-	@Meta.AD(deflt = "true", required = false)
+	@Meta.AD(deflt = "false", required = false)
 	public boolean showPerRequestDataSample();
 
 }

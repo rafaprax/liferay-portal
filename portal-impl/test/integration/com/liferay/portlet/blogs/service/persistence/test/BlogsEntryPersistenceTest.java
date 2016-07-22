@@ -36,7 +36,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
 
@@ -54,6 +53,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -389,6 +389,22 @@ public class BlogsEntryPersistenceTest {
 	}
 
 	@Test
+	public void testCountByG_D_S() throws Exception {
+		_persistence.countByG_D_S(RandomTestUtil.nextLong(),
+			RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
+
+		_persistence.countByG_D_S(0L, RandomTestUtil.nextDate(), 0);
+	}
+
+	@Test
+	public void testCountByG_GtD_S() throws Exception {
+		_persistence.countByG_GtD_S(RandomTestUtil.nextLong(),
+			RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
+
+		_persistence.countByG_GtD_S(0L, RandomTestUtil.nextDate(), 0);
+	}
+
+	@Test
 	public void testCountByG_LtD_S() throws Exception {
 		_persistence.countByG_LtD_S(RandomTestUtil.nextLong(),
 			RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
@@ -695,7 +711,7 @@ public class BlogsEntryPersistenceTest {
 
 		BlogsEntry existingBlogsEntry = _persistence.findByPrimaryKey(newBlogsEntry.getPrimaryKey());
 
-		Assert.assertTrue(Validator.equals(existingBlogsEntry.getUuid(),
+		Assert.assertTrue(Objects.equals(existingBlogsEntry.getUuid(),
 				ReflectionTestUtil.invoke(existingBlogsEntry,
 					"getOriginalUuid", new Class<?>[0])));
 		Assert.assertEquals(Long.valueOf(existingBlogsEntry.getGroupId()),
@@ -705,7 +721,7 @@ public class BlogsEntryPersistenceTest {
 		Assert.assertEquals(Long.valueOf(existingBlogsEntry.getGroupId()),
 			ReflectionTestUtil.<Long>invoke(existingBlogsEntry,
 				"getOriginalGroupId", new Class<?>[0]));
-		Assert.assertTrue(Validator.equals(existingBlogsEntry.getUrlTitle(),
+		Assert.assertTrue(Objects.equals(existingBlogsEntry.getUrlTitle(),
 				ReflectionTestUtil.invoke(existingBlogsEntry,
 					"getOriginalUrlTitle", new Class<?>[0])));
 	}

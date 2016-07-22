@@ -9,11 +9,6 @@
 </thead>
 <tbody>
 <tr>
-	<td>ALERT_SUCCESS_MESSAGE</td>
-	<td>//fieldset[contains(@class,'fieldset')]//div[contains(@class,'alert') and contains(@class,'alert-success')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>USER_NAME</td>
 	<td>//span[@class='user-name']</td>
 	<td></td>
@@ -73,7 +68,7 @@
 </tr>
 <tr>
 	<td>SITES_TABLE</td>
-	<td>//tr[contains(.,'${key_siteName}')]/td[3]/a/span[contains(.,'Remove')]/span</td>
+	<td>//tr[contains(.,'${key_siteName}')]/td[3]//a/span[contains(.,'Remove')]/span</td>
 	<td></td>
 </tr>
 <tr>
@@ -228,6 +223,11 @@
 <tr>
 	<td>LANGUAGE_SELECT</td>
 	<td>//select[contains(@id,'MyAccountPortlet') and contains(@id,'languageId')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LANGUAGE_PAGE_DISPLAY_MESSAGE</td>
+	<td>//div[@id='portalMessageContainer']//a</td>
 	<td></td>
 </tr>
 <tr>

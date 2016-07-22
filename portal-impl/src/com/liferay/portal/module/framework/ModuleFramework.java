@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 
 import java.io.InputStream;
 
+import java.net.URL;
+
 /**
  * @author Raymond Augé
  * @author Miguel Pastor
@@ -28,6 +30,8 @@ public interface ModuleFramework {
 
 	public long addBundle(String location, InputStream inputStream)
 		throws PortalException;
+
+	public URL getBundleResource(long bundleId, String name);
 
 	public Object getFramework();
 
@@ -57,6 +61,8 @@ public interface ModuleFramework {
 	public void stopRuntime() throws Exception;
 
 	public void uninstallBundle(long bundleId) throws PortalException;
+
+	public void unregisterContext(Object context);
 
 	public void updateBundle(long bundleId) throws PortalException;
 

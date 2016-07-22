@@ -45,7 +45,7 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 	LARTypeException lte = (LARTypeException)errorException;
 	%>
 
-	<liferay-ui:message arguments="<%= lte.getMessage() %>" key="please-import-a-lar-file-of-the-correct-type-x-is-not-valid" />
+	<liferay-ui:message arguments="<%= lte.getMessage() %>" key="please-import-a-lar-file-of-the-correct-type-x" />
 </liferay-ui:error>
 
 <liferay-ui:error exception="<%= LayoutImportException.class %>" message="an-unexpected-error-occurred-while-importing-your-file" />
@@ -114,6 +114,7 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 
 	<aui:input name="redirect" type="hidden" value="<%= portletURL.toString() %>" />
 
+	<aui:input name="<%= PortletDataHandlerKeys.LAYOUT_SET_PROTOTYPE_SETTINGS %>" type="hidden" value="<%= true %>" />
 	<aui:input name="<%= PortletDataHandlerKeys.LAYOUT_SET_SETTINGS %>" type="hidden" value="<%= true %>" />
 	<aui:input name="<%= PortletDataHandlerKeys.LOGO %>" type="hidden" value="<%= true %>" />
 	<aui:input name="<%= PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS_ALL %>" type="hidden" value="<%= true %>" />
@@ -160,15 +161,20 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 				</dl>
 			</aui:fieldset>
 
-			<c:if test="<%= !group.isLayoutPrototype() && !group.isLayoutSetPrototype() && !group.isCompany() %>">
-				<aui:fieldset collapsible="<%= true %>" cssClass="options-group" label="pages">
-					<aui:input id="publicPages" label="public-pages" name="privateLayout" type="radio" value="<%= false %>" />
+			<c:choose>
+				<c:when test="<%= !group.isLayoutPrototype() && !group.isLayoutSetPrototype() && !group.isCompany() %>">
+					<aui:fieldset collapsible="<%= true %>" cssClass="options-group" label="pages">
+						<aui:input id="publicPages" label="public-pages" name="privateLayout" type="radio" value="<%= false %>" />
 
-					<aui:input id="privatePages" label="private-pages" name="privateLayout" type="radio" value="<%= true %>" />
+						<aui:input id="privatePages" label="private-pages" name="privateLayout" type="radio" value="<%= true %>" />
 
-					<aui:input helpMessage="delete-missing-layouts-help" label="delete-missing-layouts" name="<%= PortletDataHandlerKeys.DELETE_MISSING_LAYOUTS %>" type="checkbox" value="<%= false %>" />
-				</aui:fieldset>
-			</c:if>
+						<aui:input helpMessage="delete-missing-layouts-help" label="delete-missing-layouts" name="<%= PortletDataHandlerKeys.DELETE_MISSING_LAYOUTS %>" type="checkbox" value="<%= false %>" />
+					</aui:fieldset>
+				</c:when>
+				<c:otherwise>
+					<aui:input name="privateLayout" type="hidden" value="<%= true %>" />
+				</c:otherwise>
+			</c:choose>
 
 			<%
 			List<Portlet> dataPortlets = ListUtil.sort(manifestSummary.getDataPortlets(), new PortletTitleComparator(application, locale));
@@ -222,7 +228,11 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 														<span class="badge badge-warning deletions"><%= modelDeletionCount > 0 ? (modelDeletionCount + StringPool.SPACE + LanguageUtil.get(request, "deletions")) : StringPool.BLANK %></span>
 													</liferay-util:buffer>
 
-													<aui:input checked="<%= true %>" label="<%= portletTitle + badgeHTML %>" name="<%= PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE + portlet.getRootPortletId() %>" type="checkbox" />
+													<%
+													String rootControlId = PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE + portlet.getRootPortletId();
+													%>
+
+													<aui:input checked="<%= true %>" label="<%= portletTitle + badgeHTML %>" name="<%= rootControlId %>" type="checkbox" />
 
 													<%
 													PortletDataHandlerControl[] importControls = portletDataHandler.getImportControls();
@@ -238,10 +248,13 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 
 																		<%
 																		if (importControls != null) {
-																			request.setAttribute("render_controls.jsp-action", Constants.EXPORT);
+																			request.setAttribute("render_controls.jsp-action", Constants.IMPORT);
+																			request.setAttribute("render_controls.jsp-childControl", false);
 																			request.setAttribute("render_controls.jsp-controls", importControls);
 																			request.setAttribute("render_controls.jsp-manifestSummary", manifestSummary);
 																			request.setAttribute("render_controls.jsp-portletDisabled", !portletDataHandler.isPublishToLiveByDefault());
+																			request.setAttribute("render_controls.jsp-portletId", portlet.getPortletId());
+																			request.setAttribute("render_controls.jsp-rootControlId", rootControlId);
 																		%>
 
 																			<aui:field-wrapper label='<%= ArrayUtil.isNotEmpty(importMetadataControls) ? "content" : StringPool.BLANK %>'>
@@ -268,15 +281,15 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 
 																				if (ArrayUtil.isNotEmpty(childrenControls)) {
 																					request.setAttribute("render_controls.jsp-controls", childrenControls);
-																				%>
+																		%>
 
-																				<aui:field-wrapper label="content-metadata">
-																					<ul class="lfr-tree list-unstyled">
-																						<liferay-util:include page="/render_controls.jsp" servletContext="<%= application %>" />
-																					</ul>
-																				</aui:field-wrapper>
+																					<aui:field-wrapper label="content-metadata">
+																						<ul class="lfr-tree list-unstyled">
+																							<liferay-util:include page="/render_controls.jsp" servletContext="<%= application %>" />
+																						</ul>
+																					</aui:field-wrapper>
 
-																				<%
+																		<%
 																				}
 																			}
 																		}
@@ -343,7 +356,7 @@ ManifestSummary manifestSummary = ExportImportHelperUtil.getManifestSummary(user
 
 			<liferay-staging:deletions cmd="<%= Constants.IMPORT %>" />
 
-			<liferay-staging:permissions action="import" descriptionCSSClass="permissions-description" global="<%= group.isCompany() %>" labelCSSClass="permissions-label" />
+			<liferay-staging:permissions action="<%= Constants.IMPORT %>" descriptionCSSClass="permissions-description" global="<%= group.isCompany() %>" labelCSSClass="permissions-label" />
 
 			<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" cssClass="options-group" label="update-data">
 				<aui:input checked="<%= true %>" helpMessage="import-data-strategy-mirror-help" id="mirror" label="mirror" name="<%= PortletDataHandlerKeys.DATA_STRATEGY %>" type="radio" value="<%= PortletDataHandlerKeys.DATA_STRATEGY_MIRROR %>" />

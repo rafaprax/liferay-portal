@@ -69,20 +69,17 @@ public class DefinePermissionsPortletConfigurationIcon
 	public String getURL(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		try {
 			PortletURL portletURL = PortletURLFactoryUtil.create(
 				portletRequest, RolesAdminPortletKeys.ROLES_ADMIN,
-				themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
+				PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("mvcPath", "/edit_role_permissions.jsp");
 			portletURL.setParameter(Constants.CMD, Constants.VIEW);
 			portletURL.setParameter(
 				"redirect", PortalUtil.getCurrentURL(portletRequest));
 			portletURL.setParameter(
-				"roleId", String.valueOf(getRoleId(portletRequest)));
+				"roleId", String.valueOf(_getRoleId(portletRequest)));
 
 			return portletURL.toString();
 		}
@@ -104,13 +101,13 @@ public class DefinePermissionsPortletConfigurationIcon
 				(ThemeDisplay)portletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
-			long roleId = getRoleId(portletRequest);
+			long roleId = _getRoleId(portletRequest);
 
 			Role role = _roleService.fetchRole(roleId);
 
 			String roleName = role.getName();
 
-			return !roleName.equals(RoleConstants.ADMINISTRATOR) &&
+			if (!roleName.equals(RoleConstants.ADMINISTRATOR) &&
 				!roleName.equals(RoleConstants.SITE_OWNER) &&
 				!roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) &&
 				!roleName.equals(RoleConstants.ORGANIZATION_OWNER) &&
@@ -118,7 +115,12 @@ public class DefinePermissionsPortletConfigurationIcon
 				!roleName.equals(RoleConstants.SITE_ADMINISTRATOR) &&
 				RolePermissionUtil.contains(
 					themeDisplay.getPermissionChecker(), roleId,
-					ActionKeys.DEFINE_PERMISSIONS);
+					ActionKeys.DEFINE_PERMISSIONS)) {
+
+				return true;
+			}
+
+			return false;
 		}
 		catch (Exception e) {
 		}
@@ -131,7 +133,7 @@ public class DefinePermissionsPortletConfigurationIcon
 		_roleService = roleService;
 	}
 
-	private long getRoleId(PortletRequest portletRequest) {
+	private long _getRoleId(PortletRequest portletRequest) {
 		HttpServletRequest request = PortalUtil.getHttpServletRequest(
 			portletRequest);
 

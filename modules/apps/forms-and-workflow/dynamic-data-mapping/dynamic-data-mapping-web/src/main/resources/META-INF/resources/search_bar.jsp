@@ -21,7 +21,7 @@ String tabs1 = ParamUtil.getString(request, "tabs1", "structures");
 
 long groupId = ParamUtil.getLong(request, "groupId", themeDisplay.getSiteGroupId());
 
-String scopedLabel = Validator.isNull(scopeTitle) ? "structures" : scopeTitle;
+String scopedLabel = Validator.isNull(scopeTitle) ? ddmDisplay.getTitle(locale) : scopeTitle;
 %>
 
 <portlet:renderURL var="portletURL">
@@ -36,7 +36,7 @@ String scopedLabel = Validator.isNull(scopeTitle) ? "structures" : scopeTitle;
 	</aui:nav>
 
 	<aui:nav-bar-search>
-		<aui:form action="<%= portletURL.toString() %>" method="post" name="formSearch">
+		<aui:form action="<%= portletURL.toString() %>" method="post" name="searchForm">
 			<liferay-util:include page="/structure_search.jsp" servletContext="<%= application %>" />
 		</aui:form>
 	</aui:nav-bar-search>

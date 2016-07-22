@@ -32,6 +32,7 @@ import java.net.URLClassLoader;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -47,7 +48,9 @@ public class ClassLoaderTest {
 	@Test
 	public void testCreate1() throws Exception {
 		try {
-			new URLClassLoader(new URL[0], getClass().getClassLoader());
+			Class<?> clazz = getClass();
+
+			new URLClassLoader(new URL[0], clazz.getClassLoader());
 
 			Assert.fail();
 		}
@@ -155,7 +158,7 @@ public class ClassLoaderTest {
 
 	@Test
 	public void testGet11() throws Exception {
-		PortalRuntimePermission.checkGetClassLoader("flash-portlet");
+		PortalRuntimePermission.checkGetClassLoader("pacl-1-test-portlet");
 	}
 
 	@Test
@@ -194,7 +197,7 @@ public class ClassLoaderTest {
 	@Test
 	public void testGet15() throws Exception {
 		try {
-			PortletClassLoaderUtil.getClassLoader("1_WAR_chatportlet");
+			PortletClassLoaderUtil.getClassLoader("2_WAR_pacl_testportlet");
 
 			Assert.fail();
 		}
@@ -204,13 +207,13 @@ public class ClassLoaderTest {
 
 	@Test
 	public void testGet16() throws Exception {
-		PortletClassLoaderUtil.getClassLoader("1_WAR_flashportlet");
+		PortletClassLoaderUtil.getClassLoader("1_WAR_pacl_testportlet");
 	}
 
 	@Test
 	public void testGet17() throws Exception {
 		try {
-			PortletClassLoaderUtil.getClassLoader("chat-portlet");
+			PortletClassLoaderUtil.getClassLoader("pacl-2-test-portlet");
 
 			Assert.fail();
 		}
@@ -218,9 +221,10 @@ public class ClassLoaderTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testGet18() throws Exception {
-		PortletClassLoaderUtil.getClassLoader("flash-portlet");
+		PortletClassLoaderUtil.getClassLoader("pacl-1-test-portlet");
 	}
 
 	@Test

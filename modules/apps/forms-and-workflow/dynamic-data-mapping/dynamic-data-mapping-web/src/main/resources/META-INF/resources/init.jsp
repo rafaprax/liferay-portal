@@ -69,7 +69,8 @@ page import="com.liferay.dynamic.data.mapping.validator.DDMFormLayoutValidationE
 page import="com.liferay.dynamic.data.mapping.validator.DDMFormValidationException" %><%@
 page import="com.liferay.dynamic.data.mapping.web.configuration.DDMWebConfigurationKeys" %><%@
 page import="com.liferay.dynamic.data.mapping.web.configuration.DDMWebConfigurationUtil" %><%@
-page import="com.liferay.dynamic.data.mapping.web.display.context.DDMDisplayContext" %><%@
+page import="com.liferay.dynamic.data.mapping.web.internal.display.context.DDMDisplayContext" %><%@
+page import="com.liferay.petra.content.ContentUtil" %><%@
 page import="com.liferay.portal.kernel.bean.BeanParamUtil" %><%@
 page import="com.liferay.portal.kernel.configuration.Filter" %><%@
 page import="com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker" %><%@
@@ -115,8 +116,7 @@ page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
 page import="com.liferay.portal.template.TemplateContextHelper" %><%@
 page import="com.liferay.portlet.display.template.PortletDisplayTemplate" %><%@
 page import="com.liferay.portlet.display.template.PortletDisplayTemplateUtil" %><%@
-page import="com.liferay.taglib.search.ResultRow" %><%@
-page import="com.liferay.util.ContentUtil" %>
+page import="com.liferay.taglib.search.ResultRow" %>
 
 <%@ page import="java.util.ArrayList" %><%@
 page import="java.util.HashMap" %><%@
@@ -124,6 +124,7 @@ page import="java.util.Iterator" %><%@
 page import="java.util.List" %><%@
 page import="java.util.Locale" %><%@
 page import="java.util.Map" %><%@
+page import="java.util.Objects" %><%@
 page import="java.util.ResourceBundle" %><%@
 page import="java.util.Set" %><%@
 page import="java.util.StringTokenizer" %>
@@ -144,7 +145,6 @@ String refererWebDAVToken = ParamUtil.getString(request, "refererWebDAVToken", p
 String scopeTitle = ParamUtil.getString(request, "scopeTitle");
 boolean showAncestorScopes = ParamUtil.getBoolean(request, "showAncestorScopes");
 boolean showManageTemplates = ParamUtil.getBoolean(request, "showManageTemplates", true);
-boolean showToolbar = ParamUtil.getBoolean(request, "showToolbar", true);
 
 DDMDisplayContext ddmDisplayContext = (DDMDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
 
@@ -218,7 +218,7 @@ private JSONArray _getFieldReadOnlyAttributes(DDMStructure structure, String fie
 }
 
 private JSONArray _getFormTemplateFieldsJSONArray(DDMStructure structure, String script) throws Exception {
-	JSONArray jsonArray = DDMUtil.getDDMFormFieldsJSONArray(structure, script);
+	JSONArray jsonArray = DDMUtil.getDDMFormFieldsJSONArray((DDMStructure)null, script);
 
 	_addFormTemplateFieldAttributes(structure, jsonArray);
 

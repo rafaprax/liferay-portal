@@ -1,4 +1,5 @@
 <definition component-name="portal-user-management-and-portal-configuration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="User Groups" />
 
 	<set-up>
@@ -218,6 +219,8 @@
 	</command>
 
 	<command name="DeleteUserGroup" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="User Groups" />
 		</execute>
@@ -361,6 +364,14 @@
 	</command>
 
 	<command name="SearchCurrentMembersAssignedToUserGroup" priority="3">
+		<execute macro="ProductMenu#gotoControlPanelConfiguration">
+			<var name="portlet" value="Server Administration" />
+		</execute>
+
+		<execute macro="ServerAdministration#executeServerResourcesActions">
+			<var name="actionsDescription" value="Reindex all search indexes." />
+		</execute>
+
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="User Groups" />
 		</execute>
@@ -402,8 +413,8 @@
 			<var name="searchTerm" value="usersn" />
 		</execute>
 
-		<execute function="AssertTextEquals" locator1="CPUsergroupsAssignmembers#USER_TABLE_GENERIC_SCREEN_NAME_1" value1="usersn" />
-		<execute function="AssertNotVisible" locator1="CPUsergroupsAssignmembers#USER_TABLE_GENERIC_SCREEN_NAME_2" />
+		<execute function="AssertTextEquals" locator1="UsersAndOrganizationsAssignOrganizationalRoles#USER_TABLE_SCREEN_NAME_1" value1="usersn" />
+		<execute function="AssertNotVisible" locator1="UsersAndOrganizationsAssignOrganizationalRoles#USER_TABLE_SCREEN_NAME_2" />
 	</command>
 
 	<command name="SearchUserGroup" priority="3">

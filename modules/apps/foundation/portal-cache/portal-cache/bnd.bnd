@@ -1,6 +1,6 @@
 Bundle-Name: Liferay Portal Cache
 Bundle-SymbolicName: com.liferay.portal.cache
-Bundle-Version: 1.0.0
+Bundle-Version: 2.1.1
 DynamicImport-Package: *
 Export-Package:\
 	com.liferay.portal.cache,\
@@ -8,4 +8,3 @@ Export-Package:\
 	com.liferay.portal.cache.io
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Cache Engines
--include: ../../app.bnd

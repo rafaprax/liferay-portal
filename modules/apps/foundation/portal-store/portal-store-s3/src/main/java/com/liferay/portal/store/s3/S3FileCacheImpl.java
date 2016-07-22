@@ -17,7 +17,7 @@ package com.liferay.portal.store.s3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
@@ -107,13 +107,15 @@ public class S3FileCacheImpl implements S3FileCache {
 
 		File cacheFile = new File(cacheFileName);
 
+		InputStream inputStream = s3Object.getObjectContent();
+
 		if (cacheFile.exists() &&
 			(cacheFile.lastModified() >= lastModifiedDate.getTime())) {
 
+			StreamUtil.cleanUp(inputStream);
+
 			return cacheFile;
 		}
-
-		InputStream inputStream = s3Object.getObjectContent();
 
 		if (inputStream == null) {
 			throw new IOException("S3 object input stream is null");

@@ -724,20 +724,20 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/development/resin.jar</file-name>
-				<version>4.0.11</version>
-				<project-name>Resin</project-name>
-				<project-url>http://www.caucho.com/resin-4.0</project-url>
-				<licenses>
-					<license>
-						<license-name>GPL 2.0</license-name>
-						<license-url>http://www.gnu.org/licenses/gpl-2.0.html</license-url>
-					</license>
-				</licenses>
-				<comments>
-					See LEP-5048 and LPS-15805.
-				</comments>
-			</library>
+-				<file-name>lib/development/resin.jar</file-name>
+-				<version>4.0.44</version>
+-				<project-name>Resin</project-name>
+-				<project-url>http://www.caucho.com/resin-4.0</project-url>
+-				<licenses>
+-					<license>
+-						<license-name>GPL 2.0</license-name>
+-						<license-url>http://www.gnu.org/licenses/gpl-2.0.html</license-url>
+-					</license>
+-				</licenses>
+-				<comments>
+-					See LEP-5048 and LPS-15805.
+-				</comments>
+-			</library>
 			<library>
 				<file-name>lib/development/saxpath.jar</file-name>
 				<version>1.0 FCS</version>
@@ -746,18 +746,6 @@
 				<licenses>
 					<license>
 						<license-name>Werkin Digital License</license-name>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/development/script-10.jar</file-name>
-				<version>3.1.9</version>
-				<project-name>Resin</project-name>
-				<project-url>http://www.caucho.com/resin-3.1</project-url>
-				<licenses>
-					<license>
-						<license-name>GPL 2.0</license-name>
-						<license-url>http://www.gnu.org/licenses/gpl-2.0.html</license-url>
 					</license>
 				</licenses>
 			</library>
@@ -799,7 +787,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/spring-instrument.jar</file-name>
-				<version>3.2.10</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -809,12 +797,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/development/spring-instrument-tomcat.jar</file-name>
-				<version>3.2.10</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -824,12 +812,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/development/spring-test.jar</file-name>
-				<version>3.2.10</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -839,7 +827,7 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
@@ -1017,7 +1005,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/aspectj-rt.jar</file-name>
-				<version>1.8.0</version>
+				<version>1.8.9</version>
 				<project-name>AspectJ</project-name>
 				<project-url>http://www.eclipse.org/aspectj</project-url>
 				<licenses>
@@ -1029,7 +1017,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/aspectj-weaver.jar</file-name>
-				<version>1.8.0</version>
+				<version>1.8.9</version>
 				<project-name>AspectJ</project-name>
 				<project-url>http://www.eclipse.org/aspectj</project-url>
 				<licenses>
@@ -1039,7 +1027,7 @@
 					</license>
 				</licenses>
 				<comments>
-					Older versions of required removing testdata.* because it conflicted
+					Older versions required removing testdata.* because it conflicted
 					with JBoss 5.1.
 				</comments>
 			</library>
@@ -1091,23 +1079,6 @@
 					<license>
 						<license-name>Apache License 2.0</license-name>
 						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/portal/backport-concurrent.jar</file-name>
-				<version>3.1</version>
-				<project-name>Concurrent (Backport)</project-name>
-				<project-url>http://backport-jsr166.sourceforge.net</project-url>
-				<project-description>Backport of JSR 166 concurrent API to Java 1.4</project-description>
-				<licenses>
-					<license>
-						<license-name>Creative Commons Public Domain</license-name>
-						<license-url>http://creativecommons.org/publicdomain/zero/1.0/legalcode</license-url>
-					</license>
-					<license>
-						<license-name>Technology License From Sun Microsystems Inc. To Doug Lea</license-name>
-						<license-url>http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/sun-u.c.license.pdf</license-url>
 					</license>
 				</licenses>
 			</library>
@@ -1658,7 +1629,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/fontbox.jar</file-name>
-				<version>1.8.11</version>
+				<version>1.8.12</version>
 				<project-name>PDFBox</project-name>
 				<project-url>http://pdfbox.apache.org</project-url>
 				<licenses>
@@ -2034,7 +2005,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/jempbox.jar</file-name>
-				<version>1.8.11</version>
+				<version>1.8.12</version>
 				<project-name>PDFBox</project-name>
 				<project-url>http://pdfbox.apache.org</project-url>
 				<licenses>
@@ -2527,7 +2498,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/pdfbox.jar</file-name>
-				<version>1.8.11</version>
+				<version>1.8.12</version>
 				<project-name>PDFBox</project-name>
 				<project-url>http://pdfbox.apache.org</project-url>
 				<licenses>
@@ -2539,7 +2510,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi.jar</file-name>
-				<version>3.11 B2</version>
+				<version>3.11</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -2552,7 +2523,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi-ooxml.jar</file-name>
-				<version>3.11 B2</version>
+				<version>3.11</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -2565,7 +2536,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi-ooxml-schemas.jar</file-name>
-				<version>3.11 B2</version>
+				<version>3.11</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -2578,7 +2549,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi-scratchpad.jar</file-name>
-				<version>3.11 B2</version>
+				<version>3.11</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -2599,12 +2570,6 @@
 						<license-name>Apache License 2.0</license-name>
 						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
 						<copyright-notice>Copyright (c) 2005-2007 The Apache Software Foundation</copyright-notice>
-					</license>
-					<license>
-						<bundled-project-name>phpportlet</bundled-project-name>
-						<license-name>PHP License 2.02</license-name>
-						<license-url>http://www.php.net/license/2_02.txt</license-url>
-						<copyright-notice>Copyright (c) 1999-2002 The PHP Group. All rights reserved.</copyright-notice>
 					</license>
 				</licenses>
 			</library>
@@ -2753,7 +2718,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/spring-aop.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2763,12 +2728,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-aspects.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2778,12 +2743,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-beans.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2793,13 +2758,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See Lata from nodes,
-#    aggregating results, etc.PS-49575.
+					This includes missing OSGi headers.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-context.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2809,12 +2773,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-context-support.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2824,12 +2788,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-core.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2839,12 +2803,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-expression.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2854,12 +2818,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-jdbc.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2869,12 +2833,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-jms.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2884,12 +2848,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-orm.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2899,12 +2863,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-oxm.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2914,27 +2878,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
-				</comments>
-			</library>
-			<library>
-				<file-name>lib/portal/spring-struts.jar</file-name>
-				<version>3.2.15</version>
-				<project-name>Spring</project-name>
-				<project-url>http://www.springframework.org</project-url>
-				<licenses>
-					<license>
-						<license-name>Apache License 2.0</license-name>
-						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-					</license>
-				</licenses>
-				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-tx.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2944,12 +2893,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-web.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2959,12 +2908,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-webmvc.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2974,12 +2923,12 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>
 				<file-name>lib/portal/spring-webmvc-portlet.jar</file-name>
-				<version>3.2.15</version>
+				<version>4.1.9</version>
 				<project-name>Spring</project-name>
 				<project-url>http://www.springframework.org</project-url>
 				<licenses>
@@ -2989,7 +2938,7 @@
 					</license>
 				</licenses>
 				<comments>
-					This includes missing OSGi headers. See LPS-49575.
+					This does not include missing OSGi headers. See LPS-49575.
 				</comments>
 			</library>
 			<library>

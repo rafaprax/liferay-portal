@@ -23,7 +23,9 @@ boolean privateLayout = ParamUtil.getBoolean(request, "privateLayout");
 
 <aui:form cssClass="lfr-export-dialog" method="post" name="fm1">
 	<div class="lfr-dynamic-uploader">
-		<div class="lfr-upload-container" id="<portlet:namespace />fileUpload"></div>
+		<div class="container-fluid-1280">
+			<div class="lfr-upload-container" id="<portlet:namespace />fileUpload"></div>
+		</div>
 	</div>
 
 	<%
@@ -51,7 +53,7 @@ boolean privateLayout = ParamUtil.getBoolean(request, "privateLayout");
 
 				decimalSeparator: '<%= decimalFormatSymbols.getDecimalSeparator() %>',
 
-				deleteFile: '<liferay-portlet:actionURL name="importLayouts" doAsUserId="<%= user.getUserId() %>"><portlet:param name="mvcRenderCommandName" value="importLayouts" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE_TEMP %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />',
+				deleteFile: '<liferay-portlet:actionURL doAsUserId="<%= user.getUserId() %>" name="importLayouts"><portlet:param name="mvcRenderCommandName" value="importLayouts" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE_TEMP %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />',
 				fileDescription: '<%= StringUtil.merge(PrefsPropsUtil.getStringArray(PropsKeys.DL_FILE_EXTENSIONS, StringPool.COMMA)) %>',
 				maxFileSize: '<%= PrefsPropsUtil.getLong(PropsKeys.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE) %> B',
 				metadataContainer: '#<portlet:namespace />commonFileMetadataContainer',
@@ -69,7 +71,7 @@ boolean privateLayout = ParamUtil.getBoolean(request, "privateLayout");
 						groupId: <%= groupId %>
 					}
 				},
-				uploadFile: '<liferay-portlet:actionURL name="importLayouts" doAsUserId="<%= user.getUserId() %>"><portlet:param name="mvcRenderCommandName" value="importLayouts" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD_TEMP %>" /><portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" /><portlet:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />'
+				uploadFile: '<liferay-portlet:actionURL doAsUserId="<%= user.getUserId() %>" name="importLayouts"><portlet:param name="mvcRenderCommandName" value="importLayouts" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD_TEMP %>" /><portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" /><portlet:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />'
 			}
 		);
 
@@ -120,7 +122,7 @@ boolean privateLayout = ParamUtil.getBoolean(request, "privateLayout");
 					},
 
 					<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="importLayouts" var="importPagesURL">
-						<portlet:param name="p_p_isolated" value="true" />
+						<portlet:param name="p_p_isolated" value="<%= Boolean.TRUE.toString() %>" />
 						<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
 						<portlet:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
 						<portlet:param name="validate" value="<%= String.valueOf(Boolean.FALSE) %>" />

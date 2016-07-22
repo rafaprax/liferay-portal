@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 
 import java.io.Serializable;
 
+import java.text.Collator;
+
 import java.util.Comparator;
 import java.util.Locale;
 
@@ -29,6 +31,8 @@ public class ModelResourceComparator
 
 	public ModelResourceComparator(Locale locale) {
 		_locale = locale;
+
+		_collator = Collator.getInstance(_locale);
 	}
 
 	@Override
@@ -36,9 +40,10 @@ public class ModelResourceComparator
 		resource1 = ResourceActionsUtil.getModelResource(_locale, resource1);
 		resource2 = ResourceActionsUtil.getModelResource(_locale, resource2);
 
-		return resource1.compareTo(resource2);
+		return _collator.compare(resource1, resource2);
 	}
 
+	private final Collator _collator;
 	private final Locale _locale;
 
 }

@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * The trash entry remote service is responsible for returning trash entries.
  * For more information on trash entries services and TrashEntry, see {@link
- * com.liferay.portlet.trash.service.impl.TrashEntryLocalServiceImpl}.
+ * TrashEntryLocalServiceImpl}.
  *
  * @author Julio Camarero
  * @author Zsolt Berentey
@@ -205,7 +205,11 @@ public class TrashEntryServiceImpl extends TrashEntryServiceBaseImpl {
 
 		int entriesCount = trashEntryPersistence.countByGroupId(groupId);
 
-		boolean approximate = entriesCount > PropsValues.TRASH_SEARCH_LIMIT;
+		boolean approximate = false;
+
+		if (entriesCount > PropsValues.TRASH_SEARCH_LIMIT) {
+			approximate = true;
+		}
 
 		trashEntriesList.setApproximate(approximate);
 

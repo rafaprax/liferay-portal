@@ -136,6 +136,7 @@ import com.liferay.portal.kernel.security.auth.FullNameGenerator;
 import com.liferay.portal.kernel.security.auth.FullNameGeneratorFactory;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
@@ -213,6 +214,7 @@ import java.io.InputStreamReader;
 import java.text.Format;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -1286,10 +1288,10 @@ public class DataFactory {
 	public DDMStructureLayoutModel newDDLDDMStructureLayoutModel(
 		long groupId, DDMStructureVersionModel ddmStructureVersionModel) {
 
-		StringBundler sb = new StringBundler(3 + _maxDDLCustomFieldCount * 4);
+		StringBundler sb = new StringBundler(4 + _maxDDLCustomFieldCount * 4);
 
-		sb.append(
-			"{\"defaultLanguageId\": \"en_US\", \"pages\": [{\"rows\": [");
+		sb.append("{\"defaultLanguageId\": \"en_US\", \"pages\": [{\"rows\": ");
+		sb.append("[");
 
 		for (int i = 0; i < _maxDDLCustomFieldCount; i++) {
 			sb.append("{\"columns\": [{\"fieldNames\": [\"");
@@ -1302,8 +1304,8 @@ public class DataFactory {
 			sb.setIndex(sb.index() - 1);
 		}
 
-		sb.append("], \"title\": {\"en_US\": \"\"}}],");
-		sb.append("\"paginationMode\": \"single-page\"}");
+		sb.append("], \"title\": {\"en_US\": \"\"}}],\"paginationMode\": ");
+		sb.append("\"single-page\"}");
 
 		return newDDMStructureLayoutModel(
 			_globalGroupId, _defaultUserId,
@@ -1317,8 +1319,9 @@ public class DataFactory {
 		sb.append("\"defaultLanguageId\": \"en_US\", \"fields\": [");
 
 		for (int i = 0; i < _maxDDLCustomFieldCount; i++) {
-			sb.append("{\"dataType\": \"string\", \"indexType\": \"keyword\"");
-			sb.append(", \"label\": {\"en_US\": \"Text");
+			sb.append(
+				"{\"dataType\": \"string\", \"indexType\": \"keyword\", ");
+			sb.append("\"label\": {\"en_US\": \"Text");
 			sb.append(i);
 			sb.append("\"}, \"name\": \"");
 			sb.append(nextDDLCustomFieldName(groupId, i));
@@ -1448,7 +1451,7 @@ public class DataFactory {
 	public DDMContentModel newDDMContentModel(
 		DDLRecordModel ddlRecordModel, int currentIndex) {
 
-		StringBundler sb = new StringBundler(3 + _maxDDLCustomFieldCount * 8);
+		StringBundler sb = new StringBundler(3 + _maxDDLCustomFieldCount * 7);
 
 		sb.append("{\"availableLanguageIds\": [\"en_US\"],");
 		sb.append("\"defaultLanguageId\": \"en_US\", \"fieldValues\": [");
@@ -1460,8 +1463,7 @@ public class DataFactory {
 			sb.append(nextDDLCustomFieldName(ddlRecordModel.getGroupId(), i));
 			sb.append("\", \"value\": {\"en_US\": \"Test Record ");
 			sb.append(currentIndex);
-			sb.append("\"}}");
-			sb.append(",");
+			sb.append("\"}},");
 		}
 
 		if (_maxDDLCustomFieldCount > 0) {
@@ -2224,14 +2226,9 @@ public class DataFactory {
 		List<ResourcePermissionModel> resourcePermissionModels =
 			new ArrayList<>(3);
 
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(getClassName(ddmStructureModel.getClassNameId()));
-		sb.append(StringPool.DASH);
-		sb.append(DDMStructure.class.getName());
-
-		String name = sb.toString();
-
+		String name = _getResourcePermissionModelName(
+			DDMStructure.class.getName(),
+			getClassName(ddmStructureModel.getClassNameId()));
 		String primKey = String.valueOf(ddmStructureModel.getStructureId());
 
 		resourcePermissionModels.add(
@@ -2254,14 +2251,9 @@ public class DataFactory {
 		List<ResourcePermissionModel> resourcePermissionModels =
 			new ArrayList<>(3);
 
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(getClassName(ddmTemplateModel.getResourceClassNameId()));
-		sb.append(StringPool.DASH);
-		sb.append(DDMTemplate.class.getName());
-
-		String name = sb.toString();
-
+		String name = _getResourcePermissionModelName(
+			DDMTemplate.class.getName(),
+			getClassName(ddmTemplateModel.getResourceClassNameId()));
 		String primKey = String.valueOf(ddmTemplateModel.getTemplateId());
 
 		resourcePermissionModels.add(
@@ -2965,7 +2957,7 @@ public class DataFactory {
 		layoutSetModel.setCreateDate(new Date());
 		layoutSetModel.setModifiedDate(new Date());
 		layoutSetModel.setPrivateLayout(privateLayout);
-		layoutSetModel.setThemeId("classic");
+		layoutSetModel.setThemeId("classic_WAR_classictheme");
 		layoutSetModel.setColorSchemeId("01");
 		layoutSetModel.setPageCount(pageCount);
 
@@ -3262,6 +3254,25 @@ public class DataFactory {
 	protected Date nextFutureDate() {
 		return new Date(
 			_FUTURE_TIME + (_futureDateCounter.get() * Time.SECOND));
+	}
+
+	private String _getResourcePermissionModelName(String... classNames) {
+		if (ArrayUtil.isEmpty(classNames)) {
+			return StringPool.BLANK;
+		}
+
+		Arrays.sort(classNames);
+
+		StringBundler sb = new StringBundler(classNames.length * 2);
+
+		for (String className : classNames) {
+			sb.append(className);
+			sb.append(StringPool.DASH);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
 	}
 
 	private static final long _CURRENT_TIME = System.currentTimeMillis();

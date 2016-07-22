@@ -18,12 +18,10 @@
 
 <%
 String redirect = ParamUtil.getString(request, "redirect");
-
-Layout exportableLayout = ExportImportHelperUtil.getExportableLayout(themeDisplay);
 %>
 
 <liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="exportImport" var="importPortletURL">
-	<portlet:param name="p_p_isolated" value="true" />
+	<portlet:param name="p_p_isolated" value="<%= Boolean.TRUE.toString() %>" />
 	<portlet:param name="redirect" value="<%= redirect %>" />
 	<portlet:param name="portletResource" value="<%= portletResource %>" />
 	<portlet:param name="groupId" value="<%= String.valueOf(scopeGroupId) %>" />
@@ -31,16 +29,19 @@ Layout exportableLayout = ExportImportHelperUtil.getExportableLayout(themeDispla
 </liferay-portlet:resourceURL>
 
 <aui:form action="<%= importPortletURL %>" cssClass="lfr-export-dialog" method="post" name="fm1">
-	<div class="lfr-dynamic-uploader">
-		<div class="lfr-upload-container" id="<portlet:namespace />fileUpload"></div>
-	</div>
 
 	<%
 	FileEntry fileEntry = ExportImportHelperUtil.getTempFileEntry(scopeGroupId, themeDisplay.getUserId(), ExportImportHelper.TEMP_FOLDER_NAME + selPortlet.getPortletId());
 	%>
 
+	<div class="lfr-dynamic-uploader <%= fileEntry == null ? "hide-dialog-footer" : StringPool.BLANK %>">
+		<div class="container-fluid-1280">
+			<div class="lfr-upload-container" id="<portlet:namespace />fileUpload"></div>
+		</div>
+	</div>
+
 	<aui:button-row>
-		<aui:button cssClass='<%= fileEntry == null ? "btn-lg hide" : "btn-lg" %>' name="continueButton" type="submit" value="continue" />
+		<aui:button cssClass="btn-lg" name="continueButton" type="submit" value="continue" />
 	</aui:button-row>
 
 	<%
@@ -60,7 +61,7 @@ Layout exportableLayout = ExportImportHelperUtil.getExportableLayout(themeDispla
 
 				decimalSeparator: '<%= decimalFormatSymbols.getDecimalSeparator() %>',
 
-				deleteFile: '<liferay-portlet:actionURL name="exportImport" doAsUserId="<%= user.getUserId() %>"><portlet:param name="mvcRenderCommandName" value="exportImport" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE_TEMP %>" /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="portletResource" value="<%= portletResource %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />',
+				deleteFile: '<liferay-portlet:actionURL doAsUserId="<%= user.getUserId() %>" name="exportImport"><portlet:param name="mvcRenderCommandName" value="exportImport" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE_TEMP %>" /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="portletResource" value="<%= portletResource %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />',
 				fileDescription: '<%= StringUtil.merge(PrefsPropsUtil.getStringArray(PropsKeys.DL_FILE_EXTENSIONS, StringPool.COMMA)) %>',
 				maxFileSize: '<%= PrefsPropsUtil.getLong(PropsKeys.UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE) %> B',
 				metadataContainer: '#<portlet:namespace />commonFileMetadataContainer',
@@ -78,11 +79,9 @@ Layout exportableLayout = ExportImportHelperUtil.getExportableLayout(themeDispla
 						groupId: <%= scopeGroupId %>
 					}
 				},
-				uploadFile: '<liferay-portlet:actionURL name="exportImport" doAsUserId="<%= user.getUserId() %>"><portlet:param name="mvcRenderCommandName" value="exportImport" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD_TEMP %>" /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="plid" value="<%= String.valueOf(exportableLayout.getPlid()) %>" /><portlet:param name="groupId" value="<%= String.valueOf(themeDisplay.getScopeGroupId()) %>" /><portlet:param name="portletResource" value="<%= portletResource %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />'
+				uploadFile: '<liferay-portlet:actionURL doAsUserId="<%= user.getUserId() %>" name="exportImport"><portlet:param name="mvcRenderCommandName" value="exportImport" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD_TEMP %>" /><portlet:param name="redirect" value="<%= redirect %>" /><portlet:param name="plid" value="<%= String.valueOf(plid) %>" /> <portlet:param name="groupId" value="<%= String.valueOf(themeDisplay.getScopeGroupId()) %>" /><portlet:param name="portletResource" value="<%= portletResource %>" /></liferay-portlet:actionURL>&ticketKey=<%= ticket.getKey() %><liferay-ui:input-permissions-params modelName="<%= Group.class.getName() %>" />'
 			}
 		);
-
-		var continueButton = A.one('#<portlet:namespace />continueButton');
 
 		liferayUpload._uploader.on(
 			'alluploadscomplete',
@@ -99,13 +98,14 @@ Layout exportableLayout = ExportImportHelperUtil.getExportableLayout(themeDispla
 		);
 
 		function toggleContinueButton() {
+			var lfrDynamicUploader = liferayUpload.get('boundingBox').ancestor('.lfr-dynamic-uploader');
 			var uploadedFiles = liferayUpload._fileListContent.all('.upload-file.upload-complete');
 
 			if (uploadedFiles.size() == 1) {
-				continueButton.show();
+				lfrDynamicUploader.removeClass('hide-dialog-footer');
 			}
 			else {
-				continueButton.hide();
+				lfrDynamicUploader.addClass('hide-dialog-footer');
 			}
 		}
 	</aui:script>

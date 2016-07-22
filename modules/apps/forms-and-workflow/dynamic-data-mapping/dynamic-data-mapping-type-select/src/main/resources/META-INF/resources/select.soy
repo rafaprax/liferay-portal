@@ -3,7 +3,7 @@
 /**
  * Prints the DDM form select field.
  *
- * @param childElementsHTML
+ * @param? childElementsHTML
  * @param dir
  * @param label
  * @param multiple
@@ -15,10 +15,9 @@
  * @param tip
  * @param strings
  * @param value
- * @param visible
  */
-{template .select}
-	<div class="form-group{$visible ? '' : ' hide'}" data-fieldname="{$name}">
+{template .select autoescape="deprecated-contextual"}
+	<div class="form-group" data-fieldname="{$name}">
 		<div class="input-select-wrapper">
 			{if $showLabel}
 				<label class="control-label" for="{$name}">
@@ -50,7 +49,9 @@
 				</select>
 			</div>
 
-			{$childElementsHTML|noAutoescape}
+			{if $childElementsHTML}
+				{$childElementsHTML|noAutoescape}
+			{/if}
 		</div>
 	</div>
 {/template}

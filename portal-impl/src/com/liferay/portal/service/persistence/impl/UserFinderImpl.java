@@ -170,7 +170,11 @@ public class UserFinderImpl extends UserFinderBaseImpl implements UserFinder {
 
 			DB db = getDB();
 
-			boolean sybase = db.getDBType() == DBType.SYBASE;
+			boolean sybase = false;
+
+			if (db.getDBType() == DBType.SYBASE) {
+				sybase = true;
+			}
 
 			if (sybase) {
 				sb = new StringBundler(25);
@@ -1326,8 +1330,8 @@ public class UserFinderImpl extends UserFinderBaseImpl implements UserFinder {
 				for (Organization organization : organizationsTree) {
 					sb.append("(Organization_.treePath LIKE '%/");
 					sb.append(organization.getOrganizationId());
-					sb.append("/%')");
-					sb.append(" OR ");
+					sb.append("/%') ");
+					sb.append("OR ");
 				}
 
 				sb.setIndex(sb.index() - 1);

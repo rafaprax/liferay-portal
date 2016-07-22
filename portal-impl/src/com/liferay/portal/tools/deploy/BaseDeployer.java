@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.servlet.filters.invoker.InvokerFilter;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -80,6 +79,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -134,7 +134,7 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 		auiTaglibDTD = System.getProperty("deployer.aui.taglib.dtd");
 		portletTaglibDTD = System.getProperty("deployer.portlet.taglib.dtd");
 		portletExtTaglibDTD = System.getProperty(
-			"deployer.portlet.ext.taglib.dtd");
+			"deployer.portlet-ext.taglib.dtd");
 		securityTaglibDTD = System.getProperty("deployer.security.taglib.dtd");
 		themeTaglibDTD = System.getProperty("deployer.theme.taglib.dtd");
 		uiTaglibDTD = System.getProperty("deployer.ui.taglib.dtd");
@@ -239,6 +239,16 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 		}
 
 		if (Validator.isNull(appServerType)) {
+			String appServerType2 = ServerDetector.getServerId();
+
+			ServerDetector.init(StringPool.BLANK);
+
+			String appServerType3 = ServerDetector.getServerId();
+
+			_log.error(
+				"App server type: " + appServerType + ", app server type 2: " +
+					appServerType2 + ", app server type 3: " + appServerType3);
+
 			throw new IllegalArgumentException(
 				"The system property deployer.app.server.type is not set");
 		}
@@ -577,7 +587,7 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 		}
 
 		for (DeploymentExtension deploymentExtension : _deploymentExtensions) {
-			if (Validator.equals(
+			if (Objects.equals(
 					appServerType, deploymentExtension.getServerId())) {
 
 				deploymentExtension.copyXmls(this, srcFile);
@@ -764,7 +774,9 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 
 			excludes += "/WEB-INF/web.xml";
 
-			WarTask.war(srcFile, tempDir, excludes, webXml);
+			File tempFile = new File(tempDir, displayName + ".war");
+
+			WarTask.war(srcFile, tempFile, excludes, webXml);
 
 			if (isJEEDeploymentEnabled()) {
 				File tempWarDir = new File(
@@ -787,7 +799,7 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 				DeleteTask.deleteDirectory(tempWarDir);
 			}
 			else {
-				if (!tempDir.renameTo(deployDir)) {
+				if (!tempFile.renameTo(deployDir)) {
 					WarTask.war(srcFile, deployDir, excludes, webXml);
 				}
 
@@ -1069,30 +1081,6 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 		DeleteTask.deleteDirectory(tempDir);
 
 		return true;
-	}
-
-	public String downloadJar(String jar) throws Exception {
-		String tmpDir = SystemProperties.get(SystemProperties.TMP_DIR);
-
-		File file = new File(
-			tmpDir + "/liferay/com/liferay/portal/deploy/dependencies/" + jar);
-
-		if (!file.exists()) {
-			synchronized (this) {
-				String url = PropsUtil.get(
-					PropsKeys.LIBRARY_DOWNLOAD_URL + jar);
-
-				if (_log.isInfoEnabled()) {
-					_log.info("Downloading library from " + url);
-				}
-
-				byte[] bytes = HttpUtil.URLtoByteArray(url);
-
-				FileUtil.write(file, bytes);
-			}
-		}
-
-		return FileUtil.getAbsolutePath(file);
 	}
 
 	public String fixPortalDependencyJar(String portalJar) {
@@ -1628,7 +1616,7 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 		}
 
 		for (DeploymentExtension deploymentExtension : _deploymentExtensions) {
-			if (Validator.equals(
+			if (Objects.equals(
 					appServerType, deploymentExtension.getServerId())) {
 
 				deploymentExtension.postDeploy(destDir, deployDir);
@@ -1926,8 +1914,7 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 			String servletClass = GetterUtil.getString(
 				servletClassElement.getText());
 
-			if (servletClass.equals(
-					PortalClassLoaderServlet.class.getName()) ||
+			if (servletClass.equals(PortalClassLoaderServlet.class.getName()) ||
 				servletClass.equals(PortalDelegateServlet.class.getName()) ||
 				servletClass.equals(PortletServlet.class.getName())) {
 
@@ -2217,8 +2204,8 @@ public class BaseDeployer implements AutoDeployer, Deployer {
 
 		FileUtil.write(webXml, newContent, true);
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Modifying Servlet " + webXmlVersion + " " + webXml);
+		if (_log.isDebugEnabled()) {
+			_log.debug("Modifying Servlet " + webXmlVersion + " " + webXml);
 		}
 	}
 

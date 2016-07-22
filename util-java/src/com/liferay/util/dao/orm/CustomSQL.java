@@ -57,6 +57,7 @@ import java.util.Properties;
  * @author Brian Wing Shun Chan
  * @author Bruno Farache
  * @author Raymond Augé
+ * @see com.liferay.portal.dao.orm.custom.sql.CustomSQL
  */
 public class CustomSQL {
 
@@ -276,7 +277,7 @@ public class CustomSQL {
 		}
 
 		if (_CUSTOM_SQL_AUTO_ESCAPE_WILDCARDS_ENABLED) {
-			keywords = escapeWildCards(keywords);
+			keywords = _escapeWildCards(keywords);
 		}
 
 		if (lowerCase) {
@@ -851,7 +852,7 @@ public class CustomSQL {
 		return sb.toString();
 	}
 
-	private String escapeWildCards(String keywords) {
+	private String _escapeWildCards(String keywords) {
 		if (!isVendorMySQL() && !isVendorOracle()) {
 			return keywords;
 		}

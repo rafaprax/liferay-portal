@@ -129,6 +129,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>APPLY_EFFECTS</td>
+	<td>//div[contains(@class,'controls-container') and contains(@class,'open')]//button[contains(@class,'btn') and contains(.,'Apply')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ASSIGN_SITE_ROLES</td>
+	<td>//*[@data-qa-id='assign-site-rolesButton']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BACK</td>
 	<td>//a[@title='Back'] | //a[contains(@id,'back')] | //button[contains(.,'Back')]</td>
 	<td></td>
@@ -139,18 +149,28 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BROWSE_IMAGE</td>
+	<td>//button[contains(@class,'browse-image')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>CALCULATE</td>
 	<td>//button[contains(.,'Calculate')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CANCEL</td>
-	<td>//a[contains(@class,'cancel') and contains(@class,'btn')] | //button[contains(.,'Cancel')]</td>
+	<td>//a[contains(@class,'cancel') and contains(@class,'btn')] | //button[contains(.,'Cancel')] | //a[contains(@class,'btn') and contains(.,'Cancel')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CANCEL_CHECKOUT</td>
 	<td>//a[contains(@class,'btn') and contains(.,'Cancel Checkout')] | //button[contains(.,'Cancel Checkout')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CANCEL_EFFECTS</td>
+	<td>//div[contains(@class,'controls-container') and contains(@class,'open')]//button[contains(@class,'btn') and contains(.,'Cancel')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -215,7 +235,7 @@
 </tr>
 <tr>
 	<td>CLOSE_MODAL</td>
-	<td>//button[contains(.,'×')]</td>
+	<td>//h3[contains(@class,'modal-title') and contains(.,'${key_modalTitle}')]/../div/button[contains(@class,'close')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -229,13 +249,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>COLOR_EFFECT</td>
+	<td>//a[@class='btn']//*[name()='svg'][@data-icon='effects']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>COMPARE_VERSIONS</td>
 	<td>//button[contains(@id,'compare')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CONFIRM</td>
-	<td>//button[contains(.,'Confirm')]</td>
+	<td>//a[contains(@class,'btn') and contains(.,'Confirm')] | //button[contains(.,'Confirm')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -329,6 +354,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>FILTER_EFFECT</td>
+	<td>//a[@class='btn' and (@data-control='effects')]//*[name()='svg'][contains(@class,'lexicon-icon')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>FIND</td>
 	<td>//button[contains(.,'Find')]</td>
 	<td></td>
@@ -336,6 +366,11 @@
 <tr>
 	<td>FINISH_CONFIGURATION</td>
 	<td>//button[contains(.,'Finish Configuration')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GENERATE</td>
+	<td>//button[contains(.,'Generate')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -361,6 +396,11 @@
 <tr>
 	<td>INFO</td>
 	<td>//a[contains(@class,'btn') and contains(.,'Info')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>INVITE_MEMBERS</td>
+	<td>//a[contains(@id,'InviteMembersPortlet') and contains(@class,'btn')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -484,6 +524,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>REMOVE_IMAGE</td>
+	<td>//button[contains(@id,'removeImage')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>REMOVE_REDIRECT</td>
 	<td>//button[contains(.,'Remove Redirect')]</td>
 	<td></td>
@@ -516,6 +561,16 @@
 <tr>
 	<td>RESTORE</td>
 	<td>//button[contains(.,'Restore')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ROTATE_LEFT</td>
+	<td>//a[contains(@class,'btn') and (@data-onclick='rotateLeft')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ROTATE_RIGHT</td>
+	<td>//a[contains(@class,'btn') and (@data-onclick='rotateRight')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -604,6 +659,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SEND_INVITATIONS</td>
+	<td>//button[contains(@id,'InviteMembersPortlet')]//span[contains(.,'Send Invitations')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SHARE</td>
 	<td>//button[contains(.,'Share')]</td>
 	<td></td>
@@ -631,6 +691,11 @@
 <tr>
 	<td>SUBMIT_FOR_PUBLICATION</td>
 	<td>//button[contains(.,'Submit for Publication')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>TRANSFORM</td>
+	<td>//a[@class='btn']//*[name()='svg'][@data-icon='transform']</td>
 	<td></td>
 </tr>
 <tr>
@@ -670,7 +735,7 @@
 </tr>
 <tr>
 	<td>WEB_CONTENT_CHOOSE</td>
-	<td>//tr[contains(.,'${key_webContentTitle}')]/td/button</td>
+	<td>//tr[contains(.,'${key_webContentTitle}')]/td//button</td>
 	<td></td>
 </tr>
 </tbody>

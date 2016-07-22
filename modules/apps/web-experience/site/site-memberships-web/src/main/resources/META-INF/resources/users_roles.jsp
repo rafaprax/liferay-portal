@@ -17,7 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String displayStyle = ParamUtil.getString(request, "displayStyle", "list");
+String displayStyle = portalPreferences.getValue(SiteMembershipsPortletKeys.SITE_MEMBERSHIPS_ADMIN, "display-style", "icon");
 String eventName = ParamUtil.getString(request, "eventName", liferayPortletResponse.getNamespace() + "selectUsersRoles");
 
 PortletURL portletURL = renderResponse.createRenderURL();
@@ -26,6 +26,10 @@ portletURL.setParameter("mvcPath", "/users_roles.jsp");
 portletURL.setParameter("p_u_i_d", String.valueOf(siteMembershipsDisplayContext.getUserId()));
 
 RoleSearch roleSearch = new RoleSearch(renderRequest, PortletURLUtil.clone(portletURL, renderResponse));
+
+RowChecker rowChecker = new UserGroupRoleRoleChecker(renderResponse, siteMembershipsDisplayContext.getSelUser(), siteMembershipsDisplayContext.getGroup());
+
+roleSearch.setRowChecker(rowChecker);
 
 RoleSearchTerms searchTerms = (RoleSearchTerms)roleSearch.getSearchTerms();
 
@@ -43,6 +47,10 @@ roleSearch.setResults(roles);
 %>
 
 <aui:nav-bar cssClass="collapse-basic-search" markupView="lexicon">
+	<aui:nav cssClass="navbar-nav">
+		<aui:nav-item label="site-roles" selected="<%= true %>" />
+	</aui:nav>
+
 	<c:if test="<%= (rolesCount > 0) || searchTerms.isSearch() %>">
 		<aui:nav-bar-search>
 			<aui:form action="<%= portletURL.toString() %>" name="searchFm">
@@ -53,7 +61,7 @@ roleSearch.setResults(roles);
 </aui:nav-bar>
 
 <liferay-frontend:management-bar
-	disabled="<%= rolesCount <= 0 %>"
+	disabled="<%= (rolesCount <= 0) && !searchTerms.isSearch() %>"
 	includeCheckBox="<%= true %>"
 	searchContainerId="userGroupRoleRole"
 >
@@ -62,23 +70,33 @@ roleSearch.setResults(roles);
 			navigationKeys='<%= new String[] {"all"} %>'
 			portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
 		/>
+
+		<liferay-frontend:management-bar-sort
+			orderByCol="<%= roleSearch.getOrderByCol() %>"
+			orderByType="<%= roleSearch.getOrderByType() %>"
+			orderColumns='<%= new String[] {"title"} %>'
+			portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
+		/>
 	</liferay-frontend:management-bar-filters>
 
 	<liferay-frontend:management-bar-buttons>
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
+
 		<liferay-frontend:management-bar-display-buttons
-			displayViews='<%= new String[] {"list"} %>'
-			portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
+			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
+			portletURL="<%= changeDisplayStyleURL %>"
 			selectedDisplayStyle="<%= displayStyle %>"
 		/>
 	</liferay-frontend:management-bar-buttons>
 </liferay-frontend:management-bar>
 
-<aui:form cssClass="container-fluid-1280" name="fm">
+<aui:form cssClass="container-fluid-1280 portlet-site-memberships-assign-site-roles" name="fm">
 	<liferay-ui:membership-policy-error />
 
 	<liferay-ui:search-container
 		id="userGroupRoleRole"
-		rowChecker="<%= new UserGroupRoleRoleChecker(renderResponse, siteMembershipsDisplayContext.getSelUser(), siteMembershipsDisplayContext.getGroup()) %>"
 		searchContainer="<%= roleSearch %>"
 	>
 		<liferay-ui:search-container-row
@@ -86,21 +104,7 @@ roleSearch.setResults(roles);
 			keyProperty="roleId"
 			modelVar="role"
 		>
-			<liferay-ui:search-container-column-text
-				cssClass="text-strong"
-				name="title"
-				value="<%= HtmlUtil.escape(role.getTitle(locale)) %>"
-			/>
-
-			<liferay-ui:search-container-column-text
-				name="type"
-				value="<%= LanguageUtil.get(request, role.getTypeLabel()) %>"
-			/>
-
-			<liferay-ui:search-container-column-text
-				name="description"
-				value="<%= HtmlUtil.escape(role.getDescription(locale)) %>"
-			/>
+			<%@ include file="/role_columns.jspf" %>
 		</liferay-ui:search-container-row>
 
 		<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />

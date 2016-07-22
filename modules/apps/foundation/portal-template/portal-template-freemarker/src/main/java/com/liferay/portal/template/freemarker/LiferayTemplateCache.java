@@ -15,7 +15,7 @@
 package com.liferay.portal.template.freemarker;
 
 import com.liferay.portal.kernel.cache.PortalCache;
-import com.liferay.portal.kernel.cache.SingleVMPoolUtil;
+import com.liferay.portal.kernel.cache.SingleVMPool;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.template.TemplateResourceLoader;
@@ -45,9 +45,11 @@ import java.util.Locale;
 public class LiferayTemplateCache extends TemplateCache {
 
 	public LiferayTemplateCache(
-		Configuration configuration,
-		FreeMarkerEngineConfiguration freemarkerEngineConfiguration,
-		TemplateResourceLoader templateResourceLoader) throws Exception {
+			Configuration configuration,
+			FreeMarkerEngineConfiguration freemarkerEngineConfiguration,
+			TemplateResourceLoader templateResourceLoader,
+			SingleVMPool singleVMPool)
+		throws Exception {
 
 		super(null, configuration);
 
@@ -60,7 +62,9 @@ public class LiferayTemplateCache extends TemplateCache {
 		porttalCacheName = porttalCacheName.concat(StringPool.POUND).concat(
 			TemplateConstants.LANG_TYPE_FTL);
 
-		_portalCache = SingleVMPoolUtil.getPortalCache(porttalCacheName);
+		_portalCache =
+			(PortalCache<TemplateResource, Object>)singleVMPool.getPortalCache(
+				porttalCacheName);
 
 		_constructor = MaybeMissingTemplate.class.getDeclaredConstructor(
 			Template.class);
@@ -99,10 +103,10 @@ public class LiferayTemplateCache extends TemplateCache {
 			}
 		}
 
-		return doGetTemplate(templateId, locale, encoding);
+		return _doGetTemplate(templateId, locale, encoding);
 	}
 
-	private MaybeMissingTemplate doGetTemplate(
+	private MaybeMissingTemplate _doGetTemplate(
 			String templateId, Locale locale, String encoding)
 		throws IOException {
 
@@ -187,7 +191,7 @@ public class LiferayTemplateCache extends TemplateCache {
 
 		@Override
 		public MaybeMissingTemplate run() throws Exception {
-			return doGetTemplate(_templateId, _locale, _encoding);
+			return _doGetTemplate(_templateId, _locale, _encoding);
 		}
 
 		private final String _encoding;

@@ -66,9 +66,9 @@
 					<encoding>UTF-8</encoding>
 				</source-folder>
 				<source-folder>
-					<label>portal-test-internal\src</label>
+					<label>portal-test-integration\src</label>
 					<type>java</type>
-					<location>portal-test-internal/src</location>
+					<location>portal-test-integration/src</location>
 					<encoding>UTF-8</encoding>
 				</source-folder>
 				<source-folder>
@@ -289,7 +289,6 @@
 				<classpath mode="compile">lib/development/junit.jar</classpath>
 				<classpath mode="compile">lib/development/jutf7.jar</classpath>
 				<classpath mode="compile">lib/development/jymsg.jar</classpath>
-				<classpath mode="compile">lib/development/liferay-doclet.jar</classpath>
 				<classpath mode="compile">lib/development/mail.jar</classpath>
 				<classpath mode="compile">lib/development/mariadb.jar</classpath>
 				<classpath mode="compile">lib/development/maven-ant-tasks.jar</classpath>
@@ -310,7 +309,6 @@
 				<classpath mode="compile">lib/development/qdox.jar</classpath>
 				<classpath mode="compile">lib/development/resin.jar</classpath>
 				<classpath mode="compile">lib/development/saxpath.jar</classpath>
-				<classpath mode="compile">lib/development/script-10.jar</classpath>
 				<classpath mode="compile">lib/development/sdk-addon-api-0.2.jar</classpath>
 				<classpath mode="compile">lib/development/servlet-api.jar</classpath>
 				<classpath mode="compile">lib/development/smtp.jar</classpath>
@@ -337,7 +335,6 @@
 				<classpath mode="compile">lib/portal/axiom-impl.jar</classpath>
 				<classpath mode="compile">lib/portal/axis-ant.jar</classpath>
 				<classpath mode="compile">lib/portal/axis.jar</classpath>
-				<classpath mode="compile">lib/portal/backport-concurrent.jar</classpath>
 				<classpath mode="compile">lib/portal/bcmail.jar</classpath>
 				<classpath mode="compile">lib/portal/bcprov.jar</classpath>
 				<classpath mode="compile">lib/portal/bnd.jar</classpath>
@@ -477,7 +474,6 @@
 				<classpath mode="compile">lib/portal/spring-jms.jar</classpath>
 				<classpath mode="compile">lib/portal/spring-orm.jar</classpath>
 				<classpath mode="compile">lib/portal/spring-oxm.jar</classpath>
-				<classpath mode="compile">lib/portal/spring-struts.jar</classpath>
 				<classpath mode="compile">lib/portal/spring-tx.jar</classpath>
 				<classpath mode="compile">lib/portal/spring-web.jar</classpath>
 				<classpath mode="compile">lib/portal/spring-webmvc.jar</classpath>

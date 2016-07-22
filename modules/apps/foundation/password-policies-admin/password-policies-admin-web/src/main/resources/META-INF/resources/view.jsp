@@ -60,7 +60,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "passwor
 
 <liferay-frontend:management-bar
 	includeCheckBox="<%= true %>"
-	searchContainerId="passwordPolicy"
+	searchContainerId="passwordPolicies"
 >
 	<liferay-frontend:management-bar-filters>
 		<liferay-frontend:management-bar-navigation
@@ -103,65 +103,65 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "passwor
 		</div>
 	</c:if>
 
-	<%
-	List headerNames = searchContainer.getHeaderNames();
-
-	headerNames.add(StringPool.BLANK);
-	%>
-
 	<c:if test="<%= !passwordPolicyEnabled && windowState.equals(WindowState.MAXIMIZED) %>">
+		<liferay-ui:search-container
+			id="passwordPolicies"
+			searchContainer="<%= searchContainer %>"
+			var="passwordPolicySearchContainer"
+		>
 
-		<%
-		PasswordPolicyDisplayTerms searchTerms = (PasswordPolicyDisplayTerms)searchContainer.getSearchTerms();
+			<%
+			PasswordPolicyDisplayTerms searchTerms = (PasswordPolicyDisplayTerms)passwordPolicySearchContainer.getSearchTerms();
 
-		int total = PasswordPolicyLocalServiceUtil.searchCount(company.getCompanyId(), searchTerms.getKeywords());
+			total = PasswordPolicyLocalServiceUtil.searchCount(company.getCompanyId(), searchTerms.getKeywords());
 
-		searchContainer.setTotal(total);
+			passwordPolicySearchContainer.setTotal(total);
 
-		List results = PasswordPolicyLocalServiceUtil.search(company.getCompanyId(), searchTerms.getKeywords(), searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator());
+			List results = PasswordPolicyLocalServiceUtil.search(company.getCompanyId(), searchTerms.getKeywords(), passwordPolicySearchContainer.getStart(), passwordPolicySearchContainer.getEnd(), passwordPolicySearchContainer.getOrderByComparator());
 
-		searchContainer.setResults(results);
+			passwordPolicySearchContainer.setResults(results);
 
-		PortletURL passwordPoliciesRedirectURL = PortletURLUtil.clone(portletURL, renderResponse);
+			PortletURL passwordPoliciesRedirectURL = PortletURLUtil.clone(portletURL, renderResponse);
 
-		passwordPoliciesRedirectURL.setParameter(searchContainer.getCurParam(), String.valueOf(searchContainer.getCur()));
-		%>
+			passwordPoliciesRedirectURL.setParameter(passwordPolicySearchContainer.getCurParam(), String.valueOf(passwordPolicySearchContainer.getCur()));
+			%>
 
-		<aui:input name="passwordPoliciesRedirect" type="hidden" value="<%= passwordPoliciesRedirectURL.toString() %>" />
+			<aui:input name="passwordPoliciesRedirect" type="hidden" value="<%= passwordPoliciesRedirectURL.toString() %>" />
 
-		<%
-		List resultRows = searchContainer.getResultRows();
+			<liferay-ui:search-container-row
+				className="com.liferay.portal.kernel.model.PasswordPolicy"
+				escapedModel="<%= true %>"
+				keyProperty="passwordPolicyId"
+				modelVar="passwordPolicy"
+			>
+				<portlet:renderURL var="rowURL">
+					<portlet:param name="mvcPath" value="/edit_password_policy_assignments.jsp" />
+					<portlet:param name="redirect" value="<%= passwordPolicySearchContainer.getIteratorURL().toString() %>" />
+					<portlet:param name="passwordPolicyId" value="<%= String.valueOf(passwordPolicy.getPasswordPolicyId()) %>" />
+				</portlet:renderURL>
 
-		for (int i = 0; i < results.size(); i++) {
-			PasswordPolicy passwordPolicy = (PasswordPolicy)results.get(i);
+				<liferay-ui:search-container-column-text
+					cssClass="table-cell-content"
+					href="<%= rowURL %>"
+					name="name"
+					property="name"
+				/>
 
-			ResultRow row = new ResultRow(passwordPolicy, passwordPolicy.getPasswordPolicyId(), i);
+				<liferay-ui:search-container-column-text
+					cssClass="table-cell-content"
+					href="<%= rowURL %>"
+					name="description"
+					orderable="<%= true %>"
+					property="description"
+				/>
 
-			PortletURL rowURL = renderResponse.createRenderURL();
+				<liferay-ui:search-container-column-jsp
+					path="/password_policy_action.jsp"
+				/>
+			</liferay-ui:search-container-row>
 
-			rowURL.setParameter("mvcPath", "/edit_password_policy_assignments.jsp");
-			rowURL.setParameter("redirect", searchContainer.getIteratorURL().toString());
-			rowURL.setParameter("passwordPolicyId", String.valueOf(passwordPolicy.getPasswordPolicyId()));
-
-			// Name
-
-			row.addText("<strong>" + HtmlUtil.escape(passwordPolicy.getName()) + "</strong>", rowURL);
-
-			// Description
-
-			row.addText(HtmlUtil.escape(passwordPolicy.getDescription()), rowURL);
-
-			// Action
-
-			row.addJSP("/password_policy_action.jsp", "list-group-item-field", application, request, response);
-
-			// Add result row
-
-			resultRows.add(row);
-		}
-		%>
-
-		<liferay-ui:search-iterator markupView="lexicon" searchContainer="<%= searchContainer %>" />
+			<liferay-ui:search-iterator markupView="lexicon" searchContainer="<%= passwordPolicySearchContainer %>" />
+		</liferay-ui:search-container>
 	</c:if>
 </aui:form>
 
@@ -176,6 +176,8 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "passwor
 
 				form.attr('method', 'post');
 				form.fm('passwordPolicyIds').val(passwordPolicyIds);
+
+				document.<portlet:namespace />fm.p_p_lifecycle.value = '1';
 
 				submitForm(form, '<portlet:actionURL name="deletePasswordPolicies" />');
 			}

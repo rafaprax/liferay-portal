@@ -1,7 +1,8 @@
 Bundle-Name: Liferay Portal Scheduler
 Bundle-SymbolicName: com.liferay.portal.scheduler
-Bundle-Version: 1.0.1
-Export-Package: com.liferay.portal.scheduler.*;version=${plugin.full.version}
+Bundle-Version: 3.0.2
+Export-Package:\
+	com.liferay.portal.scheduler,\
+	com.liferay.portal.scheduler.configuration
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Scheduling
--include: ../../app.bnd

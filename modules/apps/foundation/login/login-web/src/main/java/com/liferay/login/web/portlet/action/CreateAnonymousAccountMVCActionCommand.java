@@ -162,13 +162,6 @@ public class CreateAnonymousAccountMVCActionCommand
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		Company company = themeDisplay.getCompany();
-
-		if (!company.isStrangers()) {
-			throw new PrincipalException.MustBeEnabled(
-				company.getCompanyId(), PropsKeys.COMPANY_SECURITY_STRANGERS);
-		}
-
 		PortletConfig portletConfig = (PortletConfig)actionRequest.getAttribute(
 			JavaConstants.JAVAX_PORTLET_CONFIG);
 
@@ -190,7 +183,7 @@ public class CreateAnonymousAccountMVCActionCommand
 			actionRequest, "emailAddress");
 
 		PortletURL portletURL = PortletURLFactoryUtil.create(
-			actionRequest, LoginPortletKeys.FAST_LOGIN, themeDisplay.getPlid(),
+			actionRequest, LoginPortletKeys.FAST_LOGIN,
 			PortletRequest.RENDER_PHASE);
 
 		portletURL.setParameter(
@@ -209,6 +202,14 @@ public class CreateAnonymousAccountMVCActionCommand
 					actionRequest, actionResponse, portletURL.toString());
 			}
 			else if (cmd.equals(Constants.UPDATE)) {
+				Company company = themeDisplay.getCompany();
+
+				if (!company.isStrangers()) {
+					throw new PrincipalException.MustBeEnabled(
+						company.getCompanyId(),
+						PropsKeys.COMPANY_SECURITY_STRANGERS);
+				}
+
 				jsonObject = updateIncompleteUser(
 					actionRequest, actionResponse);
 

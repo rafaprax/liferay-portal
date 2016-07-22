@@ -48,6 +48,8 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.tree.TreeModelTasksAdapter;
+import com.liferay.portal.kernel.tree.TreePathUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -58,8 +60,6 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.TreeModelTasksAdapter;
-import com.liferay.portal.kernel.util.TreePathUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.comparator.OrganizationIdComparator;
 import com.liferay.portal.kernel.util.comparator.OrganizationNameComparator;
@@ -177,6 +177,7 @@ public class OrganizationLocalServiceImpl
 		// Organization
 
 		User user = userPersistence.findByPrimaryKey(userId);
+
 		parentOrganizationId = getParentOrganizationId(
 			user.getCompanyId(), parentOrganizationId);
 
@@ -1619,7 +1620,7 @@ public class OrganizationLocalServiceImpl
 			userId, companyGroup.getGroupId(), null, null,
 			Organization.class.getName(), organization.getOrganizationId(),
 			organization.getUuid(), 0, assetCategoryIds, assetTagNames, true,
-			false, null, null, null, null, organization.getName(),
+			false, null, null, null, null, null, organization.getName(),
 			StringPool.BLANK, null, null, null, 0, 0, null);
 	}
 
@@ -1818,8 +1819,8 @@ public class OrganizationLocalServiceImpl
 	 *             attributes for the organization.
 	 * @return     the organization
 	 * @deprecated As of 7.0.0, replaced by {@link #updateOrganization(long,
-	 *             long, long, String, String, long, long, long, String, boolean,
-	 *             byte[], boolean, ServiceContext)}
+	 *             long, long, String, String, long, long, long, String,
+	 *             boolean, byte[], boolean, ServiceContext)}
 	 */
 	@Deprecated
 	@Override

@@ -93,6 +93,10 @@ public interface PropsKeys {
 
 	public static final String ASSET_CATEGORIES_SELECTOR_MAX_ENTRIES = "asset.categories.selector.max.entries";
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public static final String ASSET_ENTRY_VALIDATOR = "asset.entry.validator";
 
 	public static final String ASSET_FILTER_SEARCH_LIMIT = "asset.filter.search.limit";
@@ -1113,8 +1117,6 @@ public interface PropsKeys {
 
 	public static final String LDAP_ATTRS_TRANSFORMER_IMPL = "ldap.attrs.transformer.impl";
 
-	public static final String LIBRARY_DOWNLOAD_URL = "library.download.url.";
-
 	public static final String LIFERAY_HOME = "liferay.home";
 
 	public static final String LIFERAY_LIB_GLOBAL_DIR = "liferay.lib.global.dir";
@@ -1339,7 +1341,19 @@ public interface PropsKeys {
 
 	public static final String MODULE_FRAMEWORK_BEGINNING_START_LEVEL = "module.framework.beginning.start.level";
 
+	public static final String MODULE_FRAMEWORK_CONFIGS_DIR = "module.framework.configs.dir";
+
+	public static final String MODULE_FRAMEWORK_DYNAMIC_INSTALL_START_LEVEL = "module.framework.dynamic.install.start.level";
+
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public static final String MODULE_FRAMEWORK_INITIAL_BUNDLES = "module.framework.initial.bundles";
+
+	public static final String MODULE_FRAMEWORK_MARKETPLACE_DIR = "module.framework.marketplace.dir";
+
+	public static final String MODULE_FRAMEWORK_MODULES_DIR = "module.framework.modules.dir";
 
 	public static final String MODULE_FRAMEWORK_PORTAL_DIR = "module.framework.portal.dir";
 
@@ -1356,6 +1370,8 @@ public interface PropsKeys {
 	public static final String MODULE_FRAMEWORK_STOP_WAIT_TIMEOUT = "module.framework.stop.wait.timeout";
 
 	public static final String MODULE_FRAMEWORK_SYSTEM_PACKAGES_EXTRA = "module.framework.system.packages.extra";
+
+	public static final String MODULE_FRAMEWORK_WAR_DIR = "module.framework.war.dir";
 
 	public static final String MODULE_FRAMEWORK_WEB_GENERATOR_DEFAULT_SERVLET_PACKAGES = "module.framework.web.generator.default.servlet.packages";
 
@@ -1779,6 +1795,8 @@ public interface PropsKeys {
 
 	public static final String RETRY_ADVICE_MAX_RETRIES = "retry.advice.max.retries";
 
+	public static final String RETRY_DATA_SOURCE_MAX_RETRIES = "retry.data.source.max.retries";
+
 	public static final String ROBOTS_TXT_WITH_SITEMAP = "robots.txt.with.sitemap";
 
 	public static final String ROBOTS_TXT_WITHOUT_SITEMAP = "robots.txt.without.sitemap";
@@ -2089,6 +2107,8 @@ public interface PropsKeys {
 
 	public static final String STAGING_DRAFT_EXPORT_IMPORT_CONFIGURATION_CLEAN_UP_COUNT = "staging.draft.export.import.configuration.clean.up.count";
 
+	public static final String STAGING_LIVE_GROUP_LOCKING_ENABLED = "staging.live.group.locking.enabled";
+
 	public static final String STAGING_LIVE_GROUP_REMOTE_STAGING_ENABLED = "staging.live.group.remote.staging.enabled";
 
 	public static final String STAGING_REMOTE_TRANSFER_BUFFER_SIZE = "staging.remote.transfer.buffer.size";
@@ -2113,7 +2133,13 @@ public interface PropsKeys {
 
 	public static final String SYSTEM_SITE_ROLES = "system.site.roles";
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #TABLE_MAPPER_CACHELESS_MAPPING_TABLE_NAMES}
+	 */
+	@Deprecated
 	public static final String TABLE_MAPPER_CACHE_MAPPING_TABLE_NAMES = "table.mapper.cache.mapping.table.names";
+
+	public static final String TABLE_MAPPER_CACHELESS_MAPPING_TABLE_NAMES = "table.mapper.cacheless.mapping.table.names";
 
 	public static final String TERMS_OF_USE_REQUIRED = "terms.of.use.required";
 
@@ -2304,6 +2330,18 @@ public interface PropsKeys {
 	public static final String VIRTUAL_HOSTS_VALID_HOSTS = "virtual.hosts.valid.hosts";
 
 	public static final String WEB_SERVER_DISPLAY_NODE = "web.server.display.node";
+
+	public static final String WEB_SERVER_FORWARDED_HOST_ENABLED = "web.server.forwarded.host.enabled";
+
+	public static final String WEB_SERVER_FORWARDED_HOST_HEADER = "web.server.forwarded.host.header";
+
+	public static final String WEB_SERVER_FORWARDED_PORT_ENABLED = "web.server.forwarded.port.enabled";
+
+	public static final String WEB_SERVER_FORWARDED_PORT_HEADER = "web.server.forwarded.port.header";
+
+	public static final String WEB_SERVER_FORWARDED_PROTOCOL_ENABLED = "web.server.forwarded.protocol.enabled";
+
+	public static final String WEB_SERVER_FORWARDED_PROTOCOL_HEADER = "web.server.forwarded.protocol.header";
 
 	public static final String WEB_SERVER_HOST = "web.server.host";
 

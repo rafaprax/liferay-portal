@@ -122,9 +122,15 @@ public class PermissionCheckerTest {
 				_PORTLET_RESOURCE_NAME, ActionKeys.ACCESS_IN_CONTROL_PANEL);
 
 			Assert.assertFalse(hasPermission);
+
+			hasPermission = permissionChecker.hasPermission(
+				_group.getGroupId(), _ROOT_MODEL_RESOURCE_NAME,
+				_ROOT_MODEL_RESOURCE_NAME, _ADD_SITE_TEST_1_ACTION);
+
+			Assert.assertTrue(hasPermission);
 		}
 		finally {
-			destroyRemotePortlet(_user.getCompanyId(), _PORTLET_RESOURCE_NAME);
+			_destroyRemotePortlet(_user.getCompanyId(), _PORTLET_RESOURCE_NAME);
 		}
 	}
 
@@ -181,7 +187,7 @@ public class PermissionCheckerTest {
 			}
 		}
 		finally {
-			destroyRemotePortlet(
+			_destroyRemotePortlet(
 				_user.getCompanyId(), _NONSITE_PORTLET_RESOURCE_NAME);
 		}
 	}
@@ -189,6 +195,12 @@ public class PermissionCheckerTest {
 	@Test
 	public void testHasPermissionOnRootModelResource() throws Exception {
 		_user = UserTestUtil.addUser();
+
+		_role = RoleTestUtil.addRole(
+			RandomTestUtil.randomString(), RoleConstants.TYPE_SITE);
+
+		UserLocalServiceUtil.setRoleUsers(
+			_role.getRoleId(), new long[] {_user.getUserId()});
 
 		PermissionChecker permissionChecker = _getPermissionChecker(_user);
 
@@ -199,7 +211,7 @@ public class PermissionCheckerTest {
 		try {
 			boolean hasPermission = permissionChecker.hasPermission(
 				_group.getGroupId(), _ROOT_MODEL_RESOURCE_NAME,
-				_group.getGroupId(), _ADD_SITE_TEST_ACTION);
+				_group.getGroupId(), _ADD_SITE_TEST_1_ACTION);
 
 			Assert.assertFalse(hasPermission);
 
@@ -210,9 +222,34 @@ public class PermissionCheckerTest {
 
 			hasPermission = permissionChecker.hasPermission(
 				_group.getGroupId(), _ROOT_MODEL_RESOURCE_NAME,
-				_group.getGroupId(), _ADD_SITE_TEST_ACTION);
+				_group.getGroupId(), _ADD_SITE_TEST_1_ACTION);
 
 			Assert.assertTrue(hasPermission);
+
+			hasPermission = permissionChecker.hasPermission(
+				_group.getGroupId(), _ROOT_MODEL_RESOURCE_NAME,
+				_group.getGroupId(), _ADD_SITE_TEST_2_ACTION);
+
+			Assert.assertFalse(hasPermission);
+
+			ResourcePermissionLocalServiceUtil.setResourcePermissions(
+				_user.getCompanyId(), _ROOT_MODEL_RESOURCE_NAME,
+				ResourceConstants.SCOPE_INDIVIDUAL,
+				String.valueOf(_group.getGroupId()), _role.getRoleId(),
+				new String[] {_ADD_SITE_TEST_2_ACTION});
+
+			try {
+				hasPermission = permissionChecker.hasPermission(
+					_group.getGroupId(), _ROOT_MODEL_RESOURCE_NAME,
+					_group.getGroupId(), _ADD_SITE_TEST_2_ACTION);
+
+				Assert.assertTrue(hasPermission);
+			}
+			finally {
+				ResourcePermissionLocalServiceUtil.deleteResourcePermissions(
+					_user.getCompanyId(), _ROOT_MODEL_RESOURCE_NAME,
+					ResourceConstants.SCOPE_INDIVIDUAL, _group.getGroupId());
+			}
 		}
 		finally {
 			ResourceLocalServiceUtil.deleteResource(
@@ -878,15 +915,7 @@ public class PermissionCheckerTest {
 		PortletLocalServiceUtil.deployRemotePortlet(portlet, "category.hidden");
 	}
 
-	private PermissionChecker _getPermissionChecker(User user)
-		throws Exception {
-
-		PermissionCacheUtil.clearCache(user.getUserId());
-
-		return PermissionCheckerFactoryUtil.create(user);
-	}
-
-	private void destroyRemotePortlet(long companyId, String portletName)
+	private void _destroyRemotePortlet(long companyId, String portletName)
 		throws PortalException {
 
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(
@@ -908,7 +937,17 @@ public class PermissionCheckerTest {
 		PortletLocalServiceUtil.destroyRemotePortlet(portlet);
 	}
 
-	private static final String _ADD_SITE_TEST_ACTION = "ADD_SITE_TEST";
+	private PermissionChecker _getPermissionChecker(User user)
+		throws Exception {
+
+		PermissionCacheUtil.clearCache(user.getUserId());
+
+		return PermissionCheckerFactoryUtil.create(user);
+	}
+
+	private static final String _ADD_SITE_TEST_1_ACTION = "ADD_SITE_TEST_1";
+
+	private static final String _ADD_SITE_TEST_2_ACTION = "ADD_SITE_TEST_2";
 
 	private static final String _ADD_TEST_ACTION = "ADD_TEST";
 

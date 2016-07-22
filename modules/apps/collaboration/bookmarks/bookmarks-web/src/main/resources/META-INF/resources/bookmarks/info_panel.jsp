@@ -49,11 +49,10 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(entries)) {
 		%>
 
 		<div class="sidebar-header">
-			<ul class="list-inline list-unstyled sidebar-header-actions">
+			<ul class="sidebar-header-actions">
 				<li>
 					<liferay-util:include page="/bookmarks/subscribe.jsp" servletContext="<%= application %>" />
 				</li>
-
 				<li>
 					<liferay-util:include page="/bookmarks/folder_action.jsp" servletContext="<%= application %>" />
 				</li>
@@ -105,17 +104,16 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(entries)) {
 		%>
 
 		<div class="sidebar-header">
-			<ul class="list-inline list-unstyled sidebar-header-actions">
+			<ul class="sidebar-header-actions">
 				<li>
 					<liferay-util:include page="/bookmarks/subscribe.jsp" servletContext="<%= application %>" />
 				</li>
-
 				<li>
 					<liferay-util:include page="/bookmarks/entry_action.jsp" servletContext="<%= application %>" />
 				</li>
 			</ul>
 
-			<h4><%= entry.getName() %></h4>
+			<h4><%= HtmlUtil.escape(entry.getName()) %></h4>
 
 			<div>
 				<liferay-ui:message key="entry" />
@@ -139,14 +137,14 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(entries)) {
 				<h5><liferay-ui:message key="description" /></h5>
 
 				<p>
-					<%= entry.getDescription() %>
+					<%= HtmlUtil.escape(entry.getDescription()) %>
 				</p>
 			</c:if>
 
 			<h5><liferay-ui:message key="url" /></h5>
 
 			<p>
-				<%= entry.getUrl() %>
+				<%= HtmlUtil.escape(entry.getUrl()) %>
 			</p>
 
 			<h5><liferay-ui:message key="visits" /></h5>

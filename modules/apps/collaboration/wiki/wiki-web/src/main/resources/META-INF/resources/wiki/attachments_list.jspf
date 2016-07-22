@@ -16,12 +16,11 @@
 
 <liferay-ui:search-container
 	emptyResultsMessage="<%= emptyResultsMessage %>"
-	headerNames="file-name,size,null"
+	headerNames="file-name,size,action"
 	id="pageAttachments"
 	iteratorURL="<%= currentURLObj %>"
 	total="<%= attachmentsFileEntriesCount %>"
 >
-
 	<liferay-ui:search-container-results
 		results="<%= paginate ? ListUtil.subList(attachmentsFileEntries, searchContainer.getStart(), searchContainer.getEnd()) : attachmentsFileEntries %>"
 	/>
@@ -52,6 +51,7 @@
 		<c:if test="<%= showPageAttachmentAction %>">
 			<liferay-ui:search-container-column-jsp
 				cssClass="entry-action"
+				name="action"
 				path="/wiki/page_attachment_action.jsp"
 			/>
 		</c:if>

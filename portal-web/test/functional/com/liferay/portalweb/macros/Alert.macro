@@ -1,4 +1,20 @@
 <definition>
+	<command name="closePortalLocalizationWarning">
+		<if>
+			<and>
+				<condition function="IsVisible" locator1="Home#PORTAL_LOCALIZATION_INFO_MESSAGE" />
+				<condition function="IsVisible" locator1="Icon#CLOSE" />
+			</and>
+			<then>
+				<execute function="Click" locator1="Icon#CLOSE" />
+			</then>
+		</if>
+	</command>
+
+	<command name="viewFailedSiteTemplateDeletionMessage">
+		<execute function="AssertTextEquals#assertPartialText" locator1="Message#ERROR_2" value1="You cannot delete site templates that are used by a site." />
+	</command>
+
 	<command name="viewRequestFailedToComplete">
 		<execute function="AssertTextEquals#assertPartialText" locator1="Message#ERROR_REQUEST_FAILED_TO_COMPLETE" value1="Your request failed to complete." />
 	</command>
@@ -11,6 +27,27 @@
 		<execute macro-mobile="MobileNavigator#clickRemoveIcon" />
 
 		<execute function="AssertVisible" locator1="Message#SUCCESS" />
+
+		<execute function="Pause" locator1="10000" />
+
+		<if>
+			<and>
+				<condition function="IsVisible" locator1="Message#SUCCESS" />
+				<condition function="IsVisible" locator1="Icon#CLOSE" />
+			</and>
+			<then>
+				<execute function="Click" locator1="Icon#CLOSE" />
+			</then>
+		</if>
+	</command>
+
+	<command name="viewSuccessMessageText">
+		<execute macro-mobile="MobileNavigator#clickRemoveIcon" />
+
+		<execute macro="Button#clickPublish" />
+
+		<execute function="AssertVisible" locator1="Message#SUCCESS" />
 		<execute function="AssertElementPresent" locator1="Message#SUCCESS" />
+		<execute function="AssertTextEquals" locator1="Message#SUCCESS" value1="${sucessMessage}" />
 	</command>
 </definition>

@@ -27,10 +27,12 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.model.ReleaseConstants;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.kernel.process.ClassPathUtil;
 import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.ReleaseLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
+import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.transaction.TransactionsUtil;
@@ -91,32 +93,29 @@ public class DBUpgrader {
 
 			stopWatch.start();
 
+			ServerDetector.init(
+				System.getProperty("server.detector.server.id"));
+
+			ClassPathUtil.initializeClassPaths(null);
+
 			InitUtil.initWithSpring(true, false);
 
 			upgrade();
 			verify();
 
+			_registerModuleServiceLifecycle("database.initialized");
+
 			InitUtil.registerContext();
 
-			Registry registry = RegistryUtil.getRegistry();
-
-			Map<String, Object> properties = new HashMap<>();
-
-			properties.put("module.service.lifecycle", "portal.initialized");
-			properties.put("service.vendor", ReleaseInfo.getVendor());
-			properties.put("service.version", ReleaseInfo.getVersion());
-
-			registry.registerService(
-				ModuleServiceLifecycle.class, new ModuleServiceLifecycle() {},
-				properties);
+			_registerModuleServiceLifecycle("portal.initialized");
 
 			System.out.println(
 				"\nCompleted Liferay core upgrade and verify processes in " +
 					(stopWatch.getTime() / Time.SECOND) + " seconds");
 
 			System.out.println(
-				"Running modules upgrades. Connect to your Gogo Shell to " +
-					"check the status.");
+				"Running modules upgrades. Connect to Gogo shell to check " +
+					"the status.");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -318,8 +317,8 @@ public class DBUpgrader {
 
 		sb.append("Permission conversion to algorithm 6 has not been ");
 		sb.append("completed. Please complete the conversion prior to ");
-		sb.append("starting the portal. The conversion process is ");
-		sb.append("available in portal versions starting with ");
+		sb.append("starting the portal. The conversion process is available ");
+		sb.append("in portal versions starting with ");
 		sb.append(ReleaseInfo.RELEASE_5_2_3_BUILD_NUMBER);
 		sb.append(" and prior to ");
 		sb.append(ReleaseInfo.RELEASE_6_2_0_BUILD_NUMBER);
@@ -335,12 +334,12 @@ public class DBUpgrader {
 
 		StringBundler sb = new StringBundler(6);
 
-		sb.append("The database contains changes from a previous ");
-		sb.append("upgrade attempt that failed. Please restore the old ");
-		sb.append("database and file system and retry the upgrade. A ");
-		sb.append("patch may be required if the upgrade failed due to a");
-		sb.append(" bug or an unforeseen data permutation that resulted ");
-		sb.append("from a corrupt database.");
+		sb.append("The database contains changes from a previous upgrade ");
+		sb.append("attempt that failed. Please restore the old database and ");
+		sb.append("file system and retry the upgrade. A patch may be ");
+		sb.append("required if the upgrade failed due to a bug or an ");
+		sb.append("unforeseen data permutation that resulted from a corrupt ");
+		sb.append("database.");
 
 		throw new IllegalStateException(sb.toString());
 	}
@@ -399,6 +398,22 @@ public class DBUpgrader {
 		finally {
 			DataAccess.cleanUp(con, ps, rs);
 		}
+	}
+
+	private static void _registerModuleServiceLifecycle(
+		String moduleServiceLifecycle) {
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put("module.service.lifecycle", moduleServiceLifecycle);
+		properties.put("service.vendor", ReleaseInfo.getVendor());
+		properties.put("service.version", ReleaseInfo.getVersion());
+
+		registry.registerService(
+			ModuleServiceLifecycle.class, new ModuleServiceLifecycle() {},
+			properties);
 	}
 
 	private static void _updateCompanyKey() throws Exception {

@@ -14,7 +14,7 @@
 
 package com.liferay.portal.template.freemarker;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.SingleVMPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
@@ -82,7 +82,8 @@ public class FreeMarkerTemplateTest {
 
 		TemplateCache templateCache = new LiferayTemplateCache(
 			_configuration, _freemarkerEngineConfiguration,
-			freeMarkerTemplateResourceLoader);
+			freeMarkerTemplateResourceLoader,
+			registry.getService(SingleVMPool.class));
 
 		ReflectionTestUtil.setFieldValue(
 			_configuration, "cache", templateCache);

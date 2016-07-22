@@ -89,7 +89,6 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 
 			<c:if test="<%= folderId != rootFolderId %>">
 				<span class="change-search-folder">
-
 					<portlet:renderURL var="changeSearchFolderURL">
 						<portlet:param name="mvcRenderCommandName" value="/document_library/search" />
 						<portlet:param name="repositoryId" value="<%= String.valueOf(repositoryId) %>" />
@@ -216,7 +215,6 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 								url="<%= tempRowURL.toString() %>"
 							/>
 						</c:when>
-
 						<c:when test="<%= (curFolder != null) && DLFolderPermission.contains(permissionChecker, curFolder, ActionKeys.VIEW) %>">
 
 							<%
@@ -240,7 +238,7 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 
 							request.setAttribute("info_panel.jsp-folder", curFolder);
 
-							request.setAttribute("view_entries.jsp-repositoryId", String.valueOf(curFolder.getRepositoryId()));
+							request.setAttribute("view.jsp-repositoryId", String.valueOf(curFolder.getRepositoryId()));
 							%>
 
 							<liferay-ui:app-view-search-entry
@@ -258,7 +256,6 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 								url="<%= tempRowURL.toString() %>"
 							/>
 						</c:when>
-
 						<c:otherwise>
 							<div style="float: left; margin: 100px 10px 0;">
 								<i class="icon-ban-circle"></i>
@@ -334,6 +331,7 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 								<div class="alert alert-info">
 									<liferay-ui:message key="searching,-please-wait" />
 								</div>
+
 								<div class="loading-animation"></div>
 							</c:otherwise>
 						</c:choose>
@@ -354,6 +352,7 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 									<div class="alert alert-info">
 										<liferay-ui:message key="searching,-please-wait" />
 									</div>
+
 									<div class="loading-animation"></div>
 								</c:otherwise>
 							</c:choose>
@@ -368,7 +367,7 @@ SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, por
 		</div>
 	</c:when>
 	<c:otherwise>
-		<div class="repository-search-results" data-repositoryId="<%= searchRepositoryId %>" id='<%= liferayPortletResponse.getNamespace() + "searchResultsContainer" + searchRepositoryId %>'>
+		<div class="repository-search-results" data-repositoryId="<%= searchRepositoryId %>" id="<%= liferayPortletResponse.getNamespace() + "searchResultsContainer" + searchRepositoryId %>">
 			<%= searchResults %>
 		</div>
 	</c:otherwise>

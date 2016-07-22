@@ -30,8 +30,6 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.NoSuchRoleException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -45,6 +43,7 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.service.persistence.impl.TableMapper;
 import com.liferay.portal.kernel.service.persistence.impl.TableMapperFactory;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -65,6 +64,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -208,7 +208,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Role role : list) {
-					if (!Validator.equals(uuid, role.getUuid())) {
+					if (!Objects.equals(uuid, role.getUuid())) {
 						list = null;
 
 						break;
@@ -1154,7 +1154,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Role role : list) {
-					if (!Validator.equals(uuid, role.getUuid()) ||
+					if (!Objects.equals(uuid, role.getUuid()) ||
 							(companyId != role.getCompanyId())) {
 						list = null;
 
@@ -2991,7 +2991,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Role role : list) {
-					if (!Validator.equals(name, role.getName())) {
+					if (!Objects.equals(name, role.getName())) {
 						list = null;
 
 						break;
@@ -4767,7 +4767,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Role role : list) {
-					if (!Validator.equals(subtype, role.getSubtype())) {
+					if (!Objects.equals(subtype, role.getSubtype())) {
 						list = null;
 
 						break;
@@ -5631,8 +5631,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRoleException(msg.toString());
@@ -5677,7 +5677,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			Role role = (Role)result;
 
 			if ((companyId != role.getCompanyId()) ||
-					!Validator.equals(name, role.getName())) {
+					!Objects.equals(name, role.getName())) {
 				result = null;
 			}
 		}
@@ -7366,7 +7366,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			if ((list != null) && !list.isEmpty()) {
 				for (Role role : list) {
 					if ((type != role.getType()) ||
-							!Validator.equals(subtype, role.getSubtype())) {
+							!Objects.equals(subtype, role.getSubtype())) {
 						list = null;
 
 						break;
@@ -8286,8 +8286,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRoleException(msg.toString());
@@ -8719,8 +8719,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			Role role = (Role)session.get(RoleImpl.class, primaryKey);
 
 			if (role == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchRoleException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -9030,8 +9030,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 		Role role = fetchByPrimaryKey(primaryKey);
 
 		if (role == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchRoleException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -9061,12 +9061,14 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	 */
 	@Override
 	public Role fetchByPrimaryKey(Serializable primaryKey) {
-		Role role = (Role)entityCache.getResult(RoleModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(RoleModelImpl.ENTITY_CACHE_ENABLED,
 				RoleImpl.class, primaryKey);
 
-		if (role == _nullRole) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		Role role = (Role)serializable;
 
 		if (role == null) {
 			Session session = null;
@@ -9081,7 +9083,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 				}
 				else {
 					entityCache.putResult(RoleModelImpl.ENTITY_CACHE_ENABLED,
-						RoleImpl.class, primaryKey, _nullRole);
+						RoleImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -9135,18 +9137,20 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Role role = (Role)entityCache.getResult(RoleModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(RoleModelImpl.ENTITY_CACHE_ENABLED,
 					RoleImpl.class, primaryKey);
 
-			if (role == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, role);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (Role)serializable);
+				}
 			}
 		}
 
@@ -9188,7 +9192,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(RoleModelImpl.ENTITY_CACHE_ENABLED,
-					RoleImpl.class, primaryKey, _nullRole);
+					RoleImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -9554,9 +9558,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			companyId = role.getCompanyId();
 		}
 
-		for (long groupPK : groupPKs) {
-			roleToGroupTableMapper.addTableMapping(companyId, pk, groupPK);
-		}
+		roleToGroupTableMapper.addTableMappings(companyId, pk, groupPKs);
 	}
 
 	/**
@@ -9568,21 +9570,9 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	@Override
 	public void addGroups(long pk,
 		List<com.liferay.portal.kernel.model.Group> groups) {
-		long companyId = 0;
-
-		Role role = fetchByPrimaryKey(pk);
-
-		if (role == null) {
-			companyId = companyProvider.getCompanyId();
-		}
-		else {
-			companyId = role.getCompanyId();
-		}
-
-		for (com.liferay.portal.kernel.model.Group group : groups) {
-			roleToGroupTableMapper.addTableMapping(companyId, pk,
-				group.getPrimaryKey());
-		}
+		addGroups(pk,
+			ListUtil.toLongArray(groups,
+				com.liferay.portal.kernel.model.Group.GROUP_ID_ACCESSOR));
 	}
 
 	/**
@@ -9625,9 +9615,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	 */
 	@Override
 	public void removeGroups(long pk, long[] groupPKs) {
-		for (long groupPK : groupPKs) {
-			roleToGroupTableMapper.deleteTableMapping(pk, groupPK);
-		}
+		roleToGroupTableMapper.deleteTableMappings(pk, groupPKs);
 	}
 
 	/**
@@ -9639,9 +9627,9 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	@Override
 	public void removeGroups(long pk,
 		List<com.liferay.portal.kernel.model.Group> groups) {
-		for (com.liferay.portal.kernel.model.Group group : groups) {
-			roleToGroupTableMapper.deleteTableMapping(pk, group.getPrimaryKey());
-		}
+		removeGroups(pk,
+			ListUtil.toLongArray(groups,
+				com.liferay.portal.kernel.model.Group.GROUP_ID_ACCESSOR));
 	}
 
 	/**
@@ -9660,9 +9648,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 		removeGroupPKsSet.removeAll(newGroupPKsSet);
 
-		for (long removeGroupPK : removeGroupPKsSet) {
-			roleToGroupTableMapper.deleteTableMapping(pk, removeGroupPK);
-		}
+		roleToGroupTableMapper.deleteTableMappings(pk,
+			ArrayUtil.toLongArray(removeGroupPKsSet));
 
 		newGroupPKsSet.removeAll(oldGroupPKsSet);
 
@@ -9677,9 +9664,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			companyId = role.getCompanyId();
 		}
 
-		for (long newGroupPK : newGroupPKsSet) {
-			roleToGroupTableMapper.addTableMapping(companyId, pk, newGroupPK);
-		}
+		roleToGroupTableMapper.addTableMappings(companyId, pk,
+			ArrayUtil.toLongArray(newGroupPKsSet));
 	}
 
 	/**
@@ -9870,9 +9856,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			companyId = role.getCompanyId();
 		}
 
-		for (long userPK : userPKs) {
-			roleToUserTableMapper.addTableMapping(companyId, pk, userPK);
-		}
+		roleToUserTableMapper.addTableMappings(companyId, pk, userPKs);
 	}
 
 	/**
@@ -9884,21 +9868,9 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	@Override
 	public void addUsers(long pk,
 		List<com.liferay.portal.kernel.model.User> users) {
-		long companyId = 0;
-
-		Role role = fetchByPrimaryKey(pk);
-
-		if (role == null) {
-			companyId = companyProvider.getCompanyId();
-		}
-		else {
-			companyId = role.getCompanyId();
-		}
-
-		for (com.liferay.portal.kernel.model.User user : users) {
-			roleToUserTableMapper.addTableMapping(companyId, pk,
-				user.getPrimaryKey());
-		}
+		addUsers(pk,
+			ListUtil.toLongArray(users,
+				com.liferay.portal.kernel.model.User.USER_ID_ACCESSOR));
 	}
 
 	/**
@@ -9941,9 +9913,7 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	 */
 	@Override
 	public void removeUsers(long pk, long[] userPKs) {
-		for (long userPK : userPKs) {
-			roleToUserTableMapper.deleteTableMapping(pk, userPK);
-		}
+		roleToUserTableMapper.deleteTableMappings(pk, userPKs);
 	}
 
 	/**
@@ -9955,9 +9925,9 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	@Override
 	public void removeUsers(long pk,
 		List<com.liferay.portal.kernel.model.User> users) {
-		for (com.liferay.portal.kernel.model.User user : users) {
-			roleToUserTableMapper.deleteTableMapping(pk, user.getPrimaryKey());
-		}
+		removeUsers(pk,
+			ListUtil.toLongArray(users,
+				com.liferay.portal.kernel.model.User.USER_ID_ACCESSOR));
 	}
 
 	/**
@@ -9976,9 +9946,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 
 		removeUserPKsSet.removeAll(newUserPKsSet);
 
-		for (long removeUserPK : removeUserPKsSet) {
-			roleToUserTableMapper.deleteTableMapping(pk, removeUserPK);
-		}
+		roleToUserTableMapper.deleteTableMappings(pk,
+			ArrayUtil.toLongArray(removeUserPKsSet));
 
 		newUserPKsSet.removeAll(oldUserPKsSet);
 
@@ -9993,9 +9962,8 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 			companyId = role.getCompanyId();
 		}
 
-		for (long newUserPK : newUserPKsSet) {
-			roleToUserTableMapper.addTableMapping(companyId, pk, newUserPK);
-		}
+		roleToUserTableMapper.addTableMappings(companyId, pk,
+			ArrayUtil.toLongArray(newUserPKsSet));
 	}
 
 	/**
@@ -10086,33 +10054,4 @@ public class RolePersistenceImpl extends BasePersistenceImpl<Role>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "type"
 			});
-	private static final Role _nullRole = new RoleImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<Role> toCacheModel() {
-				return _nullRoleCacheModel;
-			}
-		};
-
-	private static final CacheModel<Role> _nullRoleCacheModel = new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<Role>, MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public Role toEntityModel() {
-			return _nullRole;
-		}
-	}
 }

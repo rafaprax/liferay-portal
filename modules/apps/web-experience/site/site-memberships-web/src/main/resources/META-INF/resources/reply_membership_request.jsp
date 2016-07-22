@@ -27,18 +27,23 @@ if (Validator.isNull(redirect)) {
 	redirect = portletURL.toString();
 }
 
-long groupId = ParamUtil.getLong(request, "groupId");
-
-Group group = GroupLocalServiceUtil.getGroup(groupId);
-
 long membershipRequestId = ParamUtil.getLong(request, "membershipRequestId");
 
 MembershipRequest membershipRequest = MembershipRequestLocalServiceUtil.getMembershipRequest(membershipRequestId);
+
+String userName = PortalUtil.getUserName(membershipRequest.getUserId(), StringPool.BLANK);
+
+portletDisplay.setShowBackIcon(true);
+portletDisplay.setURLBack(redirect);
+
+renderResponse.setTitle(LanguageUtil.format(request, "reply-membership-request-for-x", userName));
 %>
 
 <portlet:actionURL name="replyMembershipRequest" var="replyMembershipRequestURL">
 	<portlet:param name="mvcPath" value="/reply_membership_request.jsp" />
-	<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
+	<portlet:param name="p_u_i_d" value="<%= String.valueOf(membershipRequest.getUserId()) %>" />
+	<portlet:param name="groupId" value="<%= String.valueOf(scopeGroupId) %>" />
+	<portlet:param name="membershipRequestId" value="<%= String.valueOf(membershipRequest.getMembershipRequestId()) %>" />
 </portlet:actionURL>
 
 <aui:form action="<%= replyMembershipRequestURL %>" cssClass="container-fluid-1280" method="post" name="fm">
@@ -54,22 +59,27 @@ MembershipRequest membershipRequest = MembershipRequestLocalServiceUtil.getMembe
 
 	<aui:model-context bean="<%= membershipRequest %>" model="<%= MembershipRequest.class %>" />
 
-	<c:if test="<%= Validator.isNotNull(group.getDescription()) %>">
-		<aui:field-wrapper label="description">
-			<p>
-				<%= HtmlUtil.escape(group.getDescription()) %>
-			</p>
-		</aui:field-wrapper>
-	</c:if>
-
 	<aui:fieldset-group markupView="lexicon">
 		<aui:fieldset>
+
+			<%
+			Group group = themeDisplay.getScopeGroup();
+			%>
+
+			<c:if test="<%= Validator.isNotNull(group.getDescription()) %>">
+				<h4 class="text-default"><liferay-ui:message key="description" /></h4>
+
+				<p class="text-default">
+					<%= HtmlUtil.escape(group.getDescription(locale)) %>
+				</p>
+			</c:if>
+
 			<liferay-ui:user-portrait
-				imageCssClass="user-icon-lg"
+				cssClass="user-icon-lg"
 				userId="<%= membershipRequest.getUserId() %>"
 			/>
 
-			<aui:input name="userName" type="resource" value="<%= PortalUtil.getUserName(membershipRequest.getUserId(), StringPool.BLANK) %>" />
+			<aui:input name="userName" type="resource" value="<%= userName %>" />
 
 			<aui:input name="userComments" readonly="<%= true %>" type="textarea" value="<%= membershipRequest.getComments() %>" />
 

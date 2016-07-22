@@ -15,7 +15,7 @@
 package com.liferay.staging.taglib.servlet.taglib;
 
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.staging.taglib.servlet.ServletContextUtil;
+import com.liferay.staging.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +91,7 @@ public class PermissionsTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
+		request.setAttribute("liferay-staging:deletions:global", _global);
 		request.setAttribute("liferay-staging:permissions:action", _action);
 		request.setAttribute(
 			"liferay-staging:permissions:descriptionCSSClass",
@@ -100,7 +101,6 @@ public class PermissionsTag extends IncludeTag {
 		request.setAttribute(
 			"liferay-staging:permissions:exportImportConfigurationId",
 			_exportImportConfigurationId);
-		request.setAttribute("liferay-staging:deletions:global", _global);
 		request.setAttribute(
 			"liferay-staging:permissions:labelCSSClass", _labelCSSClass);
 	}
@@ -110,7 +110,7 @@ public class PermissionsTag extends IncludeTag {
 	private String _action = StringPool.BLANK;
 	private String _descriptionCSSClass = StringPool.BLANK;
 	private boolean _disableInputs;
-	private long _exportImportConfigurationId = 0;
+	private long _exportImportConfigurationId;
 	private boolean _global;
 	private String _labelCSSClass = StringPool.BLANK;
 

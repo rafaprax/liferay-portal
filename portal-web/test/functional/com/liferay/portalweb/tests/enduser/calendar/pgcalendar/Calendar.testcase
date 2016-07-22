@@ -1,5 +1,6 @@
 <definition component-name="portal-calendar">
-	<property name="custom.properties" value="default.layout.template.id=1_column" />
+	<property name="portal.release" value="true" />
+	<property name="custom.properties" value="default.layout.template.id=1_column${line.separator}company.default.time.zone=America/Los_Angeles" />
 	<property name="testray.main.component.name" value="Calendar" />
 
 	<var name="pageName" value="Calendar Page" />
@@ -21,6 +22,12 @@
 		<execute macro="Portlet#addPG">
 			<var name="pageName" value="${pageName}" />
 			<var name="portletName" value="${portletName}" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
 		</execute>
 	</set-up>
 
@@ -141,7 +148,6 @@
 		<execute macro="Calendar#view">
 			<var name="calendarName" value="${calendarName}" />
 			<var name="calendarType" value="My Calendars" />
-			<var name="resourceNameList" value="${resourceNameList}" />
 			<var name="user" value="${user}" />
 		</execute>
 	</command>
@@ -558,10 +564,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Staging Test Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -580,11 +585,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoAddEvent" />
@@ -624,11 +627,9 @@
 			<var name="calendarType" value="Other Calendars" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Calendar#add">
@@ -641,10 +642,9 @@
 			<var name="calendarType" value="Other Calendars" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Staging Test Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CalendarScheduler#viewSpecificEventNotPresent">
@@ -660,11 +660,9 @@
 			<var name="calendarType" value="Other Calendars" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#schedulePublishToLivePG">
@@ -673,10 +671,9 @@
 
 		<execute function="Pause" locator1="120000" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Staging Test Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CalendarEvent#view">
@@ -871,9 +868,10 @@
 		<execute macro="CalendarEvent#add">
 			<var name="eventTitle" value="${eventTitle}" />
 			<var name="eventType" value="${eventType}" />
+			<var name="optionSet" value="true" />
 			<var name="optionSetValue" value="inviteResource" />
 			<var name="pageName" value="${pageName}" />
-			<var name="resourceNameList" value="${resourceNameList}" />
+			<var name="specificOptionSetValue" value="${resourceNameList}" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -1151,6 +1149,16 @@
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
+		<execute macro="CalendarNavigator#gotoConfiguration" />
+
+		<execute macro="CalendarConfiguration#editTimeZonePacific" />
+
+		<execute macro="CalendarConfiguration#save" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
 		<execute macro="CalendarNavigator#gotoAddEvent" />
 
 		<execute macro="CalendarEvent#add">
@@ -1400,8 +1408,8 @@
 		</execute>
 
 		<execute macro="CalendarEvent#setDates">
-			<var name="endDate" value="02/15/2015" />
-			<var name="startDate" value="02/15/2015" />
+			<var name="endDate" value="02/21/2016" />
+			<var name="startDate" value="02/21/2016" />
 		</execute>
 
 		<execute macro="CalendarEvent#setTimes">
@@ -1433,11 +1441,12 @@
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoView">
-			<var name="viewType" value="Week" />
+			<var name="viewType" value="Day" />
 		</execute>
 
 		<execute macro="CalendarScheduler#selectSpecificEvent">
 			<var name="eventTitle" value="${eventTitle}" />
+			<var name="eventToday" value="false" />
 		</execute>
 
 		<execute macro="CalendarScheduler#gotoDetailsViaDialogBox" />
@@ -1492,6 +1501,8 @@
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
+
+		<execute macro="Alert#viewSuccessMessage" />
 
 		<execute macro="CalendarNavigator#gotoView">
 			<var name="viewType" value="Month" />
@@ -1631,6 +1642,11 @@
 			<var name="site" value="Site Name" />
 		</execute>
 
+		<execute macro="ProductMenu#gotoSite">
+			<var name="page" value="Staging Test Page" />
+			<var name="site" value="Site Name" />
+		</execute>
+
 		<execute macro="CalendarNavigator#gotoAddEvent" />
 
 		<execute macro="CalendarEvent#editTitle">
@@ -1658,11 +1674,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
@@ -1679,32 +1693,27 @@
 
 		<execute macro="CalendarEvent#publish" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CalendarEvent#view">
 			<var name="eventTitle" value="Calendar Event Title - Staged Edit" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
 
 		<execute macro="Staging#publishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Staging Test Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CalendarScheduler#selectSpecificEvent">
@@ -2068,7 +2077,7 @@
 
 		<execute macro="CalendarNavigator#gotoConfiguration" />
 
-		<execute macro="CalendarConfiguration#editTimeZonePacific" />
+		<execute macro="CalendarConfiguration#editTimeZoneUTC" />
 
 		<execute macro="CalendarConfiguration#save" />
 
@@ -2085,8 +2094,8 @@
 		<execute macro="CalendarEvent#setDatesToday" />
 
 		<execute macro="CalendarEvent#setTimes">
-			<var name="endDateTime" value="10:00 AM" />
-			<var name="startDateTime" value="09:00 AM" />
+			<var name="endDateTime" value="03:00 PM" />
+			<var name="startDateTime" value="02:00 PM" />
 		</execute>
 
 		<execute macro="CalendarEvent#publish" />
@@ -2100,15 +2109,15 @@
 		</execute>
 
 		<execute macro="CalendarScheduler#viewEventTimesViaDialogBox">
-			<var name="endDateTime" value="10:00am" />
-			<var name="startDateTime" value="9:00am" />
+			<var name="endDateTime" value="3:00pm" />
+			<var name="startDateTime" value="2:00pm" />
 		</execute>
 
 		<execute macro="CalendarScheduler#gotoDetailsViaDialogBox" />
 
 		<execute macro="CalendarEvent#viewTimesViaDetails">
-			<var name="endDateTime" value="10:00 AM" />
-			<var name="startDateTime" value="09:00 AM" />
+			<var name="endDateTime" value="03:00 PM" />
+			<var name="startDateTime" value="02:00 PM" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -2120,8 +2129,8 @@
 		</execute>
 
 		<execute macro="CalendarEvent#viewTimes">
-			<var name="endDateTime" value="10:00 AM" />
-			<var name="startDateTime" value="09:00 AM" />
+			<var name="endDateTime" value="03:00 PM" />
+			<var name="startDateTime" value="02:00 PM" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -2143,15 +2152,15 @@
 		</execute>
 
 		<execute macro="CalendarScheduler#viewEventTimesViaDialogBox">
-			<var name="endDateTime" value="pm" />
-			<var name="startDateTime" value="pm" />
+			<var name="endDateTime" value="am" />
+			<var name="startDateTime" value="am" />
 		</execute>
 
 		<execute macro="CalendarScheduler#gotoDetailsViaDialogBox" />
 
 		<execute macro="CalendarEvent#viewTimesViaDetails">
-			<var name="endDateTime" value="PM" />
-			<var name="startDateTime" value="PM" />
+			<var name="endDateTime" value="AM" />
+			<var name="startDateTime" value="AM" />
 		</execute>
 	</command>
 
@@ -2332,6 +2341,8 @@
 		<execute macro="Calendar#viewRSSFeedEventPresent">
 			<var name="calendarName" value="${siteName}" />
 			<var name="eventTitle" value="Current Day Event" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Navigator#closeWindow" />
@@ -2351,6 +2362,8 @@
 		<execute macro="Calendar#viewRSSFeedEventNotPresent">
 			<var name="calendarName" value="${siteName}" />
 			<var name="eventTitle" value="Current Day Event" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Navigator#closeWindow" />
@@ -2358,6 +2371,7 @@
 
 	<command name="DeleteEventRegular"  priority="5">
 		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="Calendar#DeleteEventRegular" />
 
 		<execute macro="TestCase#getSiteName">
 			<return from="siteName" name="siteName" />
@@ -2420,7 +2434,7 @@
 		</execute>
 
 		<execute macro="CalendarEvent#deleteRepeatingEventViaAgendaView">
-			<var name="deleteOptionSet" value="All Events in the Series" />
+			<var name="deleteOptionSet" value="Entire Series" />
 			<var name="eventTitle" value="${eventTitle}" />
 			<var name="eventType" value="${eventType}" />
 		</execute>
@@ -2433,6 +2447,7 @@
 
 	<command name="DeleteEventRepeatingAllFollowing" priority="5">
 		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="Calendar#DeleteEventRepeatingAllFollowing" />
 
 		<var name="eventTitle" value="Calendar Event Repeating Title" />
 		<var name="eventType" value="Repeating" />
@@ -2456,7 +2471,7 @@
 		</execute>
 
 		<execute macro="CalendarEvent#deleteRepeatingEventViaAgendaView">
-			<var name="deleteOptionSet" value="All Following" />
+			<var name="deleteOptionSet" value="Following Events" />
 			<var name="eventTitle" value="${eventTitle}" />
 			<var name="eventType" value="${eventType}" />
 		</execute>
@@ -2481,8 +2496,8 @@
 		</execute>
 
 		<execute macro="CalendarEvent#setDates">
-			<var name="endDate" value="02/2/2015" />
-			<var name="startDate" value="02/2/2015" />
+			<var name="endDate" value="02/2/2016" />
+			<var name="startDate" value="02/2/2016" />
 		</execute>
 
 		<execute macro="CalendarEvent#setTimes">
@@ -2502,7 +2517,7 @@
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoMonthViaSmallCalendar">
-			<var name="dateMonth" value="February 2015" />
+			<var name="dateMonth" value="February 2016" />
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoSpecificBusyDayViaSmallCalendar">
@@ -2515,7 +2530,7 @@
 		</execute>
 
 		<execute macro="CalendarEvent#deleteRepeatingEventViaAgendaView">
-			<var name="deleteOptionSet" value="Only This Instance" />
+			<var name="deleteOptionSet" value="Single Event" />
 			<var name="eventTitle" value="${eventTitle}" />
 			<var name="eventType" value="${eventType}" />
 		</execute>
@@ -2525,7 +2540,7 @@
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoMonthViaSmallCalendar">
-			<var name="dateMonth" value="February 2015" />
+			<var name="dateMonth" value="February 2016" />
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoSpecificBusyDayViaSmallCalendar">
@@ -2575,6 +2590,8 @@
 		<execute macro="Calendar#viewRSSFeedEventPresent">
 			<var name="calendarName" value="${siteName}" />
 			<var name="eventTitle" value="Current Day Event" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<var method="selenium#getLocation()" name="rssURL" />
@@ -2583,7 +2600,9 @@
 
 		<execute macro="CalendarNavigator#gotoConfiguration" />
 
-		<execute macro="CalendarConfiguration#disableRSS" />
+		<execute macro="CalendarConfiguration#enableRSS" />
+
+		<execute macro="CalendarConfiguration#viewRSSOptionsDisabled" />
 
 		<execute macro="CalendarConfiguration#save" />
 
@@ -2594,6 +2613,7 @@
 		<execute macro="Calendar#viewSiteCalendarNoMenulistOption">
 			<var name="menuListOption" value="RSS" />
 			<var name="siteCalendarName" value="${siteName}" />
+			<var name="siteName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Calendar#viewNoRSS">
@@ -2668,7 +2688,6 @@
 		<execute macro="Calendar#view">
 			<var name="calendarName" value="${calendarNameEdit}" />
 			<var name="calendarType" value="My Calendars" />
-			<var name="resourceNameList" value="${resourceNameList}" />
 			<var name="user" value="${user}" />
 		</execute>
 	</command>
@@ -2940,8 +2959,8 @@
 		</execute>
 
 		<execute macro="CalendarEvent#setDates">
-			<var name="endDate" value="12/29/2015" />
-			<var name="startDate" value="12/29/2015" />
+			<var name="endDate" value="3/29/2016" />
+			<var name="startDate" value="3/29/2016" />
 		</execute>
 
 		<execute macro="CalendarEvent#publishWithUserNotification" />
@@ -2951,7 +2970,7 @@
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoMonthViaSmallCalendar">
-			<var name="dateMonth" value="December 2015" />
+			<var name="dateMonth" value="March 2016" />
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoSpecificBusyDayViaSmallCalendar">
@@ -2964,6 +2983,7 @@
 
 		<execute macro="CalendarScheduler#viewNoRSVP">
 			<var name="eventTitle" value="Edited Event Title" />
+			<var name="eventToday" value="false" />
 		</execute>
 	</command>
 
@@ -3071,6 +3091,10 @@
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
+		<execute macro="CalendarNavigator#gotoView">
+			<var name="viewType" value="Week" />
+		</execute>
+
 		<execute macro="Calendar#hideMyCalendarsCalendar" />
 
 		<execute macro="CalendarScheduler#selectSpecificEvent">
@@ -3087,6 +3111,10 @@
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="CalendarNavigator#gotoView">
+			<var name="viewType" value="Week" />
 		</execute>
 
 		<execute macro="CalendarScheduler#selectSpecificEvent">
@@ -3180,16 +3208,15 @@
 
 		<execute macro="CalendarScheduler#selectSpecificEvent">
 			<var name="eventTitle" value="Original Event Title" />
+			<var name="eventToday" value="false" />
 		</execute>
 
-		<execute macro="CalendarScheduler#gotoEditViaDialogBox" />
-
-		<execute macro="CalendarEvent#editTitle">
+		<execute macro="CalendarScheduler#editTitle">
 			<var name="eventTitle" value="Edited Title" />
 		</execute>
 
-		<execute macro="CalendarEvent#publishRepeating">
-			<var name="saveOption" value="All Events in the Series" />
+		<execute macro="CalendarScheduler#saveRepeatingEvent">
+			<var name="saveOption" value="Entire Series" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -3238,6 +3265,7 @@
 
 		<execute macro="CalendarScheduler#selectSpecificEvent">
 			<var name="eventTitle" value="Original Event Title" />
+			<var name="eventToday" value="false" />
 		</execute>
 
 		<execute macro="CalendarScheduler#gotoEditViaDialogBox" />
@@ -3247,7 +3275,7 @@
 		</execute>
 
 		<execute macro="CalendarEvent#publishRepeating">
-			<var name="saveOption" value="All Following" />
+			<var name="saveOption" value="Following Events" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewTitle">
@@ -3543,6 +3571,12 @@
 			<var name="saveButton" value="Guardar" />
 			<var name="viewType" value="Week" />
 		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="Alert#viewSuccessMessage" />
 
 		<execute macro="CalendarScheduler#viewLocalizedEvent">
 			<var name="eventTitle" value="Calendar Event Title" />
@@ -4197,6 +4231,10 @@
 			<var name="rsvp" value="Yes" />
 		</execute>
 
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Calendar Page" />
+		</execute>
+
 		<execute macro="CalendarEvent#view">
 			<var name="eventTitle" value="Calendar Event Title" />
 		</execute>
@@ -4285,10 +4323,6 @@
 			<var name="eventType" value="${eventType}" />
 		</execute>
 
-		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
-		</execute>
-
 		<execute macro="CalendarNavigator#gotoAddEvent" />
 
 		<execute macro="CalendarEvent#add">
@@ -4346,15 +4380,6 @@
 
 		<execute macro="User#editPasswordCP">
 			<var name="userEmailAddress" value="userea1@liferay.com" />
-			<var name="userScreenName" value="usersn1" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="User#unassignRegularRoleCP">
-			<var name="roleName" value="Power User" />
 			<var name="userScreenName" value="usersn1" />
 		</execute>
 
@@ -4596,6 +4621,10 @@
 			<var name="portletName" value="Calendar" />
 		</execute>
 
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
@@ -4810,19 +4839,19 @@
 		</execute>
 
 		<execute macro="Calendar#viewMonth">
-			<var name="dateMonth" value="February 2015" />
-		</execute>
-
-		<execute macro="Calendar#viewWeekCountViaMonthView">
-			<var name="weekNumber" value="4" />
-		</execute>
-
-		<execute macro="Calendar#viewMonth">
-			<var name="dateMonth" value="October 2015" />
+			<var name="dateMonth" value="April 2016" />
 		</execute>
 
 		<execute macro="Calendar#viewWeekCountViaMonthView">
 			<var name="weekNumber" value="5" />
+		</execute>
+
+		<execute macro="Calendar#viewMonth">
+			<var name="dateMonth" value="July 2016" />
+		</execute>
+
+		<execute macro="Calendar#viewWeekCountViaMonthView">
+			<var name="weekNumber" value="6" />
 		</execute>
 	</command>
 
@@ -5160,14 +5189,18 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Calendar Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="${portletName}" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Calendar Page" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="CalendarNavigator#gotoAddResource" />
@@ -5182,10 +5215,9 @@
 
 		<execute macro="CalendarResource#viewDefault" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Calendar Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Calendar#searchOtherCalendars">
@@ -5333,6 +5365,7 @@
 
 		<execute macro="MyAccount#configureDisplaySettingsLanguage">
 			<var name="languageName" value="español (España)" />
+			<var name="languagePageDisplayMessage" value="Mostrar la página en español (España)." />
 			<var name="myAccount" value="My Account" />
 			<var name="saveButton" value="Save" />
 			<var name="successMessage" value="Su petición ha terminado con éxito." />
@@ -5360,6 +5393,7 @@
 		<execute macro="MyAccount#configureDisplaySettingsLanguageLocalized">
 			<var name="category" value="Mi cuenta" />
 			<var name="languageName" value="English (United States)" />
+			<var name="languagePageDisplayMessage" value="Display the page in English (United States)." />
 			<var name="portlet" value="Mi cuenta" />
 			<var name="saveButton" value="Guardar" />
 			<var name="successMessage" value="Your request completed successfully." />
@@ -5401,9 +5435,7 @@
 			<var name="eventTitle" value="Previous Day Event" />
 		</execute>
 
-		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
-		</execute>
+		<execute macro="CalendarNavigator#gotoNextDay" />
 
 		<execute macro="CalendarNavigator#gotoNextDay" />
 
@@ -5424,16 +5456,22 @@
 		<execute macro="Calendar#viewRSSFeedEventNotPresent">
 			<var name="calendarName" value="${siteName}" />
 			<var name="eventTitle" value="Past Day Event" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Calendar#viewRSSFeedEventPresent">
 			<var name="calendarName" value="${siteName}" />
 			<var name="eventTitle" value="Current Day Event" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Calendar#viewRSSFeedEventPresent">
 			<var name="calendarName" value="${siteName}" />
 			<var name="eventTitle" value="Future Day Event" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Navigator#closeWindow" />
@@ -5457,10 +5495,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -5468,8 +5505,14 @@
 			<var name="portletName" value="${portletName}" />
 		</execute>
 
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Site Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
 		<execute macro="Calendar#viewCurrentSiteCalendarName">
-			<var name="site" value="Site Name" />
+			<var name="calendarName" value="Site Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
@@ -5485,14 +5528,14 @@
 			<var name="siteNameEdit" value="Site Name Edit" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Calendar#viewCurrentSiteCalendarName">
-			<var name="site" value="Site Name Edit - Site Name" />
+			<var name="calendarName" value="Site Name" />
+			<var name="siteName" value="Site Name Edit" />
 		</execute>
 	</command>
 
@@ -5517,6 +5560,17 @@
 			<var name="permissionDefinitionValue" value="Manage Events" />
 			<var name="roleName" value="Calendar Site Role Name" />
 			<var name="roleType" value="Site" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Roles" />
+		</execute>
+
+		<execute macro="Role#definePermissionCP">
+			<var name="permissionDefinitionKey" value="SITE_ADMIN_PAGES_SITE_PAGES_RESOURCE_PERMISSIONS_PAGE_UPDATE_CHECKBOX" />
+			<var name="permissionDefinitionValue" value="Update" />
+			<var name="roleName" value="Authenticated" />
+			<var name="roleUser" value="User" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -5581,10 +5635,6 @@
 			<var name="site" value="Site C" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site C" />
-		</execute>
-
 		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
@@ -5609,6 +5659,11 @@
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Calendar" />
+		</execute>
+
+		<execute macro="User#logoutAndLoginPG">
+			<var name="userLoginEmailAddress" value="usersn@liferay.com" />
+			<var name="userScreenName" value="usersn" />
 		</execute>
 
 		<execute macro="UserBar#gotoDashboard" />

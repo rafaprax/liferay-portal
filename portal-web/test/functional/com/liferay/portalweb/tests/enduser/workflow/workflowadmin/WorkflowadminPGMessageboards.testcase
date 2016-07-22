@@ -1,4 +1,5 @@
 <definition component-name="portal-workflow">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<var name="pageName" value="Message Boards Page" />
@@ -43,9 +44,11 @@
 				<execute macro="PortalInstances#tearDownCP" />
 			</then>
 			<else>
-				<execute macro="MessageboardsThread#tearDownPG">
-					<var name="pageName" value="${pageName}" />
-				</execute>
+				<execute macro="MessageboardsCategory#tearDownCP" />
+
+				<execute macro="MessageboardsThread#tearDownCP" />
+
+				<execute macro="MessageboardsPortlet#tearDownConfigurationGeneralCP" />
 
 				<execute macro="Page#tearDownPG" />
 

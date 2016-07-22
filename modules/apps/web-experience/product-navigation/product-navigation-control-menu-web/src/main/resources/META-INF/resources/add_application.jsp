@@ -31,7 +31,7 @@ refererURL.setParameter("updateLayout", "true");
 	<div id="<portlet:namespace />applicationList">
 		<c:if test="<%= layout.isTypePortlet() %>">
 			<div class="input-group search-bar">
-				<input class="form-control" id="<portlet:namespace />searchApplication" name="<portlet:namespace />searchApplication" placeholder='<%= LanguageUtil.get(request, "search") + StringPool.TRIPLE_PERIOD %>' type="text" />
+				<input class="form-control" id="<portlet:namespace />searchApplication" name="<portlet:namespace />searchApplication" placeholder="<%= LanguageUtil.get(request, "search") + StringPool.TRIPLE_PERIOD %>" type="text" />
 
 				<span class="input-group-btn">
 					<liferay-ui:icon icon="search" markupView="lexicon" />
@@ -85,7 +85,7 @@ refererURL.setParameter("updateLayout", "true");
 			%>
 
 			<div class="button-holder">
-				<aui:button cssClass="btn-lg btn-primary" href="<%= marketplaceURL.toString() %>" value="install-more-applications" />
+				<aui:button href="<%= marketplaceURL.toString() %>" primary="<%= true %>" value="install-more-applications" />
 			</div>
 		</c:if>
 	</div>
@@ -94,37 +94,40 @@ refererURL.setParameter("updateLayout", "true");
 <aui:script use="liferay-product-navigation-control-menu-add-application">
 	var ControlMenu = Liferay.ControlMenu;
 
+	var addApplicationCollapse = A.one('#<portlet:namespace />addApplicationCollapse');
 	var searchApplication = A.one('#<portlet:namespace />searchApplication');
 
-	var addApplication = new ControlMenu.AddApplication(
-		{
-			focusItem: searchApplication,
-			inputNode: searchApplication,
-			namespace: '<portlet:namespace />',
-			nodeList: A.one('#<portlet:namespace />applicationList'),
-			nodeSelector: '.drag-content-item',
-			selected: !A.one('#<portlet:namespace />addApplicationForm').ancestor().hasClass('hide')
-		}
-	);
-
-	if (ControlMenu.PortletDragDrop) {
-		addApplication.plug(
-			ControlMenu.PortletDragDrop,
+	if (addApplicationCollapse && searchApplication) {
+		var addApplication = new ControlMenu.AddApplication(
 			{
-				on: {
-					dragEnd: function(event) {
-						addApplication.addPortlet(
-							event.portletNode,
-							{
-								item: event.appendNode
-							}
-						);
-					}
-				},
-				srcNode: '#<portlet:namespace />applicationList'
+				focusItem: searchApplication,
+				inputNode: searchApplication,
+				namespace: '<portlet:namespace />',
+				nodeList: A.one('#<portlet:namespace />applicationList'),
+				nodeSelector: '.drag-content-item',
+				panelBody: addApplicationCollapse
 			}
 		);
-	}
 
-	Liferay.component('<portlet:namespace />addApplication', addApplication);
+		if (ControlMenu.PortletDragDrop) {
+			addApplication.plug(
+				ControlMenu.PortletDragDrop,
+				{
+					on: {
+						dragEnd: function(event) {
+							addApplication.addPortlet(
+								event.portletNode,
+								{
+									item: event.appendNode
+								}
+							);
+						}
+					},
+					srcNode: '#<portlet:namespace />applicationList'
+				}
+			);
+		}
+
+		Liferay.component('<portlet:namespace />addApplication', addApplication);
+	}
 </aui:script>

@@ -9,9 +9,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="DDLConfiguration#CONFIGURATION_IFRAME" />
-
-		<execute function="AssertClick" locator1="DDLConfiguration#NAVIGATION_OPTIONAL_CONFIGURATION" value1="Optional Configuration" />
+		<execute macro="DDLNavigator#gotoOptionalConfiguration" />
 
 		<if>
 			<equals arg1="${configureChecked}" arg2="false" />
@@ -28,10 +26,16 @@
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
+	<command name="viewAddToolbar">
+		<var name="key_ddlDataDefinitionName" value="${ddlDataDefinitionName}" />
+
+		<execute function="AssertTextEquals" locator1="DDL#TOOLBAR_ADD" value1="Add ${ddlDataDefinitionName}" />
+	</command>
+
 	<command name="viewDDLTemplateRecordFieldData">
 		<var name="key_ddlRecordFieldData" value="${ddlRecordFieldData}" />
 
-		<execute function="AssertTextEquals" locator1="PGDynamicdatalists#RECORD_TABLE_DISPLAY_FIELD" value1="${key_ddlRecordFieldData}" />
+		<execute function="AssertTextEquals" locator1="DDL#RECORD_TABLE_DISPLAY_FIELD" value1="${key_ddlRecordFieldData}" />
 	</command>
 
 	<command name="viewSpreadsheetContainer">

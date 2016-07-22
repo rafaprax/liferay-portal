@@ -9,13 +9,18 @@
 </thead>
 <tbody>
 <tr>
+	<td>ADD_REPEATABLE_ENTRY</td>
+	<td>xpath=(//div[contains(@data-fieldname,'${key_assetType}')]/../div//a[contains(@class,'repeatable-add-button')])[${key_counter}]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>ADVANCED_SEARCH</td>
-	<td>//button[contains(@class,'toggle-advanced') and span[@class='caret']]</td>
+	<td>//button[contains(@class,'toggle-advanced') and span[@class='caret']] | //a[contains(@id,'searchtoggleAdvanced')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ANGLE_LEFT_BACK</td>
-	<td>//div[contains(@class,'toolbar-group-content')]//span[contains(@class,'icon-angle-left')]</td>
+	<td>//div[contains(@class,'taglib-header')]//span[contains(.,'Back')]/a | //div[contains(@class,'toolbar-group-content')]//span[contains(@class,'icon-angle-left')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -110,7 +115,7 @@
 </tr>
 <tr>
 	<td>EDIT</td>
-	<td>//span/*[name()='svg'][contains(@class,'icon-pencil')]</td>
+	<td>//span[contains(.,'${key_assetTitle}')]//*[name()='svg'][contains(@class,'icon-pencil')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -121,6 +126,11 @@
 <tr>
 	<td>EDIT_CONTROLS</td>
 	<td>//li[contains(@id,'toggleControls')]/a[i[contains(@class,'icon-eye-close') or contains(@class,'icon-eye-open')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EDIT_PENCIL</td>
+	<td>//*[name()='svg'][contains(@class,'lexicon-icon-pencil')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -209,6 +219,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>INHERIT_CHANGES_TOOLTIP</td>
+	<td>//div[not(contains(@class,'hide'))]/div/label[contains(.,'Inherit Changes')]//span/*[name()='svg'][contains(@class,'icon-question')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>TWITTER</td>
 	<td>//i[contains(@class,'icon-twitter')]</td>
 	<td></td>
@@ -236,7 +251,7 @@
 </tr>
 <tr>
 	<td>HEADER_VERTICAL_ELLIPSIS</td>
-	<td>//*[@data-qa-id='headerOptions']//a</td>
+	<td>//*[@data-qa-id='header']//*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -252,6 +267,11 @@
 <tr>
 	<td>ROW_VERTICAL_ELLIPSIS_N</td>
 	<td>xpath=(//*[@data-qa-id='row']//span/*[name()='svg'][contains(@class,'icon-ellipsis')])[${key_rowIndexNumber}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_BAR_VERTICAL_ELLIPSIS</td>
+	<td>//li[contains(@class,'control-menu-nav-item')]//*[contains(@class,'lexicon-icon-ellipsis-v')]</td>
 	<td></td>
 </tr>
 </tbody>

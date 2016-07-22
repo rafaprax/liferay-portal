@@ -35,7 +35,9 @@ import com.liferay.portal.kernel.model.LayoutTypePortletConstants;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.model.Theme;
+import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
@@ -51,6 +53,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.CookieKeys;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.LayoutTypePortletFactoryUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -66,8 +69,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.LayoutClone;
 import com.liferay.portal.util.LayoutCloneFactory;
+import com.liferay.portal.util.LayoutTypeControllerTracker;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portlet.PortletURLImpl;
 
 import java.io.IOException;
 
@@ -79,6 +82,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.portlet.PortletException;
@@ -680,7 +684,13 @@ public class LayoutImpl extends LayoutBaseImpl {
 	public String getRegularURL(HttpServletRequest request)
 		throws PortalException {
 
-		return _getURL(request, false, false);
+		String url = _getURL(request, false, false);
+
+		if (!url.startsWith(Http.HTTP) && !url.startsWith(StringPool.SLASH)) {
+			return StringPool.SLASH + url;
+		}
+
+		return url;
 	}
 
 	@Override
@@ -853,10 +863,8 @@ public class LayoutImpl extends LayoutBaseImpl {
 			HttpServletRequest request, HttpServletResponse response)
 		throws Exception {
 
-		LayoutType layoutType = getLayoutType();
-
 		LayoutTypeController layoutTypeController =
-			layoutType.getLayoutTypeController();
+			LayoutTypeControllerTracker.getLayoutTypeController(getType());
 
 		return layoutTypeController.includeLayoutContent(
 			request, response, this);
@@ -1108,8 +1116,8 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypeControlPanel() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_CONTROL_PANEL) ||
-			Validator.equals(
+		if (Objects.equals(getType(), LayoutConstants.TYPE_CONTROL_PANEL) ||
+			Objects.equals(
 				_getLayoutTypeControllerType(),
 				LayoutConstants.TYPE_CONTROL_PANEL)) {
 
@@ -1121,8 +1129,8 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypeEmbedded() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_EMBEDDED) ||
-			Validator.equals(
+		if (Objects.equals(getType(), LayoutConstants.TYPE_EMBEDDED) ||
+			Objects.equals(
 				_getLayoutTypeControllerType(),
 				LayoutConstants.TYPE_EMBEDDED)) {
 
@@ -1134,8 +1142,8 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypeLinkToLayout() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_LINK_TO_LAYOUT) ||
-			Validator.equals(
+		if (Objects.equals(getType(), LayoutConstants.TYPE_LINK_TO_LAYOUT) ||
+			Objects.equals(
 				_getLayoutTypeControllerType(),
 				LayoutConstants.TYPE_LINK_TO_LAYOUT)) {
 
@@ -1147,8 +1155,8 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypePanel() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_PANEL) ||
-			Validator.equals(
+		if (Objects.equals(getType(), LayoutConstants.TYPE_PANEL) ||
+			Objects.equals(
 				_getLayoutTypeControllerType(), LayoutConstants.TYPE_PANEL)) {
 
 			return true;
@@ -1159,8 +1167,8 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypePortlet() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_PORTLET) ||
-			Validator.equals(
+		if (Objects.equals(getType(), LayoutConstants.TYPE_PORTLET) ||
+			Objects.equals(
 				_getLayoutTypeControllerType(), LayoutConstants.TYPE_PORTLET)) {
 
 			return true;
@@ -1171,7 +1179,7 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypeSharedPortlet() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_SHARED_PORTLET)) {
+		if (Objects.equals(getType(), LayoutConstants.TYPE_SHARED_PORTLET)) {
 			return true;
 		}
 
@@ -1180,7 +1188,7 @@ public class LayoutImpl extends LayoutBaseImpl {
 
 	@Override
 	public boolean isTypeURL() {
-		if (Validator.equals(getType(), LayoutConstants.TYPE_URL)) {
+		if (Objects.equals(getType(), LayoutConstants.TYPE_URL)) {
 			return true;
 		}
 
@@ -1393,31 +1401,31 @@ public class LayoutImpl extends LayoutBaseImpl {
 				String portletId = StringUtil.split(
 					layoutTypePortlet.getStateMax())[0];
 
-				PortletURLImpl portletURLImpl = new PortletURLImpl(
-					request, portletId, getPlid(), PortletRequest.ACTION_PHASE);
+				LiferayPortletURL portletURL = PortletURLFactoryUtil.create(
+					request, portletId, this, PortletRequest.ACTION_PHASE);
 
 				try {
-					portletURLImpl.setWindowState(WindowState.NORMAL);
-					portletURLImpl.setPortletMode(PortletMode.VIEW);
+					portletURL.setWindowState(WindowState.NORMAL);
+					portletURL.setPortletMode(PortletMode.VIEW);
 				}
 				catch (PortletException pe) {
 					throw new SystemException(pe);
 				}
 
-				portletURLImpl.setAnchor(false);
+				portletURL.setAnchor(false);
 
 				if (PropsValues.LAYOUT_DEFAULT_P_L_RESET &&
 					!resetRenderParameters) {
 
-					portletURLImpl.setParameter("p_l_reset", "0");
+					portletURL.setParameter("p_l_reset", "0");
 				}
 				else if (!PropsValues.LAYOUT_DEFAULT_P_L_RESET &&
 						 resetRenderParameters) {
 
-					portletURLImpl.setParameter("p_l_reset", "1");
+					portletURL.setParameter("p_l_reset", "1");
 				}
 
-				return portletURLImpl.toString();
+				return portletURL.toString();
 			}
 		}
 

@@ -46,7 +46,7 @@ portletDisplay.setShowBackIcon(true);
 
 PortletURL backURL = renderResponse.createRenderURL();
 
-portletURL.setParameter("mvcPath", "/view.jsp");
+backURL.setParameter("mvcPath", "/view.jsp");
 
 portletDisplay.setURLBack(backURL.toString());
 
@@ -82,7 +82,7 @@ MarketplaceAppManagerUtil.addPortletBreadcrumbEntry(appDisplay, request, renderR
 </aui:nav-bar>
 
 <liferay-frontend:management-bar
-	searchContainerId="appDisplays"
+	searchContainerId="moduleGroupDisplays"
 >
 	<liferay-frontend:management-bar-buttons>
 		<liferay-frontend:management-bar-display-buttons
@@ -142,7 +142,7 @@ MarketplaceAppManagerUtil.addPortletBreadcrumbEntry(appDisplay, request, renderR
 		</liferay-ui:search-container-results>
 
 		<liferay-ui:search-container-row
-			className="com.liferay.marketplace.app.manager.web.util.ModuleGroupDisplay"
+			className="com.liferay.marketplace.app.manager.web.internal.util.ModuleGroupDisplay"
 			modelVar="moduleGroupDisplay"
 		>
 			<%@ include file="/module_group_display_columns.jspf" %>

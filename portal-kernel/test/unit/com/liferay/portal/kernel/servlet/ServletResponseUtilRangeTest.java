@@ -63,6 +63,7 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 
+		setUpBrowserSniffer();
 		setUpFileUtil();
 		setUpPropsUtil();
 	}
@@ -74,7 +75,7 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 		List<Range> ranges = ServletResponseUtil.getRanges(
 			_request, _response, 1000);
 
-		Assert.assertEquals(ranges.size(), 5);
+		Assert.assertEquals(5, ranges.size());
 		assertRange(ranges.get(0), 1, 3, 3);
 		assertRange(ranges.get(1), 3, 8, 6);
 		assertRange(ranges.get(2), 9, 11, 3);
@@ -97,14 +98,14 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 		List<Range> ranges = ServletResponseUtil.getRanges(
 			_request, _response, length);
 
-		Assert.assertEquals(ranges.size(), 1);
+		Assert.assertEquals(1, ranges.size());
 		assertRange(ranges.get(0), 9500, 9999, 500);
 
 		setUpRange(_request, "bytes=9500-");
 
 		ranges = ServletResponseUtil.getRanges(_request, _response, length);
 
-		Assert.assertEquals(ranges.size(), 1);
+		Assert.assertEquals(1, ranges.size());
 		assertRange(ranges.get(0), 9500, 9999, 500);
 
 		// The first and last bytes only (bytes 0 and 9999): bytes=0-0,-1
@@ -113,7 +114,7 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 
 		ranges = ServletResponseUtil.getRanges(_request, _response, length);
 
-		Assert.assertEquals(ranges.size(), 2);
+		Assert.assertEquals(2, ranges.size());
 		assertRange(ranges.get(0), 0, 0, 1);
 		assertRange(ranges.get(1), 9999, 9999, 1);
 
@@ -125,7 +126,7 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 
 		ranges = ServletResponseUtil.getRanges(_request, _response, length);
 
-		Assert.assertEquals(ranges.size(), 2);
+		Assert.assertEquals(2, ranges.size());
 		assertRange(ranges.get(0), 500, 600, 101);
 		assertRange(ranges.get(1), 601, 999, 399);
 
@@ -133,7 +134,7 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 
 		ranges = ServletResponseUtil.getRanges(_request, _response, length);
 
-		Assert.assertEquals(ranges.size(), 2);
+		Assert.assertEquals(2, ranges.size());
 		assertRange(ranges.get(0), 500, 700, 201);
 		assertRange(ranges.get(1), 601, 999, 399);
 	}
@@ -145,7 +146,7 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 		List<Range> ranges = ServletResponseUtil.getRanges(
 			_request, _response, 1000);
 
-		Assert.assertEquals(ranges.size(), 1);
+		Assert.assertEquals(1, ranges.size());
 		assertRange(ranges.get(0), 0, 999, 1000);
 	}
 
@@ -181,8 +182,22 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 		Assert.assertEquals(range.getLength(), length);
 	}
 
+	protected void setUpBrowserSniffer() {
+		BrowserSnifferUtil browserSnifferUtil = new BrowserSnifferUtil();
+
+		browserSnifferUtil.setBrowserSniffer(_browserSniffer);
+
+		when(
+			_browserSniffer.isIe(Matchers.any(HttpServletRequest.class))
+		).thenReturn(
+			false
+		);
+	}
+
 	protected void setUpFileUtil() {
-		new FileUtil().setFile(_file);
+		FileUtil fileUtil = new FileUtil();
+
+		fileUtil.setFile(_file);
 
 		when(
 			_file.createTempFile()
@@ -299,6 +314,9 @@ public class ServletResponseUtilRangeTest extends PowerMockito {
 
 	private static final String _CONTENT_TYPE_BOUNDARY_PREFACE =
 		"multipart/byteranges; boundary=";
+
+	@Mock
+	private BrowserSniffer _browserSniffer;
 
 	@Mock
 	private com.liferay.portal.kernel.util.File _file;

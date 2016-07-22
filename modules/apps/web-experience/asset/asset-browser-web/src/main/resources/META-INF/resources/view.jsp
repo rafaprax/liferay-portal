@@ -39,9 +39,13 @@
 			/>
 		</liferay-frontend:management-bar-filters>
 
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
+
 		<liferay-frontend:management-bar-display-buttons
 			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
-			portletURL="<%= assetBrowserDisplayContext.getPortletURL() %>"
+			portletURL="<%= changeDisplayStyleURL %>"
 			selectedDisplayStyle="<%= assetBrowserDisplayContext.getDisplayStyle() %>"
 		/>
 	</liferay-frontend:management-bar-buttons>
@@ -81,7 +85,7 @@
 			%>
 
 			<c:choose>
-				<c:when test='<%= assetBrowserDisplayContext.getDisplayStyle().equals("descriptive") %>'>
+				<c:when test='<%= Objects.equals(assetBrowserDisplayContext.getDisplayStyle(), "descriptive") %>'>
 					<liferay-ui:search-container-column-text>
 						<liferay-ui:user-portrait
 							cssClass="user-icon-lg"
@@ -121,10 +125,10 @@
 						</h6>
 					</liferay-ui:search-container-column-text>
 				</c:when>
-				<c:when test='<%= assetBrowserDisplayContext.getDisplayStyle().equals("icon") %>'>
+				<c:when test='<%= Objects.equals(assetBrowserDisplayContext.getDisplayStyle(), "icon") %>'>
 
 					<%
-					row.setCssClass("col-md-2 col-sm-4 col-xs-6");
+					row.setCssClass("entry-card lfr-asset-item");
 
 					AssetRenderer assetRenderer = assetEntry.getAssetRenderer();
 					%>
@@ -152,10 +156,10 @@
 						</c:choose>
 					</liferay-ui:search-container-column-text>
 				</c:when>
-				<c:when test='<%= assetBrowserDisplayContext.getDisplayStyle().equals("list") %>'>
+				<c:when test='<%= Objects.equals(assetBrowserDisplayContext.getDisplayStyle(), "list") %>'>
 					<liferay-ui:search-container-column-text
-						cssClass="text-strong"
 						name="title"
+						truncate="<%= true %>"
 					>
 						<c:choose>
 							<c:when test="<%= assetEntry.getEntryId() != assetBrowserDisplayContext.getRefererAssetEntryId() %>">
@@ -171,6 +175,7 @@
 
 					<liferay-ui:search-container-column-text
 						name="description"
+						truncate="<%= true %>"
 						value="<%= HtmlUtil.stripHtml(assetEntry.getDescription(locale)) %>"
 					/>
 

@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Web Content Display" />
 
 	<set-up>
@@ -27,7 +28,7 @@
 
 	<command name="IFrameDemo" priority="4">
 		<execute macro="Page#add">
-			<var name="columnName" value="1_column" />
+			<var name="columnName" value="1 Column" />
 			<var name="pageName" value="IFrame Page" />
 			<var name="sitePageType" value="Empty Page" />
 		</execute>
@@ -82,7 +83,7 @@
 		</execute>
 
 		<execute macro="Page#editPageLayoutColumn">
-			<var name="columnName" value="2_columns_i" />
+			<var name="columnName" value="2 Columns (50/50)" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -104,10 +105,10 @@
 		</execute>
 
 		<execute macro="User#addCP">
-			<var name="userEmailAddress" value="test1@liferay.com" />
-			<var name="userFirstName" value="test1" />
-			<var name="userLastName" value="last" />
-			<var name="userScreenName" value="test1" />
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -115,13 +116,13 @@
 		</execute>
 
 		<execute macro="User#editPasswordCP">
-			<var name="userEmailAddress" value="test1@liferay.com" />
-			<var name="userScreenName" value="test1" />
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userScreenName" value="usersn" />
 		</execute>
 
 		<execute macro="User#logoutAndLoginPG">
-			<var name="userLoginEmailAddress" value="test1@liferay.com" />
-			<var name="userLoginFullName" value="Test1 Last" />
+			<var name="userLoginEmailAddress" value="userea@liferay.com" />
+			<var name="userLoginFullName" value="userfn userln" />
 		</execute>
 
 		<execute macro="WebContent#viewNoEditWCViaWCD" />

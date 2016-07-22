@@ -17,7 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String displayStyle = ParamUtil.getString(request, "displayStyle", "icon");
+String displayStyle = portalPreferences.getValue(SiteMembershipsPortletKeys.SITE_MEMBERSHIPS_ADMIN, "display-style", "icon");
 String orderByCol = ParamUtil.getString(request, "orderByCol", "name");
 String orderByType = ParamUtil.getString(request, "orderByType", "asc");
 
@@ -35,6 +35,12 @@ organizationSearch.setEmptyResultsMessage("no-organization-was-found-that-is-a-m
 RowChecker rowChecker = new EmptyOnClickRowChecker(renderResponse);
 
 OrganizationSearchTerms searchTerms = (OrganizationSearchTerms)organizationSearch.getSearchTerms();
+
+boolean hasAssignMembersPermission = GroupPermissionUtil.contains(permissionChecker, siteMembershipsDisplayContext.getGroupId(), ActionKeys.ASSIGN_MEMBERS);
+
+if (!searchTerms.isSearch() && hasAssignMembersPermission) {
+	organizationSearch.setEmptyResultsMessageCssClass("taglib-empty-result-message-header-has-plus-btn");
+}
 
 long parentOrganizationId = OrganizationConstants.ANY_PARENT_ORGANIZATION_ID;
 
@@ -62,9 +68,18 @@ organizationSearch.setResults(organizations);
 	searchContainerId="organizations"
 >
 	<liferay-frontend:management-bar-buttons>
+		<liferay-frontend:management-bar-sidenav-toggler-button
+			icon="info-circle"
+			label="info"
+		/>
+
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
+
 		<liferay-frontend:management-bar-display-buttons
 			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
-			portletURL="<%= PortletURLUtil.clone(viewOrganizationsURL, renderResponse) %>"
+			portletURL="<%= changeDisplayStyleURL %>"
 			selectedDisplayStyle="<%= displayStyle %>"
 		/>
 	</liferay-frontend:management-bar-buttons>
@@ -84,43 +99,60 @@ organizationSearch.setResults(organizations);
 	</liferay-frontend:management-bar-filters>
 
 	<liferay-frontend:management-bar-action-buttons>
-		<liferay-frontend:management-bar-button href="javascript:;" icon="trash" id="deleteSelectedOrganizations" label="delete" />
+		<liferay-frontend:management-bar-sidenav-toggler-button
+			icon="info-circle"
+			label="info"
+		/>
+
+		<liferay-frontend:management-bar-button href="javascript:;" icon="trash" id="deleteSelectedOrganizations" label="remove-membership" />
 	</liferay-frontend:management-bar-action-buttons>
 </liferay-frontend:management-bar>
 
-<liferay-util:include page="/info_message.jsp" servletContext="<%= application %>" />
+<div class="closed container-fluid-1280 sidenav-container sidenav-right" id="<portlet:namespace />infoPanelId">
+	<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="/organization/info_panel" var="sidebarPanelURL">
+		<portlet:param name="groupId" value="<%= String.valueOf(siteMembershipsDisplayContext.getGroupId()) %>" />
+	</liferay-portlet:resourceURL>
 
-<portlet:actionURL name="deleteGroupOrganizations" var="deleteGroupOrganizationsURL">
-	<portlet:param name="redirect" value="<%= currentURL %>" />
-</portlet:actionURL>
-
-<aui:form action="<%= deleteGroupOrganizationsURL %>" cssClass="container-fluid-1280" method="post" name="fm">
-	<aui:input name="tabs1" type="hidden" value="organizations" />
-	<aui:input name="groupId" type="hidden" value="<%= String.valueOf(siteMembershipsDisplayContext.getGroupId()) %>" />
-
-	<liferay-ui:search-container
-		id="organizations"
-		rowChecker="<%= rowChecker %>"
-		searchContainer="<%= organizationSearch %>"
+	<liferay-frontend:sidebar-panel
+		resourceURL="<%= sidebarPanelURL %>"
+		searchContainerId="organizations"
 	>
+		<liferay-util:include page="/organization_info_panel.jsp" servletContext="<%= application %>" />
+	</liferay-frontend:sidebar-panel>
 
-		<liferay-ui:search-container-row
-			className="com.liferay.portal.kernel.model.Organization"
-			escapedModel="<%= true %>"
-			keyProperty="organizationId"
-			modelVar="organization"
-		>
+	<div class="sidenav-content">
+		<portlet:actionURL name="deleteGroupOrganizations" var="deleteGroupOrganizationsURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</portlet:actionURL>
 
-			<%
-			boolean selectOrganizations = false;
-			%>
+		<aui:form action="<%= deleteGroupOrganizationsURL %>" method="post" name="fm">
+			<aui:input name="tabs1" type="hidden" value="organizations" />
+			<aui:input name="groupId" type="hidden" value="<%= String.valueOf(siteMembershipsDisplayContext.getGroupId()) %>" />
 
-			<%@ include file="/organization_columns.jspf" %>
-		</liferay-ui:search-container-row>
+			<liferay-ui:search-container
+				id="organizations"
+				rowChecker="<%= rowChecker %>"
+				searchContainer="<%= organizationSearch %>"
+			>
+				<liferay-ui:search-container-row
+					className="com.liferay.portal.kernel.model.Organization"
+					escapedModel="<%= true %>"
+					keyProperty="organizationId"
+					modelVar="organization"
+				>
 
-		<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />
-	</liferay-ui:search-container>
-</aui:form>
+					<%
+					boolean selectOrganizations = false;
+					%>
+
+					<%@ include file="/organization_columns.jspf" %>
+				</liferay-ui:search-container-row>
+
+				<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />
+			</liferay-ui:search-container>
+		</aui:form>
+	</div>
+</div>
 
 <portlet:actionURL name="addGroupOrganizations" var="addGroupOrganizationsURL" />
 
@@ -128,7 +160,7 @@ organizationSearch.setResults(organizations);
 	<aui:input name="tabs1" type="hidden" value="organizations" />
 </aui:form>
 
-<c:if test="<%= GroupPermissionUtil.contains(permissionChecker, siteMembershipsDisplayContext.getGroupId(), ActionKeys.ASSIGN_MEMBERS) %>">
+<c:if test="<%= hasAssignMembersPermission %>">
 	<liferay-frontend:add-menu>
 		<liferay-frontend:add-menu-item id="selectOrganizations" title='<%= LanguageUtil.get(request, "assign-organizations") %>' url="javascript:;" />
 	</liferay-frontend:add-menu>
@@ -169,7 +201,8 @@ organizationSearch.setResults(organizations);
 							}
 						}
 					},
-					title: '<liferay-ui:message key="add-organizations-to-this-site" />',
+					'strings.add': '<liferay-ui:message key="done" />',
+					title: '<liferay-ui:message key="assign-organizations-to-this-site" />',
 					url: '<portlet:renderURL windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcPath" value="/select_organizations.jsp" /></portlet:renderURL>'
 				}
 			);

@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
@@ -57,6 +56,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -205,7 +205,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalFolder journalFolder : list) {
-					if (!Validator.equals(uuid, journalFolder.getUuid())) {
+					if (!Objects.equals(uuid, journalFolder.getUuid())) {
 						list = null;
 
 						break;
@@ -678,8 +678,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFolderException(msg.toString());
@@ -723,7 +723,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 		if (result instanceof JournalFolder) {
 			JournalFolder journalFolder = (JournalFolder)result;
 
-			if (!Validator.equals(uuid, journalFolder.getUuid()) ||
+			if (!Objects.equals(uuid, journalFolder.getUuid()) ||
 					(groupId != journalFolder.getGroupId())) {
 				result = null;
 			}
@@ -1018,7 +1018,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalFolder journalFolder : list) {
-					if (!Validator.equals(uuid, journalFolder.getUuid()) ||
+					if (!Objects.equals(uuid, journalFolder.getUuid()) ||
 							(companyId != journalFolder.getCompanyId())) {
 						list = null;
 
@@ -3818,8 +3818,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFolderException(msg.toString());
@@ -3864,7 +3864,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 			JournalFolder journalFolder = (JournalFolder)result;
 
 			if ((groupId != journalFolder.getGroupId()) ||
-					!Validator.equals(name, journalFolder.getName())) {
+					!Objects.equals(name, journalFolder.getName())) {
 				result = null;
 			}
 		}
@@ -4619,8 +4619,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFolderException(msg.toString());
@@ -4669,7 +4669,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			if ((groupId != journalFolder.getGroupId()) ||
 					(parentFolderId != journalFolder.getParentFolderId()) ||
-					!Validator.equals(name, journalFolder.getName())) {
+					!Objects.equals(name, journalFolder.getName())) {
 				result = null;
 			}
 		}
@@ -7552,8 +7552,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 					primaryKey);
 
 			if (journalFolder == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchFolderException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -7844,8 +7844,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 		JournalFolder journalFolder = fetchByPrimaryKey(primaryKey);
 
 		if (journalFolder == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchFolderException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -7876,12 +7876,14 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	 */
 	@Override
 	public JournalFolder fetchByPrimaryKey(Serializable primaryKey) {
-		JournalFolder journalFolder = (JournalFolder)entityCache.getResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
 				JournalFolderImpl.class, primaryKey);
 
-		if (journalFolder == _nullJournalFolder) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		JournalFolder journalFolder = (JournalFolder)serializable;
 
 		if (journalFolder == null) {
 			Session session = null;
@@ -7897,7 +7899,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 				}
 				else {
 					entityCache.putResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
-						JournalFolderImpl.class, primaryKey, _nullJournalFolder);
+						JournalFolderImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -7951,18 +7953,20 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			JournalFolder journalFolder = (JournalFolder)entityCache.getResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
 					JournalFolderImpl.class, primaryKey);
 
-			if (journalFolder == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, journalFolder);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (JournalFolder)serializable);
+				}
 			}
 		}
 
@@ -8004,7 +8008,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
-					JournalFolderImpl.class, primaryKey, _nullJournalFolder);
+					JournalFolderImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -8259,22 +8263,4 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final JournalFolder _nullJournalFolder = new JournalFolderImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<JournalFolder> toCacheModel() {
-				return _nullJournalFolderCacheModel;
-			}
-		};
-
-	private static final CacheModel<JournalFolder> _nullJournalFolderCacheModel = new CacheModel<JournalFolder>() {
-			@Override
-			public JournalFolder toEntityModel() {
-				return _nullJournalFolder;
-			}
-		};
 }

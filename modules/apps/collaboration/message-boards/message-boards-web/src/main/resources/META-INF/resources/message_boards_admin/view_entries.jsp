@@ -25,12 +25,6 @@ SearchContainer entriesSearchContainer = (SearchContainer)request.getAttribute("
 
 long groupThreadsUserId = ParamUtil.getLong(request, "groupThreadsUserId");
 
-Calendar calendar = Calendar.getInstance();
-
-int offset = GetterUtil.getInteger(recentPostsDateOffset);
-
-calendar.add(Calendar.DATE, -offset);
-
 boolean showBreadcrumb = ParamUtil.getBoolean(request, "showBreadcrumb", true);
 
 PortletURL portletURL = (PortletURL)request.getAttribute("view.jsp-portletURL");
@@ -102,7 +96,6 @@ if (groupThreadsUserId > 0) {
 				keyProperty="categoryId"
 				modelVar="result"
 			>
-
 				<%@ include file="/message_boards/cast_result.jspf" %>
 
 				<c:choose>
@@ -141,7 +134,6 @@ if (groupThreadsUserId > 0) {
 							<span class="h6">
 								<liferay-ui:message arguments="<%= subcategoriesCount %>" key='<%= subcategoriesCount == 1 ? "x-subcategory" : "x-subcategories" %>' />
 							</span>
-
 							<span class="h6">
 								<liferay-ui:message arguments="<%= threadsCount %>" key='<%= threadsCount == 1 ? "x-thread" : "x-threads" %>' />
 							</span>
@@ -259,7 +251,6 @@ if (groupThreadsUserId > 0) {
 							<span class="h6">
 								<liferay-ui:message arguments="<%= messageCount %>" key='<%= messageCount == 1 ? "x-post" : "x-posts" %>' />
 							</span>
-
 							<span class="h6">
 								<liferay-ui:message arguments="<%= viewCount %>" key='<%= viewCount == 1 ? "x-view" : "x-views" %>' />
 							</span>

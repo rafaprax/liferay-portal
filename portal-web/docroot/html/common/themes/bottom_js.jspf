@@ -44,6 +44,8 @@
 			</c:if>
 		</c:otherwise>
 	</c:choose>
+
+	Liferay.BrowserSelectors.run();
 </aui:script>
 
 <aui:script use="aui-base">
@@ -64,7 +66,7 @@ if (layout != null) {
 }
 %>
 
-<c:if test="<%= !themeDisplay.isStatePopUp() && !group.isControlPanel() && (layout != null) && (!group.hasStagingGroup() || group.isStagingGroup() || layoutTypePortlet.isCustomizable()) && (GroupPermissionUtil.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_LAYOUT) || LayoutPermissionUtil.contains(permissionChecker, layout, ActionKeys.UPDATE) || (layoutTypePortlet.isCustomizable() && LayoutPermissionUtil.contains(permissionChecker, layout, ActionKeys.CUSTOMIZE))) %>">
+<c:if test="<%= !themeDisplay.isStatePopUp() && !group.isControlPanel() && (layout != null) && (!group.hasStagingGroup() || group.isStagingGroup() || !PropsValues.STAGING_LIVE_GROUP_LOCKING_ENABLED || layoutTypePortlet.isCustomizable()) && (GroupPermissionUtil.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_LAYOUT) || LayoutPermissionUtil.contains(permissionChecker, layout, ActionKeys.UPDATE) || (layoutTypePortlet.isCustomizable() && LayoutPermissionUtil.contains(permissionChecker, layout, ActionKeys.CUSTOMIZE))) %>">
 	<c:if test="<%= layout.isTypePortlet() %>">
 		<aui:script position="inline">
 			Liferay.Data.layoutConfig = {
@@ -83,7 +85,7 @@ if (layout != null) {
 
 				<c:choose>
 					<c:when test="<%= BrowserSnifferUtil.isMobile(request) %>">
-						handles: Liferay.Data.PORTLET_TOUCH_DRAG_HANDLE_SELECTOR || ['.portlet-title-text'],
+						handles: Liferay.Data.PORTLET_TOUCH_DRAG_HANDLE_SELECTOR || ['.portlet-title-default'],
 					</c:when>
 					<c:when test="<%= !themeDisplay.isFreeformLayout() %>">
 						handles: Liferay.Data.PORTLET_DRAG_HANDLE_SELECTOR || ['.portlet-title-default', '.portlet-topper'],
@@ -109,6 +111,8 @@ if (layout != null) {
 	</c:if>
 
 	<aui:script use="event-move,liferay-navigation">
+		var navBlock = A.one(Liferay.Data.NAV_SELECTOR);
+
 		Liferay.once(
 			'initNavigation',
 			function() {
@@ -148,15 +152,23 @@ if (layout != null) {
 			}
 		);
 
-		var navBlock = A.one(Liferay.Data.NAV_SELECTOR);
-
 		if (navBlock) {
-			navBlock.once(
-				['gesturemovestart', 'mousemove'],
-				function() {
-					Liferay.fire('initNavigation');
-				}
-			);
+			if (A.UA.touchMobile) {
+				AUI.$(Liferay.Data.NAV_SELECTOR_MOBILE).one(
+					'shown.bs.collapse',
+					function() {
+						Liferay.fire('initNavigation');
+					}
+				);
+			}
+			else {
+				navBlock.once(
+					['gesturemovestart', 'mousemove'],
+					function() {
+						Liferay.fire('initNavigation');
+					}
+				);
+			}
 		}
 
 		A.on(
@@ -195,7 +207,7 @@ if (layout != null) {
 		%>
 
 		Liferay.currentURL = '<%= HtmlUtil.escapeJS(currentURL) %>';
-		Liferay.currentURLEncoded = '<%= HttpUtil.encodeURL(currentURL) %>';
+		Liferay.currentURLEncoded = '<%= HtmlUtil.escapeJS(HttpUtil.encodeURL(currentURL)) %>';
 
 	// ]]>
 </script>

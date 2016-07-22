@@ -20,9 +20,9 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.ConfigurationAction;
 import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.facet.SearchFacet;
-import com.liferay.portal.search.facet.util.SearchFacetTracker;
 import com.liferay.portal.search.web.constants.SearchPortletKeys;
+import com.liferay.portal.search.web.facet.SearchFacet;
+import com.liferay.portal.search.web.facet.util.SearchFacetTracker;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -65,9 +65,9 @@ public class SearchConfigurationAction extends DefaultConfigurationAction {
 			facetJSONObject.put("className", searchFacet.getFacetClassName());
 			facetJSONObject.put("data", searchFacet.getJSONData(actionRequest));
 			facetJSONObject.put("fieldName", searchFacet.getFieldName());
+			facetJSONObject.put("id", searchFacet.getId());
 			facetJSONObject.put("label", searchFacet.getLabel());
 			facetJSONObject.put("order", searchFacet.getOrder());
-			facetJSONObject.put("id", searchFacet.getId());
 
 			boolean displayFacet = ParamUtil.getBoolean(
 				actionRequest, searchFacet.getClassName() + "displayFacet");
@@ -92,7 +92,8 @@ public class SearchConfigurationAction extends DefaultConfigurationAction {
 
 	@Override
 	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.portal.search.web)", unbind = "-"
+		target = "(osgi.web.symbolicname=com.liferay.portal.search.web)",
+		unbind = "-"
 	)
 	public void setServletContext(ServletContext servletContext) {
 		super.setServletContext(servletContext);

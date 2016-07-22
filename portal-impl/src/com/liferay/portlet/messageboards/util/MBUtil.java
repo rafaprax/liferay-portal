@@ -20,6 +20,7 @@ import com.liferay.message.boards.kernel.model.MBBan;
 import com.liferay.message.boards.kernel.model.MBCategory;
 import com.liferay.message.boards.kernel.model.MBCategoryConstants;
 import com.liferay.message.boards.kernel.model.MBMessage;
+import com.liferay.message.boards.kernel.model.MBMessageConstants;
 import com.liferay.message.boards.kernel.model.MBStatsUser;
 import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBCategoryLocalServiceUtil;
@@ -805,10 +806,22 @@ public class MBUtil {
 	public static boolean isValidMessageFormat(String messageFormat) {
 		String editorName = PropsUtil.get(BB_CODE_EDITOR_WYSIWYG_IMPL_KEY);
 
-		if (messageFormat.equals("bbcode") &&
-			!(editorName.equals("bbcode") ||
-			  editorName.equals("ckeditor_bbcode"))) {
+		if (editorName.equals("bbcode")) {
+			editorName = "ckeditor_bbcode";
 
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Replacing unsupported BBCode editor with CKEditor BBCode");
+			}
+		}
+
+		if (messageFormat.equals("bbcode") &&
+			!editorName.equals("ckeditor_bbcode")) {
+
+			return false;
+		}
+
+		if (!ArrayUtil.contains(MBMessageConstants.FORMATS, messageFormat)) {
 			return false;
 		}
 
@@ -844,7 +857,7 @@ public class MBUtil {
 		}
 
 		if (!message.isApproved() &&
-			!Validator.equals(message.getUserId(), themeDisplay.getUserId()) &&
+			(message.getUserId() != themeDisplay.getUserId()) &&
 			!permissionChecker.isContentReviewer(
 				themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId())) {
 

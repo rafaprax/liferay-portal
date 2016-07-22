@@ -28,8 +28,6 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.NoSuchRegionException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.model.Region;
 import com.liferay.portal.kernel.service.persistence.RegionPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
@@ -37,7 +35,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.impl.RegionImpl;
 import com.liferay.portal.model.impl.RegionModelImpl;
 
@@ -49,6 +46,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -1124,8 +1122,8 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRegionException(msg.toString());
@@ -1170,7 +1168,7 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 			Region region = (Region)result;
 
 			if ((countryId != region.getCountryId()) ||
-					!Validator.equals(regionCode, region.getRegionCode())) {
+					!Objects.equals(regionCode, region.getRegionCode())) {
 				result = null;
 			}
 		}
@@ -2060,8 +2058,8 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 			Region region = (Region)session.get(RegionImpl.class, primaryKey);
 
 			if (region == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchRegionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2247,8 +2245,8 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 		Region region = fetchByPrimaryKey(primaryKey);
 
 		if (region == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchRegionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2278,12 +2276,14 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 	 */
 	@Override
 	public Region fetchByPrimaryKey(Serializable primaryKey) {
-		Region region = (Region)entityCache.getResult(RegionModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(RegionModelImpl.ENTITY_CACHE_ENABLED,
 				RegionImpl.class, primaryKey);
 
-		if (region == _nullRegion) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		Region region = (Region)serializable;
 
 		if (region == null) {
 			Session session = null;
@@ -2298,7 +2298,7 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 				}
 				else {
 					entityCache.putResult(RegionModelImpl.ENTITY_CACHE_ENABLED,
-						RegionImpl.class, primaryKey, _nullRegion);
+						RegionImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2352,18 +2352,20 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Region region = (Region)entityCache.getResult(RegionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(RegionModelImpl.ENTITY_CACHE_ENABLED,
 					RegionImpl.class, primaryKey);
 
-			if (region == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, region);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (Region)serializable);
+				}
 			}
 		}
 
@@ -2405,7 +2407,7 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(RegionModelImpl.ENTITY_CACHE_ENABLED,
-					RegionImpl.class, primaryKey, _nullRegion);
+					RegionImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2645,34 +2647,4 @@ public class RegionPersistenceImpl extends BasePersistenceImpl<Region>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"active"
 			});
-	private static final Region _nullRegion = new RegionImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<Region> toCacheModel() {
-				return _nullRegionCacheModel;
-			}
-		};
-
-	private static final CacheModel<Region> _nullRegionCacheModel = new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<Region>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public Region toEntityModel() {
-			return _nullRegion;
-		}
-	}
 }

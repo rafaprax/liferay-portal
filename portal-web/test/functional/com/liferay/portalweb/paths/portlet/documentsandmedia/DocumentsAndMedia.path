@@ -40,7 +40,7 @@
 </tr>
 <tr>
 	<td>DOCUMENT_VERSION_VERTICAL_ELLIPSIS</td>
-	<td>//h4[contains(.,'${key_dmDocumentVersionNumber}')]/..//*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
+	<td>//dl/dt[contains(.,'${key_dmDocumentVersionNumber}')]/../..//div//*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -106,7 +106,12 @@
 </tr>
 <tr>
 	<td>ICON_DOCUMENT_TITLE</td>
-	<td>//div[contains(@class,'toggle-card')]//div[contains(@class,'card-dm-text') and contains(.,'${key_dmDocumentTitle}')]</td>
+	<td>//span[contains(@class,'lfr-card-title-text') and contains(.,'${key_dmDocumentTitle}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ICON_DOCUMENT_TITLE_LINK</td>
+	<td>//span[contains(@class,'lfr-card-title-text') and contains(.,'${key_dmDocumentTitle}')]//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -137,7 +142,7 @@
 </tr>
 <tr>
 	<td>ICON_FOLDER_CHECKBOX</td>
-	<td>//li[contains(@data-title,'${key_dmFolderName}')]//input</td>
+	<td>//li[contains(@data-title,'${key_dmFolderName}')]//label/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -147,7 +152,7 @@
 </tr>
 <tr>
 	<td>ICON_FOLDER_TITLE</td>
-	<td>//span[@title='${key_dmFolderName}']//a</td>
+	<td>//span//a[@title='${key_dmFolderName}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -163,7 +168,7 @@
 </tr>
 <tr>
 	<td>DESCRIPTIVE_LIST_DOCUMENT_ICON</td>
-	<td>//li[@data-title='${key_dmDocumentTitle}']//img</td>
+	<td>//li[contains(@data-title,'${key_dmDocumentTitle}')]//div//div</td>
 	<td></td>
 </tr>
 <tr>
@@ -204,7 +209,7 @@
 </tr>
 <tr>
 	<td>DESCRIPTIVE_LIST_FOLDER_ICON</td>
-	<td>//li[@data-title='${key_dmFolderName}']//img</td>
+	<td>//li[@data-title='${key_dmFolderName}']//*[name()='svg'][contains(@class,'icon-folder')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -240,7 +245,7 @@
 </tr>
 <tr>
 	<td>LIST_DOCUMENT_TITLE</td>
-	<td>//table[@class='table table-list']//tr[contains(.,'${key_dmDocumentTitle}')]/td[2]/div/span</td>
+	<td>//table[@class='table table-list']//tr[contains(.,'${key_dmDocumentTitle}')]/td[2]//div/span</td>
 	<td></td>
 </tr>
 <tr>
@@ -276,7 +281,7 @@
 </tr>
 <tr>
 	<td>FILTER_REPOSITORY</td>
-	<td>//div[contains(@id,'folderContainer')]/ul/li/a[contains(.,'${key_dmRepositoryName}')]</td>
+	<td>//li[@data-title='${key_dmRepositoryName}']//span[contains(@title,'${key_dmRepositoryName}')]/a</td>
 	<td></td>
 </tr>
 <tr>
@@ -333,7 +338,7 @@
 </tr>
 <tr>
 	<td>TOOLBAR_SELECT_ALL_CHECKBOX</td>
-	<td>//input[contains(@id,'allRowIds')]</td>
+	<td>xpath=(//div[@class='checkbox']//input[@title='Select All'])[2]</td>
 	<td></td>
 </tr>
 <tr>
@@ -360,6 +365,27 @@
 <tr>
 	<td>SEARCH_PARENT_FOLDER</td>
 	<td>//a[@class='entry-link' and contains(.,'${dmDocumentTitle}')]//dd</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SEARCH_FIELD</td>
+	<td>//div[contains(@class,'basic-search')]/input[contains(@id,'document_library')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SEARCH_BUTTON</td>
+	<td>//*[@data-qa-id='searchButton']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--REPOSITORY-->
+<tr>
+	<td>REPOSITORY_FOLDER_NAME_DESCRIPTIVE_VIEW</td>
+	<td>//a[contains(.,'${key_dmRepositoryName}')]</td>
 	<td></td>
 </tr>
 </tbody>

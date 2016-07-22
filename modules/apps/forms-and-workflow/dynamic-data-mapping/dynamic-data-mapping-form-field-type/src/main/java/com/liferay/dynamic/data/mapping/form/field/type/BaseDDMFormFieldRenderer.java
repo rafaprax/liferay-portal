@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.portal.kernel.language.LanguageConstants;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -26,6 +27,7 @@ import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Writer;
 
@@ -54,6 +56,7 @@ public abstract class BaseDDMFormFieldRenderer implements DDMFormFieldRenderer {
 			getTemplateLanguage(), getTemplateResource(), false);
 
 		template.put(TemplateConstants.NAMESPACE, getTemplateNamespace());
+		template.put(TemplateConstants.RENDER_STRICT, Boolean.FALSE);
 
 		populateRequiredContext(
 			template, ddmFormField, ddmFormFieldRenderingContext);
@@ -93,10 +96,15 @@ public abstract class BaseDDMFormFieldRenderer implements DDMFormFieldRenderer {
 
 		Locale locale = ddmFormFieldRenderingContext.getLocale();
 
+		String childElementsHTML =
+			ddmFormFieldRenderingContext.getChildElementsHTML();
+
+		if (Validator.isNotNull(childElementsHTML)) {
+			template.put("childElementsHTML", childElementsHTML);
+		}
+
 		template.put(
-			"childElementsHTML",
-			ddmFormFieldRenderingContext.getChildElementsHTML());
-		template.put("dir", LanguageUtil.get(locale, "lang.dir"));
+			"dir", LanguageUtil.get(locale, LanguageConstants.KEY_DIR));
 		template.put("label", ddmFormFieldRenderingContext.getLabel());
 		template.put("name", ddmFormFieldRenderingContext.getName());
 		template.put(

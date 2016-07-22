@@ -376,6 +376,52 @@ public class StringUtil {
 		return contains(toLowerCase(s), toLowerCase(text), delimiter);
 	}
 
+	public static int count(String s, char c) {
+		return count(s, 0, s.length(), c);
+	}
+
+	public static int count(String s, int start, int end, char c) {
+		if ((s == null) || s.isEmpty() || ((end - start) < 1)) {
+			return 0;
+		}
+
+		int count = 0;
+
+		int pos = start;
+
+		while ((pos < end) && ((pos = s.indexOf(c, pos)) != -1)) {
+			if (pos < end) {
+				count++;
+			}
+
+			pos++;
+		}
+
+		return count;
+	}
+
+	public static int count(String s, int start, int end, String text) {
+		if ((s == null) || s.isEmpty() || ((end - start) < 1) ||
+			(text == null) || text.isEmpty()) {
+
+			return 0;
+		}
+
+		int count = 0;
+
+		int pos = start;
+
+		while ((pos < end) && (pos = s.indexOf(text, pos)) != -1) {
+			if (pos < end) {
+				count++;
+			}
+
+			pos += text.length();
+		}
+
+		return count;
+	}
+
 	/**
 	 * Returns the number of times the text appears in the string.
 	 *
@@ -384,23 +430,7 @@ public class StringUtil {
 	 * @return the number of times the text appears in the string
 	 */
 	public static int count(String s, String text) {
-		if ((s == null) || (s.length() == 0) || (text == null) ||
-			(text.length() == 0)) {
-
-			return 0;
-		}
-
-		int count = 0;
-
-		int pos = s.indexOf(text);
-
-		while (pos != -1) {
-			pos = s.indexOf(text, pos + text.length());
-
-			count++;
-		}
-
-		return count;
+		return count(s, 0, s.length(), text);
 	}
 
 	/**
@@ -413,7 +443,11 @@ public class StringUtil {
 	 *         character, ignoring case; <code>false</code> otherwise
 	 */
 	public static boolean endsWith(String s, char end) {
-		return endsWith(s, (Character.valueOf(end)).toString());
+		if ((s == null) || s.isEmpty()) {
+			return false;
+		}
+
+		return equalsIgnoreCase(s.charAt(s.length() - 1), end);
 	}
 
 	/**
@@ -462,18 +496,51 @@ public class StringUtil {
 			return false;
 		}
 
-		s1 = replace(
-			s1, new String[] {StringPool.RETURN_NEW_LINE, StringPool.NEW_LINE},
-			new String[] {StringPool.BLANK, StringPool.BLANK});
-		s2 = replace(
-			s2, new String[] {StringPool.RETURN_NEW_LINE, StringPool.NEW_LINE},
-			new String[] {StringPool.BLANK, StringPool.BLANK});
+		s1 = removeChars(s1, CharPool.RETURN, CharPool.NEW_LINE);
+		s2 = removeChars(s2, CharPool.RETURN, CharPool.NEW_LINE);
 
 		if (s1.length() != s2.length()) {
 			return false;
 		}
 
 		return s1.equals(s2);
+	}
+
+	public static boolean equalsIgnoreCase(char c1, char c2) {
+		if (c1 == c2) {
+			return true;
+		}
+
+		// Fast fallback for non-acsii code.
+
+		if ((c1 > 127) || (c2 > 127)) {
+
+			// Georgian alphabet needs to check both upper and lower case
+
+			if ((Character.toLowerCase(c1) == Character.toLowerCase(c2)) ||
+				(Character.toUpperCase(c1) == Character.toUpperCase(c2))) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+		// Fast fallback for non-letter ascii code
+
+		if ((c1 < CharPool.UPPER_CASE_A) || (c1 > CharPool.LOWER_CASE_Z) ||
+			(c2 < CharPool.UPPER_CASE_A) || (c2 > CharPool.LOWER_CASE_Z)) {
+
+			return false;
+		}
+
+		int delta = c1 - c2;
+
+		if ((delta != 32) && (delta != -32)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -498,40 +565,7 @@ public class StringUtil {
 		}
 
 		for (int i = 0; i < s1.length(); i++) {
-			char c1 = s1.charAt(i);
-
-			char c2 = s2.charAt(i);
-
-			if (c1 == c2) {
-				continue;
-			}
-
-			// Fast fallback for non-acsii code.
-
-			if ((c1 > 127) || (c2 > 127)) {
-
-				// Georgian alphabet needs to check both upper and lower case
-
-				if ((Character.toLowerCase(c1) == Character.toLowerCase(c2)) ||
-					(Character.toUpperCase(c1) == Character.toUpperCase(c2))) {
-
-					continue;
-				}
-
-				return false;
-			}
-
-			// Fast fallback for non-letter ascii code
-
-			if ((c1 < CharPool.UPPER_CASE_A) || (c1 > CharPool.LOWER_CASE_Z) ||
-				(c2 < CharPool.UPPER_CASE_A) || (c2 > CharPool.LOWER_CASE_Z)) {
-
-				return false;
-			}
-
-			int delta = c1 - c2;
-
-			if ((delta != 32) && (delta != -32)) {
+			if (!equalsIgnoreCase(s1.charAt(i), s2.charAt(i))) {
 				return false;
 			}
 		}
@@ -2253,6 +2287,65 @@ public class StringUtil {
 		return removeFromList(s, element, delimiter);
 	}
 
+	public static String removeChar(String s, char oldSub) {
+		if (s == null) {
+			return null;
+		}
+
+		int y = s.indexOf(oldSub);
+
+		if (y >= 0) {
+			StringBundler sb = new StringBundler();
+
+			int x = 0;
+
+			while (x <= y) {
+				sb.append(s.substring(x, y));
+
+				x = y + 1;
+				y = s.indexOf(oldSub, x);
+			}
+
+			sb.append(s.substring(x));
+
+			return sb.toString();
+		}
+		else {
+			return s;
+		}
+	}
+
+	public static String removeChars(String s, char... oldSubs) {
+		if (s == null) {
+			return null;
+		}
+
+		if (oldSubs == null) {
+			return s;
+		}
+
+		StringBuilder sb = new StringBuilder(s.length());
+
+		iterate:
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+
+			for (int j = 0; j < oldSubs.length; j++) {
+				if (c == oldSubs[j]) {
+					continue iterate;
+				}
+			}
+
+			sb.append(c);
+		}
+
+		if (s.length() == sb.length()) {
+			return s;
+		}
+
+		return sb.toString();
+	}
+
 	/**
 	 * Removes the <code>remove</code> string from string <code>s</code> that
 	 * represents a list of comma delimited strings.
@@ -2357,6 +2450,55 @@ public class StringUtil {
 		return s;
 	}
 
+	public static String removeSubstring(String s, String oldSub) {
+		if (s == null) {
+			return null;
+		}
+
+		if (oldSub == null) {
+			return s;
+		}
+
+		int y = s.indexOf(oldSub);
+
+		if (y >= 0) {
+			StringBundler sb = new StringBundler();
+
+			int length = oldSub.length();
+			int x = 0;
+
+			while (x <= y) {
+				sb.append(s.substring(x, y));
+
+				x = y + length;
+				y = s.indexOf(oldSub, x);
+			}
+
+			sb.append(s.substring(x));
+
+			return sb.toString();
+		}
+		else {
+			return s;
+		}
+	}
+
+	public static String removeSubstrings(String s, String... oldSubs) {
+		if (s == null) {
+			return null;
+		}
+
+		if (ArrayUtil.isEmpty(oldSubs)) {
+			return s;
+		}
+
+		for (String oldSub : oldSubs) {
+			s = removeSubstring(s, oldSub);
+		}
+
+		return s;
+	}
+
 	/**
 	 * Replaces all occurrences of the character with the new character.
 	 *
@@ -2396,20 +2538,115 @@ public class StringUtil {
 			return null;
 		}
 
-		// The number 5 is arbitrary and is used as extra padding to reduce
-		// buffer expansion
+		int index = s.indexOf(oldSub);
 
-		StringBundler sb = new StringBundler(s.length() + 5 * newSub.length());
+		if (index == -1) {
+			return s;
+		}
 
-		char[] chars = s.toCharArray();
+		int previousIndex = index;
 
-		for (char c : chars) {
-			if (c == oldSub) {
-				sb.append(newSub);
+		StringBundler sb = new StringBundler();
+
+		if (previousIndex != 0) {
+			sb.append(s.substring(0, previousIndex));
+		}
+
+		sb.append(newSub);
+
+		while ((index = s.indexOf(oldSub, previousIndex + 1)) != -1) {
+			sb.append(s.substring(previousIndex + 1, index));
+			sb.append(newSub);
+
+			previousIndex = index;
+		}
+
+		index = previousIndex + 1;
+
+		if (index < s.length()) {
+			sb.append(s.substring(index));
+		}
+
+		return sb.toString();
+	}
+
+	public static String replace(String s, char[] oldSubs, char[] newSubs) {
+		if ((s == null) || (oldSubs == null) || (newSubs == null)) {
+			return null;
+		}
+
+		if (oldSubs.length != newSubs.length) {
+			return s;
+		}
+
+		StringBuilder sb = new StringBuilder(s.length());
+
+		sb.append(s);
+
+		boolean modified = false;
+
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+
+			for (int j = 0; j < oldSubs.length; j++) {
+				if (c == oldSubs[j]) {
+					sb.setCharAt(i, newSubs[j]);
+
+					modified = true;
+
+					break;
+				}
 			}
-			else {
-				sb.append(c);
+		}
+
+		if (modified) {
+			return sb.toString();
+		}
+
+		return s;
+	}
+
+	public static String replace(String s, char[] oldSubs, String[] newSubs) {
+		if ((s == null) || (oldSubs == null) || (newSubs == null)) {
+			return null;
+		}
+
+		if (oldSubs.length != newSubs.length) {
+			return s;
+		}
+
+		StringBundler sb = null;
+
+		int lastReplacementIndex = 0;
+
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+
+			for (int j = 0; j < oldSubs.length; j++) {
+				if (c == oldSubs[j]) {
+					if (sb == null) {
+						sb = new StringBundler();
+					}
+
+					if (i > lastReplacementIndex) {
+						sb.append(s.substring(lastReplacementIndex, i));
+					}
+
+					sb.append(newSubs[j]);
+
+					lastReplacementIndex = i + 1;
+
+					break;
+				}
 			}
+		}
+
+		if (sb == null) {
+			return s;
+		}
+
+		if (lastReplacementIndex < s.length()) {
+			sb.append(s.substring(lastReplacementIndex));
 		}
 
 		return sb.toString();
@@ -3726,7 +3963,11 @@ public class StringUtil {
 	 *         specified character; <code>false</code> otherwise
 	 */
 	public static boolean startsWith(String s, char begin) {
-		return startsWith(s, (Character.valueOf(begin)).toString());
+		if ((s == null) || s.isEmpty()) {
+			return false;
+		}
+
+		return equalsIgnoreCase(s.charAt(0), begin);
 	}
 
 	/**
@@ -4151,6 +4392,7 @@ public class StringUtil {
 	 * @param  locale apply this locale's rules
 	 * @return the string, converted to lower case, or <code>null</code> if the
 	 *         string is <code>null</code>
+	 * @see    GetterUtil#_toLowerCase
 	 */
 	public static String toLowerCase(String s, Locale locale) {
 		if (s == null) {

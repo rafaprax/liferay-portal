@@ -14,10 +14,10 @@
 
 package com.liferay.portal.upgrade.v7_0_0;
 
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,8 +27,19 @@ import java.sql.ResultSet;
  */
 public class UpgradeResourcePermission extends UpgradeProcess {
 
+	protected void createIndex() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			runSQLTemplateString(
+				"create index IX_D5F1E2A2 on ResourcePermission " +
+					"(name[$COLUMN_LENGTH:255$])",
+				false, false);
+		}
+	}
+
 	@Override
 	protected void doUpgrade() throws Exception {
+		createIndex();
+
 		upgradeResourcePermissions();
 	}
 
@@ -54,7 +65,12 @@ public class UpgradeResourcePermission extends UpgradeProcess {
 
 					long newPrimKeyId = GetterUtil.getLong(
 						rs.getString("primKey"));
-					boolean newViewActionId = (actionIds % 2 == 1);
+
+					boolean newViewActionId = false;
+
+					if ((actionIds % 2) == 1) {
+						newViewActionId = true;
+					}
 
 					if ((newPrimKeyId == 0) && !newViewActionId) {
 						continue;

@@ -45,18 +45,12 @@
 		%>
 
 		<%@ include file="/search_columns.jspf" %>
-
-		<liferay-ui:search-container-column-jsp
-			align="right"
-			cssClass="entry-action"
-			path="/user_group_action.jsp"
-		/>
 	</liferay-ui:search-container-row>
 
 	<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />
 </liferay-ui:search-container>
 
-<c:if test="<%= PortalPermissionUtil.contains(permissionChecker, ActionKeys.ADD_USER_GROUP) %>">
+<c:if test="<%= hasAddUserGroupPermission %>">
 	<portlet:renderURL var="viewUserGroupsURL" />
 
 	<portlet:renderURL var="addUsergroupURL">

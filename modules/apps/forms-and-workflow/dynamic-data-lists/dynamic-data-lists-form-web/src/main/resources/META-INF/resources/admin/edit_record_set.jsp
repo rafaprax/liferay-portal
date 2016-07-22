@@ -73,6 +73,8 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 			<liferay-ui:message arguments="<%= mndfn.getFieldName() %>" key="the-definition-field-name-x-was-defined-more-than-once" translateArguments="<%= false %>" />
 		</liferay-ui:error>
 
+		<liferay-ui:error exception="<%= DDMFormValidationException.MustSetFieldsForForm.class %>" message="please-add-at-least-one-field" />
+
 		<liferay-ui:error exception="<%= DDMFormValidationException.MustSetOptionsForField.class %>">
 
 			<%
@@ -109,7 +111,7 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 		<aui:fieldset cssClass="ddl-form-basic-info">
 			<div class="container-fluid-1280">
 				<h1>
-					<liferay-ui:input-editor autoCreate="<%= false %>" contents="<%= HtmlUtil.escape(LocalizationUtil.getLocalization(name, themeDisplay.getLanguageId())) %>" cssClass="ddl-form-name" editorName="alloyeditor" name="nameEditor" onChangeMethod="OnChangeEditor" onInitMethod="OnInitEditor" placeholder="untitled-form" showSource="<%= false %>" />
+					<liferay-ui:input-editor autoCreate="<%= false %>" contents="<%= HtmlUtil.escape(LocalizationUtil.getLocalization(name, themeDisplay.getLanguageId())) %>" cssClass="ddl-form-name" editorName="alloyeditor" name="nameEditor" placeholder="untitled-form" showSource="<%= false %>" />
 				</h1>
 
 				<aui:input name="name" type="hidden" />
@@ -131,23 +133,11 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 
 		<div class="container-fluid-1280">
 			<aui:button-row cssClass="ddl-form-builder-buttons">
-				<aui:button cssClass="btn-lg ddl-button" disabled="<%= true %>" id="submit" primary="<%= true %>" type="submit" value="save" />
+				<aui:button cssClass="btn-lg ddl-button" id="submit" type="submit" value="save" />
 
 				<aui:button cssClass="btn-lg" href="<%= redirect %>" name="cancelButton" type="cancel" />
 			</aui:button-row>
 		</div>
-
-		<aui:script>
-			function <portlet:namespace />OnChangeEditor(html) {
-				Liferay.Util.toggleDisabled('#<portlet:namespace />submit', !html.trim());
-			}
-
-			function <portlet:namespace />OnInitEditor() {
-				var html = window['<portlet:namespace />nameEditor'].getHTML();
-
-				Liferay.Util.toggleDisabled('#<portlet:namespace />submit', !html.trim());
-			}
-		</aui:script>
 
 		<div class="container-fluid-1280 ddl-publish-modal hide" id="<portlet:namespace />publishModal">
 			<div class="form-group">
@@ -216,6 +206,7 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 											definition: <%= ddlFormAdminDisplayContext.getSerializedDDMForm() %>,
 											description: '<%= HtmlUtil.escapeJS(description) %>',
 											editForm: event.form,
+											evaluatorURL: '<%= ddlFormAdminDisplayContext.getDDMFormEvaluatorServletURL() %>',
 											layout: <%= ddlFormAdminDisplayContext.getSerializedDDMFormLayout() %>,
 											name: '<%= HtmlUtil.escapeJS(name) %>',
 											namespace: '<portlet:namespace />',

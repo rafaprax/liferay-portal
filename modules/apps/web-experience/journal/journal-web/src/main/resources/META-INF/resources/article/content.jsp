@@ -80,25 +80,25 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 <liferay-ui:error exception="<%= StorageFieldRequiredException.class %>" message="please-fill-out-all-required-fields" />
 
 <aui:fieldset>
+	<aui:input autoFocus="<%= true %>" ignoreRequestValue="<%= changeStructure %>" name="title" wrapperCssClass="article-content-title">
+		<c:if test="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>">
+			<aui:validator name="required" />
+		</c:if>
+	</aui:input>
+
 	<c:if test="<%= (article == null) || article.isNew() %>">
 		<c:choose>
-			<c:when test="<%= journalWebConfiguration.journalFeedForceAutogenerateId() || (classNameId != JournalArticleConstants.CLASSNAME_ID_DEFAULT) %>">
+			<c:when test="<%= journalWebConfiguration.journalArticleForceAutogenerateId() || (classNameId != JournalArticleConstants.CLASSNAME_ID_DEFAULT) %>">
 				<aui:input name="newArticleId" type="hidden" />
 				<aui:input name="autoArticleId" type="hidden" value="<%= true %>" />
 			</c:when>
 			<c:otherwise>
-				<aui:input autoFocus="<%= windowState.equals(WindowState.MAXIMIZED) || windowState.equals(LiferayWindowState.POP_UP) %>" field="articleId" fieldParam="newArticleId" label="id" name="newArticleId" value="<%= newArticleId %>" />
+				<aui:input field="articleId" fieldParam="newArticleId" label="id" name="newArticleId" value="<%= newArticleId %>" />
 
 				<aui:input label="autogenerate-id" name="autoArticleId" type="checkbox" />
 			</c:otherwise>
 		</c:choose>
 	</c:if>
-
-	<aui:input autoFocus="<%= (((article != null) && !article.isNew()) && !journalWebConfiguration.journalFeedForceAutogenerateId() && windowState.equals(WindowState.MAXIMIZED)) || windowState.equals(LiferayWindowState.POP_UP) %>" ignoreRequestValue="<%= changeStructure %>" name="title" wrapperCssClass="article-content-title">
-		<c:if test="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>">
-			<aui:validator name="required" />
-		</c:if>
-	</aui:input>
 
 	<aui:input ignoreRequestValue="<%= changeStructure %>" label="summary" name="description" />
 
@@ -140,11 +140,11 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 <aui:script use="liferay-journal-content">
 	var journalContent = new Liferay.Portlet.JournalContent(
 		{
-			'ddm.basePortletURL': '<%= PortletURLFactoryUtil.create(request, PortletProviderUtil.getPortletId(DDMStructure.class.getName(), PortletProvider.Action.VIEW), themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>',
+			'ddm.basePortletURL': '<%= PortletURLFactoryUtil.create(request, PortletProviderUtil.getPortletId(DDMStructure.class.getName(), PortletProvider.Action.VIEW), PortletRequest.RENDER_PHASE) %>',
 			'ddm.classNameId': '<%= PortalUtil.getClassNameId(DDMStructure.class) %>',
 			'ddm.classPK': <%= ddmStructure.getPrimaryKey() %>,
 			'ddm.groupId': <%= groupId %>,
-			'ddm.refererPortletName': '<%= JournalPortletKeys.JOURNAL %>',
+			'ddm.refererPortletName': '<%= JournalPortletKeys.JOURNAL + ".selectStructure" %>',
 			'ddm.resourceClassNameId': '<%= ddmStructure.getClassNameId() %>',
 			'ddm.templateId': <%= (ddmTemplate != null) ? ddmTemplate.getTemplateId() : 0 %>,
 			descriptionInputLocalized: Liferay.component('<portlet:namespace />description'),
@@ -156,8 +156,6 @@ boolean changeStructure = GetterUtil.getBoolean(request.getAttribute("edit_artic
 			'strings.draft': '<liferay-ui:message key="draft" />',
 			'strings.editStructure': '<liferay-ui:message key="editing-the-current-structure-deletes-all-unsaved-content" />',
 			'strings.editTemplate': '<liferay-ui:message key="editing-the-current-template-deletes-all-unsaved-content" />',
-			'strings.selectStructure': '<liferay-ui:message key="selecting-a-new-structure-changes-the-available-input-fields-and-available-templates" />',
-			'strings.selectTemplate': '<liferay-ui:message key="selecting-a-new-template-deletes-all-unsaved-content" />',
 			titleInputLocalized: Liferay.component('<portlet:namespace />title'),
 			translationManager: Liferay.component('<portlet:namespace />translationManager'),
 			'urls.editStructure': '<%= editStructureURL %>',

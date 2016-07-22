@@ -24,7 +24,6 @@ String displayStyle = journalDisplayContext.getDisplayStyle();
 	emptyResultsMessage="no-comment-was-found"
 	searchContainer="<%= journalDisplayContext.getCommentsSearchContainer() %>"
 >
-
 	<liferay-ui:search-container-row
 		className="com.liferay.message.boards.kernel.model.MBMessage"
 		cssClass="entry-display-style selectable"
@@ -63,7 +62,7 @@ String displayStyle = journalDisplayContext.getDisplayStyle();
 			<c:when test='<%= displayStyle.equals("icon") %>'>
 
 				<%
-				row.setCssClass("article-entry col-md-2 col-sm-4 col-xs-6");
+				row.setCssClass("entry-card lfr-asset-item");
 				%>
 
 				<liferay-ui:search-container-column-text>
@@ -86,16 +85,18 @@ String displayStyle = journalDisplayContext.getDisplayStyle();
 				<liferay-ui:search-container-column-text
 					name="author"
 					property="userName"
+					truncate="<%= true %>"
+				/>
+
+				<liferay-ui:search-container-column-text
+					name="message"
+					truncate="<%= true %>"
+					value="<%= HtmlUtil.extractText(content) %>"
 				/>
 
 				<liferay-ui:search-container-column-date
 					name="modified-date"
 					property="modifiedDate"
-				/>
-
-				<liferay-ui:search-container-column-text
-					name="message"
-					value="<%= HtmlUtil.extractText(content) %>"
 				/>
 			</c:otherwise>
 		</c:choose>

@@ -29,6 +29,18 @@ AUI.add(
 				);
 			},
 
+			disableSubmitButton: function() {
+				var instance = this;
+
+				instance._setSubmitButtonDisabledState(true);
+			},
+
+			enableSubmitButton: function() {
+				var instance = this;
+
+				instance._setSubmitButtonDisabledState(false);
+			},
+
 			hideErrorMessages: function() {
 				var instance = this;
 
@@ -49,7 +61,7 @@ AUI.add(
 				);
 
 				instance.get('alert').hide();
-				instance.spinner.hide();
+				instance._spinner.hide();
 			},
 
 			showAlert: function(message, cssClass) {
@@ -80,8 +92,8 @@ AUI.add(
 				var submitButton = instance.getSubmitButton();
 
 				if (submitButton) {
-					instance.spinner.appendTo(submitButton);
-					instance.spinner.show();
+					instance._spinner.appendTo(submitButton);
+					instance._spinner.show();
 				}
 				else {
 					instance.showAlert(Liferay.Language.get('please-wait'), 'alert-info');
@@ -101,7 +113,17 @@ AUI.add(
 			_createSpinner: function() {
 				var instance = this;
 
-				instance.spinner = A.Node.create(TPL_BUTTON_SPINNER);
+				instance._spinner = A.Node.create(TPL_BUTTON_SPINNER);
+			},
+
+			_setSubmitButtonDisabledState: function(state) {
+				var instance = this;
+
+				var submitButton = instance.getSubmitButton();
+
+				if (submitButton) {
+					submitButton.attr('disabled', state);
+				}
 			},
 
 			_valueAlert: function() {

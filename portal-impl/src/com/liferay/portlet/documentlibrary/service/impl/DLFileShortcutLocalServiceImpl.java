@@ -53,6 +53,7 @@ public class DLFileShortcutLocalServiceImpl
 		// File shortcut
 
 		User user = userPersistence.findByPrimaryKey(userId);
+
 		folderId = getFolderId(user.getCompanyId(), folderId);
 
 		validate(user, toFileEntryId);
@@ -342,9 +343,10 @@ public class DLFileShortcutLocalServiceImpl
 			fileShortcut.getModifiedDate(),
 			DLFileShortcutConstants.getClassName(),
 			fileShortcut.getFileShortcutId(), fileShortcut.getUuid(), 0,
-			assetCategoryIds, assetTagNames, true, false, null, null, null,
-			fileEntry.getMimeType(), fileEntry.getTitle(),
-			fileEntry.getDescription(), null, null, null, 0, 0, null);
+			assetCategoryIds, assetTagNames, true, false, null, null,
+			fileShortcut.getCreateDate(), null, fileEntry.getMimeType(),
+			fileEntry.getTitle(), fileEntry.getDescription(), null, null, null,
+			0, 0, null);
 	}
 
 	@Override

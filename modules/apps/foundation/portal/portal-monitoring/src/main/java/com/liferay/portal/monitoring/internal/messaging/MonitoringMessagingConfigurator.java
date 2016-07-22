@@ -14,7 +14,7 @@
 
 package com.liferay.portal.monitoring.internal.messaging;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.concurrent.DiscardOldestPolicy;
 import com.liferay.portal.kernel.concurrent.RejectedExecutionHandler;
 import com.liferay.portal.kernel.concurrent.ThreadPoolExecutor;
@@ -41,7 +41,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Michael C. Han
  */
-@Component(immediate = true, service = MonitoringMessagingConfigurator.class)
+@Component(
+	enabled = false, immediate = true,
+	service = MonitoringMessagingConfigurator.class
+)
 public class MonitoringMessagingConfigurator {
 
 	@Activate

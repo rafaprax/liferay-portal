@@ -1,35 +1,8 @@
-FileTree fileTree = fileTree(rootDir) {
-	exclude "**/bin/"
-	exclude "sdk/*/samples/"
-
-	if (Boolean.getBoolean("portal.build")) {
-		String excludesString = System.properties["portal.build.modules.excludes"]
-		String includesString = System.properties["portal.build.modules.includes"]
-
-		if (excludesString) {
-			exclude excludesString.tokenize(",")
-		}
-
-		if (includesString) {
-			include includesString.tokenize(",")
-		}
-	}
-	else {
-		include "*/**/build.gradle"
-		include "apps/foundation/frontend/frontend-theme/*/gulpfile.js"
-	}
+buildscript {
+	apply from: "build-buildscript.gradle", to: buildscript
 }
 
-URI rootURI = rootDir.toURI()
-
-fileTree.each {
-	String dirName = rootURI.relativize(it.parentFile.toURI())
-
-	dirName = dirName[0 .. -2]
-	dirName = dirName.replace("/" as char, ":" as char)
-
-	include ":" + dirName
-}
+apply plugin: "com.liferay.settings.plugin"
 
 String testClassGroupIndex = System.getProperty("test.class.group.index")
 

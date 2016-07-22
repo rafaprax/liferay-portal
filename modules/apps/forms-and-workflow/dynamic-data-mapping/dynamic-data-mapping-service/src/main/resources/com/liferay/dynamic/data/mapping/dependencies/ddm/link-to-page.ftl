@@ -44,11 +44,11 @@
 			value=fieldRawValue
 		/>
 
-		<@liferay_aui["button-row"]>
+		<div class="button-holder">
 			<@liferay_aui.button
 				cssClass="select-button"
 				id="${namespacedFieldName}SelectButton"
-				value="select-layout"
+				value="select"
 			/>
 
 			<@liferay_aui.button
@@ -56,7 +56,7 @@
 				id="${namespacedFieldName}ClearButton"
 				value="clear"
 			/>
-		</@>
+		</div>
 	</div>
 
 	${fieldStructure.children}

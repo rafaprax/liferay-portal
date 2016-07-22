@@ -95,36 +95,48 @@ try {
 catch (NoSuchLayoutException nsle) {
 }
 
+if (configuredPublish) {
+	privateLayout = MapUtil.getBoolean(exportImportConfigurationSettingsMap, "privateLayout", privateLayout);
+}
+
 treeId = treeId + privateLayout + layoutSetBranchId;
 
 long[] selectedLayoutIds = null;
 
-String openNodes = SessionTreeJSClicks.getOpenNodes(request, treeId + "SelectedNode");
+if (configuredPublish) {
+	if (cmd.equals(Constants.PUBLISH_TO_LIVE)) {
+		selectedLayoutIds = GetterUtil.getLongValues(exportImportConfigurationSettingsMap.get("layoutIds"));
+	}
+	else if (cmd.equals(Constants.PUBLISH_TO_REMOTE)) {
+		Map<Long, Boolean> layoutIdMap = (Map<Long, Boolean>)exportImportConfigurationSettingsMap.get("layoutIdMap");
 
-if (openNodes == null) {
-	selectedLayoutIds = ExportImportHelperUtil.getAllLayoutIds(stagingGroupId, privateLayout);
-
-	for (long selectedLayoutId : selectedLayoutIds) {
-		SessionTreeJSClicks.openLayoutNodes(request, treeId + "SelectedNode", privateLayout, selectedLayoutId, true);
+		selectedLayoutIds = ExportImportHelperUtil.getLayoutIds(layoutIdMap);
 	}
 }
 else {
-	selectedLayoutIds = GetterUtil.getLongValues(StringUtil.split(openNodes, ','));
+	String openNodes = SessionTreeJSClicks.getOpenNodes(request, treeId + "SelectedNode");
+
+	if (openNodes == null) {
+		selectedLayoutIds = ExportImportHelperUtil.getAllLayoutIds(stagingGroupId, privateLayout);
+
+		for (long selectedLayoutId : selectedLayoutIds) {
+			SessionTreeJSClicks.openLayoutNodes(request, treeId + "SelectedNode", privateLayout, selectedLayoutId, true);
+		}
+	}
+	else {
+		selectedLayoutIds = GetterUtil.getLongValues(StringUtil.split(openNodes, ','));
+	}
 }
-
-UnicodeProperties liveGroupTypeSettings = liveGroup.getTypeSettingsProperties();
-
-PortletURL portletURL = renderResponse.createActionURL();
 
 if (group.isStaged() && group.isStagedRemotely()) {
 	cmd = Constants.PUBLISH_TO_REMOTE;
 }
 
+PortletURL portletURL = renderResponse.createActionURL();
+
 portletURL.setParameter(ActionRequest.ACTION_NAME, "publishLayouts");
 portletURL.setParameter("mvcRenderCommandName", "publishLayouts");
-portletURL.setParameter("groupId", String.valueOf(stagingGroupId));
 portletURL.setParameter("stagingGroupId", String.valueOf(stagingGroupId));
-portletURL.setParameter("privateLayout", String.valueOf(privateLayout));
 
 PortletURL renderURL = renderResponse.createRenderURL();
 
@@ -156,17 +168,13 @@ renderResponse.setTitle(!configuredPublish ? LanguageUtil.get(request, "new-publ
 	<portlet:param name="mvcRenderCommandName" value="processesList" />
 </portlet:renderURL>
 
-<portlet:actionURL name="editPublishConfiguration" var="updatePublishConfigurationURL">
-	<portlet:param name="mvcRenderCommandName" value="editPublishConfiguration" />
-	<portlet:param name="groupId" value="<%= String.valueOf(stagingGroupId) %>" />
-	<portlet:param name="localPublishing" value="<%= String.valueOf(localPublishing) %>" />
-</portlet:actionURL>
-
 <aui:form action='<%= portletURL.toString() + "&etag=0&strip=0" %>' cssClass="lfr-export-dialog" method="post" name="exportPagesFm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "publishPages();" %>'>
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= cmd %>" />
+	<aui:input name="exportImportConfigurationId" type="hidden" value="<%= exportImportConfigurationId %>" />
 	<aui:input name="originalCmd" type="hidden" value="<%= cmd %>" />
 	<aui:input name="currentURL" type="hidden" value="<%= currentURL %>" />
 	<aui:input name="redirect" type="hidden" value="<%= basePortletURL %>" />
+	<aui:input name="exportImportConfigurationId" type="hidden" value="<%= exportImportConfigurationId %>" />
 	<aui:input name="groupId" type="hidden" value="<%= stagingGroupId %>" />
 	<aui:input name="privateLayout" type="hidden" value="<%= privateLayout %>" />
 	<aui:input name="layoutSetBranchName" type="hidden" value="<%= layoutSetBranchName %>" />
@@ -199,9 +207,9 @@ renderResponse.setTitle(!configuredPublish ? LanguageUtil.get(request, "new-publ
 				String layoutPrototypeName = (String)missingLayoutPrototype.getObject(2);
 			%>
 
-			<li>
-				<%= ResourceActionsUtil.getModelResource(locale, layoutPrototypeClassName) %>: <strong><%= HtmlUtil.escape(layoutPrototypeName) %></strong> (<%= HtmlUtil.escape(layoutPrototypeUuid) %>)
-			</li>
+				<li>
+					<%= ResourceActionsUtil.getModelResource(locale, layoutPrototypeClassName) %>: <strong><%= HtmlUtil.escape(layoutPrototypeName) %></strong> (<%= HtmlUtil.escape(layoutPrototypeUuid) %>)
+				</li>
 
 			<%
 			}
@@ -275,33 +283,18 @@ renderResponse.setTitle(!configuredPublish ? LanguageUtil.get(request, "new-publ
 				</aui:fieldset>
 
 				<c:if test="<%= !group.isCompany() %>">
-
-					<%
-					request.setAttribute("select_pages.jsp-parameterMap", parameterMap);
-					%>
-
-					<aui:fieldset collapsible="<%= true %>" cssClass="options-group" label="pages">
-						<liferay-util:include page="/new_publication/select_pages.jsp" servletContext="<%= application %>">
-							<liferay-util:param name="<%= Constants.CMD %>" value="<%= cmd %>" />
-							<liferay-util:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-							<liferay-util:param name="layoutSetBranchId" value="<%= String.valueOf(layoutSetBranchId) %>" />
-							<liferay-util:param name="privateLayout" value='<%= MapUtil.getString(exportImportConfigurationSettingsMap, "privateLayout", String.valueOf(privateLayout)) %>' />
-							<liferay-util:param name="treeId" value="<%= treeId %>" />
-							<liferay-util:param name="selectedLayoutIds" value="<%= StringUtil.merge(selectedLayoutIds) %>" />
-							<liferay-util:param name="disableInputs" value="<%= String.valueOf(configuredPublish) %>" />
-						</liferay-util:include>
-					</aui:fieldset>
+					<liferay-staging:select-pages action="<%= Constants.PUBLISH %>" disableInputs="<%= configuredPublish %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" groupId="<%= groupId %>" privateLayout="<%= privateLayout %>" treeId="<%= treeId %>" />
 				</c:if>
 
 				<liferay-staging:content cmd="<%= cmd %>" disableInputs="<%= configuredPublish %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" type="<%= localPublishing ? Constants.PUBLISH_TO_LIVE : Constants.PUBLISH_TO_REMOTE %>" />
 
-				<liferay-staging:deletions cmd="<%= Constants.PUBLISH %>" disableInputs="<%= configuredPublish %>" />
+				<liferay-staging:deletions cmd="<%= Constants.PUBLISH %>" disableInputs="<%= configuredPublish %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" />
 
-				<liferay-staging:permissions action="publish" descriptionCSSClass="permissions-description" disableInputs="<%= configuredPublish %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" global="<%= group.isCompany() %>" labelCSSClass="permissions-label" />
+				<liferay-staging:permissions action="<%= Constants.PUBLISH %>" descriptionCSSClass="permissions-description" disableInputs="<%= configuredPublish %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" global="<%= group.isCompany() %>" labelCSSClass="permissions-label" />
 
 				<c:if test="<%= !localPublishing %>">
 					<aui:fieldset collapsible="<%= true %>" cssClass="options-group" label="remote-live-connection-settings">
-						<%@ include file="/new_publication/publish_layouts_remote_options.jspf" %>
+						<liferay-staging:remote-options disableInputs="<%= configuredPublish %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" privateLayout="<%= privateLayout %>" />
 					</aui:fieldset>
 				</c:if>
 			</aui:fieldset-group>
@@ -356,11 +349,6 @@ renderResponse.setTitle(!configuredPublish ? LanguageUtil.get(request, "new-publ
 			rangeLastNode: '#rangeLast',
 			rangeLastPublishNode: '#rangeLastPublish',
 			ratingsNode: '#<%= PortletDataHandlerKeys.RATINGS %>',
-			remoteAddressNode: '#<portlet:namespace />remoteAddress',
-			remoteGroupIdNode: '#<portlet:namespace />remoteGroupId',
-			remotePathContextNode: '#<portlet:namespace />remotePathContext',
-			remotePortNode: '#<portlet:namespace />remotePort',
-			secureConnectionNode: '#secureConnection',
 			setupNode: '#<%= PortletDataHandlerKeys.PORTLET_SETUP_ALL %>',
 			timeZone: '<%= timeZone.getID() %>',
 			userPreferencesNode: '#<%= PortletDataHandlerKeys.PORTLET_USER_PREFERENCES_ALL %>'

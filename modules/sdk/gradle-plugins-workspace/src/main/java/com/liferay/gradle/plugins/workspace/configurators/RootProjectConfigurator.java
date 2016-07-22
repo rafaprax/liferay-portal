@@ -16,11 +16,17 @@ package com.liferay.gradle.plugins.workspace.configurators;
 
 import com.liferay.gradle.plugins.workspace.WorkspaceExtension;
 import com.liferay.gradle.plugins.workspace.util.GradleUtil;
+import com.liferay.gradle.util.Validator;
 import com.liferay.gradle.util.copy.StripPathSegmentsAction;
+
+import de.undercouch.gradle.tasks.download.Download;
 
 import groovy.lang.Closure;
 
 import java.io.File;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,11 +35,10 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ExtensionAware;
@@ -61,6 +66,8 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	public static final String DIST_BUNDLE_ZIP_TASK_NAME = "distBundleZip";
 
+	public static final String DOWNLOAD_BUNDLE_TASK_NAME = "downloadBundle";
+
 	public static final String INIT_BUNDLE_TASK_NAME = "initBundle";
 
 	@Override
@@ -68,66 +75,23 @@ public class RootProjectConfigurator implements Plugin<Project> {
 		WorkspaceExtension workspaceExtension = GradleUtil.getExtension(
 			(ExtensionAware)project.getGradle(), WorkspaceExtension.class);
 
-		Configuration bundleConfiguration = addConfigurationBundle(
-			project, workspaceExtension);
-
-		addRepositoryBundle(project, workspaceExtension);
-
 		addTaskClean(project);
 
+		Download downloadBundleTask = addTaskDownloadBundle(
+			project, workspaceExtension);
+
 		Tar distBundleTarTask = addTaskDistBundle(
-			project, DIST_BUNDLE_TAR_TASK_NAME, Tar.class, bundleConfiguration,
+			project, DIST_BUNDLE_TAR_TASK_NAME, Tar.class, downloadBundleTask,
 			workspaceExtension);
 
 		distBundleTarTask.setCompression(Compression.GZIP);
 		distBundleTarTask.setExtension("tar.gz");
 
 		addTaskDistBundle(
-			project, DIST_BUNDLE_ZIP_TASK_NAME, Zip.class, bundleConfiguration,
+			project, DIST_BUNDLE_ZIP_TASK_NAME, Zip.class, downloadBundleTask,
 			workspaceExtension);
 
-		addTaskInitBundle(project, bundleConfiguration, workspaceExtension);
-	}
-
-	protected Configuration addConfigurationBundle(
-		final Project project, final WorkspaceExtension workspaceExtension) {
-
-		Configuration configuration = GradleUtil.addConfiguration(
-			project, BUNDLE_CONFIGURATION_NAME);
-
-		configuration.defaultDependencies(
-			new Action<DependencySet>() {
-
-				@Override
-				public void execute(DependencySet dependencySet) {
-					GradleUtil.addDependency(
-						project, BUNDLE_CONFIGURATION_NAME,
-						workspaceExtension.getBundleArtifactGroup(),
-						workspaceExtension.getBundleArtifactName(),
-						workspaceExtension.getBundleArtifactVersion());
-				}
-
-			});
-
-		configuration.setDescription(
-			"Configures the Liferay bundle to use for your project.");
-
-		return configuration;
-	}
-
-	protected void addRepositoryBundle(
-		Project project, final WorkspaceExtension workspaceExtension) {
-
-		GradleUtil.addMavenRepository(
-			project,
-			new Callable<String>() {
-
-				@Override
-				public String call() throws Exception {
-					return workspaceExtension.getBundleMavenUrl();
-				}
-
-			});
+		addTaskInitBundle(project, downloadBundleTask, workspaceExtension);
 	}
 
 	protected Delete addTaskClean(final Project project) {
@@ -151,12 +115,11 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	protected <T extends AbstractArchiveTask> T addTaskDistBundle(
 		Project project, String taskName, Class<T> clazz,
-		Configuration bundleConfiguration,
-		WorkspaceExtension workspaceExtension) {
+		Download downloadBundleTask, WorkspaceExtension workspaceExtension) {
 
 		final T task = GradleUtil.addTask(project, taskName, clazz);
 
-		configureTaskCopyBundle(task, bundleConfiguration, workspaceExtension);
+		configureTaskCopyBundle(task, downloadBundleTask, workspaceExtension);
 
 		task.setBaseName(project.getName());
 		task.setDestinationDir(project.getBuildDir());
@@ -168,6 +131,10 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 				@Override
 				public void execute(Project project) {
+					if (Validator.isNotNull(task.getDescription())) {
+						return;
+					}
+
 					task.setDescription(
 						"Assembles the Liferay bundle and zips it up into '" +
 							project.relativePath(task.getArchivePath()) + "'.");
@@ -178,14 +145,67 @@ public class RootProjectConfigurator implements Plugin<Project> {
 		return task;
 	}
 
+	protected Download addTaskDownloadBundle(
+		Project project, final WorkspaceExtension workspaceExtension) {
+
+		final Download download = GradleUtil.addTask(
+			project, DOWNLOAD_BUNDLE_TASK_NAME, Download.class);
+
+		File destinationDir = new File(
+			System.getProperty("user.home"), ".liferay/bundles");
+
+		destinationDir.mkdirs();
+
+		download.dest(destinationDir);
+
+		download.onlyIfNewer(true);
+		download.setDescription("Downloads the Liferay bundle zip file.");
+
+		project.afterEvaluate(
+			new Action<Project>() {
+
+				@Override
+				public void execute(Project project) {
+					Object src = download.getSrc();
+
+					if (src != null) {
+						if (src instanceof List<?>) {
+							List<?> srcList = (List<?>)src;
+
+							if (!srcList.isEmpty()) {
+								return;
+							}
+						}
+						else {
+							return;
+						}
+					}
+
+					String bundleUrl = workspaceExtension.getBundleUrl();
+
+					bundleUrl = bundleUrl.replace(" ", "%20");
+
+					try {
+						download.src(bundleUrl);
+					}
+					catch (MalformedURLException murle) {
+						throw new GradleException(murle.getMessage(), murle);
+					}
+				}
+
+			});
+
+		return download;
+	}
+
 	protected Copy addTaskInitBundle(
-		Project project, Configuration bundleConfiguration,
+		Project project, Download downloadBundleTask,
 		final WorkspaceExtension workspaceExtension) {
 
 		final Copy copy = GradleUtil.addTask(
 			project, INIT_BUNDLE_TASK_NAME, Copy.class);
 
-		configureTaskCopyBundle(copy, bundleConfiguration, workspaceExtension);
+		configureTaskCopyBundle(copy, downloadBundleTask, workspaceExtension);
 
 		copy.doFirst(
 			new Action<Task>() {
@@ -202,7 +222,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 			});
 
 		copy.into(
-			new Closure<Void>(null) {
+			new Closure<Void>(project) {
 
 				@SuppressWarnings("unused")
 				public File doCall() {
@@ -219,6 +239,10 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 				@Override
 				public void execute(Project project) {
+					if (Validator.isNotNull(copy.getDescription())) {
+						return;
+					}
+
 					copy.setDescription(
 						"Downloads and unzips the bundle into '" +
 							project.relativePath(copy.getDestinationDir()) +
@@ -232,23 +256,28 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	protected void configureTaskCopyBundle(
 		final AbstractCopyTask abstractCopyTask,
-		final Configuration bundleConfiguration,
+		final Download downloadBundleTask,
 		final WorkspaceExtension workspaceExtension) {
+
+		final Project project = abstractCopyTask.getProject();
+
+		abstractCopyTask.dependsOn(downloadBundleTask);
 
 		abstractCopyTask.from(
 			new Callable<FileCollection>() {
 
 				@Override
 				public FileCollection call() throws Exception {
-					Project project = abstractCopyTask.getProject();
+					File dir = downloadBundleTask.getDest();
 
-					if (!GradleUtil.isInTaskGraph(abstractCopyTask)) {
-						return project.files();
-					}
+					URL url = (URL)downloadBundleTask.getSrc();
 
-					File file = bundleConfiguration.getSingleFile();
+					String fileName = url.toString();
 
-					String fileName = file.getName();
+					fileName = fileName.substring(
+						fileName.lastIndexOf('/') + 1);
+
+					File file = new File(dir, fileName);
 
 					if (fileName.endsWith(".tar.gz")) {
 						return project.tarTree(file);
@@ -259,7 +288,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 				}
 
 			},
-			new Closure<Void>(null) {
+			new Closure<Void>(project) {
 
 				@SuppressWarnings("unused")
 				public void doCall(CopySpec copySpec) {
@@ -269,12 +298,10 @@ public class RootProjectConfigurator implements Plugin<Project> {
 			});
 
 		abstractCopyTask.from(
-			new Closure<Void>(null) {
+			new Closure<Void>(project) {
 
 				@SuppressWarnings("unused")
 				public FileCollection doCall() {
-					Project project = abstractCopyTask.getProject();
-
 					Map<String, Object> args = new HashMap<>();
 
 					args.put("dir", workspaceExtension.getConfigsDir());
@@ -289,7 +316,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 				}
 
 			},
-			new Closure<Void>(null) {
+			new Closure<Void>(project) {
 
 				@SuppressWarnings("unused")
 				public void doCall(CopySpec copySpec) {

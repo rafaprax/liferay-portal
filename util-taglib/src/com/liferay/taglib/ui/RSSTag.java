@@ -63,7 +63,7 @@ public class RSSTag extends IncludeTag {
 		_delta = SearchContainer.DEFAULT_DELTA;
 		_displayStyle = RSSUtil.DISPLAY_STYLE_DEFAULT;
 		_feedType = RSSUtil.FEED_TYPE_DEFAULT;
-		_message = "RSS";
+		_message = RSSUtil.RSS;
 		_name = null;
 		_resourceURL = null;
 		_url = null;
@@ -82,10 +82,10 @@ public class RSSTag extends IncludeTag {
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
 		request.setAttribute("liferay-ui:rss:message", _message);
-		request.setAttribute("liferay-ui:rss:url", getURL());
+		request.setAttribute("liferay-ui:rss:url", _getURL());
 	}
 
-	private String getURL() {
+	private String _getURL() {
 		if (_resourceURL != null) {
 			if ((_delta > 0) && (_delta != SearchContainer.DEFAULT_DELTA)) {
 				_resourceURL.setParameter("max", String.valueOf(_delta));
@@ -152,7 +152,7 @@ public class RSSTag extends IncludeTag {
 	private int _delta = SearchContainer.DEFAULT_DELTA;
 	private String _displayStyle = RSSUtil.DISPLAY_STYLE_DEFAULT;
 	private String _feedType = RSSUtil.FEED_TYPE_DEFAULT;
-	private String _message = "rss";
+	private String _message = RSSUtil.RSS;
 	private String _name;
 	private ResourceURL _resourceURL;
 	private String _url;

@@ -88,38 +88,45 @@ public class PluginAutoDeployListenerHelper {
 			return false;
 		}
 
-		ZipFile zipFile = null;
+		if (_file.isDirectory()) {
+			File xmlFile = new File(_file, checkXmlFile);
 
-		try {
-			zipFile = new ZipFile(_file);
-
-			if (zipFile.getEntry(checkXmlFile) == null) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						_file.getPath() + " does not have " + checkXmlFile);
-				}
-
-				return false;
-			}
-			else {
-				return true;
-			}
+			return xmlFile.exists();
 		}
-		catch (IOException ioe) {
-			throw new AutoDeployException(ioe);
-		}
-		finally {
-			if (zipFile != null) {
-				try {
-					zipFile.close();
+		else {
+			ZipFile zipFile = null;
+
+			try {
+				zipFile = new ZipFile(_file);
+
+				if (zipFile.getEntry(checkXmlFile) == null) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							_file.getPath() + " does not have " + checkXmlFile);
+					}
+
+					return false;
 				}
-				catch (IOException ioe) {
+				else {
+					return true;
+				}
+			}
+			catch (IOException ioe) {
+				throw new AutoDeployException(ioe);
+			}
+			finally {
+				if (zipFile != null) {
+					try {
+						zipFile.close();
+					}
+					catch (IOException ioe) {
+					}
 				}
 			}
 		}
 	}
 
-	public boolean isMatchingFileExtension(String ... extensions) {
+	public boolean isMatchingFileExtension(String... extensions) {
 		String fileName = _file.getName();
 
 		fileName = StringUtil.toLowerCase(fileName);
@@ -142,7 +149,7 @@ public class PluginAutoDeployListenerHelper {
 	}
 
 	public boolean isThemePlugin() throws AutoDeployException {
-		if (isMatchingFile("WEB-INF/liferay-look-and-feel.xml")) {
+		if (isMatchingFile("WEB-INF/liferay-look-and-feel.xml", false)) {
 			return true;
 		}
 

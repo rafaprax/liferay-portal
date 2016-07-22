@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -34,7 +33,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchTimerException;
 import com.liferay.portal.workflow.kaleo.model.KaleoTimer;
@@ -51,6 +49,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -210,7 +209,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTimer kaleoTimer : list) {
-					if (!Validator.equals(kaleoClassName,
+					if (!Objects.equals(kaleoClassName,
 								kaleoTimer.getKaleoClassName()) ||
 							(kaleoClassPK != kaleoTimer.getKaleoClassPK())) {
 						list = null;
@@ -817,7 +816,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTimer kaleoTimer : list) {
-					if (!Validator.equals(kaleoClassName,
+					if (!Objects.equals(kaleoClassName,
 								kaleoTimer.getKaleoClassName()) ||
 							(kaleoClassPK != kaleoTimer.getKaleoClassPK()) ||
 							(blocking != kaleoTimer.getBlocking())) {
@@ -1457,8 +1456,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 					primaryKey);
 
 			if (kaleoTimer == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchTimerException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1667,8 +1666,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		KaleoTimer kaleoTimer = fetchByPrimaryKey(primaryKey);
 
 		if (kaleoTimer == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchTimerException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1699,12 +1698,14 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 	 */
 	@Override
 	public KaleoTimer fetchByPrimaryKey(Serializable primaryKey) {
-		KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
 				KaleoTimerImpl.class, primaryKey);
 
-		if (kaleoTimer == _nullKaleoTimer) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		KaleoTimer kaleoTimer = (KaleoTimer)serializable;
 
 		if (kaleoTimer == null) {
 			Session session = null;
@@ -1720,7 +1721,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 				}
 				else {
 					entityCache.putResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoTimerImpl.class, primaryKey, _nullKaleoTimer);
+						KaleoTimerImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -1774,18 +1775,20 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			KaleoTimer kaleoTimer = (KaleoTimer)entityCache.getResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
 					KaleoTimerImpl.class, primaryKey);
 
-			if (kaleoTimer == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, kaleoTimer);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (KaleoTimer)serializable);
+				}
 			}
 		}
 
@@ -1827,7 +1830,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoTimerImpl.class, primaryKey, _nullKaleoTimer);
+					KaleoTimerImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2064,22 +2067,4 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No KaleoTimer exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No KaleoTimer exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(KaleoTimerPersistenceImpl.class);
-	private static final KaleoTimer _nullKaleoTimer = new KaleoTimerImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<KaleoTimer> toCacheModel() {
-				return _nullKaleoTimerCacheModel;
-			}
-		};
-
-	private static final CacheModel<KaleoTimer> _nullKaleoTimerCacheModel = new CacheModel<KaleoTimer>() {
-			@Override
-			public KaleoTimer toEntityModel() {
-				return _nullKaleoTimer;
-			}
-		};
 }

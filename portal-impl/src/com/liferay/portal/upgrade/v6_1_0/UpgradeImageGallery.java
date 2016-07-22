@@ -21,6 +21,7 @@ import com.liferay.document.library.kernel.util.ImageProcessorUtil;
 import com.liferay.portal.image.DLHook;
 import com.liferay.portal.image.DatabaseHook;
 import com.liferay.portal.image.FileSystemHook;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.image.Hook;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
@@ -39,7 +40,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.upgrade.v6_1_0.util.UpdateSyncUtil;
 import com.liferay.portal.util.PropsValues;
 
@@ -90,17 +90,16 @@ public class UpgradeImageGallery extends UpgradeProcess {
 			long largeImageId, long custom1ImageId, long custom2ImageId)
 		throws Exception {
 
-		StringBundler sb = new StringBundler(9);
+		StringBundler sb = new StringBundler(8);
 
 		sb.append("insert into DLFileEntry (uuid_, fileEntryId, groupId, ");
 		sb.append("companyId, userId, userName, versionUserId, ");
-		sb.append("versionUserName, createDate, modifiedDate, ");
-		sb.append("repositoryId, folderId, name, extension, mimeType, ");
-		sb.append("title, description, extraSettings, fileEntryTypeId, ");
-		sb.append("version, size_, readCount, smallImageId, ");
-		sb.append("largeImageId, custom1ImageId, custom2ImageId) values (");
-		sb.append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ");
-		sb.append("?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sb.append("versionUserName, createDate, modifiedDate, repositoryId, ");
+		sb.append("folderId, name, extension, mimeType, title, description, ");
+		sb.append("extraSettings, fileEntryTypeId, version, size_, ");
+		sb.append("readCount, smallImageId, largeImageId, custom1ImageId, ");
+		sb.append("custom2ImageId) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ");
+		sb.append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				sb.toString())) {
@@ -146,16 +145,15 @@ public class UpgradeImageGallery extends UpgradeProcess {
 			Timestamp statusDate)
 		throws Exception {
 
-		StringBundler sb = new StringBundler(8);
+		StringBundler sb = new StringBundler(7);
 
 		sb.append("insert into DLFileVersion (fileVersionId, groupId, ");
-		sb.append("companyId, userId, userName, createDate, ");
-		sb.append("modifiedDate, repositoryId, folderId, fileEntryId, ");
-		sb.append("extension, mimeType, title, description, changeLog, ");
-		sb.append("extraSettings, fileEntryTypeId, version, size_, ");
-		sb.append("status, statusByUserId, statusByUserName, statusDate) ");
-		sb.append("values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ");
-		sb.append("?, ?, ?, ?, ?, ?, ?, ?)");
+		sb.append("companyId, userId, userName, createDate, modifiedDate, ");
+		sb.append("repositoryId, folderId, fileEntryId, extension, ");
+		sb.append("mimeType, title, description, changeLog, extraSettings, ");
+		sb.append("fileEntryTypeId, version, size_, status, statusByUserId, ");
+		sb.append("statusByUserName, statusDate) values (?, ?, ?, ?, ?, ?, ");
+		sb.append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				sb.toString())) {
@@ -198,10 +196,10 @@ public class UpgradeImageGallery extends UpgradeProcess {
 		StringBundler sb = new StringBundler(5);
 
 		sb.append("insert into DLFolder (uuid_, folderId, groupId, ");
-		sb.append("companyId, userId, userName, createDate, ");
-		sb.append("modifiedDate, repositoryId, mountPoint, ");
-		sb.append("parentFolderId, name, description, lastPostDate) ");
-		sb.append("values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sb.append("companyId, userId, userName, createDate, modifiedDate, ");
+		sb.append("repositoryId, mountPoint, parentFolderId, name, ");
+		sb.append("description, lastPostDate) values (?, ?, ?, ?, ?, ?, ?, ");
+		sb.append("?, ?, ?, ?, ?, ?, ?)");
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				sb.toString())) {
@@ -258,10 +256,10 @@ public class UpgradeImageGallery extends UpgradeProcess {
 
 		StringBundler sb = new StringBundler(4);
 
-		sb.append("insert into DLFileEntryType (uuid_, groupId, ");
-		sb.append("companyId, userId, userName, createDate, ");
-		sb.append("modifiedDate, name, description, fileEntryTypeId) ");
-		sb.append("values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sb.append("insert into DLFileEntryType (uuid_, groupId, companyId, ");
+		sb.append("userId, userName, createDate, modifiedDate, name, ");
+		sb.append("description, fileEntryTypeId) values (?, ?, ?, ?, ?, ?, ");
+		sb.append("?, ?, ?, ?)");
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				sb.toString())) {
@@ -504,11 +502,11 @@ public class UpgradeImageGallery extends UpgradeProcess {
 
 		List<String> actionIds = new ArrayList<>();
 
-		for (String actionId : bitwiseValues.keySet()) {
-			long bitwiseValue = bitwiseValues.get(actionId);
+		for (Map.Entry<String, Long> entry : bitwiseValues.entrySet()) {
+			long bitwiseValue = entry.getValue();
 
 			if ((actionIdsLong & bitwiseValue) == bitwiseValue) {
-				actionIds.add(actionId);
+				actionIds.add(entry.getKey());
 			}
 		}
 

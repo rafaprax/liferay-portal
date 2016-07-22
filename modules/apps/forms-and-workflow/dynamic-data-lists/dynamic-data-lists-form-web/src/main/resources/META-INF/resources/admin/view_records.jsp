@@ -32,7 +32,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "form-entries"));
 
 <aui:nav-bar cssClass="collapse-basic-search" markupView="lexicon">
 	<aui:nav cssClass="navbar-nav">
-		<aui:nav-item label="<%= ddlRecordSet.getName(locale) %>" selected="<%= true %>" />
+		<aui:nav-item label="<%= HtmlUtil.escape(ddlRecordSet.getName(locale)) %>" selected="<%= true %>" />
 	</aui:nav>
 
 	<aui:nav-bar-search>
@@ -61,12 +61,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "form-entries"));
 	</liferay-frontend:management-bar-filters>
 
 	<liferay-frontend:management-bar-action-buttons>
-
-		<%
-		String taglibURL = "javascript:" + renderResponse.getNamespace() + "deleteRecords();";
-		%>
-
-		<liferay-frontend:management-bar-button href="<%= taglibURL %>" icon="trash" label="delete" />
+		<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "deleteRecords();" %>' icon="trash" label="delete" />
 	</liferay-frontend:management-bar-action-buttons>
 </liferay-frontend:management-bar>
 
@@ -79,7 +74,6 @@ renderResponse.setTitle(LanguageUtil.get(request, "form-entries"));
 			rowChecker="<%= new EmptyOnClickRowChecker(renderResponse) %>"
 			searchContainer="<%= ddlFormViewRecordsDisplayContext.getRecordSearchContainer() %>"
 		>
-
 			<liferay-ui:search-container-row
 				className="com.liferay.dynamic.data.lists.model.DDLRecord"
 				cssClass="entry-display-style selectable"
@@ -125,7 +119,6 @@ renderResponse.setTitle(LanguageUtil.get(request, "form-entries"));
 			</liferay-ui:search-container-row>
 
 			<liferay-ui:search-iterator displayStyle="<%= ddlFormViewRecordsDisplayContext.getDisplayStyle() %>" markupView="lexicon" paginate="<%= false %>" searchContainer="<%= ddlFormViewRecordsDisplayContext.getRecordSearchContainer() %>" />
-
 		</liferay-ui:search-container>
 	</aui:form>
 </div>

@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -34,7 +33,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchNotificationException;
 import com.liferay.portal.workflow.kaleo.model.KaleoNotification;
@@ -51,6 +49,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -1248,7 +1247,7 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoNotification kaleoNotification : list) {
-					if (!Validator.equals(kaleoClassName,
+					if (!Objects.equals(kaleoClassName,
 								kaleoNotification.getKaleoClassName()) ||
 							(kaleoClassPK != kaleoNotification.getKaleoClassPK())) {
 						list = null;
@@ -1863,10 +1862,10 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoNotification kaleoNotification : list) {
-					if (!Validator.equals(kaleoClassName,
+					if (!Objects.equals(kaleoClassName,
 								kaleoNotification.getKaleoClassName()) ||
 							(kaleoClassPK != kaleoNotification.getKaleoClassPK()) ||
-							!Validator.equals(executionType,
+							!Objects.equals(executionType,
 								kaleoNotification.getExecutionType())) {
 						list = null;
 
@@ -2549,8 +2548,8 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 					primaryKey);
 
 			if (kaleoNotification == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchNotificationException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2799,8 +2798,8 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 		KaleoNotification kaleoNotification = fetchByPrimaryKey(primaryKey);
 
 		if (kaleoNotification == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchNotificationException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2831,12 +2830,14 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 	 */
 	@Override
 	public KaleoNotification fetchByPrimaryKey(Serializable primaryKey) {
-		KaleoNotification kaleoNotification = (KaleoNotification)entityCache.getResult(KaleoNotificationModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(KaleoNotificationModelImpl.ENTITY_CACHE_ENABLED,
 				KaleoNotificationImpl.class, primaryKey);
 
-		if (kaleoNotification == _nullKaleoNotification) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		KaleoNotification kaleoNotification = (KaleoNotification)serializable;
 
 		if (kaleoNotification == null) {
 			Session session = null;
@@ -2852,8 +2853,7 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 				}
 				else {
 					entityCache.putResult(KaleoNotificationModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoNotificationImpl.class, primaryKey,
-						_nullKaleoNotification);
+						KaleoNotificationImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2907,18 +2907,20 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			KaleoNotification kaleoNotification = (KaleoNotification)entityCache.getResult(KaleoNotificationModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(KaleoNotificationModelImpl.ENTITY_CACHE_ENABLED,
 					KaleoNotificationImpl.class, primaryKey);
 
-			if (kaleoNotification == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, kaleoNotification);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (KaleoNotification)serializable);
+				}
 			}
 		}
 
@@ -2960,8 +2962,7 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(KaleoNotificationModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoNotificationImpl.class, primaryKey,
-					_nullKaleoNotification);
+					KaleoNotificationImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3198,23 +3199,4 @@ public class KaleoNotificationPersistenceImpl extends BasePersistenceImpl<KaleoN
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No KaleoNotification exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No KaleoNotification exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(KaleoNotificationPersistenceImpl.class);
-	private static final KaleoNotification _nullKaleoNotification = new KaleoNotificationImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<KaleoNotification> toCacheModel() {
-				return _nullKaleoNotificationCacheModel;
-			}
-		};
-
-	private static final CacheModel<KaleoNotification> _nullKaleoNotificationCacheModel =
-		new CacheModel<KaleoNotification>() {
-			@Override
-			public KaleoNotification toEntityModel() {
-				return _nullKaleoNotification;
-			}
-		};
 }

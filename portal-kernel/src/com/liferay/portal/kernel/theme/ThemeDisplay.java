@@ -855,8 +855,9 @@ public class ThemeDisplay
 
 		Map<String, ThemeSetting> themeSettings = theme.getSettings();
 
-		for (String key : themeSettings.keySet()) {
-			ThemeSetting themeSetting = themeSettings.get(key);
+		for (Map.Entry<String, ThemeSetting> entry : themeSettings.entrySet()) {
+			String key = entry.getKey();
+			ThemeSetting themeSetting = entry.getValue();
 
 			String value = null;
 
@@ -1813,7 +1814,7 @@ public class ThemeDisplay
 	private Contact _contact;
 	private User _defaultUser;
 	private Device _device;
-	private long _doAsGroupId = 0;
+	private long _doAsGroupId;
 	private String _doAsUserId = StringPool.BLANK;
 	private String _doAsUserLanguageId = StringPool.BLANK;
 	private boolean _facebook;
@@ -1906,13 +1907,13 @@ public class ThemeDisplay
 	private String _urlCurrent = StringPool.BLANK;
 	private String _urlHome = StringPool.BLANK;
 	private String _urlLayoutTemplates = StringPool.BLANK;
-	private transient PortletURL _urlMyAccount = null;
-	private transient PortletURL _urlPageSettings = null;
+	private transient PortletURL _urlMyAccount;
+	private transient PortletURL _urlPageSettings;
 	private String _urlPortal = StringPool.BLANK;
-	private transient PortletURL _urlPublishToLive = null;
+	private transient PortletURL _urlPublishToLive;
 	private String _urlSignIn = StringPool.BLANK;
 	private String _urlSignOut = StringPool.BLANK;
-	private transient PortletURL _urlUpdateManager = null;
+	private transient PortletURL _urlUpdateManager;
 	private User _user;
 	private boolean _widget;
 

@@ -54,9 +54,13 @@
 	</liferay-frontend:management-bar-filters>
 
 	<liferay-frontend:management-bar-buttons>
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
+
 		<liferay-frontend:management-bar-display-buttons
-			displayViews='<%= new String[] {"list"} %>'
-			portletURL="<%= portletURL %>"
+			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
+			portletURL="<%= changeDisplayStyleURL %>"
 			selectedDisplayStyle="<%= assetTagsDisplayContext.getDisplayStyle() %>"
 		/>
 	</liferay-frontend:management-bar-buttons>
@@ -77,35 +81,84 @@
 		id="assetTags"
 		searchContainer="<%= assetTagsDisplayContext.getTagsSearchContainer() %>"
 	>
-
 		<liferay-ui:search-container-row
 			className="com.liferay.asset.kernel.model.AssetTag"
 			keyProperty="tagId"
 			modelVar="tag"
 		>
-			<liferay-ui:search-container-column-text
-				cssClass="text-strong"
-				name="name"
-				truncate="<%= true %>"
-				value="<%= tag.getName() %>"
-			/>
 
-			<liferay-ui:search-container-column-text
-				name="usages"
-				value="<%= String.valueOf(tag.getAssetCount()) %>"
-			/>
+			<%
+			long fullTagsCount = assetTagsDisplayContext.getFullTagsCount(tag);
+			%>
 
-			<liferay-ui:search-container-column-jsp
-				cssClass="list-group-item-field"
-				path="/tag_action.jsp"
-			/>
+			<c:choose>
+				<c:when test='<%= Objects.equals(assetTagsDisplayContext.getDisplayStyle(), "descriptive") %>'>
+					<liferay-ui:search-container-column-icon
+						icon="tag"
+						toggleRowChecker="<%= true %>"
+					/>
+
+					<liferay-ui:search-container-column-text
+						colspan="<%= 2 %>"
+					>
+						<h5>
+							<%= tag.getName() %>
+						</h5>
+
+						<h6 class="text-default">
+							<strong><liferay-ui:message key="usages" /></strong>: <span><%= String.valueOf(fullTagsCount) %></span>
+						</h6>
+					</liferay-ui:search-container-column-text>
+
+					<liferay-ui:search-container-column-jsp
+						path="/tag_action.jsp"
+					/>
+				</c:when>
+				<c:when test='<%= Objects.equals(assetTagsDisplayContext.getDisplayStyle(), "icon") %>'>
+
+					<%
+					row.setCssClass("entry-card lfr-asset-item");
+					%>
+
+					<liferay-ui:search-container-column-text>
+						<liferay-frontend:icon-vertical-card
+							actionJsp="/tag_action.jsp"
+							actionJspServletContext="<%= application %>"
+							icon="tag"
+							resultRow="<%= row %>"
+							rowChecker="<%= searchContainer.getRowChecker() %>"
+							title="<%= tag.getName() %>"
+						>
+							<liferay-frontend:vertical-card-footer>
+								<strong><liferay-ui:message key="usages" /></strong>: <span><%= String.valueOf(fullTagsCount) %></span>
+							</liferay-frontend:vertical-card-footer>
+						</liferay-frontend:icon-vertical-card>
+					</liferay-ui:search-container-column-text>
+				</c:when>
+				<c:when test='<%= Objects.equals(assetTagsDisplayContext.getDisplayStyle(), "list") %>'>
+					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
+						name="name"
+						value="<%= tag.getName() %>"
+					/>
+
+					<liferay-ui:search-container-column-text
+						name="usages"
+						value="<%= String.valueOf(fullTagsCount) %>"
+					/>
+
+					<liferay-ui:search-container-column-jsp
+						path="/tag_action.jsp"
+					/>
+				</c:when>
+			</c:choose>
 		</liferay-ui:search-container-row>
 
-		<liferay-ui:search-iterator markupView="lexicon" />
+		<liferay-ui:search-iterator displayStyle="<%= assetTagsDisplayContext.getDisplayStyle() %>" markupView="lexicon" />
 	</liferay-ui:search-container>
 </aui:form>
 
-<c:if test="<%= AssetPermission.contains(permissionChecker, themeDisplay.getSiteGroupId(), ActionKeys.ADD_TAG) %>">
+<c:if test="<%= assetTagsDisplayContext.isShowAddButton() %>">
 	<portlet:renderURL var="editTagURL">
 		<portlet:param name="mvcPath" value="/edit_tag.jsp" />
 	</portlet:renderURL>

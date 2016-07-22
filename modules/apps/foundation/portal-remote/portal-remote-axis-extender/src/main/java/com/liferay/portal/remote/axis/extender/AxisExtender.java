@@ -14,6 +14,7 @@
 
 package com.liferay.portal.remote.axis.extender;
 
+import com.liferay.osgi.util.BundleUtil;
 import com.liferay.portal.kernel.bean.ClassLoaderBeanHandler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -132,7 +133,7 @@ public class AxisExtender {
 
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_NAME,
-				bundle.getSymbolicName());
+				"liferay.axis." + bundle.getSymbolicName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_PATH,
 				"/" + bundle.getSymbolicName());
@@ -149,7 +150,9 @@ public class AxisExtender {
 									name = name.substring(1);
 								}
 
-								return bundle.getResource(name);
+								return
+									BundleUtil.getResourceInBundleOrFragments(
+										bundle, name);
 							}
 
 						},
@@ -159,10 +162,10 @@ public class AxisExtender {
 
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT,
-				bundle.getSymbolicName());
+				"liferay.axis." + bundle.getSymbolicName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_NAME,
-				"AuthVerifierFilter");
+				AuthVerifierFilter.class.getName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_FILTER_PATTERN,
 				"/api/axis/*");
@@ -175,10 +178,10 @@ public class AxisExtender {
 
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT,
-				bundle.getSymbolicName());
+				"liferay.axis." + bundle.getSymbolicName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME,
-				"AxisServlet");
+				AxisServlet.class.getName());
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN,
 				"/api/axis/*");

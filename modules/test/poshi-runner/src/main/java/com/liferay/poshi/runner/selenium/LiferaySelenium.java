@@ -39,6 +39,8 @@ public interface LiferaySelenium {
 
 	public void antCommand(String fileName, String target) throws Exception;
 
+	public void assertAccessible() throws Exception;
+
 	public void assertAlert(String pattern) throws Exception;
 
 	public void assertAlertNotPresent() throws Exception;
@@ -227,6 +229,8 @@ public interface LiferaySelenium {
 	public String getCurrentDay();
 
 	public String getCurrentDayName();
+
+	public String getCurrentHour();
 
 	public String getCurrentMonth();
 
@@ -475,6 +479,8 @@ public interface LiferaySelenium {
 	public void saveScreenshotBeforeAction(boolean actionFailed)
 		throws Exception;
 
+	public void scrollBy(String coordString);
+
 	public void scrollWebElementIntoView(String locator) throws Exception;
 
 	public void select(String selectLocator, String optionLocator);
@@ -618,7 +624,13 @@ public interface LiferaySelenium {
 
 	public void waitForElementNotPresent(String locator) throws Exception;
 
+	public void waitForElementNotPresent(String locator, String timeout)
+		throws Exception;
+
 	public void waitForElementPresent(String locator) throws Exception;
+
+	public void waitForElementPresent(String locator, String timeout)
+		throws Exception;
 
 	public void waitForFrameToLoad(String frameAddress, String timeout);
 

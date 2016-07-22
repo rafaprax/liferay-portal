@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -34,7 +33,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchInstanceTokenException;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstanceToken;
@@ -53,6 +51,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -2350,7 +2349,7 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 				for (KaleoInstanceToken kaleoInstanceToken : list) {
 					if ((companyId != kaleoInstanceToken.getCompanyId()) ||
 							(parentKaleoInstanceTokenId != kaleoInstanceToken.getParentKaleoInstanceTokenId()) ||
-							!Validator.equals(completionDate,
+							!Objects.equals(completionDate,
 								kaleoInstanceToken.getCompletionDate())) {
 						list = null;
 
@@ -2983,8 +2982,8 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 					primaryKey);
 
 			if (kaleoInstanceToken == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchInstanceTokenException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3254,8 +3253,8 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 		KaleoInstanceToken kaleoInstanceToken = fetchByPrimaryKey(primaryKey);
 
 		if (kaleoInstanceToken == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchInstanceTokenException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -3286,12 +3285,14 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 	 */
 	@Override
 	public KaleoInstanceToken fetchByPrimaryKey(Serializable primaryKey) {
-		KaleoInstanceToken kaleoInstanceToken = (KaleoInstanceToken)entityCache.getResult(KaleoInstanceTokenModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(KaleoInstanceTokenModelImpl.ENTITY_CACHE_ENABLED,
 				KaleoInstanceTokenImpl.class, primaryKey);
 
-		if (kaleoInstanceToken == _nullKaleoInstanceToken) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		KaleoInstanceToken kaleoInstanceToken = (KaleoInstanceToken)serializable;
 
 		if (kaleoInstanceToken == null) {
 			Session session = null;
@@ -3307,8 +3308,7 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 				}
 				else {
 					entityCache.putResult(KaleoInstanceTokenModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoInstanceTokenImpl.class, primaryKey,
-						_nullKaleoInstanceToken);
+						KaleoInstanceTokenImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -3362,18 +3362,20 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			KaleoInstanceToken kaleoInstanceToken = (KaleoInstanceToken)entityCache.getResult(KaleoInstanceTokenModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(KaleoInstanceTokenModelImpl.ENTITY_CACHE_ENABLED,
 					KaleoInstanceTokenImpl.class, primaryKey);
 
-			if (kaleoInstanceToken == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, kaleoInstanceToken);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (KaleoInstanceToken)serializable);
+				}
 			}
 		}
 
@@ -3416,8 +3418,7 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(KaleoInstanceTokenModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoInstanceTokenImpl.class, primaryKey,
-					_nullKaleoInstanceToken);
+					KaleoInstanceTokenImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3654,23 +3655,4 @@ public class KaleoInstanceTokenPersistenceImpl extends BasePersistenceImpl<Kaleo
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No KaleoInstanceToken exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No KaleoInstanceToken exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(KaleoInstanceTokenPersistenceImpl.class);
-	private static final KaleoInstanceToken _nullKaleoInstanceToken = new KaleoInstanceTokenImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<KaleoInstanceToken> toCacheModel() {
-				return _nullKaleoInstanceTokenCacheModel;
-			}
-		};
-
-	private static final CacheModel<KaleoInstanceToken> _nullKaleoInstanceTokenCacheModel =
-		new CacheModel<KaleoInstanceToken>() {
-			@Override
-			public KaleoInstanceToken toEntityModel() {
-				return _nullKaleoInstanceToken;
-			}
-		};
 }

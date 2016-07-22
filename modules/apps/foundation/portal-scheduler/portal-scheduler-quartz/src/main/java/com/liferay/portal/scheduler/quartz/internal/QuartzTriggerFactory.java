@@ -74,9 +74,8 @@ public class QuartzTriggerFactory implements TriggerFactory {
 				jobName, groupName, startDate, endDate, simpleScheduleBuilder);
 		}
 
-		CalendarIntervalScheduleBuilder
-			calendarIntervalScheduleBuilder =
-				CalendarIntervalScheduleBuilder.calendarIntervalSchedule();
+		CalendarIntervalScheduleBuilder calendarIntervalScheduleBuilder =
+			CalendarIntervalScheduleBuilder.calendarIntervalSchedule();
 
 		calendarIntervalScheduleBuilder.withInterval(
 			interval, IntervalUnit.valueOf(timeUnit.name()));
@@ -96,7 +95,7 @@ public class QuartzTriggerFactory implements TriggerFactory {
 			CronScheduleBuilder.cronSchedule(cronExpression));
 	}
 
-	private Trigger createTrigger(
+	protected Trigger createTrigger(
 		String jobName, String groupName, Date startDate, Date endDate,
 		ScheduleBuilder<?> scheduleBuilder) {
 

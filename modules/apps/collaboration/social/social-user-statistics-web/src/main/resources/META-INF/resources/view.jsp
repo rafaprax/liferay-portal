@@ -78,12 +78,12 @@ if (!rankingNamesList.isEmpty()) {
 	for (int i = 1; i < rankingNames.length; i++) {
 		rankingNamesMessage = LanguageUtil.format(request, "x-and-y", new Object[] {rankingNamesMessage, rankingNames[i]});
 	}
-	%>
+%>
 
 	<c:if test="<%= socialUserStatisticsPortletInstanceConfiguration.showHeaderText() %>">
 		<div class="top-users">
 			<c:if test="<%= total > 0 %>">
-				<liferay-ui:message arguments="<%= total %>" key="top-users-out-of-x" translateArguments="<%= false %>" /> <liferay-ui:message arguments="<%= rankingNamesMessage %>" key="ranking-is-based-on-x" translateArguments="<%= false %>" /></br />
+				<liferay-ui:message arguments="<%= total %>" key="top-users-out-of-x" translateArguments="<%= false %>" /> <liferay-ui:message arguments="<%= rankingNamesMessage %>" key="ranking-is-based-on-x" translateArguments="<%= false %>" /><br />
 			</c:if>
 		</div>
 	</c:if>

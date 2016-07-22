@@ -20,11 +20,13 @@ import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
 import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
 import com.liferay.dynamic.data.mapping.exception.StructureDuplicateStructureKeyException;
 import com.liferay.dynamic.data.mapping.exception.StructureNameException;
+import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstanceLink;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
+import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLinkLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
@@ -41,6 +43,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,124 +72,111 @@ public class DDMStructureLocalServiceTest extends BaseDDMServiceTestCase {
 		_classNameId = PortalUtil.getClassNameId(DDL_RECORD_SET_CLASS_NAME);
 	}
 
-	@Test
+	@Test(expected = StructureDefinitionException.class)
 	public void testAddStructureMissingRequiredElementAttribute()
 		throws Exception {
 
-		try {
-			addStructure(
-				_classNameId, null, "Test Structure",
-				read("ddm-structure-required-element-attribute.xsd"),
-				StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
-
-			Assert.fail();
-		}
-		catch (StructureDefinitionException sde) {
-		}
+		addStructure(
+			_classNameId, null, "Test Structure",
+			read("ddm-structure-required-element-attribute.xsd"),
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 	}
 
-	@Test
+	@Test(expected = StructureDuplicateElementException.class)
 	public void testAddStructureWithDuplicateElementName() throws Exception {
-		try {
-			addStructure(
-				_classNameId, null, "Test Structure",
-				read("ddm-structure-duplicate-element-name.xsd"),
-				StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
-
-			Assert.fail();
-		}
-		catch (StructureDuplicateElementException sdee) {
-		}
+		addStructure(
+			_classNameId, null, "Test Structure",
+			read("ddm-structure-duplicate-element-name.xsd"),
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 	}
 
-	@Test
+	@Test(expected = StructureDuplicateElementException.class)
 	public void testAddStructureWithDuplicateElementNameInParent()
 		throws Exception {
 
-		try {
-			DDMStructure parentStructure = addStructure(
-				_classNameId, null, "Test Parent Structure",
-				read("ddm-structure-duplicate-element-name.xsd"),
-				StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
+		DDMStructure parentStructure = addStructure(
+			_classNameId, null, "Test Parent Structure",
+			read("ddm-structure-duplicate-element-name.xsd"),
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 
-			addStructure(
-				parentStructure.getStructureId(), _classNameId, null,
-				"Test Structure",
-				read("ddm-structure-duplicate-element-name.xsd"),
-				StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
-
-			Assert.fail();
-		}
-		catch (StructureDuplicateElementException sdee) {
-		}
+		addStructure(
+			parentStructure.getStructureId(), _classNameId, null,
+			"Test Structure", read("ddm-structure-duplicate-element-name.xsd"),
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 	}
 
-	@Test
+	@Test(expected = StructureDuplicateStructureKeyException.class)
 	public void testAddStructureWithDuplicateKey() throws Exception {
 		String structureKey = RandomTestUtil.randomString();
 
-		try {
-			addStructure(
-				_classNameId, structureKey, "Test Structure 1",
-				read("test-structure.xsd"), StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
+		addStructure(
+			_classNameId, structureKey, "Test Structure 1",
+			read("test-structure.xsd"), StorageType.JSON.getValue(),
+			DDMStructureConstants.TYPE_DEFAULT);
 
-			addStructure(
-				_classNameId, structureKey, "Test Structure 2",
-				read("test-structure.xsd"), StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
-
-			Assert.fail();
-		}
-		catch (StructureDuplicateStructureKeyException sdske) {
-		}
+		addStructure(
+			_classNameId, structureKey, "Test Structure 2",
+			read("test-structure.xsd"), StorageType.JSON.getValue(),
+			DDMStructureConstants.TYPE_DEFAULT);
 	}
 
-	@Test
+	@Test(expected = StructureDefinitionException.class)
 	public void testAddStructureWithInvalidElementAttribute() throws Exception {
-		try {
-			addStructure(
-				_classNameId, null, "Test Structure",
-				read("ddm-structure-invalid-element-attribute.xsd"),
-				StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
-
-			Assert.fail();
-		}
-		catch (StructureDefinitionException sde) {
-		}
+		addStructure(
+			_classNameId, null, "Test Structure",
+			read("ddm-structure-invalid-element-attribute.xsd"),
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 	}
 
-	@Test
+	@Test(expected = StructureDefinitionException.class)
 	public void testAddStructureWithoutDefinition() throws Exception {
-		try {
-			addStructure(
-				_classNameId, null, "Test Structure", StringPool.BLANK,
-				StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
+		addStructure(
+			_classNameId, null, "Test Structure", StringPool.BLANK,
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
+	}
 
-			Assert.fail();
-		}
-		catch (StructureDefinitionException sde) {
-		}
+	@Test(expected = StructureNameException.class)
+	public void testAddStructureWithoutName() throws Exception {
+		addStructure(
+			_classNameId, null, StringPool.BLANK, read("test-structure.xsd"),
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 	}
 
 	@Test
-	public void testAddStructureWithoutName() throws Exception {
-		try {
-			addStructure(
-				_classNameId, null, StringPool.BLANK,
-				read("test-structure.xsd"), StorageType.JSON.getValue(),
-				DDMStructureConstants.TYPE_DEFAULT);
+	public void testAddStructureWithReferencedDataProviderInstance()
+		throws Exception {
 
-			Assert.fail();
-		}
-		catch (StructureNameException sne) {
-		}
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm();
+
+		DDMFormField ddmFormField = new DDMFormField("Field", "select");
+
+		ddmFormField.setDataType("string");
+
+		long ddmDataProviderInstanceId = RandomTestUtil.randomLong();
+
+		ddmFormField.setProperty(
+			"ddmDataProviderInstanceId", ddmDataProviderInstanceId);
+
+		ddmForm.addDDMFormField(ddmFormField);
+
+		DDMStructure structure = ddmStructureTestHelper.addStructure(
+			ddmForm, StorageType.JSON.getValue());
+
+		DDMDataProviderInstanceLink dataProviderInstanceLink =
+			DDMDataProviderInstanceLinkLocalServiceUtil.
+				fetchDataProviderInstanceLink(
+					ddmDataProviderInstanceId, structure.getStructureId());
+
+		Assert.assertNotNull(dataProviderInstanceLink);
+
+		DDMStructureLocalServiceUtil.deleteStructure(structure);
+
+		dataProviderInstanceLink =
+			DDMDataProviderInstanceLinkLocalServiceUtil.
+				fetchDataProviderInstanceLink(
+					ddmDataProviderInstanceId, structure.getStructureId());
+
+		Assert.assertNull(dataProviderInstanceLink);
 	}
 
 	@Test
@@ -549,6 +539,71 @@ public class DDMStructureLocalServiceTest extends BaseDDMServiceTestCase {
 			_classNameId, null, WorkflowConstants.STATUS_APPROVED);
 
 		Assert.assertEquals(initialCount + 1, count);
+	}
+
+	@Test
+	public void testUpdateStructureWithReferencedDataProviderInstance()
+		throws Exception {
+
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm();
+
+		List<DDMFormField> ddmFormFields = new ArrayList<>();
+
+		DDMFormField ddmFormField1 = new DDMFormField("Field1", "select");
+
+		ddmFormField1.setDataType("string");
+
+		long ddmDataProviderInstanceId1 = RandomTestUtil.randomLong();
+
+		ddmFormField1.setProperty(
+			"ddmDataProviderInstanceId", ddmDataProviderInstanceId1);
+
+		ddmFormFields.add(ddmFormField1);
+
+		DDMFormField ddmFormField2 = new DDMFormField("Field2", "select");
+
+		ddmFormField2.setDataType("string");
+
+		long ddmDataProviderInstanceId2 = RandomTestUtil.randomLong();
+
+		ddmFormField2.setProperty(
+			"ddmDataProviderInstanceId", ddmDataProviderInstanceId2);
+
+		ddmFormFields.add(ddmFormField2);
+
+		ddmForm.setDDMFormFields(ddmFormFields);
+
+		DDMStructure structure = ddmStructureTestHelper.addStructure(
+			ddmForm, StorageType.JSON.getValue());
+
+		List<DDMDataProviderInstanceLink> dataProviderInstanceLinks =
+			DDMDataProviderInstanceLinkLocalServiceUtil.
+				getDataProviderInstanceLinks(structure.getStructureId());
+
+		Assert.assertEquals(2, dataProviderInstanceLinks.size());
+
+		// Remove one of the data provider instance links
+
+		ddmFormFields.remove(ddmFormField2);
+
+		ddmForm.setDDMFormFields(ddmFormFields);
+
+		ddmStructureTestHelper.updateStructure(
+			structure.getStructureId(), ddmForm);
+
+		dataProviderInstanceLinks =
+			DDMDataProviderInstanceLinkLocalServiceUtil.
+				getDataProviderInstanceLinks(structure.getStructureId());
+
+		Assert.assertEquals(1, dataProviderInstanceLinks.size());
+
+		DDMStructureLocalServiceUtil.deleteStructure(structure);
+
+		dataProviderInstanceLinks =
+			DDMDataProviderInstanceLinkLocalServiceUtil.
+				getDataProviderInstanceLinks(structure.getStructureId());
+
+		Assert.assertEquals(0, dataProviderInstanceLinks.size());
 	}
 
 	protected DDMStructure copyStructure(DDMStructure structure)

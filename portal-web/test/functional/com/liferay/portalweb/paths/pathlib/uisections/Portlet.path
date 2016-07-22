@@ -9,6 +9,11 @@
 </thead>
 <tbody>
 <tr>
+	<td>BODY</td>
+	<td>//div[@id='main-content']//section[contains(.,'${key_portletName}')]//div[@class='portlet-body']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>LAYOUT_2_COLUMNS</td>
 	<td>//input[contains(@id,'layoutTemplateId_1')]</td>
 	<td></td>
@@ -34,6 +39,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>H3_MODAL_TITLE</td>
+	<td>//h3[@class='modal-title']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>H3_HEADER_2</td>
 	<td>xpath=(//h3[@class='header-title']/span)[2]</td>
 	<td></td>
@@ -45,7 +55,7 @@
 </tr>
 <tr>
 	<td>ICON_PLUS_SIGN</td>
-	<td>//i[contains(@class,'icon-plus-sign')]</td>
+	<td>//*[@data-qa-id='addButton']//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -56,6 +66,11 @@
 <tr>
 	<td>TITLE</td>
 	<td>//span[contains(@class,'header-toolbar-title')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>WORD</td>
+	<td>//h1[@class='head-entry']/span[contains(.,'${key_dictionaryTerm}')]</td>
 	<td></td>
 </tr>
 </tbody>

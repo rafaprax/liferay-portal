@@ -64,21 +64,18 @@ public class DeletePasswordPolicyPortletConfigurationIcon
 	public String getURL(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		try {
 			PortletURL portletURL = PortletURLFactoryUtil.create(
 				portletRequest,
 				PasswordPoliciesAdminPortletKeys.PASSWORD_POLICIES_ADMIN,
-				themeDisplay.getPlid(), PortletRequest.ACTION_PHASE);
+				PortletRequest.ACTION_PHASE);
 
 			portletURL.setParameter(
 				ActionRequest.ACTION_NAME, "deletePasswordPolicy");
 			portletURL.setParameter("mvcPath", "/view.jsp");
 			portletURL.setParameter(
 				"passwordPolicyId",
-				String.valueOf(getPasswordPolicyId(portletRequest)));
+				String.valueOf(_getPasswordPolicyId(portletRequest)));
 
 			return portletURL.toString();
 		}
@@ -100,7 +97,7 @@ public class DeletePasswordPolicyPortletConfigurationIcon
 				(ThemeDisplay)portletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
-			long passwordPolicyId = getPasswordPolicyId(portletRequest);
+			long passwordPolicyId = _getPasswordPolicyId(portletRequest);
 
 			PasswordPolicy passwordPolicy =
 				_passwordPolicyLocalService.fetchPasswordPolicy(
@@ -127,7 +124,7 @@ public class DeletePasswordPolicyPortletConfigurationIcon
 		_passwordPolicyLocalService = passwordPolicyLocalService;
 	}
 
-	private long getPasswordPolicyId(PortletRequest portletRequest) {
+	private long _getPasswordPolicyId(PortletRequest portletRequest) {
 		HttpServletRequest request = PortalUtil.getHttpServletRequest(
 			portletRequest);
 

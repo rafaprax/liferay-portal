@@ -66,6 +66,7 @@ import com.liferay.journal.social.JournalActivityKeys;
 import com.liferay.journal.util.comparator.ArticleIDComparator;
 import com.liferay.journal.util.comparator.ArticleVersionComparator;
 import com.liferay.journal.util.impl.JournalUtil;
+import com.liferay.petra.xml.XMLUtil;
 import com.liferay.portal.kernel.comment.CommentManagerUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -160,10 +161,11 @@ import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.trash.kernel.exception.RestoreEntryException;
+import com.liferay.trash.kernel.exception.TrashEntryException;
 import com.liferay.trash.kernel.model.TrashEntry;
 import com.liferay.trash.kernel.model.TrashVersion;
 import com.liferay.trash.kernel.util.TrashUtil;
-import com.liferay.util.xml.XMLUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -178,6 +180,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -359,12 +362,12 @@ public class JournalArticleLocalServiceImpl
 		validate(
 			user.getCompanyId(), groupId, classNameId, articleId, autoArticleId,
 			version, titleMap, content, ddmStructureKey, ddmTemplateKey,
-			expirationDate, smallImage, smallImageURL, smallImageFile,
-			smallImageBytes, serviceContext);
+			displayDate, expirationDate, smallImage, smallImageURL,
+			smallImageFile, smallImageBytes, serviceContext);
 
 		validateReferences(
 			groupId, ddmStructureKey, ddmTemplateKey, layoutUuid, smallImage,
-			smallImageURL, smallImageBytes, content);
+			smallImageURL, smallImageBytes, 0, content);
 
 		serviceContext.setAttribute("articleId", articleId);
 
@@ -771,8 +774,8 @@ public class JournalArticleLocalServiceImpl
 		else {
 			validate(newArticleId);
 
-			if (journalArticlePersistence.countByG_A(
-					groupId, newArticleId) > 0) {
+			if (journalArticlePersistence.countByG_A(groupId, newArticleId) >
+					0) {
 
 				StringBundler sb = new StringBundler(5);
 
@@ -1441,7 +1444,7 @@ public class JournalArticleLocalServiceImpl
 		}
 
 		return fetchLatestArticleByUrlTitle(
-			groupId, urlTitle, WorkflowConstants.STATUS_PENDING);
+			groupId, urlTitle, WorkflowConstants.STATUS_ANY);
 	}
 
 	@Override
@@ -1743,7 +1746,7 @@ public class JournalArticleLocalServiceImpl
 		}
 
 		return getLatestArticleByUrlTitle(
-			groupId, urlTitle, WorkflowConstants.STATUS_PENDING);
+			groupId, urlTitle, WorkflowConstants.STATUS_ANY);
 	}
 
 	/**
@@ -2434,6 +2437,41 @@ public class JournalArticleLocalServiceImpl
 	@Override
 	public List<JournalArticle> getArticlesBySmallImageId(long smallImageId) {
 		return journalArticlePersistence.findBySmallImageId(smallImageId);
+	}
+
+	@Override
+	public List<JournalArticle> getArticlesByStructureId(
+		long groupId, long classNameId, String ddmStructureKey, int status,
+		int start, int end, OrderByComparator<JournalArticle> obc) {
+
+		QueryDefinition<JournalArticle> queryDefinition = new QueryDefinition<>(
+			status, start, end, obc);
+
+		return journalArticleFinder.findByG_C_S(
+			groupId, classNameId, ddmStructureKey, queryDefinition);
+	}
+
+	@Override
+	public List<JournalArticle> getArticlesByStructureId(
+		long groupId, String ddmStructureKey, int status, int start, int end,
+		OrderByComparator<JournalArticle> obc) {
+
+		QueryDefinition<JournalArticle> queryDefinition = new QueryDefinition<>(
+			status, start, end, obc);
+
+		return journalArticleFinder.findByG_C_S(
+			groupId, JournalArticleConstants.CLASSNAME_ID_DEFAULT,
+			ddmStructureKey, queryDefinition);
+	}
+
+	@Override
+	public List<JournalArticle> getArticlesByStructureId(
+		long groupId, String ddmStructureKey, int start, int end,
+		OrderByComparator<JournalArticle> obc) {
+
+		return getArticlesByStructureId(
+			groupId, ddmStructureKey, WorkflowConstants.STATUS_ANY, start, end,
+			obc);
 	}
 
 	/**
@@ -3432,6 +3470,11 @@ public class JournalArticleLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
+		if (!article.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
+
 		if (article.isInTrashExplicitly()) {
 			restoreArticleFromTrash(userId, article);
 		}
@@ -3480,6 +3523,10 @@ public class JournalArticleLocalServiceImpl
 		throws PortalException {
 
 		// Article
+
+		if (article.isInTrash()) {
+			throw new TrashEntryException();
+		}
 
 		int oldStatus = article.getStatus();
 
@@ -3690,6 +3737,11 @@ public class JournalArticleLocalServiceImpl
 
 		// Article
 
+		if (!article.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
+
 		String trashArticleId = TrashUtil.getOriginalTitle(
 			article.getArticleId());
 
@@ -3731,6 +3783,8 @@ public class JournalArticleLocalServiceImpl
 		List<TrashVersion> trashVersions = trashVersionLocalService.getVersions(
 			trashEntry.getEntryId());
 
+		boolean visible = false;
+
 		for (TrashVersion trashVersion : trashVersions) {
 			JournalArticle trashArticleVersion =
 				journalArticlePersistence.findByPrimaryKey(
@@ -3738,11 +3792,21 @@ public class JournalArticleLocalServiceImpl
 
 			trashArticleVersion.setStatus(trashVersion.getStatus());
 
+			if (trashVersion.getStatus() == WorkflowConstants.STATUS_APPROVED) {
+				visible = true;
+			}
+
 			journalArticlePersistence.update(trashArticleVersion);
 		}
 
 		trashEntryLocalService.deleteEntry(
 			JournalArticle.class.getName(), article.getResourcePrimKey());
+
+		if (visible) {
+			assetEntryLocalService.updateVisible(
+				JournalArticle.class.getName(), article.getResourcePrimKey(),
+				true);
+		}
 
 		// Comment
 
@@ -5119,7 +5183,7 @@ public class JournalArticleLocalServiceImpl
 
 				addNewVersion = true;
 
-				version = MathUtil.format(latestVersion + 0.1, 1, 1);
+				version = getNextVersion(article);
 			}
 		}
 
@@ -5160,13 +5224,14 @@ public class JournalArticleLocalServiceImpl
 
 		validate(
 			user.getCompanyId(), groupId, latestArticle.getClassNameId(),
-			titleMap, content, ddmStructureKey, ddmTemplateKey, expirationDate,
-			smallImage, smallImageURL, smallImageFile, smallImageBytes,
-			serviceContext);
+			titleMap, content, ddmStructureKey, ddmTemplateKey, displayDate,
+			expirationDate, smallImage, smallImageURL, smallImageFile,
+			smallImageBytes, serviceContext);
 
 		validateReferences(
 			groupId, ddmStructureKey, ddmTemplateKey, layoutUuid, smallImage,
-			smallImageURL, smallImageBytes, content);
+			smallImageURL, smallImageBytes, latestArticle.getSmallImageId(),
+			content);
 
 		if (addNewVersion) {
 			long id = counterLocalService.increment();
@@ -5408,7 +5473,7 @@ public class JournalArticleLocalServiceImpl
 		Locale defaultLocale = getArticleDefaultLocale(content);
 
 		if (incrementVersion) {
-			double newVersion = MathUtil.format(oldVersion + 0.1, 1, 1);
+			double newVersion = getNextVersion(oldArticle);
 
 			long id = counterLocalService.increment();
 
@@ -5560,7 +5625,7 @@ public class JournalArticleLocalServiceImpl
 				article.getModifiedDate(), JournalArticle.class.getName(),
 				article.getPrimaryKey(), article.getUuid(),
 				getClassTypeId(article), assetCategoryIds, assetTagNames,
-				isListable(article), false, null, null, null,
+				isListable(article), false, null, null, null, null,
 				ContentTypes.TEXT_HTML, article.getTitle(),
 				article.getDescription(), article.getDescription(), null,
 				article.getLayoutUuid(), 0, 0, priority);
@@ -5576,9 +5641,10 @@ public class JournalArticleLocalServiceImpl
 				journalArticleResource.getResourcePrimKey(),
 				journalArticleResource.getUuid(), getClassTypeId(article),
 				assetCategoryIds, assetTagNames, isListable(article), visible,
-				null, null, null, ContentTypes.TEXT_HTML, article.getTitle(),
-				article.getDescription(), article.getDescription(), null,
-				article.getLayoutUuid(), 0, 0, priority);
+				null, null, null, null, ContentTypes.TEXT_HTML,
+				article.getTitle(), article.getDescription(),
+				article.getDescription(), null, article.getLayoutUuid(), 0, 0,
+				priority);
 		}
 
 		assetLinkLocalService.updateLinks(
@@ -5763,7 +5829,7 @@ public class JournalArticleLocalServiceImpl
 								article.getResourcePrimKey(), article.getUuid(),
 								getClassTypeId(article), assetCategoryIds,
 								assetTagNames, isListable(article), false, null,
-								null, null, ContentTypes.TEXT_HTML,
+								null, null, null, ContentTypes.TEXT_HTML,
 								article.getTitle(), article.getDescription(),
 								article.getDescription(), null,
 								article.getLayoutUuid(), 0, 0,
@@ -6004,10 +6070,11 @@ public class JournalArticleLocalServiceImpl
 		searchContext.setEnd(end);
 		searchContext.setFolderIds(folderIds);
 		searchContext.setGroupIds(new long[] {groupId});
-		searchContext.setIncludeDiscussions(
-			GetterUtil.getBoolean(params.get("includeDiscussions")));
 
 		if (params != null) {
+			searchContext.setIncludeDiscussions(
+				GetterUtil.getBoolean(params.get("includeDiscussions")));
+
 			String keywords = (String)params.remove("keywords");
 
 			if (Validator.isNotNull(keywords)) {
@@ -6387,6 +6454,31 @@ public class JournalArticleLocalServiceImpl
 		}
 	}
 
+	protected JournalArticle fetchLatestLiveArticle(JournalArticle article)
+		throws PortalException {
+
+		Group group = groupLocalService.getGroup(article.getGroupId());
+
+		long liveGroupId = group.getLiveGroupId();
+
+		if (liveGroupId == 0) {
+			return null;
+		}
+
+		JournalArticleResource articleResource =
+			journalArticleResourceLocalService.
+				fetchJournalArticleResourceByUuidAndGroupId(
+					article.getArticleResourceUuid(), liveGroupId);
+
+		if (articleResource == null) {
+			return null;
+		}
+
+		return journalArticleLocalService.fetchLatestArticle(
+			articleResource.getResourcePrimKey(), WorkflowConstants.STATUS_ANY,
+			false);
+	}
+
 	protected void format(
 			User user, long groupId, String articleId, double version,
 			boolean incrementVersion, Element root, Map<String, byte[]> images)
@@ -6612,11 +6704,11 @@ public class JournalArticleLocalServiceImpl
 			if ((version > JournalArticleConstants.VERSION_DEFAULT) &&
 				incrementVersion) {
 
-				double oldVersion = MathUtil.format(version - 0.1, 1, 1);
-
 				long oldImageId = 0;
 
-				if ((oldVersion >= 1) && incrementVersion) {
+				if (incrementVersion) {
+					double oldVersion = getLatestVersion(groupId, articleId);
+
 					oldImageId =
 						journalArticleImageLocalService.getArticleImageId(
 							groupId, articleId, oldVersion, elInstanceId,
@@ -7001,6 +7093,25 @@ public class JournalArticleLocalServiceImpl
 				groupId, JournalConstants.SERVICE_NAME));
 	}
 
+	protected double getNextVersion(JournalArticle article)
+		throws PortalException {
+
+		double nextVersion = article.getVersion();
+
+		// The next version must be greater than the version of the latest live
+		// article
+
+		JournalArticle latestLiveArticle = fetchLatestLiveArticle(article);
+
+		if ((latestLiveArticle != null) &&
+			(latestLiveArticle.getVersion() > nextVersion)) {
+
+			nextVersion = latestLiveArticle.getVersion();
+		}
+
+		return MathUtil.format(nextVersion + 0.1, 1, 1);
+	}
+
 	protected String getUniqueUrlTitle(
 			long id, long groupId, String articleId, String title)
 		throws PortalException {
@@ -7034,7 +7145,7 @@ public class JournalArticleLocalServiceImpl
 			groupId, urlTitle);
 
 		if ((urlTitleArticle != null) &&
-			!Validator.equals(
+			!Objects.equals(
 				urlTitleArticle.getArticleId(), articleId)) {
 
 			urlTitle = getUniqueUrlTitle(id, groupId, articleId, urlTitle);
@@ -7613,9 +7724,10 @@ public class JournalArticleLocalServiceImpl
 	protected void validate(
 			long companyId, long groupId, long classNameId,
 			Map<Locale, String> titleMap, String content,
-			String ddmStructureKey, String ddmTemplateKey, Date expirationDate,
-			boolean smallImage, String smallImageURL, File smallImageFile,
-			byte[] smallImageBytes, ServiceContext serviceContext)
+			String ddmStructureKey, String ddmTemplateKey, Date displayDate,
+			Date expirationDate, boolean smallImage, String smallImageURL,
+			File smallImageFile, byte[] smallImageBytes,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		Locale articleDefaultLocale = LocaleUtil.fromLanguageId(
@@ -7638,7 +7750,11 @@ public class JournalArticleLocalServiceImpl
 				throw le;
 			}
 
-			if ((expirationDate != null) && expirationDate.before(new Date())) {
+			if ((expirationDate != null) &&
+				(expirationDate.before(new Date()) ||
+				 ((displayDate != null) &&
+				  expirationDate.before(displayDate)))) {
+
 				throw new ArticleExpirationDateException(
 					"Expiration date " + expirationDate + " is in the past");
 			}
@@ -7718,8 +7834,8 @@ public class JournalArticleLocalServiceImpl
 			long companyId, long groupId, long classNameId, String articleId,
 			boolean autoArticleId, double version, Map<Locale, String> titleMap,
 			String content, String ddmStructureKey, String ddmTemplateKey,
-			Date expirationDate, boolean smallImage, String smallImageURL,
-			File smallImageFile, byte[] smallImageBytes,
+			Date displayDate, Date expirationDate, boolean smallImage,
+			String smallImageURL, File smallImageFile, byte[] smallImageBytes,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -7746,8 +7862,8 @@ public class JournalArticleLocalServiceImpl
 
 		validate(
 			companyId, groupId, classNameId, titleMap, content, ddmStructureKey,
-			ddmTemplateKey, expirationDate, smallImage, smallImageURL,
-			smallImageFile, smallImageBytes, serviceContext);
+			ddmTemplateKey, displayDate, expirationDate, smallImage,
+			smallImageURL, smallImageFile, smallImageBytes, serviceContext);
 	}
 
 	protected void validate(String articleId) throws PortalException {
@@ -7841,7 +7957,7 @@ public class JournalArticleLocalServiceImpl
 	protected void validateReferences(
 			long groupId, String ddmStructureKey, String ddmTemplateKey,
 			String layoutUuid, boolean smallImage, String smallImageURL,
-			byte[] smallImageBytes, String content)
+			byte[] smallImageBytes, long smallImageId, String content)
 		throws PortalException {
 
 		long classNameId = classNameLocalService.getClassNameId(
@@ -7880,7 +7996,11 @@ public class JournalArticleLocalServiceImpl
 		if (smallImage && Validator.isNull(smallImageURL) &&
 			ArrayUtil.isEmpty(smallImageBytes)) {
 
-			throw new NoSuchImageException();
+			Image image = imageLocalService.fetchImage(smallImageId);
+
+			if (image == null) {
+				throw new NoSuchImageException();
+			}
 		}
 
 		ExportImportContentProcessor exportImportContentProcessor =
@@ -7889,6 +8009,23 @@ public class JournalArticleLocalServiceImpl
 
 		exportImportContentProcessor.validateContentReferences(
 			groupId, content);
+	}
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #validateReferences(long,
+	 *             String, String, String, boolean, String, byte[], long,
+	 *             String)}
+	 */
+	@Deprecated
+	protected void validateReferences(
+			long groupId, String ddmStructureKey, String ddmTemplateKey,
+			String layoutUuid, boolean smallImage, String smallImageURL,
+			byte[] smallImageBytes, String content)
+		throws PortalException {
+
+		validateReferences(
+			groupId, ddmStructureKey, ddmTemplateKey, layoutUuid, smallImage,
+			smallImageURL, smallImageBytes, 0, content);
 	}
 
 	@ServiceReference(type = ConfigurationProvider.class)

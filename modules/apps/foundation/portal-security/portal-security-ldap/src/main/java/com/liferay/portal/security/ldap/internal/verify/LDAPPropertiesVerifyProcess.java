@@ -77,9 +77,9 @@ public class LDAPPropertiesVerifyProcess extends VerifyProcess {
 	)
 	protected void setLDAPAuthConfigurationProvider(
 		ConfigurationProvider<LDAPAuthConfiguration>
-			LDAPAuthConfigurationProvider) {
+			ldapAuthConfigurationProvider) {
 
-		_ldapAuthConfigurationProvider = LDAPAuthConfigurationProvider;
+		_ldapAuthConfigurationProvider = ldapAuthConfigurationProvider;
 	}
 
 	@Reference(
@@ -283,7 +283,7 @@ public class LDAPPropertiesVerifyProcess extends VerifyProcess {
 
 	protected void verifyLDAPProperties() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			List<Company> companies =_companyLocalService.getCompanies(false);
+			List<Company> companies = _companyLocalService.getCompanies(false);
 
 			for (Company company : companies) {
 				long companyId = company.getCompanyId();

@@ -35,7 +35,7 @@
 </tr>
 <tr>
 	<td>PREVIEW_CUSTOM</td>
-	<td>//span[@data-device='custom']/i</td>
+	<td>//div[@data-device='custom']</td>
 	<td></td>
 </tr>
 <tr>
@@ -51,6 +51,16 @@
 <tr>
 	<td>PREVIEW_MESSAGE</td>
 	<td>//li[contains(@id,'_simulationDeviceContainer')]//div[contains(@class,'preview-info-message')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PREVIEW_DEVICE_IFRAME</td>
+	<td>//div[contains(@class,'${key_deviceType}')]//iframe[@id='simulationDeviceIframe']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PREVIEW_DEVICE_GENERAL_IFRAME</td>
+	<td>//iframe[@id='simulationDeviceIframe']</td>
 	<td></td>
 </tr>
 </tbody>

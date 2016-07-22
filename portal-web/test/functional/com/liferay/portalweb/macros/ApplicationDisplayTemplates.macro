@@ -7,11 +7,13 @@
 
 		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
+		<var name="key_tab" value="Display Settings" />
+
 		<if>
-			<condition function="IsElementPresent" locator1="Configuration#SETUP_DISPLAY_SETTINGS" />
+			<condition function="IsElementPresent" locator1="NavTab#TAB_LINK" />
 			<then>
-				<execute macro="Panel#expandPanel">
-					<var name="panelHeading" value="Display Settings" />
+				<execute macro="Navigator#gotoTab">
+					<var name="tab" value="Display Settings" />
 				</execute>
 			</then>
 		</if>
@@ -69,6 +71,9 @@
 
 		<execute function="Click" locator1="Button#PLUS" />
 
+		<execute function="AssertVisible" locator1="ApplicationDisplayTemplates#RSS_FEEDS" />
+		<execute function="AssertElementPresent" locator1="ApplicationDisplayTemplates#RSS_FEEDS" />
+
 		<execute function="Type#mouseOverFocusType" locator1="TextInput#NAME" value1="RSS Test ADT" />
 
 		<execute function="Click" locator1="ApplicationDisplayTemplates#RSS_FEEDS" />
@@ -91,6 +96,14 @@
 			<then>
 				<execute function="AssertClick" locator1="Configuration#SETUP_DISPLAY_SETTINGS" value1="Display Settings" />
 			</then>
+			<elseif>
+				<condition function="IsElementPresent" locator1="Configuration#SETUP_DISPLAY_SETTINGS_PANEL" />
+				<then>
+					<execute macro="Panel#expandPanel">
+						<var name="panelHeading" value="Display Settings" />
+					</execute>
+				</then>
+			</elseif>
 		</if>
 
 		<execute function="AssertClick" locator1="ApplicationDisplayTemplatesConfiguration#MANAGE_DISPLAY_TEMPLATES_LINK" value1="Manage Display Templates for ${siteName}" />
@@ -105,7 +118,10 @@
 
 		<var name="key_adtType" value="${adtType}" />
 
-		<execute function="Type" locator1="TextInput#NAME" value1="${adtType} Test ADT" />
+		<execute function="AssertVisible" locator1="ApplicationDisplayTemplates#PORTLET_PREFERENCES" />
+		<execute function="AssertElementPresent" locator1="ApplicationDisplayTemplates#PORTLET_PREFERENCES" />
+
+		<execute function="Type#mouseOverFocusType" locator1="TextInput#NAME" value1="${adtType} Test ADT" />
 
 		<execute function="UploadCommonFile" locator1="DDMEditTemplate#SCRIPT_FILE_FIELD" value1="${adtFile}" />
 

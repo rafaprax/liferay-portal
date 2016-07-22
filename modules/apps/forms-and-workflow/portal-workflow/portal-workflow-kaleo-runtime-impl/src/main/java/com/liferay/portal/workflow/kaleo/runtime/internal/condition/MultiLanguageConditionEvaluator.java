@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.workflow.kaleo.definition.ScriptLanguage;
 import com.liferay.portal.workflow.kaleo.model.KaleoCondition;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
@@ -43,16 +44,16 @@ public class MultiLanguageConditionEvaluator implements ConditionEvaluator {
 			KaleoCondition kaleoCondition, ExecutionContext executionContext)
 		throws PortalException {
 
-		ScriptLanguage scriptLanguage = ScriptLanguage.parse(
-			kaleoCondition.getScriptLanguage());
+		String conditionEvaluatorKey = getConditionEvaluatorKey(
+			kaleoCondition.getScriptLanguage(), kaleoCondition.getScript());
 
 		ConditionEvaluator conditionEvaluator = _conditionEvaluators.get(
-			scriptLanguage.getValue());
+			conditionEvaluatorKey);
 
 		if (conditionEvaluator == null) {
 			throw new IllegalArgumentException(
 				"No condition evaluator found for script language " +
-					scriptLanguage);
+					conditionEvaluatorKey);
 		}
 
 		return conditionEvaluator.evaluate(kaleoCondition, executionContext);
@@ -65,20 +66,33 @@ public class MultiLanguageConditionEvaluator implements ConditionEvaluator {
 		target = "(scripting.language=*)", unbind = "removeConditionEvaluator"
 	)
 	protected void addConditionEvaluator(
-		ConditionEvaluator conditionEvaluator,
-		Map<String, Object> properties) {
+		ConditionEvaluator conditionEvaluator, Map<String, Object> properties) {
 
 		String[] scriptingLanguages = getScriptingLanguages(
 			conditionEvaluator, properties);
 
 		for (String scriptingLanguage : scriptingLanguages) {
-			_conditionEvaluators.put(scriptingLanguage, conditionEvaluator);
+			String conditionEvaluatorKey = getConditionEvaluatorKey(
+				scriptingLanguage, ClassUtil.getClassName(conditionEvaluator));
+
+			_conditionEvaluators.put(conditionEvaluatorKey, conditionEvaluator);
 		}
 	}
 
+	protected String getConditionEvaluatorKey(
+		String language, String conditionEvaluatorClassName) {
+
+		ScriptLanguage scriptLanguage = ScriptLanguage.parse(language);
+
+		if (scriptLanguage.equals(ScriptLanguage.JAVA)) {
+			return language + StringPool.COLON + conditionEvaluatorClassName;
+		}
+
+		return language;
+	}
+
 	protected String[] getScriptingLanguages(
-		ConditionEvaluator conditionEvaluator,
-		Map<String, Object> properties) {
+		ConditionEvaluator conditionEvaluator, Map<String, Object> properties) {
 
 		Object value = properties.get("scripting.language");
 
@@ -95,14 +109,16 @@ public class MultiLanguageConditionEvaluator implements ConditionEvaluator {
 	}
 
 	protected void removeConditionEvaluator(
-		ConditionEvaluator conditionEvaluator,
-		Map<String, Object> properties) {
+		ConditionEvaluator conditionEvaluator, Map<String, Object> properties) {
 
 		String[] scriptingLanguages = getScriptingLanguages(
 			conditionEvaluator, properties);
 
 		for (String scriptingLanguage : scriptingLanguages) {
-			_conditionEvaluators.remove(scriptingLanguage);
+			String conditionEvaluatorKey = getConditionEvaluatorKey(
+				scriptingLanguage, ClassUtil.getClassName(conditionEvaluator));
+
+			_conditionEvaluators.remove(conditionEvaluatorKey);
 		}
 	}
 

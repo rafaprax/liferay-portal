@@ -13,7 +13,28 @@
 			</then>
 		</if>
 
-		<execute argument1="//div[contains(@class,'collapse on')]//input" selenium="assertChecked" />
+		<execute argument1="xpath=( //div[@class='checkbox']//input[@title='Select All'])[2]" selenium="assertChecked" />
+
+		<execute selenium="assertJavaScriptErrors" />
+
+		<execute selenium="assertLiferayErrors" />
+	</command>
+
+	<command name="checkHiddenToggleSwitch">
+		<execute function="WaitForSPARefresh" />
+
+		<execute selenium="waitForElementPresent" />
+
+		<execute selenium="mouseOver" />
+
+		<if>
+			<condition selenium="isNotChecked" />
+			<then>
+				<execute selenium="clickAt" />
+			</then>
+		</if>
+
+		<execute function="AssertChecked#assertCheckedHiddenToggleSwitch" />
 
 		<execute selenium="assertJavaScriptErrors" />
 
@@ -56,6 +77,27 @@
 		</if>
 
 		<execute function="AssertChecked#assertChecked" />
+
+		<execute selenium="assertJavaScriptErrors" />
+
+		<execute selenium="assertLiferayErrors" />
+	</command>
+
+	<command name="toggleSwitch">
+		<execute function="WaitForSPARefresh" />
+
+		<execute selenium="waitForElementPresent" />
+
+		<execute selenium="mouseOver" />
+
+		<if>
+			<condition selenium="isNotChecked" />
+			<then>
+				<execute selenium="clickAt" />
+			</then>
+		</if>
+
+		<execute function="AssertElementPresent" />
 
 		<execute selenium="assertJavaScriptErrors" />
 

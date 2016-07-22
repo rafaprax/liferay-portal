@@ -14,9 +14,13 @@
 
 package com.liferay.gradle.plugins.workspace.configurators;
 
-import com.liferay.gradle.plugins.LiferayDefaultsPlugin;
-import com.liferay.gradle.plugins.LiferayPlugin;
+import com.liferay.gradle.plugins.LiferayBasePlugin;
+import com.liferay.gradle.plugins.LiferayOSGiDefaultsPlugin;
+import com.liferay.gradle.plugins.LiferayOSGiPlugin;
 import com.liferay.gradle.plugins.extensions.LiferayExtension;
+import com.liferay.gradle.plugins.poshi.runner.PoshiRunnerPlugin;
+import com.liferay.gradle.plugins.service.builder.ServiceBuilderPlugin;
+import com.liferay.gradle.plugins.util.FileUtil;
 import com.liferay.gradle.plugins.workspace.WorkspaceExtension;
 import com.liferay.gradle.plugins.workspace.WorkspacePlugin;
 import com.liferay.gradle.plugins.workspace.util.GradleUtil;
@@ -35,8 +39,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.CopySourceSpec;
 import org.gradle.api.file.CopySpec;
@@ -65,10 +71,11 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 		WorkspaceExtension workspaceExtension = GradleUtil.getExtension(
 			(ExtensionAware)project.getGradle(), WorkspaceExtension.class);
 
-		GradleUtil.applyPlugin(project, LiferayPlugin.class);
+		applyPlugins(project);
 
 		addRepositoryDefault(project, workspaceExtension);
 		configureLiferay(project, workspaceExtension);
+		configureTaskRunPoshi(project);
 
 		configureRootTaskDistBundle(
 			project, RootProjectConfigurator.DIST_BUNDLE_TAR_TASK_NAME);
@@ -96,8 +103,29 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 			return null;
 		}
 
-		return GradleUtil.addMavenRepository(
-			project, LiferayDefaultsPlugin.DEFAULT_REPOSITORY_URL);
+		RepositoryHandler repositoryHandler = project.getRepositories();
+
+		return repositoryHandler.maven(
+			new Action<MavenArtifactRepository>() {
+
+				@Override
+				public void execute(
+					MavenArtifactRepository mavenArtifactRepository) {
+
+					mavenArtifactRepository.setUrl(
+						LiferayOSGiDefaultsPlugin.DEFAULT_REPOSITORY_URL);
+				}
+
+			});
+	}
+
+	protected void applyPlugins(Project project) {
+		GradleUtil.applyPlugin(project, LiferayOSGiPlugin.class);
+		GradleUtil.applyPlugin(project, PoshiRunnerPlugin.class);
+
+		if (FileUtil.exists(project, "service.xml")) {
+			GradleUtil.applyPlugin(project, ServiceBuilderPlugin.class);
+		}
 	}
 
 	protected void configureLiferay(
@@ -117,7 +145,7 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 
 		copySpec.into(
 			"osgi/modules",
-			new Closure<Void>(null) {
+			new Closure<Void>(project) {
 
 				@SuppressWarnings("unused")
 				public void doCall(CopySourceSpec copySourceSpec) {
@@ -128,6 +156,13 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 				}
 
 			});
+	}
+
+	protected void configureTaskRunPoshi(Project project) {
+		Task task = GradleUtil.getTask(
+			project, PoshiRunnerPlugin.RUN_POSHI_TASK_NAME);
+
+		task.dependsOn(LiferayBasePlugin.DEPLOY_TASK_NAME);
 	}
 
 	@Override

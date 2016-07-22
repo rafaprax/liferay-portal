@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -57,6 +56,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -205,7 +205,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileVersion dlFileVersion : list) {
-					if (!Validator.equals(uuid, dlFileVersion.getUuid())) {
+					if (!Objects.equals(uuid, dlFileVersion.getUuid())) {
 						list = null;
 
 						break;
@@ -678,8 +678,8 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFileVersionException(msg.toString());
@@ -723,7 +723,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		if (result instanceof DLFileVersion) {
 			DLFileVersion dlFileVersion = (DLFileVersion)result;
 
-			if (!Validator.equals(uuid, dlFileVersion.getUuid()) ||
+			if (!Objects.equals(uuid, dlFileVersion.getUuid()) ||
 					(groupId != dlFileVersion.getGroupId())) {
 				result = null;
 			}
@@ -1018,7 +1018,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileVersion dlFileVersion : list) {
-					if (!Validator.equals(uuid, dlFileVersion.getUuid()) ||
+					if (!Objects.equals(uuid, dlFileVersion.getUuid()) ||
 							(companyId != dlFileVersion.getCompanyId())) {
 						list = null;
 
@@ -2616,7 +2616,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFileVersion dlFileVersion : list) {
-					if (!Validator.equals(mimeType, dlFileVersion.getMimeType())) {
+					if (!Objects.equals(mimeType, dlFileVersion.getMimeType())) {
 						list = null;
 
 						break;
@@ -3621,8 +3621,8 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchFileVersionException(msg.toString());
@@ -3667,7 +3667,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			DLFileVersion dlFileVersion = (DLFileVersion)result;
 
 			if ((fileEntryId != dlFileVersion.getFileEntryId()) ||
-					!Validator.equals(version, dlFileVersion.getVersion())) {
+					!Objects.equals(version, dlFileVersion.getVersion())) {
 				result = null;
 			}
 		}
@@ -5117,9 +5117,8 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 				for (DLFileVersion dlFileVersion : list) {
 					if ((groupId != dlFileVersion.getGroupId()) ||
 							(folderId != dlFileVersion.getFolderId()) ||
-							!Validator.equals(title, dlFileVersion.getTitle()) ||
-							!Validator.equals(version,
-								dlFileVersion.getVersion())) {
+							!Objects.equals(title, dlFileVersion.getTitle()) ||
+							!Objects.equals(version, dlFileVersion.getVersion())) {
 						list = null;
 
 						break;
@@ -5929,8 +5928,8 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 					primaryKey);
 
 			if (dlFileVersion == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchFileVersionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -6273,8 +6272,8 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		DLFileVersion dlFileVersion = fetchByPrimaryKey(primaryKey);
 
 		if (dlFileVersion == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchFileVersionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -6305,12 +6304,14 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 	 */
 	@Override
 	public DLFileVersion fetchByPrimaryKey(Serializable primaryKey) {
-		DLFileVersion dlFileVersion = (DLFileVersion)entityCache.getResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
 				DLFileVersionImpl.class, primaryKey);
 
-		if (dlFileVersion == _nullDLFileVersion) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		DLFileVersion dlFileVersion = (DLFileVersion)serializable;
 
 		if (dlFileVersion == null) {
 			Session session = null;
@@ -6326,7 +6327,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 				}
 				else {
 					entityCache.putResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
-						DLFileVersionImpl.class, primaryKey, _nullDLFileVersion);
+						DLFileVersionImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -6380,18 +6381,20 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			DLFileVersion dlFileVersion = (DLFileVersion)entityCache.getResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
 					DLFileVersionImpl.class, primaryKey);
 
-			if (dlFileVersion == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, dlFileVersion);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (DLFileVersion)serializable);
+				}
 			}
 		}
 
@@ -6433,7 +6436,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
-					DLFileVersionImpl.class, primaryKey, _nullDLFileVersion);
+					DLFileVersionImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -6676,22 +6679,4 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "size"
 			});
-	private static final DLFileVersion _nullDLFileVersion = new DLFileVersionImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<DLFileVersion> toCacheModel() {
-				return _nullDLFileVersionCacheModel;
-			}
-		};
-
-	private static final CacheModel<DLFileVersion> _nullDLFileVersionCacheModel = new CacheModel<DLFileVersion>() {
-			@Override
-			public DLFileVersion toEntityModel() {
-				return _nullDLFileVersion;
-			}
-		};
 }

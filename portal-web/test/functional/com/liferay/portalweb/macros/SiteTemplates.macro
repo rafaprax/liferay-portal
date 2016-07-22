@@ -11,16 +11,12 @@
 			<var name="category" value="Navigation" />
 		</execute>
 
-		<var name="key_page" value="${sitePageName}" />
-
-		<execute function="Click#makeVisibleClickAt" locator1="ProductMenu#ADD_PAGE_ICON" />
-
-		<execute function="Pause" locator1="3000" />
-
-		<execute function="Type#clickAtSendKeys" locator1="TextInput#NAME" value1="${siteChildPageName}" />
-		<execute function="AssertClick" locator1="Button#ADD_PAGE_BTN" value1="Add Page" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="Page#addChild">
+			<var name="page" value="Private Pages" />
+			<var name="pageName" value="${pageName}" />
+			<var name="siteChildPageName" value="${siteChildPageName}" />
+			<var name="siteScopeSelected" value="true" />
+		</execute>
 	</command>
 
 	<command name="addCP">
@@ -33,19 +29,13 @@
 		<if>
 			<equals arg1="${siteTemplateActive}" arg2="No" />
 			<then>
-				<execute function="Click" locator1="ToggleSwitch#ACTIVE" />
+				<execute function="Uncheck#uncheckToggleSwitch" locator1="ToggleSwitch#ACTIVE" />
 			</then>
 		</if>
 
 		<execute macro="Button#clickSave" />
 
-		<execute macro="SiteAdmin#viewPortletTitle">
-			<var name="portletTitle" value="Site Template Settings" />
-		</execute>
-
-		<var name="key_siteTemplateName" value="${siteTemplateName}" />
-
-		<execute function="AssertTextEquals" locator1="TextInput#NAME" value1="${siteTemplateName}" />
+		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
 	<command name="addSitePageViaSiteTemplateCP">
@@ -60,22 +50,25 @@
 			<var name="category" value="Navigation" />
 		</execute>
 
-		<var name="key_page" value="${sitePageName}" />
+		<var name="key_page" value="${pageName}" />
 
-		<execute function="AssertClick" locator1="Button#ADD_PAGE" value1="Add Page" />
+		<execute function="Click" locator1="SitePages#PRIVATE_PAGE_ELLIPSIS" />
+
+		<execute function="AssertClick" locator1="SitePages#ADD_PRIVATE_PAGE_MENUITEM" value1="Add Page" />
 
 		<if>
 			<isset var="pageType" />
 			<then>
-				<var name="key_pageType" value="${pageType}" />
-
-				<execute function="AssertTextEquals" locator1="SitePagesEditPage#PAGE_TYPE_LABEL" value1="${pageType}" />
-				<execute function="Click" locator1="SitePagesEditPage#PAGE_TYPE_RADIO" value1="${pageType}" />
+				<execute function="Select" locator1="SitePagesEditPage#PAGE_TYPE_SELECT" value1="${pageType}" />
 
 				<if>
 					<equals arg1="${pageTemplateAutoApplyChanges}" arg2="true" />
 					<then>
-						<execute function="AssertTextEquals" locator1="SitePagesEditPage#PAGE_TYPE_TEMPLATE_AUTOMATICALLY_APPLY_CHANGES_LABEL"  value1="Automatically apply changes done to the page template." />
+						<var name="key_pageType" value="${pageType}" />
+
+						<execute function="MouseOver" locator1="Icon#INHERIT_CHANGES_TOOLTIP" />
+
+						<execute function="AssertTextEquals" locator1="Message#TOOLTIP"  value1="Automatically apply changes done to the page template." />
 						<execute function="Check#checkToggleSwitch" locator1="SitePagesEditPage#PAGE_TYPE_TEMPLATE_AUTOMATICALLY_APPLY_CHANGES_CHECKBOX" value1="${pageType}" />
 					</then>
 				</if>
@@ -92,12 +85,12 @@
 			</then>
 		</if>
 
-		<execute function="Type#clickAtSendKeys" locator1="TextInput#NAME" value1="${sitePageName}" />
+		<execute function="Type#clickAtSendKeys" locator1="TextInput#NAME" value1="${pageName}" />
 		<execute function="AssertClick" locator1="Button#ADD_PAGE_BTN" value1="Add Page" />
 	</command>
 
 	<command name="allowChangesToPageTemplateCP">
-		<var name="key_page" value="${sitePageName}" />
+		<var name="key_page" value="${pageName}" />
 
 		<execute function="Click" locator1="SitePages#PAGE_TREE_PAGE_SPECIFIC_PAGE" value1="sitePageName" />
 
@@ -115,7 +108,7 @@
 	</command>
 
 	<command name="allowSiteAdminsToEditThisPageCP">
-		<var name="key_page" value="${sitePageName}" />
+		<var name="key_page" value="${pageName}" />
 
 		<execute function="Click" locator1="SitePages#PAGE_TREE_PAGE_SPECIFIC_PAGE" value1="sitePageName" />
 
@@ -130,7 +123,17 @@
 		<execute function="AssertClickNoError" locator1="MenuItem#DELETE" value1="Delete" />
 		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
-		<execute macro="Alert#viewSuccessMessage" />
+		<if>
+			<equals arg1="${associatedToSite}" arg2="true" />
+			<then>
+				<execute macro="Alert#viewRequestFailedToComplete" />
+
+				<execute macro="Alert#viewFailedSiteTemplateDeletionMessage" />
+			</then>
+			<else>
+				<execute macro="Alert#viewSuccessMessage" />
+			</else>
+		</if>
 	</command>
 
 	<command name="editCP">
@@ -153,7 +156,7 @@
 				<if>
 					<equals arg1="${siteTemplateActiveEdit}" arg2="No" />
 					<then>
-						<execute function="Click" locator1="ToggleSwitch#ACTIVE" />
+						<execute function="Uncheck#uncheckToggleSwitch" locator1="ToggleSwitch#ACTIVE" />
 					</then>
 				</if>
 			</then>
@@ -189,7 +192,7 @@
 
 		<execute function="AssertClick#assertPartialTextClickAt" locator1="SiteTemplates#SITE_TEMPLATE_TABLE_NAME" value1="${siteTemplateName}" />
 
-		<execute function="SelectWindow" locator1="home - ${siteTemplateName} - Liferay" />
+		<execute function="SelectWindow" locator1="home - ${siteTemplateName} - ${siteName}" />
 	</command>
 
 	<command name="resetPageChanges">
@@ -203,6 +206,8 @@
 		<execute function="AssertTextEquals" locator1="Home#PAGE_COLUMN_PORTLET_COLUMN_${columnNumberTo}_PORTLET_TITLE" value1="${portletName}" />
 
 		<execute function="AssertClick" locator1="Button#RESET_CHANGES" value1="Reset Changes" />
+
+		<execute function="AssertElementNotPresent" locator1="ControlMenu#INFO" />
 	</command>
 
 	<command name="tearDownCP">
@@ -236,6 +241,14 @@
 		</if>
 
 		<execute macro="Button#clickSave" />
+	</command>
+
+	<command name="viewCP">
+		<for list="${siteTemplateNameList}" param="siteTemplateName" >
+			<var name="key_siteTemplateName" value="${siteTemplateName}" />
+
+			<execute function="AssertTextEquals#assertPartialText" locator1="SiteTemplates#SITE_TEMPLATE_TABLE_NAME" value1="${siteTemplateName}" />
+		</for>
 	</command>
 
 	<command name="viewDefaultCP">

@@ -45,18 +45,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>LAYOUT_RADIO</td>
-	<td>//input[@value='${key_columnName}']</td>
+	<td>LAYOUT_CARD</td>
+	<td>//div[contains(@class,'card')]//span[contains(.,'${key_columnName}')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>PAGE_TYPE_LABEL</td>
-	<td>//div[contains(@data-search,'${key_pageType}')]//label[contains(@for,'addLayoutSelectedPageTemplate')]</td>
+	<td>PAGE_TEMPLATE_INHERIT_CHANGES_TOGGLE</td>
+	<td>//div[@class='layout-type']//label[contains(.,'Inherit Changes')]/input[contains(@class,'toggle-switch')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>PAGE_TYPE_RADIO</td>
-	<td>//div[contains(@data-search,'${key_pageType}')]//input[contains(@id,'addLayoutSelectedPageTemplate')]</td>
+	<td>PAGE_TYPE_SELECT</td>
+	<td>//div[contains(@class,'input-select')]//select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TYPE_SELECT_OPTION</td>
+	<td>//div[contains(@class,'input-select')]//select//option[contains(.,'${key_pageType}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -116,7 +121,7 @@
 </tr>
 <tr>
 	<td>PAGE_TYPE_EMBEDDED_DESCRIPTION_FIELD</td>
-	<td>//div[@data-search='Embedded']//div[contains(@class,'page-template-options')]</td>
+	<td>//div[@id='embedded']/p[contains(@class,'text')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -126,7 +131,7 @@
 </tr>
 <tr>
 	<td>PAGE_TYPE_LINK_TO_URL_DESCRIPTION_FIELD</td>
-	<td>//div[@data-search='Link to URL']//div[contains(@class,'page-template-options')]</td>
+	<td>//div[@id='url']/p[contains(@class,'text')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -151,6 +156,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SELECT_CATEGORY_BUTTON</td>
+	<td>//button[contains(@title,'Select ${key_vocabularyName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CATEGORY_TREE_NODE</td>
+	<td>//li[contains(@id,'category')]//div//span[contains(@class,'tree-node-checkbox-container')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td></td>
 	<td></td>
 	<td></td>
@@ -168,12 +183,12 @@
 </tr>
 <tr>
 	<td>SEO_HTML_TITLE</td>
-	<td>//div[contains(.,'HTML Title')]/span/input</td>
+	<td>//div[contains(.,'HTML')]/span/input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>SEO_HTML_TITLE_META_TAGS</td>
-	<td>//div[contains(.,'HTML Title')]/span//ul/li[@data-value='${key_defaultSiteLanguageKey}']</td>
+	<td>//div[contains(.,'HTML')]/span//ul/li[@data-value='${key_defaultSiteLanguageKey}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -234,11 +249,6 @@
 <tr>
 	<td>MOBILE_DEVICE_RULES_PANEL_TOGGLE</td>
 	<td>//li/a[contains(@id,'mobileDeviceRules')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>

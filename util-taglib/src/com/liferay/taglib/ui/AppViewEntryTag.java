@@ -308,8 +308,8 @@ public class AppViewEntryTag extends IncludeTag {
 		request.setAttribute(
 			"liferay-ui:app-view-entry:thumbnailStyle", _thumbnailStyle);
 		request.setAttribute("liferay-ui:app-view-entry:title", _title);
-		request.setAttribute("liferay-ui:app-view-entry:version", _version);
 		request.setAttribute("liferay-ui:app-view-entry:url", _url);
+		request.setAttribute("liferay-ui:app-view-entry:version", _version);
 	}
 
 	private static final boolean _CLEAN_UP_SET_ATTRIBUTES = true;
@@ -341,9 +341,9 @@ public class AppViewEntryTag extends IncludeTag {
 	private String _rowCheckerId;
 	private String _rowCheckerName;
 	private boolean _shortcut;
-	private boolean _showCheckbox = false;
+	private boolean _showCheckbox;
 	private boolean _showLinkTitle = true;
-	private int _status = 0;
+	private int _status;
 	private String _thumbnailDivStyle = StringPool.BLANK;
 	private String _thumbnailSrc;
 	private String _thumbnailStyle;

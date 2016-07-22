@@ -25,14 +25,10 @@ int ruleGroupInstancesCount = MDRRuleGroupInstanceServiceUtil.getRuleGroupInstan
 PortletURL portletURL = (PortletURL)request.getAttribute("mobile_device_rules_header.jspf-portletURL");
 %>
 
-<c:if test="<%= ruleGroupInstancesCount <= 0 %>">
-	<p class="text-muted">
-		<%= StringUtil.toLowerCase(LanguageUtil.get(request, "none")) %>
-	</p>
-</c:if>
-
 <liferay-ui:search-container
+	compactEmptyResultsMessage="<%= true %>"
 	deltaConfigurable="<%= false %>"
+	emptyResultsMessage="none"
 	id="rules"
 	iteratorURL="<%= portletURL %>"
 	total="<%= ruleGroupInstancesCount %>"
@@ -61,33 +57,6 @@ PortletURL portletURL = (PortletURL)request.getAttribute("mobile_device_rules_he
 </liferay-ui:search-container>
 
 <%@ include file="/layout/mobile_device_rules_toolbar.jspf" %>
-
-<aui:script use="aui-base">
-	A.one('#<portlet:namespace />rules').delegate(
-		'click',
-		function(event) {
-			var currentTarget = event.currentTarget;
-
-			Liferay.Util.openWindow(
-				{
-					dialog: {
-						on: {
-							visibleChange: function(event) {
-								<portlet:namespace />updateRuleGroupInstances();
-							}
-						}
-					},
-					dialogIframe: {
-						bodyCssClass: 'dialog-with-footer'
-					},
-					title: currentTarget.attr('data-title'),
-					uri: currentTarget.attr('data-uri')
-				}
-			);
-		},
-		'.actions'
-	);
-</aui:script>
 
 <c:if test="<%= themeDisplay.isStateExclusive() %>">
 	<aui:script sandbox="<%= true %>">

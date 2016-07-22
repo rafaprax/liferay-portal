@@ -25,6 +25,8 @@ import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.Serializable;
 
+import java.text.Collator;
+
 import java.util.Comparator;
 import java.util.Locale;
 
@@ -38,11 +40,14 @@ public class PluginComparator implements Comparator, Serializable {
 	public PluginComparator() {
 		_locale = LocaleUtil.getDefault();
 		_servletContext = ServletContextPool.get(PortalUtil.getPathContext());
+
+		_collator = Collator.getInstance(_locale);
 	}
 
 	public PluginComparator(ServletContext servletContext, Locale locale) {
 		_servletContext = servletContext;
 		_locale = locale;
+		_collator = Collator.getInstance(_locale);
 	}
 
 	@Override
@@ -50,7 +55,7 @@ public class PluginComparator implements Comparator, Serializable {
 		String name1 = _getName(plugin1);
 		String name2 = _getName(plugin2);
 
-		return name1.compareTo(name2);
+		return _collator.compare(name1, name2);
 	}
 
 	private String _getName(Object plugin) {
@@ -76,6 +81,7 @@ public class PluginComparator implements Comparator, Serializable {
 		return StringUtil.toLowerCase(name);
 	}
 
+	private final Collator _collator;
 	private final Locale _locale;
 	private final ServletContext _servletContext;
 

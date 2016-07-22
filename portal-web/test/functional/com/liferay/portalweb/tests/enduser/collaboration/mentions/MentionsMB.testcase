@@ -1,5 +1,5 @@
 <definition component-name="portal-collaboration">
-	<property name="portlet.plugins.includes" value="mentions-portlet" />
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Mentions" />
 
 	<set-up>

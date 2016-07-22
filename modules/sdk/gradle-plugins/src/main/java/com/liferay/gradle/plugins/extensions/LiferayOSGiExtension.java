@@ -23,6 +23,7 @@ import com.liferay.ant.bnd.npm.NpmAnalyzerPlugin;
 import com.liferay.ant.bnd.resource.bundle.ResourceBundleLoaderAnalyzerPlugin;
 import com.liferay.ant.bnd.sass.SassAnalyzerPlugin;
 import com.liferay.ant.bnd.service.ServiceAnalyzerPlugin;
+import com.liferay.ant.bnd.social.SocialAnalyzerPlugin;
 import com.liferay.ant.bnd.spring.SpringDependencyAnalyzerPlugin;
 import com.liferay.gradle.plugins.util.GradleUtil;
 import com.liferay.gradle.util.StringUtil;
@@ -40,12 +41,12 @@ import org.gradle.api.tasks.compile.JavaCompile;
 /**
  * @author Andrea Di Giorgi
  */
-public class LiferayOSGiExtension extends LiferayExtension {
+public class LiferayOSGiExtension {
 
 	public static final String DONOTCOPY_DEFAULT = ".*\\.wsdd";
 
 	public LiferayOSGiExtension(Project project) {
-		super(project);
+		_project = project;
 
 		_bundleDefaultInstructions.put(
 			Constants.BUNDLE_SYMBOLICNAME, project.getName());
@@ -135,7 +136,7 @@ public class LiferayOSGiExtension extends LiferayExtension {
 
 	private CompileOptions _getCompileOptions() {
 		JavaCompile javaCompile = (JavaCompile)GradleUtil.getTask(
-			project, JavaPlugin.COMPILE_JAVA_TASK_NAME);
+			_project, JavaPlugin.COMPILE_JAVA_TASK_NAME);
 
 		return javaCompile.getOptions();
 	}
@@ -152,12 +153,14 @@ public class LiferayOSGiExtension extends LiferayExtension {
 		JspAnalyzerPlugin.class.getName(), NpmAnalyzerPlugin.class.getName(),
 		ResourceBundleLoaderAnalyzerPlugin.class.getName(),
 		SassAnalyzerPlugin.class.getName(),
-		ServiceAnalyzerPlugin.class.getName(), SpringComponent.class.getName(),
+		ServiceAnalyzerPlugin.class.getName(),
+		SocialAnalyzerPlugin.class.getName(), SpringComponent.class.getName(),
 		SpringDependencyAnalyzerPlugin.class.getName()
 	};
 
 	private boolean _autoUpdateXml = true;
 	private final Map<String, Object> _bundleDefaultInstructions =
 		new HashMap<>();
+	private final Project _project;
 
 }

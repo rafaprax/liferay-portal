@@ -46,6 +46,10 @@ SearchContainer userSearchContainer = new UserSearch(renderRequest, searchURL);
 
 UserSearchTerms searchTerms = (UserSearchTerms)userSearchContainer.getSearchTerms();
 
+if (!searchTerms.isSearch()) {
+	userSearchContainer.setEmptyResultsMessageCssClass("taglib-empty-result-message-header-has-plus-btn");
+}
+
 LinkedHashMap<String, Object> userParams = new LinkedHashMap<String, Object>();
 
 if (filterManageableOrganizations) {
@@ -60,6 +64,13 @@ portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(redirect);
 
 renderResponse.setTitle(userGroup.getName());
+
+PortletURL homeURL = renderResponse.createRenderURL();
+
+homeURL.setParameter("mvcPath", "/view.jsp");
+
+PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "user-groups"), homeURL.toString());
+PortalUtil.addPortletBreadcrumbEntry(request, userGroup.getName(), null);
 %>
 
 <aui:nav-bar cssClass="collapse-basic-search" markupView="lexicon">
@@ -108,8 +119,13 @@ renderResponse.setTitle(userGroup.getName());
 <aui:form action="<%= portletURL.toString() %>" cssClass="container-fluid-1280" method="post" name="fm">
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 	<aui:input name="userGroupId" type="hidden" value="<%= userGroup.getUserGroupId() %>" />
+	<aui:input name="deleteUserGroupIds" type="hidden" />
 	<aui:input name="addUserIds" type="hidden" />
 	<aui:input name="removeUserIds" type="hidden" />
+
+	<div id="breadcrumb">
+		<liferay-ui:breadcrumb showCurrentGroup="<%= false %>" showGuestGroup="<%= false %>" showLayout="<%= false %>" showPortletBreadcrumb="<%= true %>" />
+	</div>
 
 	<liferay-ui:search-container
 		id="users"
@@ -125,6 +141,11 @@ renderResponse.setTitle(userGroup.getName());
 			modelVar="user2"
 			rowIdProperty="screenName"
 		>
+
+			<%
+			boolean showActions = true;
+			%>
+
 			<%@ include file="/user_search_columns.jspf" %>
 		</liferay-ui:search-container-row>
 
@@ -161,7 +182,7 @@ renderResponse.setTitle(userGroup.getName());
 							}
 						}
 					},
-					title: '<liferay-ui:message arguments="<%= userGroup.getName() %>" key="add-users-to-x" />',
+					title: '<liferay-ui:message arguments="<%= HtmlUtil.escape(userGroup.getName()) %>" key="add-users-to-x" />',
 					url: '<%= selectUsersURL %>'
 				}
 			);
@@ -180,8 +201,3 @@ renderResponse.setTitle(userGroup.getName());
 		}
 	);
 </aui:script>
-
-<%
-PortalUtil.addPortletBreadcrumbEntry(request, userGroup.getName(), null);
-PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "assign-members"), currentURL);
-%>

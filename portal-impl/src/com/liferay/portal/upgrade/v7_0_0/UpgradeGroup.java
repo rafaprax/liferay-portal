@@ -14,17 +14,53 @@
 
 package com.liferay.portal.upgrade.v7_0_0;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.upgrade.v7_0_0.util.GroupTable;
+
+import java.sql.PreparedStatement;
+
+import java.util.Locale;
 
 /**
  * @author Eudaldo Alonso
  */
 public class UpgradeGroup extends UpgradeProcess {
 
+	protected void createIndex() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			runSQL("create index IX_8257E37B on Group_ (classNameId, classPK)");
+		}
+	}
+
 	@Override
 	protected void doUpgrade() throws Exception {
 		alter(GroupTable.class, new AlterColumnType("name", "STRING null"));
+
+		createIndex();
+
+		updateGlobalGroupName();
+	}
+
+	protected void updateGlobalGroupName() throws Exception {
+		LocalizedValuesMap localizedValuesMap = new LocalizedValuesMap();
+
+		for (Locale locale : LanguageUtil.getAvailableLocales()) {
+			localizedValuesMap.put(locale, LanguageUtil.get(locale, "global"));
+		}
+
+		String nameXML = LocalizationUtil.getXml(localizedValuesMap, "global");
+
+		try (PreparedStatement ps = connection.prepareStatement(
+				"update Group_ set name = ? where friendlyURL = '/global'")) {
+
+			ps.setString(1, nameXML);
+
+			ps.executeUpdate();
+		}
 	}
 
 }

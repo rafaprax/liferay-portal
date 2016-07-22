@@ -1,7 +1,6 @@
 Bundle-Name: Liferay Portal Scripting Groovy
 Bundle-SymbolicName: com.liferay.portal.scripting.groovy
-Bundle-Version: 1.0.0
-DynamicImport-Package: *
+Bundle-Version: 2.0.3
 Import-Package:\
 	!com.thoughtworks.xstream.*,\
 	\
@@ -12,7 +11,6 @@ Import-Package:\
 	\
 	!org.fusesource.jansi.*,\
 	*
-Include-Resource: @lib/groovy.jar
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Scripting Engines
--include: ../../app.bnd
+-includeresource: @groovy-[0-9]*.jar

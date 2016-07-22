@@ -31,6 +31,8 @@ import com.liferay.journal.service.JournalArticleServiceUtil;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
 import com.liferay.journal.transformer.JournalTransformer;
 import com.liferay.journal.util.comparator.ArticleVersionComparator;
+import com.liferay.petra.collection.stack.FiniteUniqueStack;
+import com.liferay.petra.xml.XMLUtil;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.diff.CompareVersionsException;
@@ -94,8 +96,6 @@ import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.xml.XPath;
 import com.liferay.portal.util.PropsUtil;
-import com.liferay.util.FiniteUniqueStack;
-import com.liferay.util.xml.XMLUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,7 +107,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -801,8 +800,8 @@ public class JournalUtil {
 			title = String.valueOf(id);
 		}
 		else {
-			title = FriendlyURLNormalizerUtil.normalize(
-				title, _friendlyURLPattern);
+			title = FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(
+				title);
 		}
 
 		return ModelHintsUtil.trimString(
@@ -940,9 +939,11 @@ public class JournalUtil {
 				"available-locales");
 
 			if (availableLocalesAttribute == null) {
-				availableLocalesAttribute =
-					(Attribute)newRootElement.addAttribute(
-						"available-locales", StringPool.BLANK);
+				newRootElement = newRootElement.addAttribute(
+					"available-locales", StringPool.BLANK);
+
+				availableLocalesAttribute = newRootElement.attribute(
+					"available-locales");
 			}
 
 			String defaultImportLanguageId = LocaleUtil.toLanguageId(
@@ -972,8 +973,11 @@ public class JournalUtil {
 				"default-locale");
 
 			if (defaultLocaleAttribute == null) {
-				defaultLocaleAttribute = (Attribute)newRootElement.addAttribute(
+				newRootElement = newRootElement.addAttribute(
 					"default-locale", StringPool.BLANK);
+
+				defaultLocaleAttribute = newRootElement.attribute(
+					"default-locale");
 			}
 
 			Locale defaultContentLocale = LocaleUtil.fromLanguageId(
@@ -1627,8 +1631,6 @@ public class JournalUtil {
 	private static final Log _log = LogFactoryUtil.getLog(JournalUtil.class);
 
 	private static Map<String, String> _customTokens;
-	private static final Pattern _friendlyURLPattern = Pattern.compile(
-		"[^a-z0-9_-]");
 	private static final JournalTransformer _journalTransformer =
 		new JournalTransformer(
 			JournalServiceConfigurationKeys.TRANSFORMER_LISTENER,

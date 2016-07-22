@@ -1,12 +1,14 @@
 Bundle-Name: Liferay Portal Search Web
 Bundle-SymbolicName: com.liferay.portal.search.web
-Bundle-Version: 1.0.0
-Export-Package: com.liferay.portal.search.web.constants.*
+Bundle-Version: 1.1.3
+Export-Package:\
+	com.liferay.portal.search.web.constants,\
+	com.liferay.portal.search.web.facet,\
+	com.liferay.portal.search.web.facet.util,\
+	com.liferay.portal.search.web.facet.util.comparator
 Import-Package:\
 	!com.liferay.util.xml,\
 	*
-Include-Resource: @${app.server.lib.portal.dir}/util-java.jar!/com/liferay/util/xml/XMLUtil.class
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title:
 Web-ContextPath: /portal-search-web
--include: ../../app.bnd

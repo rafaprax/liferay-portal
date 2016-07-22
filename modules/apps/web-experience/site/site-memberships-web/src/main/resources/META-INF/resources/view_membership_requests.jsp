@@ -31,19 +31,48 @@ else {
 	statusId = MembershipRequestConstants.STATUS_PENDING;
 }
 
-long groupId = ParamUtil.getLong(request, "groupId", themeDisplay.getSiteGroupId());
-
-Group group = GroupLocalServiceUtil.getGroup(groupId);
-
-String displayStyle = ParamUtil.getString(request, "displayStyle", "list");
+String displayStyle = portalPreferences.getValue(SiteMembershipsPortletKeys.SITE_MEMBERSHIPS_ADMIN, "display-style", "icon");
 
 PortletURL portletURL = renderResponse.createRenderURL();
 
 portletURL.setParameter("mvcPath", "/view_membership_requests.jsp");
 portletURL.setParameter("tabs1", tabs1);
-portletURL.setParameter("groupId", String.valueOf(group.getGroupId()));
+portletURL.setParameter("groupId", String.valueOf(scopeGroupId));
 
-int membershipRequestCount = MembershipRequestLocalServiceUtil.searchCount(group.getGroupId(), statusId);
+SearchContainer siteMembershipSearch = new SearchContainer(renderRequest, portletURL, null, "no-requests-were-found");
+
+String orderByCol = ParamUtil.getString(request, "orderByCol", "date");
+
+siteMembershipSearch.setOrderByCol(orderByCol);
+
+boolean orderByAsc = false;
+
+String orderByType = ParamUtil.getString(request, "orderByType", "asc");
+
+if (orderByType.equals("asc")) {
+	orderByAsc = true;
+}
+
+OrderByComparator<MembershipRequest> orderByComparator = new MembershipRequestCreateDateComparator(orderByAsc);
+
+siteMembershipSearch.setOrderByComparator(orderByComparator);
+
+siteMembershipSearch.setOrderByType(orderByType);
+
+int membershipRequestCount = MembershipRequestLocalServiceUtil.searchCount(scopeGroupId, statusId);
+
+siteMembershipSearch.setTotal(membershipRequestCount);
+
+List results = MembershipRequestLocalServiceUtil.search(scopeGroupId, statusId, siteMembershipSearch.getStart(), siteMembershipSearch.getEnd(), siteMembershipSearch.getOrderByComparator());
+
+siteMembershipSearch.setResults(results);
+
+PortletURL backURL = renderResponse.createRenderURL();
+
+portletDisplay.setShowBackIcon(true);
+portletDisplay.setURLBack(backURL.toString());
+
+renderResponse.setTitle(LanguageUtil.get(request, "membership-requests"));
 %>
 
 <liferay-ui:success key="membershipReplySent" message="your-reply-will-be-sent-to-the-user-by-email" />
@@ -77,109 +106,54 @@ int membershipRequestCount = MembershipRequestLocalServiceUtil.searchCount(group
 	</aui:nav>
 </aui:nav-bar>
 
-<c:if test="<%= membershipRequestCount > 0 %>">
-	<liferay-frontend:management-bar>
-		<liferay-frontend:management-bar-buttons>
-			<liferay-frontend:management-bar-display-buttons
-				displayViews='<%= new String[] {"list"} %>'
-				portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
-				selectedDisplayStyle="<%= displayStyle %>"
-			/>
-		</liferay-frontend:management-bar-buttons>
+<liferay-frontend:management-bar
+	disabled="<%= membershipRequestCount <= 0 %>"
+>
+	<liferay-frontend:management-bar-buttons>
+		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
+			<portlet:param name="redirect" value="<%= currentURL %>" />
+		</liferay-portlet:actionURL>
 
-		<liferay-frontend:management-bar-filters>
-			<liferay-frontend:management-bar-navigation
-				navigationKeys='<%= new String[] {"all"} %>'
-				portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
-			/>
-		</liferay-frontend:management-bar-filters>
-	</liferay-frontend:management-bar>
-</c:if>
+		<liferay-frontend:management-bar-display-buttons
+			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
+			portletURL="<%= changeDisplayStyleURL %>"
+			selectedDisplayStyle="<%= displayStyle %>"
+		/>
+	</liferay-frontend:management-bar-buttons>
+
+	<liferay-frontend:management-bar-filters>
+		<liferay-frontend:management-bar-navigation
+			navigationKeys='<%= new String[] {"all"} %>'
+			portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
+		/>
+
+		<liferay-frontend:management-bar-sort
+			orderByCol="<%= orderByCol %>"
+			orderByType="<%= orderByType %>"
+			orderColumns='<%= new String[] {"date"} %>'
+			portletURL="<%= PortletURLUtil.clone(portletURL, renderResponse) %>"
+		/>
+	</liferay-frontend:management-bar-filters>
+</liferay-frontend:management-bar>
 
 <div class="container-fluid-1280">
 	<liferay-ui:search-container
-		emptyResultsMessage="no-requests-were-found"
-		iteratorURL="<%= portletURL %>"
-		total="<%= membershipRequestCount %>"
+		searchContainer="<%= siteMembershipSearch %>"
 	>
-		<liferay-ui:search-container-results
-			results="<%= MembershipRequestLocalServiceUtil.search(group.getGroupId(), statusId, searchContainer.getStart(), searchContainer.getEnd()) %>"
-		/>
-
 		<liferay-ui:search-container-row
 			className="com.liferay.portal.kernel.model.MembershipRequest"
 			modelVar="membershipRequest"
 		>
-
-			<%
-			User membershipRequestUser = UserLocalServiceUtil.getUserById(membershipRequest.getUserId());
-
-			row.setObject(new Object[] {membershipRequestUser, group, membershipRequest});
-			%>
-
-			<liferay-ui:search-container-column-text>
-				<liferay-ui:user-portrait
-					imageCssClass="user-icon-lg"
-					userId="<%= membershipRequestUser.getUserId() %>"
-				/>
-			</liferay-ui:search-container-column-text>
-
-			<liferay-ui:search-container-column-date
-				name="date"
-				value="<%= membershipRequest.getCreateDate() %>"
-			/>
-
-			<liferay-ui:search-container-column-text
-				name="user"
-			>
-				<%= HtmlUtil.escape(membershipRequestUser.getFullName()) %> (<%= membershipRequestUser.getEmailAddress() %>)
-			</liferay-ui:search-container-column-text>
-
-			<liferay-ui:search-container-column-text
-				name="user-comments"
-				value="<%= HtmlUtil.escape(membershipRequest.getComments()) %>"
-			/>
-
-			<c:if test='<%= !tabs1.equals("pending") %>'>
-				<liferay-ui:search-container-column-date
-					name="reply-date"
-					value="<%= membershipRequest.getReplyDate() %>"
-				/>
-
-				<%
-				User membershipRequestReplierUser = UserLocalServiceUtil.getUserById(membershipRequest.getReplierUserId());
-				%>
-
-				<liferay-ui:search-container-column-text
-					name="replier"
-				>
-					<c:choose>
-						<c:when test="<%= membershipRequestReplierUser.isDefaultUser() %>">
-
-							<%
-							Company membershipRequestReplierCompany = CompanyLocalServiceUtil.getCompanyById(membershipRequestReplierUser.getCompanyId());
-							%>
-
-							<%= HtmlUtil.escape(membershipRequestReplierCompany.getName()) %>
-						</c:when>
-						<c:otherwise>
-							<%= HtmlUtil.escape(membershipRequestReplierUser.getFullName()) %>
-						</c:otherwise>
-					</c:choose>
-				</liferay-ui:search-container-column-text>
-
-				<liferay-ui:search-container-column-text
-					name="reply-comments"
-					value="<%= HtmlUtil.escape(membershipRequest.getReplyComments()) %>"
-				/>
-			</c:if>
-
-			<liferay-ui:search-container-column-jsp
-				cssClass="entry-action"
-				path="/membership_request_action.jsp"
-			/>
+			<c:choose>
+				<c:when test='<%= tabs1.equals("pending") %>'>
+					<%@ include file="/view_membership_requests_pending_columns.jspf" %>
+				</c:when>
+				<c:otherwise>
+					<%@ include file="/view_membership_requests_columns.jspf" %>
+				</c:otherwise>
+			</c:choose>
 		</liferay-ui:search-container-row>
 
-		<liferay-ui:search-iterator markupView="lexicon" searchContainer="<%= searchContainer %>" />
+		<liferay-ui:search-iterator displayStyle="<%= displayStyle %>" markupView="lexicon" />
 	</liferay-ui:search-container>
 </div>

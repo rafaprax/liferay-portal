@@ -1,4 +1,5 @@
 <definition component-name="portal-permissions">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Permissions" />
 
 	<set-up>
@@ -224,7 +225,7 @@
 		</execute>
 
 		<execute macro="Role#addCP">
-			<var name="roleName" value="Regrole Name" />
+			<var name="roleName" value="Siterole Name" />
 			<var name="roleType" value="Site" />
 		</execute>
 

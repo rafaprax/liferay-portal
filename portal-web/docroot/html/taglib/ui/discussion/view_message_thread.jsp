@@ -165,12 +165,12 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 									</span>
 								</header>
 
-								<div class="lfr-discussion-message-body" id='<%= namespace + randomNamespace + "discussionMessage" + index %>'>
+								<div class="lfr-discussion-message-body" id="<%= namespace + randomNamespace + "discussionMessage" + index %>">
 									<%= discussionComment.getTranslatedBody(themeDisplay.getPathThemeImages()) %>
 								</div>
 
 								<c:if test="<%= commentTreeDisplayContext.isEditControlsVisible() %>">
-									<div class="lfr-discussion-form lfr-discussion-form-edit" id="<%= namespace + randomNamespace %>editForm<%= index %>" style='<%= "display: none; max-width: " + ModelHintsConstants.TEXTAREA_DISPLAY_WIDTH + "px;" %>'>
+									<div class="lfr-discussion-form lfr-discussion-form-edit" id="<%= namespace + randomNamespace %>editForm<%= index %>" style="<%= "display: none; max-width: " + ModelHintsConstants.TEXTAREA_DISPLAY_WIDTH + "px;" %>">
 										<liferay-ui:input-editor autoCreate="<%= false %>" configKey="commentEditor" contents="<%= discussionComment.getBody() %>" editorName='<%= PropsUtil.get("editor.wysiwyg.portal-web.docroot.html.taglib.ui.discussion.jsp") %>' name='<%= randomNamespace + "editReplyBody" + index %>' onChangeMethod='<%= randomNamespace + index + "EditOnChange" %>' showSource="<%= false %>" skipEditorLoading="<%= skipEditorLoading %>" />
 
 										<aui:input name='<%= "editReplyBody" + index %>' type="hidden" value="<%= discussionComment.getBody() %>" />
@@ -207,9 +207,7 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 								<c:if test="<%= commentTreeDisplayContext.isActionControlsVisible() && commentTreeDisplayContext.isReplyActionControlVisible() %>">
 
 									<%
-									String taglibPostReplyURL = "javascript:"
-										+ randomNamespace + "showEditor('" + namespace + randomNamespace + "postReplyBody" + index + "','" + namespace + randomNamespace + "postReplyForm" + index + "'); "
-										+ randomNamespace + "hideEditor('" + namespace + randomNamespace + "editReplyBody" + index + "','" + namespace + randomNamespace + "editForm" + index + "');" + randomNamespace + "showEl('" + namespace + randomNamespace + "discussionMessage" + index + "')";
+									String taglibPostReplyURL = "javascript:" + randomNamespace + "showEditor('" + namespace + randomNamespace + "postReplyBody" + index + "','" + namespace + randomNamespace + "postReplyForm" + index + "'); " + randomNamespace + "hideEditor('" + namespace + randomNamespace + "editReplyBody" + index + "','" + namespace + randomNamespace + "editForm" + index + "');" + randomNamespace + "showEl('" + namespace + randomNamespace + "discussionMessage" + index + "')";
 									%>
 
 									<c:if test="<%= !discussion.isMaxCommentsLimitExceeded() %>">
@@ -243,9 +241,7 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 								<c:if test="<%= commentTreeDisplayContext.isEditActionControlVisible() %>">
 
 									<%
-									String taglibEditURL = "javascript:"
-										+ randomNamespace + "showEditor('" + namespace + randomNamespace + "editReplyBody" + index + "','" + namespace + randomNamespace + "editForm" + index + "'); "
-										+ randomNamespace + "hideEditor('" + namespace + randomNamespace + "postReplyBody" + index + "','" + namespace + randomNamespace + "postReplyForm" + index + "');" + randomNamespace + "hideEl('" + namespace + randomNamespace + "discussionMessage" + index + "');";
+									String taglibEditURL = "javascript:" + randomNamespace + "showEditor('" + namespace + randomNamespace + "editReplyBody" + index + "','" + namespace + randomNamespace + "editForm" + index + "'); " + randomNamespace + "hideEditor('" + namespace + randomNamespace + "postReplyBody" + index + "','" + namespace + randomNamespace + "postReplyForm" + index + "');" + randomNamespace + "hideEl('" + namespace + randomNamespace + "discussionMessage" + index + "');";
 									%>
 
 									<liferay-ui:icon
@@ -255,14 +251,9 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 								</c:if>
 
 								<c:if test="<%= commentTreeDisplayContext.isDeleteActionControlVisible() %>">
-
-									<%
-									String taglibDeleteURL = "javascript:" + randomNamespace + "deleteMessage(" + index + ");";
-									%>
-
 									<liferay-ui:icon-delete
 										label="<%= true %>"
-										url="<%= taglibDeleteURL %>"
+										url='<%= "javascript:" + randomNamespace + "deleteMessage(" + index + ");" %>'
 									/>
 								</c:if>
 							</liferay-ui:icon-menu>
@@ -272,13 +263,13 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 			</div>
 		</div>
 
-		<div class="<%= (depth < 3) ? "card-tab" : StringPool.BLANK %> lfr-discussion lfr-discussion-form-reply" id='<%= namespace + randomNamespace + "postReplyForm" + index %>' style="display: none;">
+		<div class="<%= (depth < 3) ? "card-tab" : StringPool.BLANK %> lfr-discussion lfr-discussion-form-reply" id="<%= namespace + randomNamespace + "postReplyForm" + index %>" style="display: none;">
 			<div class="card list-group-card panel">
 				<div class="panel-body">
 					<div class="lfr-discussion-details">
 						<liferay-ui:user-portrait
 							cssClass="user-icon-lg"
-							userId="<%= discussionComment.getUserId() %>"
+							userId="<%= user.getUserId() %>"
 						/>
 					</div>
 

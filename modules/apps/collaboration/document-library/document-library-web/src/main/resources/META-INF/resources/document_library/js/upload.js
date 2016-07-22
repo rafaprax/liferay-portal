@@ -31,7 +31,7 @@ AUI.add(
 
 		var CSS_ENTRY_SELECTOR = 'entry-selector';
 
-		var CSS_ENTRY_TITLE_TEXT = 'card-dm-text-large';
+		var CSS_ENTRY_TITLE_TEXT = 'lfr-card-title-text';
 
 		var CSS_ICON = 'icon';
 
@@ -136,7 +136,7 @@ AUI.add(
 				'</a>' +
 			'</span>';
 
-		var TPL_ENTRY_WRAPPER = '<li class="col-md-2 col-sm-4 col-xs-6" data-title="{title}"></li>';
+		var TPL_ENTRY_WRAPPER = '<li class="lfr-asset-item data-title="{title}"></li>';
 
 		var TPL_ERROR_FOLDER = new A.Template(
 			'<span class="lfr-status-success-label">{validFilesLength}</span>',

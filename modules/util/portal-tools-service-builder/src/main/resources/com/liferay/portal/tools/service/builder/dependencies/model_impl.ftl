@@ -546,6 +546,10 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 		</#if>
 
 		<#if column.type== "boolean">
+			<#if column.jsonEnabled>
+				@JSON
+			</#if>
+
 			@Override
 			public ${column.type} is${column.methodName}() {
 				return _${column.name};
@@ -1354,7 +1358,9 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(${entity.regularColList?size * 2 + 1});
+		<#assign initialCapacity = entity.regularColList?size * 2 + 1>
+
+		StringBundler sb = new StringBundler(${initialCapacity?c});
 
 		<#list entity.regularColList as column>
 			<#if (column.type != "Blob") || !column.lazy>
@@ -1377,7 +1383,9 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(${entity.regularColList?size * 3 + 4});
+		<#assign initialCapacity = entity.regularColList?size * 3 + 4>
+
+		StringBundler sb = new StringBundler(${initialCapacity?c});
 
 		sb.append("<model><model-name>");
 		sb.append("${apiPackagePath}.model.${entity.name}");

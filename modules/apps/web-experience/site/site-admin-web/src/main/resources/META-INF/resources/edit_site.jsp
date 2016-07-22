@@ -83,8 +83,6 @@ if (layoutSetPrototypeId > 0) {
 	layoutSetPrototype = LayoutSetPrototypeServiceUtil.getLayoutSetPrototype(layoutSetPrototypeId);
 }
 
-boolean showPrototypes = ParamUtil.getBoolean(request, "showPrototypes", true);
-
 if (!portletName.equals(SiteAdminPortletKeys.SITE_SETTINGS)) {
 	portletDisplay.setShowBackIcon(true);
 	portletDisplay.setURLBack(backURL.toString());
@@ -133,13 +131,12 @@ if (!portletName.equals(SiteAdminPortletKeys.SITE_SETTINGS)) {
 
 	<%
 	request.setAttribute("site.group", group);
+	request.setAttribute("site.layoutSetPrototype", layoutSetPrototype);
 	request.setAttribute("site.liveGroup", liveGroup);
 	request.setAttribute("site.liveGroupId", Long.valueOf(liveGroupId));
+	request.setAttribute("site.liveGroupTypeSettings", liveGroupTypeSettings);
 	request.setAttribute("site.stagingGroup", stagingGroup);
 	request.setAttribute("site.stagingGroupId", Long.valueOf(stagingGroupId));
-	request.setAttribute("site.liveGroupTypeSettings", liveGroupTypeSettings);
-	request.setAttribute("site.layoutSetPrototype", layoutSetPrototype);
-	request.setAttribute("site.showPrototypes", String.valueOf(showPrototypes));
 	%>
 
 	<liferay-ui:form-navigator

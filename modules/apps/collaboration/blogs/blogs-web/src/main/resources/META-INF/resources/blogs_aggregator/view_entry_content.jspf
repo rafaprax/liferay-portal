@@ -23,7 +23,7 @@
 		showErrorMessageURL.setParameter("mvcRenderCommandName", "/blogs_aggregator/view");
 		showErrorMessageURL.setParameter("blogsPortletFound", Boolean.FALSE.toString());
 
-		StringBundler sb = new StringBundler(6);
+		StringBundler sb = new StringBundler(5);
 
 		sb.append(themeDisplay.getPathMain());
 		sb.append("/blogs/find_entry?noSuchEntryRedirect=");
@@ -78,6 +78,9 @@
 			<div class="entry-body">
 				<c:choose>
 					<c:when test='<%= displayStyle.startsWith("abstract") %>'>
+						<div class="asset-small-image">
+							<img alt="" class="asset-small-image" src="<%= HtmlUtil.escape(entry.getSmallImageURL(themeDisplay)) %>" width="150" />
+						</div>
 
 						<%
 						String summary = entry.getDescription();
@@ -118,6 +121,34 @@
 					</div>
 				</div>
 			</div>
+		</c:if>
+
+		<c:if test='<%= !displayStyle.endsWith("-without-title") %>'>
+			<liferay-ui:asset-categories-available
+				className="<%= BlogsEntry.class.getName() %>"
+				classPK="<%= entry.getEntryId() %>"
+			>
+				<span class="entry-categories">
+					<liferay-ui:asset-categories-summary
+						className="<%= BlogsEntry.class.getName() %>"
+						classPK="<%= entry.getEntryId() %>"
+					/>
+				</span>
+			</liferay-ui:asset-categories-available>
+
+			<c:if test="<%= showTags %>">
+				<liferay-ui:asset-tags-available
+					className="<%= BlogsEntry.class.getName() %>"
+					classPK="<%= entry.getEntryId() %>"
+				>
+					<span class="entry-tags">
+						<liferay-ui:asset-tags-summary
+							className="<%= BlogsEntry.class.getName() %>"
+							classPK="<%= entry.getEntryId() %>"
+						/>
+					</span>
+				</liferay-ui:asset-tags-available>
+			</c:if>
 		</c:if>
 	</div>
 

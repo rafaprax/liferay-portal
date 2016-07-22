@@ -8,26 +8,6 @@
 <tr><td rowspan="1" colspan="3">DDMSelectStructure</td></tr>
 </thead>
 <tbody>
-<tr>
-	<td>DDM_STRUCTURES_IFRAME</td>
-	<td>//iframe[@class='dialog-iframe-node ']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DDM_STRUCTURES_IFRAME_1</td>
-	<td>xPath=(//iframe[@class='dialog-iframe-node '])[1]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DDM_STRUCTURES_IFRAME_2</td>
-	<td>xPath=(//iframe[@class='dialog-iframe-node '])[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
 <!--TOOLBAR-->
 <tr>
 	<td>TOOLBAR_VIEW_ALL</td>
@@ -72,42 +52,42 @@
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_ID</td>
-	<td>//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'ID')]/preceding-sibling::th) + 1]</td>
+	<td>//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'ID')]//preceding-sibling::th) + 1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_ID_1</td>
-	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td[count(//th[contains(.,'ID')]/preceding-sibling::th) + 1])[1]</td>
+	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td[count(//th[contains(.,'ID')]//preceding-sibling::th) + 1])[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_NAME</td>
-	<td>//div[contains(@id,'ddmStructuresSearchContainer')]//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Name')]/preceding-sibling::th) + 1][1]</td>
+	<td>//div[contains(@id,'ddmStructuresSearchContainer')]//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Name')]//preceding-sibling::th) + 1][1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_NAME_LINK</td>
-	<td>//div[contains(@id,'ddmStructuresSearchContainer')]//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Name')]/preceding-sibling::th) + 1]/a[1]</td>
+	<td>//div[contains(@id,'ddmStructuresSearchContainer')]//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Name')]//preceding-sibling::th) + 1]//a[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_NAME_1</td>
-	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td[count(//th[contains(.,'Name')]/preceding-sibling::th) + 1])[1]</td>
+	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td[count(//th[contains(.,'Name')]//preceding-sibling::th) + 1])[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_DESCRIPTION</td>
-	<td>//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Description')]/preceding-sibling::th) + 1]</td>
+	<td>//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Description')]//preceding-sibling::th) + 1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_DESCRIPTION_1</td>
-	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td[count(//th[contains(.,'Description')]/preceding-sibling::th) + 1])[1]</td>
+	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td[count(//th[contains(.,'Description')]//preceding-sibling::th) + 1])[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_MODIFIED_DATE</td>
-	<td>//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Modified Date')]/preceding-sibling::th) + 1]</td>
+	<td>//tr[contains(.,'${key_ddlDataDefinitionName}')]/td[count(//th[contains(.,'Modified Date')]//preceding-sibling::th) + 1]</td>
 	<td></td>
 </tr>
 <tr>
@@ -117,12 +97,12 @@
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_CHOOSE_BUTTON_1</td>
-	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td/button[contains(.,'Choose')])[1]</td>
+	<td>xpath=(//div[contains(@id,'ddmStructuresSearchContainer')]//tr/td//button[contains(.,'Choose')])[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DDM_STRUCTURE_TABLE_ACTIONS</td>
-	<td>xpath=(//tr[contains(.,'${key_ddlDataDefinitionName}')]/td/div/a[contains(@id,'ddmStructuresSearchContainer')])[1]</td>
+	<td>xpath=(//tr[contains(.,'${key_ddlDataDefinitionName}')]/td//div/a[contains(@id,'ddmStructuresSearchContainer')])[1]</td>
 	<td></td>
 </tr>
 <tr>

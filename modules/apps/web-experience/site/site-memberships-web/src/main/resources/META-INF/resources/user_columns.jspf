@@ -15,48 +15,9 @@
 --%>
 
 <%
-Group curGroup = siteMembershipsDisplayContext.getGroup();
-%>
+List<UserGroupRole> userGroupRoles = UserGroupRoleLocalServiceUtil.getUserGroupRoles(user2.getUserId(), siteMembershipsDisplayContext.getGroupId());
 
-<liferay-util:buffer var="name">
-	<%= user2.getFullName() %>
-
-	<%
-	List<String> names = new ArrayList<String>();
-
-	List<String> organizationNames = SitesUtil.getOrganizationNames(curGroup, user2);
-
-	names.addAll(organizationNames);
-
-	boolean organizationUser = !organizationNames.isEmpty();
-
-	row.setParameter("organizationUser", organizationUser);
-
-	List<String> userGroupNames = SitesUtil.getUserGroupNames(curGroup, user2);
-
-	names.addAll(userGroupNames);
-
-	boolean userGroupUser = !userGroupNames.isEmpty();
-
-	row.setParameter("userGroupUser", userGroupUser);
-	%>
-
-	<c:if test="<%= organizationUser || userGroupUser %>">
-		<c:choose>
-			<c:when test="<%= names.size() == 1 %>">
-				<liferay-ui:icon-help message='<%= LanguageUtil.format(request, "this-user-is-a-member-of-x-because-he-belongs-to-x", new Object[] {HtmlUtil.escape(curGroup.getDescriptiveName(locale)), HtmlUtil.escape(names.get(0))}, false) %>' />
-			</c:when>
-			<c:otherwise>
-				<liferay-ui:icon-help message='<%= LanguageUtil.format(request, "this-user-is-a-member-of-x-because-he-belongs-to-x-and-x", new Object[] {HtmlUtil.escape(curGroup.getDescriptiveName(locale)), HtmlUtil.escape(StringUtil.merge(names.subList(0, names.size() - 1).toArray(new String[names.size() - 1]), ", ")), HtmlUtil.escape(names.get(names.size() - 1))}, false) %>' />
-			</c:otherwise>
-		</c:choose>
-	</c:if>
-</liferay-util:buffer>
-
-<%
-List<UserGroupRole> userGroupRoles = UserGroupRoleLocalServiceUtil.getUserGroupRoles(user2.getUserId(), curGroup.getGroupId());
-
-List<Team> teams = TeamLocalServiceUtil.getUserOrUserGroupTeams(curGroup.getGroupId(), user2.getUserId());
+List<Team> teams = TeamLocalServiceUtil.getUserOrUserGroupTeams(siteMembershipsDisplayContext.getGroupId(), user2.getUserId());
 
 List<String> names = ListUtil.toList(userGroupRoles, UsersAdmin.USER_GROUP_ROLE_TITLE_ACCESSOR);
 
@@ -67,7 +28,7 @@ names.addAll(ListUtil.toList(teams, Team.NAME_ACCESSOR));
 	<c:when test='<%= displayStyle.equals("icon") %>'>
 
 		<%
-		row.setCssClass("article-entry col-md-2 col-sm-4 col-xs-6");
+		row.setCssClass("entry-card lfr-asset-item");
 		%>
 
 		<liferay-ui:search-container-column-text>
@@ -78,19 +39,21 @@ names.addAll(ListUtil.toList(teams, Team.NAME_ACCESSOR));
 				resultRow="<%= row %>"
 				rowChecker="<%= rowChecker %>"
 				subtitle="<%= user2.getScreenName() %>"
-				title="<%= name %>"
+				title="<%= user2.getFullName() %>"
 				userId="<%= user2.getUserId() %>"
 			>
 				<c:if test="<%= !selectUsers %>">
 					<liferay-frontend:vertical-card-footer>
-						<c:choose>
-							<c:when test="<%= !ListUtil.isEmpty(names) %>">
-								<%= HtmlUtil.escape(StringUtil.merge(names, StringPool.COMMA_AND_SPACE)) %>
-							</c:when>
-							<c:otherwise>
-								&nbsp;
-							</c:otherwise>
-						</c:choose>
+						<span class="text-default">
+							<c:choose>
+								<c:when test="<%= !ListUtil.isEmpty(names) %>">
+									<%= HtmlUtil.escape(StringUtil.merge(names, StringPool.COMMA_AND_SPACE)) %>
+								</c:when>
+								<c:otherwise>
+									&nbsp;
+								</c:otherwise>
+							</c:choose>
+						</span>
 					</liferay-frontend:vertical-card-footer>
 				</c:if>
 			</liferay-frontend:user-vertical-card>
@@ -106,8 +69,8 @@ names.addAll(ListUtil.toList(teams, Team.NAME_ACCESSOR));
 
 		<liferay-ui:search-container-column-text
 			colspan="<%= 2 %>"
-			>
-			<h5><%= name %></h5>
+		>
+			<h5><%= user2.getFullName() %></h5>
 
 			<h6 class="text-default">
 				<span><%= user2.getScreenName() %></span>
@@ -128,12 +91,13 @@ names.addAll(ListUtil.toList(teams, Team.NAME_ACCESSOR));
 	</c:when>
 	<c:otherwise>
 		<liferay-ui:search-container-column-text
-			cssClass="text-strong"
+			cssClass="table-cell-content"
 			name="name"
-			value="<%= name %>"
+			value="<%= user2.getFullName() %>"
 		/>
 
 		<liferay-ui:search-container-column-text
+			cssClass="table-cell-content"
 			name="screen-name"
 			orderable="<%= true %>"
 			property="screenName"
@@ -141,12 +105,12 @@ names.addAll(ListUtil.toList(teams, Team.NAME_ACCESSOR));
 
 		<c:if test="<%= !selectUsers %>">
 			<liferay-ui:search-container-column-text
+				cssClass="table-cell-content"
 				name="site-roles-and-teams"
 				value="<%= HtmlUtil.escape(StringUtil.merge(names, StringPool.COMMA_AND_SPACE)) %>"
 			/>
 
 			<liferay-ui:search-container-column-jsp
-				cssClass="list-group-item-field"
 				path="/user_action.jsp"
 			/>
 		</c:if>

@@ -1,6 +1,5 @@
 Bundle-Name: Liferay Social Requests Web
 Bundle-SymbolicName: com.liferay.social.requests.web
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.3
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Social
--include: ../../app.bnd

@@ -47,6 +47,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.lock.LockListener;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.portlet.ControlPanelEntry;
@@ -73,6 +74,7 @@ import com.liferay.portal.kernel.security.membershippolicy.UserGroupMembershipPo
 import com.liferay.portal.kernel.security.pacl.PACLConstants;
 import com.liferay.portal.kernel.security.pacl.permission.PortalHookPermission;
 import com.liferay.portal.kernel.security.pwd.Toolkit;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.ReleaseLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceWrapper;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
@@ -105,6 +107,7 @@ import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
@@ -480,7 +483,7 @@ public class HookHotDeployListener
 
 		Element rootElement = document.getRootElement();
 
-		ClassLoader portletClassLoader = servletContext.getClassLoader();
+		ClassLoader portletClassLoader = hotDeployEvent.getContextClassLoader();
 
 		initPortalProperties(
 			servletContextName, portletClassLoader, rootElement);
@@ -498,7 +501,8 @@ public class HookHotDeployListener
 				_log.warn(servletContextName + " will be undeployed");
 			}
 
-			HotDeployUtil.fireUndeployEvent(new HotDeployEvent(servletContext));
+			HotDeployUtil.fireUndeployEvent(
+				new HotDeployEvent(servletContext, portletClassLoader));
 
 			DeployManagerUtil.undeploy(servletContextName);
 
@@ -602,9 +606,13 @@ public class HookHotDeployListener
 		int x = languagePropertiesLocation.indexOf(CharPool.UNDERLINE);
 		int y = languagePropertiesLocation.indexOf(".properties");
 
+		if ((x == -1) && (y != -1)) {
+			return new Locale(StringPool.BLANK);
+		}
+
 		Locale locale = null;
 
-		if ((x != -1) && (y != 1)) {
+		if ((x != -1) && (y != -1)) {
 			String localeKey = languagePropertiesLocation.substring(x + 1, y);
 
 			locale = LocaleUtil.fromLanguageId(localeKey, true, false);
@@ -1172,24 +1180,29 @@ public class HookHotDeployListener
 		List<Element> languagePropertiesElements = parentElement.elements(
 			"language-properties");
 
-		String baseLanguagePropertiesLocation = null;
-		URL baseLanguageURL = null;
-
 		for (Element languagePropertiesElement : languagePropertiesElements) {
 			String languagePropertiesLocation =
 				languagePropertiesElement.getText();
 
 			Locale locale = getLocale(languagePropertiesLocation);
 
-			if (locale != null) {
-				if (!checkPermission(
-						PACLConstants.
-							PORTAL_HOOK_PERMISSION_LANGUAGE_PROPERTIES_LOCALE,
-						portletClassLoader, locale,
-						"Rejecting locale " + locale)) {
-
-					continue;
+			if (locale == null) {
+				if (_log.isInfoEnabled()) {
+					_log.info("Ignoring " + languagePropertiesLocation);
 				}
+
+				continue;
+			}
+
+			String languageId = LocaleUtil.toLanguageId(locale);
+
+			if (!StringPool.BLANK.equals(languageId) &&
+				!checkPermission(
+					PACLConstants.
+						PORTAL_HOOK_PERMISSION_LANGUAGE_PROPERTIES_LOCALE,
+					portletClassLoader, locale, "Rejecting locale " + locale)) {
+
+				continue;
 			}
 
 			URL url = portletClassLoader.getResource(
@@ -1199,34 +1212,7 @@ public class HookHotDeployListener
 				continue;
 			}
 
-			if (locale != null) {
-				String languageId = LocaleUtil.toLanguageId(locale);
-
-				try (InputStream inputStream = url.openStream()) {
-					ResourceBundle resourceBundle = new LiferayResourceBundle(
-						inputStream, StringPool.UTF8);
-
-					Map<String, Object> properties = new HashMap<>();
-
-					properties.put("language.id", languageId);
-
-					registerService(
-						servletContextName, languagePropertiesLocation,
-						ResourceBundle.class, resourceBundle, properties);
-				}
-			}
-			else {
-				baseLanguagePropertiesLocation = languagePropertiesLocation;
-				baseLanguageURL = url;
-			}
-		}
-
-		if (baseLanguageURL != null) {
-			Locale locale = new Locale(StringPool.BLANK);
-
-			String languageId = LocaleUtil.toLanguageId(locale);
-
-			try (InputStream inputStream = baseLanguageURL.openStream()) {
+			try (InputStream inputStream = url.openStream()) {
 				ResourceBundle resourceBundle = new LiferayResourceBundle(
 					inputStream, StringPool.UTF8);
 
@@ -1235,7 +1221,7 @@ public class HookHotDeployListener
 				properties.put("language.id", languageId);
 
 				registerService(
-					servletContextName, baseLanguagePropertiesLocation,
+					servletContextName, languagePropertiesLocation,
 					ResourceBundle.class, resourceBundle, properties);
 			}
 		}
@@ -1376,7 +1362,18 @@ public class HookHotDeployListener
 			Properties portalProperties, Properties unfilteredPortalProperties)
 		throws Exception {
 
-		PropsUtil.addProperties(portalProperties);
+		if (GetterUtil.getBoolean(
+				SystemProperties.get("company-id-properties"))) {
+
+			List<Company> companies = CompanyLocalServiceUtil.getCompanies();
+
+			for (Company company : companies) {
+				PropsUtil.addProperties(company, portalProperties);
+			}
+		}
+		else {
+			PropsUtil.addProperties(portalProperties);
+		}
 
 		if (_log.isDebugEnabled() && portalProperties.containsKey(LOCALES)) {
 			_log.debug(
@@ -2316,6 +2313,16 @@ public class HookHotDeployListener
 		stringArraysContainer.setPluginStringArray(servletContextName, value);
 
 		value = stringArraysContainer.getStringArray();
+
+		if (stringArraysContainer instanceof MergeStringArraysContainer) {
+			Properties properties = new Properties();
+
+			String valueString = StringUtil.merge(value, StringPool.COMMA);
+
+			properties.setProperty(key, valueString);
+
+			PropsUtil.addProperties(properties);
+		}
 
 		field.set(null, value);
 	}

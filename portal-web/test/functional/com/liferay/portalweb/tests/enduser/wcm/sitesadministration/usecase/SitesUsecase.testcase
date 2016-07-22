@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Site Administration" />
 
 	<var name="globalSiteName" value="Global" />
@@ -77,11 +78,15 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
+		<execute macro="Page#localizedPG">
+			<var name="pageLocale" value="Display the page in English (United States)" />
+		</execute>
+
 		<execute macro="Page#addChild">
 			<var name="page" value="Public Pages" />
+			<var name="pageName" value="Home" />
 			<var name="siteChildPageName" value="Blog Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Home" />
 			<var name="siteScopeSelected" value="true" />
 		</execute>
 
@@ -156,10 +161,10 @@
 			<var name="portletName" value="Asset Publisher" />
 		</execute>
 
-		<execute function="Click" locator1="ControlMenu#INFO" />
-
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#CUSTOMIZED_PAGE_INFO" value1="This page has been changed since the last update from the site template." />
-		<execute function="AssertClick" locator1="Button#RESET_CHANGES" value1="Reset Changes" />
+		<execute macro="SiteTemplates#resetPageChanges">
+			<var name="columnNumberTo" value="1" />
+			<var name="portletName" value="Asset Publisher" />
+		</execute>
 
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Site Name" />
@@ -186,6 +191,18 @@
 			<var name="pollsQuestionChoiceA" value="The Economy" />
 			<var name="pollsQuestionChoiceB" value="The National Debt" />
 			<var name="pollsQuestionTitle" value="Election Poll" />
+		</execute>
+
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Polls#selectPollPG">
+			<var name="pollsQuestionTitle" value="Election Poll" />
+		</execute>
+
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="Polls#viewPollPG">
@@ -228,7 +245,9 @@
 
 		<execute macro="User#logoutPG" />
 
-		<execute function="Open" locator1="http://localhost:8080/web/site-name/home" />
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+
+		<execute function="Open" locator1="${portalURL}/web/site-name/home" />
 
 		<execute macro="Portlet#viewTitle">
 			<var name="portletName" value="Message Boards" />
@@ -263,7 +282,7 @@
 			<var name="userPassword" value="test" />
 		</execute>
 
-		<execute function="Open" locator1="http://localhost:8080/web/site-name/home" />
+		<execute function="Open" locator1="${portalURL}/web/site-name/home" />
 
 		<execute macro="PermissionsInline#gotoConfigurationPG" >
 			<var name="portletName" value="Polls Display" />
@@ -289,10 +308,10 @@
 
 		<execute macro="User#logoutPG" />
 
-		<execute function="Open" locator1="http://localhost:8080/web/site-name/home" />
+		<execute function="Open" locator1="${portalURL}/web/site-name/home" />
 
-		<execute function="AssertTextEquals" locator1="PGPollsdisplay#ERROR_MESSAGE_1_COLUMN_1" value1="You do not have the roles required to access this portlet." />
-		<execute function="AssertTextEquals" locator1="PGPollsdisplay#ERROR_MESSAGE_1_COLUMN_2" value1="You do not have the roles required to access this portlet." />
+		<execute function="AssertTextEquals" locator1="Message#ERROR_1_COLUMN_1" value1="You do not have the roles required to access this portlet." />
+		<execute function="AssertTextEquals" locator1="Message#ERROR_1_COLUMN_2" value1="You do not have the roles required to access this portlet." />
 	</command>
 
 	<command name="ViewDefaultGlobalScopeLandingPage" priority="4">

@@ -65,8 +65,8 @@ page import="com.liferay.calendar.util.ColorUtil" %><%@
 page import="com.liferay.calendar.util.JCalendarUtil" %><%@
 page import="com.liferay.calendar.util.RecurrenceUtil" %><%@
 page import="com.liferay.calendar.util.comparator.CalendarNameComparator" %><%@
-page import="com.liferay.calendar.web.search.CalendarResourceDisplayTerms" %><%@
-page import="com.liferay.calendar.web.search.CalendarResourceSearch" %><%@
+page import="com.liferay.calendar.web.internal.search.CalendarResourceDisplayTerms" %><%@
+page import="com.liferay.calendar.web.internal.search.CalendarResourceSearch" %><%@
 page import="com.liferay.calendar.workflow.CalendarBookingWorkflowConstants" %><%@
 page import="com.liferay.portal.kernel.bean.BeanParamUtil" %><%@
 page import="com.liferay.portal.kernel.bean.BeanPropertiesUtil" %><%@
@@ -99,6 +99,8 @@ page import="com.liferay.portal.kernel.util.ListUtil" %><%@
 page import="com.liferay.portal.kernel.util.OrderByComparator" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
+page import="com.liferay.portal.kernel.util.PrefsPropsUtil" %><%@
+page import="com.liferay.portal.kernel.util.PropsKeys" %><%@
 page import="com.liferay.portal.kernel.util.SessionClicks" %><%@
 page import="com.liferay.portal.kernel.util.StringBundler" %><%@
 page import="com.liferay.portal.kernel.util.StringPool" %><%@
@@ -108,8 +110,8 @@ page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.kernel.util.comparator.UserScreenNameComparator" %><%@
 page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
-page import="com.liferay.taglib.search.ResultRow" %><%@
-page import="com.liferay.util.RSSUtil" %>
+page import="com.liferay.rss.util.RSSUtil" %><%@
+page import="com.liferay.taglib.search.ResultRow" %>
 
 <%@ page import="java.text.Format" %>
 
@@ -119,6 +121,7 @@ page import="java.util.Collections" %><%@
 page import="java.util.Date" %><%@
 page import="java.util.Iterator" %><%@
 page import="java.util.List" %><%@
+page import="java.util.Objects" %><%@
 page import="java.util.TimeZone" %>
 
 <%@ page import="javax.portlet.PortletURL" %>
@@ -130,10 +133,41 @@ page import="java.util.TimeZone" %>
 <portlet:defineObjects />
 
 <%
+int defaultDuration = GetterUtil.getInteger(portletPreferences.getValue("defaultDuration", null), 60);
+String defaultView = portletPreferences.getValue("defaultView", "week");
+String timeFormat = GetterUtil.getString(portletPreferences.getValue("timeFormat", "locale"));
+String timeZoneId = portletPreferences.getValue("timeZoneId", user.getTimeZoneId());
+boolean usePortalTimeZone = GetterUtil.getBoolean(portletPreferences.getValue("usePortalTimeZone", Boolean.TRUE.toString()));
+int weekStartsOn = GetterUtil.getInteger(portletPreferences.getValue("weekStartsOn", null));
+
+String sessionClicksDefaultView = SessionClicks.get(request, "com.liferay.calendar.web_defaultView", defaultView);
+
+if (usePortalTimeZone) {
+	timeZoneId = user.getTimeZoneId();
+}
+
+boolean displaySchedulerOnly = GetterUtil.getBoolean(portletPreferences.getValue("displaySchedulerOnly", null));
+boolean showUserEvents = GetterUtil.getBoolean(portletPreferences.getValue("showUserEvents", null), true);
+
+boolean showAgendaView = GetterUtil.getBoolean(portletPreferences.getValue("showAgendaView", null), true);
+boolean showDayView = GetterUtil.getBoolean(portletPreferences.getValue("showDayView", null), true);
+boolean showWeekView = GetterUtil.getBoolean(portletPreferences.getValue("showWeekView", null), true);
+boolean showMonthView = GetterUtil.getBoolean(portletPreferences.getValue("showMonthView", null), true);
+
+boolean enableRSS = !PortalUtil.isRSSFeedsEnabled() ? false : GetterUtil.getBoolean(portletPreferences.getValue("enableRss", null), true);
+int rssDelta = GetterUtil.getInteger(portletPreferences.getValue("rssDelta", StringPool.BLANK), SearchContainer.DEFAULT_DELTA);
+String rssDisplayStyle = portletPreferences.getValue("rssDisplayStyle", RSSUtil.DISPLAY_STYLE_DEFAULT);
+String rssFeedType = portletPreferences.getValue("rssFeedType", RSSUtil.FEED_TYPE_DEFAULT);
+long rssTimeInterval = GetterUtil.getLong(portletPreferences.getValue("rssTimeInterval", StringPool.BLANK), Time.WEEK);
+
 CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(CalendarWebKeys.CALENDAR_BOOKING);
 
 CalendarResource groupCalendarResource = CalendarResourceUtil.getScopeGroupCalendarResource(liferayPortletRequest, scopeGroupId);
-CalendarResource userCalendarResource = CalendarResourceUtil.getUserCalendarResource(liferayPortletRequest, themeDisplay.getUserId());
+CalendarResource userCalendarResource = null;
+
+if (showUserEvents || !themeDisplay.isSignedIn()) {
+	userCalendarResource = CalendarResourceUtil.getUserCalendarResource(liferayPortletRequest, themeDisplay.getUserId());
+}
 
 Calendar userDefaultCalendar = null;
 
@@ -145,24 +179,55 @@ if (userCalendarResource != null) {
 	}
 }
 
-int defaultDuration = GetterUtil.getInteger(portletPreferences.getValue("defaultDuration", null), 60);
-String defaultView = portletPreferences.getValue("defaultView", "week");
-String timeFormat = GetterUtil.getString(portletPreferences.getValue("timeFormat", "locale"));
-String timeZoneId = portletPreferences.getValue("timeZoneId", user.getTimeZoneId());
-boolean usePortalTimeZone = GetterUtil.getBoolean(portletPreferences.getValue("usePortalTimeZone", Boolean.TRUE.toString()));
-int weekStartsOn = GetterUtil.getInteger(portletPreferences.getValue("weekStartsOn", null), 0);
+List<Calendar> groupCalendars = Collections.emptyList();
 
-String sessionClicksDefaultView = SessionClicks.get(request, "com.liferay.calendar.web_defaultView", defaultView);
+boolean showSiteCalendars = false;
 
-if (usePortalTimeZone) {
-	timeZoneId = user.getTimeZoneId();
+if (groupCalendarResource != null) {
+	showSiteCalendars = (userCalendarResource == null) || (groupCalendarResource.getCalendarResourceId() != userCalendarResource.getCalendarResourceId());
 }
 
-boolean enableRSS = !PortalUtil.isRSSFeedsEnabled() ? false : GetterUtil.getBoolean(portletPreferences.getValue("enableRss", null), true);
-int rssDelta = GetterUtil.getInteger(portletPreferences.getValue("rssDelta", StringPool.BLANK), SearchContainer.DEFAULT_DELTA);
-String rssDisplayStyle = portletPreferences.getValue("rssDisplayStyle", RSSUtil.DISPLAY_STYLE_DEFAULT);
-String rssFeedType = portletPreferences.getValue("rssFeedType", RSSUtil.FEED_TYPE_DEFAULT);
-long rssTimeInterval = GetterUtil.getLong(portletPreferences.getValue("rssTimeInterval", StringPool.BLANK), Time.WEEK);
+if (showSiteCalendars) {
+	groupCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] {groupCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator)null);
+}
+
+List<Calendar> userCalendars = Collections.emptyList();
+
+if (userCalendarResource != null) {
+	userCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] {userCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator)null);
+}
+
+List<Calendar> otherCalendars = new ArrayList<Calendar>();
+
+long[] calendarIds = StringUtil.split(SessionClicks.get(request, "com.liferay.calendar.web_otherCalendars", StringPool.BLANK), 0L);
+
+Calendar defaultCalendar = null;
+
+for (long calendarId : calendarIds) {
+	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
+
+	if (calendar != null) {
+		CalendarResource calendarResource = calendar.getCalendarResource();
+
+		if (calendarResource.isActive()) {
+			otherCalendars.add(calendar);
+		}
+	}
+}
+
+for (Calendar groupCalendar : groupCalendars) {
+	if (groupCalendar.isDefaultCalendar() && CalendarPermission.contains(themeDisplay.getPermissionChecker(), groupCalendar, CalendarActionKeys.MANAGE_BOOKINGS)) {
+		defaultCalendar = groupCalendar;
+	}
+}
+
+if (defaultCalendar == null) {
+	for (Calendar userCalendar : userCalendars) {
+		if (userCalendar.isDefaultCalendar()) {
+			defaultCalendar = userCalendar;
+		}
+	}
+}
 
 TimeZone userTimeZone = CalendarUtil.getCalendarBookingDisplayTimeZone(calendarBooking, TimeZone.getTimeZone(timeZoneId));
 TimeZone utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);

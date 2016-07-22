@@ -1,5 +1,39 @@
 @import "bourbon";
 @import "variables";
+@import "mixins";
+
+body {
+	&.open #wrapper {
+		@include sm() {
+			padding-left: $product-menu-width;
+		}
+	}
+
+	&.open .control-menu {
+		@include sm() {
+			left: $product-menu-width;
+		}
+	}
+
+	&.open, &.sidenav-transition {
+		@include sm() {
+			overflow-x: hidden;
+		}
+	}
+
+	&.sidenav-transition #wrapper {
+		@include transition(padding 0.5s ease);
+	}
+}
+
+.lfr-product-menu-panel.sidenav-menu-slider {
+	z-index: $product-menu-zindex;
+
+	&.open,
+	.sidenav-menu {
+		width: $product-menu-width;
+	}
+}
 
 .product-menu {
 	background-color: $product-menu-body-bg;
@@ -125,6 +159,10 @@
 		> .panel-toggler {
 			line-height: 32px;
 			padding: 10px 40px 10px 24px;
+		}
+
+		.aspect-ratio-bg-cover {
+			background-size: contain;
 		}
 
 		.site-administration-toggler {
@@ -319,6 +357,14 @@
 		width: 100%;
 	}
 
+	.layout-prototype-tree {
+		padding-bottom: 30px;
+	}
+
+	.layouts-tree-container {
+		padding-left: 10px;
+	}
+
 	.layout-set-tabs {
 		.selected-layout-set {
 			.layout-set-link, .icon-monospaced {
@@ -399,11 +445,19 @@
 	.tree-node-content {
 		color: $product-menu-tree-color;
 		display: inline;
-		padding-bottom: 10px;
 		padding-left: 3px;
 		padding-right: 25px;
-		padding-top: 11px;
 		position: relative;
+
+		&.tree-node-over, &.tree-node-selected {
+			background: $product-menu-tree-active-bg;
+		}
+
+		.layout-tree {
+			display: block;
+			padding-bottom: 12px;
+			padding-top: 12px;
+		}
 
 		.tree-hitarea {
 			color: $product-menu-tree-hitarea-color;
@@ -427,7 +481,7 @@
 	}
 
 	.tree-root-container {
-		margin-left: 0;
+		margin-left: -10px;
 	}
 
 	.tree-view {
@@ -442,6 +496,7 @@
 
 	&.sidenav-fixed.sidenav-menu-slider {
 		overflow: auto;
+		visibility: visible;
 		width: 100%;
 	}
 }

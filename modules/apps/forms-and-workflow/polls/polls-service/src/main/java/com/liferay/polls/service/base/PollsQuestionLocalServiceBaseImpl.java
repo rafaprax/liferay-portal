@@ -25,6 +25,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.polls.model.PollsQuestion;
 import com.liferay.polls.service.PollsQuestionLocalService;
 import com.liferay.polls.service.persistence.PollsChoicePersistence;
+import com.liferay.polls.service.persistence.PollsQuestionFinder;
 import com.liferay.polls.service.persistence.PollsQuestionPersistence;
 import com.liferay.polls.service.persistence.PollsVotePersistence;
 
@@ -251,7 +252,7 @@ public abstract class PollsQuestionLocalServiceBaseImpl
 	public ActionableDynamicQuery getActionableDynamicQuery() {
 		ActionableDynamicQuery actionableDynamicQuery = new DefaultActionableDynamicQuery();
 
-		actionableDynamicQuery.setBaseLocalService(com.liferay.polls.service.PollsQuestionLocalServiceUtil.getService());
+		actionableDynamicQuery.setBaseLocalService(pollsQuestionLocalService);
 		actionableDynamicQuery.setClassLoader(getClassLoader());
 		actionableDynamicQuery.setModelClass(PollsQuestion.class);
 
@@ -264,7 +265,7 @@ public abstract class PollsQuestionLocalServiceBaseImpl
 	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		IndexableActionableDynamicQuery indexableActionableDynamicQuery = new IndexableActionableDynamicQuery();
 
-		indexableActionableDynamicQuery.setBaseLocalService(com.liferay.polls.service.PollsQuestionLocalServiceUtil.getService());
+		indexableActionableDynamicQuery.setBaseLocalService(pollsQuestionLocalService);
 		indexableActionableDynamicQuery.setClassLoader(getClassLoader());
 		indexableActionableDynamicQuery.setModelClass(PollsQuestion.class);
 
@@ -275,7 +276,7 @@ public abstract class PollsQuestionLocalServiceBaseImpl
 
 	protected void initActionableDynamicQuery(
 		ActionableDynamicQuery actionableDynamicQuery) {
-		actionableDynamicQuery.setBaseLocalService(com.liferay.polls.service.PollsQuestionLocalServiceUtil.getService());
+		actionableDynamicQuery.setBaseLocalService(pollsQuestionLocalService);
 		actionableDynamicQuery.setClassLoader(getClassLoader());
 		actionableDynamicQuery.setModelClass(PollsQuestion.class);
 
@@ -469,6 +470,24 @@ public abstract class PollsQuestionLocalServiceBaseImpl
 	public void setPollsQuestionPersistence(
 		PollsQuestionPersistence pollsQuestionPersistence) {
 		this.pollsQuestionPersistence = pollsQuestionPersistence;
+	}
+
+	/**
+	 * Returns the polls question finder.
+	 *
+	 * @return the polls question finder
+	 */
+	public PollsQuestionFinder getPollsQuestionFinder() {
+		return pollsQuestionFinder;
+	}
+
+	/**
+	 * Sets the polls question finder.
+	 *
+	 * @param pollsQuestionFinder the polls question finder
+	 */
+	public void setPollsQuestionFinder(PollsQuestionFinder pollsQuestionFinder) {
+		this.pollsQuestionFinder = pollsQuestionFinder;
 	}
 
 	/**
@@ -712,10 +731,12 @@ public abstract class PollsQuestionLocalServiceBaseImpl
 		}
 	}
 
-	@BeanReference(type = com.liferay.polls.service.PollsQuestionLocalService.class)
+	@BeanReference(type = PollsQuestionLocalService.class)
 	protected PollsQuestionLocalService pollsQuestionLocalService;
 	@BeanReference(type = PollsQuestionPersistence.class)
 	protected PollsQuestionPersistence pollsQuestionPersistence;
+	@BeanReference(type = PollsQuestionFinder.class)
+	protected PollsQuestionFinder pollsQuestionFinder;
 	@ServiceReference(type = com.liferay.counter.kernel.service.CounterLocalService.class)
 	protected com.liferay.counter.kernel.service.CounterLocalService counterLocalService;
 	@BeanReference(type = com.liferay.polls.service.PollsChoiceLocalService.class)

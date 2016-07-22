@@ -14,9 +14,11 @@
 
 package com.liferay.portal.verify;
 
+import com.liferay.portal.dao.orm.common.SQLTransformer;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBType;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -41,6 +43,7 @@ import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -51,7 +54,10 @@ import com.liferay.portal.security.permission.PermissionCacheUtil;
 import com.liferay.portal.service.impl.ResourcePermissionLocalServiceImpl;
 import com.liferay.portal.util.PortalInstances;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +90,67 @@ public class VerifyPermission extends VerifyProcess {
 
 				ResourceActionLocalServiceUtil.checkResourceActions(
 					portletName, actionIds, true);
+			}
+		}
+	}
+
+	protected void deleteConflictingUserDefaultRolePermissions(
+			long companyId, long powerUserRoleId, long userRoleId,
+			long userClassNameId, long userGroupClassNameId)
+		throws Exception {
+
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			StringBundler sb = new StringBundler(14);
+
+			sb.append("select resourcePermission1.resourcePermissionId from ");
+			sb.append("ResourcePermission resourcePermission1 inner join ");
+			sb.append("ResourcePermission resourcePermission2 on ");
+			sb.append("resourcePermission1.companyId = ");
+			sb.append("resourcePermission2.companyId and ");
+			sb.append("resourcePermission1.name = resourcePermission2.name ");
+			sb.append("and resourcePermission1.scope = ");
+			sb.append("resourcePermission2.scope and ");
+			sb.append("resourcePermission1.primKey = ");
+			sb.append("resourcePermission2.primKey inner join Layout on ");
+			sb.append("resourcePermission1.companyId = Layout.companyId and ");
+			sb.append("resourcePermission1.primKey like ");
+			sb.append("replace('[$PLID$]_LAYOUT_%', '[$PLID$]', ");
+			sb.append("cast_text(Layout.plid)) and Layout.type_ = '");
+			sb.append(LayoutConstants.TYPE_PORTLET);
+			sb.append(CharPool.APOSTROPHE);
+			sb.append(" inner join Group_ on Layout.groupId = Group_.groupId ");
+			sb.append("where resourcePermission1.companyId = ");
+			sb.append(companyId);
+			sb.append(" and resourcePermission1.roleId = ");
+			sb.append(powerUserRoleId);
+			sb.append(" and resourcePermission2.roleId = ");
+			sb.append(userRoleId);
+			sb.append(" and resourcePermission1.scope = ");
+			sb.append(ResourceConstants.SCOPE_INDIVIDUAL);
+			sb.append(" and (Group_.classNameId = ");
+			sb.append(userClassNameId);
+			sb.append(" or Group_.classNameId = ");
+			sb.append(userGroupClassNameId);
+			sb.append(")");
+
+			try (Statement ps1 = connection.createStatement();
+				PreparedStatement ps2 =
+					AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+						connection,
+						"delete from ResourcePermission where " +
+							"resourcePermissionId = ?")) {
+
+				String sql = SQLTransformer.transform(sb.toString());
+
+				try (ResultSet rs = ps1.executeQuery(sql)) {
+					while (rs.next()) {
+						ps2.setLong(1, rs.getLong(1));
+
+						ps2.addBatch();
+					}
+				}
+
+				ps2.executeBatch();
 			}
 		}
 	}
@@ -238,13 +305,18 @@ public class VerifyPermission extends VerifyProcess {
 				Role userRole = RoleLocalServiceUtil.getRole(
 					companyId, RoleConstants.USER);
 
-				StringBundler sb = new StringBundler(19);
+				deleteConflictingUserDefaultRolePermissions(
+					companyId, powerUserRole.getRoleId(), userRole.getRoleId(),
+					userClassNameId, userGroupClassNameId);
+
+				StringBundler sb = new StringBundler(20);
 
 				sb.append("update ResourcePermission set roleId = ");
 				sb.append(userRole.getRoleId());
 				sb.append(" where resourcePermissionId in (select ");
 				sb.append("resourcePermissionId from ResourcePermission ");
-				sb.append("inner join Layout on ResourcePermission.primKey ");
+				sb.append("inner join Layout on ResourcePermission.companyId ");
+				sb.append("= Layout.companyId and ResourcePermission.primKey ");
 				sb.append("like replace('[$PLID$]_LAYOUT_%', '[$PLID$]', ");
 				sb.append("cast_text(Layout.plid)) inner join Group_ on ");
 				sb.append("Layout.groupId = Group_.groupId where ");
@@ -279,9 +351,14 @@ public class VerifyPermission extends VerifyProcess {
 			Role userRole = RoleLocalServiceUtil.getRole(
 				companyId, RoleConstants.USER);
 
-			StringBundler sb = new StringBundler(18);
+			deleteConflictingUserDefaultRolePermissions(
+				companyId, powerUserRole.getRoleId(), userRole.getRoleId(),
+				userClassNameId, userGroupClassNameId);
+
+			StringBundler sb = new StringBundler(19);
 
 			sb.append("update ResourcePermission inner join Layout on ");
+			sb.append("ResourcePermission.companyId = Layout.companyId and ");
 			sb.append("ResourcePermission.primKey like ");
 			sb.append("replace('[$PLID$]_LAYOUT_%', '[$PLID$]', ");
 			sb.append("cast_text(Layout.plid)) inner join Group_ on ");
@@ -309,22 +386,26 @@ public class VerifyPermission extends VerifyProcess {
 		throws Exception {
 
 		try {
-			runSQL(
-				"create table ResourcePermissionPlid (resourcePermissionId " +
-					"LONG null, plid LONG null)");
+			runSQL("alter table ResourcePermission drop column plid");
 		}
 		catch (SQLException sqle) {
-			runSQL("delete from ResourcePermissionPlid");
+			if (_log.isDebugEnabled()) {
+				_log.debug(sqle, sqle);
+			}
 		}
+
+		runSQL("alter table ResourcePermission add plid NUMBER null");
+
+		runSQL("create index tmp_res_plid on ResourcePermission(plid)");
 
 		StringBundler sb = new StringBundler(6);
 
-		sb.append("insert into ResourcePermissionPlid(select ");
-		sb.append("ResourcePermission.resourcePermissionId, ");
+		sb.append("update ResourcePermission r1 set plid = (select ");
 		sb.append("SUBSTR(ResourcePermission.primKey, 0, ");
-		sb.append("INSTR(ResourcePermission.primKey, '_LAYOUT_') -1) as plid ");
-		sb.append("from ResourcePermission where ResourcePermission.primKey ");
-		sb.append("like '%_LAYOUT_%')");
+		sb.append("INSTR(ResourcePermission.primKey, '_LAYOUT_') -1) from ");
+		sb.append("ResourcePermission where r1.resourcePermissionId = ");
+		sb.append("ResourcePermission.resourcePermissionId and ");
+		sb.append("ResourcePermission.primKey like '%_LAYOUT_%')");
 
 		runSQL(sb.toString());
 
@@ -334,18 +415,21 @@ public class VerifyPermission extends VerifyProcess {
 			Role userRole = RoleLocalServiceUtil.getRole(
 				companyId, RoleConstants.USER);
 
-			sb = new StringBundler(20);
+			deleteConflictingUserDefaultRolePermissions(
+				companyId, powerUserRole.getRoleId(), userRole.getRoleId(),
+				userClassNameId, userGroupClassNameId);
 
-			sb.append("update ResourcePermission set roleId = ");
+			sb = new StringBundler(19);
+
+			sb.append("update ResourcePermission r1 set roleId = ");
 			sb.append(userRole.getRoleId());
-			sb.append(" where resourcePermissionId in (select ");
+			sb.append(" where exists (select ");
 			sb.append("ResourcePermission.resourcePermissionId from ");
-			sb.append("ResourcePermission inner join ResourcePermissionPlid ");
-			sb.append("on ResourcePermission.resourcePermissionId = ");
-			sb.append("ResourcePermissionPlid.resourcePermissionId inner ");
-			sb.append("join Layout on ResourcePermissionPlid.plid = ");
-			sb.append("Layout.plid inner join Group_ on Layout.groupId = ");
-			sb.append("Group_.groupId where ResourcePermission.scope = ");
+			sb.append("ResourcePermission inner join Layout on ");
+			sb.append("ResourcePermission.plid = Layout.plid inner join ");
+			sb.append("Group_ on Layout.groupId = Group_.groupId where ");
+			sb.append("r1.resourcePermissionId = ResourcePermission.");
+			sb.append("resourcePermissionId and ResourcePermission.scope = ");
 			sb.append(ResourceConstants.SCOPE_INDIVIDUAL);
 			sb.append(" and ResourcePermission.roleId = ");
 			sb.append(powerUserRole.getRoleId());
@@ -360,7 +444,7 @@ public class VerifyPermission extends VerifyProcess {
 			runSQL(sb.toString());
 		}
 
-		runSQL("drop table ResourcePermissionPlid");
+		runSQL("alter table ResourcePermission drop column plid");
 	}
 
 	protected boolean isPrivateLayout(String name, String primKey)

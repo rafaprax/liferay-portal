@@ -25,12 +25,12 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.log.LogUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.InfrastructureUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -67,6 +67,7 @@ import javax.mail.internet.MimeMultipart;
  * @author Neil Griffin
  * @author Thiago Moreira
  * @author Brett Swaim
+ * @see com.liferay.petra.mail.MailEngine
  */
 public class MailEngine {
 
@@ -523,8 +524,8 @@ public class MailEngine {
 
 	private static String _sanitizeCRLF(String text) {
 		return StringUtil.replace(
-			text, new String[] {StringPool.NEW_LINE, StringPool.RETURN},
-			new String[] {StringPool.SPACE, StringPool.SPACE});
+			text, new char[] {CharPool.NEW_LINE, CharPool.RETURN},
+			new char[] {CharPool.SPACE, CharPool.SPACE});
 	}
 
 	private static void _send(
@@ -534,7 +535,7 @@ public class MailEngine {
 
 		try {
 			boolean smtpAuth = GetterUtil.getBoolean(
-				_getSMTPProperty(session, "auth"), false);
+				_getSMTPProperty(session, "auth"));
 			String smtpHost = _getSMTPProperty(session, "host");
 			int smtpPort = GetterUtil.getInteger(
 				_getSMTPProperty(session, "port"), Account.PORT_SMTP);

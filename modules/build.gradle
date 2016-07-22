@@ -1,10 +1,30 @@
 import com.liferay.gradle.util.FileUtil
+import com.liferay.gradle.util.GradleUtil
 
-import org.gradle.internal.hash.HashUtil
-import org.gradle.internal.hash.HashValue
+import java.util.concurrent.ConcurrentSkipListSet
 
 buildscript {
 	apply from: rootProject.file("build-buildscript.gradle"), to: buildscript
+}
+
+Set<File> bndPrintJarFiles = null
+
+if (System.getenv("JENKINS_HOME")) {
+	configurations {
+		bnd
+	}
+
+	dependencies {
+		bnd group: "biz.aQute.bnd", name: "biz.aQute.bnd", version: "3.2.0"
+	}
+
+	repositories {
+		maven {
+			url System.properties["repository.url"] ?: "https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
+		}
+	}
+
+	bndPrintJarFiles = new ConcurrentSkipListSet<File>()
 }
 
 buildDir = new File(rootDir.parentFile, "build")
@@ -12,49 +32,43 @@ buildDir = new File(rootDir.parentFile, "build")
 gradle.beforeProject {
 	Project project ->
 
-	if (!project.parent) {
+	if (!project.parent || project.childProjects) {
 		return
 	}
 
 	configure(project) {
-		if (project.path.startsWith(":apps:foundation:frontend:frontend-theme:") && FileUtil.exists(project, "gulpfile.js")) {
-			apply from: rootProject.file("build-theme.gradle")
-		}
-		else if (FileUtil.exists(project, "bnd.bnd") && FileUtil.exists(project, "build.gradle")) {
-			apply from: rootProject.file("build-module.gradle")
-			apply plugin: "pmd"
+		apply plugin: "com.liferay.defaults.plugin"
 
-			task installCache(type: InstallCacheTask)
+		pluginManager.withPlugin("com.liferay.ant.plugin") {
+			task buildLang(dependsOn: "build-lang")
+
+			if (FileUtil.exists(project, "docroot/WEB-INF/service.xml")) {
+				task buildService(dependsOn: "build-service")
+				task buildWSDD(dependsOn: "build-wsdd")
+			}
+
+			deploy {
+				dependsOn ":apps:foundation:frontend-css:frontend-css-common:buildCssCommon"
+			}
+		}
+
+		pluginManager.withPlugin("com.liferay.osgi.plugin") {
+			afterEvaluate {
+				bundle.jarBuilderFactory.contextClassLoader = buildscript.classLoader
+
+				File forcedDeployDir = GradleUtil.getProperty(project, "forced.deploy.dir", (File)null)
+
+				if (forcedDeployDir) {
+					liferay.deployDir = forcedDeployDir
+				}
+			}
 
 			configurations {
 				xmltask
 			}
 
 			dependencies {
-				pmd group: "com.liferay", name: "com.liferay.pmd", version: "1.0.1"
 				xmltask rootProject.files("../lib/development/xmltask.jar")
-			}
-
-			installCache {
-				artifactGroup = "${->project.group}"
-				artifactName = "${->project.archivesBaseName}"
-				artifactVersion = "${->project.version}"
-
-				dependsOn cleanInstallCache
-				dependsOn install
-
-				description = "Installs the project to the local Gradle cache for testing."
-
-				ext {
-					autoClean = false
-				}
-
-				group = "upload"
-			}
-
-			pmd {
-				ruleSetFiles = rootProject.files("../tools/sdk/dependencies/net.sourceforge.pmd/rulesets/java/standard-rules.xml")
-				ruleSets = []
 			}
 
 			testIntegration {
@@ -83,8 +97,12 @@ gradle.beforeProject {
 				}
 			}
 
-			tasks.withType(Pmd) {
-				classpath = null
+			if (bndPrintJarFiles != null) {
+				jar {
+					doLast {
+						bndPrintJarFiles << archivePath
+					}
+				}
 			}
 
 			if (gradle.hasProperty("testClassGroupIndex")) {
@@ -114,6 +132,20 @@ gradle.beforeProject {
 						throw new GradleException("Unable to use Node.js on CI, please configure com.liferay.cache or update the cache")
 					}
 				}
+			}
+		}
+	}
+}
+
+if (bndPrintJarFiles != null) {
+	gradle.buildFinished {
+		bndPrintJarFiles.each {
+			File jarFile ->
+
+			javaexec {
+				args "print", jarFile
+				classpath = configurations.bnd
+				main = "aQute.bnd.main.bnd"
 			}
 		}
 	}
@@ -163,76 +195,4 @@ private boolean _hasTestClasses(Project project, String testClassesDirName) {
 	}
 
 	return true
-}
-
-class InstallCacheTask extends DefaultTask {
-
-	@Input
-	Object artifactGroup
-
-	@Input
-	Object artifactName
-
-	@Input
-	Object artifactVersion
-
-	@Input
-	File cacheRootDir = new File(project.gradle.gradleUserHomeDir, "caches/modules-2/files-2.1")
-
-	@Input
-	File mavenRootDir = new File(System.properties["user.home"], ".m2/repository")
-
-	@OutputDirectory
-	File getCacheDestinationDir() {
-		new File(cacheRootDir, "${artifactGroup}/${artifactName}/${artifactVersion}")
-	}
-
-	@InputDirectory
-	File getMavenInputDir() {
-		String mavenArtifactGroup = artifactGroup.replace('.' as char, File.separatorChar)
-
-		new File(mavenRootDir, "${mavenArtifactGroup}/${artifactName}/${artifactVersion}")
-	}
-
-	@TaskAction
-	void installCacheTask() {
-		["jar", "pom"].each {
-			String extension ->
-
-			File file = new File(mavenInputDir, "${artifactName}-${artifactVersion}.${extension}")
-
-			if (!file.exists()) {
-				throw new GradleException("Unable to find " + file)
-			}
-
-			if (extension == "pom") {
-				File tempFile = new File(temporaryDir, file.name)
-
-				project.copy {
-					from file
-					into temporaryDir
-				}
-
-				file = tempFile
-
-				CharsetToolkit charsetToolkit = new CharsetToolkit(file)
-
-				String charset = charsetToolkit.charset.name()
-
-				ant.fixcrlf encoding: charset, eol: "lf", file: file, fixlast: false, outputencoding: "UTF-8"
-			}
-
-			HashValue hashValue = HashUtil.sha1(file)
-
-			String hash = hashValue.asHexString()
-
-			hash.replaceFirst(/^0*/, "")
-
-			project.copy {
-				from file
-				into new File(cacheDestinationDir, hash)
-			}
-		}
-	}
-
 }

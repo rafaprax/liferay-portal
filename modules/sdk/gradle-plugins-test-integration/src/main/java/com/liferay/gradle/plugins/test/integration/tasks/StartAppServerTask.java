@@ -14,38 +14,20 @@
 
 package com.liferay.gradle.plugins.test.integration.tasks;
 
-import com.liferay.gradle.util.GradleUtil;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 import java.util.concurrent.Callable;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.StartedProcess;
 
 /**
  * @author Andrea Di Giorgi
  */
 public class StartAppServerTask extends BaseAppServerTask {
-
-	@Input
-	public long getCheckInterval() {
-		return _checkInterval;
-	}
-
-	@Input
-	public long getCheckTimeout() {
-		return _checkTimeout;
-	}
-
-	public void setCheckInterval(long checkInterval) {
-		_checkInterval = checkInterval;
-	}
-
-	public void setCheckTimeout(long checkTimeout) {
-		_checkTimeout = checkTimeout;
-	}
 
 	@TaskAction
 	public void startAppServer() throws Exception {
@@ -53,45 +35,33 @@ public class StartAppServerTask extends BaseAppServerTask {
 			return;
 		}
 
+		OutputStream outputStream = new ByteArrayOutputStream();
+
 		ProcessExecutor processExecutor = getProcessExecutor();
 
-		processExecutor.start();
+		processExecutor.redirectOutputAlsoTo(outputStream);
 
-		waitForAppServer();
+		StartedProcess startedProcess = processExecutor.start();
+
+		waitForStarted(startedProcess, outputStream);
 	}
 
-	public void waitForAppServer() {
-		Callable<Boolean> callable = new Callable<Boolean>() {
+	public void waitForReachable() {
+		waitFor(
+			new Callable<Boolean>() {
 
-			@Override
-			public Boolean call() throws Exception {
-				if (isReachable()) {
-					return true;
+				@Override
+				public Boolean call() throws Exception {
+					return isReachable();
 				}
 
-				return false;
-			}
-
-		};
-
-		boolean success = false;
-
-		try {
-			success = GradleUtil.waitFor(
-				callable, getCheckInterval(), getCheckTimeout());
-		}
-		catch (Exception e) {
-			throw new GradleException(
-				"Unable to wait for the application server", e);
-		}
-
-		if (!success) {
-			throw new GradleException(
-				"Timeout while starting the application server");
-		}
+			});
 	}
 
-	private long _checkInterval = 500;
-	private long _checkTimeout = 5 * 60 * 1000;
+	protected void waitForStarted(
+		StartedProcess startedProcess, OutputStream outputStream) {
+
+		waitForReachable();
+	}
 
 }

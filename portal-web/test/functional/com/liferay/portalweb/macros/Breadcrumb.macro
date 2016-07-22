@@ -1,6 +1,6 @@
 <definition>
 	<command name="configureBreadcrumb">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<if>
 			<isset var="checkSetupName" />
@@ -46,7 +46,7 @@
 	</command>
 
 	<command name="displayTemplatePreview">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute function="Select" locator1="Select#DISPLAY_TEMPLATE" value1="${displayStyle}" />
 
@@ -54,7 +54,7 @@
 	</command>
 
 	<command name="saveDisplayPreview">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute macro="PortletEntry#save" />
 
@@ -68,7 +68,7 @@
 	</command>
 
 	<command name="viewConfigurationCheckboxes">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<if>
 			<isset var="checkSetupName" />
@@ -96,7 +96,7 @@
 	</command>
 
 	<command name="viewConfigurationPreview">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<if>
 			<isset var="breadcrumbListVisible" />
@@ -106,7 +106,7 @@
 
 					<var method="StringUtil#upperCase('${breadcrumbName}')" name="breadcrumbNameUppercase" />
 
-					<execute function="AssertTextEquals" locator1="BreadcrumbConfiguration#BREADCRUMB_PREVIEW_PAGE" value1="${breadcrumbNameUppercase}" />
+					<execute function="AssertTextEquals#assertPartialText" locator1="BreadcrumbConfiguration#BREADCRUMB_PREVIEW_PAGE" value1="${breadcrumbNameUppercase}" />
 				</for>
 			</then>
 		</if>
@@ -134,7 +134,7 @@
 
 					<var method="StringUtil#upperCase('${breadcrumbName}')" name="breadcrumbNameUppercase" />
 
-					<execute function="AssertTextEquals" locator1="Breadcrumb#BREADCRUMB_${pathLocator}" value1="${breadcrumbNameUppercase}" />
+					<execute function="AssertTextEquals#assertPartialText" locator1="Breadcrumb#BREADCRUMB_${pathLocator}" value1="${breadcrumbNameUppercase}" />
 				</for>
 			</then>
 		</if>

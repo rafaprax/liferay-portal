@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.log.LogUtil;
 
+import java.util.Objects;
+
 /**
  * @author Brian Wing Shun Chan
  */
@@ -74,6 +76,17 @@ public class JavaDetector {
 		}
 	}
 
+	public static boolean isJDK8() {
+		String javaVersion = getJavaVersion();
+
+		if (javaVersion.startsWith(_JAVA_VERSION_JDK_8)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static boolean isOpenJDK() {
 		return _instance._openJDK;
 	}
@@ -94,7 +107,7 @@ public class JavaDetector {
 		_javaVersion = System.getProperty("java.version");
 		_javaVmVersion = System.getProperty("java.vm.version");
 
-		_64bit = Validator.equals(
+		_64bit = Objects.equals(
 			"64", System.getProperty("sun.arch.data.model"));
 
 		boolean oracle = false;
@@ -127,6 +140,8 @@ public class JavaDetector {
 	}
 
 	private static final String _JAVA_VERSION_JDK_7 = "1.7.";
+
+	private static final String _JAVA_VERSION_JDK_8 = "1.8.";
 
 	private static final Log _log = LogFactoryUtil.getLog(JavaDetector.class);
 

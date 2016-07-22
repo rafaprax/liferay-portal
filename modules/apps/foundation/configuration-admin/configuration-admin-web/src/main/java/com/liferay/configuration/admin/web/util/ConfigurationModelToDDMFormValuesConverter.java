@@ -21,9 +21,10 @@ import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
+import java.util.Dictionary;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -77,7 +78,7 @@ public class ConfigurationModelToDDMFormValuesConverter {
 
 		Configuration configuration = _configurationModel.getConfiguration();
 
-		if (configuration != null) {
+		if (hasConfigurationAttribute(configuration, attributeDefinition)) {
 			values = AttributeDefinitionUtil.getProperty(
 				attributeDefinition, configuration);
 		}
@@ -126,6 +127,18 @@ public class ConfigurationModelToDDMFormValuesConverter {
 		return ddmFormField.getType();
 	}
 
+	protected boolean hasConfigurationAttribute(
+		Configuration configuration, AttributeDefinition attributeDefinition) {
+
+		if (configuration == null) {
+			return false;
+		}
+
+		Dictionary<String, Object> properties = configuration.getProperties();
+
+		return Validator.isNotNull(properties.get(attributeDefinition.getID()));
+	}
+
 	protected void setDDMFormFieldValueLocalizedValue(
 		String value, DDMFormFieldValue ddmFormFieldValue) {
 
@@ -137,23 +150,9 @@ public class ConfigurationModelToDDMFormValuesConverter {
 
 		LocalizedValue localizedValue = new LocalizedValue(_locale);
 
-		localizedValue.addString(_locale, translate(value));
+		localizedValue.addString(_locale, value);
 
 		ddmFormFieldValue.setValue(localizedValue);
-	}
-
-	protected String translate(String key) {
-		if ((_resourceBundle == null) || (key == null)) {
-			return key;
-		}
-
-		String value = ResourceBundleUtil.getString(_resourceBundle, key);
-
-		if (value == null) {
-			return key;
-		}
-
-		return value;
 	}
 
 	private final ConfigurationModel _configurationModel;

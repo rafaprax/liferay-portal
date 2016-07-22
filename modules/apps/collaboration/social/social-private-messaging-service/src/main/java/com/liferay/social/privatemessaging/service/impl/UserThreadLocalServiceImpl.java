@@ -18,6 +18,7 @@ import com.liferay.mail.kernel.model.MailMessage;
 import com.liferay.mail.kernel.service.MailService;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.model.MBMessageConstants;
+import com.liferay.petra.content.ContentUtil;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -34,6 +35,7 @@ import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.notifications.UserNotificationManagerUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.settings.CompanyServiceSettingsLocator;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -42,6 +44,7 @@ import com.liferay.portal.kernel.util.FastDateFormatConstants;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
@@ -51,7 +54,6 @@ import com.liferay.social.privatemessaging.constants.PrivateMessagingPortletKeys
 import com.liferay.social.privatemessaging.model.PrivateMessagingConstants;
 import com.liferay.social.privatemessaging.model.UserThread;
 import com.liferay.social.privatemessaging.service.base.UserThreadLocalServiceBaseImpl;
-import com.liferay.util.ContentUtil;
 
 import java.io.InputStream;
 
@@ -82,6 +84,24 @@ public class UserThreadLocalServiceImpl extends UserThreadLocalServiceBaseImpl {
 		List<User> recipients = null;
 
 		if (mbThreadId != 0) {
+			if (Validator.isNull(fetchUserThread(userId, mbThreadId))) {
+				if (_log.isWarnEnabled()) {
+					StringBundler sb = new StringBundler(5);
+
+					sb.append("User ");
+					sb.append(userId);
+					sb.append(" attempted to add a message to thread ");
+					sb.append(mbThreadId);
+					sb.append(" through the Private Messaging portlet");
+
+					_log.warn(sb.toString());
+				}
+
+				throw new PrincipalException(
+					"User " + userId + " cannot access thread " + mbThreadId +
+						" through the Private Messaging portlet");
+			}
+
 			List<MBMessage> mbMessages =
 				mbMessageLocalService.getThreadMessages(
 					mbThreadId, WorkflowConstants.STATUS_ANY);
@@ -255,7 +275,9 @@ public class UserThreadLocalServiceImpl extends UserThreadLocalServiceBaseImpl {
 		throws PortalException {
 
 		User user = userLocalService.getUser(userId);
+
 		Group group = groupLocalService.getCompanyGroup(user.getCompanyId());
+
 		long categoryId =
 			PrivateMessagingConstants.PRIVATE_MESSAGING_CATEGORY_ID;
 

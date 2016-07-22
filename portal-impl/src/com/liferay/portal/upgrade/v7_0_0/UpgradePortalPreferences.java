@@ -14,12 +14,12 @@
 
 package com.liferay.portal.upgrade.v7_0_0;
 
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
-import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
 import com.liferay.util.xml.XMLUtil;
 
 import java.sql.PreparedStatement;
@@ -74,10 +74,11 @@ public class UpgradePortalPreferences extends UpgradeProcess {
 				"select portalPreferencesId, preferences from " +
 					"PortalPreferences");
 			ResultSet rs = ps1.executeQuery();
-			PreparedStatement ps2 = AutoBatchPreparedStatementUtil.autoBatch(
-				connection.prepareStatement(
+			PreparedStatement ps2 =
+				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+					connection,
 					"update PortalPreferences set preferences = ? " +
-						"where portalPreferencesId = ?"))) {
+						"where portalPreferencesId = ?")) {
 
 			while (rs.next()) {
 				long portalPreferencesId = rs.getLong("portalPreferencesId");

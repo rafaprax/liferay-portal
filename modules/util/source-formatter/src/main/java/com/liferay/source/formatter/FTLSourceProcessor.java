@@ -102,7 +102,7 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 
 			String strippedMatch = stripQuotes(match, CharPool.QUOTE);
 
-			if (StringUtil.count(strippedMatch, StringPool.EQUAL) <= 1) {
+			if (StringUtil.count(strippedMatch, CharPool.EQUAL) <= 1) {
 				continue;
 			}
 
@@ -146,6 +146,10 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 		ImportsFormatter importsFormatter = new FTLImportsFormatter();
 
 		content = importsFormatter.format(content, null, null);
+
+		content = fixEmptyLinesInNestedTags(content);
+
+		content = fixEmptyLinesBetweenTags(content);
 
 		return formatFTL(fileName, content);
 	}
@@ -235,13 +239,13 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 
 	private static final String[] _INCLUDES = new String[] {"**/*.ftl"};
 
-	private Pattern _liferayVariablePattern = Pattern.compile(
+	private final Pattern _liferayVariablePattern = Pattern.compile(
 		"^\t*<#assign liferay_.*>\n", Pattern.MULTILINE);
-	private Pattern _liferayVariablesPattern = Pattern.compile(
+	private final Pattern _liferayVariablesPattern = Pattern.compile(
 		"(^\t*<#assign liferay_.*>\n)+", Pattern.MULTILINE);
-	private Pattern _multiParameterTagPattern = Pattern.compile(
+	private final Pattern _multiParameterTagPattern = Pattern.compile(
 		"\n(\t*)<@.+=.+=.+/>");
-	private Pattern _singleParameterTagPattern = Pattern.compile(
+	private final Pattern _singleParameterTagPattern = Pattern.compile(
 		"(<@[\\w\\.]+ \\w+)( )?=([^=]+?)/>");
 
 }

@@ -21,7 +21,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 
 <div class="lfr-permission-navigation-container" id="<portlet:namespace />permissionNavigationContainer">
 	<div class="search" id="<portlet:namespace />permissionNavigationSearchContainer">
-		<input class="field form-control search-query" id="<portlet:namespace />permissionNavigationSearch" placeholder='<%= LanguageUtil.get(request, "search") %>' type="text">
+		<input class="field form-control search-query" id="<portlet:namespace />permissionNavigationSearch" placeholder="<%= LanguageUtil.get(request, "search") %>" type="text" />
 	</div>
 
 	<div class="lfr-permission-navigation" id="<portlet:namespace />permissionNavigationDataContainer">
@@ -48,7 +48,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 				<portlet:param name="roleId" value="<%= String.valueOf(role.getRoleId()) %>" />
 			</liferay-portlet:renderURL>
 
-			<div class='permission-navigation-item-summary <%= Validator.isNull(portletResource)? "selected" : "" %>'>
+			<div class="permission-navigation-item-summary <%= Validator.isNull(portletResource)? "selected" : "" %>">
 				<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= viewPermissionsURL.toString() %>">
 					<liferay-ui:message key="summary" />
 				</aui:a>
@@ -69,7 +69,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 					data.put("resource-href", editPermissionsResourceURL.toString());
 					%>
 
-					<div class='permission-navigation-item-users-admin <%= portletResource.equals(usersAdminPortlet.getPortletId())? "selected" : "" %>'>
+					<div class="permission-navigation-item-users-admin <%= portletResource.equals(usersAdminPortlet.getPortletId())? "selected" : "" %>">
 						<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= editPermissionsURL.toString() %>">
 							<%= PortalUtil.getPortletLongTitle(usersAdminPortlet, application, locale) %>
 						</aui:a>
@@ -91,7 +91,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 								<i class="icon-caret-down"></i>
 								<i class="icon-caret-right"></i>
 							</span>
-
 							<span><liferay-ui:message key="control-panel" /></span>
 						</div>
 
@@ -99,7 +98,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 							<div class="permission-navigation-section">
 								<ul class="permission-navigation-item-content">
 									<li class="permission-navigation-item-container">
-										<span class='permission-navigation-item <%= portletResource.equals(PortletKeys.PORTAL)? "selected" : "" %>'>
+										<span class="permission-navigation-item <%= portletResource.equals(PortletKeys.PORTAL)? "selected" : "" %>">
 											<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= editPermissionsURL.toString() %>">
 												<liferay-ui:message key="general-permissions" />
 											</aui:a>
@@ -120,7 +119,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 												<i class="icon-caret-down"></i>
 												<i class="icon-caret-right"></i>
 											</span>
-
 											<span><%= panelCategory.getLabel(locale) %></span>
 										</div>
 
@@ -130,7 +128,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 											for (PanelApp panelApp : panelApps) {
 												Portlet panelAppPortlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), panelApp.getPortletId());
 
-												if (Validator.equals(panelAppPortlet.getControlPanelEntryClass(), com.liferay.portal.kernel.portlet.OmniadminControlPanelEntry.class.getName())) {
+												if (Objects.equals(panelAppPortlet.getControlPanelEntryClass(), com.liferay.portal.kernel.portlet.OmniadminControlPanelEntry.class.getName())) {
 													continue;
 												}
 
@@ -142,7 +140,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 											%>
 
 												<li class="permission-navigation-item-container">
-													<span class='permission-navigation-item <%= portletResource.equals(panelAppPortlet.getPortletId())? "selected" : "" %>'>
+													<span class="permission-navigation-item <%= portletResource.equals(panelAppPortlet.getPortletId())? "selected" : "" %>">
 														<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= editPermissionsURL.toString() %>">
 															<%= PortalUtil.getPortletLongTitle(panelAppPortlet, application, locale) %>
 														</aui:a>
@@ -172,7 +170,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 						<i class="icon-caret-down"></i>
 						<i class="icon-caret-right"></i>
 					</span>
-
 					<span><liferay-ui:message key="site-administration" /></span>
 				</div>
 
@@ -190,7 +187,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 										<i class="icon-caret-down"></i>
 										<i class="icon-caret-right"></i>
 									</span>
-
 									<span><%= panelCategory.getLabel(locale) %></span>
 								</div>
 
@@ -208,7 +204,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 									%>
 
 										<li class="permission-navigation-item-container">
-											<span class='permission-navigation-item <%= portletResource.equals(panelAppPortlet.getPortletId())? "selected" : "" %>'>
+											<span class="permission-navigation-item <%= portletResource.equals(panelAppPortlet.getPortletId())? "selected" : "" %>">
 												<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= editPermissionsURL.toString() %>">
 													<%= PortalUtil.getPortletLongTitle(panelAppPortlet, application, locale) %>
 												</aui:a>
@@ -243,7 +239,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 								<i class="icon-caret-down"></i>
 								<i class="icon-caret-right"></i>
 							</span>
-
 							<span><liferay-ui:message key="applications" /></span>
 						</div>
 
@@ -269,7 +264,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 							%>
 
 								<li class="permission-navigation-item-container">
-									<span class='permission-navigation-item <%= portletResource.equals(curPortlet.getPortletId())? "selected" : "" %>'>
+									<span class="permission-navigation-item <%= portletResource.equals(curPortlet.getPortletId())? "selected" : "" %>">
 										<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= editPermissionsURL.toString() %>">
 											<%= PortalUtil.getPortletLongTitle(curPortlet, application, locale) %>
 										</aui:a>
@@ -292,7 +287,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 							<i class="icon-caret-down"></i>
 							<i class="icon-caret-right"></i>
 						</span>
-
 						<span><liferay-ui:message key="user" /></span>
 					</div>
 
@@ -310,7 +304,6 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 											<i class="icon-caret-down"></i>
 											<i class="icon-caret-right"></i>
 										</span>
-
 										<span><%= panelCategory.getLabel(locale) %></span>
 									</div>
 
@@ -328,7 +321,7 @@ PanelCategoryRegistry panelCategoryRegistry = (PanelCategoryRegistry)request.get
 										%>
 
 											<li class="permission-navigation-item-container">
-												<span class='permission-navigation-item <%= portletResource.equals(panelAppPortlet.getPortletId())? "selected" : "" %>'>
+												<span class="permission-navigation-item <%= portletResource.equals(panelAppPortlet.getPortletId())? "selected" : "" %>">
 													<aui:a cssClass="permission-navigation-link" data="<%= data %>" href="<%= editPermissionsURL.toString() %>">
 														<%= PortalUtil.getPortletLongTitle(panelAppPortlet, application, locale) %>
 													</aui:a>

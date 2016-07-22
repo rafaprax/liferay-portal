@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -57,6 +56,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -724,7 +724,7 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CalendarBooking calendarBooking : list) {
-					if (!Validator.equals(uuid, calendarBooking.getUuid())) {
+					if (!Objects.equals(uuid, calendarBooking.getUuid())) {
 						list = null;
 
 						break;
@@ -1200,8 +1200,8 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchBookingException(msg.toString());
@@ -1245,7 +1245,7 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 		if (result instanceof CalendarBooking) {
 			CalendarBooking calendarBooking = (CalendarBooking)result;
 
-			if (!Validator.equals(uuid, calendarBooking.getUuid()) ||
+			if (!Objects.equals(uuid, calendarBooking.getUuid()) ||
 					(groupId != calendarBooking.getGroupId())) {
 				result = null;
 			}
@@ -1541,7 +1541,7 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 
 			if ((list != null) && !list.isEmpty()) {
 				for (CalendarBooking calendarBooking : list) {
-					if (!Validator.equals(uuid, calendarBooking.getUuid()) ||
+					if (!Objects.equals(uuid, calendarBooking.getUuid()) ||
 							(companyId != calendarBooking.getCompanyId())) {
 						list = null;
 
@@ -3614,8 +3614,8 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchBookingException(msg.toString());
@@ -3839,8 +3839,8 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchBookingException(msg.toString());
@@ -3885,7 +3885,7 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 			CalendarBooking calendarBooking = (CalendarBooking)result;
 
 			if ((calendarId != calendarBooking.getCalendarId()) ||
-					!Validator.equals(vEventUid, calendarBooking.getVEventUid())) {
+					!Objects.equals(vEventUid, calendarBooking.getVEventUid())) {
 				result = null;
 			}
 		}
@@ -5729,8 +5729,8 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 					primaryKey);
 
 			if (calendarBooking == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchBookingException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -6076,8 +6076,8 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 		CalendarBooking calendarBooking = fetchByPrimaryKey(primaryKey);
 
 		if (calendarBooking == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchBookingException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -6108,12 +6108,14 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 	 */
 	@Override
 	public CalendarBooking fetchByPrimaryKey(Serializable primaryKey) {
-		CalendarBooking calendarBooking = (CalendarBooking)entityCache.getResult(CalendarBookingModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(CalendarBookingModelImpl.ENTITY_CACHE_ENABLED,
 				CalendarBookingImpl.class, primaryKey);
 
-		if (calendarBooking == _nullCalendarBooking) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		CalendarBooking calendarBooking = (CalendarBooking)serializable;
 
 		if (calendarBooking == null) {
 			Session session = null;
@@ -6129,8 +6131,7 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 				}
 				else {
 					entityCache.putResult(CalendarBookingModelImpl.ENTITY_CACHE_ENABLED,
-						CalendarBookingImpl.class, primaryKey,
-						_nullCalendarBooking);
+						CalendarBookingImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -6184,18 +6185,20 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			CalendarBooking calendarBooking = (CalendarBooking)entityCache.getResult(CalendarBookingModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(CalendarBookingModelImpl.ENTITY_CACHE_ENABLED,
 					CalendarBookingImpl.class, primaryKey);
 
-			if (calendarBooking == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, calendarBooking);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (CalendarBooking)serializable);
+				}
 			}
 		}
 
@@ -6237,7 +6240,7 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(CalendarBookingModelImpl.ENTITY_CACHE_ENABLED,
-					CalendarBookingImpl.class, primaryKey, _nullCalendarBooking);
+					CalendarBookingImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -6482,23 +6485,4 @@ public class CalendarBookingPersistenceImpl extends BasePersistenceImpl<Calendar
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final CalendarBooking _nullCalendarBooking = new CalendarBookingImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<CalendarBooking> toCacheModel() {
-				return _nullCalendarBookingCacheModel;
-			}
-		};
-
-	private static final CacheModel<CalendarBooking> _nullCalendarBookingCacheModel =
-		new CacheModel<CalendarBooking>() {
-			@Override
-			public CalendarBooking toEntityModel() {
-				return _nullCalendarBooking;
-			}
-		};
 }

@@ -25,12 +25,22 @@
 </tr>
 <tr>
 	<td>DDM_TEMPLATE_INFO</td>
-	<td>//div[contains(@id,'DDMPortlet')]//div[contains(@class,'empty-result-message')]//div[@class='card-footer']</td>
+	<td>//div[contains(@id,'DDMPortlet')]//div[contains(@class,'empty-result-message')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DRAFT_AUTO_SAVE</td>
 	<td>//div/small[contains(@id,'saveStatus') and contains(.,'Draft saved at')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EMPTY_INFO</td>
+	<td>//div[contains(@class,'empty-result-message')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EMPTY_INFO_2</td>
+	<td>//div[contains(@class,'panel-default')][2]//div[contains(@class,'empty-result-message')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -41,6 +51,16 @@
 <tr>
 	<td>ERROR_1</td>
 	<td>xpath=(//div[contains(@class,'alert') and (contains(@class,'alert-error') or contains(@class,'alert-danger'))])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ERROR_1_COLUMN_1</td>
+	<td>xpath=(//div[contains(@id,'column-1')]/div[contains(@class,'alert') and (contains(@class,'alert-error') or contains(@class,'alert-danger'))])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ERROR_1_COLUMN_2</td>
+	<td>xpath=(//div[contains(@id,'column-2')]/div[contains(@class,'alert') and (contains(@class,'alert-error') or contains(@class,'alert-danger'))])[1]</td>
 	<td></td>
 </tr>
 <tr>
@@ -89,6 +109,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>ERROR_SPECIFIC_FORM_FIELD_REQUIRED</td>
+	<td>//div[contains(@data-fieldname,'${key_fieldName}')]/../../div[contains(@class,'has-error')]//div[contains(@class,'help-block')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>INFO</td>
 	<td>//div[contains(@class,'alert alert-info') and not(contains(@class,'hide'))]</td>
 	<td></td>
@@ -120,7 +145,7 @@
 </tr>
 <tr>
 	<td>INFO_NO_RESULTS_FOUND</td>
-	<td>//div[contains(@id,'EmptyResultsMessage')]//p</td>
+	<td>//div[contains(@class,'empty-result-message')]//div[contains(@class,'text-center')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -130,12 +155,12 @@
 </tr>
 <tr>
 	<td>LOGIN_URL_SUCCESS</td>
-	<td>//tr[contains(.,'Login URL')]/td/span[contains(@class,'lfr-status-success')]</td>
+	<td>//tr[contains(.,'Login URL')]/td//span[contains(@class,'lfr-status-success')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>LOGOUT_URL_SUCCESS</td>
-	<td>//tr[contains(.,'Logout URL')]/td/span[contains(@class,'lfr-status-success')]</td>
+	<td>//tr[contains(.,'Logout URL')]/td//span[contains(@class,'lfr-status-success')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -146,21 +171,6 @@
 <tr>
 	<td>NO_ENTRIES</td>
 	<td>//div[contains(@id,'Empty') and contains(.,'No entries were found')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>NO_TOP_POSTERS</td>
-	<td>//p[contains(.,'There are no top posters.')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>EMPTY_INFO</td>
-	<td>//div[contains(@class,'empty-result-message')]//div[@class='card-footer']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>EMPTY_INFO_2</td>
-	<td>//div[contains(@class,'panel-default')][2]//div[contains(@class,'empty-result-message')]//div[@class='card-footer']</td>
 	<td></td>
 </tr>
 <tr>
@@ -179,8 +189,13 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SEE_MORE_DETAILS_LINK</td>
+	<td>//a[contains(.,'See More Details')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SERVER_URL_SUCCESS</td>
-	<td>//tr[contains(.,'Server URL')]/td/span[contains(@class,'lfr-status-success')]</td>
+	<td>//tr[contains(.,'Server URL')]/td//span[contains(@class,'lfr-status-success')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -226,6 +241,11 @@
 <tr>
 	<td>UNIQUE_SUCCESS</td>
 	<td>//div[contains(@class,'alert') and contains(@class,'alert-success') and contains(.,'${key_uniqueSuccess}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>URL_ERROR</td>
+	<td>//code[@class='lfr-url-error']</td>
 	<td></td>
 </tr>
 <tr>

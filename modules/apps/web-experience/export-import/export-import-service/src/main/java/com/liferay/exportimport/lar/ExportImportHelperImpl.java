@@ -30,6 +30,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.exportimport.kernel.lar.UserIdStrategy;
+import com.liferay.exportimport.portlet.data.handler.provider.PortletDataHandlerProvider;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Disjunction;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -229,31 +230,15 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			defaultRange);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public Layout getExportableLayout(ThemeDisplay themeDisplay)
 		throws PortalException {
 
-		Layout layout = themeDisplay.getLayout();
-
-		if (!layout.isTypeControlPanel()) {
-			return layout;
-		}
-
-		Group scopeGroup = themeDisplay.getScopeGroup();
-
-		if (scopeGroup.isLayout()) {
-			layout = _layoutLocalService.getLayout(scopeGroup.getClassPK());
-		}
-		else if (!scopeGroup.isCompany()) {
-			long defaultPlid = _layoutLocalService.getDefaultPlid(
-				themeDisplay.getSiteGroupId());
-
-			if (defaultPlid > 0) {
-				layout = _layoutLocalService.getLayout(defaultPlid);
-			}
-		}
-
-		return layout;
+		return themeDisplay.getLayout();
 	}
 
 	@Override
@@ -1250,15 +1235,8 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			return false;
 		}
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			companyId, portletId);
-
-		if ((portlet == null) || portlet.isUndeployedPortlet()) {
-			return false;
-		}
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(companyId, portletId);
 
 		if (portletDataHandler == null) {
 			return false;
@@ -1271,7 +1249,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		return MapUtil.getBoolean(
 			parameterMap,
 			PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE +
-				portlet.getRootPortletId());
+				PortletConstants.getRootPortletId(portletId));
 	}
 
 	protected Map<String, Boolean> getExportPortletSetupControlsMap(
@@ -1374,15 +1352,8 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 			return false;
 		}
 
-		Portlet portlet = _portletLocalService.getPortletById(
-			companyId, portletId);
-
-		if (portlet == null) {
-			return false;
-		}
-
 		PortletDataHandler portletDataHandler =
-			portlet.getPortletDataHandlerInstance();
+			_portletDataHandlerProvider.provide(companyId, portletId);
 
 		if ((portletDataHandler == null) ||
 			((portletDataElement == null) &&
@@ -1398,7 +1369,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 		return MapUtil.getBoolean(
 			parameterMap,
 			PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE +
-				portlet.getRootPortletId());
+				PortletConstants.getRootPortletId(portletId));
 	}
 
 	protected Map<String, Boolean> getImportPortletSetupControlsMap(
@@ -1635,6 +1606,10 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 	private GroupLocalService _groupLocalService;
 	private LayoutLocalService _layoutLocalService;
 	private LayoutService _layoutService;
+
+	@Reference
+	private PortletDataHandlerProvider _portletDataHandlerProvider;
+
 	private PortletLocalService _portletLocalService;
 	private SystemEventLocalService _systemEventLocalService;
 	private UserLocalService _userLocalService;
@@ -1676,7 +1651,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 				}
 
 				PortletDataHandler portletDataHandler =
-					portlet.getPortletDataHandlerInstance();
+					_portletDataHandlerProvider.provide(portlet);
 
 				if (portletDataHandler == null) {
 					return;

@@ -153,7 +153,6 @@ if (portletTitleBasedNavigation) {
 		</liferay-ui:error>
 
 		<liferay-ui:error exception="<%= CaptchaConfigurationException.class %>" message="a-captcha-error-occurred-please-contact-an-administrator" />
-		<liferay-ui:error exception="<%= CaptchaMaxChallengesException.class %>" message="maximum-number-of-captcha-attempts-exceeded" />
 		<liferay-ui:error exception="<%= CaptchaTextException.class %>" message="text-verification-failed" />
 		<liferay-ui:error exception="<%= DuplicateFileEntryException.class %>" message="please-enter-a-unique-document-name" />
 
@@ -205,12 +204,12 @@ if (portletTitleBasedNavigation) {
 						</span>
 
 						<%
-						request.setAttribute("edit_message.jsp-category", null);
-						request.setAttribute("edit_message.jsp-editable", Boolean.FALSE);
-						request.setAttribute("edit_message.jsp-message", curParentMessage);
 						request.setAttribute("edit-message.jsp-showDeletedAttachmentsFileEntries", Boolean.TRUE);
 						request.setAttribute("edit-message.jsp-showPermanentLink", Boolean.TRUE);
 						request.setAttribute("edit-message.jsp-showRecentPosts", Boolean.TRUE);
+						request.setAttribute("edit_message.jsp-category", null);
+						request.setAttribute("edit_message.jsp-editable", Boolean.FALSE);
+						request.setAttribute("edit_message.jsp-message", curParentMessage);
 						request.setAttribute("edit_message.jsp-thread", thread);
 						%>
 

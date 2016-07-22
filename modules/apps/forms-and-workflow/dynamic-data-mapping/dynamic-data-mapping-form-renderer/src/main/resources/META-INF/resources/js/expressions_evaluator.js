@@ -8,8 +8,8 @@ AUI.add(
 						value: true
 					},
 
-					evaluationURL: {
-						value: '/o/dynamic-data-mapping-form-evaluator/'
+					evaluatorURL: {
+						valueFn: '_valueEvaluatorURL'
 					},
 
 					form: {
@@ -23,7 +23,6 @@ AUI.add(
 						var instance = this;
 
 						instance.after('evaluationEnded', instance._afterEvaluationEnded);
-						instance.after('evaluationStarted', instance._afterEvaluationStarted);
 					},
 
 					evaluate: function(callback) {
@@ -33,11 +32,19 @@ AUI.add(
 
 						var form = instance.get('form');
 
-						if (enabled && form && !instance.evaluating()) {
+						if (instance.isEvaluating()) {
+							instance.stop();
+						}
+
+						if (enabled && form) {
 							instance.fire('evaluationStarted');
+
+							form.disableSubmitButton();
 
 							instance._evaluate(
 								function(result) {
+									form.enableSubmitButton();
+
 									instance.fire(
 										'evaluationEnded',
 										{
@@ -53,22 +60,24 @@ AUI.add(
 						}
 					},
 
-					evaluating: function() {
+					isEvaluating: function() {
 						var instance = this;
 
-						return instance._evaluating === true;
+						return instance._request !== undefined;
+					},
+
+					stop: function() {
+						var instance = this;
+
+						instance._request.destroy();
+
+						delete instance._request;
 					},
 
 					_afterEvaluationEnded: function() {
 						var instance = this;
 
-						instance._evaluating = null;
-					},
-
-					_afterEvaluationStarted: function() {
-						var instance = this;
-
-						instance._evaluating = true;
+						instance.stop();
 					},
 
 					_evaluate: function(callback) {
@@ -76,8 +85,8 @@ AUI.add(
 
 						var form = instance.get('form');
 
-						A.io.request(
-							instance.get('evaluationURL'),
+						instance._request = A.io.request(
+							instance.get('evaluatorURL'),
 							{
 								data: {
 									languageId: form.get('locale'),
@@ -87,8 +96,12 @@ AUI.add(
 								dataType: 'JSON',
 								method: 'POST',
 								on: {
-									failure: function() {
-										callback.call(instance, null);
+									failure: function(event) {
+										if (event.details[1].statusText !== 'abort') {
+											callback.call(instance, null);
+										}
+
+										callback.call(instance, {});
 									},
 									success: function() {
 										var result = this.get('responseData');
@@ -98,6 +111,20 @@ AUI.add(
 								}
 							}
 						);
+					},
+
+					_valueEvaluatorURL: function() {
+						var instance = this;
+
+						var evaluatorURL;
+
+						var form = instance.get('form');
+
+						if (form) {
+							evaluatorURL = form.get('evaluatorURL');
+						}
+
+						return evaluatorURL;
 					}
 				}
 			}

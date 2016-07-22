@@ -52,29 +52,23 @@ public final class LoggerUtil {
 
 		StringBuilder parentSB = new StringBuilder();
 
-		parentSB.append("{");
-		parentSB.append("cssClass: '");
+		parentSB.append("{cssClass: '");
 		parentSB.append(
 			StringEscapeUtils.escapeEcmaScript(
 				childLoggerElement.getClassName()));
-		parentSB.append("', ");
-		parentSB.append("id: '");
+		parentSB.append("', id: '");
 		parentSB.append(
 			StringEscapeUtils.escapeEcmaScript(childLoggerElement.getID()));
-		parentSB.append("', ");
-		parentSB.append("innerHTML: '");
+		parentSB.append("', innerHTML: '");
 		parentSB.append(
 			StringEscapeUtils.escapeEcmaScript(childLoggerElement.getText()));
-		parentSB.append("', ");
-		parentSB.append("name: '");
+		parentSB.append("', name: '");
 		parentSB.append(
 			StringEscapeUtils.escapeEcmaScript(childLoggerElement.getName()));
-		parentSB.append("', ");
-		parentSB.append("parentId: '");
+		parentSB.append("', parentId: '");
 		parentSB.append(
 			StringEscapeUtils.escapeEcmaScript(parentLoggerElement.getID()));
-		parentSB.append("'");
-		parentSB.append("}");
+		parentSB.append("'}");
 
 		StringBuilder childSB = new StringBuilder();
 
@@ -92,9 +86,11 @@ public final class LoggerUtil {
 			String escapedAttributeValue = StringEscapeUtils.escapeEcmaScript(
 				childLoggerElement.getAttributeValue(attributeName));
 
-			childSB.append(
-				"'" + escapedAttributeName + "': '" + escapedAttributeValue +
-					"'");
+			childSB.append("'");
+			childSB.append(escapedAttributeName);
+			childSB.append("': '");
+			childSB.append(escapedAttributeValue);
+			childSB.append("'");
 
 			if (iterator.hasNext()) {
 				childSB.append(", ");
@@ -276,15 +272,21 @@ public final class LoggerUtil {
 	}
 
 	public static void startLogger() throws Exception {
-		if (isLoggerStarted() || !PropsValues.SELENIUM_LOGGER_ENABLED) {
-			return;
-		}
+		CommandLoggerHandler.startRunning();
 
-		_startLogger();
+		SummaryLoggerHandler.startRunning();
+
+		if (!isLoggerStarted() && PropsValues.SELENIUM_LOGGER_ENABLED) {
+			_startLogger();
+		}
 	}
 
 	public static void stopLogger() throws PoshiRunnerLoggerException {
 		try {
+			CommandLoggerHandler.stopRunning();
+
+			SummaryLoggerHandler.stopRunning();
+
 			if (!PropsValues.SELENIUM_LOGGER_ENABLED) {
 				String mainCSSContent = _readResource(
 					"META-INF/resources/css/main.css");

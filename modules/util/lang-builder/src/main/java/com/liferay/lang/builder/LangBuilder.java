@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.io.OutputStreamWriter;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedWriter;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
+import com.liferay.portal.kernel.language.LanguageConstants;
+import com.liferay.portal.kernel.language.LanguageValidator;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
 import com.liferay.portal.kernel.util.PropertiesUtil;
@@ -26,6 +28,8 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.tools.ArgumentsUtil;
+import com.liferay.portal.tools.GitException;
+import com.liferay.portal.tools.GitUtil;
 
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
@@ -44,6 +48,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -51,6 +56,7 @@ import java.util.TreeMap;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Hugo Huijser
  */
 public class LangBuilder {
 
@@ -66,7 +72,8 @@ public class LangBuilder {
 		System.setProperty("line.separator", StringPool.NEW_LINE);
 
 		String langDirName = GetterUtil.getString(
-			arguments.get("lang.dir"), LangBuilderArgs.LANG_DIR_NAME);
+			arguments.get(LanguageConstants.KEY_DIR),
+			LangBuilderArgs.LANG_DIR_NAME);
 		String langFileName = GetterUtil.getString(
 			arguments.get("lang.file"), LangBuilderArgs.LANG_FILE_NAME);
 		boolean plugin = GetterUtil.getBoolean(
@@ -78,6 +85,21 @@ public class LangBuilder {
 		String translateClientId = arguments.get("lang.translate.client.id");
 		String translateClientSecret = arguments.get(
 			"lang.translate.client.secret");
+
+		boolean buildCurrentBranch = ArgumentsUtil.getBoolean(
+			arguments, "build.current.branch", false);
+
+		if (buildCurrentBranch) {
+			String gitWorkingBranchName = ArgumentsUtil.getString(
+				arguments, "git.working.branch.name", "master");
+
+			_processCurrentBranch(
+				langFileName, plugin, portalLanguagePropertiesFileName,
+				translate, translateClientId, translateClientSecret,
+				gitWorkingBranchName);
+
+			return;
+		}
 
 		try {
 			new LangBuilder(
@@ -209,6 +231,54 @@ public class LangBuilder {
 		_createProperties(content, "tr"); // Turkish
 		_createProperties(content, "uk"); // Ukrainian
 		_createProperties(content, "vi"); // Vietnamese
+	}
+
+	private static String _getSpecialPropertyValue(String key) {
+		if (key.equals(LanguageConstants.KEY_DIR)) {
+			return LanguageConstants.VALUE_LTR;
+		}
+		else if (key.equals(LanguageConstants.KEY_LINE_BEGIN)) {
+			return LanguageConstants.VALUE_LEFT;
+		}
+		else if (key.equals(LanguageConstants.KEY_LINE_END)) {
+			return LanguageConstants.VALUE_RIGHT;
+		}
+
+		return StringPool.BLANK;
+	}
+
+	private static void _processCurrentBranch(
+			String langFileName, boolean plugin,
+			String portalLanguagePropertiesFileName, boolean translate,
+			String translateClientId, String translateClientSecret,
+			String gitWorkingBranchName)
+		throws Exception {
+
+		try {
+			String basedir = ".././";
+
+			List<String> fileNames = GitUtil.getCurrentBranchFileNames(
+				basedir, gitWorkingBranchName);
+
+			for (String fileName : fileNames) {
+				int pos = fileName.indexOf(
+					"content/" + langFileName + ".properties");
+
+				if (pos == -1) {
+					continue;
+				}
+
+				String langDirName = basedir + fileName.substring(0, pos + 7);
+
+				new LangBuilder(
+					langDirName, langFileName, plugin,
+					portalLanguagePropertiesFileName, translate,
+					translateClientId, translateClientSecret);
+			}
+		}
+		catch (GitException ge) {
+			System.out.println(ge.getMessage());
+		}
 	}
 
 	private void _copyProperties(File file, String languageId)
@@ -346,17 +416,8 @@ public class LangBuilder {
 								translatedText = value + AUTOMATIC_COPY;
 							}
 						}
-						else if (key.equals("lang.dir")) {
-							translatedText = "ltr";
-						}
-						else if (key.equals("lang.line.begin")) {
-							translatedText = "left";
-						}
-						else if (key.equals("lang.line.end")) {
-							translatedText = "right";
-						}
-						else if (key.startsWith("lang.user.name.")) {
-							translatedText = "";
+						else if (LanguageValidator.isSpecialPropertyKey(key)) {
+							translatedText = _getSpecialPropertyValue(key);
 						}
 						else if (languageId.equals("el") &&
 								 (key.equals("enabled") || key.equals("on") ||

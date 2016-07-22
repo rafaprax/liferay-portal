@@ -23,8 +23,8 @@ ArticleSearch articleSearchContainer = journalDisplayContext.getSearchContainer(
 
 request.setAttribute("view.jsp-total", String.valueOf(articleSearchContainer.getTotal()));
 
-request.setAttribute("view_entries.jsp-entryStart", String.valueOf(articleSearchContainer.getStart()));
 request.setAttribute("view_entries.jsp-entryEnd", String.valueOf(articleSearchContainer.getEnd()));
+request.setAttribute("view_entries.jsp-entryStart", String.valueOf(articleSearchContainer.getStart()));
 
 String displayStyle = journalDisplayContext.getDisplayStyle();
 
@@ -123,7 +123,6 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 
 						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
 							<liferay-ui:search-container-column-jsp
-								cssClass="list-group-item-field"
 								path="/article_action.jsp"
 							/>
 						</c:if>
@@ -131,7 +130,7 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 					<c:when test='<%= displayStyle.equals("icon") %>'>
 
 						<%
-						row.setCssClass("article-entry col-md-2 col-sm-4 col-xs-6 " + row.getCssClass());
+						row.setCssClass("entry-card lfr-asset-item " + row.getCssClass());
 						%>
 
 						<liferay-ui:search-container-column-text>
@@ -177,15 +176,15 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						/>
 
 						<liferay-ui:search-container-column-jsp
-							cssClass="text-strong"
+							cssClass="table-cell-content"
+							href="<%= rowURL %>"
 							name="title"
 							path="/article_title.jsp"
-							truncate="<%= true %>"
 						/>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-content"
 							name="description"
-							truncate="<%= true %>"
 							value="<%= HtmlUtil.escape(curArticle.getDescription(locale)) %>"
 						/>
 
@@ -219,7 +218,6 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 
 						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
 							<liferay-ui:search-container-column-jsp
-								cssClass="list-group-item-field"
 								path="/article_action.jsp"
 							/>
 						</c:if>
@@ -282,7 +280,6 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 
 						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
 							<liferay-ui:search-container-column-jsp
-								cssClass="list-group-item-field"
 								path="/folder_action.jsp"
 							/>
 						</c:if>
@@ -290,7 +287,7 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 					<c:when test='<%= displayStyle.equals("icon") %>'>
 
 						<%
-						row.setCssClass("col-md-3 col-sm-4 folder-entry " + row.getCssClass());
+						row.setCssClass("entry-card lfr-asset-folder " + row.getCssClass());
 						%>
 
 						<liferay-ui:search-container-column-text colspan="<%= 2 %>">
@@ -317,16 +314,15 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						/>
 
 						<liferay-ui:search-container-column-text
-							cssClass="text-strong"
+							cssClass="table-cell-content"
 							href="<%= rowURL.toString() %>"
 							name="title"
-							truncate="<%= true %>"
 							value="<%= HtmlUtil.escape(curFolder.getName()) %>"
 						/>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-content"
 							name="description"
-							truncate="<%= true %>"
 							value="<%= HtmlUtil.escape(curFolder.getDescription()) %>"
 						/>
 
@@ -357,7 +353,6 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 
 						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
 							<liferay-ui:search-container-column-jsp
-								cssClass="list-group-item-field"
 								path="/folder_action.jsp"
 							/>
 						</c:if>

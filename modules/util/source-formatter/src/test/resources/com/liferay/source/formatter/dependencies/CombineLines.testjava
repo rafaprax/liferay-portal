@@ -16,6 +16,9 @@ package com.liferay.source.formatter.dependencies;
 
 import aQute.bnd.annotation.metatype.Meta;
 
+import com.liferay.dynamic.data.mapping.annotations.DDMFormField;
+import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
+import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
 import com.liferay.portal.kernel.provider.AddPortletProvider;
 import com.liferay.portal.kernel.provider.ViewPortletProvider;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -48,14 +51,35 @@ public class CombineLines
 	public static final String
 		STRING_1;
 
+	@DDMFormField(
+		label =
+			"%field-with-a-long-name-so-it-will-surpass-the-max-number-of-characters-for-a-single-line",
+		properties = {
+			"tooltip=%tooltip-with-a-long-name-so-it-will-surpass-the-max-" +
+				"number-of-characters-for-a-single-line"
+		}
+	)
+	public List<String>
+		getList() {
+
+		return new ArrayList<>();
+	}
+
 	@Meta.AD(
 		deflt = "false", required = false
 	)
-	public String getString(
+	public String getString1(
 		String test) {
 
 		return
 			test;
+	}
+
+	public String getString2(String test) {
+		return
+			StringUtil.replace(
+				test, "Hello World Hello World Hello",
+				"World Hello World Hello World");
 	}
 
 	public String[][] getStringArray() {
@@ -76,6 +100,12 @@ public class CombineLines
 
 		if ((i1 == 0) ||
 			(i2 == 0)) {
+		}
+
+		if (StringUtil.contains(
+				test1, "Hello World Hello World Hello") ||
+			StringUtil.contains(
+				test2, "Hello World Hello World Hello World Hello")) {
 		}
 	}
 
@@ -185,6 +215,21 @@ public class CombineLines
 			"Hello World " +
 				"Hello World Hello" + "Hello World Hello World Hello";
 	}
+
+	public void method9(String s) {
+		try (UnsyncBufferedReader unsyncBufferedReader =
+				new UnsyncBufferedReader(
+					new UnsyncStringReader(s))) {
+
+			return;
+		}
+	}
+
+	protected final List<String>
+		listWithAMediumLongVariableName = new ArrayList<>();
+	protected final List<String>
+		listWithAnLongerNameThanTheMediumLongNameOne =
+			new ArrayList<>();
 
 	private class SubClass1 extends
 		SomeOtherClassWithALongNameThatDoesNotFitOnPreviousLine {

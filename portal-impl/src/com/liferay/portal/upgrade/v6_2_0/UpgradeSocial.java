@@ -57,15 +57,15 @@ public class UpgradeSocial extends UpgradeProcess {
 				classPK, type, extraData);
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				JSONObject extraDataJSONObject = null;
-
-				while (resultSet.next()) {
-					extraDataJSONObject =
+				if (resultSet.next()) {
+					JSONObject extraDataJSONObject =
 						extraDataFactory.createExtraDataJSONObject(
 							resultSet, extraData);
+
+					return extraDataJSONObject.toString();
 				}
 
-				return extraDataJSONObject.toString();
+				return null;
 			}
 		}
 	}
@@ -175,8 +175,8 @@ public class UpgradeSocial extends UpgradeProcess {
 
 				sb.append("update ");
 				sb.append(tableName);
-				sb.append(" set classPK = (select resourcePrimKey ");
-				sb.append("from JournalArticle where id_ = ");
+				sb.append(" set classPK = (select resourcePrimKey from ");
+				sb.append("JournalArticle where id_ = ");
 				sb.append(tableName);
 				sb.append(".classPK) where classNameId = ");
 				sb.append(classNameId);

@@ -114,6 +114,25 @@ public abstract class ScreensJournalArticleServiceBaseImpl
 	}
 
 	/**
+	 * Returns the screens ratings entry remote service.
+	 *
+	 * @return the screens ratings entry remote service
+	 */
+	public com.liferay.screens.service.ScreensRatingsEntryService getScreensRatingsEntryService() {
+		return screensRatingsEntryService;
+	}
+
+	/**
+	 * Sets the screens ratings entry remote service.
+	 *
+	 * @param screensRatingsEntryService the screens ratings entry remote service
+	 */
+	public void setScreensRatingsEntryService(
+		com.liferay.screens.service.ScreensRatingsEntryService screensRatingsEntryService) {
+		this.screensRatingsEntryService = screensRatingsEntryService;
+	}
+
+	/**
 	 * Returns the counter local service.
 	 *
 	 * @return the counter local service
@@ -403,8 +422,10 @@ public abstract class ScreensJournalArticleServiceBaseImpl
 	protected com.liferay.screens.service.ScreensAssetEntryService screensAssetEntryService;
 	@BeanReference(type = com.liferay.screens.service.ScreensDDLRecordService.class)
 	protected com.liferay.screens.service.ScreensDDLRecordService screensDDLRecordService;
-	@BeanReference(type = com.liferay.screens.service.ScreensJournalArticleService.class)
+	@BeanReference(type = ScreensJournalArticleService.class)
 	protected ScreensJournalArticleService screensJournalArticleService;
+	@BeanReference(type = com.liferay.screens.service.ScreensRatingsEntryService.class)
+	protected com.liferay.screens.service.ScreensRatingsEntryService screensRatingsEntryService;
 	@ServiceReference(type = com.liferay.counter.kernel.service.CounterLocalService.class)
 	protected com.liferay.counter.kernel.service.CounterLocalService counterLocalService;
 	@ServiceReference(type = com.liferay.journal.service.JournalArticleLocalService.class)

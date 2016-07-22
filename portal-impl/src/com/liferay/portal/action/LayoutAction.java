@@ -100,10 +100,10 @@ public class LayoutAction extends Action {
 				String redirectParam = "redirect";
 
 				if (Validator.isNotNull(PropsValues.AUTH_LOGIN_PORTLET_NAME)) {
-					redirectParam =
-						PortalUtil.getPortletNamespace(
-							PropsValues.AUTH_LOGIN_PORTLET_NAME) +
-								redirectParam;
+					String portletNamespace = PortalUtil.getPortletNamespace(
+						PropsValues.AUTH_LOGIN_PORTLET_NAME);
+
+					redirectParam = portletNamespace + redirectParam;
 				}
 
 				String authLoginURL = SSOUtil.getSignInURL(
@@ -119,7 +119,7 @@ public class LayoutAction extends Action {
 
 				if (Validator.isNull(authLoginURL)) {
 					PortletURL loginURL = PortletURLFactoryUtil.create(
-						request, PortletKeys.LOGIN, themeDisplay.getPlid(),
+						request, PortletKeys.LOGIN,
 						PortletRequest.RENDER_PHASE);
 
 					loginURL.setParameter(

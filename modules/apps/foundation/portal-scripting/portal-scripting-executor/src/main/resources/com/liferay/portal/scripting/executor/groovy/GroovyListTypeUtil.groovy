@@ -15,15 +15,18 @@
 package com.liferay.portal.scripting.executor.groovy;
 
 import com.liferay.portal.kernel.model.ListType;
-import com.liferay.portal.kernel.service.ListTypeServiceUtil;
+import com.liferay.portal.kernel.service.ListTypeLocalServiceUtil;
 
+/**
+ * @author Michael C. Han
+ */
 class GroovyListTypeUtil {
 
-	static Map listTypesmap = new HashMap<String, List>();
+	static Map listTypesmap = new HashMap<>();
 
 	static List<ListType> getListTypes(String className) {
 		if (!listTypesmap.containsKey(className)) {
-			List<ListType> listTypes = ListTypeServiceUtil.getListTypes(
+			List<ListType> listTypes = ListTypeLocalServiceUtil.getListTypes(
 				className)
 
 			listTypesmap.put(className, listTypes)

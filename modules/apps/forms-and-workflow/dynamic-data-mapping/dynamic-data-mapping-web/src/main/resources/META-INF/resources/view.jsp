@@ -51,38 +51,34 @@ structureSearch.setOrderByType(ddmDisplayContext.getOrderByType());
 <liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureReferencedByTemplates.class %>" message="the-structure-cannot-be-deleted-because-it-is-required-by-one-or-more-templates" />
 <liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureThatHasChild.class %>" message="the-structure-cannot-be-deleted-because-it-has-one-or-more-substructures" />
 
+<liferay-ui:success key='<%= DDMPortletKeys.DYNAMIC_DATA_MAPPING + "requestProcessed" %>' message="your-request-completed-successfully" />
+
 <portlet:renderURL var="portletURL">
 	<portlet:param name="mvcPath" value="/view.jsp" />
 	<portlet:param name="tabs1" value="<%= tabs1 %>" />
 	<portlet:param name="groupId" value="<%= String.valueOf(groupId) %>" />
 </portlet:renderURL>
 
-<c:if test="<%= showToolbar %>">
-	<liferay-util:include page="/search_bar.jsp" servletContext="<%= application %>">
-		<liferay-util:param name="groupId" value="<%= String.valueOf(groupId) %>" />
-	</liferay-util:include>
-</c:if>
+<liferay-util:include page="/search_bar.jsp" servletContext="<%= application %>">
+	<liferay-util:param name="groupId" value="<%= String.valueOf(groupId) %>" />
+</liferay-util:include>
 
 <aui:form action="<%= portletURL.toString() %>" method="post" name="fm">
-	<c:if test="<%= showToolbar %>">
-		<liferay-util:include page="/toolbar.jsp" servletContext="<%= application %>">
-			<liferay-util:param name="orderByCol" value="<%= ddmDisplayContext.getOrderByCol() %>" />
-			<liferay-util:param name="orderByType" value="<%= ddmDisplayContext.getOrderByType() %>" />
-			<liferay-util:param name="searchContainerId" value="ddmStructures" />
-		</liferay-util:include>
-	</c:if>
+	<liferay-util:include page="/toolbar.jsp" servletContext="<%= application %>">
+		<liferay-util:param name="orderByCol" value="<%= ddmDisplayContext.getOrderByCol() %>" />
+		<liferay-util:param name="orderByType" value="<%= ddmDisplayContext.getOrderByType() %>" />
+		<liferay-util:param name="searchContainerId" value="ddmStructures" />
+	</liferay-util:include>
 
 	<aui:input name="redirect" type="hidden" value="<%= portletURL.toString() %>" />
 	<aui:input name="deleteStructureIds" type="hidden" />
 
 	<div class="container-fluid-1280" id="<portlet:namespace />entriesContainer">
-
 		<liferay-ui:search-container
 			id="ddmStructures"
 			rowChecker="<%= new EmptyOnClickRowChecker(renderResponse) %>"
 			searchContainer="<%= structureSearch %>"
 		>
-
 			<liferay-ui:search-container-results>
 				<%@ include file="/structure_search_results.jspf" %>
 			</liferay-ui:search-container-results>
@@ -109,7 +105,6 @@ structureSearch.setOrderByType(ddmDisplayContext.getOrderByType());
 				%>
 
 				<liferay-ui:search-container-column-text
-					cssClass="text-strong"
 					href="<%= rowHREF %>"
 					name="id"
 					orderable="<%= true %>"
@@ -118,13 +113,14 @@ structureSearch.setOrderByType(ddmDisplayContext.getOrderByType());
 				/>
 
 				<liferay-ui:search-container-column-text
-					cssClass="text-strong"
+					cssClass="table-cell-content"
 					href="<%= rowHREF %>"
 					name="name"
 					value="<%= HtmlUtil.escape(structure.getName(locale)) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
+					cssClass="table-cell-content"
 					href="<%= rowHREF %>"
 					name="description"
 					value="<%= HtmlUtil.escape(structure.getDescription(locale)) %>"
@@ -164,8 +160,6 @@ structureSearch.setOrderByType(ddmDisplayContext.getOrderByType());
 				/>
 
 				<liferay-ui:search-container-column-jsp
-					align="right"
-					cssClass="entry-action"
 					path="/structure_action.jsp"
 				/>
 			</liferay-ui:search-container-row>

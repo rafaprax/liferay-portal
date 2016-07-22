@@ -83,7 +83,7 @@ public class IncorrectWhitespace {
 		for (int i = 1; i < 10; i++) {
 			String[] stringArray1 = new String[] {"test1"};
 			String[] stringArray2 = new String[] {
-				"test1", "test2", "test3", "test4"
+				"test1", "test2", "test3", "test4", "test5", "test6"
 			};
 		}
 
@@ -104,6 +104,27 @@ public class IncorrectWhitespace {
 		return s;
 	}
 
+	public void method5(String... strings) {
+	}
+
+	public void method6(String testString) {
+		testString = _trim(testString);
+	}
+
+	public List<String> method7(List<String> list1, List<String> list2) {
+		List<String> newList = new ArrayList<>();
+
+		for (String s : list1) {
+			newList.add(s);
+		}
+
+		for (String s : list2) {
+			newList.add(s);
+		}
+
+		return newList;
+	}
+
 	protected class SubClass1 {
 	}
 
@@ -112,6 +133,10 @@ public class IncorrectWhitespace {
 		protected void method1() {
 		}
 
+	}
+
+	private String _trim(String s) {
+		return StringUtil.trim(s);
 	}
 
 	private class SubClass3

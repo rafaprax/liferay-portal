@@ -1,16 +1,35 @@
 @import "bourbon";
 @import "mixins";
 @import "form-builder-field-toolbar";
+@import "form-builder-layout-builder-move";
 @import "form-builder-modal";
 
 $horizontal-spacing: 35px;
 
 .ddl-form-builder-buttons .icon-spinner,
+.lfr-ddm-form-pagination-controls .icon-spinner,
 .ddl-form-settings-modal .btn-toolbar-button .icon-spinner,
 .lfr-ddl-field-settings-modal .btn-toolbar-button .icon-spinner {
 	line-height: 21px;
 	margin-left: 10px;
 	position: absolute;
+}
+
+.ddl-form-settings-modal,
+.ddl-publish-modal,
+.dynamic-data-mapping-data-providers-modal,
+.lfr-ddl-field-settings-modal {
+	.btn {
+		transition: opacity 0.5s;
+	}
+}
+
+.ddl-form-settings-modal,
+.lfr-ddl-field-settings-modal.form-builder-field-settings,
+.publish-modal-container {
+	.modal-body {
+		background-color: #FFF;
+	}
 }
 
 .ddl-publish-modal {
@@ -19,15 +38,40 @@ $horizontal-spacing: 35px;
 	}
 
 	.ddl-publish-checkbox {
+		margin-bottom: 0;
 		width: 100%;
 
 		small {
 			display: block;
 		}
+
+		> span {
+			margin-bottom: 0.4em;
+			margin-top: 0.4em;
+		}
 	}
 
 	.input-checkbox-wrapper {
 		float: right;
+		margin-bottom: 0;
+	}
+
+	.lfr-ddm-repeatable-delete-button {
+		position: absolute;
+		right: 15px;
+		top: 0;
+	}
+
+	select.form-control[multiple] {
+		height: auto;
+	}
+
+	.text-to-copy {
+		background-color: transparent;
+	}
+
+	.toggle-switch {
+		display: none;
 	}
 }
 
@@ -39,7 +83,7 @@ $horizontal-spacing: 35px;
 	}
 }
 
-.form-builder-page-manager-popover-header  {
+.form-builder-page-manager-popover-header {
 	.popover-content {
 		padding: 7px 21px;
 	}
@@ -48,7 +92,7 @@ $horizontal-spacing: 35px;
 		color: #869CAD;
 		cursor: pointer;
 		font-size: 15px;
-		font-weight: 400;
+		font-weight: normal;
 		line-height: 16px;
 		list-style-type: none;
 		padding: 11px 0;
@@ -64,13 +108,35 @@ $horizontal-spacing: 35px;
 	margin-left: 19px;
 }
 
+.lfr-ddl-field-settings-confirmation-message {
+	margin: 0;
+	padding: $horizontal-spacing;
+	text-align: center;
+}
+
 .lfr-ddl-field-settings-modal.form-builder-field-settings {
 	height: 100%;
 	margin: 0;
 	width: 100%;
 
+	@keyframes fade-down {
+		from {
+			opacity: 0;
+			top: -50px;
+		}
+
+		to {
+			opacity: 1;
+			top: 0;
+		}
+	}
+
 	&:focus {
 		outline: none;
+	}
+
+	.alloy-editor {
+		padding-right: 4px;
 	}
 
 	.form-builder-field-settings-content {
@@ -79,7 +145,7 @@ $horizontal-spacing: 35px;
 		}
 
 		.has-error .key-value-editor {
-			display: none
+			display: none;
 		}
 
 		.key-value-editor {
@@ -176,6 +242,10 @@ $horizontal-spacing: 35px;
 				opacity: 0.5;
 			}
 
+			.last-option:not(:first-of-type) {
+				@include animation(fade-down 0.7s ease);
+			}
+
 			.last-option .close {
 				display: none;
 			}
@@ -242,14 +312,20 @@ $horizontal-spacing: 35px;
 
 		.settings-toggler {
 			background-color: #F5F8FA;
-			bottom: 81px;
 			color: #879CB5;
-			display: block;
 			font-weight: 500;
 			padding: 18px $horizontal-spacing;
 			position: static;
-			text-decoration: none;
-			width: auto;
+			text-align: left;
+			width: 100%;
+
+			.settings-toggle-label {
+				float: left;
+			}
+
+			.settings-toggle-icon {
+				float: right;
+			}
 		}
 	}
 
@@ -258,7 +334,6 @@ $horizontal-spacing: 35px;
 	}
 
 	.modal-body {
-		background-color: #FFF;
 		overflow-x: hidden;
 		overflow-y: auto;
 		padding: 0;
@@ -300,13 +375,12 @@ $horizontal-spacing: 35px;
 	}
 
 	.modal-footer {
+		bottom: 0;
+		position: absolute;
+		width: 100%;
+
 		.btn {
 			width: auto;
-		}
-
-		.lfr-ddl-field-settings-confirmation-message {
-			float: left;
-			margin: 13px 20px 0 0;
 		}
 	}
 
@@ -315,13 +389,16 @@ $horizontal-spacing: 35px;
 		top: 0;
 		width: 100%;
 	}
+
+	.radio-inline {
+		margin-right: 125px;
+	}
 }
 
 .lfr-ddl-field-settings-modal,
 .portlet-forms {
 	.form-control {
 		font-size: 14px;
-		height: 40px;
 	}
 
 	@include sm {
@@ -338,8 +415,13 @@ $horizontal-spacing: 35px;
 		margin-left: 4px;
 	}
 
-	label.radio-inline {
-		margin-right: 125px;
+	.liferay-ddm-form-field-editor .form-control-feedback {
+		margin-top: -25px;
+		position: absolute;
+		z-index: 2;
+	}
+
+	.radio-inline {
 		padding-top: 11px;
 
 		& + .radio-inline {
@@ -348,71 +430,9 @@ $horizontal-spacing: 35px;
 	}
 }
 
-.lfr-ddl-form-builder-field-types-modal {
-	height: 100%;
-	margin: 0;
-	outline: none;
-	width: 100%;
-
-	&.lfr-ddl-form-builder-field-types-modal-hidden {
-		display: none;
-	}
-
-	.form-builder-field-types-list {
-		margin-top: 10px;
-	}
-
-	.modal-body {
-		background-color: #FFF;
-		padding: 15px 25px;
-
-		.field-type {
-			border-radius: 5px;
-			padding: 20px 0;
-
-			&:hover {
-				background-color: #E8F1F7;
-			}
-
-			@include md {
-				float: none;
-				width: auto;
-			}
-
-			.field-type-icon,
-			.field-type-label {
-				color: #879CAC;
-			}
-
-			.field-type-icon {
-				font-size: 0;
-				margin: 0 0 10px;
-
-				.lexicon-icon {
-					height: 18px;
-					width: 18px;
-				}
-			}
-
-			.field-type-label {
-				font-family: inherit;
-				font-size: 12px;
-				font-weight: 500;
-				margin-top: 8px;
-				text-transform: capitalize;
-			}
-		}
-	}
-
-	&.modal-dialog {
-		width: 100%;
-	}
-
-	@include sm {
-		&.modal-dialog {
-			width: 392px;
-		}
-	}
+.lfr-ddl-field-settings-yes {
+	padding-left: 21px;
+	padding-right: 21px;
 }
 
 .portal-popup,
@@ -426,14 +446,16 @@ $horizontal-spacing: 35px;
 		width: 32px;
 	}
 
-	.record-set-id, .record-set-modified-date {
-		margin-right: 20px;
+	.checkbox,
+	.radio {
+		margin-bottom: 0;
+		margin-top: 0;
 	}
 
 	.ddl-form-basic-info {
 		background-color: #869CAD;
 		min-height: 300px;
-		padding-bottom: 169px;
+		padding-bottom: 187px;
 
 		h1,
 		h2,
@@ -444,12 +466,16 @@ $horizontal-spacing: 35px;
 			margin: 0;
 		}
 
+		.ae-placeholder:empty:before {
+			content: attr(data-placeholder);
+		}
+
 		.alloy-editor.alloy-editor-placeholder,
 		.alloy-editor.alloy-editor-placeholder:empty:not(:focus),
 		.ddl-form-name,
 		.ddl-form-description {
 			border-width: 0;
-			color: white;
+			color: #FFF;
 			margin: 0;
 			padding-left: 0;
 
@@ -472,8 +498,8 @@ $horizontal-spacing: 35px;
 		}
 
 		.ddl-form-description {
-			font-weight: 400;
-			padding: 23px 0 0 0;
+			font-weight: normal;
+			padding: 17px 0 0 0;
 
 			p {
 				margin: 0;
@@ -499,10 +525,6 @@ $horizontal-spacing: 35px;
 			position: relative;
 		}
 
-		.liferay-ddm-form-field-paragraph p {
-			min-height: 65px;
-		}
-
 		.liferay-ddm-form-field-text textarea {
 			resize: none;
 		}
@@ -518,13 +540,13 @@ $horizontal-spacing: 35px;
 		padding: 20px 34px 11px 34px;
 		position: relative;
 	}
+
+	.record-set-id, .record-set-modified-date {
+		margin-right: 20px;
+	}
 }
 
 .portal-popup {
-	.portlet-layout {
-		margin: 0 0 75px;
-	}
-
 	.portlet-column {
 		padding: 0;
 	}
@@ -533,11 +555,29 @@ $horizontal-spacing: 35px;
 		margin-left: 34px;
 		margin-right: 34px;
 	}
+
+	.lfr-ddm-form-page .required-warning {
+		margin-top: -16px;
+	}
 }
 
 .portlet-forms {
+	label {
+		float: initial;
+	}
+
 	.aspect-ratio img {
 		top: 0;
+	}
+
+	.btn {
+		transition: opacity 0.5s;
+	}
+
+	.control-label {
+		float: none;
+		margin-bottom: 0;
+		word-wrap: break-word;
 	}
 
 	.ddl-form-builder-buttons {
@@ -552,12 +592,7 @@ $horizontal-spacing: 35px;
 
 	.ddl-form-name {
 		font-size: 32px;
-		line-height: 32px;
 		word-break: break-all;
-	}
-
-	.form-builder-field-list {
-		padding: 25px 0;
 	}
 
 	.form-builder-field-list-container {
@@ -575,7 +610,7 @@ $horizontal-spacing: 35px;
 	.lfr-ddm-form-page-description,
 	.lfr-ddm-form-page-title {
 		color: #728694;
-		font-weight: 400;
+		font-weight: normal;
 		resize: none;
 		word-break: break-all;
 	}
@@ -589,19 +624,16 @@ $horizontal-spacing: 35px;
 		margin: 0;
 	}
 
+	.lfr-ddm-form-page-description {
+		margin-top: 9px;
+	}
+
 	.lfr-ddm-form-field-container {
 		border-radius: 0;
 		border-width: 0;
 		box-shadow: none;
 		margin: 0;
-		padding: 21px 0;
-
-		label {
-			float: none;
-			line-height: 12px;
-			margin-bottom: 0;
-			word-wrap: break-word;
-		}
+		padding: 23px 0 31px 0;
 	}
 
 	.liferay-ddm-form-field-paragraph {
@@ -616,22 +648,22 @@ $horizontal-spacing: 35px;
 
 	.lfr-ddm-form-page-title {
 		font-size: 19px;
+		margin-bottom: 9px;
 		margin-top: 0;
-	}
-
-	.input-group-container,
-	.radio-options {
-		margin-top: 14px;
 	}
 
 	.multi-step-progress-bar .progress-bar-title {
 		word-break: break-all;
 	}
 
+	.radio-inline {
+		margin-right: 10%;
+	}
+
 	.required-warning {
 		display: block;
 		font-weight: inherit;
-		margin-top: -11px;
+		margin-top: -17px;
 		text-align: left;
 	}
 }
@@ -640,6 +672,10 @@ $horizontal-spacing: 35px;
 .lfr-ddl-field-settings-modal {
 	.help-block {
 		font-size: 14px;
+	}
+
+	.lfr-ddm-form-field-validation .row {
+		margin: 0;
 	}
 }
 
@@ -656,8 +692,12 @@ $horizontal-spacing: 35px;
 		}
 	}
 
-	.form-builder-controls-trigger {
+	.form-builder-controls-trigger,
+	.form-builder-controls-trigger.disabled:hover {
 		color: #B0BEC9;
+	}
+
+	.form-builder-controls-trigger {
 		display: block;
 		font-size: 20px;
 		line-height: 0;
@@ -666,6 +706,10 @@ $horizontal-spacing: 35px;
 		right: 0;
 		text-decoration: none;
 		top: 0;
+
+		&.disabled {
+			cursor: not-allowed;
+		}
 
 		&:hover {
 			color: #4A90E2;
@@ -679,14 +723,23 @@ $horizontal-spacing: 35px;
 		margin: 0;
 	}
 
-	.form-builder-field-list-add-container,
-	.form-builder-field-move-target {
-		position: absolute;
+	.form-builder-field-list-add-button {
+		border-width: 0;
+		width: 100%;
 	}
 
-	.form-builder-field-list-add-button {
-		cursor: pointer;
-		width: 100%;
+	.form-builder-field-list-add-button.disabled,
+	.form-builder-field-list-add-button[disabled] {
+		.form-builder-field-list-add-button-label,
+		.form-builder-field-list-add-button-icon {
+			opacity: 1;
+		}
+	}
+
+	.form-builder-field-list-add-button-icon,
+	.form-builder-field-list-add-button-label {
+		cursor: inherit;
+		transition: opacity 0.5s;
 	}
 
 	.form-builder-field-list-add-button-icon {
@@ -702,10 +755,12 @@ $horizontal-spacing: 35px;
 		color: #4A90E2;
 	}
 
-	.form-builder-field-list-add-container,
-	.form-builder-field + .form-builder-field-list-add-container,
-	.form-builder-choose-col-move-target .form-builder-field-move-target {
-		margin-top: -7px;
+	.form-builder-field + .form-builder-field-list-add-container {
+		margin-top: -22px;
+	}
+
+	.form-builder-field-list-add-container.between-fields {
+		margin-top: -12px;
 	}
 
 	.form-builder-field-list-empty {
@@ -722,8 +777,9 @@ $horizontal-spacing: 35px;
 			padding-top: 0;
 		}
 
-		.form-builder-field-list-add-container {
-			margin-top: 0;
+		.form-builder-field-list-add-container,
+		.form-builder-field-move-target {
+			margin: 10px 0;
 		}
 
 		.form-builder-field-list-container {
@@ -731,9 +787,7 @@ $horizontal-spacing: 35px;
 		}
 
 		.form-builder-field-move-target {
-			margin-top: 0;
-			padding: 37px 0 36px 0;
-			position: static;
+			padding: 37px 0 37px 0;
 		}
 	}
 
@@ -747,6 +801,7 @@ $horizontal-spacing: 35px;
 
 	.form-builder-layout {
 		margin: 0 auto;
+		padding-bottom: 20px;
 		width: auto;
 
 		.layout-builder-add-row-area {
@@ -775,8 +830,8 @@ $horizontal-spacing: 35px;
 
 					@include md {
 						.layout-col-content {
-							padding-left: 15px;
-							padding-right: 15px;
+							padding-left: 20px;
+							padding-right: 20px;
 						}
 
 						&:first-of-type .layout-col-content {
@@ -821,7 +876,7 @@ $horizontal-spacing: 35px;
 		}
 
 		.form-builder-page-header-description {
-			margin-top: -15px;
+			margin-top: -19px;
 			padding-top: 0;
 		}
 
@@ -886,7 +941,14 @@ $horizontal-spacing: 35px;
 		font-size: 11px;
 	}
 
-	.layout-builder-move-cut-button.layout-builder-move-cut-row-button,
+	input.toggle-switch {
+		display: none;
+
+		&:disabled ~ .toggle-switch-bar {
+			opacity: 1;
+		}
+	}
+
 	.layout-builder-remove-row-button {
 		background: #FFF;
 		border: 1px solid #65B6F0;
@@ -910,10 +972,6 @@ $horizontal-spacing: 35px;
 		}
 	}
 
-	.layout-builder-move-cut-button.layout-builder-move-cut-row-button {
-		right: 30px;
-	}
-
 	.layout-builder-move-row-target {
 		margin-left: 34px;
 		margin-right: 34px;
@@ -921,6 +979,10 @@ $horizontal-spacing: 35px;
 
 	.layout-builder-remove-row-button {
 		right: -20px;
+	}
+
+	.layout-builder-resize-col-draggable-handle .glyphicon-chevron-left {
+		left: 6px;
 	}
 
 	.lfr-ddm-repeatable-add-button {
@@ -935,82 +997,28 @@ $horizontal-spacing: 35px;
 		top: 0;
 	}
 
-	.liferay-ddm-form-renderer-wizard-navigation-allowed {
-		> li {
-			cursor: pointer;
+	.liferay-ddm-form-renderer-wizard-disabled {
+		.liferay-ddm-form-renderer-wizard-navigation-allowed > li {
+			cursor: not-allowed;
 		}
 	}
 
-	.toggle-switch {
-		display: none;
-	}
-}
-
-.ddl-publish-modal {
-	.alert-info {
-		text-align: center;
-	}
-
-	.ddl-publish-checkbox {
-		margin-bottom: 0;
-		width: 100%;
-
-		small {
-			display: block;
-		}
-
-		> span {
-			margin-bottom: 0.4em;
-			margin-top: 0.4em;
-		}
-	}
-
-	.input-checkbox-wrapper {
-		float: right;
-		margin-bottom: 0;
-	}
-
-	.lfr-ddm-repeatable-delete-button {
-		position: absolute;
-		right: 15px;
-		top: 0;
-	}
-
-	.liferay-ddm-form-renderer-wizard-navigation-allowed {
-		> li {
-			cursor: pointer;
-		}
-	}
-
-	select.form-control[multiple] {
-		height: auto;
-	}
-
-	.text-to-copy {
-		background-color: transparent;
-	}
-
-	.toggle-switch {
-		display: none;
+	.liferay-ddm-form-renderer-wizard-navigation-allowed > li {
+		cursor: pointer;
 	}
 }
 
 @include sm {
 	.lfr-ddl-field-settings-modal.form-builder-field-settings {
-		height: 670px;
-		padding-top: 85px;
+		height: auto;
+		margin-bottom: 85px;
+		margin-top: 85px;
 		width: 390px;
 
 		.modal-body {
 			height: 100%;
 			max-height: 100%;
 		}
-	}
-
-	.lfr-ddl-form-builder-field-types-modal {
-		max-height: 550px;
-		padding-top: 85px;
-		width: 500px;
 	}
 }
 

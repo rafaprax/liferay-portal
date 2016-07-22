@@ -29,7 +29,7 @@ AUI.add(
 				instance._eventHandlers.push(
 					evaluator.after('evaluationEnded', A.bind('_afterVisibilityEvaluationEnded', instance)),
 					evaluator.after('evaluationStarted', A.bind('_afterVisibilityEvaluationStarted', instance)),
-					instance.after('valueChanged', instance._afterValueChanged),
+					instance.after('valueChanged', A.debounce(instance._afterValueChanged, 200, instance)),
 					instance.after('visibleChange', instance._afterVisibleChange)
 				);
 			},
@@ -84,14 +84,12 @@ AUI.add(
 				instance.showLoadingFeedback();
 			},
 
-			_afterVisibleChange: function() {
+			_afterVisibleChange: function(event) {
 				var instance = this;
 
-				var value = instance.getValue();
+				var container = instance.get('container');
 
-				instance.render();
-
-				instance.setValue(value);
+				container.toggleClass('hide', !event.newVal);
 			},
 
 			_valueVisible: function() {

@@ -28,6 +28,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -42,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -109,10 +111,6 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 		Set<String> ddmFormFieldParameterNames) {
 
 		for (DDMFormField ddmFormField : ddmFormFields) {
-			if (ddmFormField.isTransient()) {
-				continue;
-			}
-
 			if (containsDDMFormFieldParameterName(
 					ddmFormField, ddmFormFieldParameterNames)) {
 
@@ -274,7 +272,7 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 		}
 
 		if (availableLocales.isEmpty()) {
-			availableLocales.add(LocaleUtil.getSiteDefault());
+			availableLocales.add(LocaleThreadLocal.getThemeDisplayLocale());
 		}
 
 		return availableLocales;
@@ -420,7 +418,7 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 			httpServletRequest, "defaultLanguageId");
 
 		if (Validator.isNull(defaultLanguageId)) {
-			return LocaleUtil.getSiteDefault();
+			return LocaleThreadLocal.getThemeDisplayLocale();
 		}
 
 		return LocaleUtil.fromLanguageId(defaultLanguageId);
@@ -455,7 +453,7 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 			DDMFormFieldValue ddmFormFieldValue = entry.getValue();
 
 			if (key.startsWith(entryKeyPrefix) &&
-				Validator.equals(
+				Objects.equals(
 					ddmFormFieldValue.getName(), fieldNameFilter)) {
 
 				entryKeys.add(key);

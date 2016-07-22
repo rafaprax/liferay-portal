@@ -54,9 +54,11 @@ public class GroupPortletRatingsDefinitionDisplayContext {
 				PortletRatingsDefinitionUtil.
 					getPortletRatingsDefinitionValuesMap();
 
-		for (String className : portletRatingsDefinitionValuesMap.keySet()) {
+		for (Map.Entry<String, PortletRatingsDefinitionValues> entry :
+				portletRatingsDefinitionValuesMap.entrySet()) {
+
 			PortletRatingsDefinitionValues portletRatingsDefinitionValues =
-				portletRatingsDefinitionValuesMap.get(className);
+				entry.getValue();
 
 			if (portletRatingsDefinitionValues == null) {
 				continue;
@@ -72,6 +74,8 @@ public class GroupPortletRatingsDefinitionDisplayContext {
 
 				continue;
 			}
+
+			String className = entry.getKey();
 
 			Map<String, RatingsType> ratingsTypeMap = new HashMap<>();
 
@@ -93,7 +97,7 @@ public class GroupPortletRatingsDefinitionDisplayContext {
 		}
 	}
 
-	private final Map<String, Map<String, RatingsType>>
-		_groupRatingsTypeMaps = new HashMap<>();
+	private final Map<String, Map<String, RatingsType>> _groupRatingsTypeMaps =
+		new HashMap<>();
 
 }

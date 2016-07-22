@@ -271,7 +271,7 @@ public class ExportImportHelperUtilTest {
 
 		List<String> entries = testReaderWriter.getEntries();
 
-		Assert.assertEquals(entries.size(), 1);
+		Assert.assertEquals(1, entries.size());
 
 		List<String> binaryEntries = testReaderWriter.getBinaryEntries();
 
@@ -471,9 +471,8 @@ public class ExportImportHelperUtilTest {
 		Layout childLayout = LayoutTestUtil.addLayout(
 			_stagingGroup, layout.getPlid());
 
-		long[] selectedLayoutIds = new long[] {
-			layout.getLayoutId(), childLayout.getLayoutId()
-		};
+		long[] selectedLayoutIds =
+			new long[] {layout.getLayoutId(), childLayout.getLayoutId()};
 
 		String selectedLayoutsJSON =
 			ExportImportHelperUtil.getSelectedLayoutsJSON(

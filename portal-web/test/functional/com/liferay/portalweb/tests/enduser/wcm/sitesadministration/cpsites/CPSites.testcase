@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Site Administration" />
 
 	<set-up>
@@ -128,8 +129,8 @@
 		</execute>
 
 		<execute macro="Site#viewVirtualHostsURLPG">
+			<var name="pageName" value="Test Public Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Test Public Page" />
 			<var name="sitePageURL" value="http://www.able.com:8080/test-public-page" />
 		</execute>
 	</command>
@@ -335,12 +336,13 @@
 			<var name="pageName" value="Test Public Page" />
 		</execute>
 
-		<execute macro="SitePageNavigator#gotoPages">
-			<var name="page" value="Private Pages" />
+		<execute macro="ProductMenu#gotoControlPanelSites">
+			<var name="portlet" value="Sites" />
 		</execute>
 
 		<execute macro="Page#add">
 			<var name="pageName" value="Test Private Page" />
+			<var name="siteName" value="Site Name" />
 			<var name="sitePagePrivacy" value="Private" />
 		</execute>
 
@@ -357,8 +359,8 @@
 		</execute>
 
 		<execute macro="Site#viewSiteFriendlyURLPG">
+			<var name="pageName" value="Public Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Public Page" />
 			<var name="sitePageURL" value="http://localhost:8080/web/alpha" />
 		</execute>
 
@@ -367,8 +369,8 @@
 		</execute>
 
 		<execute macro="Site#viewSiteFriendlyURLPG">
+			<var name="pageName" value="Private Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Private Page" />
 			<var name="sitePageURL" value="http://localhost:8080/group/alpha" />
 		</execute>
 	</command>
@@ -409,8 +411,8 @@
 		</execute>
 
 		<execute macro="Page#viewFriendlyURL">
+			<var name="pageName" value="Site Page" />
 			<var name="siteFriendlyURL" value="/site-name" />
-			<var name="sitePageName" value="Site Page" />
 		</execute>
 	</command>
 
@@ -479,11 +481,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Home" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#viewStagingLocalLivePG" />
@@ -578,10 +578,9 @@
 			<var name="siteName" value="Child SiteName" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child SiteName" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -592,10 +591,9 @@
 			<var name="directorySites" value="Parent Level" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child SiteName" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -709,10 +707,9 @@
 			<var name="siteName" value="Child Site2Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child Site1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -723,10 +720,9 @@
 			<var name="directorySites" value="Top Level" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child Site1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -737,10 +733,9 @@
 			<var name="directorySites" value="Parent Level" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child Site1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -751,10 +746,9 @@
 			<var name="directorySites" value="Siblings" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child Site1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -769,10 +763,9 @@
 			<var name="directorySites" value="Children" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child Site1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -783,10 +776,9 @@
 			<var name="siteName" value="Child ChildSite2Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child ChildSite1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -797,10 +789,9 @@
 			<var name="directorySites" value="Top Level" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child ChildSite1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -811,10 +802,9 @@
 			<var name="directorySites" value="Parent Level" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child ChildSite1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -829,10 +819,9 @@
 			<var name="directorySites" value="Siblings" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child ChildSite1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SitesDirectory#viewDescriptivePG">
@@ -847,10 +836,9 @@
 			<var name="directorySites" value="Children" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Child ChildSite1Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="No sites were found." />

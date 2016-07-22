@@ -10,7 +10,7 @@
 <tbody>
 <tr>
 	<td>IFRAME</td>
-	<td>//iframe[contains(@id,'knowledgebaseportlet')]</td>
+	<td>//iframe[contains(@id,'knowledge_base_web')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -93,11 +93,6 @@
 <tr>
 	<td>DISPLAY_SETTINGS_ENABLE_PRINT_CHECKBOX</td>
 	<td>//input[contains(@id,'enableKBArticlePrint')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DISPLAY_SETTINGS_ENABLE_SOCIAL_BOOKMARKS_CHECKBOX</td>
-	<td>//input[contains(@id,'enableSocialBookmarks')]</td>
 	<td></td>
 </tr>
 <tr>

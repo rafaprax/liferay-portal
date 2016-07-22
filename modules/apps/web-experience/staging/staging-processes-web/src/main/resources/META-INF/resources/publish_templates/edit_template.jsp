@@ -17,14 +17,17 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String cmd = ParamUtil.getString(request, Constants.CMD, Constants.ADD);
+String cmd = ParamUtil.getString(request, Constants.CMD);
+
+if (Validator.isNull(cmd)) {
+	cmd = Constants.ADD;
+}
 
 long exportImportConfigurationId = 0;
 
 ExportImportConfiguration exportImportConfiguration = null;
 Map<String, Serializable> exportImportConfigurationSettingsMap = Collections.emptyMap();
 Map<String, String[]> parameterMap = Collections.emptyMap();
-long[] selectedLayoutIds = null;
 
 if (SessionMessages.contains(liferayPortletRequest, portletDisplay.getId() + "exportImportConfigurationId")) {
 	exportImportConfigurationId = (Long)SessionMessages.get(liferayPortletRequest, portletDisplay.getId() + "exportImportConfigurationId");
@@ -48,7 +51,6 @@ else {
 if (MapUtil.isNotEmpty(exportImportConfigurationSettingsMap)) {
 	parameterMap = (Map<String, String[]>)exportImportConfigurationSettingsMap.get("parameterMap");
 	privateLayout = GetterUtil.getBoolean(exportImportConfigurationSettingsMap.get("privateLayout"), privateLayout);
-	selectedLayoutIds = GetterUtil.getLongValues(exportImportConfigurationSettingsMap.get("layoutIds"));
 }
 
 if (exportImportConfiguration != null) {
@@ -72,20 +74,6 @@ if (liveGroup.isStaged()) {
 treeId = treeId + liveGroupId;
 
 treeId = treeId + privateLayout + layoutSetBranchId;
-
-if (!cmd.equals(Constants.UPDATE)) {
-	String openNodes = SessionTreeJSClicks.getOpenNodes(request, treeId + "SelectedNode");
-
-	if (openNodes == null) {
-		selectedLayoutIds = ExportImportHelperUtil.getAllLayoutIds(stagingGroupId, privateLayout);
-
-		for (long selectedLayoutId : selectedLayoutIds) {
-			SessionTreeJSClicks.openLayoutNodes(request, treeId + "SelectedNode", privateLayout, selectedLayoutId, true);
-		}
-	} else {
-		selectedLayoutIds = GetterUtil.getLongValues(StringUtil.split(openNodes, ','));
-	}
-}
 
 PortletURL renderURL = renderResponse.createRenderURL();
 
@@ -138,43 +126,30 @@ renderResponse.setTitle((exportImportConfiguration == null) ? LanguageUtil.get(r
 			<aui:input name="<%= PortletDataHandlerKeys.PORTLET_SETUP_ALL %>" type="hidden" value="<%= true %>" />
 			<aui:input name="<%= PortletDataHandlerKeys.PORTLET_USER_PREFERENCES_ALL %>" type="hidden" value="<%= true %>" />
 
+			<%@ include file="/error/error_auth_exception.jspf" %>
+
+			<%@ include file="/error/error_remote_export_exception.jspf" %>
+
+			<%@ include file="/error/error_remote_options_exception.jspf" %>
+
 			<div id="<portlet:namespace />publishOptions">
 				<div class="export-dialog-tree">
 					<aui:fieldset-group markupView="lexicon">
 						<liferay-staging:configuration-header exportImportConfiguration="<%= exportImportConfiguration %>" />
 
 						<c:if test="<%= !group.isCompany() %>">
-							<aui:fieldset collapsible="<%= true %>" cssClass="options-group" label="pages">
-
-								<%
-								request.setAttribute("select_pages.jsp-parameterMap", parameterMap);
-								%>
-
-								<liferay-util:include page="/publish_templates/select_pages.jsp" servletContext="<%= application %>">
-									<liferay-util:param name="<%= Constants.CMD %>" value="<%= cmd %>" />
-									<liferay-util:param name="groupId" value="<%= String.valueOf(stagingGroupId) %>" />
-									<liferay-util:param name="layoutSetBranchId" value="<%= String.valueOf(layoutSetBranchId) %>" />
-									<liferay-util:param name="privateLayout" value="<%= String.valueOf(privateLayout) %>" />
-									<liferay-util:param name="treeId" value="<%= treeId %>" />
-									<liferay-util:param name="selectedLayoutIds" value="<%= StringUtil.merge(selectedLayoutIds) %>" />
-								</liferay-util:include>
-							</aui:fieldset>
+							<liferay-staging:select-pages action="<%= Constants.PUBLISH %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" groupId="<%= stagingGroupId %>" privateLayout="<%= privateLayout %>" treeId="<%= treeId %>" />
 						</c:if>
 
-						<liferay-staging:content cmd="<%= cmd %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" type="<%= stagingGroup.isStagedRemotely() ? Constants.PUBLISH_TO_REMOTE : Constants.PUBLISH_TO_LIVE %>" />
+						<liferay-staging:content cmd="<%= cmd %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" showAllPortlets="<%= true %>" type="<%= stagingGroup.isStagedRemotely() ? Constants.PUBLISH_TO_REMOTE : Constants.PUBLISH_TO_LIVE %>" />
 
-						<liferay-staging:deletions cmd="<%= cmd %>" />
+						<liferay-staging:deletions cmd="<%= cmd %>" exportImportConfigurationId="<%= exportImportConfigurationId %>" />
 
-						<liferay-staging:permissions action="publish" descriptionCSSClass="permissions-description" exportImportConfigurationId="<%= exportImportConfigurationId %>" global="<%= group.isCompany() %>" labelCSSClass="permissions-label" />
+						<liferay-staging:permissions action="<%= Constants.PUBLISH %>" descriptionCSSClass="permissions-description" exportImportConfigurationId="<%= exportImportConfigurationId %>" global="<%= group.isCompany() %>" labelCSSClass="permissions-label" />
 
 						<c:if test="<%= stagingGroup.isStagedRemotely() %>">
 							<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" cssClass="options-group" label="remote-live-connection-settings">
-
-								<%
-								UnicodeProperties liveGroupTypeSettings = liveGroup.getTypeSettingsProperties();
-								%>
-
-								<%@ include file="/new_publication/publish_layouts_remote_options.jspf" %>
+								<liferay-staging:remote-options exportImportConfigurationId="<%= exportImportConfigurationId %>" privateLayout="<%= privateLayout %>" />
 							</aui:fieldset>
 						</c:if>
 					</aui:fieldset-group>
@@ -235,17 +210,12 @@ renderResponse.setTitle((exportImportConfiguration == null) ? LanguageUtil.get(r
 			namespace: '<portlet:namespace />',
 			pageTreeId: '<%= treeId %>',
 			processesNode: '#publishProcesses',
-			processesResourceURL: '<%= publishProcessesURL.toString() %>',
+			processesResourceURL: '<%= HtmlUtil.escapeJS(publishProcessesURL.toString()) %>',
 			rangeAllNode: '#rangeAll',
 			rangeDateRangeNode: '#rangeDateRange',
 			rangeLastNode: '#rangeLast',
 			rangeLastPublishNode: '#rangeLastPublish',
 			ratingsNode: '#<%= PortletDataHandlerKeys.RATINGS %>',
-			remoteAddressNode: '#<portlet:namespace />remoteAddress',
-			remoteGroupIdNode: '#<portlet:namespace />remoteGroupId',
-			remotePathContextNode: '#<portlet:namespace />remotePathContext',
-			remotePortNode: '#<portlet:namespace />remotePort',
-			secureConnectionNode: '#secureConnection',
 			setupNode: '#<%= PortletDataHandlerKeys.PORTLET_SETUP_ALL %>',
 			timeZone: '<%= timeZone.getID() %>',
 			userPreferencesNode: '#<%= PortletDataHandlerKeys.PORTLET_USER_PREFERENCES_ALL %>'

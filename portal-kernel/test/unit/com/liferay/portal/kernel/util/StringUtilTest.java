@@ -29,7 +29,7 @@ import org.junit.Test;
 public class StringUtilTest {
 
 	@Test
-	public void testAppendParentheticalSuffixInteger() throws Exception {
+	public void testAppendParentheticalSuffixInteger() {
 		Assert.assertEquals(
 			"Hello World (2)",
 			StringUtil.appendParentheticalSuffix("Hello World", 2));
@@ -45,7 +45,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testAppendParentheticalSuffixString() throws Exception {
+	public void testAppendParentheticalSuffixString() {
 		Assert.assertEquals(
 			"Hello (World)",
 			StringUtil.appendParentheticalSuffix("Hello", "World"));
@@ -91,7 +91,37 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testEqualsIgnoreBreakLine() throws Exception {
+	public void testCountChar() {
+		Assert.assertEquals(0, StringUtil.count(null, 0, 1, 'b'));
+		Assert.assertEquals(0, StringUtil.count("", 0, 1, 'b'));
+		Assert.assertEquals(0, StringUtil.count("", 0, 0, 'b'));
+		Assert.assertEquals(0, StringUtil.count("a", 0, 1, 'b'));
+		Assert.assertEquals(1, StringUtil.count("b", 0, 1, 'b'));
+		Assert.assertEquals(0, StringUtil.count("ab", 0, 1, 'b'));
+		Assert.assertEquals(1, StringUtil.count("ab", 0, 2, 'b'));
+		Assert.assertEquals(1, StringUtil.count("abb", 0, 2, 'b'));
+		Assert.assertEquals(2, StringUtil.count("abb", 0, 3, 'b'));
+		Assert.assertEquals(2, StringUtil.count("abcabfabrgab", 2, 8, 'b'));
+	}
+
+	@Test
+	public void testCountString() {
+		Assert.assertEquals(0, StringUtil.count(null, 0, 1, ""));
+		Assert.assertEquals(0, StringUtil.count("", 0, 1, ""));
+		Assert.assertEquals(0, StringUtil.count("", 0, 0, ""));
+		Assert.assertEquals(0, StringUtil.count("a", 0, 1, ""));
+		Assert.assertEquals(0, StringUtil.count("a", 0, 1, null));
+		Assert.assertEquals(0, StringUtil.count("a", 0, 1, "b"));
+		Assert.assertEquals(1, StringUtil.count("b", 0, 1, "b"));
+		Assert.assertEquals(0, StringUtil.count("ab", 0, 1, "b"));
+		Assert.assertEquals(1, StringUtil.count("ab", 0, 2, "b"));
+		Assert.assertEquals(1, StringUtil.count("abb", 0, 2, "b"));
+		Assert.assertEquals(2, StringUtil.count("abb", 0, 3, "b"));
+		Assert.assertEquals(2, StringUtil.count("abcabfabrgab", 2, 8, "ab"));
+	}
+
+	@Test
+	public void testEqualsIgnoreBreakLine() {
 		Assert.assertTrue(
 			StringUtil.equalsIgnoreBreakLine("Hello\n World", "Hello World"));
 		Assert.assertTrue(
@@ -106,7 +136,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testEqualsIgnoreCase() throws Exception {
+	public void testEqualsIgnoreCase() {
 		Assert.assertTrue(
 			StringUtil.equalsIgnoreCase("HELLO WORLD", "Hello World"));
 		Assert.assertTrue(
@@ -117,7 +147,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testIndexOfAny() throws Exception {
+	public void testIndexOfAny() {
 		char[] chars = {CharPool.COLON, CharPool.COMMA};
 
 		Assert.assertEquals(-1, StringUtil.indexOfAny(null, chars));
@@ -155,7 +185,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testIsLowerCase() throws Exception {
+	public void testIsLowerCase() {
 		Assert.assertTrue(StringUtil.isLowerCase("hello world"));
 		Assert.assertFalse(StringUtil.isLowerCase("Hello World"));
 		Assert.assertFalse(StringUtil.isLowerCase("HELLO WORLD"));
@@ -164,7 +194,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testIsUpperCase() throws Exception {
+	public void testIsUpperCase() {
 		Assert.assertFalse(StringUtil.isUpperCase("hello world"));
 		Assert.assertFalse(StringUtil.isUpperCase("Hello World"));
 		Assert.assertTrue(StringUtil.isUpperCase("HELLO WORLD"));
@@ -173,7 +203,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testLastIndexOfAny() throws Exception {
+	public void testLastIndexOfAny() {
 		char[] chars = {CharPool.COLON, CharPool.COMMA};
 
 		Assert.assertEquals(-1, StringUtil.lastIndexOfAny(null, chars));
@@ -231,13 +261,113 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceChar() throws Exception {
+	public void testQuote() {
+		Assert.assertEquals(
+			"'Hello, World!'", StringUtil.quote("Hello, World!"));
+		Assert.assertEquals("%PATH%", StringUtil.quote("PATH", '%'));
+		Assert.assertEquals(
+			"Hello World Hello", StringUtil.quote(" World ", "Hello"));
+	}
+
+	@Test
+	public void testRemoveChar() {
+		Assert.assertEquals("abcd", StringUtil.removeChar("a.b.c.d", '.'));
+		Assert.assertEquals("abcd", StringUtil.removeChar(".a.b.c.d.", '.'));
+
+		String s = "a.b.c.d";
+
+		Assert.assertSame(s, StringUtil.removeChar(s, '?'));
+	}
+
+	@Test
+	public void testRemoveChars() {
+		Assert.assertEquals(
+			"abcd", StringUtil.removeChars("a.*b./c.*d", '.', '*', '/'));
+		Assert.assertEquals(
+			"abcd", StringUtil.removeChars("/.*a./b.c.*d./", '.', '*', '/'));
+
+		String s = "/.*a./b.c.*d./";
+
+		Assert.assertSame(s, StringUtil.removeChars(s, 'x', 'y', 'z'));
+	}
+
+	@Test
+	public void testRemoveFromList() {
+		Assert.assertEquals(
+			"red,green,yellow,",
+			StringUtil.removeFromList("red,blue,green,yellow", "blue"));
+		Assert.assertEquals("", StringUtil.removeFromList("blue", "blue"));
+		Assert.assertEquals("", StringUtil.removeFromList("blue,", "blue"));
+		Assert.assertEquals(
+			"red;green;yellow;",
+			StringUtil.removeFromList("red;blue;green;yellow", "blue", ";"));
+		Assert.assertEquals("", StringUtil.removeFromList("blue", "blue", ";"));
+		Assert.assertEquals(
+			"", StringUtil.removeFromList("blue;", "blue", ";"));
+	}
+
+	@Test
+	public void testReplaceChar() {
 		Assert.assertEquals(
 			"127_0_0_1", StringUtil.replace("127.0.0.1", '.', '_'));
 	}
 
 	@Test
-	public void testReplaceEmptyString() throws Exception {
+	public void testReplaceCharArray() {
+		Assert.assertEquals(
+			"227_0_0_2",
+			StringUtil.replace(
+				"127.0.0.1", new char[] {'.', '1'}, new char[] {'_', '2'}));
+		Assert.assertEquals(
+			"227_0_0_2",
+			StringUtil.replace(
+				"127.0.0.1", new char[] {'.', '.', '1', '1'},
+				new char[] {'_', '_', '2', '2'}));
+	}
+
+	@Test
+	public void testReplaceCharString() {
+		Assert.assertNull(StringUtil.replace(null, ',', "COMMA"));
+		Assert.assertNull(StringUtil.replace("Hello World", ',', null));
+		Assert.assertEquals(
+			"Hello World", StringUtil.replace("Hello World", ',', "COMMA"));
+		Assert.assertEquals(
+			"COMMAHello World",
+			StringUtil.replace(",Hello World", ',', "COMMA"));
+		Assert.assertEquals(
+			"HelloCOMMA World",
+			StringUtil.replace("Hello, World", ',', "COMMA"));
+		Assert.assertEquals(
+			"Hello WorldCOMMA",
+			StringUtil.replace("Hello World,", ',', "COMMA"));
+		Assert.assertEquals(
+			"COMMAHelloCOMMA WorldCOMMA",
+			StringUtil.replace(",Hello, World,", ',', "COMMA"));
+	}
+
+	@Test
+	public void testReplaceCharStringArrays() {
+		Assert.assertEquals(
+			"Hello World,HELLO WORLD,Hello World",
+			StringUtil.replace(
+				"Hello World/HI WORLD/Hello World",
+				new char[] {CharPool.SLASH, CharPool.UPPER_CASE_I},
+				new String[] {StringPool.COMMA, "ELLO"}));
+		Assert.assertEquals(
+			"Hello World,HELLO WORLD,Hello World",
+			StringUtil.replace(
+				"Hello World/HI WORLD/Hello World",
+				new char[] {
+					CharPool.SLASH, CharPool.SLASH, CharPool.UPPER_CASE_I,
+					CharPool.UPPER_CASE_I
+				},
+				new String[] {
+					StringPool.COMMA, StringPool.COMMA, "ELLO", "ELLO"
+				}));
+	}
+
+	@Test
+	public void testReplaceEmptyString() {
 		Assert.assertEquals(
 			"Hello World HELLO WORLD Hello World",
 			StringUtil.replace(
@@ -245,13 +375,13 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceFirstChar() throws Exception {
+	public void testReplaceFirstChar() {
 		Assert.assertEquals(
 			"127_0.0.1", StringUtil.replaceFirst("127.0.0.1", '.', '_'));
 	}
 
 	@Test
-	public void testReplaceFirstString() throws Exception {
+	public void testReplaceFirstString() {
 		Assert.assertEquals(
 			"Aloha World HELLO WORLD Hello World",
 			StringUtil.replaceFirst(
@@ -263,7 +393,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceFirstStringArray() throws Exception {
+	public void testReplaceFirstStringArray() {
 		Assert.assertEquals(
 			"Aloha World ALOHA WORLD Hello World HELLO WORLD",
 			StringUtil.replaceFirst(
@@ -273,13 +403,13 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceLastChar() throws Exception {
+	public void testReplaceLastChar() {
 		Assert.assertEquals(
 			"127.0.0_1", StringUtil.replaceLast("127.0.0.1", '.', '_'));
 	}
 
 	@Test
-	public void testReplaceLastString() throws Exception {
+	public void testReplaceLastString() {
 		Assert.assertEquals(
 			"Hello World HELLO WORLD Aloha World",
 			StringUtil.replaceLast(
@@ -287,7 +417,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceLastStringArray() throws Exception {
+	public void testReplaceLastStringArray() {
 		Assert.assertEquals(
 			"Hello World HELLO WORLD Aloha World ALOHA WORLD",
 			StringUtil.replaceLast(
@@ -297,7 +427,7 @@ public class StringUtilTest {
 	}
 
 	@Test(timeout = 1000)
-	public void testReplaceMap() throws Exception {
+	public void testReplaceMap() {
 		Map<String, String> map = new HashMap<>();
 
 		map.put("Hallo", "Hello");
@@ -313,7 +443,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceSpaceString() throws Exception {
+	public void testReplaceSpaceString() {
 		Assert.assertEquals(
 			"HelloWorldHELLOWORLDHelloWorld",
 			StringUtil.replace(
@@ -321,7 +451,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceString() throws Exception {
+	public void testReplaceString() {
 		Assert.assertEquals(
 			"Aloha World HELLO WORLD Aloha World",
 			StringUtil.replace(
@@ -329,7 +459,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testReplaceStringArray() throws Exception {
+	public void testReplaceStringArray() {
 		Assert.assertEquals(
 			"Aloha World ALOHA WORLD Aloha World",
 			StringUtil.replace(
@@ -339,7 +469,7 @@ public class StringUtilTest {
 	}
 
 	@Test(timeout = 1000)
-	public void testReplaceWithStringBundle() throws Exception {
+	public void testReplaceWithStringBundle() {
 		Map<String, StringBundler> map = new HashMap<>();
 
 		map.put("Hallo", new StringBundler("Hello"));
@@ -371,6 +501,32 @@ public class StringUtilTest {
 			StringUtil.shorten(
 				"HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHello", 20,
 				"... etc."));
+	}
+
+	@Test
+	public void testSplit() {
+		Assert.assertArrayEquals(
+			new String[] {"Alice", "Bob", "Charlie"},
+			StringUtil.split("Alice,Bob,Charlie"));
+		Assert.assertArrayEquals(
+			new boolean[] {true, false, true},
+			StringUtil.split("true,false,true", false));
+		Assert.assertArrayEquals(
+			new String[] {"First", "Second", "Third"},
+			StringUtil.split("First;Second;Third", ';'));
+		Assert.assertArrayEquals(
+			new String[] {"One", "Two", "Three"},
+			StringUtil.split("OnexTwoxThree", 'x'));
+		Assert.assertArrayEquals(
+			new double[] {1.0, 2.0, 3.0}, StringUtil.split("1.0,2.0,3.0", 1.0),
+			0.0001);
+		Assert.assertArrayEquals(
+			new float[] {1.0f, 2.0f, 3.0f},
+			StringUtil.split("1.0,2.0,3.0", 1.0f), .0001f);
+		Assert.assertArrayEquals(
+			new int[] {1, 2, 3}, StringUtil.split("1,2,3", 1));
+		Assert.assertArrayEquals(
+			new long[] {1L, 2L, 3L}, StringUtil.split("1,2,3", 1L));
 	}
 
 	@Test
@@ -425,7 +581,7 @@ public class StringUtilTest {
 	}
 
 	@Test(timeout = 1000)
-	public void testStripBetween() throws Exception {
+	public void testStripBetween() {
 		Assert.assertEquals(
 			"One small leap for mankind",
 			StringUtil.stripBetween(
@@ -452,7 +608,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testStripParentheticalSuffixInteger() throws Exception {
+	public void testStripParentheticalSuffixInteger() {
 		Assert.assertEquals(
 			"Hello World",
 			StringUtil.stripParentheticalSuffix("Hello World (2)"));
@@ -468,7 +624,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testStripParentheticalSuffixString() throws Exception {
+	public void testStripParentheticalSuffixString() {
 		Assert.assertEquals(
 			"Hello", StringUtil.stripParentheticalSuffix("Hello (World)"));
 		Assert.assertEquals(
@@ -484,7 +640,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testToLowerCase() throws Exception {
+	public void testToLowerCase() {
 		Assert.assertEquals(
 			"hello world", StringUtil.toLowerCase("hello world"));
 		Assert.assertEquals(
@@ -496,7 +652,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testToLowerCaseWithNonASCIICharacters() throws Exception {
+	public void testToLowerCaseWithNonASCIICharacters() {
 		Assert.assertEquals("\u00F1", StringUtil.toLowerCase("\u00D1"));
 		Assert.assertEquals(
 			"hello world \u00F1", StringUtil.toLowerCase("hello world \u00D1"));
@@ -505,7 +661,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testToUpperCase() throws Exception {
+	public void testToUpperCase() {
 		Assert.assertEquals(
 			"HELLO WORLD", StringUtil.toUpperCase("hello world"));
 		Assert.assertEquals(
@@ -517,7 +673,7 @@ public class StringUtilTest {
 	}
 
 	@Test
-	public void testToUpperCaseWithNonASCIICharacters() throws Exception {
+	public void testToUpperCaseWithNonASCIICharacters() {
 		Assert.assertEquals("\u00D1", StringUtil.toUpperCase("\u00F1"));
 		Assert.assertEquals(
 			"HELLO WORLD \u00D1", StringUtil.toUpperCase("hello world \u00F1"));
@@ -635,14 +791,12 @@ public class StringUtilTest {
 		// Leading spaces
 
 		Assert.assertEquals(
-			"\t\r\n\t\r",
-			StringUtil.trimLeading(" \t\r\n\t\r", exceptions));
+			"\t\r\n\t\r", StringUtil.trimLeading(" \t\r\n\t\r", exceptions));
 
 		// Trailing spaces
 
 		Assert.assertSame(
-			"\t\r \t\r\n",
-			StringUtil.trimLeading("\t\r \t\r\n", exceptions));
+			"\t\r \t\r\n", StringUtil.trimLeading("\t\r \t\r\n", exceptions));
 
 		// Surrounding spaces
 
@@ -728,14 +882,12 @@ public class StringUtilTest {
 		// Leading spaces
 
 		Assert.assertSame(
-			" \t\r\n\t\r",
-			StringUtil.trimTrailing(" \t\r\n\t\r", exceptions));
+			" \t\r\n\t\r", StringUtil.trimTrailing(" \t\r\n\t\r", exceptions));
 
 		// Trailing spaces
 
 		Assert.assertEquals(
-			"\t\r \t\r",
-			StringUtil.trimTrailing("\t\r \t\r\n", exceptions));
+			"\t\r \t\r", StringUtil.trimTrailing("\t\r \t\r\n", exceptions));
 
 		// Surrounding spaces
 

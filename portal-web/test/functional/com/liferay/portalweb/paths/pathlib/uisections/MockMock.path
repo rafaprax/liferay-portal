@@ -45,7 +45,7 @@
 </tr>
 <tr>
 	<td>MOCKMOCK_TO_FIELD</td>
-	<td>//tr[contains(.,'${key_columnEntry}')]/td[2]</td>
+	<td>//tr[contains(.,'${key_columnEntry}')]/td[2][contains(.,'${key_recipient}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -55,12 +55,17 @@
 </tr>
 <tr>
 	<td>MOCKMOCK_SUBJECT_FIELD_LINK</td>
-	<td>//tr[contains(.,'${key_columnEntry}')]/td[3]/a</td>
+	<td>//tr[contains(.,'${key_columnEntry}')]/td[3]//a</td>
 	<td></td>
 </tr>
 <tr>
 	<td>MOCKMOCK_MESSAGE_BODY</td>
 	<td>//div[@class='well' and contains(.,'${key_asset}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>MOCKMOCK_HTML_BODY_LINK</td>
+	<td>//div[@name='bodyHTML_Formatted']//a[contains(.,'${key_bodyLink}')]</td>
 	<td></td>
 </tr>
 </tbody>

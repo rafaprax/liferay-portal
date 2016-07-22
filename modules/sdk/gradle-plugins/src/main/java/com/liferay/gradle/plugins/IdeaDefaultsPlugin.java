@@ -21,14 +21,12 @@ import groovy.lang.Closure;
 
 import java.io.File;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.XmlProvider;
-import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
@@ -67,7 +65,7 @@ public class IdeaDefaultsPlugin extends BaseDefaultsPlugin<IdeaPlugin> {
 	protected void configureIdeaModuleExcludeDirs(
 		Project project, IdeaPlugin ideaPlugin) {
 
-		if (!hasPlugin(project, JavaPlugin.class)) {
+		if (!GradleUtil.hasPlugin(project, JavaPlugin.class)) {
 			return;
 		}
 
@@ -102,11 +100,11 @@ public class IdeaDefaultsPlugin extends BaseDefaultsPlugin<IdeaPlugin> {
 
 		IdeaModuleIml ideaModuleIml = ideaModule.getIml();
 
-		Closure<Void> closure = new Closure<Void>(null) {
+		Closure<Void> closure = new Closure<Void>(project) {
 
 			@SuppressWarnings("unused")
 			public void doCall(XmlProvider xmlProvider) throws Exception {
-				if (!hasPlugin(project, JavaPlugin.class)) {
+				if (!GradleUtil.hasPlugin(project, JavaPlugin.class)) {
 					return;
 				}
 
@@ -114,7 +112,8 @@ public class IdeaDefaultsPlugin extends BaseDefaultsPlugin<IdeaPlugin> {
 					project, SourceSet.MAIN_SOURCE_SET_NAME);
 
 				File resourcesDir = new File(
-					getSrcDir(sourceSet.getResources()), "META-INF/resources");
+					GradleUtil.getSrcDir(sourceSet.getResources()),
+					"META-INF/resources");
 
 				if (!resourcesDir.exists()) {
 					return;
@@ -175,7 +174,7 @@ public class IdeaDefaultsPlugin extends BaseDefaultsPlugin<IdeaPlugin> {
 	}
 
 	protected File getClassesDir(Project project) {
-		if (!hasPlugin(project, JavaPlugin.class)) {
+		if (!GradleUtil.hasPlugin(project, JavaPlugin.class)) {
 			return null;
 		}
 
@@ -197,14 +196,6 @@ public class IdeaDefaultsPlugin extends BaseDefaultsPlugin<IdeaPlugin> {
 	@Override
 	protected Class<IdeaPlugin> getPluginClass() {
 		return IdeaPlugin.class;
-	}
-
-	protected File getSrcDir(SourceDirectorySet sourceDirectorySet) {
-		Set<File> srcDirs = sourceDirectorySet.getSrcDirs();
-
-		Iterator<File> iterator = srcDirs.iterator();
-
-		return iterator.next();
 	}
 
 }

@@ -34,7 +34,7 @@ else {
 		try {
 			vocabularies.add(AssetVocabularyServiceUtil.getVocabulary(vocabularyId));
 		}
-		catch (NoSuchVocabularyException nsve) {
+		catch (PortalException pe) {
 		}
 	}
 }
@@ -80,7 +80,7 @@ if (hidePortletWhenEmpty) {
 }
 
 if (categoryId > 0) {
-	AssetUtil.addPortletBreadcrumbEntries(categoryId, request, portletURL);
+	AssetUtil.addPortletBreadcrumbEntries(categoryId, request, portletURL, false);
 }
 %>
 

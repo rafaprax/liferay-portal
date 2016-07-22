@@ -34,7 +34,7 @@
 	<c:when test='<%= displayStyle.equals("icon") %>'>
 
 		<%
-		row.setCssClass("article-entry col-md-2 col-sm-4 col-xs-6 selectable");
+		row.setCssClass("entry-card lfr-asset-item selectable");
 		%>
 
 		<liferay-ui:search-container-column-text>
@@ -54,12 +54,14 @@
 			name="name"
 			orderable="<%= true %>"
 			property="name"
+			truncate="<%= true %>"
 		/>
 
 		<liferay-ui:search-container-column-text
 			name="description"
 			orderable="<%= true %>"
 			property="description"
+			truncate="<%= true %>"
 		/>
 	</c:otherwise>
 </c:choose>

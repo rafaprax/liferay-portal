@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.configuration;
 
+import aQute.bnd.annotation.ProviderType;
 import aQute.bnd.annotation.metatype.Meta;
 
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
@@ -27,10 +28,11 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 	localization = "content/Language",
 	name = "search.engine.helper.configuration.name"
 )
+@ProviderType
 public interface SearchEngineHelperConfiguration {
 
 	@Meta.AD(
-		deflt = "com.liferay.portal.kernel.plugin.PluginPackage|com.liferay.asset.kernel.model.AssetEntry",
+		deflt = "com.liferay.asset.kernel.model.AssetCategory|com.liferay.asset.kernel.model.AssetEntry|com.liferay.asset.kernel.model.AssetVocabulary|com.liferay.calendar.model.Calendar|com.liferay.configuration.admin.web.model.ConfigurationModel|com.liferay.document.library.kernel.model.DLFileEntryMetadata|com.liferay.exportimport.kernel.model.ExportImportConfiguration|com.liferay.message.boards.kernel.model.MBThread|com.liferay.portal.kernel.model.Contact|com.liferay.portal.kernel.model.Organization|com.liferay.portal.kernel.model.UserGroup|com.liferay.portal.kernel.plugin.PluginPackage|com.liferay.trash.kernel.model.TrashEntry|com.liferay.wiki.model.WikiNode",
 		required = false
 	)
 	public String[] excludedEntryClassNames();

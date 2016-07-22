@@ -64,18 +64,15 @@ public class DeleteRolePortletConfigurationIcon
 	public String getURL(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		try {
 			PortletURL portletURL = PortletURLFactoryUtil.create(
 				portletRequest, RolesAdminPortletKeys.ROLES_ADMIN,
-				themeDisplay.getPlid(), PortletRequest.ACTION_PHASE);
+				PortletRequest.ACTION_PHASE);
 
 			portletURL.setParameter(ActionRequest.ACTION_NAME, "deleteRole");
 			portletURL.setParameter("mvcPath", "/view.jsp");
 			portletURL.setParameter(
-				"roleId", String.valueOf(getRoleId(portletRequest)));
+				"roleId", String.valueOf(_getRoleId(portletRequest)));
 
 			return portletURL.toString();
 		}
@@ -97,14 +94,19 @@ public class DeleteRolePortletConfigurationIcon
 				(ThemeDisplay)portletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
-			long roleId = getRoleId(portletRequest);
+			long roleId = _getRoleId(portletRequest);
 
 			Role role = _roleService.fetchRole(roleId);
 
-			return !role.isSystem() &&
+			if (!role.isSystem() &&
 				RolePermissionUtil.contains(
 					themeDisplay.getPermissionChecker(), roleId,
-					ActionKeys.DELETE);
+					ActionKeys.DELETE)) {
+
+				return true;
+			}
+
+			return false;
 		}
 		catch (Exception e) {
 		}
@@ -117,7 +119,7 @@ public class DeleteRolePortletConfigurationIcon
 		_roleService = roleService;
 	}
 
-	private long getRoleId(PortletRequest portletRequest) {
+	private long _getRoleId(PortletRequest portletRequest) {
 		HttpServletRequest request = PortalUtil.getHttpServletRequest(
 			portletRequest);
 

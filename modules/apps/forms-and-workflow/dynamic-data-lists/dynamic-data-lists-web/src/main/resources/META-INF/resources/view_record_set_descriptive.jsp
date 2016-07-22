@@ -30,13 +30,13 @@ String href = (String)request.getAttribute(WebKeys.SEARCH_ENTRY_HREF);
 
 <h4>
 	<aui:a cssClass="record-set-name" href="<%= href %>">
-		<%= ddlRecordSet.getName(locale) %>
+		<%= HtmlUtil.escape(ddlRecordSet.getName(locale)) %>
 	</aui:a>
 </h4>
 
 <h5 class="text-default">
 	<div class="record-set-description">
-		<%= ddlRecordSet.getDescription(locale) %>
+		<%= HtmlUtil.escape(ddlRecordSet.getDescription(locale)) %>
 	</div>
 </h5>
 
@@ -44,7 +44,6 @@ String href = (String)request.getAttribute(WebKeys.SEARCH_ENTRY_HREF);
 	<span class="record-set-id">
 		<liferay-ui:message key="id" />: <%= ddlRecordSet.getRecordSetId() %>
 	</span>
-
 	<span class="record-set-modified-date">
 		<liferay-ui:message key="modified-date" />: <%= dateSearchEntry.getName(request) %>
 	</span>

@@ -9,8 +9,8 @@
 </thead>
 <tbody>
 <tr>
-	<td>ANYONE</td>
-	<td>//select[contains(.,'Anyone')]</td>
+	<td>PERMISSIONS_VIEW_ROLE</td>
+	<td>//select[contains(.,'${key_permissionsViewRole}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -30,7 +30,12 @@
 </tr>
 <tr>
 	<td>DEFAULT_LANGUAGE</td>
-	<td>//div[label[contains(.,'Default Language')]]/select</td>
+	<td>//div[contains(.,'Default Language')]//select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DEFAULT_VALUE_SELECT</td>
+	<td>//select[contains(@id,'defaultValue')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -49,6 +54,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>EXPORT_IMPORT_CONTENT</td>
+	<td>//select[contains(@id,'PORTLET_DATA')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>GENDER</td>
 	<td>//div[label[contains(.,'Gender')]]/select</td>
 	<td></td>
@@ -64,8 +74,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>KNOWLEDGE_BASE_RATING</td>
+	<td>//select[contains(@id,'knowledge-base')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>LANGUAGE</td>
 	<td>//div[label[contains(.,'Language')]]/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LENGTH</td>
+	<td>//select[contains(@id,'length')]</td>
 	<td></td>
 </tr>
 <tr>

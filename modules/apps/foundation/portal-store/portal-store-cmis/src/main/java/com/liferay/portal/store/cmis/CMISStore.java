@@ -14,12 +14,12 @@
 
 package com.liferay.portal.store.cmis;
 
-import com.liferay.bnd.util.ConfigurableUtil;
 import com.liferay.document.library.kernel.exception.DuplicateFileException;
 import com.liferay.document.library.kernel.exception.NoSuchFileException;
 import com.liferay.document.library.kernel.store.BaseStore;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.document.library.kernel.util.DLUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -628,7 +628,7 @@ public class CMISStore extends BaseStore {
 				doGetFileNames(fileNames, subDirName, curFolder);
 			}
 		}
-		else if (!Validator.isNull(dirName)) {
+		else if (Validator.isNotNull(dirName)) {
 			fileNames.add(dirName);
 		}
 	}

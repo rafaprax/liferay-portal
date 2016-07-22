@@ -160,6 +160,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -296,10 +297,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			Group group = groupPersistence.fetchByC_GK(
 				user.getCompanyId(), defaultGroupName);
 
-			if ((group != null) &&
-				!userPersistence.containsGroup(
-					userId, group.getGroupId())) {
-
+			if (group != null) {
 				groupIdsSet.add(group.getGroupId());
 			}
 		}
@@ -319,10 +317,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			Group group = groupPersistence.fetchByC_GK(
 				user.getCompanyId(), defaultOrganizationGroupName);
 
-			if ((group != null) &&
-				!userPersistence.containsGroup(
-					userId, group.getGroupId())) {
-
+			if (group != null) {
 				groupIdsSet.add(group.getGroupId());
 			}
 		}
@@ -330,7 +325,11 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		long[] groupIds = ArrayUtil.toArray(
 			groupIdsSet.toArray(new Long[groupIdsSet.size()]));
 
-		groupLocalService.addUserGroups(userId, groupIds);
+		userPersistence.addGroups(userId, groupIds);
+
+		for (long groupId : groupIds) {
+			addDefaultRolesAndTeams(groupId, new long[] {userId});
+		}
 	}
 
 	/**
@@ -356,8 +355,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 				user.getCompanyId(), defaultRoleName);
 
 			if ((role != null) &&
-				(role.getType() == RoleConstants.TYPE_REGULAR) &&
-				!userPersistence.containsRole(userId, role.getRoleId())) {
+				(role.getType() == RoleConstants.TYPE_REGULAR)) {
 
 				roleIdSet.add(role.getRoleId());
 			}
@@ -394,10 +392,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			UserGroup userGroup = userGroupPersistence.fetchByC_N(
 				user.getCompanyId(), defaultUserGroupName);
 
-			if ((userGroup != null) &&
-				!userPersistence.containsUserGroup(
-					userId, userGroup.getUserGroupId())) {
-
+			if (userGroup != null) {
 				userGroupIdSet.add(userGroup.getUserGroupId());
 			}
 		}
@@ -3598,7 +3593,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 							ticket.getKey();
 		}
 		else {
-			if (!Validator.equals(
+			if (!Objects.equals(
 					PasswordEncryptorUtil.getDefaultPasswordAlgorithmType(),
 					PasswordEncryptorUtil.TYPE_NONE)) {
 
@@ -3608,8 +3603,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 					if (_log.isWarnEnabled()) {
 						StringBundler sb = new StringBundler(5);
 
-						sb.append("When LDAP password policy is enabled, ");
-						sb.append("it is possible that portal generated ");
+						sb.append("When LDAP password policy is enabled, it ");
+						sb.append("is possible that portal generated ");
 						sb.append("passwords will not match the LDAP policy.");
 						sb.append("Using RegExpToolkit to generate new ");
 						sb.append("password.");
@@ -4073,8 +4068,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			userId, companyGroup.getGroupId(), user.getCreateDate(),
 			user.getModifiedDate(), User.class.getName(), user.getUserId(),
 			user.getUuid(), 0, assetCategoryIds, assetTagNames, true, false,
-			null, null, null, null, user.getFullName(), null, null, null, null,
-			0, 0, null);
+			null, null, null, null, null, user.getFullName(), null, null, null,
+			null, 0, 0, null);
 	}
 
 	/**
@@ -4631,6 +4626,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		User user = userPersistence.findByPrimaryKey(userId);
 
+		user.setModifiedDate(modifiedDate);
+
 		userPersistence.update(user);
 
 		return user;
@@ -5072,8 +5069,10 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		// User
 
 		User user = userPersistence.findByPrimaryKey(userId);
+
 		Company company = companyPersistence.findByPrimaryKey(
 			user.getCompanyId());
+
 		String password = oldPassword;
 		screenName = getLogin(screenName);
 		emailAddress = StringUtil.toLowerCase(emailAddress.trim());
@@ -5494,9 +5493,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			Set<Long> userRoleIdsSet = new HashSet<>();
 
 			for (Role role : defaultSiteRoles) {
-				if (!userPersistence.containsRole(userId, role.getRoleId())) {
-					userRoleIdsSet.add(role.getRoleId());
-				}
+				userRoleIdsSet.add(role.getRoleId());
 			}
 
 			long[] userRoleIds = ArrayUtil.toArray(
@@ -5508,9 +5505,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			Set<Long> userTeamIdsSet = new HashSet<>();
 
 			for (Team team : defaultTeams) {
-				if (!userPersistence.containsTeam(userId, team.getTeamId())) {
-					userTeamIdsSet.add(team.getTeamId());
-				}
+				userTeamIdsSet.add(team.getTeamId());
 			}
 
 			long[] userTeamIds = ArrayUtil.toArray(
@@ -5721,8 +5716,6 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			resetFailedLoginAttempts(user);
 		}
 
-		// PLACEHOLDER 02
-
 		return authResult;
 	}
 
@@ -5894,20 +5887,34 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			return false;
 		}
 
-		for (String key : params.keySet()) {
-			if (!key.equals("inherit") && !key.equals("usersGroups") &&
-				!key.equals("usersOrgs") && !key.equals("usersOrgsCount") &&
-				!key.equals("usersRoles") && !key.equals("usersTeams") &&
-				!key.equals("usersUserGroups")) {
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			String key = entry.getKey();
+
+			if (key.equals("inherit")) {
+				if (Boolean.TRUE.equals(entry.getValue())) {
+					return true;
+				}
+			}
+			else if (key.equals("noOrganizations")) {
+				if (!Boolean.TRUE.equals(entry.getValue())) {
+					return true;
+				}
+
+				Object usersOrgsCount = params.get("usersOrgsCount");
+
+				if ((usersOrgsCount == null) ||
+					(GetterUtil.getLong(usersOrgsCount) != 0)) {
+
+					return true;
+				}
+			}
+			else if (!key.equals("usersGroups") && !key.equals("usersOrgs") &&
+					 !key.equals("usersOrgsCount") &&
+					 !key.equals("usersRoles") && !key.equals("usersTeams") &&
+					 !key.equals("usersUserGroups")) {
 
 				return true;
 			}
-		}
-
-		Boolean inherit = (Boolean)params.get("inherit");
-
-		if ((inherit != null) && inherit) {
-			return true;
 		}
 
 		return false;

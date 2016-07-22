@@ -1,4 +1,5 @@
 <definition component-name="portal-collaboration">
+	<property name="portal.release" value="true" />
 	<property name="custom.properties" value="default.layout.template.id=1_column" />
 	<property name="testray.main.component.name" value="Wiki" />
 
@@ -19,7 +20,7 @@
 		</execute>
 
 		<execute macro="Page#editPageLayoutColumn">
-			<var name="columnName" value="1_column" />
+			<var name="columnName" value="1 Column" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -60,6 +61,115 @@
 
 		<execute macro="WikiPage#addFrontPagePG">
 			<var name="wikiPageContent" value="${wikiPageContent}" />
+		</execute>
+	</command>
+
+	<command name="AddWikiFrontPageAttachment" priority="4">
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiPage#addFrontPagePG">
+			<var name="wikiPageContent" value="Wiki FrontPage Content" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiNavigator#gotoPG">
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="WikiPage#addAttachmentViaPageEdit">
+			<var name="attachmentFileName" value="Document_1.jpg" />
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiNavigator#gotoPG">
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="WikiPage#viewAttachmentPGViaEdit">
+			<var name="attachmentFileName" value="Document_1.jpg" />
+			<var name="attachmentFileSize" value="13KB" />
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+	</command>
+
+	<command name="AddWikiFrontPageAttachments" priority="4">
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiPage#addFrontPagePG">
+			<var name="wikiPageContent" value="Wiki FrontPage Content" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiNavigator#gotoPG">
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<var name="attachmentFileName" value="Document_1.jpg,Document_2.mp3,Document_3.doc" />
+
+		<for list="${attachmentFileName}" param="attachmentFileName" >
+			<execute macro="WikiPage#addAttachmentViaPageEdit">
+				<var name="attachmentFileName" value="${attachmentFileName}" />
+				<var name="wikiPageTitle" value="FrontPage" />
+			</execute>
+
+			<execute macro="Navigator#gotoPage">
+				<var name="pageName" value="${pageName}" />
+			</execute>
+
+			<execute macro="WikiNavigator#gotoPG">
+				<var name="wikiPageTitle" value="FrontPage" />
+			</execute>
+		</for>
+
+		<execute macro="WikiPage#viewAttachmentPGViaEdit">
+			<var name="attachmentFileName" value="Document_1.jpg" />
+			<var name="attachmentFileSize" value="13KB" />
+			<var name="numberOfAttachments" value="3" />
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiNavigator#gotoPG">
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="WikiPage#viewAttachmentPGViaEdit">
+			<var name="attachmentFileName" value="Document_2.mp3" />
+			<var name="attachmentFileSize" value="1KB" />
+			<var name="numberOfAttachments" value="3" />
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="${pageName}" />
+		</execute>
+
+		<execute macro="WikiNavigator#gotoPG">
+			<var name="wikiPageTitle" value="FrontPage" />
+		</execute>
+
+		<execute macro="WikiPage#viewAttachmentPGViaEdit">
+			<var name="attachmentFileName" value="Document_3.doc" />
+			<var name="attachmentFileSize" value="24KB" />
+			<var name="numberOfAttachments" value="3" />
+			<var name="wikiPageTitle" value="FrontPage" />
 		</execute>
 	</command>
 
@@ -621,6 +731,8 @@
 	</command>
 
 	<command name="AddWikiPageFormatMediaWiki" priority="5">
+		<property name="osgi.modules.includes" value="wiki-engine-mediawiki" />
+
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Test Page" />
 		</execute>

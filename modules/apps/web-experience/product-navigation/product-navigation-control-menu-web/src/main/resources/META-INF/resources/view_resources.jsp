@@ -63,7 +63,6 @@ if (Validator.isNotNull(keywords)) {
 
 		</ul>
 	</span>
-
 	<span class="pull-right" id="<portlet:namespace />displayStyleContainer">
 
 		<%
@@ -97,7 +96,7 @@ if (Validator.isNotNull(keywords)) {
 <div class="add-content-button">
 
 	<%
-	PortletURL redirectURL = PortletURLFactoryUtil.create(request, portletDisplay.getId(), plid, PortletRequest.RENDER_PHASE);
+	PortletURL redirectURL = PortletURLFactoryUtil.create(request, portletDisplay.getId(), PortletRequest.RENDER_PHASE);
 
 	redirectURL.setParameter("mvcPath", "/add_content_redirect.jsp");
 	redirectURL.setWindowState(LiferayWindowState.POP_UP);
@@ -227,9 +226,9 @@ if (Validator.isNotNull(keywords)) {
 									<h4><%= title %></h4>
 
 									<%
-									Date createDate = assetRenderer.getDisplayDate();
+									Date modifiedDate = assetEntry.getModifiedDate();
 
-									String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - createDate.getTime(), true);
+									String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true);
 									%>
 
 									<h6 class="text-default">

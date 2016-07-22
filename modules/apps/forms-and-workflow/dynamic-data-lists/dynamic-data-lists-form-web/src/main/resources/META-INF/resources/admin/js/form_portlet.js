@@ -6,10 +6,6 @@ AUI.add(
 
 		var TPL_BUTTON_SPINNER = '<span aria-hidden="true"><span class="icon-spinner icon-spin"></span></span>';
 
-		var isNode = function(node) {
-			return node && (node._node || node.nodeType);
-		};
-
 		var DDLPortlet = A.Component.create(
 			{
 				ATTRS: {
@@ -27,6 +23,9 @@ AUI.add(
 					editForm: {
 					},
 
+					evaluatorURL: {
+					},
+
 					formBuilder: {
 						valueFn: '_valueFormBuilder'
 					},
@@ -36,6 +35,7 @@ AUI.add(
 
 					name: {
 						getter: '_getName',
+						setter: '_setName',
 						value: ''
 					},
 
@@ -105,7 +105,11 @@ AUI.add(
 
 						editForm.set('onSubmit', A.bind('_onSubmitEditForm', instance));
 
+						var formBuilder = instance.get('formBuilder');
+
 						instance._eventHandlers = [
+							formBuilder._layoutBuilder.after('layout-builder:moveEnd', A.bind(instance._afterFormBuilderLayoutBuilderMoveEnd, instance)),
+							formBuilder._layoutBuilder.after('layout-builder:moveStart', A.bind(instance._afterFormBuilderLayoutBuilderMoveStart, instance)),
 							instance.one('.btn-cancel').on('click', A.bind('_onCancel', instance)),
 							Liferay.on('destroyPortlet', A.bind('_onDestroyPortlet', instance))
 						];
@@ -137,6 +141,38 @@ AUI.add(
 								}
 							);
 						}
+					},
+
+					disableDescriptionEditor: function() {
+						var instance = this;
+
+						var descriptionEditor = CKEDITOR.instances[instance.ns('descriptionEditor')];
+
+						descriptionEditor.setReadOnly(true);
+					},
+
+					disableNameEditor: function() {
+						var instance = this;
+
+						var nameEditor = CKEDITOR.instances[instance.ns('nameEditor')];
+
+						nameEditor.setReadOnly(true);
+					},
+
+					enableDescriptionEditor: function() {
+						var instance = this;
+
+						var descriptionEditor = CKEDITOR.instances[instance.ns('descriptionEditor')];
+
+						descriptionEditor.setReadOnly(false);
+					},
+
+					enableNameEditor: function() {
+						var instance = this;
+
+						var nameEditor = CKEDITOR.instances[instance.ns('nameEditor')];
+
+						nameEditor.setReadOnly(false);
 					},
 
 					getState: function() {
@@ -280,6 +316,10 @@ AUI.add(
 					submitForm: function() {
 						var instance = this;
 
+						if (!instance.get('name').trim()) {
+							instance.set('name', Liferay.Language.get('untitled-form'));
+						}
+
 						instance.serializeFormBuilder();
 
 						var submitButton = instance.one('#submit');
@@ -293,28 +333,30 @@ AUI.add(
 						submitForm(editForm.form);
 					},
 
-					_getDescription: function(value) {
+					_afterFormBuilderLayoutBuilderMoveEnd: function() {
 						var instance = this;
 
-						var editor = window[instance.ns('descriptionEditor')];
-
-						if (editor && !isNode(editor)) {
-							value = editor.getHTML();
-						}
-
-						return value;
+						instance.enableDescriptionEditor();
+						instance.enableNameEditor();
 					},
 
-					_getName: function(value) {
+					_afterFormBuilderLayoutBuilderMoveStart: function() {
 						var instance = this;
 
-						var editor = window[instance.ns('nameEditor')];
+						instance.disableDescriptionEditor();
+						instance.disableNameEditor();
+					},
 
-						if (editor && !isNode(editor)) {
-							value = editor.getHTML();
-						}
+					_getDescription: function() {
+						var instance = this;
 
-						return value;
+						return window[instance.ns('descriptionEditor')].getHTML();
+					},
+
+					_getName: function() {
+						var instance = this;
+
+						return window[instance.ns('nameEditor')].getHTML();
 					},
 
 					_isSameState: function() {
@@ -405,6 +447,12 @@ AUI.add(
 						);
 					},
 
+					_setName: function(value) {
+						var instance = this;
+
+						window[instance.ns('nameEditor')].setHTML(value);
+					},
+
 					_valueFormBuilder: function() {
 						var instance = this;
 
@@ -414,6 +462,7 @@ AUI.add(
 							{
 								dataProviders: instance.get('dataProviders'),
 								definition: instance.get('definition'),
+								evaluatorURL: instance.get('evaluatorURL'),
 								pagesJSON: layout.pages,
 								portletNamespace: instance.get('namespace')
 							}

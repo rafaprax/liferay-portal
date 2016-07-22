@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Sitemap" />
 
 	<set-up>
@@ -33,11 +34,10 @@
 		</execute>
 
 		<execute macro="Page#addChild">
-			<var name="childSitepageName" value="true" />
 			<var name="page" value="Private Pages" />
+			<var name="pageName" value="Site Page Name" />
 			<var name="siteChildPageName" value="Child Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page Name" />
 		</execute>
 	</set-up>
 
@@ -58,8 +58,6 @@
 	</tear-down>
 
 	<command name="DisplayPrivatePageWithChildPage" priority="4">
-		<property name="portal.acceptance" value="true" />
-
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Site Map" />
 		</execute>

@@ -488,42 +488,48 @@
 			<var name="pageType" value="Blog" />
 		</execute>
 
-		<execute macro="PermissionsInline#gotoPagePG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName1}" />
-			<var name="siteURLTemp" value="true" />
+		</execute>
+
+		<execute macro="PermissionsInline#gotoPagePG">
+			<var name="pageName" value="${pageName}" />
 		</execute>
 
 		<for list="${permissionInLineCheckLists}" param="permissionsInLineCheckListsCount" >
-
 			<execute macro="Team#definePermissionPG">
 				<var name="permissionDefinitionKey" value="${permissionsInLineCheckListsCount}" />
 				<var name="teamName" value="${teamName}" />
 			</execute>
 		</for>
 
-		<execute macro="PermissionsInline#gotoPagePG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName1}" />
-			<var name="siteURLTemp" value="true" />
+		</execute>
+
+		<execute macro="PermissionsInline#gotoPagePG">
+			<var name="pageName" value="${pageName}" />
 		</execute>
 
 		<for list="${permissionInLineUncheckLists1}" param="permissionsInLineUncheckListsCount" >
-
 			<execute macro="Role#removePermissionPG">
 				<var name="permissionDefinitionKey" value="${permissionsInLineUncheckListsCount}" />
 				<var name="roleName" value="Site Member" />
 			</execute>
 		</for>
 
-		<execute macro="PermissionsInline#gotoPagePG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName1}" />
-			<var name="siteURLTemp" value="true" />
+		</execute>
+
+		<execute macro="PermissionsInline#gotoPagePG">
+			<var name="pageName" value="${pageName}" />
 		</execute>
 
 		<for list="${permissionInLineUncheckLists2}" param="permissionsInLineUncheckListsCount" >
-
 			<execute macro="Role#removePermissionPG">
 				<var name="permissionDefinitionKey" value="${permissionsInLineUncheckListsCount}" />
 				<var name="roleName" value="Guest" />

@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -45,7 +46,7 @@ public class LoadBalancerUtilTest extends BaseJenkinsResultsParserTestCase {
 
 	@Test
 	public void testGetMostAvailableMasterURL() throws Exception {
-		LoadBalancerUtil.recentJobPeriod = 0;
+		LoadBalancerUtil.RECENT_BATCH_AGE = 0;
 
 		assertSamples();
 	}
@@ -117,10 +118,10 @@ public class LoadBalancerUtilTest extends BaseJenkinsResultsParserTestCase {
 	protected void downloadSample(File sampleDir, URL url) throws Exception {
 		Properties properties = getDownloadProperties(sampleDir.getName());
 
-		List<String> hostNames = LoadBalancerUtil.getHostNames(
-			properties, sampleDir.getName());
+		List<String> masters = LoadBalancerUtil.getMasters(
+			sampleDir.getName(), properties);
 
-		for (int i = 1; i <= hostNames.size(); i++) {
+		for (int i = 1; i <= masters.size(); i++) {
 			downloadSampleURL(
 				new File(sampleDir, sampleDir.getName() + "-" + i),
 				JenkinsResultsParserUtil.createURL(
@@ -151,12 +152,14 @@ public class LoadBalancerUtilTest extends BaseJenkinsResultsParserTestCase {
 	protected Properties getTestProperties(String baseInvocationHostName) {
 		Properties properties = getDownloadProperties(baseInvocationHostName);
 
-		for (Object key : properties.keySet()) {
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			Object key = entry.getKey();
+
 			if (key.equals("base.invocation.url")) {
 				continue;
 			}
 
-			String value = (String)properties.get(key);
+			String value = (String)entry.getValue();
 
 			if (value.contains("http://")) {
 				Class<?> clazz = getClass();
@@ -166,7 +169,7 @@ public class LoadBalancerUtilTest extends BaseJenkinsResultsParserTestCase {
 					"${dependencies.url}" + clazz.getSimpleName() + "/" +
 						baseInvocationHostName + "/");
 
-				properties.put(key, value);
+				entry.setValue(value);
 			}
 		}
 

@@ -329,8 +329,6 @@
 		</execute>
 
 		<execute function="AssertClick#pauseAssertTextClickAt" locator1="DDMEditStructure#FIELDS_LINK" value1="Fields" />
-
-		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
 	<command name="editFieldPredefinedValue">
@@ -553,9 +551,9 @@
 				<execute function="SelectFrame" locator1="DDMEditStructure#IFRAME" />
 			</then>
 			<elseif>
-				<condition function="IsElementPresent" locator1="BasePortlet#IFRAME" />
+				<condition function="IsElementPresent" locator1="IFrame#DIALOG" />
 				<then>
-					<execute function="SelectFrame" locator1="BasePortlet#IFRAME" />
+					<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 				</then>
 			</elseif>
 		</if>

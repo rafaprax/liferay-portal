@@ -15,7 +15,7 @@
 package com.liferay.staging.taglib.servlet.taglib;
 
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.staging.taglib.servlet.ServletContextUtil;
+import com.liferay.staging.taglib.internal.servlet.ServletContextUtil;
 import com.liferay.taglib.util.IncludeTag;
 
 import java.util.List;
@@ -49,6 +49,10 @@ public class PortletListTag extends IncludeTag {
 		_portlets = portlets;
 	}
 
+	public void setShowAllPortlets(boolean showAllPortlets) {
+		_showAllPortlets = showAllPortlets;
+	}
+
 	public void setType(String type) {
 		_type = type;
 	}
@@ -58,6 +62,7 @@ public class PortletListTag extends IncludeTag {
 		_disableInputs = false;
 		_exportImportConfigurationId = 0;
 		_portlets = null;
+		_showAllPortlets = false;
 		_type = null;
 	}
 
@@ -75,14 +80,17 @@ public class PortletListTag extends IncludeTag {
 			_exportImportConfigurationId);
 		request.setAttribute(
 			"liferay-staging:portlet-list:portlets", _portlets);
+		request.setAttribute(
+			"liferay-staging:portlet-list:showAllPortlets", _showAllPortlets);
 		request.setAttribute("liferay-staging:portlet-list:type", _type);
 	}
 
 	private static final String _PAGE = "/portlet_list/page.jsp";
 
 	private boolean _disableInputs;
-	private long _exportImportConfigurationId = 0;
+	private long _exportImportConfigurationId;
 	private List<Portlet> _portlets;
+	private boolean _showAllPortlets;
 	private String _type;
 
 }

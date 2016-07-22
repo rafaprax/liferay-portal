@@ -104,6 +104,9 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.time.StopWatch;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -180,17 +183,19 @@ public class LayoutExportController implements ExportController {
 		Map<String, String[]> parameterMap =
 			portletDataContext.getParameterMap();
 
-		boolean exportIgnoreLastPublishDate = MapUtil.getBoolean(
+		boolean ignoreLastPublishDate = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.IGNORE_LAST_PUBLISH_DATE);
-		boolean exportPermissions = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
-		boolean exportLogo = MapUtil.getBoolean(
-			parameterMap, PortletDataHandlerKeys.LOGO);
-		boolean exportLayoutSetSettings = MapUtil.getBoolean(
+		boolean layoutSetPrototypeSettings = MapUtil.getBoolean(
+			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_PROTOTYPE_SETTINGS);
+		boolean layoutSetSettings = MapUtil.getBoolean(
 			parameterMap, PortletDataHandlerKeys.LAYOUT_SET_SETTINGS);
+		boolean logo = MapUtil.getBoolean(
+			parameterMap, PortletDataHandlerKeys.LOGO);
+		boolean permissions = MapUtil.getBoolean(
+			parameterMap, PortletDataHandlerKeys.PERMISSIONS);
 
 		if (_log.isDebugEnabled()) {
-			_log.debug("Export permissions " + exportPermissions);
+			_log.debug("Export permissions " + permissions);
 		}
 
 		LayoutSet layoutSet = _layoutSetLocalService.getLayoutSet(
@@ -220,7 +225,7 @@ public class LayoutExportController implements ExportController {
 
 		ServiceContextThreadLocal.pushServiceContext(serviceContext);
 
-		if (exportIgnoreLastPublishDate) {
+		if (ignoreLastPublishDate) {
 			portletDataContext.setEndDate(null);
 			portletDataContext.setStartDate(null);
 		}
@@ -242,8 +247,16 @@ public class LayoutExportController implements ExportController {
 			StringUtil.merge(
 				LanguageUtil.getAvailableLocales(
 					portletDataContext.getScopeGroupId())));
+
 		headerElement.addAttribute(
 			"build-number", String.valueOf(ReleaseInfo.getBuildNumber()));
+
+		Bundle bundle = FrameworkUtil.getBundle(LayoutExportController.class);
+
+		Version version = bundle.getVersion();
+
+		headerElement.addAttribute("bundle-version", String.valueOf(version));
+
 		headerElement.addAttribute("export-date", Time.getRFC822());
 
 		if (portletDataContext.hasDateRange()) {
@@ -302,7 +315,7 @@ public class LayoutExportController implements ExportController {
 			_layoutSetBranchLocalService.fetchLayoutSetBranch(
 				layoutSetBranchId);
 
-		if (exportLogo) {
+		if (logo) {
 			Image image = null;
 
 			if (layoutSetBranch != null) {
@@ -325,6 +338,23 @@ public class LayoutExportController implements ExportController {
 			}
 		}
 
+		String layoutSetPrototypeUuid = layoutSet.getLayoutSetPrototypeUuid();
+
+		if (layoutSetPrototypeSettings &&
+			Validator.isNotNull(layoutSetPrototypeUuid)) {
+
+			LayoutSetPrototype layoutSetPrototype =
+				_layoutSetPrototypeLocalService.
+					getLayoutSetPrototypeByUuidAndCompanyId(
+						layoutSetPrototypeUuid, companyId);
+
+			headerElement.addAttribute(
+				"layout-set-prototype-uuid", layoutSetPrototypeUuid);
+			headerElement.addAttribute(
+				"layout-set-prototype-name",
+				layoutSetPrototype.getName(LocaleUtil.getDefault()));
+		}
+
 		Element missingReferencesElement = rootElement.addElement(
 			"missing-references");
 
@@ -338,7 +368,7 @@ public class LayoutExportController implements ExportController {
 			_themeExporter.exportTheme(portletDataContext, layoutSet);
 		}
 
-		if (exportLayoutSetSettings) {
+		if (layoutSetSettings) {
 			Element settingsElement = headerElement.addElement("settings");
 
 			if (layoutSetBranch != null) {
@@ -440,24 +470,9 @@ public class LayoutExportController implements ExportController {
 		portletDataContext.addDeletionSystemEventStagedModelTypes(
 			new StagedModelType(Layout.class));
 
-		Element layoutsElement = portletDataContext.getExportDataGroupElement(
-			Layout.class);
+		// Force to always have a layout group element
 
-		String layoutSetPrototypeUuid = layoutSet.getLayoutSetPrototypeUuid();
-
-		if (Validator.isNotNull(layoutSetPrototypeUuid)) {
-			LayoutSetPrototype layoutSetPrototype =
-				_layoutSetPrototypeLocalService.
-					getLayoutSetPrototypeByUuidAndCompanyId(
-						layoutSetPrototypeUuid, companyId);
-
-			layoutsElement.addAttribute(
-				"layout-set-prototype-uuid", layoutSetPrototypeUuid);
-
-			layoutsElement.addAttribute(
-				"layout-set-prototype-name",
-				layoutSetPrototype.getName(LocaleUtil.getDefault()));
-		}
+		portletDataContext.getExportDataGroupElement(Layout.class);
 
 		for (Layout layout : layouts) {
 			exportLayout(portletDataContext, layoutIds, layout);
@@ -521,8 +536,7 @@ public class LayoutExportController implements ExportController {
 						portletDataContext));
 
 				_portletExportController.exportPortlet(
-					portletDataContext, layout, portletsElement,
-					exportPermissions,
+					portletDataContext, layout, portletsElement, permissions,
 					exportPortletControlsMap.get(
 						PortletDataHandlerKeys.PORTLET_ARCHIVED_SETUPS),
 					exportPortletControlsMap.get(
@@ -561,7 +575,7 @@ public class LayoutExportController implements ExportController {
 		_deletionSystemEventExporter.exportDeletionSystemEvents(
 			portletDataContext);
 
-		if (exportPermissions) {
+		if (permissions) {
 			_permissionExporter.exportPortletDataPermissions(
 				portletDataContext);
 		}

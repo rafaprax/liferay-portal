@@ -33,19 +33,21 @@
 			</h6>
 		</liferay-ui:search-container-column-text>
 
-		<liferay-ui:search-container-column-jsp
-			path="/user_action.jsp"
-		/>
+		<c:if test="<%= showActions %>">
+			<liferay-ui:search-container-column-jsp
+				path="/user_action.jsp"
+			/>
+		</c:if>
 	</c:when>
 	<c:when test='<%= displayStyle.equals("icon") %>'>
 
 		<%
-		row.setCssClass("article-entry col-md-2 col-sm-4 col-xs-6");
+		row.setCssClass("entry-card lfr-asset-item");
 		%>
 
 		<liferay-ui:search-container-column-text>
 			<liferay-frontend:user-vertical-card
-				actionJsp="/user_action.jsp"
+				actionJsp='<%= showActions ? "/user_action.jsp" : StringPool.BLANK %>'
 				actionJspServletContext="<%= application %>"
 				cssClass="entry-display-style"
 				resultRow="<%= row %>"
@@ -60,16 +62,19 @@
 		<liferay-ui:search-container-column-text
 			name="name"
 			property="fullName"
+			truncate="<%= true %>"
 		/>
 
 		<liferay-ui:search-container-column-text
 			name="screen-name"
 			property="screenName"
+			truncate="<%= true %>"
 		/>
 
-		<liferay-ui:search-container-column-jsp
-			cssClass="list-group-item-field"
-			path="/user_action.jsp"
-		/>
+		<c:if test="<%= showActions %>">
+			<liferay-ui:search-container-column-jsp
+				path="/user_action.jsp"
+			/>
+		</c:if>
 	</c:otherwise>
 </c:choose>

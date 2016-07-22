@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -54,6 +53,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -197,7 +197,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMContent ddmContent : list) {
-					if (!Validator.equals(uuid, ddmContent.getUuid())) {
+					if (!Objects.equals(uuid, ddmContent.getUuid())) {
 						list = null;
 
 						break;
@@ -670,8 +670,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchContentException(msg.toString());
@@ -715,7 +715,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 		if (result instanceof DDMContent) {
 			DDMContent ddmContent = (DDMContent)result;
 
-			if (!Validator.equals(uuid, ddmContent.getUuid()) ||
+			if (!Objects.equals(uuid, ddmContent.getUuid()) ||
 					(groupId != ddmContent.getGroupId())) {
 				result = null;
 			}
@@ -1006,7 +1006,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMContent ddmContent : list) {
-					if (!Validator.equals(uuid, ddmContent.getUuid()) ||
+					if (!Objects.equals(uuid, ddmContent.getUuid()) ||
 							(companyId != ddmContent.getCompanyId())) {
 						list = null;
 
@@ -2668,8 +2668,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 					primaryKey);
 
 			if (ddmContent == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchContentException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2907,8 +2907,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 		DDMContent ddmContent = fetchByPrimaryKey(primaryKey);
 
 		if (ddmContent == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchContentException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2939,12 +2939,14 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	 */
 	@Override
 	public DDMContent fetchByPrimaryKey(Serializable primaryKey) {
-		DDMContent ddmContent = (DDMContent)entityCache.getResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
 				DDMContentImpl.class, primaryKey);
 
-		if (ddmContent == _nullDDMContent) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		DDMContent ddmContent = (DDMContent)serializable;
 
 		if (ddmContent == null) {
 			Session session = null;
@@ -2960,7 +2962,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 				}
 				else {
 					entityCache.putResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
-						DDMContentImpl.class, primaryKey, _nullDDMContent);
+						DDMContentImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -3014,18 +3016,20 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			DDMContent ddmContent = (DDMContent)entityCache.getResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
 					DDMContentImpl.class, primaryKey);
 
-			if (ddmContent == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, ddmContent);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (DDMContent)serializable);
+				}
 			}
 		}
 
@@ -3067,7 +3071,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
-					DDMContentImpl.class, primaryKey, _nullDDMContent);
+					DDMContentImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3312,22 +3316,4 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "data"
 			});
-	private static final DDMContent _nullDDMContent = new DDMContentImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<DDMContent> toCacheModel() {
-				return _nullDDMContentCacheModel;
-			}
-		};
-
-	private static final CacheModel<DDMContent> _nullDDMContentCacheModel = new CacheModel<DDMContent>() {
-			@Override
-			public DDMContent toEntityModel() {
-				return _nullDDMContent;
-			}
-		};
 }

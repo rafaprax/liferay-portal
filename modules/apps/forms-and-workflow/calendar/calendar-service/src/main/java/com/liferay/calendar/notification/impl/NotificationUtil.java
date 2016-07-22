@@ -24,6 +24,7 @@ import com.liferay.calendar.notification.NotificationType;
 import com.liferay.calendar.service.configuration.CalendarServiceConfigurationKeys;
 import com.liferay.calendar.service.configuration.CalendarServiceConfigurationUtil;
 import com.liferay.calendar.service.configuration.CalendarServiceConfigurationValues;
+import com.liferay.petra.content.ContentUtil;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.model.Group;
@@ -33,7 +34,6 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.UnicodeProperties;
-import com.liferay.util.ContentUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,7 +82,8 @@ public class NotificationUtil {
 		String templatePath = CalendarServiceConfigurationUtil.get(
 			propertyName, filter);
 
-		return ContentUtil.get(templatePath);
+		return ContentUtil.get(
+			NotificationUtil.class.getClassLoader(), templatePath);
 	}
 
 	public static String getTemplate(
@@ -220,10 +221,14 @@ public class NotificationUtil {
 
 		Set<User> users = new HashSet<>();
 
-		users.add(UserLocalServiceUtil.getUser(calendarBooking.getUserId()));
-		users.add(UserLocalServiceUtil.getUser(calendarResource.getUserId()));
+		users.add(UserLocalServiceUtil.fetchUser(calendarBooking.getUserId()));
+		users.add(UserLocalServiceUtil.fetchUser(calendarResource.getUserId()));
 
 		for (User user : users) {
+			if (user == null) {
+				continue;
+			}
+
 			notificationRecipients.add(new NotificationRecipient(user));
 		}
 

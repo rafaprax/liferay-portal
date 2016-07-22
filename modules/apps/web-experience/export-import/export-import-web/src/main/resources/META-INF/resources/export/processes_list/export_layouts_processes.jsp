@@ -125,9 +125,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 
 						<h5>
 							<span id="<portlet:namespace />backgroundTaskName<%= backgroundTask.getBackgroundTaskId() %>">
-
 								<%= HtmlUtil.escape(backgroundTaskName) %>
-
 							</span>
 
 							<%
@@ -224,6 +222,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
 						name="title"
 					>
 						<span id="<%= liferayPortletResponse.getNamespace() + "backgroundTaskName" + String.valueOf(backgroundTask.getBackgroundTaskId()) %>">
@@ -249,6 +248,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 					/>
 
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
 						name="download"
 					>
 
@@ -284,9 +284,7 @@ OrderByComparator<BackgroundTask> orderByComparator = BackgroundTaskComparatorFa
 				</c:when>
 			</c:choose>
 
-			<liferay-ui:search-container-column-text
-				align="right"
-			>
+			<liferay-ui:search-container-column-text>
 				<c:if test="<%= !backgroundTask.isInProgress() %>">
 					<liferay-ui:icon-menu direction="left-side" icon="<%= StringPool.BLANK %>" markupView="lexicon" message="<%= StringPool.BLANK %>" showWhenSingleIcon="<%= true %>">
 						<portlet:actionURL name="editExportConfiguration" var="relaunchURL">

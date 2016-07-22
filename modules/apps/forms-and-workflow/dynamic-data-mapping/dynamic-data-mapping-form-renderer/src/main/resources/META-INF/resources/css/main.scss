@@ -1,5 +1,14 @@
 @import "bourbon";
 
+.ddl-form-builder-app {
+	.lfr-ddm-form-page {
+		> .row {
+			margin-left: 18px;
+			margin-right: 18px;
+		}
+	}
+}
+
 .lfr-ddm-form-container {
 	.form-control-feedback {
 		margin-left: -20px;
@@ -88,10 +97,6 @@
 		padding-top: 20px;
 	}
 
-	.lfr-ddm-form-submit .icon-spinner {
-		margin-left: 5px;
-	}
-
 	.row {
 		min-height: auto;
 	}
@@ -99,12 +104,15 @@
 
 .liferay-ddm-form-field-paragraph, .liferay-ddm-form-field-tip {
 	color: #869CAD;
-	font-size: 14px;
 	line-height: 16px;
 }
 
+.liferay-ddm-form-field-paragraph {
+	font-size: 14px;
+}
+
 .liferay-ddm-form-field-tip {
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: 400;
 }
 
@@ -119,7 +127,7 @@
 }
 
 .portal-popup {
-	$side-spacing: 34px;
+	$side-spacing: 32px;
 	padding: 0;
 
 	&.open {

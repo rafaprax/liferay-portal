@@ -14,7 +14,7 @@
 
 package com.liferay.portal.search.internal;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
@@ -309,8 +309,8 @@ public class SearchEngineHelperImpl implements SearchEngineHelper {
 	private String _defaultSearchEngineId;
 	private final Set<String> _excludedEntryClassNames = new HashSet<>();
 	private int _queueCapacity = 200;
-	private final Map<String, QueuingSearchEngine>
-		_queuingSearchEngines = new HashMap<>();
+	private final Map<String, QueuingSearchEngine> _queuingSearchEngines =
+		new HashMap<>();
 	private final Map<String, SearchEngine> _searchEngines =
 		new ConcurrentHashMap<>();
 

@@ -82,10 +82,8 @@ public class Base64 {
 	public static String fromURLSafe(String base64) {
 		return StringUtil.replace(
 			base64,
-			new String[] {
-				StringPool.MINUS, StringPool.STAR, StringPool.UNDERLINE
-			},
-			new String[] {StringPool.PLUS, StringPool.EQUAL, StringPool.SLASH});
+			new char[] {CharPool.MINUS, CharPool.STAR, CharPool.UNDERLINE},
+			new char[] {CharPool.PLUS, CharPool.EQUAL, CharPool.SLASH});
 	}
 
 	public static String objectToString(Object o) {
@@ -126,11 +124,8 @@ public class Base64 {
 
 	public static String toURLSafe(String base64) {
 		return StringUtil.replace(
-			base64,
-			new String[] {StringPool.PLUS, StringPool.EQUAL, StringPool.SLASH},
-			new String[] {
-				StringPool.MINUS, StringPool.STAR, StringPool.UNDERLINE
-			});
+			base64, new char[] {CharPool.PLUS, CharPool.EQUAL, CharPool.SLASH},
+			new char[] {CharPool.MINUS, CharPool.STAR, CharPool.UNDERLINE});
 	}
 
 	protected static char[] encodeBlock(byte[] raw, int offset, int lastIndex) {
@@ -180,7 +175,11 @@ public class Base64 {
 			return CharPool.PLUS;
 		}
 
-		return sixbit != 63 ? CharPool.QUESTION : CharPool.SLASH;
+		if (sixbit != 63) {
+			return CharPool.QUESTION;
+		}
+
+		return CharPool.SLASH;
 	}
 
 	protected static int getValue(char c) {
@@ -204,7 +203,11 @@ public class Base64 {
 			return 63;
 		}
 
-		return c != CharPool.EQUAL ? -1 : 0;
+		if (c != CharPool.EQUAL) {
+			return -1;
+		}
+
+		return 0;
 	}
 
 	private static Object _stringToObject(

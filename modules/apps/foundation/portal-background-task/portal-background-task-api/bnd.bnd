@@ -1,6 +1,6 @@
 Bundle-Name: Liferay Portal Background Task API
 Bundle-SymbolicName: com.liferay.portal.background.task.api
-Bundle-Version: 1.0.1
+Bundle-Version: 2.1.1
 Export-Package:\
 	com.liferay.portal.background.task.constants,\
 	com.liferay.portal.background.task.exception,\
@@ -9,4 +9,3 @@ Export-Package:\
 	com.liferay.portal.background.task.service.persistence
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title: Background Tasks
--include: ../../app.bnd

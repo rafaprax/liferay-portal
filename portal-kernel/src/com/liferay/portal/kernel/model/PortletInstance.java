@@ -61,7 +61,7 @@ public class PortletInstance {
 	}
 
 	public PortletInstance(String portletName, long userId, String instanceId) {
-		validatePortletName(portletName);
+		_validatePortletName(portletName);
 
 		_portletName = portletName;
 		_userId = userId;
@@ -146,8 +146,7 @@ public class PortletInstance {
 			return new UserIdAndInstanceIdEncoder(0, null);
 		}
 
-		int slashCount = StringUtil.count(
-			userIdAndInstanceId, StringPool.SLASH);
+		int slashCount = StringUtil.count(userIdAndInstanceId, CharPool.SLASH);
 
 		if (slashCount > 0) {
 			throw new InvalidParameterException(
@@ -155,7 +154,7 @@ public class PortletInstance {
 		}
 
 		int underlineCount = StringUtil.count(
-			userIdAndInstanceId, StringPool.UNDERLINE);
+			userIdAndInstanceId, CharPool.UNDERLINE);
 
 		if (underlineCount > 1) {
 			throw new InvalidParameterException(
@@ -226,7 +225,7 @@ public class PortletInstance {
 			portletInstanceKey.substring(x + _USER_SEPARATOR.length()));
 	}
 
-	private void validatePortletName(String portletName) {
+	private void _validatePortletName(String portletName) {
 		for (String keyword : _PORTLET_NAME_KEYWORDS) {
 			if (!portletName.contains(keyword)) {
 				continue;

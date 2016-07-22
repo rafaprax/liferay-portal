@@ -23,6 +23,17 @@
 		}
 	}
 
+	.wiki-body, .wiki-page-editor {
+		table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		table, th, td {
+			border: 1px solid;
+		}
+	}
+
 	a.createpage {
 		color: #F00;
 	}
@@ -61,7 +72,7 @@
 	}
 
 	.page-categorization {
-	  margin: 0;
+		margin: 0;
 	}
 
 	.page-categories {
@@ -70,10 +81,6 @@
 
 	.taglib-discussion {
 		margin: 1em;
-	}
-
-	.page-tags {
-		color: #7D7D7D;
 	}
 
 	.portlet-body {
@@ -197,6 +204,10 @@
 			text-align: right;
 
 			img {
+				margin-left: 5px;
+			}
+
+			& > span {
 				margin-left: 5px;
 			}
 		}
@@ -329,10 +340,6 @@
 
 	.trash-attachments {
 		float: right;
-	}
-
-	#wikiCommentsPanelContainer {
-		border-width: 0;
 	}
 
 	.wiki-page-toolbar {

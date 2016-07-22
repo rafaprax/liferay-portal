@@ -1,8 +1,14 @@
 <definition>
-	<command name="addCP">
-		<execute function="AssertClick" locator1="KnowledgeBase#MENUBAR_ADD" value1="Add" />
+	<command name="_gotoAddFolder">
+		<execute function="Click" locator1="Button#PLUS" />
 
-		<execute function="AssertClick" locator1="MenuItem#FOLDER" value1="Folder" />
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Folder">
+			<var name="key_menuItem" value="Folder" />
+		</execute>
+	</command>
+
+	<command name="addCP">
+		<execute macro="KBFolder#_gotoAddFolder" />
 
 		<execute function="Type" locator1="TextInput#NAME" value1="${kbFolderName}" />
 
@@ -24,7 +30,9 @@
 	</command>
 
 	<command name="deleteCP">
-		<execute function="AssertClick" locator1="KnowledgeBase#FOLDER_TABLE_FOLDER_ACTIONS" value1="Actions" />
+		<var name="key_rowEntry" value="${kbFolderName}" />
+
+		<execute function="Click" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
 
 		<execute function="AssertClickNoError" locator1="MenuItem#DELETE" value1="Delete" />
 
@@ -34,7 +42,9 @@
 	</command>
 
 	<command name="editCP">
-		<execute function="AssertClick" locator1="KnowledgeBase#FOLDER_TABLE_FOLDER_ACTIONS" value1="Actions" />
+		<var name="key_rowEntry" value="${kbFolderName}" />
+
+		<execute function="Click" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
 
 		<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
 
@@ -48,7 +58,7 @@
 	<command name="gotoCP">
 		<var name="key_kbFolderName" value="${kbFolderName}" />
 
-		<execute function="AssertClick" locator1="KnowledgeBase#FOLDER_TABLE_FOLDER_NAME" value1="${kbFolderName}" />
+		<execute function="AssertClick" locator1="KnowledgeBase#FOLDER_DESCRIPTIVE_FOLDER_NAME" value1="${kbFolderName}" />
 
 		<var method="StringUtil#upperCase('${key_kbFolderName}')" name="folderBreadcrumbUpperCase" />
 
@@ -101,9 +111,9 @@
 		</while>
 	</command>
 
-	<command name="viewFolderTableCP">
+	<command name="viewFolderNameCP">
 		<var name="key_kbFolderName" value="${kbFolderName}" />
 
-		<execute function="AssertTextEquals" locator1="KnowledgeBase#FOLDER_TABLE_FOLDER_NAME" value1="${kbFolderName}" />
+		<execute function="AssertTextEquals" locator1="KnowledgeBase#FOLDER_DESCRIPTIVE_FOLDER_NAME" value1="${kbFolderName}" />
 	</command>
 </definition>

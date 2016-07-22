@@ -174,7 +174,7 @@ StringBuilder friendlyURLBase = new StringBuilder();
 			<aui:option disabled="<%= selLayout.isFirstParent() && !layoutTypeController.isFirstPageable() %>" label='<%= LanguageUtil.get(request, layoutTypeResourceBundle, "layout.types." + type) %>' selected="<%= selLayout.getType().equals(type) %>" value="<%= type %>" />
 
 		<%
-			}
+		}
 		%>
 
 	</aui:select>
@@ -203,7 +203,6 @@ StringBuilder friendlyURLBase = new StringBuilder();
 				%>
 
 				<%= layoutTypeController.includeEditContent(dynamicServletRequest, response, selLayout) %>
-
 			</div>
 
 		<%
@@ -271,7 +270,7 @@ StringBuilder friendlyURLBase = new StringBuilder();
 
 			$('.layout-prototype-info-message').toggleClass('hide', !layoutPrototypeLinkChecked);
 
-			var propagatableFields = $('#<portlet:namespace />fm .propagatable-field');
+			var propagatableFields = $('#<portlet:namespace />editLayoutFm .propagatable-field');
 
 			propagatableFields.prop('disabled', layoutPrototypeLinkChecked);
 			propagatableFields.toggleClass('disabled', layoutPrototypeLinkChecked);

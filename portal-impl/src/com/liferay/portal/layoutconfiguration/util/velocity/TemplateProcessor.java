@@ -103,10 +103,9 @@ public class TemplateProcessor implements ColumnProcessor {
 
 		List<Portlet> portlets = layoutTypePortlet.getAllPortlets(columnId);
 
-		StringBundler sb = new StringBundler(portlets.size() * 3 + 11);
+		StringBundler sb = new StringBundler(portlets.size() * 3 + 10);
 
-		sb.append("<div class=\"");
-		sb.append("portlet-dropzone");
+		sb.append("<div class=\"portlet-dropzone");
 
 		if (layoutTypePortlet.isCustomizable() &&
 			layoutTypePortlet.isColumnDisabled(columnId)) {
@@ -180,15 +179,6 @@ public class TemplateProcessor implements ColumnProcessor {
 			_request, bufferCacheServletResponse, _portlet);
 
 		return bufferCacheServletResponse.getString();
-	}
-
-	/**
-	 * @deprecated As of 6.2.0, replaced by {@link #processMax()}
-	 */
-	@Deprecated
-	@Override
-	public String processMax(String classNames) throws Exception {
-		return processMax();
 	}
 
 	@Override

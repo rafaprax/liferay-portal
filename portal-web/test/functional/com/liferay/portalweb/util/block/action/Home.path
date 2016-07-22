@@ -94,6 +94,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>USER_NAME_HEADER</td>
+	<td>//div[@id='heading']//span[@class='site-name'] | //div[@id='heading']//div[contains(@class,'site-name')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SITE_NAME_LOGO</td>
 	<td>//h1[@class='site-title']/a/img</td>
 	<td></td>
@@ -120,7 +125,7 @@
 </tr>
 <tr>
 	<td>ERROR_MESSAGE_EXPIRED_SESSION</td>
-	<td>//div[contains(@class,'liferayalert-content')]</td>
+	<td>//div[contains(@class,'liferayalert')]//div</td>
 	<td></td>
 </tr>
 <tr>
@@ -422,22 +427,22 @@
 <!--PAGE_CUSTOMIZATION-->
 <tr>
 	<td>PAGE_CUSTOMIZATION_MESSAGE_INFO</td>
-	<td>//div[@class='customizable-layout']/span[contains(.,'You can customize this page')]</td>
+	<td>//li[contains(@class,'control-menu') and contains(@class,'nav-item')]/p[contains(.,'You can customize this page')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>PAGE_CUSTOMIZATION_VIEW_DEFAULT_PAGE</td>
-	<td>//div[@class='customizable-layout']//span[contains(.,'View Default Page')]/a/span</td>
+	<td>//li/a[contains(.,'View Page without my customizations')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>PAGE_CUSTOMIZATION_RESET_MY_CUSTOMIZATIONS</td>
-	<td>//div[@class='customizable-layout']//span[contains(.,'Reset My Customizations')]/a/span</td>
+	<td>//li/a[contains(.,'Reset My Customizations')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>PAGE_CUSTOMIZATION_VIEW_MY_CUSTOMIZED_PAGE</td>
-	<td>//div[@class='customizable-layout']//span[contains(.,'View My Customized')]/a/span</td>
+	<td>//li/a[contains(.,'View My Customized')]</td>
 	<td></td>
 </tr>
 <tr>

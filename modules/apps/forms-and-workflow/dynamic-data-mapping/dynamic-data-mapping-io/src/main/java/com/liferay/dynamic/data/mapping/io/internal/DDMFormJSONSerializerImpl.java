@@ -22,6 +22,7 @@ import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializer;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldRule;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
@@ -30,11 +31,11 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
@@ -79,7 +80,17 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 	protected void addFields(
 		JSONObject jsonObject, List<DDMFormField> ddmFormFields) {
 
-		jsonObject.put("fields", toJSONArray(ddmFormFields));
+		jsonObject.put("fields", fieldsToJSONArray(ddmFormFields));
+	}
+
+	protected void addFormFieldRules(
+		JSONObject jsonObject, List<DDMFormFieldRule> ddmFormFieldRules) {
+
+		if (ddmFormFieldRules.isEmpty()) {
+			return;
+		}
+
+		jsonObject.put("rules", rulesToJSONArray(ddmFormFieldRules));
 	}
 
 	protected void addNestedFields(
@@ -89,7 +100,7 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 			return;
 		}
 
-		jsonObject.put("nestedFields", toJSONArray(nestedDDMFormFields));
+		jsonObject.put("nestedFields", fieldsToJSONArray(nestedDDMFormFields));
 	}
 
 	protected void addProperties(
@@ -103,6 +114,8 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 
 			addProperty(jsonObject, ddmFormField, ddmFormFieldTypeSetting);
 		}
+
+		addFormFieldRules(jsonObject, ddmFormField.getDDMFormFieldRules());
 	}
 
 	protected void addProperty(
@@ -131,6 +144,16 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 		jsonObject.put(propertyName, propertyValue);
 	}
 
+	protected JSONArray fieldsToJSONArray(List<DDMFormField> ddmFormFields) {
+		JSONArray jsonArray = _jsonFactory.createJSONArray();
+
+		for (DDMFormField ddmFormField : ddmFormFields) {
+			jsonArray.put(toJSONObject(ddmFormField));
+		}
+
+		return jsonArray;
+	}
+
 	protected DDMForm getDDMFormFieldTypeSettingsDDMForm(String type) {
 		DDMFormFieldType ddmFormFieldType =
 			_ddmFormFieldTypeServicesTracker.getDDMFormFieldType(type);
@@ -146,6 +169,43 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 		return DDMFormFactory.create(ddmFormFieldTypeSettings);
 	}
 
+	protected JSONArray optionsToJSONArray(
+		DDMFormFieldOptions ddmFormFieldOptions) {
+
+		Set<String> optionValues = ddmFormFieldOptions.getOptionsValues();
+
+		if (optionValues.isEmpty()) {
+			return null;
+		}
+
+		JSONArray jsonArray = _jsonFactory.createJSONArray();
+
+		for (String optionValue : optionValues) {
+			JSONObject jsonObject = _jsonFactory.createJSONObject();
+
+			jsonObject.put(
+				"label",
+				toJSONObject(ddmFormFieldOptions.getOptionLabels(optionValue)));
+			jsonObject.put("value", optionValue);
+
+			jsonArray.put(jsonObject);
+		}
+
+		return jsonArray;
+	}
+
+	protected JSONArray rulesToJSONArray(
+		List<DDMFormFieldRule> ddmFormFieldRules) {
+
+		JSONArray jsonArray = _jsonFactory.createJSONArray();
+
+		for (DDMFormFieldRule ddmFormFieldRule : ddmFormFieldRules) {
+			jsonArray.put(toJSONObject(ddmFormFieldRule));
+		}
+
+		return jsonArray;
+	}
+
 	protected Object serializeDDMFormFieldProperty(
 		Object property, DDMFormField ddmFormFieldTypeSetting) {
 
@@ -155,13 +215,13 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 
 		String dataType = ddmFormFieldTypeSetting.getDataType();
 
-		if (Validator.equals(dataType, "boolean")) {
+		if (Objects.equals(dataType, "boolean")) {
 			return GetterUtil.getBoolean(property);
 		}
-		else if (Validator.equals(dataType, "ddm-options")) {
-			return toJSONArray((DDMFormFieldOptions)property);
+		else if (Objects.equals(dataType, "ddm-options")) {
+			return optionsToJSONArray((DDMFormFieldOptions)property);
 		}
-		else if (Validator.equals(dataType, "ddm-validation")) {
+		else if (Objects.equals(dataType, "ddm-validation")) {
 			return toJSONObject((DDMFormFieldValidation)property);
 		}
 		else {
@@ -181,45 +241,21 @@ public class DDMFormJSONSerializerImpl implements DDMFormJSONSerializer {
 		_jsonFactory = jsonFactory;
 	}
 
-	protected JSONArray toJSONArray(DDMFormFieldOptions ddmFormFieldOptions) {
-		Set<String> optionValues = ddmFormFieldOptions.getOptionsValues();
-
-		if (optionValues.isEmpty()) {
-			return null;
-		}
-
-		JSONArray jsonArray = _jsonFactory.createJSONArray();
-
-		for (String optionValue : optionValues) {
-			JSONObject jsonObject = _jsonFactory.createJSONObject();
-
-			jsonObject.put("value", optionValue);
-			jsonObject.put(
-				"label",
-				toJSONObject(ddmFormFieldOptions.getOptionLabels(optionValue)));
-
-			jsonArray.put(jsonObject);
-		}
-
-		return jsonArray;
-	}
-
-	protected JSONArray toJSONArray(List<DDMFormField> ddmFormFields) {
-		JSONArray jsonArray = _jsonFactory.createJSONArray();
-
-		for (DDMFormField ddmFormField : ddmFormFields) {
-			jsonArray.put(toJSONObject(ddmFormField));
-		}
-
-		return jsonArray;
-	}
-
 	protected JSONObject toJSONObject(DDMFormField ddmFormField) {
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
 		addProperties(jsonObject, ddmFormField);
 
 		addNestedFields(jsonObject, ddmFormField.getNestedDDMFormFields());
+
+		return jsonObject;
+	}
+
+	protected JSONObject toJSONObject(DDMFormFieldRule ddmFormFieldRule) {
+		JSONObject jsonObject = _jsonFactory.createJSONObject();
+
+		jsonObject.put("expression", ddmFormFieldRule.getExpression());
+		jsonObject.put("type", ddmFormFieldRule.getDDMFormFieldRuleType());
 
 		return jsonObject;
 	}

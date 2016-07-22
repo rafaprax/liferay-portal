@@ -43,6 +43,10 @@ public abstract class BaseItemSelectorCriterionHandler
 		List<ItemSelectorView> itemSelectorViews =
 			_serviceTrackerMap.getService(itemSelectorCriterion.getClass());
 
+		if (itemSelectorViews == null) {
+			return Collections.emptyList();
+		}
+
 		for (ItemSelectorView itemSelectorView : itemSelectorViews) {
 			List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
 				itemSelectorCriterion.getDesiredItemSelectorReturnTypes();
@@ -68,7 +72,8 @@ public abstract class BaseItemSelectorCriterionHandler
 			bundleContext, ItemSelectorView.class, null,
 			new ItemSelectorViewServiceReferenceMapper(bundleContext),
 			Collections.reverseOrder(
-				new PropertyServiceReferenceComparator("service.ranking")));
+				new PropertyServiceReferenceComparator(
+					"item.selector.view.order")));
 	}
 
 	private boolean _isItemSelectorViewSupported(

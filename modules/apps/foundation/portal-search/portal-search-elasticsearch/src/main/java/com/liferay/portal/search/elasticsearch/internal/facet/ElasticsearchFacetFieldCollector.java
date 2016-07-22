@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.search.facet.collector.DefaultTermCollector;
 import com.liferay.portal.kernel.search.facet.collector.FacetCollector;
 import com.liferay.portal.kernel.search.facet.collector.TermCollector;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -52,13 +53,8 @@ public class ElasticsearchFacetFieldCollector implements FacetCollector {
 
 	@Override
 	public TermCollector getTermCollector(String term) {
-		int count = 0;
-
-		if (_counts.containsKey(term)) {
-			count = _counts.get(term);
-		}
-
-		return new DefaultTermCollector(term, count);
+		return new DefaultTermCollector(
+			term, GetterUtil.getInteger(_counts.get(term)));
 	}
 
 	@Override
@@ -81,6 +77,16 @@ public class ElasticsearchFacetFieldCollector implements FacetCollector {
 		return _termCollectors;
 	}
 
+	protected void initialize(MultiBucketsAggregation multiBucketsAggregation) {
+		_aggregation = multiBucketsAggregation;
+
+		for (MultiBucketsAggregation.Bucket bucket :
+				multiBucketsAggregation.getBuckets()) {
+
+			_counts.put(bucket.getKeyAsString(), (int)bucket.getDocCount());
+		}
+	}
+
 	protected void initialize(Range range) {
 		_aggregation = range;
 
@@ -92,16 +98,6 @@ public class ElasticsearchFacetFieldCollector implements FacetCollector {
 				StringPool.CLOSE_BRACKET);
 
 			_counts.put(key, (int)bucket.getDocCount());
-		}
-	}
-
-	private void initialize(MultiBucketsAggregation multiBucketsAggregation) {
-		_aggregation = multiBucketsAggregation;
-
-		for (MultiBucketsAggregation.Bucket bucket :
-				multiBucketsAggregation.getBuckets()) {
-
-			_counts.put(bucket.getKeyAsString(), (int)bucket.getDocCount());
 		}
 	}
 

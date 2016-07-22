@@ -21,6 +21,8 @@ import com.liferay.gradle.util.Validator;
 
 import java.io.File;
 
+import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Optional;
@@ -49,6 +52,7 @@ import org.gradle.util.GUtil;
 public class BuildCSSTask extends JavaExec {
 
 	public BuildCSSTask() {
+		setDefaultCharacterEncoding(StandardCharsets.UTF_8.toString());
 		setDirNames("/");
 		setMain("com.liferay.css.builder.CSSBuilder");
 	}
@@ -59,7 +63,7 @@ public class BuildCSSTask extends JavaExec {
 		return this;
 	}
 
-	public BuildCSSTask dirNames(Object ... dirNames) {
+	public BuildCSSTask dirNames(Object... dirNames) {
 		return dirNames(Arrays.asList(dirNames));
 	}
 
@@ -68,23 +72,6 @@ public class BuildCSSTask extends JavaExec {
 		setArgs(getCompleteArgs());
 
 		super.exec();
-	}
-
-	@OutputDirectories
-	public FileCollection getCSSCacheDirs() {
-		Project project = getProject();
-
-		Set<File> cssCacheDirs = new HashSet<>();
-
-		FileCollection cssFiles = getCSSFiles();
-
-		for (File cssFile : cssFiles) {
-			File cssCacheDir = project.file(cssFile + "/../.sass-cache");
-
-			cssCacheDirs.add(cssCacheDir);
-		}
-
-		return project.files(cssCacheDirs);
 	}
 
 	@InputFiles
@@ -102,7 +89,7 @@ public class BuildCSSTask extends JavaExec {
 		Map<String, Object> args = new HashMap<>();
 
 		args.put("dir", docrootDir);
-		args.put("exclude", "**/.sass-cache/**");
+		args.put("exclude", "**/" + _addTrailingSlash(getOutputDirName()));
 
 		for (String dirName : dirNames) {
 			dirName = dirName.replace('\\', '/');
@@ -136,9 +123,51 @@ public class BuildCSSTask extends JavaExec {
 		return GradleUtil.toFile(getProject(), _docrootDir);
 	}
 
+	@Input
+	public String getOutputDirName() {
+		return GradleUtil.toString(_outputDirName);
+	}
+
+	@OutputDirectories
+	public FileCollection getOutputDirs() {
+		Project project = getProject();
+
+		Set<File> outputDirs = new HashSet<>();
+
+		FileCollection cssFiles = getCSSFiles();
+
+		String outputDirName = _removeTrailingSlash(getOutputDirName());
+
+		for (File cssFile : cssFiles) {
+			File outputDir = project.file(cssFile + "/../" + outputDirName);
+
+			outputDirs.add(outputDir);
+		}
+
+		return project.files(outputDirs);
+	}
+
 	@InputDirectory
+	@Optional
 	public File getPortalCommonDir() {
 		return GradleUtil.toFile(getProject(), _portalCommonDir);
+	}
+
+	@InputFile
+	@Optional
+	public File getPortalCommonFile() {
+		return GradleUtil.toFile(getProject(), _portalCommonFile);
+	}
+
+	@Input
+	public File getPortalCommonPath() {
+		File portalCommonPath = getPortalCommonDir();
+
+		if (portalCommonPath == null) {
+			portalCommonPath = getPortalCommonFile();
+		}
+
+		return portalCommonPath;
 	}
 
 	@Input
@@ -190,7 +219,7 @@ public class BuildCSSTask extends JavaExec {
 	}
 
 	public BuildCSSTask rtlExcludedPathRegexps(
-		Object ... rtlExcludedPathRegexps) {
+		Object... rtlExcludedPathRegexps) {
 
 		return rtlExcludedPathRegexps(Arrays.asList(rtlExcludedPathRegexps));
 	}
@@ -201,7 +230,7 @@ public class BuildCSSTask extends JavaExec {
 		dirNames(dirNames);
 	}
 
-	public void setDirNames(Object ... dirNames) {
+	public void setDirNames(Object... dirNames) {
 		setDirNames(Arrays.asList(dirNames));
 	}
 
@@ -213,8 +242,16 @@ public class BuildCSSTask extends JavaExec {
 		_generateSourceMap = generateSourceMap;
 	}
 
+	public void setOutputDirName(Object outputDirName) {
+		_outputDirName = outputDirName;
+	}
+
 	public void setPortalCommonDir(Object portalCommonDir) {
 		_portalCommonDir = portalCommonDir;
+	}
+
+	public void setPortalCommonFile(Object portalCommonFile) {
+		_portalCommonFile = portalCommonFile;
 	}
 
 	public void setPrecision(Object precision) {
@@ -229,7 +266,7 @@ public class BuildCSSTask extends JavaExec {
 		rtlExcludedPathRegexps(rtlExcludedPathRegexps);
 	}
 
-	public void setRtlExcludedPathRegexps(Object ... rtlExcludedPathRegexps) {
+	public void setRtlExcludedPathRegexps(Object... rtlExcludedPathRegexps) {
 		setRtlExcludedPathRegexps(Arrays.asList(rtlExcludedPathRegexps));
 	}
 
@@ -259,10 +296,12 @@ public class BuildCSSTask extends JavaExec {
 
 		args.add("sass.generate.source.map=" + isGenerateSourceMap());
 
-		String portalCommonDirName = FileUtil.getAbsolutePath(
-			getPortalCommonDir());
+		args.add("sass.output.dir=" + _addTrailingSlash(getOutputDirName()));
 
-		args.add("sass.portal.common.dir=" + portalCommonDirName);
+		String portalCommonPath = FileUtil.getAbsolutePath(
+			getPortalCommonPath());
+
+		args.add("sass.portal.common.path=" + portalCommonPath);
 
 		args.add("sass.precision=" + getPrecision());
 
@@ -278,6 +317,20 @@ public class BuildCSSTask extends JavaExec {
 		}
 
 		return args;
+	}
+
+	private String _addTrailingSlash(String path) {
+		if (Validator.isNull(path)) {
+			return path;
+		}
+
+		path = path.replace('\\', '/');
+
+		if (path.charAt(path.length() - 1) != '/') {
+			path += '/';
+		}
+
+		return path;
 	}
 
 	private String _removeLeadingSlash(String path) {
@@ -311,7 +364,9 @@ public class BuildCSSTask extends JavaExec {
 	private final Set<Object> _dirNames = new LinkedHashSet<>();
 	private Object _docrootDir;
 	private boolean _generateSourceMap;
+	private Object _outputDirName = CSSBuilderArgs.OUTPUT_DIR_NAME;
 	private Object _portalCommonDir;
+	private Object _portalCommonFile;
 	private Object _precision = CSSBuilderArgs.PRECISION;
 	private final Set<Object> _rtlExcludedPathRegexps = new LinkedHashSet<>();
 	private Object _sassCompilerClassName;

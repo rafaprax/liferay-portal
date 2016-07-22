@@ -71,13 +71,9 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>
 		%>
 
 		<div id="<portlet:namespace />scopesBoxes">
-			<c:if test="<%= selectedGroups.isEmpty() %>">
-				<p class="text-muted">
-					<%= StringUtil.toLowerCase(LanguageUtil.get(request, "none")) %>
-				</p>
-			</c:if>
-
 			<liferay-ui:search-container
+				compactEmptyResultsMessage="<%= true %>"
+				emptyResultsMessage="none"
 				iteratorURL="<%= configurationRenderURL %>"
 				total="<%= selectedGroups.size() %>"
 			>
@@ -91,6 +87,7 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>
 				>
 					<liferay-ui:search-container-column-text
 						name="name"
+						truncate="<%= true %>"
 						value="<%= group.getScopeDescriptiveName(themeDisplay) %>"
 					/>
 
@@ -99,10 +96,7 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>
 						value="<%= LanguageUtil.get(request, group.getScopeLabel(themeDisplay)) %>"
 					/>
 
-					<liferay-ui:search-container-column-text
-						align="right"
-						cssClass="list-group-item-field"
-					>
+					<liferay-ui:search-container-column-text>
 						<liferay-portlet:actionURL portletConfiguration="<%= true %>" var="deleteURL">
 							<portlet:param name="<%= Constants.CMD %>" value="remove-scope" />
 							<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -147,14 +141,14 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>
 
 					<%
 					}
+
+					PortletURL layoutSiteBrowserURL = PortletProviderUtil.getPortletURL(request, Group.class.getName(), PortletProvider.Action.BROWSE);
 					%>
 
-					<c:if test="<%= GroupLocalServiceUtil.getGroupsCount(company.getCompanyId(), Layout.class.getName(), layout.getGroupId()) > 0 %>">
+					<c:if test="<%= (GroupLocalServiceUtil.getGroupsCount(company.getCompanyId(), Layout.class.getName(), layout.getGroupId()) > 0) && (layoutSiteBrowserURL != null) %>">
 
 						<%
 						data = new HashMap<String, Object>();
-
-						PortletURL layoutSiteBrowserURL = PortletProviderUtil.getPortletURL(request, Group.class.getName(), PortletProvider.Action.BROWSE);
 
 						layoutSiteBrowserURL.setParameter("groupId", String.valueOf(layout.getGroupId()));
 						layoutSiteBrowserURL.setParameter("selectedGroupIds", StringUtil.merge(assetPublisherDisplayContext.getGroupIds()));
@@ -180,6 +174,8 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>
 					</c:if>
 
 					<%
+					PortletURL siteBrowserURL = PortletProviderUtil.getPortletURL(renderRequest, Group.class.getName(), PortletProvider.Action.BROWSE);
+
 					List<String> types = new ArrayList<String>();
 
 					if (PrefsPropsUtil.getBoolean(company.getCompanyId(), PropsKeys.SITES_CONTENT_SHARING_THROUGH_ADMINISTRATORS_ENABLED)) {
@@ -197,12 +193,10 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>
 					}
 					%>
 
-					<c:if test="<%= !types.isEmpty() && !siteGroup.isLayoutPrototype() && !siteGroup.isLayoutSetPrototype() %>">
+					<c:if test="<%= (siteBrowserURL != null) && !types.isEmpty() && !siteGroup.isLayoutPrototype() && !siteGroup.isLayoutSetPrototype() %>">
 
 						<%
 						data = new HashMap<String, Object>();
-
-						PortletURL siteBrowserURL = PortletProviderUtil.getPortletURL(renderRequest, Group.class.getName(), PortletProvider.Action.BROWSE);
 
 						siteBrowserURL.setParameter("groupId", String.valueOf(layout.getGroupId()));
 						siteBrowserURL.setParameter("selectedGroupIds", StringUtil.merge(assetPublisherDisplayContext.getGroupIds()));

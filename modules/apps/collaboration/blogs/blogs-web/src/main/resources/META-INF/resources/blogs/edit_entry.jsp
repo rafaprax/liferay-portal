@@ -212,7 +212,7 @@ renderResponse.setTitle((entry != null) ? entry.getTitle() : LanguageUtil.get(re
 					</div>
 
 					<div class="entry-description">
-						<liferay-ui:input-editor autoCreate="<%= false %>" contents="<%= HtmlUtil.escape(description) %>" cssClass='<%= customAbstract ? StringPool.BLANK : "readonly" %>' editorName="alloyeditor" name="descriptionEditor" onInitMethod="OnDescriptionEditorInit" placeholder="description" showSource="<%= false %>" />
+						<liferay-ui:input-editor autoCreate="<%= false %>" contents="<%= description %>" cssClass='<%= customAbstract ? StringPool.BLANK : "readonly" %>' editorName="alloyeditor" name="descriptionEditor" onInitMethod="OnDescriptionEditorInit" placeholder="description" showSource="<%= false %>" />
 					</div>
 
 					<aui:input name="description" type="hidden" />
@@ -330,7 +330,7 @@ renderResponse.setTitle((entry != null) ? entry.getTitle() : LanguageUtil.get(re
 </div>
 
 <portlet:actionURL name="/blogs/edit_entry" var="editEntryURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
-	<portlet:param name="ajax" value="true" />
+	<portlet:param name="ajax" value="<%= Boolean.TRUE.toString() %>" />
 </portlet:actionURL>
 
 <aui:script>
@@ -394,6 +394,25 @@ renderResponse.setTitle((entry != null) ? entry.getTitle() : LanguageUtil.get(re
 			Liferay.detach('destroyPortlet', clearSaveDraftHandle);
 		}
 	};
+
+	var createAbstractEditor = function() {
+		var descriptionEditor = window['<portlet:namespace />descriptionEditor'];
+
+		if (!descriptionEditor.instanceReady) {
+			descriptionEditor.create();
+
+			blogs.setDescription(window['<portlet:namespace />contentEditor'].getText());
+		}
+	};
+
+	var configurationContentHeader = AUI.$('#configurationContent');
+
+	if (configurationContentHeader.hasClass('in')) {
+		createAbstractEditor();
+	}
+	else {
+		configurationContentHeader.on('show.bs.collapse', createAbstractEditor);
+	}
 
 	Liferay.on('destroyPortlet', clearSaveDraftHandle);
 </aui:script>

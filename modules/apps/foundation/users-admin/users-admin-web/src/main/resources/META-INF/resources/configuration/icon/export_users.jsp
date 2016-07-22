@@ -16,20 +16,9 @@
 
 <%@ include file="/init.jsp" %>
 
-<%
-String taglibOnClick = renderResponse.getNamespace() + "exportUsers()";
-%>
+<liferay-portlet:resourceURL id="/users_admin/export_users" var="exportURL" />
 
 <liferay-ui:icon
 	message="export-users"
-	onClick="<%= taglibOnClick %>"
-	url="javascript:;"
+	url='<%= exportURL + "&compress=0&etag=0&strip=0" %>'
 />
-
-<aui:script>
-	function <portlet:namespace />exportUsers() {
-		document.<portlet:namespace />fm.method = 'post';
-
-		submitForm(document.<portlet:namespace />fm, '<portlet:actionURL name="/users_admin/export_users" />&compress=0&etag=0&strip=0', false);
-	}
-</aui:script>

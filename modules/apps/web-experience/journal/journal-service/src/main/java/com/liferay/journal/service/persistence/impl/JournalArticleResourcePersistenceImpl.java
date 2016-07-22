@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
@@ -51,6 +50,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -199,7 +199,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalArticleResource journalArticleResource : list) {
-					if (!Validator.equals(uuid, journalArticleResource.getUuid())) {
+					if (!Objects.equals(uuid, journalArticleResource.getUuid())) {
 						list = null;
 
 						break;
@@ -679,8 +679,8 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchArticleResourceException(msg.toString());
@@ -724,7 +724,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 		if (result instanceof JournalArticleResource) {
 			JournalArticleResource journalArticleResource = (JournalArticleResource)result;
 
-			if (!Validator.equals(uuid, journalArticleResource.getUuid()) ||
+			if (!Objects.equals(uuid, journalArticleResource.getUuid()) ||
 					(groupId != journalArticleResource.getGroupId())) {
 				result = null;
 			}
@@ -1020,7 +1020,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalArticleResource journalArticleResource : list) {
-					if (!Validator.equals(uuid, journalArticleResource.getUuid()) ||
+					if (!Objects.equals(uuid, journalArticleResource.getUuid()) ||
 							(companyId != journalArticleResource.getCompanyId())) {
 						list = null;
 
@@ -2040,8 +2040,8 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchArticleResourceException(msg.toString());
@@ -2086,7 +2086,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 			JournalArticleResource journalArticleResource = (JournalArticleResource)result;
 
 			if ((groupId != journalArticleResource.getGroupId()) ||
-					!Validator.equals(articleId,
+					!Objects.equals(articleId,
 						journalArticleResource.getArticleId())) {
 				result = null;
 			}
@@ -2509,8 +2509,8 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 					primaryKey);
 
 			if (journalArticleResource == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchArticleResourceException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2708,8 +2708,8 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 		JournalArticleResource journalArticleResource = fetchByPrimaryKey(primaryKey);
 
 		if (journalArticleResource == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchArticleResourceException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2740,12 +2740,14 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 	 */
 	@Override
 	public JournalArticleResource fetchByPrimaryKey(Serializable primaryKey) {
-		JournalArticleResource journalArticleResource = (JournalArticleResource)entityCache.getResult(JournalArticleResourceModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(JournalArticleResourceModelImpl.ENTITY_CACHE_ENABLED,
 				JournalArticleResourceImpl.class, primaryKey);
 
-		if (journalArticleResource == _nullJournalArticleResource) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		JournalArticleResource journalArticleResource = (JournalArticleResource)serializable;
 
 		if (journalArticleResource == null) {
 			Session session = null;
@@ -2761,8 +2763,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 				}
 				else {
 					entityCache.putResult(JournalArticleResourceModelImpl.ENTITY_CACHE_ENABLED,
-						JournalArticleResourceImpl.class, primaryKey,
-						_nullJournalArticleResource);
+						JournalArticleResourceImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2816,18 +2817,20 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			JournalArticleResource journalArticleResource = (JournalArticleResource)entityCache.getResult(JournalArticleResourceModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(JournalArticleResourceModelImpl.ENTITY_CACHE_ENABLED,
 					JournalArticleResourceImpl.class, primaryKey);
 
-			if (journalArticleResource == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, journalArticleResource);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (JournalArticleResource)serializable);
+				}
 			}
 		}
 
@@ -2870,8 +2873,7 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(JournalArticleResourceModelImpl.ENTITY_CACHE_ENABLED,
-					JournalArticleResourceImpl.class, primaryKey,
-					_nullJournalArticleResource);
+					JournalArticleResourceImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3116,23 +3118,4 @@ public class JournalArticleResourcePersistenceImpl extends BasePersistenceImpl<J
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final JournalArticleResource _nullJournalArticleResource = new JournalArticleResourceImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<JournalArticleResource> toCacheModel() {
-				return _nullJournalArticleResourceCacheModel;
-			}
-		};
-
-	private static final CacheModel<JournalArticleResource> _nullJournalArticleResourceCacheModel =
-		new CacheModel<JournalArticleResource>() {
-			@Override
-			public JournalArticleResource toEntityModel() {
-				return _nullJournalArticleResource;
-			}
-		};
 }

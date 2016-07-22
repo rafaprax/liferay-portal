@@ -5,11 +5,11 @@ AUI.add(
 
 		var CSS_FIELD_SETTINGS_SAVE = A.getClassName('lfr', 'ddl', 'field', 'settings', 'save');
 
-		var TPL_MODE_TOGGLER = '<a class="settings-toggler" href="javascript:;"></a>';
-
 		var TPL_OPTION = '<option {status} value="{value}">{label}</option>';
 
 		var TPL_SETTINGS_FORM = '<form action="javascript:;"></form>';
+
+		var TPL_SETTINGS_TOGGLER = '<button class="btn settings-toggler" type="button"><span class="settings-toggle-label"></span><span class="settings-toggle-icon"></span></button>';
 
 		var TPL_SUBMIT_BUTTON = '<button class="hide" type="submit" />';
 
@@ -34,12 +34,24 @@ AUI.add(
 						instance._initDataProvider();
 
 						var labelField = instance.getField('label');
+						var nameField = instance.getField('name');
 
 						instance._eventHandlers.push(
 							instance.after('render', instance._afterSettingsFormRender),
-							labelField.on('keyChange', A.bind('_onLabelFieldKeyChange', instance)),
-							labelField.on(A.bind('_onLabelFieldNormalizeKey', instance), labelField, 'normalizeKey')
+							instance.on('*:addField', instance.alignModal),
+							instance.on('*:removeField', instance.alignModal),
+							labelField.after(A.bind('_afterLabelFieldNormalizeKey', instance), labelField, 'normalizeKey'),
+							labelField.on('keyChange', instance._onLabelFieldKeyChange, instance),
+							nameField.on('valueChange', instance._onNameChange, instance)
 						);
+					},
+
+					alignModal: function() {
+						var instance = this;
+
+						var modalSettings = instance.get('field').getSettingsModal();
+
+						modalSettings._modal.align();
 					},
 
 					getSubmitButton: function() {
@@ -48,18 +60,6 @@ AUI.add(
 						var footerNode = instance._getModalStdModeNode(A.WidgetStdMod.FOOTER);
 
 						return footerNode.one('.' + CSS_FIELD_SETTINGS_SAVE);
-					},
-
-					render: function() {
-						var instance = this;
-
-						var bodyNode = instance._getModalStdModeNode(A.WidgetStdMod.BODY);
-
-						var container = instance.get('container');
-
-						container.appendTo(bodyNode);
-
-						return FormBuilderSettingsForm.superclass.render.apply(instance, arguments);
 					},
 
 					submit: function(callback) {
@@ -159,6 +159,12 @@ AUI.add(
 						optionsField.set('visible', manualDataSourceType);
 					},
 
+					_afterLabelFieldNormalizeKey: function(key) {
+						var instance = this;
+
+						return new A.Do.AlterReturn(null, instance._generateFieldName(A.Do.originalRetVal));
+					},
+
 					_afterSettingsFormRender: function() {
 						var instance = this;
 
@@ -180,11 +186,6 @@ AUI.add(
 								id: formName
 							}
 						);
-
-						var labelField = instance.getField('label');
-						var nameField = instance.getField('name');
-
-						labelField.set('key', nameField.getValue());
 					},
 
 					_createModeToggler: function() {
@@ -192,13 +193,13 @@ AUI.add(
 
 						var advancedSettingsNode = instance.getPageNode(2);
 
-						var modeToggler = A.Node.create(TPL_MODE_TOGGLER);
+						var settingsTogglerNode = A.Node.create(TPL_SETTINGS_TOGGLER);
 
-						advancedSettingsNode.placeBefore(modeToggler);
+						advancedSettingsNode.placeBefore(settingsTogglerNode);
 
-						modeToggler.on('click', A.bind('_onClickModeToggler', instance));
+						settingsTogglerNode.on('click', A.bind('_onClickModeToggler', instance));
 
-						instance.modeToggler = modeToggler;
+						instance.settingsTogglerNode = settingsTogglerNode;
 					},
 
 					_generateFieldName: function(key) {
@@ -211,6 +212,10 @@ AUI.add(
 						var builder = field.get('builder');
 
 						var existingField;
+
+						if (!key) {
+							key = field.get('type');
+						}
 
 						var name = key;
 
@@ -288,11 +293,7 @@ AUI.add(
 
 						advancedSettingsNode.toggleClass('active');
 
-						var field = instance.get('field');
-
-						var settingsModal = field.getSettingsModal();
-
-						settingsModal._modal.align();
+						instance.alignModal();
 
 						instance._syncModeToggler();
 					},
@@ -305,10 +306,12 @@ AUI.add(
 						nameField.setValue(event.newVal);
 					},
 
-					_onLabelFieldNormalizeKey: function(key) {
+					_onNameChange: function(event) {
 						var instance = this;
 
-						return new A.Do.AlterArgs(null, [instance._generateFieldName(key)]);
+						var labelField = instance.getField('label');
+
+						labelField.set('key', event.newVal);
 					},
 
 					_onSubmitForm: function(event) {
@@ -324,16 +327,23 @@ AUI.add(
 
 						var advancedSettingsNode = instance.getPageNode(2);
 
-						var modeToggler = instance.modeToggler;
+						var settingsTogglerNode = instance.settingsTogglerNode;
 
-						if (advancedSettingsNode.hasClass('active')) {
-							modeToggler.addClass('active');
-							modeToggler.html(Liferay.Language.get('hide-options'));
+						var settingsTogglerIconNode = settingsTogglerNode.one('.settings-toggle-icon');
+						var settingsTogglerLabelNode = settingsTogglerNode.one('.settings-toggle-label');
+
+						var active = advancedSettingsNode.hasClass('active');
+
+						if (active) {
+							settingsTogglerIconNode.html(Liferay.Util.getLexiconIconTpl('angle-up'));
+							settingsTogglerLabelNode.html(Liferay.Language.get('hide-options'));
 						}
 						else {
-							modeToggler.removeClass('active');
-							modeToggler.html(Liferay.Language.get('show-more-options'));
+							settingsTogglerIconNode.html(Liferay.Util.getLexiconIconTpl('angle-down'));
+							settingsTogglerLabelNode.html(Liferay.Language.get('show-more-options'));
 						}
+
+						settingsTogglerNode.toggleClass('active', active);
 					},
 
 					_valueContainer: function() {

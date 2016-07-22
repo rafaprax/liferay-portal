@@ -59,7 +59,7 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.xml.XPath;
-import com.liferay.util.RSSUtil;
+import com.liferay.rss.util.RSSUtil;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
@@ -126,7 +126,9 @@ public class JournalRSSUtil {
 		int end = feed.getDelta();
 
 		String orderByCol = feed.getOrderByCol();
+
 		String orderByType = feed.getOrderByType();
+
 		boolean orderByAsc = orderByType.equals("asc");
 
 		OrderByComparator<JournalArticle> obc =

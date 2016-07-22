@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
@@ -41,7 +40,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -53,6 +51,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -623,8 +622,8 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchEntryException(msg.toString());
@@ -669,7 +668,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 			Entry entry = (Entry)result;
 
 			if ((userId != entry.getUserId()) ||
-					!Validator.equals(emailAddress, entry.getEmailAddress())) {
+					!Objects.equals(emailAddress, entry.getEmailAddress())) {
 				result = null;
 			}
 		}
@@ -1028,8 +1027,8 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 			Entry entry = (Entry)session.get(EntryImpl.class, primaryKey);
 
 			if (entry == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1203,8 +1202,8 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 		Entry entry = fetchByPrimaryKey(primaryKey);
 
 		if (entry == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1234,12 +1233,14 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 */
 	@Override
 	public Entry fetchByPrimaryKey(Serializable primaryKey) {
-		Entry entry = (Entry)entityCache.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
 				EntryImpl.class, primaryKey);
 
-		if (entry == _nullEntry) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		Entry entry = (Entry)serializable;
 
 		if (entry == null) {
 			Session session = null;
@@ -1254,7 +1255,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 				}
 				else {
 					entityCache.putResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
-						EntryImpl.class, primaryKey, _nullEntry);
+						EntryImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -1308,18 +1309,20 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Entry entry = (Entry)entityCache.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
 					EntryImpl.class, primaryKey);
 
-			if (entry == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, entry);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (Entry)serializable);
+				}
 			}
 		}
 
@@ -1361,7 +1364,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
-					EntryImpl.class, primaryKey, _nullEntry);
+					EntryImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -1597,22 +1600,4 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Entry exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Entry exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(EntryPersistenceImpl.class);
-	private static final Entry _nullEntry = new EntryImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<Entry> toCacheModel() {
-				return _nullEntryCacheModel;
-			}
-		};
-
-	private static final CacheModel<Entry> _nullEntryCacheModel = new CacheModel<Entry>() {
-			@Override
-			public Entry toEntityModel() {
-				return _nullEntry;
-			}
-		};
 }

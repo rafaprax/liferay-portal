@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
-import com.liferay.portal.kernel.model.TreeModel;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
 import com.liferay.portal.kernel.search.Indexable;
@@ -47,6 +46,8 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.tree.TreeModelTasksAdapter;
+import com.liferay.portal.kernel.tree.TreePathUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ObjectValuePair;
@@ -56,13 +57,13 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.TreeModelTasksAdapter;
-import com.liferay.portal.kernel.util.TreePathUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.trash.kernel.exception.RestoreEntryException;
+import com.liferay.trash.kernel.exception.TrashEntryException;
 import com.liferay.trash.kernel.model.TrashEntry;
 import com.liferay.trash.kernel.model.TrashVersion;
 import com.liferay.trash.kernel.util.TrashUtil;
@@ -570,6 +571,11 @@ public class JournalFolderLocalServiceImpl
 		JournalFolder folder = journalFolderPersistence.findByPrimaryKey(
 			folderId);
 
+		if (!folder.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
+
 		if (folder.isInTrashExplicitly()) {
 			restoreFolderFromTrash(userId, folderId);
 		}
@@ -608,6 +614,7 @@ public class JournalFolderLocalServiceImpl
 			folderId, parentFolderId, serviceContext);
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public JournalFolder moveFolderToTrash(long userId, long folderId)
 		throws PortalException {
@@ -616,6 +623,10 @@ public class JournalFolderLocalServiceImpl
 
 		JournalFolder folder = journalFolderPersistence.findByPrimaryKey(
 			folderId);
+
+		if (folder.isInTrash()) {
+			throw new TrashEntryException();
+		}
 
 		String title = folder.getName();
 
@@ -695,24 +706,6 @@ public class JournalFolderLocalServiceImpl
 						parentPrimaryKey, treePath, false);
 				}
 
-				@Override
-				public void reindexTreeModels(List<TreeModel> treeModels)
-					throws PortalException {
-
-					if (!reindex) {
-						return;
-					}
-
-					Indexer<JournalFolder> indexer =
-						IndexerRegistryUtil.nullSafeGetIndexer(
-							JournalFolder.class);
-
-					for (TreeModel treeModel : treeModels) {
-						JournalFolder journalFolder = (JournalFolder)treeModel;
-						indexer.reindex(journalFolder);
-					}
-				}
-
 			});
 	}
 
@@ -724,6 +717,11 @@ public class JournalFolderLocalServiceImpl
 
 		JournalFolder folder = journalFolderPersistence.findByPrimaryKey(
 			folderId);
+
+		if (!folder.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
 
 		folder.setName(TrashUtil.getOriginalTitle(folder.getName()));
 
@@ -793,7 +791,7 @@ public class JournalFolderLocalServiceImpl
 			userId, folder.getGroupId(), folder.getCreateDate(),
 			folder.getModifiedDate(), JournalFolder.class.getName(),
 			folder.getFolderId(), folder.getUuid(), 0, assetCategoryIds,
-			assetTagNames, true, true, null, null, null,
+			assetTagNames, true, true, null, null, folder.getCreateDate(), null,
 			ContentTypes.TEXT_PLAIN, folder.getName(), folder.getDescription(),
 			null, null, null, 0, 0, priority);
 
@@ -966,7 +964,7 @@ public class JournalFolderLocalServiceImpl
 				JournalFolder.class.getName(), folder.getFolderId(), false);
 		}
 
-		// Index
+		// Indexer
 
 		Indexer<JournalFolder> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
 			JournalFolder.class);
@@ -1276,7 +1274,7 @@ public class JournalFolderLocalServiceImpl
 				assetEntryLocalService.updateVisible(
 					JournalFolder.class.getName(), folder.getFolderId(), false);
 
-				// Index
+				// Indexer
 
 				Indexer<JournalFolder> indexer =
 					IndexerRegistryUtil.nullSafeGetIndexer(JournalFolder.class);
@@ -1400,7 +1398,7 @@ public class JournalFolderLocalServiceImpl
 				assetEntryLocalService.updateVisible(
 					JournalFolder.class.getName(), folder.getFolderId(), true);
 
-				// Index
+				// Indexer
 
 				Indexer<JournalFolder> indexer =
 					IndexerRegistryUtil.nullSafeGetIndexer(JournalFolder.class);

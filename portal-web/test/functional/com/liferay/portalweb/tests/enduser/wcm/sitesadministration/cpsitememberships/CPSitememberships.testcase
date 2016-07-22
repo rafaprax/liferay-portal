@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Site Administration" />
 
 	<set-up>
@@ -362,8 +363,11 @@
 
 		<execute macro="Site#addBlankCP">
 			<var name="parentSiteName" value="Site Name" />
-			<var name="siteLimitMembership" value="Yes" />
 			<var name="siteName" value="Child SiteName" />
+		</execute>
+
+		<execute macro="Site#limitMembership">
+			<var name="siteLimitMembership" value="Yes" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -489,6 +493,9 @@
 	</command>
 
 	<command name="OrganizationsView" priority="5">
+		<property name="portal.acceptance" value="false" />
+		<property name="portal.acceptance.quarantine" value="true" />
+
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
@@ -576,7 +583,6 @@
 
 		<execute macro="Site#viewMemberOrganizationCP">
 			<var name="orgName" value="Organization Name 1" />
-			<var name="toolTip" value="true" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -1052,6 +1058,11 @@
 	</command>
 
 	<command name="ViewNoManualMembershipManagement" priority="3">
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="Site#manageMembershipOptions">
 			<var name="allowManualMembershipManagement" value="true" />
 		</execute>
@@ -1069,7 +1080,7 @@
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Liferay" />
+			<var name="site" value="${siteName}" />
 		</execute>
 
 		<execute function="AssertNotVisible" locator1="ControlMenu#ADMIN_SITE_ADMINISTRATION_USERS" value1="Users" />

@@ -97,6 +97,10 @@ public class ExportImportHelperUtil {
 			defaultRange);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public static Layout getExportableLayout(ThemeDisplay themeDisplay)
 		throws PortalException {
 
@@ -644,7 +648,9 @@ public class ExportImportHelperUtil {
 		_exportImportHelper.writeManifestSummary(document, manifestSummary);
 	}
 
-	private static final ExportImportHelper _exportImportHelper =
-		ProxyFactory.newServiceTrackedInstance(ExportImportHelper.class);
+	private static volatile ExportImportHelper _exportImportHelper =
+		ProxyFactory.newServiceTrackedInstance(
+			ExportImportHelper.class, ExportImportHelperUtil.class,
+			"_exportImportHelper");
 
 }

@@ -70,6 +70,8 @@ import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.social.kernel.model.SocialActivityConstants;
+import com.liferay.trash.kernel.exception.RestoreEntryException;
+import com.liferay.trash.kernel.exception.TrashEntryException;
 import com.liferay.trash.kernel.model.TrashEntry;
 
 import java.util.ArrayList;
@@ -105,14 +107,14 @@ public class CalendarBookingLocalServiceImpl
 
 		long calendarBookingId = counterLocalService.increment();
 
-		for (Locale locale : descriptionMap.keySet()) {
+		for (Map.Entry<Locale, String> entry : descriptionMap.entrySet()) {
 			String sanitizedDescription = SanitizerUtil.sanitize(
 				calendar.getCompanyId(), calendar.getGroupId(), userId,
 				CalendarBooking.class.getName(), calendarBookingId,
-				ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-				descriptionMap.get(locale), null);
+				ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL, entry.getValue(),
+				null);
 
-			descriptionMap.put(locale, sanitizedDescription);
+			descriptionMap.put(entry.getKey(), sanitizedDescription);
 		}
 
 		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
@@ -165,7 +167,8 @@ public class CalendarBookingLocalServiceImpl
 
 		calendarBooking.setVEventUid(vEventUid);
 		calendarBooking.setTitleMap(titleMap, serviceContext.getLocale());
-		calendarBooking.setDescriptionMap(descriptionMap);
+		calendarBooking.setDescriptionMap(
+			descriptionMap, serviceContext.getLocale());
 		calendarBooking.setLocation(location);
 		calendarBooking.setStartTime(startTimeJCalendar.getTimeInMillis());
 		calendarBooking.setEndTime(endTimeJCalendar.getTimeInMillis());
@@ -370,7 +373,7 @@ public class CalendarBookingLocalServiceImpl
 		Date now = new Date();
 
 		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
-			startTime);
+			startTime, calendarBooking.getTimeZone());
 
 		Recurrence recurrenceObj = calendarBooking.getRecurrenceObj();
 
@@ -591,6 +594,10 @@ public class CalendarBookingLocalServiceImpl
 			long userId, CalendarBooking calendarBooking)
 		throws PortalException {
 
+		if (calendarBooking.isInTrash()) {
+			throw new TrashEntryException();
+		}
+
 		// Calendar booking
 
 		if (!calendarBooking.isMasterBooking()) {
@@ -647,6 +654,11 @@ public class CalendarBookingLocalServiceImpl
 		// Calendar booking
 
 		CalendarBooking calendarBooking = getCalendarBooking(calendarBookingId);
+
+		if (!calendarBooking.isInTrash()) {
+			throw new RestoreEntryException(
+				RestoreEntryException.INVALID_STATUS);
+		}
 
 		if (!calendarBooking.isMasterBooking()) {
 			return calendarBooking;
@@ -762,8 +774,12 @@ public class CalendarBookingLocalServiceImpl
 
 		boolean visible = false;
 
+		Date publishDate = null;
+
 		if (calendarBooking.isApproved()) {
 			visible = true;
+
+			publishDate = calendarBooking.getCreateDate();
 		}
 
 		String summary = HtmlUtil.extractText(
@@ -774,10 +790,10 @@ public class CalendarBookingLocalServiceImpl
 			calendarBooking.getCreateDate(), calendarBooking.getModifiedDate(),
 			CalendarBooking.class.getName(),
 			calendarBooking.getCalendarBookingId(), calendarBooking.getUuid(),
-			0, assetCategoryIds, assetTagNames, true, visible, null, null, null,
-			ContentTypes.TEXT_HTML, calendarBooking.getTitle(),
-			calendarBooking.getDescription(), summary, null, null, 0, 0,
-			priority);
+			0, assetCategoryIds, assetTagNames, true, visible, null, null,
+			publishDate, null, ContentTypes.TEXT_HTML,
+			calendarBooking.getTitle(), calendarBooking.getDescription(),
+			summary, null, null, 0, 0, priority);
 
 		assetLinkLocalService.updateLinks(
 			userId, assetEntry.getEntryId(), assetLinkEntryIds,
@@ -800,14 +816,14 @@ public class CalendarBookingLocalServiceImpl
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
-		for (Locale locale : descriptionMap.keySet()) {
+		for (Map.Entry<Locale, String> entry : descriptionMap.entrySet()) {
 			String sanitizedDescription = SanitizerUtil.sanitize(
 				calendar.getCompanyId(), calendar.getGroupId(), userId,
 				CalendarBooking.class.getName(), calendarBookingId,
-				ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
-				descriptionMap.get(locale), null);
+				ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL, entry.getValue(),
+				null);
 
-			descriptionMap.put(locale, sanitizedDescription);
+			descriptionMap.put(entry.getKey(), sanitizedDescription);
 		}
 
 		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
@@ -847,7 +863,8 @@ public class CalendarBookingLocalServiceImpl
 
 		updatedDescriptionMap.putAll(descriptionMap);
 
-		calendarBooking.setDescriptionMap(updatedDescriptionMap);
+		calendarBooking.setDescriptionMap(
+			updatedDescriptionMap, serviceContext.getLocale());
 
 		calendarBooking.setLocation(location);
 		calendarBooking.setStartTime(startTimeJCalendar.getTimeInMillis());
@@ -859,7 +876,9 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setSecondReminder(secondReminder);
 		calendarBooking.setSecondReminderType(secondReminderType);
 
-		if (!calendarBooking.isPending() || !calendarBooking.isDraft()) {
+		if (calendarBooking.isMasterBooking() && !calendarBooking.isDraft() &&
+			!calendarBooking.isPending()) {
+
 			calendarBooking.setStatus(WorkflowConstants.STATUS_DRAFT);
 		}
 
@@ -1199,6 +1218,23 @@ public class CalendarBookingLocalServiceImpl
 				continue;
 			}
 
+			long firstReminder = calendarBooking.getFirstReminder();
+			String firstReminderType = calendarBooking.getFirstReminderType();
+			long secondReminder = calendarBooking.getSecondReminder();
+			String secondReminderType = calendarBooking.getSecondReminderType();
+
+			if (childCalendarBookingMap.containsKey(calendarId)) {
+				CalendarBooking oldChildCalendarBooking =
+					childCalendarBookingMap.get(calendarId);
+
+				firstReminder = oldChildCalendarBooking.getFirstReminder();
+				firstReminderType =
+					oldChildCalendarBooking.getFirstReminderType();
+				secondReminder = oldChildCalendarBooking.getSecondReminder();
+				secondReminderType =
+					oldChildCalendarBooking.getSecondReminderType();
+			}
+
 			serviceContext.setAttribute("sendNotification", false);
 
 			CalendarBooking childCalendarBooking = addCalendarBooking(
@@ -1208,11 +1244,9 @@ public class CalendarBookingLocalServiceImpl
 				calendarBooking.getDescriptionMap(),
 				calendarBooking.getLocation(), calendarBooking.getStartTime(),
 				calendarBooking.getEndTime(), calendarBooking.getAllDay(),
-				calendarBooking.getRecurrence(),
-				calendarBooking.getFirstReminder(),
-				calendarBooking.getFirstReminderType(),
-				calendarBooking.getSecondReminder(),
-				calendarBooking.getSecondReminderType(), serviceContext);
+				calendarBooking.getRecurrence(), firstReminder,
+				firstReminderType, secondReminder, secondReminderType,
+				serviceContext);
 
 			serviceContext.setAttribute("sendNotification", true);
 

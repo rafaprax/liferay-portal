@@ -59,7 +59,7 @@ portletURL.setParameter("displayStyle", displayStyle);
 						/>
 
 						<liferay-ui:search-container-column-jsp
-							colspan="2"
+							colspan="<%= 2 %>"
 							href="<%= rowURL %>"
 							path="/admin/view_record_set_descriptive.jsp"
 						/>
@@ -69,17 +69,16 @@ portletURL.setParameter("displayStyle", displayStyle);
 						/>
 					</c:when>
 					<c:otherwise>
-
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-content"
 							href="<%= rowURL %>"
 							name="name"
-							truncate="<%= true %>"
 							value="<%= HtmlUtil.escape(recordSet.getName(locale)) %>"
 						/>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-content"
 							name="description"
-							truncate="<%= true %>"
 							value="<%= HtmlUtil.escape(recordSet.getDescription(locale)) %>"
 						/>
 
@@ -89,8 +88,6 @@ portletURL.setParameter("displayStyle", displayStyle);
 						/>
 
 						<liferay-ui:search-container-column-jsp
-							align="right"
-							cssClass="checkbox-cell entry-action"
 							path="/admin/record_set_action.jsp"
 						/>
 					</c:otherwise>

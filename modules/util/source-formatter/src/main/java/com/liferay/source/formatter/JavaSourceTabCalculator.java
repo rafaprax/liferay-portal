@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
 public class JavaSourceTabCalculator {
 
 	public void calculateTabs(
-			String fileName, String content,
-			JavaSourceProcessor javaSourceProcessor)
+			String fileName, String content, int lineCount, int tabLevel,
+			SourceProcessor sourceProcessor)
 		throws Exception {
 
 		content = stripTrailingComments(content);
@@ -46,12 +46,9 @@ public class JavaSourceTabCalculator {
 
 			String line = null;
 
-			int lineCount = 0;
-
 			boolean forClause = false;
 			boolean ifClause = false;
 			boolean multiLineComment = false;
-			int tabLevel = 0;
 
 			_extraTabMap = new HashMap<>();
 			_ignoreTabCheck = new HashSet<>();
@@ -64,7 +61,7 @@ public class JavaSourceTabCalculator {
 
 				String trimmedLine = StringUtil.trimLeading(line);
 
-				int leadingTabCount = BaseSourceProcessor.getLeadingTabCount(
+				int leadingTabCount = _javaSourceProcessor.getLeadingTabCount(
 					line);
 
 				if (trimmedLine.startsWith("/*") &&
@@ -87,7 +84,7 @@ public class JavaSourceTabCalculator {
 					if (Validator.isNotNull(line) && !ifClause) {
 						checkTabLevel(
 							trimmedLine, leadingTabCount, tabLevel, fileName,
-							lineCount, javaSourceProcessor);
+							lineCount, sourceProcessor);
 					}
 
 					if (trimmedLine.startsWith("catch (") ||
@@ -124,6 +121,13 @@ public class JavaSourceTabCalculator {
 		}
 	}
 
+	public void calculateTabs(
+			String fileName, String content, SourceProcessor sourceProcessor)
+		throws Exception {
+
+		calculateTabs(fileName, content, 0, 0, sourceProcessor);
+	}
+
 	protected void addExtraTabs(int lineCount, int extra) {
 		for (int i = lineCount + 1; i <= lineCount + extra; i++) {
 			Integer count = _extraTabMap.get(i);
@@ -158,7 +162,7 @@ public class JavaSourceTabCalculator {
 			Matcher matcher2 = _throwsExceptionPattern.matcher(match);
 
 			if (matcher2.find()) {
-				addExtraTabs(lineCount, StringUtil.count(match, "\n") - 1);
+				addExtraTabs(lineCount, StringUtil.count(match, '\n') - 1);
 			}
 		}
 
@@ -168,9 +172,8 @@ public class JavaSourceTabCalculator {
 			return;
 		}
 
-		String[] texts = new String[] {
-			"{\n", ";\n", ",\n", "\n)", "\t)", "\t}", ")\n"
-		};
+		String[] texts =
+			new String[] {"{\n", ";\n", ",\n", "\n)", "\t)", "\t}", ")\n"};
 
 		if (line.endsWith(":")) {
 			if (line.startsWith("case ") || line.startsWith("default")) {
@@ -250,12 +253,12 @@ public class JavaSourceTabCalculator {
 			}
 
 			if (matchingText.equals(",\n") &&
-				(BaseSourceProcessor.getLevel(s, "<", ">") > 0)) {
+				(_javaSourceProcessor.getLevel(s, "<", ">") > 0)) {
 
 				continue;
 			}
 
-			int extra = StringUtil.count(s, "\n");
+			int extra = StringUtil.count(s, '\n');
 
 			if (matchingText.equals("\t)") || matchingText.equals("\t}") ||
 				matchingText.equals(":\n")) {
@@ -338,19 +341,20 @@ public class JavaSourceTabCalculator {
 	}
 
 	protected int calculateTabLevel(int level, String text) {
-		return BaseSourceProcessor.getLevel(
+		return _javaSourceProcessor.getLevel(
 			text,
 			new String[] {
 				StringPool.OPEN_CURLY_BRACE, StringPool.OPEN_PARENTHESIS
 			},
 			new String[] {
-				StringPool.CLOSE_CURLY_BRACE, StringPool.CLOSE_PARENTHESIS},
+				StringPool.CLOSE_CURLY_BRACE, StringPool.CLOSE_PARENTHESIS
+			},
 			level);
 	}
 
 	protected void checkTabLevel(
 		String trimmedLine, int leadingTabCount, int tabLevel, String fileName,
-		int lineCount, JavaSourceProcessor javaSourceProcessor) {
+		int lineCount, SourceProcessor sourceProcessor) {
 
 		if (_ignoreTabCheck.contains(lineCount)) {
 			_printIncorrectTabMessage = true;
@@ -365,10 +369,8 @@ public class JavaSourceTabCalculator {
 		}
 		else {
 			if (_printIncorrectTabMessage) {
-				javaSourceProcessor.processErrorMessage(
-					fileName,
-					"Incorrect tab or line break: " + fileName + " " +
-						lineCount);
+				sourceProcessor.processMessage(
+					fileName, "Incorrect tab or line break", lineCount);
 			}
 
 			_printIncorrectTabMessage = false;
@@ -493,14 +495,16 @@ public class JavaSourceTabCalculator {
 
 	private Map<Integer, Integer> _extraTabMap;
 	private Set<Integer> _ignoreTabCheck;
-	private Pattern _methodDeclarationPattern = Pattern.compile(
+	private final JavaSourceProcessor _javaSourceProcessor =
+		new JavaSourceProcessor();
+	private final Pattern _methodDeclarationPattern = Pattern.compile(
 		"^\\s*(private|protected|public) .*?(\\{|;)\n", Pattern.DOTALL);
 	private boolean _printIncorrectTabMessage;
-	private Pattern _throwsExceptionPattern = Pattern.compile(
+	private final Pattern _throwsExceptionPattern = Pattern.compile(
 		"\t((default .*)|(throws (E|(.*(Error|Exception|Fault|Throwable)))))" +
 			"(;| \\{)$",
 		Pattern.DOTALL);
-	private Pattern _trailingCommentPattern = Pattern.compile(
+	private final Pattern _trailingCommentPattern = Pattern.compile(
 		"(\n|\t).*\\S(( |\t)+//.*?)\n");
 
 }

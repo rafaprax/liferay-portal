@@ -126,6 +126,8 @@ public class UsersAdminImpl implements UsersAdmin {
 		PortletURL portletURL = renderResponse.createRenderURL();
 
 		portletURL.setParameter("mvcRenderCommandName", "/users_admin/view");
+		portletURL.setParameter("toolbarItem", "view-all-organizations");
+		portletURL.setParameter("usersListView", "tree");
 
 		List<Organization> ancestorOrganizations = organization.getAncestors();
 
@@ -235,8 +237,7 @@ public class UsersAdminImpl implements UsersAdmin {
 
 			String roleName = groupRole.getName();
 
-			if (roleName.equals(
-					RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
+			if (roleName.equals(RoleConstants.ORGANIZATION_ADMINISTRATOR) ||
 				roleName.equals(RoleConstants.ORGANIZATION_OWNER) ||
 				roleName.equals(RoleConstants.SITE_ADMINISTRATOR) ||
 				roleName.equals(RoleConstants.SITE_OWNER) ||

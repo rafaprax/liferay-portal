@@ -14,7 +14,7 @@
 
 package com.liferay.portal.monitoring.internal.servlet.taglib;
 
-import com.liferay.bnd.util.ConfigurableUtil;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.monitoring.DataSample;
 import com.liferay.portal.kernel.monitoring.DataSampleFactory;
 import com.liferay.portal.kernel.monitoring.DataSampleThreadLocal;
@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	configurationPid = "com.liferay.portal.monitoring.configuration.MonitoringConfiguration",
-	immediate = true, service = DynamicInclude.class
+	enabled = false, immediate = true, service = DynamicInclude.class
 )
 public class MonitoringTopHeadDynamicInclude extends BaseDynamicInclude {
 

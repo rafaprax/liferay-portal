@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.servlet.PipingServletResponse;
 import com.liferay.wiki.engine.BaseWikiEngine;
-import com.liferay.wiki.engine.input.editor.common.util.WikiEngineInputEditorCommonComponentProvider;
+import com.liferay.wiki.engine.input.editor.common.internal.util.WikiEngineInputEditorCommonComponentProvider;
 import com.liferay.wiki.model.WikiNode;
 import com.liferay.wiki.model.WikiPage;
 
@@ -80,7 +80,8 @@ public abstract class BaseInputEditorWikiEngine extends BaseWikiEngine {
 
 	public String getHelpPageTitle(HttpServletRequest request) {
 		return LanguageUtil.format(
-			request, "x-syntax-help", getFormat(), false);
+			request, "x-syntax-help", getFormatLabel(request.getLocale()),
+			false);
 	}
 
 	public abstract String getHelpURL();

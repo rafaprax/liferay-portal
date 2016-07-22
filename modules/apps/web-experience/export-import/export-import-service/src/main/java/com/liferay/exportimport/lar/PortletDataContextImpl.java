@@ -22,6 +22,7 @@ import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.model.ExpandoColumn;
 import com.liferay.expando.kernel.service.ExpandoColumnLocalServiceUtil;
+import com.liferay.exportimport.internal.util.ExportImportPermissionUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportClassedModelUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
@@ -35,7 +36,6 @@ import com.liferay.exportimport.kernel.lar.UserIdStrategy;
 import com.liferay.exportimport.kernel.xstream.XStreamAlias;
 import com.liferay.exportimport.kernel.xstream.XStreamConverter;
 import com.liferay.exportimport.kernel.xstream.XStreamType;
-import com.liferay.exportimport.util.ExportImportPermissionUtil;
 import com.liferay.exportimport.xstream.ConverterAdapter;
 import com.liferay.exportimport.xstream.XStreamStagedModelTypeHierarchyPermission;
 import com.liferay.message.boards.kernel.model.MBMessage;
@@ -105,6 +105,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.ClassLoaderReference;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import com.thoughtworks.xstream.security.NoTypePermission;
+import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -2186,10 +2187,9 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return null;
 		}
 
-		StringBundler sb = new StringBundler(6);
+		StringBundler sb = new StringBundler(5);
 
-		sb.append("staged-model");
-		sb.append("[@");
+		sb.append("staged-model[@");
 		sb.append(attribute);
 		sb.append(StringPool.EQUAL);
 		sb.append(HtmlUtil.escapeXPathAttribute(value));
@@ -2393,9 +2393,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			return getUserId(userUuid);
 		}
 		catch (SystemException se) {
-			if (_log.isErrorEnabled()) {
-				_log.error(se, se);
-			}
+			_log.error(se, se);
 		}
 
 		return 0;
@@ -2455,20 +2453,18 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		_xStream.addPermission(NoTypePermission.NONE);
 
+		// Add permissions
+
+		_xStream.addPermission(PrimitiveTypePermission.PRIMITIVES);
 		_xStream.addPermission(
 			XStreamStagedModelTypeHierarchyPermission.STAGED_MODELS);
+
+		_xStream.allowTypes(_XSTREAM_DEFAULT_ALLOWED_TYPES);
 
 		_xStream.allowTypeHierarchy(List.class);
 		_xStream.allowTypeHierarchy(Map.class);
 		_xStream.allowTypeHierarchy(Timestamp.class);
 		_xStream.allowTypeHierarchy(Set.class);
-
-		Class[] types = new Class[] {
-			Boolean.class, Date.class, Integer.class, String.class,
-			Locale.class, Long.class
-		};
-
-		_xStream.allowTypes(types);
 
 		_xStream.allowTypes(allowedTypeNames.toArray(new String[0]));
 
@@ -2507,6 +2503,12 @@ public class PortletDataContextImpl implements PortletDataContext {
 			element.addAttribute("attached-class-name", attachedClassName);
 		}
 	}
+
+	private static final Class<?>[] _XSTREAM_DEFAULT_ALLOWED_TYPES = {
+		boolean[].class, byte[].class, Date.class, Date[].class, double[].class,
+		float[].class, int[].class, Locale.class, long[].class, Number.class,
+		Number[].class, short[].class, String.class, String[].class
+	};
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletDataContextImpl.class);

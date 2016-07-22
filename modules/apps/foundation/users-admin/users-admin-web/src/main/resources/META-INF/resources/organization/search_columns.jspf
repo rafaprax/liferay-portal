@@ -15,39 +15,47 @@
 --%>
 
 <liferay-ui:search-container-column-text
+	cssClass="table-cell-content"
 	href="<%= rowURL %>"
 	name="name"
 	orderable="<%= true %>"
-	property="name"
-/>
+>
+	<aui:a href="<%= String.valueOf(rowURL) %>"><strong><%= organization.getName() %></strong></aui:a>
+</liferay-ui:search-container-column-text>
+
+<c:if test="<%= Validator.isNotNull(keywords) %>">
+	<liferay-ui:search-container-column-text
+		cssClass="table-cell-content"
+		href="<%= rowURL %>"
+		name="parent-organization"
+		value="<%= HtmlUtil.escape(organization.getParentOrganizationName()) %>"
+	/>
+</c:if>
 
 <liferay-ui:search-container-column-text
-	href="<%= rowURL %>"
-	name="parent-organization"
-	value="<%= HtmlUtil.escape(organization.getParentOrganizationName()) %>"
-/>
-
-<liferay-ui:search-container-column-text
+	cssClass="table-cell-content"
 	href="<%= rowURL %>"
 	name="type"
 	orderable="<%= true %>"
 	value="<%= LanguageUtil.get(request, organization.getType()) %>"
 />
 
-<liferay-ui:search-container-column-text
-	href="<%= rowURL %>"
-	name="city"
-	value="<%= HtmlUtil.escape(organization.getAddress().getCity()) %>"
-/>
+<c:if test="<%= Validator.isNotNull(keywords) %>">
+	<liferay-ui:search-container-column-text
+		href="<%= rowURL %>"
+		name="city"
+		value="<%= HtmlUtil.escape(organization.getAddress().getCity()) %>"
+	/>
 
-<liferay-ui:search-container-column-text
-	href="<%= rowURL %>"
-	name="region"
-	value="<%= UsersAdmin.ORGANIZATION_REGION_NAME_ACCESSOR.get(organization) %>"
-/>
+	<liferay-ui:search-container-column-text
+		href="<%= rowURL %>"
+		name="region"
+		value="<%= UsersAdmin.ORGANIZATION_REGION_NAME_ACCESSOR.get(organization) %>"
+	/>
 
-<liferay-ui:search-container-column-text
-	href="<%= rowURL %>"
-	name="country"
-	value="<%= UsersAdmin.ORGANIZATION_COUNTRY_NAME_ACCESSOR.get(organization) %>"
-/>
+	<liferay-ui:search-container-column-text
+		href="<%= rowURL %>"
+		name="country"
+		value="<%= UsersAdmin.ORGANIZATION_COUNTRY_NAME_ACCESSOR.get(organization) %>"
+	/>
+</c:if>

@@ -154,83 +154,11 @@ public class LicenseUtil {
 	}
 
 	public static Set<String> getIpAddresses() {
-		if (_ipAddresses != null) {
-			return new HashSet<>(_ipAddresses);
-		}
-
-		_ipAddresses = new HashSet<>();
-
-		try {
-			List<NetworkInterface> networkInterfaces = Collections.list(
-				NetworkInterface.getNetworkInterfaces());
-
-			for (NetworkInterface networkInterface : networkInterfaces) {
-				List<InetAddress> inetAddresses = Collections.list(
-					networkInterface.getInetAddresses());
-
-				for (InetAddress inetAddress : inetAddresses) {
-					if (inetAddress.isLinkLocalAddress() ||
-						inetAddress.isLoopbackAddress() ||
-						!(inetAddress instanceof Inet4Address)) {
-
-						continue;
-					}
-
-					_ipAddresses.add(inetAddress.getHostAddress());
-				}
-			}
-		}
-		catch (Exception e) {
-			_log.error("Unable to read local server's IP addresses");
-
-			_log.error(e, e);
-		}
-
-		return new HashSet<>(_ipAddresses);
+		return _ipAddresses;
 	}
 
 	public static Set<String> getMacAddresses() {
-		if (_macAddresses != null) {
-			return new HashSet<>(_macAddresses);
-		}
-
-		_macAddresses = new HashSet<>();
-
-		try {
-			List<NetworkInterface> networkInterfaces = Collections.list(
-				NetworkInterface.getNetworkInterfaces());
-
-			for (NetworkInterface networkInterface : networkInterfaces) {
-				byte[] hardwareAddress = networkInterface.getHardwareAddress();
-
-				if (ArrayUtil.isEmpty(hardwareAddress)) {
-					continue;
-				}
-
-				StringBuilder sb = new StringBuilder(
-					(hardwareAddress.length * 3) - 1);
-
-				String hexString = StringUtil.bytesToHexString(hardwareAddress);
-
-				for (int i = 0; i < hexString.length(); i += 2) {
-					if (i != 0) {
-						sb.append(CharPool.COLON);
-					}
-
-					sb.append(Character.toLowerCase(hexString.charAt(i)));
-					sb.append(Character.toLowerCase(hexString.charAt(i + 1)));
-				}
-
-				_macAddresses.add(sb.toString());
-			}
-		}
-		catch (Exception e) {
-			_log.error("Unable to read local server's MAC addresses");
-
-			_log.error(e, e);
-		}
-
-		return new HashSet<>(_macAddresses);
+		return _macAddresses;
 	}
 
 	public static byte[] getServerIdBytes() throws Exception {
@@ -462,9 +390,9 @@ public class LicenseUtil {
 
 		JSONObject jsonObject = new JSONObjectImpl();
 
-		jsonObject.put("version", 2);
-		jsonObject.put("orderUuid", orderUuid);
 		jsonObject.put("liferayVersion", ReleaseInfo.getBuildNumber());
+		jsonObject.put("orderUuid", orderUuid);
+		jsonObject.put("version", 2);
 
 		if (Validator.isNull(productEntryName)) {
 			jsonObject.put(Constants.CMD, "QUERY");
@@ -484,8 +412,8 @@ public class LicenseUtil {
 						productEntryName, StringPool.DASH);
 
 					if (productNameArray.length >= 3) {
-						jsonObject.put("offeringEntryId", productNameArray[1]);
 						jsonObject.put("clusterId", productNameArray[2]);
+						jsonObject.put("offeringEntryId", productNameArray[1]);
 					}
 				}
 			}
@@ -538,6 +466,74 @@ public class LicenseUtil {
 		jsonObject.put("key", _encryptedSymmetricKey);
 
 		return jsonObject.toString().getBytes(StringPool.UTF8);
+	}
+
+	private static Set<String> _getIPAddresses() {
+		Set<String> ipAddresses = new HashSet<>();
+
+		try {
+			List<NetworkInterface> networkInterfaces = Collections.list(
+				NetworkInterface.getNetworkInterfaces());
+
+			for (NetworkInterface networkInterface : networkInterfaces) {
+				List<InetAddress> inetAddresses = Collections.list(
+					networkInterface.getInetAddresses());
+
+				for (InetAddress inetAddress : inetAddresses) {
+					if (inetAddress.isLinkLocalAddress() ||
+						inetAddress.isLoopbackAddress() ||
+						!(inetAddress instanceof Inet4Address)) {
+
+						continue;
+					}
+
+					ipAddresses.add(inetAddress.getHostAddress());
+				}
+			}
+		}
+		catch (Exception e) {
+			_log.error("Unable to read local server's IP addresses", e);
+		}
+
+		return Collections.unmodifiableSet(ipAddresses);
+	}
+
+	private static Set<String> _getMACAddresses() {
+		Set<String> macAddresses = new HashSet<>();
+
+		try {
+			List<NetworkInterface> networkInterfaces = Collections.list(
+				NetworkInterface.getNetworkInterfaces());
+
+			for (NetworkInterface networkInterface : networkInterfaces) {
+				byte[] hardwareAddress = networkInterface.getHardwareAddress();
+
+				if (ArrayUtil.isEmpty(hardwareAddress)) {
+					continue;
+				}
+
+				StringBuilder sb = new StringBuilder(
+					(hardwareAddress.length * 3) - 1);
+
+				String hexString = StringUtil.bytesToHexString(hardwareAddress);
+
+				for (int i = 0; i < hexString.length(); i += 2) {
+					if (i != 0) {
+						sb.append(CharPool.COLON);
+					}
+
+					sb.append(Character.toLowerCase(hexString.charAt(i)));
+					sb.append(Character.toLowerCase(hexString.charAt(i + 1)));
+				}
+
+				macAddresses.add(sb.toString());
+			}
+		}
+		catch (Exception e) {
+			_log.error("Unable to read local server's MAC addresses", e);
+		}
+
+		return Collections.unmodifiableSet(macAddresses);
 	}
 
 	private static Map<String, String> _getOrderProducts(
@@ -649,8 +645,8 @@ public class LicenseUtil {
 	private static String _encryptedSymmetricKey;
 	private static final MethodHandler _getServerInfoMethodHandler =
 		new MethodHandler(new MethodKey(LicenseUtil.class, "getServerInfo"));
-	private static Set<String> _ipAddresses;
-	private static Set<String> _macAddresses;
+	private static final Set<String> _ipAddresses;
+	private static final Set<String> _macAddresses;
 	private static final MethodKey _registerOrderMethodKey = new MethodKey(
 		LicenseUtil.class, "registerOrder", String.class, String.class,
 		int.class);
@@ -659,6 +655,9 @@ public class LicenseUtil {
 
 	static {
 		_initKeys();
+
+		_ipAddresses = _getIPAddresses();
+		_macAddresses = _getMACAddresses();
 	}
 
 }

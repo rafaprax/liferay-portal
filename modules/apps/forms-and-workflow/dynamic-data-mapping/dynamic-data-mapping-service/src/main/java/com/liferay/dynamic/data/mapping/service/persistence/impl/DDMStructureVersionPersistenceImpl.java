@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
@@ -39,7 +38,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -50,6 +48,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -641,8 +640,8 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchStructureVersionException(msg.toString());
@@ -687,7 +686,7 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 			DDMStructureVersion ddmStructureVersion = (DDMStructureVersion)result;
 
 			if ((structureId != ddmStructureVersion.getStructureId()) ||
-					!Validator.equals(version, ddmStructureVersion.getVersion())) {
+					!Objects.equals(version, ddmStructureVersion.getVersion())) {
 				result = null;
 			}
 		}
@@ -1599,8 +1598,8 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 					primaryKey);
 
 			if (ddmStructureVersion == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchStructureVersionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1789,8 +1788,8 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 		DDMStructureVersion ddmStructureVersion = fetchByPrimaryKey(primaryKey);
 
 		if (ddmStructureVersion == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchStructureVersionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1821,12 +1820,14 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	 */
 	@Override
 	public DDMStructureVersion fetchByPrimaryKey(Serializable primaryKey) {
-		DDMStructureVersion ddmStructureVersion = (DDMStructureVersion)entityCache.getResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
 				DDMStructureVersionImpl.class, primaryKey);
 
-		if (ddmStructureVersion == _nullDDMStructureVersion) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		DDMStructureVersion ddmStructureVersion = (DDMStructureVersion)serializable;
 
 		if (ddmStructureVersion == null) {
 			Session session = null;
@@ -1842,8 +1843,7 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 				}
 				else {
 					entityCache.putResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
-						DDMStructureVersionImpl.class, primaryKey,
-						_nullDDMStructureVersion);
+						DDMStructureVersionImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -1897,18 +1897,20 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			DDMStructureVersion ddmStructureVersion = (DDMStructureVersion)entityCache.getResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
 					DDMStructureVersionImpl.class, primaryKey);
 
-			if (ddmStructureVersion == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, ddmStructureVersion);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (DDMStructureVersion)serializable);
+				}
 			}
 		}
 
@@ -1951,8 +1953,7 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
-					DDMStructureVersionImpl.class, primaryKey,
-					_nullDDMStructureVersion);
+					DDMStructureVersionImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2197,23 +2198,4 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"type"
 			});
-	private static final DDMStructureVersion _nullDDMStructureVersion = new DDMStructureVersionImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<DDMStructureVersion> toCacheModel() {
-				return _nullDDMStructureVersionCacheModel;
-			}
-		};
-
-	private static final CacheModel<DDMStructureVersion> _nullDDMStructureVersionCacheModel =
-		new CacheModel<DDMStructureVersion>() {
-			@Override
-			public DDMStructureVersion toEntityModel() {
-				return _nullDDMStructureVersion;
-			}
-		};
 }

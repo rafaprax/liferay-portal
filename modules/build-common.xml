@@ -6,13 +6,17 @@
 
 	<taskdef classpath="${modules.dir}/../lib/development/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
 
-	<property name="gradle.wrapper.path" relative="yes" value="${modules.dir}/../gradlew" />
+	<pathconvert dirsep=":" property="gradle.project.path">
+		<map from="${modules.dir}" to="" />
 
-	<macrodef name="print-gradle-alternative">
-		<attribute name="args" />
+		<path>
+			<pathelement location="${basedir}" />
+		</path>
+	</pathconvert>
 
-		<sequential>
-			<echo>Please run this command instead: ${gradle.wrapper.path} @{args}</echo>
-		</sequential>
-	</macrodef>
+	<condition else="" property="gradlew.suffix" value=".bat">
+		<os family="windows" />
+	</condition>
+
+	<property name="gradle.wrapper.path" relative="yes" value="${modules.dir}/../gradlew${gradlew.suffix}" />
 </project>

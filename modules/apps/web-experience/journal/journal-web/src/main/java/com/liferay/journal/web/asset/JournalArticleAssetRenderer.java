@@ -141,6 +141,10 @@ public class JournalArticleAssetRenderer
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public Date getDisplayDate() {
 		return _article.getDisplayDate();
@@ -242,8 +246,10 @@ public class JournalArticleAssetRenderer
 			LiferayPortletResponse liferayPortletResponse)
 		throws Exception {
 
+		Group group = GroupLocalServiceUtil.fetchGroup(_article.getGroupId());
+
 		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
-			liferayPortletRequest, JournalPortletKeys.JOURNAL,
+			liferayPortletRequest, group, JournalPortletKeys.JOURNAL, 0, 0,
 			PortletRequest.RENDER_PHASE);
 
 		portletURL.setParameter("mvcPath", "/edit_article.jsp");
@@ -359,25 +365,15 @@ public class JournalArticleAssetRenderer
 						_article.getUrlTitle()));
 		}
 
-		List<Long> hitLayoutIds =
-			JournalContentSearchLocalServiceUtil.getLayoutIds(
-				_article.getGroupId(), layout.isPrivateLayout(),
-				_article.getArticleId());
+		String hitLayoutURL = getHitLayoutURL(
+			layout.isPrivateLayout(), noSuchEntryRedirect, themeDisplay);
 
-		for (Long hitLayoutId : hitLayoutIds) {
-			Layout hitLayout = LayoutLocalServiceUtil.getLayout(
-				_article.getGroupId(), layout.isPrivateLayout(),
-				hitLayoutId.longValue());
-
-			if (LayoutPermissionUtil.contains(
-					themeDisplay.getPermissionChecker(), hitLayout,
-					ActionKeys.VIEW)) {
-
-				return PortalUtil.getLayoutURL(hitLayout, themeDisplay);
-			}
+		if (hitLayoutURL.equals(noSuchEntryRedirect)) {
+			hitLayoutURL = getHitLayoutURL(
+				!layout.isPrivateLayout(), noSuchEntryRedirect, themeDisplay);
 		}
 
-		return noSuchEntryRedirect;
+		return hitLayoutURL;
 	}
 
 	@Override
@@ -510,14 +506,41 @@ public class JournalArticleAssetRenderer
 		}
 	}
 
+	protected String getHitLayoutURL(
+			boolean privateLayout, String noSuchEntryRedirect,
+			ThemeDisplay themeDisplay)
+		throws PortalException {
+
+		List<Long> hitLayoutIds =
+			JournalContentSearchLocalServiceUtil.getLayoutIds(
+				_article.getGroupId(), privateLayout, _article.getArticleId());
+
+		for (Long hitLayoutId : hitLayoutIds) {
+			Layout hitLayout = LayoutLocalServiceUtil.getLayout(
+				_article.getGroupId(), privateLayout, hitLayoutId.longValue());
+
+			if (LayoutPermissionUtil.contains(
+					themeDisplay.getPermissionChecker(), hitLayout,
+					ActionKeys.VIEW)) {
+
+				return PortalUtil.getLayoutURL(hitLayout, themeDisplay);
+			}
+		}
+
+		return noSuchEntryRedirect;
+	}
+
 	protected PortletRequestModel getPortletRequestModel(
 		HttpServletRequest request, HttpServletResponse response) {
 
 		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
 			JavaConstants.JAVAX_PORTLET_REQUEST);
-
 		PortletResponse portletResponse = (PortletResponse)request.getAttribute(
 			JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+		if ((portletRequest == null) || (portletResponse == null)) {
+			return null;
+		}
 
 		return new PortletRequestModel(portletRequest, portletResponse);
 	}
