@@ -12,6 +12,10 @@ AUI.add(
 						value: 'manual'
 					},
 
+					multiple: {
+						value: false
+					},
+
 					options: {
 						getter: '_getOptions',
 						validator: Array.isArray,
@@ -47,7 +51,8 @@ AUI.add(
 						return A.merge(
 							SelectField.superclass.getTemplateContext.apply(instance, arguments),
 							{
-								options: instance.get('options')
+								options: instance.get('options'),
+								value: instance.getValueArray()
 							}
 						);
 					},
@@ -57,23 +62,36 @@ AUI.add(
 
 						var inputNode = instance.getInputNode();
 
-						var value = [];
+						var value;
 
-						inputNode.all('option').each(
-							function(optionNode) {
-								if (optionNode.attr('selected')) {
-									value.push(optionNode.val());
+						if (instance.get('multiple')) {
+							value = [];
+
+							inputNode.all('option').each(
+								function(optionNode) {
+									if (optionNode.attr('selected')) {
+										value.push(optionNode.val());
+									}
 								}
-							}
-						);
-
-						if (value.length == 1) {
-							return value[0];
+							);
 						}
 						else {
-							return value;
+							value = inputNode.val();
 						}
 
+						return value;
+					},
+
+					getValueArray: function() {
+						var instance = this;
+
+						var value = instance.get('value');
+
+						if (!Lang.isArray(value)) {
+							value = [value];
+						}
+
+						return value;
 					},
 
 					render: function() {
@@ -110,10 +128,24 @@ AUI.add(
 							var inputNode = instance.getInputNode();
 
 							inputNode.all('option').each(
-								function(optionNode) {
-									optionNode.attr('selected', value.indexOf(optionNode.val()) > -1);
+								function(optionNode, index) {
+									var selected = value.indexOf(optionNode.val()) > -1;
+
+									if (index === 0 && value.length === 0) {
+										selected = true;
+									}
+
+									if (selected) {
+										optionNode.attr('selected', selected);
+									}
+									else {
+										optionNode.removeAttribute('selected');
+									}
 								}
 							);
+						}
+						else {
+							inputNode.val(value);
 						}
 					},
 

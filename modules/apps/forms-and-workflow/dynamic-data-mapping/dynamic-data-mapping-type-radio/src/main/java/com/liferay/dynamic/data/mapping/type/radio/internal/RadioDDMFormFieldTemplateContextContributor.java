@@ -79,7 +79,7 @@ public class RadioDDMFormFieldTemplateContextContributor
 		DDMFormField ddmFormField,
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
 
-		RadioDDMFormFieldContextHelper selectDDMFormFieldContextHelper =
+		RadioDDMFormFieldContextHelper radioDDMFormFieldContextHelper =
 			new RadioDDMFormFieldContextHelper(
 				jsonFactory,
 				getDDMFormFieldOptions(
@@ -89,7 +89,7 @@ public class RadioDDMFormFieldTemplateContextContributor
 				ddmFormFieldRenderingContext.getLocale());
 
 		String[] valuesStringArray =
-			selectDDMFormFieldContextHelper.toStringArray(
+			radioDDMFormFieldContextHelper.toStringArray(
 				ddmFormFieldRenderingContext.getValue());
 
 		return ListUtil.toList(valuesStringArray);

@@ -151,11 +151,11 @@ AUI.add(
 				return new Liferay.DDL.FormBuilderSettingsForm(
 					{
 						context: context,
-						definition: context.definition,
+						definition: JSON.parse(context.definition),
 						editMode: builder.get('recordSetId') === 0 || instance.isPersisted(),
 						evaluatorURL: instance.get('evaluatorURL'),
 						field: instance,
-						layout: context.layout,
+						layout: JSON.parse(context.layout),
 						portletNamespace: instance.get('portletNamespace'),
 						templateNamespace: 'ddm.settings_form'
 					}

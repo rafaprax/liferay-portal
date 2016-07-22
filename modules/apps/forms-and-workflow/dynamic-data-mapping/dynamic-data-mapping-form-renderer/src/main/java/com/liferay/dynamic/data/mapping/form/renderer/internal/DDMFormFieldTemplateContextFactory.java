@@ -370,7 +370,9 @@ public class DDMFormFieldTemplateContextFactory {
 	protected void setDDMFormFieldTemplateContextValue(
 		Map<String, Object> ddmFormFieldTemplateContext, Value value) {
 
-		ddmFormFieldTemplateContext.put("value", value.getString(_locale));
+		if (value != null) {
+			ddmFormFieldTemplateContext.put("value", value.getString(_locale));
+		}
 	}
 
 	protected void setDDMFormFieldTemplateContextVisible(

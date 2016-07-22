@@ -87,8 +87,8 @@ AUI.add(
 
 						return {
 							portletNamespace: instance.get('portletNamespace'),
-							serializedDDMForm: instance.get('definition'),
-							serializedDDMFormLayout: instance.get('layout'),
+							serializedDDMForm: JSON.stringify(instance.get('definition')),
+							serializedDDMFormLayout: JSON.stringify(instance.get('layout')),
 							serializedDDMFormValues: JSON.stringify(instance.toJSON())
 						};
 					},

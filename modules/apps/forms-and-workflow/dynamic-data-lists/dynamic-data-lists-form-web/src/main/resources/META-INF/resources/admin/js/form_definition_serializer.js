@@ -61,7 +61,7 @@ AUI.add(
 								if (name === 'name') {
 									config[name] = field.get('fieldName');
 								}
-								else if (name === 'options' && config[name]) {
+								else if (name === 'options' && value) {
 									config[name] = value.slice().map(
 										function(option) {
 											var label = {};
