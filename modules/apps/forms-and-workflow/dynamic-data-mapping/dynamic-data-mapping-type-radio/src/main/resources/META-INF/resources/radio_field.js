@@ -1,6 +1,8 @@
 AUI.add(
 	'liferay-ddm-form-field-radio',
 	function(A) {
+		var Lang = A.Lang;
+
 		var RadioField = A.Component.create(
 			{
 				ATTRS: {
@@ -15,6 +17,10 @@ AUI.add(
 
 					type: {
 						value: 'radio'
+					},
+
+					value: {
+						setter: '_setValue'
 					}
 				},
 
@@ -23,23 +29,6 @@ AUI.add(
 				NAME: 'liferay-ddm-form-field-radio',
 
 				prototype: {
-					getContextValue: function() {
-						var instance = this;
-
-						var value = RadioField.superclass.getContextValue.apply(instance, arguments);
-
-						if (!Array.isArray(value)) {
-							try {
-								value = JSON.parse(value);
-							}
-							catch (e) {
-								value = [value];
-							}
-						}
-
-						return value[0];
-					},
-
 					getInputNode: function() {
 						var instance = this;
 
@@ -54,23 +43,6 @@ AUI.add(
 						return inputNode;
 					},
 
-					getOptions: function() {
-						var instance = this;
-
-						var value = instance.getContextValue();
-
-						return A.map(
-							instance.get('options'),
-							function(item) {
-								return {
-									label: item.label[instance.get('locale')],
-									status: value === item.value ? 'checked' : '',
-									value: item.value
-								};
-							}
-						);
-					},
-
 					getTemplateContext: function() {
 						var instance = this;
 
@@ -78,7 +50,7 @@ AUI.add(
 							RadioField.superclass.getTemplateContext.apply(instance, arguments),
 							{
 								inline: instance.get('inline'),
-								options: instance.getOptions()
+								options: instance.get('options')
 							}
 						);
 					},
@@ -88,10 +60,10 @@ AUI.add(
 
 						var inputNode = instance.getInputNode();
 
-						var value = '';
+						var value = [];
 
 						if (inputNode.attr('checked')) {
-							value = inputNode.val();
+							value.push(inputNode.val());
 						}
 
 						return value;
@@ -99,6 +71,8 @@ AUI.add(
 
 					setValue: function(value) {
 						var instance = this;
+
+						value = instance._setValue(value);
 
 						var container = instance.get('container');
 
@@ -108,43 +82,36 @@ AUI.add(
 
 						var radioToCheck = radiosNodeList.filter(
 							function(node) {
-								return node.val() === value;
+								return node.val() === value[0];
 							}
 						).item(0);
 
 						if (radioToCheck) {
 							radioToCheck.attr('checked', true);
-
-							instance.fire(
-								'valueChanged',
-								{
-									field: instance,
-									value: value
-								}
-							);
 						}
 					},
 
-					_renderErrorMessage: function() {
+					showErrorMessage: function() {
 						var instance = this;
 
 						var container = instance.get('container');
 
-						RadioField.superclass._renderErrorMessage.apply(instance, arguments);
+						RadioField.superclass.showErrorMessage.apply(instance, arguments);
 
 						container.all('.help-block').appendTo(container.one('.form-group'));
 					},
 
-					_showFeedback: function() {
-						var instance = this;
+					_setValue: function(value) {
+						if (Lang.isString(value)) {
+							try {
+								value = JSON.parse(value);
+							}
+							catch (e) {
+								value = [];
+							}
+						}
 
-						RadioField.superclass._showFeedback.apply(instance, arguments);
-
-						var container = instance.get('container');
-
-						var feedBack = container.one('.form-control-feedback');
-
-						feedBack.appendTo(container);
+						return value;
 					}
 				}
 			}
