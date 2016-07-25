@@ -427,6 +427,12 @@ public abstract class BaseDDMDisplay implements DDMDisplay {
 		portletURL.setParameter(
 			"resourceClassNameId", String.valueOf(resourceClassNameId));
 
+		boolean showCacheableInput = ParamUtil.getBoolean(
+			liferayPortletRequest, "showCacheableInput");
+
+		portletURL.setParameter(
+			"showCacheableInput", String.valueOf(showCacheableInput));
+
 		return portletURL.toString();
 	}
 
