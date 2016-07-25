@@ -271,6 +271,7 @@ AUI.add(
 								refererPortletName: ddm.refererPortletName,
 								resourceClassNameId: ddm.resourceClassNameId,
 								showAncestorScopes: true,
+								showCacheableInput: true,
 								templateId: ddm.templateId,
 								title: strings.templates
 							},
