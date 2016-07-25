@@ -27,6 +27,8 @@ long classPK = ParamUtil.getLong(request, "classPK");
 long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
 
 String message = "add";
+
+boolean showCacheableInput = ParamUtil.getBoolean(request, "showCacheableInput");
 %>
 
 <liferay-frontend:add-menu>
@@ -46,6 +48,7 @@ String message = "add";
 					<portlet:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
 					<portlet:param name="classPK" value="<%= String.valueOf(classPK) %>" />
 					<portlet:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
+					<portlet:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 					<portlet:param name="structureAvailableFields" value='<%= renderResponse.getNamespace() + "getAvailableFields" %>' />
 				</portlet:renderURL>
 
@@ -69,6 +72,7 @@ String message = "add";
 					<portlet:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
 					<portlet:param name="classPK" value="<%= String.valueOf(classPK) %>" />
 					<portlet:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
+					<portlet:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 					<portlet:param name="type" value="<%= DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY %>" />
 				</portlet:renderURL>
 
