@@ -59,15 +59,28 @@ public class DDMFormEvaluationResult {
 		for (DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult :
 				ddmFormFieldEvaluationResults) {
 
-			ddmFormFieldEvaluationResultsMap.put(
+			String key = _getKey(
 				ddmFormFieldEvaluationResult.getName(),
-				ddmFormFieldEvaluationResult);
+				ddmFormFieldEvaluationResult.getInstanceId());
+
+			ddmFormFieldEvaluationResultsMap.put(
+				key, ddmFormFieldEvaluationResult);
 
 			populateDDMFormFieldEvaluationResultsMap(
 				ddmFormFieldEvaluationResult.
 					getNestedDDMFormFieldEvaluationResults(),
 				ddmFormFieldEvaluationResultsMap);
 		}
+	}
+
+	private String _getKey(String fieldName, String instanceId) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(fieldName);
+		sb.append("_INSTANCE_");
+		sb.append(instanceId);
+
+		return sb.toString();
 	}
 
 	private List<DDMFormFieldEvaluationResult> _ddmFormFieldEvaluationResults =

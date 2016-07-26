@@ -16,13 +16,16 @@ package com.liferay.dynamic.data.mapping.type.radio.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -51,8 +54,39 @@ public class RadioDDMFormFieldTemplateContextContributor
 			GetterUtil.getBoolean(ddmFormField.getProperty("inline")));
 		parameters.put(
 			"options", getOptions(ddmFormField, ddmFormFieldRenderingContext));
+		parameters.put(
+			"value", getValue(ddmFormField, ddmFormFieldRenderingContext));
 
 		return parameters;
+	}
+
+	protected DDMFormFieldOptions getDDMFormFieldOptions(
+		DDMFormField ddmFormField,
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+
+		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
+
+		String dataSourceType = GetterUtil.getString(
+			ddmFormField.getProperty("dataSourceType"), "manual");
+
+		if (Objects.equals(dataSourceType, "manual")) {
+			List<Map<String, String>> keyValuePairs =
+				(List<Map<String, String>>)
+					ddmFormFieldRenderingContext.getProperty("options");
+
+			if (keyValuePairs.size() == 0) {
+				return ddmFormField.getDDMFormFieldOptions();
+			}
+
+			for (Map<String, String> keyValuePair : keyValuePairs) {
+				ddmFormFieldOptions.addOptionLabel(
+					keyValuePair.get("value"),
+					ddmFormFieldRenderingContext.getLocale(),
+					keyValuePair.get("label"));
+			}
+		}
+
+		return ddmFormFieldOptions;
 	}
 
 	protected List<Object> getOptions(
@@ -61,12 +95,33 @@ public class RadioDDMFormFieldTemplateContextContributor
 
 		RadioDDMFormFieldContextHelper radioDDMFormFieldContextHelper =
 			new RadioDDMFormFieldContextHelper(
-				jsonFactory, ddmFormField.getDDMFormFieldOptions(),
+				jsonFactory, getDDMFormFieldOptions(
+					ddmFormField, ddmFormFieldRenderingContext),
 				ddmFormFieldRenderingContext.getValue(),
 				ddmFormField.getPredefinedValue(),
 				ddmFormFieldRenderingContext.getLocale());
 
 		return radioDDMFormFieldContextHelper.getOptions();
+	}
+
+	protected List<String> getValue(
+		DDMFormField ddmFormField,
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+
+		RadioDDMFormFieldContextHelper radioDDMFormFieldContextHelper =
+			new RadioDDMFormFieldContextHelper(
+				jsonFactory,
+				getDDMFormFieldOptions(
+					ddmFormField, ddmFormFieldRenderingContext),
+				ddmFormFieldRenderingContext.getValue(),
+				ddmFormField.getPredefinedValue(),
+				ddmFormFieldRenderingContext.getLocale());
+
+		String[] valuesStringArray =
+			radioDDMFormFieldContextHelper.toStringArray(
+				ddmFormFieldRenderingContext.getValue());
+
+		return ListUtil.toList(valuesStringArray);
 	}
 
 	@Reference

@@ -259,10 +259,14 @@ public class DDMFormValuesValidatorImpl implements DDMFormValuesValidator {
 
 		DDMFormValues ddmFormValues = ddmFormFieldValue.getDDMFormValues();
 
+		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
+			_getDDMFormFieldEvaluationResult(
+				ddmFormFieldValue, ddmFormFieldEvaluationResultsMap);
+
 		validateDDMFormFieldValue(
 			ddmFormField, ddmFormValues.getAvailableLocales(),
 			ddmFormValues.getDefaultLocale(), ddmFormFieldValue.getValue(),
-			ddmFormFieldEvaluationResultsMap.get(ddmFormFieldValue.getName()));
+			ddmFormFieldEvaluationResult);
 
 		traverseDDMFormFieldValues(
 			ddmFormFieldValue.getNestedDDMFormFieldValues(),
@@ -332,6 +336,26 @@ public class DDMFormValuesValidatorImpl implements DDMFormValuesValidator {
 		if (!ddmFormField.isRepeatable() && (ddmFormFieldValues.size() > 1)) {
 			throw new MustSetValidValuesSize(ddmFormField.getName());
 		}
+	}
+
+	private DDMFormFieldEvaluationResult _getDDMFormFieldEvaluationResult(
+		DDMFormFieldValue ddmFormFieldValue, Map<String,
+		DDMFormFieldEvaluationResult> ddmFormFieldEvaluationResultsMap) {
+
+		String key = _getKey(
+			ddmFormFieldValue.getName(), ddmFormFieldValue.getInstanceId());
+
+		return ddmFormFieldEvaluationResultsMap.get(key);
+	}
+
+	private String _getKey(String fieldName, String instanceId) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(fieldName);
+		sb.append("_INSTANCE_");
+		sb.append(instanceId);
+
+		return sb.toString();
 	}
 
 	private DDMFormEvaluator _ddmFormEvaluator;
