@@ -58,6 +58,8 @@ templateSearch.setOrderByComparator(orderByComparator);
 templateSearch.setOrderByType(ddmDisplayContext.getOrderByType());
 
 TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.getSearchTerms();
+
+boolean showCacheableInput = ParamUtil.getBoolean(request, "showCacheableInput");
 %>
 
 <liferay-ui:error exception="<%= RequiredTemplateException.MustNotDeleteTemplateReferencedByTemplateLinks.class %>" message="the-template-cannot-be-deleted-because-it-is-required-by-one-or-more-template-links" />
@@ -136,6 +138,7 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 					rowURL.setParameter("classNameId", String.valueOf(classNameId));
 					rowURL.setParameter("classPK", String.valueOf(template.getClassPK()));
 					rowURL.setParameter("type", template.getType());
+					rowURL.setParameter("showCacheableInput", String.valueOf(showCacheableInput));
 					rowURL.setParameter("structureAvailableFields", renderResponse.getNamespace() + "getAvailableFields");
 
 					rowHREF = rowURL.toString();
@@ -256,4 +259,5 @@ TemplateSearchTerms templateSearchTerms = (TemplateSearchTerms)templateSearch.ge
 	<liferay-util:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
 	<liferay-util:param name="classPK" value="<%= String.valueOf(classPK) %>" />
 	<liferay-util:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
+	<liferay-util:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 </liferay-util:include>

@@ -48,6 +48,8 @@ OrderByComparator<DDMTemplate> orderByComparator = DDMUtil.getTemplateOrderByCom
 templateSearch.setOrderByCol(ddmDisplayContext.getOrderByCol());
 templateSearch.setOrderByComparator(orderByComparator);
 templateSearch.setOrderByType(ddmDisplayContext.getOrderByType());
+
+boolean showCacheableInput = ParamUtil.getBoolean(request, "showCacheableInput");
 %>
 
 <portlet:actionURL var="selectURL">
@@ -161,6 +163,7 @@ templateSearch.setOrderByType(ddmDisplayContext.getOrderByType());
 	<liferay-util:param name="classPK" value="<%= String.valueOf(classPK) %>" />
 	<liferay-util:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
 	<liferay-util:param name="mode" value="<%= mode %>" />
+	<liferay-util:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 </liferay-util:include>
 
 <aui:script>

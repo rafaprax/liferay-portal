@@ -20,6 +20,7 @@
 long classNameId = ParamUtil.getLong(request, "classNameId");
 long classPK = ParamUtil.getLong(request, "classPK");
 long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
+boolean showCacheableInput = ParamUtil.getBoolean(request, "showCacheableInput");
 
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
@@ -33,6 +34,7 @@ DDMTemplate template = (DDMTemplate)row.getObject();
 			<portlet:param name="groupId" value="<%= String.valueOf(template.getGroupId()) %>" />
 			<portlet:param name="templateId" value="<%= String.valueOf(template.getTemplateId()) %>" />
 			<portlet:param name="type" value="<%= template.getType() %>" />
+			<portlet:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 			<portlet:param name="structureAvailableFields" value='<%= renderResponse.getNamespace() + "getAvailableFields" %>' />
 		</portlet:renderURL>
 
@@ -66,6 +68,7 @@ DDMTemplate template = (DDMTemplate)row.getObject();
 			<portlet:param name="classNameId" value="<%= String.valueOf(template.getClassNameId()) %>" />
 			<portlet:param name="classPK" value="<%= String.valueOf(template.getClassPK()) %>" />
 			<portlet:param name="resourceClassNameId" value="<%= String.valueOf(template.getResourceClassNameId()) %>" />
+			<portlet:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 		</portlet:renderURL>
 
 		<liferay-ui:icon
@@ -81,6 +84,7 @@ DDMTemplate template = (DDMTemplate)row.getObject();
 			<portlet:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
 			<portlet:param name="classPK" value="<%= String.valueOf(classPK) %>" />
 			<portlet:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
+			<portlet:param name="showCacheableInput" value="<%= String.valueOf(showCacheableInput) %>" />
 		</portlet:actionURL>
 
 		<liferay-ui:icon-delete
