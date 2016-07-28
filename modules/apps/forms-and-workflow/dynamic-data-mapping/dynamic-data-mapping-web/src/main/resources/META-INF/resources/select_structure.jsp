@@ -19,6 +19,7 @@
 <%
 long groupId = ParamUtil.getLong(request, "groupId", scopeGroupId);
 long classPK = ParamUtil.getLong(request, "classPK");
+boolean editArticle = ParamUtil.getBoolean(request, "editArticle");
 String displayStyle = ParamUtil.getString(request, "displayStyle", "list");
 String eventName = ParamUtil.getString(request, "eventName", "selectStructure");
 
@@ -94,7 +95,7 @@ request.setAttribute(WebKeys.SEARCH_CONTAINER, structureSearch);
 				name="name"
 			>
 				<c:choose>
-					<c:when test="<%= (structure.getStructureId() != classPK) && ((classPK == 0) || (structure.getParentStructureId() == 0) || (structure.getParentStructureId() != classPK)) %>">
+					<c:when test="<%= (structure.getStructureId() != classPK) && ((classPK == 0) || (structure.getParentStructureId() == 0) || (structure.getParentStructureId() != classPK) || editArticle) %>">
 
 						<%
 						Map<String, Object> data = new HashMap<String, Object>();

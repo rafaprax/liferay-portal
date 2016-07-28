@@ -221,6 +221,7 @@ AUI.add(
 								dialog: {
 									destroyOnHide: true
 								},
+								editArticle: true,
 								eventName: instance.ns(STR_SELECT_STRUCTURE),
 								groupId: ddm.groupId,
 								mvcPath: '/select_structure.jsp',
