@@ -1308,6 +1308,7 @@
 			ddmURL.setParameter('classNameId', config.classNameId);
 			ddmURL.setParameter('classPK', config.classPK);
 			ddmURL.setParameter('resourceClassNameId', config.resourceClassNameId);
+			ddmURL.setParameter('editArticle', config.editArticle);
 			ddmURL.setParameter('eventName', config.eventName);
 			ddmURL.setParameter('groupId', config.groupId);
 			ddmURL.setParameter('mode', config.mode);
