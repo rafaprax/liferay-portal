@@ -27,6 +27,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.portal.kernel.servlet.DynamicServletRequest;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -36,6 +37,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.servlet.SharedSessionServletRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +51,7 @@ import java.util.TreeSet;
 
 import javax.portlet.PortletRequest;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.BundleContext;
@@ -65,6 +68,11 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 	@Override
 	public DDMFormValues create(
 		HttpServletRequest httpServletRequest, DDMForm ddmForm) {
+
+		httpServletRequest = updateHttpServletRequestIfWrapped(
+			httpServletRequest);
+
+		setDDLFormName(httpServletRequest);
 
 		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
 
@@ -335,7 +343,16 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 		String ddmFormFieldParameterName,
 		String defaultDDMFormFieldParameterValue, Locale locale) {
 
-		StringBundler sb = new StringBundler(4);
+		StringBundler sb;
+
+		if (_httpServletRequestWrapped) {
+			sb = new StringBundler(5);
+
+			sb.append(_ddlFormName);
+		}
+		else {
+			sb = new StringBundler(4);
+		}
 
 		sb.append(DDMFormRendererConstants.DDM_FORM_FIELD_NAME_PREFIX);
 		sb.append(ddmFormFieldParameterName);
@@ -504,7 +521,10 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 
 	protected boolean isDDMFormFieldParameter(String parameterName) {
 		if (parameterName.startsWith(
-				DDMFormRendererConstants.DDM_FORM_FIELD_NAME_PREFIX)) {
+				DDMFormRendererConstants.DDM_FORM_FIELD_NAME_PREFIX) ||
+			parameterName.startsWith(
+				_ddlFormName + DDMFormRendererConstants.
+					DDM_FORM_FIELD_NAME_PREFIX)) {
 
 			return true;
 		}
@@ -529,6 +549,18 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 				ddmFormField.getNestedDDMFormFields(),
 				defaultDDMFormFieldParameterName,
 				defaultDDMFormFieldParameterNames);
+		}
+	}
+
+	protected void setDDLFormName(HttpServletRequest httpServletRequest) {
+		String portletId = PortalUtil.getPortletId(httpServletRequest);
+
+		if (Validator.isNotNull(portletId)) {
+			_ddlFormName =
+				StringPool.UNDERLINE + portletId + StringPool.UNDERLINE;
+		}
+		else {
+			_ddlFormName = StringPool.BLANK;
 		}
 	}
 
@@ -643,15 +675,48 @@ public class DDMFormValuesFactoryImpl implements DDMFormValuesFactory {
 		}
 	}
 
+	protected HttpServletRequest updateHttpServletRequestIfWrapped(
+		HttpServletRequest httpServletRequest) {
+
+		_httpServletRequestWrapped = false;
+
+		if (httpServletRequest instanceof DynamicServletRequest) {
+			DynamicServletRequest dynamicServletRequest =
+				(DynamicServletRequest)httpServletRequest;
+
+			ServletRequest wrappedServletRequest =
+				dynamicServletRequest.getRequest();
+
+			if (wrappedServletRequest instanceof SharedSessionServletRequest) {
+				SharedSessionServletRequest sharedSessionServletRequest =
+					(SharedSessionServletRequest)wrappedServletRequest;
+
+				wrappedServletRequest =
+					sharedSessionServletRequest.getRequest();
+
+				if (wrappedServletRequest instanceof HttpServletRequest) {
+					httpServletRequest =
+						(HttpServletRequest)wrappedServletRequest;
+
+					_httpServletRequestWrapped = true;
+				}
+			}
+		}
+
+		return httpServletRequest;
+	}
+
 	private static final int _DDM_FORM_FIELD_INDEX_INDEX = 2;
 
 	private static final int _DDM_FORM_FIELD_INSTANCE_ID_INDEX = 1;
 
 	private static final int _DDM_FORM_FIELD_NAME_INDEX = 0;
 
+	private String _ddlFormName;
 	private final DDMFormFieldValueRequestParameterRetriever
 		_defaultDDMFormFieldValueRequestParameterRetriever =
 			new DefaultDDMFormFieldValueRequestParameterRetriever();
+	private boolean _httpServletRequestWrapped;
 	private ServiceTrackerMap
 		<String, DDMFormFieldValueRequestParameterRetriever> _serviceTrackerMap;
 

@@ -25,6 +25,8 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.taglib.servlet.PipingPageContext;
 import com.liferay.taglib.ui.CaptchaTag;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspFactory;
@@ -71,6 +73,13 @@ public class CaptchaDDMFormFieldRenderer implements DDMFormFieldRenderer {
 			ddmFormFieldRenderingContext.getHttpServletRequest();
 		HttpServletResponse httpServletResponse =
 			ddmFormFieldRenderingContext.getHttpServletResponse();
+
+		Map<String, String[]> parameterMap =
+			httpServletRequest.getParameterMap();
+
+		if (!parameterMap.isEmpty()) {
+			parameterMap.remove("captchaText");
+		}
 
 		PageContext pageContext = jspFactory.getPageContext(
 			new JSPSupportServlet(httpServletRequest.getServletContext()),

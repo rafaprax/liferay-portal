@@ -33,6 +33,7 @@ import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ReflectionUtil;
 import com.liferay.portal.kernel.util.StringPool;
 
@@ -62,7 +63,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * @author Marcellus Tavares
  */
-@PrepareForTest(LocaleUtil.class)
+@PrepareForTest({LocaleUtil.class, PortalUtil.class})
 @RunWith(PowerMockRunner.class)
 public class DDMFormValuesFactoryTest extends PowerMockito {
 
@@ -73,6 +74,7 @@ public class DDMFormValuesFactoryTest extends PowerMockito {
 		setUpJSONFactoryUtil();
 		setUpLocaleThreadLocale();
 		setUpLocaleUtil();
+		setUpPortalUtil();
 	}
 
 	@After
@@ -908,6 +910,16 @@ public class DDMFormValuesFactoryTest extends PowerMockito {
 			LocaleUtil.getSiteDefault()
 		).thenReturn(
 			LocaleUtil.US
+		);
+	}
+
+	protected void setUpPortalUtil() {
+		mockStatic(PortalUtil.class);
+
+		when(
+			PortalUtil.getPortletId(new MockHttpServletRequest())
+		).thenReturn(
+			"_com_liferay_dynamic_data_lists_form_web_portlet_DDLFormPortlet_"
 		);
 	}
 
