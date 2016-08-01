@@ -53,6 +53,7 @@ import org.osgi.service.component.annotations.Modified;
 	configurationPid = "com.liferay.portal.workflow.task.web.configuration.WorkflowTaskWebConfiguration",
 	immediate = true,
 	property = {
+		"com.liferay.portlet.autopropagated-parameters=workflowTaskId",
 		"com.liferay.portlet.css-class-wrapper=portlet-workflow-tasks",
 		"com.liferay.portlet.display-category=category.hidden",
 		"com.liferay.portlet.footer-portlet-javascript=/js/main.js",
