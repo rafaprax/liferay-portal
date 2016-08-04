@@ -311,6 +311,11 @@ public abstract class BaseDDMDisplay implements DDMDisplay {
 	}
 
 	@Override
+	public boolean isEnabledSelectLink(DDMStructure structure, long classPK) {
+		return false;
+	}
+
+	@Override
 	public boolean isShowAddStructureButton() {
 		String portletId = getPortletId();
 
