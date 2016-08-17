@@ -1,61 +1,36 @@
 {
 	"fields":[
 		{
-			"errorMessage": "This field is never valid.",
-			"instanceId": "gfkm",
-			"name": "Text",
-			"nestedFields": [
-				{
-					"errorMessage": "",
-					"instanceId": "lroa",
-					"name": "Integer",
-					"nestedFields": [],
-					"valid": true,
-					"visible": false
-				}
-			],
+			"errorMessage": "Integer must be equal to zero.",
+			"instanceId": "lroa",
+			"name": "Integer",
+			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
 			"valid": false,
-			"visible": true
+			"value": 0,
+			"visible": false
 		},
 		{
-			"errorMessage": "This field is never valid.",
-			"instanceId": "xucq",
-			"name": "Text",
-			"nestedFields": [
-				{
-					"errorMessage": "Integer must be equal to zero.",
-					"instanceId": "uvwn",
-					"name": "Integer",
-					"nestedFields": [],
-					"valid": false,
-					"visible": false
-				},
-				{
-					"errorMessage": "Integer must be equal to zero.",
-					"instanceId": "lsky",
-					"name": "Integer",
-					"nestedFields": [],
-					"valid": false,
-					"visible": false
-				}
-			],
-			"valid": false,
+			"errorMessage": "",
+			"instanceId": "uvwn",
+			"name": "Integer",
+			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
+			"valid": true,
+			"value": 1,
 			"visible": true
 		},
 		{
 			"errorMessage": "",
-			"instanceId": "mnst",
-			"name": "Boolean",
+			"instanceId": "lsky",
+			"name": "Integer",
 			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
 			"valid": true,
-			"visible": false
-		},
-		{
-			"errorMessage": "This field is required.",
-			"instanceId": "uahm",
-			"name": "Text2",
-			"nestedFields": [],
-			"valid": false,
+			"value": 2,
 			"visible": true
 		},
 		{
@@ -63,8 +38,55 @@
 			"instanceId": "nahi",
 			"name": "Text3",
 			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
 			"valid": false,
+			"value": "Bloggs",
 			"visible": true
+		},
+		{
+			"errorMessage": "This field is never valid.",
+			"instanceId": "gfkm",
+			"name": "Text",
+			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
+			"valid": false,
+			"value": "Zero",
+			"visible": true
+		},
+		{
+			"errorMessage": "",
+			"instanceId": "xucq",
+			"name": "Text",
+			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
+			"valid": true,
+			"value": "OneTwo",
+			"visible": true
+		},
+		{
+			"errorMessage": "This field is required.",
+			"instanceId": "uahm",
+			"name": "Text2",
+			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
+			"valid": false,
+			"value": "",
+			"visible": true
+		},
+		{
+			"errorMessage": "",
+			"instanceId": "mnst",
+			"name": "Boolean",
+			"nestedFields": [],
+			"options": [],
+			"readOnly": false,
+			"valid": true,
+			"value": true,
+			"visible": false
 		}
 	]
 }
