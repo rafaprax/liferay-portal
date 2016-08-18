@@ -2190,7 +2190,7 @@
 
 		<execute macro="FormFields#editValidation">
 			<var name="validationArgument" value="Contains" />
-			<var name="validationErrorMessage" value="Text must contain &quot;Test&quot;" />
+			<var name="validationErrorMessage" value="Text must contain &apos;&apos;Test&apos;&apos;" />
 			<var name="validationInput" value="Test" />
 			<var name="validationType" value="Text" />
 		</execute>
@@ -2233,12 +2233,12 @@
 		</execute>
 
 		<execute macro="FormPortlet#submitWithValidationError">
-			<var name="validationErrorMessage" value="Text must contain &quot;Test&quot;" />
+			<var name="validationErrorMessage" value="Text must contain &apos;&apos;Test&apos;&apos;" />
 		</execute>
 
 		<execute macro="FormFields#editText">
 			<var name="fieldName" value="Text" />
-			<var name="fieldValue" value="Test" />
+			<var name="fieldValue" value="test" />
 		</execute>
 
 		<execute macro="FormPortlet#submit" />
@@ -2255,7 +2255,7 @@
 
 		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text" />
-			<var name="fieldValue" value="Test" />
+			<var name="fieldValue" value="test" />
 		</execute>
 	</command>
 
