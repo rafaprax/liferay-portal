@@ -473,6 +473,7 @@ public class JournalConverterImpl implements JournalConverter {
 			JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 			jsonObject.put("groupId", fileEntry.getGroupId());
+			jsonObject.put("repositoryId", fileEntry.getRepositoryId());
 			jsonObject.put("title", fileEntry.getTitle());
 			jsonObject.put("uuid", fileEntry.getUuid());
 			jsonObject.put("version", fileEntry.getVersion());
@@ -926,6 +927,25 @@ public class JournalConverterImpl implements JournalConverter {
 			}
 
 			dynamicContentElement.addCDATA(fieldValue);
+		}
+		else if (DDMImpl.TYPE_DDM_DOCUMENTLIBRARY.equals(fieldType) &&
+				 Validator.isNotNull(fieldValue)) {
+
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+				fieldValue);
+
+			StringBundler sb = new StringBundler(8);
+
+			sb.append("/documents/");
+			sb.append(jsonObject.getString("groupId"));
+			sb.append(StringPool.SLASH);
+			sb.append(jsonObject.getString("repositoryId"));
+			sb.append(StringPool.SLASH);
+			sb.append(jsonObject.getString("title"));
+			sb.append(StringPool.SLASH);
+			sb.append(jsonObject.getString("uuid"));
+
+			dynamicContentElement.addCDATA(sb.toString());
 		}
 		else if (DDMImpl.TYPE_DDM_IMAGE.equals(fieldType) &&
 				 Validator.isNotNull(fieldValue)) {
