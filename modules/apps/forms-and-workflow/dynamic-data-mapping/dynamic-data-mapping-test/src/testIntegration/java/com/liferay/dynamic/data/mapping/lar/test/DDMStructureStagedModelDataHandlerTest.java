@@ -42,8 +42,11 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.lar.test.BaseStagedModelDataHandlerTestCase;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 
@@ -52,10 +55,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -78,8 +83,43 @@ public class DDMStructureStagedModelDataHandlerTest
 	public void setUp() throws Exception {
 		super.setUp();
 
+		_defaultLocale = LocaleUtil.getDefault();
+
 		setUpDDMDataProvider();
 		setUpDDMFormValuesJSONDeserializer();
+	}
+
+	@After
+	public void tearDown() {
+		LocaleUtil.setDefault(
+			_defaultLocale.getLanguage(), _defaultLocale.getCountry(),
+			_defaultLocale.getVariant());
+
+		PropsValues.LOCALES_ENABLED = PropsUtil.getArray(
+			PropsKeys.LOCALES_ENABLED);
+	}
+
+	@Test
+	public void testImportStructureWithDisabledDefaultLocale()
+		throws Exception {
+
+		DDMStructure structure = DDMStructureTestUtil.addStructure(_CLASS_NAME);
+
+		Locale newLocale = LocaleUtil.BRAZIL;
+
+		PropsValues.LOCALES_ENABLED = new String[] {"pt_BR"};
+
+		if (newLocale.equals(_defaultLocale)) {
+			newLocale = LocaleUtil.CHINA;
+
+			PropsValues.LOCALES_ENABLED = new String[] {"zh_CN"};
+		}
+
+		LocaleUtil.setDefault(
+			newLocale.getLanguage(), newLocale.getCountry(),
+			newLocale.getVariant());
+
+		exportImportStagedModel(structure);
 	}
 
 	@Override
@@ -339,6 +379,8 @@ public class DDMStructureStagedModelDataHandlerTest
 
 	private static final String _CLASS_NAME =
 		"com.liferay.dynamic.data.lists.model.DDLRecordSet";
+
+	private static Locale _defaultLocale;
 
 	private DDMDataProvider _ddmDataProvider;
 	private DDMFormValuesJSONDeserializer _ddmFormValuesJSONDeserializer;
