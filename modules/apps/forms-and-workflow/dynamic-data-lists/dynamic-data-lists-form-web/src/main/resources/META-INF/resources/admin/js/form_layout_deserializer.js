@@ -118,6 +118,7 @@ AUI.add(
 						return new fieldClass(
 							{
 								context: context,
+								defaultLanguageId: builder.get('defaultLanguageId'),
 								evaluatorURL: builder.get('evaluatorURL'),
 								getFieldNameSettingFormContextURL: builder.get('getFieldNameSettingFormContextURL'),
 								getFieldTypeSettingFormContextURL: builder.get('getFieldTypeSettingFormContextURL'),
