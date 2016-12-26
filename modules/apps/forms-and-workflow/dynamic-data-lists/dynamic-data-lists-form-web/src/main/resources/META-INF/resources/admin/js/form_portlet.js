@@ -55,6 +55,10 @@ AUI.add(
 					formURL: {
 					},
 
+					functionsMetadata: {
+						value: []
+					},
+
 					getFieldTypeSettingFormContextURL: {
 						value: ''
 					},

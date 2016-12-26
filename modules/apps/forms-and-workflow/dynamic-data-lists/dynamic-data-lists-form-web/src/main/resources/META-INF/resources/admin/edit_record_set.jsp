@@ -244,6 +244,7 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 											evaluatorURL: '<%= ddlFormAdminDisplayContext.getDDMFormContextProviderServletURL() %>',
 											fieldTypesDefinitions: <%= ddlFormAdminDisplayContext.getDDMFormFieldTypesDefinitionsMap() %>,
 											formURL: '<%= ddlFormAdminDisplayContext.getFormURL() %>',
+											functionsMetadata : <%= ddlFormAdminDisplayContext.getSerializedDDMExpressionFunctionsMetadata() %>,
 											getFieldTypeSettingFormContextURL: '<%= getFieldSettingsDDMFormContext.toString() %>',
 											layout: <%= ddlFormAdminDisplayContext.getSerializedDDMFormLayout() %>,
 											name: '<%= HtmlUtil.escapeJS(name) %>',

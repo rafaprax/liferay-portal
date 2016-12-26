@@ -21,6 +21,8 @@ import com.liferay.dynamic.data.lists.form.web.constants.DDLFormPortletKeys;
 import com.liferay.dynamic.data.lists.form.web.internal.converter.DDMFormRulesToDDLFormRulesConverter;
 import com.liferay.dynamic.data.lists.form.web.internal.converter.model.DDLFormRule;
 import com.liferay.dynamic.data.lists.form.web.internal.display.context.util.DDLFormAdminRequestHelper;
+import com.liferay.dynamic.data.lists.form.web.internal.display.context.util.DDMExpressionFunctionMetadataHelper;
+import com.liferay.dynamic.data.lists.form.web.internal.display.context.util.DDMExpressionFunctionMetadataHelper.DDMExpressionFunctionMetadata;
 import com.liferay.dynamic.data.lists.form.web.internal.search.RecordSetSearch;
 import com.liferay.dynamic.data.lists.model.DDLFormRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
@@ -61,10 +63,15 @@ import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -74,6 +81,7 @@ import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -130,6 +138,8 @@ public class DDLFormAdminDisplayContext {
 
 		_ddlFormAdminRequestHelper = new DDLFormAdminRequestHelper(
 			renderRequest);
+		_ddmExpressionFunctionMetadataHelper =
+			new DDMExpressionFunctionMetadataHelper(getResourceBundle());
 	}
 
 	public int getAutosaveInterval() {
@@ -348,6 +358,34 @@ public class DDLFormAdminDisplayContext {
 		DDLRecord record = getRecord();
 
 		return record.getLatestRecordVersion();
+	}
+
+	public ResourceBundle getResourceBundle() {
+		Locale locale = getSiteDefaultLocale();
+
+		String languageId = LocaleUtil.toLanguageId(locale);
+
+		ResourceBundleLoader portalResourceBundleLoader =
+			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
+
+		ResourceBundle portalResourceBundle =
+			portalResourceBundleLoader.loadResourceBundle(languageId);
+
+		ResourceBundle portletResourceBundle = ResourceBundleUtil.getBundle(
+			"content.Language", getSiteDefaultLocale(), getClass());
+
+		return new AggregateResourceBundle(
+			portletResourceBundle, portalResourceBundle);
+	}
+
+	public String getSerializedDDMExpressionFunctionsMetadata() {
+		JSONSerializer jsonSerializer = _jsonFactory.createJSONSerializer();
+
+		List<DDMExpressionFunctionMetadata> ddmExpressionFunctionsMetadata =
+			_ddmExpressionFunctionMetadataHelper.
+				getDDMExpressionFunctionsMetadata();
+
+		return jsonSerializer.serializeDeep(ddmExpressionFunctionsMetadata);
 	}
 
 	public String getSerializedDDMForm() throws PortalException {
@@ -687,6 +725,8 @@ public class DDLFormAdminDisplayContext {
 	private final DDLFormWebConfiguration _ddlFormWebConfiguration;
 	private final DDLRecordLocalService _ddlRecordLocalService;
 	private final DDLRecordSetService _ddlRecordSetService;
+	private final DDMExpressionFunctionMetadataHelper
+		_ddmExpressionFunctionMetadataHelper;
 	private final Servlet _ddmFormContextProviderServlet;
 	private final DDMFormFieldTypeServicesTracker
 		_ddmFormFieldTypeServicesTracker;
