@@ -35,6 +35,7 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -115,13 +116,12 @@ public class DDMRESTDataProvider implements DDMDataProvider {
 
 			data.add(map);
 
-			String key = jsonObject.getString(
-				ddmRESTDataProviderSettings.key());
+			for (Iterator<String> iterator = jsonObject.keys(); iterator.hasNext();) {
+				String key = iterator.next();
+				
+				map.put(key, jsonObject.get(key));
+			} 
 
-			String value = jsonObject.getString(
-				ddmRESTDataProviderSettings.value());
-
-			map.put(key, value);
 		}
 
 		return new DDMDataProviderResponse(data);

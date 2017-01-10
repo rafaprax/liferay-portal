@@ -184,12 +184,10 @@ public class SelectDDMFormFieldTemplateContextContributor
 				for (Map<Object, Object> map :
 						ddmDataProviderResponse.getData()) {
 
-					for (Entry<Object, Object> entry : map.entrySet()) {
-						ddmFormFieldOptions.addOptionLabel(
-							String.valueOf(entry.getValue()),
-							ddmFormFieldRenderingContext.getLocale(),
-							String.valueOf(entry.getKey()));
-					}
+					ddmFormFieldOptions.addOptionLabel(
+						String.valueOf(map.get("es")),
+						ddmFormFieldRenderingContext.getLocale(),
+						String.valueOf(map.get("name")));
 				}
 
 				return ddmFormFieldOptions;
