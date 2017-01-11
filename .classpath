@@ -6,7 +6,6 @@
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-impl/test/integration"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-impl/test/unit"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-kernel/src"/>
-	<!--<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-kernel/test/integration"/>-->
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-kernel/test/unit"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-test/src"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="portal-test-integration/src"/>
@@ -14,7 +13,6 @@
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="support-tomcat/src"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="util-bridges/src"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="util-java/src"/>
-	<!--<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="util-java/test/integration"/>-->
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="util-java/test/unit"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="util-slf4j/src"/>
 	<classpathentry excluding="**/.svn/**|.svn/" kind="src" path="util-taglib/src"/>
@@ -191,7 +189,7 @@
 	<classpathentry kind="lib" path="lib/portal/jmatio.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jna.jar"/>
 	<classpathentry kind="lib" path="lib/portal/jodconverter.jar"/>
-	<classpathentry kind="lib" path="lib/portal/jodd.jar"/>
+	<classpathentry kind="lib" path="lib/portal/jodd.jar" sourcepath="/Users/rafael/Desktop/jodd-3.6.4"/>
 	<classpathentry kind="lib" path="lib/portal/jrcs-diff.jar"/>
 	<classpathentry kind="lib" path="lib/portal/json-java.jar"/>
 	<classpathentry kind="lib" path="lib/portal/json-schema-validator.jar"/>
