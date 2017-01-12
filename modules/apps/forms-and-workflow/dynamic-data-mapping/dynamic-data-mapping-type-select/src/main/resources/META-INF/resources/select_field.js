@@ -119,10 +119,10 @@ AUI.add(
 								}
 							);
 
-							value = value.join();
+							value = value;
 						}
 						else {
-							value = inputNode.val();
+							value = inputNode.val().split();
 						}
 
 						if (!value) {
