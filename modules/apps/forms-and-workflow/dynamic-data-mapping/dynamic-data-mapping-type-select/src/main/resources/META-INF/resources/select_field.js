@@ -119,10 +119,10 @@ AUI.add(
 								}
 							);
 
-							value = value.join();
+							value = value;
 						}
 						else {
-							value = inputNode.val();
+							value = inputNode.val().split();
 						}
 
 						return value;
@@ -303,8 +303,6 @@ AUI.add(
 
 					_onClickItem: function(event) {
 						var instance = this;
-
-						var options = instance.get('options');
 
 						var value = event.target.getAttribute('data-option-value');
 
