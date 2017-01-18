@@ -51,15 +51,14 @@ public class SelectDDMFormFieldValueSerializer
 		String dataSourceType = GetterUtil.getString(
 			ddmFormField.getProperty("dataSourceType"), "manual");
 
-		boolean isManualDataSourceType = Objects.equals(
-			dataSourceType, "manual");
+		boolean manualDataSourceType = Objects.equals(dataSourceType, "manual");
 
 		if (value.isLocalized()) {
 			return serializeLocalizedValue(
-				ddmFormField, value, isManualDataSourceType);
+				ddmFormField, value, manualDataSourceType);
 		}
 		else {
-			return serializeUnlocalizedValue(value, isManualDataSourceType);
+			return serializeUnlocalizedValue(value, manualDataSourceType);
 		}
 	}
 
@@ -81,11 +80,10 @@ public class SelectDDMFormFieldValueSerializer
 	}
 
 	protected Object serializeLocalizedValue(
-		DDMFormField ddmFormField, Value value,
-		boolean isManualDataSourceType) {
+		DDMFormField ddmFormField, Value value, boolean manualDataSourceType) {
 
 		try {
-			return toJSONObject(ddmFormField, value, isManualDataSourceType);
+			return toJSONObject(ddmFormField, value, manualDataSourceType);
 		}
 		catch (Exception e) {
 			if (_log.isDebugEnabled()) {
@@ -97,11 +95,11 @@ public class SelectDDMFormFieldValueSerializer
 	}
 
 	protected Object serializeUnlocalizedValue(
-		Value value, boolean isManualDataSourceType) {
+		Value value, boolean manualDataSourceType) {
 
 		String valueStr = value.getString(LocaleUtil.ROOT);
 
-		if (isManualDataSourceType || Validator.isNull(valueStr)) {
+		if (manualDataSourceType || Validator.isNull(valueStr)) {
 			return valueStr;
 		}
 
@@ -126,7 +124,7 @@ public class SelectDDMFormFieldValueSerializer
 
 	protected JSONObject toJSONObject(
 			DDMFormField ddmFormField, Value value,
-			boolean isManualDataSourceType)
+			boolean manualDataSourceType)
 		throws Exception {
 
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
@@ -134,7 +132,7 @@ public class SelectDDMFormFieldValueSerializer
 		for (Locale availableLocale : value.getAvailableLocales()) {
 			String valueStr = value.getString(availableLocale);
 
-			if (!isManualDataSourceType) {
+			if (!manualDataSourceType) {
 				jsonObject.put(
 					LocaleUtil.toLanguageId(availableLocale), valueStr);
 			}
