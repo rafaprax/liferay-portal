@@ -118,6 +118,9 @@ public class DDMFormEvaluatorHelper {
 			new DDMFormFieldEvaluationResult(
 				ddmFormField.getName(), ddmFormFieldValue.getInstanceId());
 
+		setDDMFormFieldEvaluationResultFieldType(
+			ddmFormFieldEvaluationResult, ddmFormField);
+
 		setDDMFormFieldEvaluationResultReadOnly(
 			ddmFormFieldEvaluationResult, ddmFormField);
 		setDDMFormFieldEvaluationResultRequired(
@@ -165,6 +168,20 @@ public class DDMFormEvaluatorHelper {
 
 			ddmFormFieldEvaluationResultInstances.add(
 				ddmFormFieldEvaluationResult);
+
+			for (DDMFormFieldValue nestedDDMFormFieldValue :
+					ddmFormFieldValue.getNestedDDMFormFieldValues()) {
+
+				DDMFormField nestedDDMFormField =
+					nestedDDMFormFieldValue.getDDMFormField();
+
+				ddmFormFieldEvaluationResult =
+					createDDMFormFieldEvaluationResult(
+						nestedDDMFormField, nestedDDMFormFieldValue);
+
+				ddmFormFieldEvaluationResultInstances.add(
+					ddmFormFieldEvaluationResult);
+			}
 		}
 
 		_ddmFormFieldEvaluationResultsMap.put(
@@ -221,6 +238,16 @@ public class DDMFormEvaluatorHelper {
 		for (DDMFormFieldValue ddmFormFieldValue : ddmFormFieldValues) {
 			if (instanceId.equals(ddmFormFieldValue.getInstanceId())) {
 				return ddmFormFieldValue;
+			}
+
+			for (DDMFormFieldValue nestedDDMFormFieldValue :
+					ddmFormFieldValue.getNestedDDMFormFieldValues()) {
+
+				if (instanceId.equals(
+						nestedDDMFormFieldValue.getInstanceId())) {
+
+					return nestedDDMFormFieldValue;
+				}
 			}
 		}
 
@@ -414,6 +441,14 @@ public class DDMFormEvaluatorHelper {
 					ddmFormFieldName, valueString);
 			}
 		}
+	}
+
+	protected void setDDMFormFieldEvaluationResultFieldType(
+		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult,
+		DDMFormField ddmFormField) {
+
+		ddmFormFieldEvaluationResult.setProperty(
+			"fieldType", ddmFormField.getType());
 	}
 
 	protected void setDDMFormFieldEvaluationResultReadOnly(

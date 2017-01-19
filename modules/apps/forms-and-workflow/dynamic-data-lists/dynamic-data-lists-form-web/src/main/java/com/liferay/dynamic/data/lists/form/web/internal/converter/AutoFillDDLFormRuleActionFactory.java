@@ -20,6 +20,7 @@ import com.liferay.dynamic.data.lists.form.web.internal.converter.model.action.A
 import com.liferay.dynamic.data.mapping.expression.model.Expression;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +50,10 @@ public class AutoFillDDLFormRuleActionFactory {
 
 		Map<String, String> map = new LinkedHashMap<>();
 
+		if (Validator.isNull(paramsExpression))  {
+			return map;
+		}
+		
 		String[] innerExpressions = StringUtil.split(
 			paramsExpression, CharPool.SEMICOLON);
 
@@ -63,7 +68,9 @@ public class AutoFillDDLFormRuleActionFactory {
 				String[] tokens = StringUtil.split(
 					innerExpression, CharPool.EQUAL);
 
-				map.put(tokens[0], tokens[1]);
+				if (tokens.length == 2) {
+					map.put(tokens[0], tokens[1]);
+				}
 			}
 		}
 

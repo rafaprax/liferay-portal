@@ -35,6 +35,17 @@ AUI.add(
 					fields: {
 						value: []
 					},
+					getDataProviderParametersSettingsURL: {
+						value: ''
+					},
+					getDataProviderInstancesURL: {
+						value: ''
+					},
+					
+					portletNamespace: {
+						value: ''
+					},
+
 					logicOperator: {
 						setter: function(val) {
 							return val.toUpperCase();
@@ -48,6 +59,7 @@ AUI.add(
 					strings: {
 						value: {
 							and: Liferay.Language.get('and'),
+							autofill: Liferay.Language.get('autofill'),
 							cancel: Liferay.Language.get('cancel'),
 							description: Liferay.Language.get('define-here-a-condition-to-change-fields-and-elements-from-your-current-form'),
 							enable: Liferay.Language.get('enable'),
@@ -78,6 +90,9 @@ AUI.add(
 						instance._actionFactory = new Liferay.DDL.FormBuilderActionFactory(
 							{
 								fields: instance.get('fields'),
+								getDataProviderParametersSettingsURL: instance.get('getDataProviderParametersSettingsURL'),
+								getDataProviderInstancesURL: instance.get('getDataProviderInstancesURL'),
+								portletNamespace: instance.get('portletNamespace'),
 								pages: instance.get('pages')
 							}
 						);
@@ -208,9 +223,9 @@ AUI.add(
 
 						var contentBox = instance.get('contentBox');
 
-						var container = contentBox.one('.target-' + index);
+						var container = contentBox.one('.form-builder-rule-action-container-' + index);
 
-						container.empty();
+						container.one('.target-' + index).empty();
 
 						var target = instance._actionFactory.createAction(type, index, action, container);
 
@@ -259,6 +274,10 @@ AUI.add(
 						var strings = instance.get('strings');
 
 						return [
+							{
+								label: strings.autofill,
+								value: 'auto-fill'
+							},
 							{
 								label: strings.show,
 								value: 'show'
