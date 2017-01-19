@@ -20,6 +20,7 @@ import com.liferay.dynamic.data.lists.form.web.internal.converter.model.action.A
 import com.liferay.dynamic.data.mapping.expression.model.Expression;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,22 +50,18 @@ public class AutoFillDDLFormRuleActionFactory {
 
 		Map<String, String> map = new LinkedHashMap<>();
 
+		if (Validator.isNull(paramsExpression)) {
+			return map;
+		}
+
 		String[] innerExpressions = StringUtil.split(
 			paramsExpression, CharPool.SEMICOLON);
 
-		if (innerExpressions.length == 0) {
+		for (String innerExpression : innerExpressions) {
 			String[] tokens = StringUtil.split(
-				paramsExpression, CharPool.EQUAL);
+				innerExpression, CharPool.EQUAL);
 
 			map.put(tokens[0], tokens[1]);
-		}
-		else {
-			for (String innerExpression : innerExpressions) {
-				String[] tokens = StringUtil.split(
-					innerExpression, CharPool.EQUAL);
-
-				map.put(tokens[0], tokens[1]);
-			}
 		}
 
 		return map;
@@ -75,22 +72,18 @@ public class AutoFillDDLFormRuleActionFactory {
 
 		Map<String, String> map = new LinkedHashMap<>();
 
+		if (Validator.isNull(resultMapExpression)) {
+			return map;
+		}
+
 		String[] innerExpressions = StringUtil.split(
 			resultMapExpression, CharPool.SEMICOLON);
 
-		if (innerExpressions.length == 0) {
+		for (String innerExpression : innerExpressions) {
 			String[] tokens = StringUtil.split(
-				resultMapExpression, CharPool.EQUAL);
+				innerExpression, CharPool.EQUAL);
 
 			map.put(tokens[1], tokens[0]);
-		}
-		else {
-			for (String innerExpression : innerExpressions) {
-				String[] tokens = StringUtil.split(
-					innerExpression, CharPool.EQUAL);
-
-				map.put(tokens[1], tokens[0]);
-			}
 		}
 
 		return map;

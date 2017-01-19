@@ -82,7 +82,7 @@ describe(
 		describe(
 			'.setValue()',
 			function() {
-				it(
+				it.only(
 					'should return empty value if set an empty array value',
 					function(done) {
 						selectField = createSelectField(
