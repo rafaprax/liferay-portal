@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -142,15 +143,22 @@ public class GetDataProviderParametersSettingsMVCResourceCommand
 
 			JSONObject inputJSONObject = _jsonFactory.createJSONObject();
 
-			inputJSONObject.put(
-				"name",
-				ddmDataProviderInputParameterSetting.inputParameterName());
+			String name =
+				ddmDataProviderInputParameterSetting.inputParameterName();
+			String type =
+				ddmDataProviderInputParameterSetting.inputParameterType();
+
+			if (Validator.isNull(name) || Validator.isNull(type)) {
+				continue;
+			}
+
+			inputJSONObject.put("name", name);
+
 			inputJSONObject.put(
 				"required",
 				ddmDataProviderInputParameterSetting.inputParameterRequired());
-			inputJSONObject.put(
-				"type",
-				ddmDataProviderInputParameterSetting.inputParameterType());
+
+			inputJSONObject.put("type", type);
 
 			inputsJSONArray.put(inputJSONObject);
 		}
@@ -170,12 +178,17 @@ public class GetDataProviderParametersSettingsMVCResourceCommand
 
 			JSONObject outputJSONObject = _jsonFactory.createJSONObject();
 
-			outputJSONObject.put(
-				"name",
-				ddmDataProviderOutputParameterSetting.outputParameterName());
-			outputJSONObject.put(
-				"type",
-				ddmDataProviderOutputParameterSetting.outputParameterType());
+			String name =
+				ddmDataProviderOutputParameterSetting.outputParameterName();
+			String type =
+				ddmDataProviderOutputParameterSetting.outputParameterType();
+
+			if (Validator.isNull(name) || Validator.isNull(type)) {
+				continue;
+			}
+
+			outputJSONObject.put("name", name);
+			outputJSONObject.put("type", type);
 
 			outputsJSONArray.put(outputJSONObject);
 		}
