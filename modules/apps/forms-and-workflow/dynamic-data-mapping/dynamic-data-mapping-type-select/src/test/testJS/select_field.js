@@ -54,13 +54,9 @@ describe(
 			'.showErrorMessage()',
 			function() {
 				it(
-					'should exists an error container if the select field has an error message',
+					'should show an error message if there is a validation error',
 					function(done) {
-						selectField = createSelectField(
-							{
-								options: [{label: 'a', value: 'a'}]
-							}
-						);
+						selectField = createSelectField();
 
 						selectField.set('errorMessage', 'error');
 
@@ -68,10 +64,7 @@ describe(
 
 						var container = selectField.get('container');
 
-						assert.isNotNull(
-							container.one('.help-block'),
-							'The selectField has an error'
-						);
+						assert.isTrue(container.one('.help-block').inDoc());
 
 						done();
 					}
@@ -93,10 +86,7 @@ describe(
 
 						selectField.setValue([]);
 
-						assert.equal(
-							selectField.getValue(),
-							''
-						);
+						assert.equal(selectField.getValue(), '');
 
 						done();
 					}
@@ -113,10 +103,7 @@ describe(
 
 						selectField.setValue('');
 
-						assert.equal(
-							selectField.getValue(),
-							''
-						);
+						assert.equal(selectField.getValue(), '');
 
 						done();
 					}
@@ -177,10 +164,7 @@ describe(
 
 						selectField.setValue(['a', 'c']);
 
-						assert.equal(
-							selectField.getValue(),
-							'a,c'
-						);
+						assert.equal(selectField.getValue(), 'a,c');
 
 						done();
 					}
