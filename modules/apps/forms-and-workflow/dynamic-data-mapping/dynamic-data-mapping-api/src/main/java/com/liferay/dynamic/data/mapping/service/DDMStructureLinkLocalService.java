@@ -160,6 +160,10 @@ public interface DDMStructureLinkLocalService extends BaseLocalService,
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getCountStructureLinkStructures(long classNameId, long classPK,
+		java.lang.String keywords);
+
 	/**
 	* Returns the number of ddm structure links.
 	*
@@ -241,6 +245,21 @@ public interface DDMStructureLinkLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<DDMStructure> getStructureLinkStructures(long classNameId,
 		long classPK, int start, int end) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<DDMStructure> getStructureLinkStructures(long classNameId,
+		long classPK, java.lang.String keywords) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<DDMStructure> getStructureLinkStructures(long classNameId,
+		long classPK, java.lang.String keywords, int start, int end)
+		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<DDMStructure> getStructureLinkStructures(long classNameId,
+		long classPK, java.lang.String keywords, int start, int end,
+		OrderByComparator<DDMStructureLink> orderByComparator)
+		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<DDMStructureLink> getStructureLinks(long classNameId,

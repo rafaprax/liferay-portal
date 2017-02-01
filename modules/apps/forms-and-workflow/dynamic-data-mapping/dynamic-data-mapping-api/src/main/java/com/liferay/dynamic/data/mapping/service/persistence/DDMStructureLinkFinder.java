@@ -12,21 +12,21 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.internal.upgrade.v1_0_3;
+package com.liferay.dynamic.data.mapping.service.persistence;
 
-import com.liferay.dynamic.data.mapping.internal.upgrade.v1_0_3.util.DDMStructureTable;
-import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import aQute.bnd.annotation.ProviderType;
 
 /**
- * @author Christopher Kian
+ * @author Brian Wing Shun Chan
+ * @generated
  */
-public class UpgradeDDMStructure extends UpgradeProcess {
+@ProviderType
+public interface DDMStructureLinkFinder {
+	public int countByKeywords(long classNameId, long classPK,
+		java.lang.String keywords);
 
-	@Override
-	protected void doUpgrade() throws Exception {
-		alter(
-			DDMStructureTable.class,
-			new UpgradeProcess.AlterColumnType("name", "TEXT null"));
-	}
-
+	public java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> findByKeywords(
+		long classNameId, long classPK, java.lang.String keywords, int start,
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMStructureLink> orderByComparator);
 }

@@ -169,6 +169,13 @@ public class DDMStructureLinkLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
+	public static int getCountStructureLinkStructures(long classNameId,
+		long classPK, java.lang.String keywords) {
+		return getService()
+				   .getCountStructureLinkStructures(classNameId, classPK,
+			keywords);
+	}
+
 	/**
 	* Returns the number of ddm structure links.
 	*
@@ -273,6 +280,31 @@ public class DDMStructureLinkLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .getStructureLinkStructures(classNameId, classPK, start, end);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructureLinkStructures(
+		long classNameId, long classPK, java.lang.String keywords)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .getStructureLinkStructures(classNameId, classPK, keywords);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructureLinkStructures(
+		long classNameId, long classPK, java.lang.String keywords, int start,
+		int end) throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .getStructureLinkStructures(classNameId, classPK, keywords,
+			start, end);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructure> getStructureLinkStructures(
+		long classNameId, long classPK, java.lang.String keywords, int start,
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.mapping.model.DDMStructureLink> orderByComparator)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .getStructureLinkStructures(classNameId, classPK, keywords,
+			start, end, orderByComparator);
 	}
 
 	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMStructureLink> getStructureLinks(
