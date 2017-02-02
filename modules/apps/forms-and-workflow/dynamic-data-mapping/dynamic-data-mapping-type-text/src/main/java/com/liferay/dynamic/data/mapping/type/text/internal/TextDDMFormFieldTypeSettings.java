@@ -20,6 +20,7 @@ import com.liferay.dynamic.data.mapping.annotations.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutColumn;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.annotations.DDMFormLayoutRow;
+import com.liferay.dynamic.data.mapping.annotations.DDMFormRule;
 import com.liferay.dynamic.data.mapping.form.field.type.DefaultDDMFormFieldTypeSettings;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
@@ -27,7 +28,26 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 /**
  * @author Lino Alves
  */
-@DDMForm
+@DDMForm(
+	rules = {
+		@DDMFormRule(
+			actions = {
+				"call('getDataProviderInstanceOutputParameters', 'dataProviderInstanceId=ddmDataProviderInstanceId', 'ddmDataProviderInstanceOutput={key: outputParameterName, value: outputParameterName}')"
+			},
+			condition = "not(equals(getValue('ddmDataProviderInstanceId'), 0))"
+		),
+		@DDMFormRule(
+			actions = {
+				"setVisible('dataSourceType', TRUE)",
+				"setVisible('ddmDataProviderInstanceId', equals(dataSourceType, \"data-provider\"))",
+				"setVisible('ddmDataProviderInstanceOutput', equals(dataSourceType, \"data-provider\"))",
+				"setVisible('options', equals(dataSourceType, \"manual\"))",
+				"setVisible('tooltip', FALSE)"
+			},
+			condition = "TRUE"
+		)
+	}
+)
 @DDMFormLayout(
 	paginationMode = com.liferay.dynamic.data.mapping.model.DDMFormLayout.TABBED_MODE,
 	value = {
@@ -53,7 +73,8 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							size = 12,
 							value = {
 								"predefinedValue", "dataSourceType",
-								"ddmDataProviderInstanceId", "options",
+								"ddmDataProviderInstanceId",
+								"ddmDataProviderInstanceOutput", "options",
 								"placeholder", "visibilityExpression",
 								"validation", "fieldNamespace", "indexType",
 								"localizable", "readOnly", "dataType", "type",
@@ -73,16 +94,21 @@ public interface TextDDMFormFieldTypeSettings
 		label = "%create-list",
 		optionLabels = {"%manually", "%from-data-provider"},
 		optionValues = {"manual", "data-provider"}, predefinedValue = "manual",
-		properties = {"showLabel=false"}, type = "radio",
-		visibilityExpression = "TRUE"
+		properties = {"showLabel=false"}, type = "radio"
 	)
 	public String dataSourceType();
 
-	@DDMFormField(
-		label = "%choose-a-data-provider", type = "select",
-		visibilityExpression = "equals(dataSourceType, \"data-provider\")"
-	)
+	@DDMFormField(label = "%choose-a-data-provider", type = "select")
 	public long ddmDataProviderInstanceId();
+
+	@DDMFormField(
+		label = "%choose-an-output-parameter",
+		properties = {
+			"tooltip=%choose-an-output-parameter-for-a-data-provider-previously-created"
+		},
+		type = "select"
+	)
+	public String ddmDataProviderInstanceOutput();
 
 	@DDMFormField(
 		label = "%my-text-field-has",
@@ -96,8 +122,7 @@ public interface TextDDMFormFieldTypeSettings
 	@DDMFormField(
 		dataType = "ddm-options", label = "%options",
 		properties = {"showLabel=false", "allowEmptyOptions=true"},
-		required = false, type = "options",
-		visibilityExpression = "equals(dataSourceType, \"manual\")"
+		required = false, type = "options"
 	)
 	public DDMFormFieldOptions options();
 
@@ -111,7 +136,7 @@ public interface TextDDMFormFieldTypeSettings
 	)
 	public LocalizedValue placeholder();
 
-	@DDMFormField(visibilityExpression = "FALSE")
+	@DDMFormField
 	public LocalizedValue tooltip();
 
 }

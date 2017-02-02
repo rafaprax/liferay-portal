@@ -46,6 +46,31 @@ public class TextDDMFormFieldTypeSettingsTest
 		Map<String, DDMFormField> ddmFormFieldsMap =
 			ddmForm.getDDMFormFieldsMap(false);
 
+		DDMFormField dataSourceTypeDDMFormField = ddmFormFieldsMap.get(
+			"dataSourceType");
+
+		Assert.assertNotNull(dataSourceTypeDDMFormField);
+		Assert.assertNotNull(dataSourceTypeDDMFormField.getLabel());
+		Assert.assertEquals(
+			"false", dataSourceTypeDDMFormField.getProperty("showLabel"));
+		Assert.assertEquals("radio", dataSourceTypeDDMFormField.getType());
+		Assert.assertNotNull(dataSourceTypeDDMFormField.getPredefinedValue());
+
+		DDMFormField ddmDataProviderInstanceIdDDMFormField =
+			ddmFormFieldsMap.get("ddmDataProviderInstanceId");
+
+		Assert.assertNotNull(ddmDataProviderInstanceIdDDMFormField.getLabel());
+		Assert.assertEquals(
+			"select", ddmDataProviderInstanceIdDDMFormField.getType());
+
+		DDMFormField ddmDataProviderInstanceOutputDDMFormField =
+			ddmFormFieldsMap.get("ddmDataProviderInstanceOutput");
+
+		Assert.assertNotNull(
+			ddmDataProviderInstanceOutputDDMFormField.getLabel());
+		Assert.assertEquals(
+			"select", ddmDataProviderInstanceOutputDDMFormField.getType());
+
 		DDMFormField displayStyleDDMFormField = ddmFormFieldsMap.get(
 			"displayStyle");
 
@@ -55,18 +80,23 @@ public class TextDDMFormFieldTypeSettingsTest
 			"true", displayStyleDDMFormField.getProperty("inline"));
 		Assert.assertEquals("radio", displayStyleDDMFormField.getType());
 
+		DDMFormField optionsDDMFormField = ddmFormFieldsMap.get("options");
+
+		Assert.assertEquals("ddm-options", optionsDDMFormField.getDataType());
+		Assert.assertNotNull(optionsDDMFormField.getLabel());
+		Assert.assertEquals(false, optionsDDMFormField.isRequired());
+		Assert.assertEquals("options", optionsDDMFormField.getType());
+		Assert.assertEquals(
+			"false", optionsDDMFormField.getProperty("showLabel"));
+		Assert.assertEquals(
+			"true", optionsDDMFormField.getProperty("allowEmptyOptions"));
+
 		DDMFormField placeholderDDMFormField = ddmFormFieldsMap.get(
 			"placeholder");
 
 		Assert.assertNotNull(placeholderDDMFormField);
 		Assert.assertEquals("string", placeholderDDMFormField.getDataType());
 		Assert.assertEquals("text", placeholderDDMFormField.getType());
-
-		DDMFormField tooltipDDMFormField = ddmFormFieldsMap.get("tooltip");
-
-		Assert.assertNotNull(tooltipDDMFormField);
-		Assert.assertEquals(
-			"FALSE", tooltipDDMFormField.getVisibilityExpression());
 	}
 
 }
