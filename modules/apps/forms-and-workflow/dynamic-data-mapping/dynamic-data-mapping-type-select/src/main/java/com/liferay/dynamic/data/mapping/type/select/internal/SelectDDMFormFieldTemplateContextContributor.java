@@ -235,19 +235,19 @@ public class SelectDDMFormFieldTemplateContextContributor
 					outputParameterSetting.outputParameterPath(),
 					CharPool.SEMICOLON);
 
-				String key = paths[0];
+				String optionLabelPath = paths[0];
 
-				String value = key;
+				String optionValuePath = optionLabelPath;
 
 				if (paths.length > 1) {
-					value = paths[1];
+					optionValuePath = paths[1];
 				}
 
 				for (Map<Object, Object> ddmDataProviderData :
 						ddmDataProviderResponse.getData()) {
 
 					String optionValue = String.valueOf(
-						ddmDataProviderData.get(value));
+						ddmDataProviderData.get(optionValuePath));
 
 					if (key != null) {
 						optionValue = encryptOptionValue(
@@ -256,7 +256,8 @@ public class SelectDDMFormFieldTemplateContextContributor
 
 					ddmFormFieldOptions.addOptionLabel(
 						optionValue, ddmFormFieldRenderingContext.getLocale(),
-						String.valueOf(ddmDataProviderData.get(key)));
+						String.valueOf(
+							ddmDataProviderData.get(optionLabelPath)));
 				}
 			}
 			else {
