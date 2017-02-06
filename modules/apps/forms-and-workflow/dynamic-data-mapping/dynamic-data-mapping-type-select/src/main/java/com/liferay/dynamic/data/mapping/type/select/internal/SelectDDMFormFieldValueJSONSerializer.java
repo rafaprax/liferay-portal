@@ -14,7 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.type.select.internal;
 
-import com.liferay.dynamic.data.mapping.io.DDMFormFieldValueSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormFieldValueJSONSerializer;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
@@ -39,8 +39,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Leonardo Barros
  */
 @Component(immediate = true, property = "ddm.form.field.type.name=select")
-public class SelectDDMFormFieldValueSerializer
-	implements DDMFormFieldValueSerializer {
+public class SelectDDMFormFieldValueJSONSerializer
+	implements DDMFormFieldValueJSONSerializer {
 
 	@Override
 	public Object serialize(
@@ -149,7 +149,7 @@ public class SelectDDMFormFieldValueSerializer
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		SelectDDMFormFieldValueSerializer.class);
+		SelectDDMFormFieldValueJSONSerializer.class);
 
 	private JSONFactory _jsonFactory;
 

@@ -20,7 +20,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 /**
  * @author Leonardo Barros
  */
-public interface DDMFormFieldValueSerializer {
+public interface DDMFormFieldValueJSONSerializer {
 
 	public Object serialize(
 		DDMFormField ddmFormField, DDMFormFieldValue ddmFormFieldValue);

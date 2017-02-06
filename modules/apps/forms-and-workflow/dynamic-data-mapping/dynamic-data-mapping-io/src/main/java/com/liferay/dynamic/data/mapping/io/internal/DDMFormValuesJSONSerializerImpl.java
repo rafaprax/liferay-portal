@@ -14,7 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.io.internal;
 
-import com.liferay.dynamic.data.mapping.io.DDMFormFieldValueSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormFieldValueJSONSerializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONSerializer;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.Value;
@@ -78,7 +78,7 @@ public class DDMFormValuesJSONSerializerImpl
 		unbind = "removeDDMFormFieldValueSerializer"
 	)
 	protected void addDDMFormFieldValueSerializer(
-		DDMFormFieldValueSerializer ddmFormFieldValueSerializer,
+		DDMFormFieldValueJSONSerializer ddmFormFieldValueSerializer,
 		Map<String, Object> properties) {
 
 		String type = MapUtil.getString(properties, "ddm.form.field.type.name");
@@ -87,7 +87,7 @@ public class DDMFormValuesJSONSerializerImpl
 			return;
 		}
 
-		_ddmFormFieldValueSerializers.put(type, ddmFormFieldValueSerializer);
+		_ddmFormFieldValueJSONSerializers.put(type, ddmFormFieldValueSerializer);
 	}
 
 	protected void addDefaultLanguageId(
@@ -129,12 +129,12 @@ public class DDMFormValuesJSONSerializerImpl
 	}
 
 	protected void removeDDMFormFieldValueSerializer(
-		DDMFormFieldValueSerializer ddmFormFieldValueSerializer,
+		DDMFormFieldValueJSONSerializer ddmFormFieldValueSerializer,
 		Map<String, Objects> properties) {
 
 		String type = MapUtil.getString(properties, "ddm.form.field.type.name");
 
-		_ddmFormFieldValueSerializers.remove(type);
+		_ddmFormFieldValueJSONSerializers.remove(type);
 	}
 
 	@Reference(unbind = "-")
@@ -167,13 +167,13 @@ public class DDMFormValuesJSONSerializerImpl
 
 		String type = ddmFormField.getType();
 
-		DDMFormFieldValueSerializer ddmFormFieldValueSerializer =
-			_ddmFormFieldValueSerializers.get(type);
+		DDMFormFieldValueJSONSerializer ddmFormFieldValueJSONSerializer =
+			_ddmFormFieldValueJSONSerializers.get(type);
 
-		if (ddmFormFieldValueSerializer != null) {
+		if (ddmFormFieldValueJSONSerializer != null) {
 			jsonObject.put(
 				"value",
-				ddmFormFieldValueSerializer.serialize(
+				ddmFormFieldValueJSONSerializer.serialize(
 					ddmFormField, ddmFormFieldValue));
 		}
 		else {
@@ -195,8 +195,8 @@ public class DDMFormValuesJSONSerializerImpl
 		return jsonObject;
 	}
 
-	private final Map<String, DDMFormFieldValueSerializer>
-		_ddmFormFieldValueSerializers = new ConcurrentHashMap<>();
+	private final Map<String, DDMFormFieldValueJSONSerializer>
+		_ddmFormFieldValueJSONSerializers = new ConcurrentHashMap<>();
 	private JSONFactory _jsonFactory;
 
 }
