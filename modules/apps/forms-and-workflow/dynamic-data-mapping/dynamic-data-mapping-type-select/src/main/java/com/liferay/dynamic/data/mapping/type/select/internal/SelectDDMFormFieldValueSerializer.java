@@ -14,7 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.type.select.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormFieldValueSerializer;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
