@@ -125,10 +125,10 @@ AUI.add(
 							value = inputNode.val().split();
 						}
 
-						if (!value) {
-							var contextValue = instance._getContextValue();
+						if (value.length === 1 && value[0] === '') {
+							var contextValue = instance.get('value');
 
-							var hasOption = instance._hasOption(contextValue);
+							var hasOption = instance._hasOption(contextValue[0]);
 
 							if (contextValue && !hasOption) {
 								value = contextValue;
@@ -245,18 +245,6 @@ AUI.add(
 
 							instance.openList();
 						}
-					},
-
-					_getContextValue: function() {
-						var instance = this;
-
-						var contextValue = instance.get('value');
-
-						if (Lang.isArray(contextValue)) {
-							contextValue = contextValue[0];
-						}
-
-						return contextValue;
 					},
 
 					_getDataSourceType: function(value) {

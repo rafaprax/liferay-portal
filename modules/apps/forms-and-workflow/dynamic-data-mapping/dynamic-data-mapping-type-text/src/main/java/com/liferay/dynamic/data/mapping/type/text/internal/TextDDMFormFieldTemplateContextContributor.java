@@ -35,6 +35,7 @@ import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -193,7 +194,7 @@ public class TextDDMFormFieldTemplateContextContributor
 			ddmFormFieldRenderingContext.getLocale());
 
 		try {
-			String ddmDataProviderInstanceId = GetterUtil.getString(
+			String ddmDataProviderInstanceId = extractValue(
 				ddmFormField.getProperty("ddmDataProviderInstanceId"));
 
 			DDMDataProvider ddmDataProvider =
@@ -224,7 +225,7 @@ public class TextDDMFormFieldTemplateContextContributor
 			DDMDataProviderResponse ddmDataProviderResponse =
 				executeDDMDataProvider(ddmDataProvider, ddmDataProviderContext);
 
-			String ddmDataProviderInstanceOutput = GetterUtil.getString(
+			String ddmDataProviderInstanceOutput = extractValue(
 				ddmFormField.getProperty("ddmDataProviderInstanceOutput"));
 
 			if (Validator.isNotNull(ddmDataProviderInstanceOutput)) {
@@ -287,6 +288,13 @@ public class TextDDMFormFieldTemplateContextContributor
 			new DDMDataProviderRequest(ddmDataProviderContext);
 
 		return ddmDataProvider.getData(ddmDataProviderRequest);
+	}
+
+	protected String extractValue(Object jsonArrayStringObj) throws Exception {
+		JSONArray jsonArray = jsonFactory.createJSONArray(
+			GetterUtil.getString(jsonArrayStringObj));
+
+		return jsonArray.getString(0);
 	}
 
 	protected DDMDataProviderOutputParametersSettings

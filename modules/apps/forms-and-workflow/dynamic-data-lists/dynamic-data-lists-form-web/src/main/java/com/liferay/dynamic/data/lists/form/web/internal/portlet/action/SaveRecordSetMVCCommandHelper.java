@@ -40,6 +40,8 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
@@ -246,7 +248,10 @@ public class SaveRecordSetMVCCommandHelper {
 
 		Value value = ddmFormFieldValue.getValue();
 
-		String storageType = value.getString(ddmFormValues.getDefaultLocale());
+		JSONArray storageTypeJSONArray = _jsonFactory.createJSONArray(
+			value.getString(ddmFormValues.getDefaultLocale()));
+
+		String storageType = storageTypeJSONArray.getString(0);
 
 		if (Validator.isNull(storageType)) {
 			storageType = StorageType.JSON.toString();
@@ -267,7 +272,10 @@ public class SaveRecordSetMVCCommandHelper {
 
 		Value value = ddmFormFieldValue.getValue();
 
-		return value.getString(ddmFormValues.getDefaultLocale());
+		JSONArray workflowDefinitionJSONArray = _jsonFactory.createJSONArray(
+			value.getString(ddmFormValues.getDefaultLocale()));
+
+		return workflowDefinitionJSONArray.getString(0);
 	}
 
 	protected DDMStructure updateDDMStructure(PortletRequest portletRequest)
@@ -363,6 +371,9 @@ public class SaveRecordSetMVCCommandHelper {
 			DDLRecordSet.class.getName(), recordSet.getRecordSetId(), 0,
 			workflowDefinition);
 	}
+
+	@Reference
+	protected JSONFactory _jsonFactory;
 
 	@Reference
 	protected DDLFormRuleDeserializer ddlFormRuleDeserializer;

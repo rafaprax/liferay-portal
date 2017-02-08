@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidat
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidator;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -106,6 +107,22 @@ public class SelectDDMFormFieldValueValidator
 		}
 	}
 
+	protected String getDDMDataProviderInstanceId(DDMFormField ddmFormField) {
+		String ddmDataProviderInstanceId = GetterUtil.getString(
+			ddmFormField.getProperty("ddmDataProviderInstanceId"));
+
+		try {
+			JSONArray jsonArray = jsonFactory.createJSONArray(
+				ddmDataProviderInstanceId);
+
+			return jsonArray.getString(0);
+		}
+		catch (Exception e) {
+		}
+
+		return ddmDataProviderInstanceId;
+	}
+
 	protected Key getKey(HttpSession session) {
 		Key key = null;
 
@@ -125,11 +142,37 @@ public class SelectDDMFormFieldValueValidator
 		return key;
 	}
 
+	protected JSONArray getPredefinedValueJSONArray(DDMFormField ddmFormField)
+		throws DDMFormFieldValueValidationException {
+
+		LocalizedValue predefinedValue = ddmFormField.getPredefinedValue();
+
+		String predefinedValueString = predefinedValue.getString(null);
+
+		if (Validator.isNull(predefinedValueString)) {
+			return jsonFactory.createJSONArray();
+		}
+
+		try {
+			return jsonFactory.createJSONArray(predefinedValueString);
+		}
+		catch (JSONException jsone) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(jsone, jsone);
+			}
+
+			throw new DDMFormFieldValueValidationException(
+				String.format(
+					"Invalid data stored for predefinedValue property \"%s\"",
+					predefinedValueString));
+		}
+	}
+
 	protected void validateDataProvider(DDMFormField ddmFormField, Value value)
 		throws DDMFormFieldValueValidationException {
 
-		String ddmDataProviderInstanceId = GetterUtil.getString(
-			ddmFormField.getProperty("ddmDataProviderInstanceId"));
+		String ddmDataProviderInstanceId = getDDMDataProviderInstanceId(
+			ddmFormField);
 
 		HttpSession session = PortalSessionThreadLocal.getHttpSession();
 
@@ -139,13 +182,26 @@ public class SelectDDMFormFieldValueValidator
 			return;
 		}
 
+		JSONArray predefinedValueJSONArray = getPredefinedValueJSONArray(
+			ddmFormField);
+
 		Map<Locale, String> selectedValues = value.getValues();
 
 		for (String selectedValue : selectedValues.values()) {
 			JSONArray jsonArray = createJSONArray(
 				ddmFormField.getName(), selectedValue);
 
+			if (Objects.equals(
+					jsonArray.toString(),
+					predefinedValueJSONArray.toString())) {
+				continue;
+			}
+
 			for (int i = 0; i < jsonArray.length(); i++) {
+				if (Validator.isNull(jsonArray.getString(i))) {
+					continue;
+				}
+
 				Matcher matcher = _VALUE_PATTERN.matcher(
 					jsonArray.getString(i));
 
