@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.type.select.internal;
 
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderTracker;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidationException;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueValidator;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
@@ -25,13 +26,24 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.servlet.PortalSessionThreadLocal;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.util.Encryptor;
+
+import java.security.Key;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpSession;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -58,6 +70,9 @@ public class SelectDDMFormFieldValueValidator
 			validateDDMFormFieldOptions(
 				ddmFormField, ddmFormFieldValue.getValue());
 		}
+		else {
+			validateDataProvider(ddmFormField, ddmFormFieldValue.getValue());
+		}
 	}
 
 	protected JSONArray createJSONArray(String fieldName, String json)
@@ -67,16 +82,102 @@ public class SelectDDMFormFieldValueValidator
 			return jsonFactory.createJSONArray(json);
 		}
 		catch (JSONException jsone) {
+			JSONArray jsonArray = jsonFactory.createJSONArray();
 
-			// LPS-52675
+			jsonArray.put(json);
 
+			return jsonArray;
+		}
+	}
+
+	protected String decryptSelectedValue(Key key, String selectedValue) {
+		try {
+			return Encryptor.decrypt(key, selectedValue);
+		}
+		catch (Exception e) {
 			if (_log.isDebugEnabled()) {
-				_log.debug(jsone, jsone);
+				_log.debug(e, e);
 			}
 
-			throw new DDMFormFieldValueValidationException(
-				String.format(
-					"Invalid data stored for select field \"%s\"", fieldName));
+			return selectedValue;
+		}
+	}
+
+	protected Key getKey(HttpSession session) {
+		Key key = null;
+
+		try {
+			String serializedKey = (String)session.getAttribute("key");
+
+			if (serializedKey != null) {
+				key = Encryptor.deserializeKey(serializedKey);
+			}
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
+
+		return key;
+	}
+
+	protected void validateDataProvider(DDMFormField ddmFormField, Value value)
+		throws DDMFormFieldValueValidationException {
+
+		String ddmDataProviderInstanceId = GetterUtil.getString(
+			ddmFormField.getProperty("ddmDataProviderInstanceId"));
+
+		if (ddmDataProviderTracker.getDDMDataProviderByInstanceId(
+				ddmDataProviderInstanceId) != null) {
+			return;
+		}
+
+		HttpSession session = PortalSessionThreadLocal.getHttpSession();
+
+		Key key = getKey(session);
+
+		if (key == null) {
+			return;
+		}
+
+		Map<Locale, String> selectedValues = value.getValues();
+
+		for (Entry<Locale, String> entry : selectedValues.entrySet()) {
+			JSONArray jsonArray = createJSONArray(
+				ddmFormField.getName(), entry.getValue());
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				if (Validator.isNull(jsonArray.getString(i))) {
+					continue;
+				}
+
+				Matcher matcher = _VALUE_PATTERN.matcher(
+					jsonArray.getString(i));
+
+				if (!matcher.matches()) {
+					throw new DDMFormFieldValueValidationException(
+						String.format(
+							"Invalid value found for select field \"%s\"",
+							ddmFormField.getName()));
+				}
+
+				String[] values = StringUtil.split(
+					jsonArray.getString(i), CharPool.POUND);
+
+				String decrytedSelectedValue = decryptSelectedValue(
+					key, values[1]);
+
+				String selectedValueExpr = String.format(
+					"%s#%s", values[0], ddmDataProviderInstanceId);
+
+				if (!selectedValueExpr.equals(decrytedSelectedValue)) {
+					throw new DDMFormFieldValueValidationException(
+						String.format(
+							"Invalid value found for select field \"%s\"",
+							ddmFormField.getName()));
+				}
+			}
 		}
 	}
 
@@ -133,7 +234,12 @@ public class SelectDDMFormFieldValueValidator
 	}
 
 	@Reference
+	protected DDMDataProviderTracker ddmDataProviderTracker;
+
+	@Reference
 	protected JSONFactory jsonFactory;
+
+	private static final Pattern _VALUE_PATTERN = Pattern.compile(".+#.+");
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		SelectDDMFormFieldValueValidator.class);
