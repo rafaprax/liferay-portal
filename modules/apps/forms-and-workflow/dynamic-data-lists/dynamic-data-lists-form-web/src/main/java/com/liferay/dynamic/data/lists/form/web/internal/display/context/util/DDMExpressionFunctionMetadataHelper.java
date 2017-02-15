@@ -29,6 +29,11 @@ public class DDMExpressionFunctionMetadataHelper {
 
 	public DDMExpressionFunctionMetadataHelper(ResourceBundle resourceBundle) {
 		addDDMExpressionFunctionMetadata(
+				new DDMExpressionFunctionMetadata(
+					"belongs-to", LanguageUtil.get(resourceBundle, "belongs-to"),
+					_TYPE_BOOLEAN, new String[] {_TYPE_USER, _TYPE_LIST}));
+
+		addDDMExpressionFunctionMetadata(
 			new DDMExpressionFunctionMetadata(
 				"equals-to", LanguageUtil.get(resourceBundle, "is-equal-to"),
 				_TYPE_BOOLEAN, new String[] {_TYPE_TEXT, _TYPE_TEXT}));
@@ -139,6 +144,10 @@ public class DDMExpressionFunctionMetadataHelper {
 	private static final String _TYPE_NUMBER = "number";
 
 	private static final String _TYPE_TEXT = "text";
+
+	private static final String _TYPE_USER = "user";
+	
+	private static final String _TYPE_LIST = "list";
 
 	private final Map<String, List<DDMExpressionFunctionMetadata>>
 		_ddmExpressionFunctionsMetadata = new HashMap<>();
