@@ -124,7 +124,7 @@ public interface DDLRecordSetSettings {
 		label = "%select-a-storage-type", predefinedValue = "[\"json\"]",
 		properties = {
 			"dataSourceType=data-provider",
-			"ddmDataProviderInstanceId=ddm-storage-types"
+			"ddmDataProviderInstanceId=[\"ddm-storage-types\"]"
 		},
 		type = "select"
 	)
@@ -134,7 +134,7 @@ public interface DDLRecordSetSettings {
 		label = "%select-a-workflow",
 		properties = {
 			"dataSourceType=data-provider",
-			"ddmDataProviderInstanceId=workflow-definitions"
+			"ddmDataProviderInstanceId=[\"workflow-definitions\"]"
 		},
 		type = "select"
 	)
