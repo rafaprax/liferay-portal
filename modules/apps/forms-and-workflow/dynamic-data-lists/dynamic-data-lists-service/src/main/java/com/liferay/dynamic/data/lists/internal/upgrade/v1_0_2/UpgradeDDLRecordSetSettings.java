@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.upgrade.AutoBatchPreparedStatementUtil;
@@ -90,6 +91,10 @@ public class UpgradeDDLRecordSetSettings extends UpgradeProcess {
 						settings = addRequireAuthenticationSetting(
 							settingsJSONObject);
 
+						settings = updateFieldValueStringToJSONArray(
+							settingsJSONObject, "storageType",
+							"workflowDefinition");
+
 						ps2.setString(1, settings);
 
 						ps2.setLong(2, recordSetId);
@@ -101,6 +106,30 @@ public class UpgradeDDLRecordSetSettings extends UpgradeProcess {
 
 			ps2.executeBatch();
 		}
+	}
+
+	protected String updateFieldValueStringToJSONArray(
+		JSONObject settingsJSONObject, String... fieldNames) {
+
+		JSONArray fieldValues = settingsJSONObject.getJSONArray("fieldValues");
+
+		for (int i = 0; i < fieldValues.length(); i++) {
+			JSONObject fieldValue = fieldValues.getJSONObject(i);
+
+			String fieldName = fieldValue.getString("name");
+
+			if (ArrayUtil.contains(fieldNames, fieldName)) {
+				String fieldValueString = fieldValue.getString("value");
+
+				JSONArray fieldValueJSONArray = _jsonFactory.createJSONArray();
+
+				fieldValueJSONArray.put(fieldValueString);
+
+				fieldValue.put("value", fieldValueJSONArray);
+			}
+		}
+
+		return settingsJSONObject.toJSONString();
 	}
 
 	private final JSONFactory _jsonFactory;

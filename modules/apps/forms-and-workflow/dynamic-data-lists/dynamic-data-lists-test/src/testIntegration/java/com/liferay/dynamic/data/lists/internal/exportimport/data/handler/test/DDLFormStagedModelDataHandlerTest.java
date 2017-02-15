@@ -106,10 +106,10 @@ public class DDLFormStagedModelDataHandlerTest
 				"sendEmailNotification", "true"));
 		recordSetSettingsDDMFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
-				"storageType", "json"));
+				"storageType", "[\"json\"]"));
 		recordSetSettingsDDMFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
-				"workflowDefinition", "Single Approver@1"));
+				"workflowDefinition", "[\"Single Approver@1\"]"));
 
 		return recordSetSettingsDDMFormValues;
 	}

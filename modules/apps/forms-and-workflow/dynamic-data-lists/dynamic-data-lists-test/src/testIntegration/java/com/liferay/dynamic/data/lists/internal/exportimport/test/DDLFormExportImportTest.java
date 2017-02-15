@@ -27,7 +27,6 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
@@ -168,10 +167,10 @@ public class DDLFormExportImportTest extends BasePortletExportImportTestCase {
 				"sendEmailNotification", Boolean.FALSE.toString()));
 		settingsDDMFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
-				"storageType", StorageType.JSON.toString()));
+				"storageType", "[\"json\"]"));
 		settingsDDMFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
-				"workflowDefinition", StringPool.BLANK));
+				"workflowDefinition", "[\"\"]"));
 
 		return settingsDDMFormValues;
 	}
