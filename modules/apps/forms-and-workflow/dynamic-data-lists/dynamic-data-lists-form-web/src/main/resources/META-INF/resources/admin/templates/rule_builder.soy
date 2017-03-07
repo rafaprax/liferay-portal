@@ -51,8 +51,8 @@
 							{/call}
 
 							{if not isLast($condition)}
-							<br />
-							<b> {$condition.logicOperator} </b>
+								<br />
+								<b> {$rule.logicOperator} </b>
 							{/if}
 						{/foreach}
 
@@ -147,7 +147,10 @@
  * @param operandValue
  */
 {template .condition autoescape="deprecated-contextual"}
-	<span>{$operandType} </span>
+	{if $operandType != 'user'}
+		<span>{$operandType} </span>
+	{/if}
+
 	{call .badge}
 		{param content: $operandValue /}
 	{/call}

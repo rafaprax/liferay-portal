@@ -255,8 +255,13 @@ public class DDMFormRuleToDDLFormRuleConverter {
 
 		@Override
 		public Object visit(Term term) {
-			return new DDLFormRuleCondition.Operand(
-				"constant", term.getValue());
+			String termValue = term.getValue();
+
+			if (termValue.equals("user")) {
+				return new DDLFormRuleCondition.Operand("user", termValue);
+			}
+
+			return new DDLFormRuleCondition.Operand("constant", termValue);
 		}
 
 		protected <T> T doVisit(Expression expression) {

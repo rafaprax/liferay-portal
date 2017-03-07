@@ -30,6 +30,14 @@ AUI.add(
 						value: ''
 					},
 
+					getRoles: {
+						value: []
+					},
+
+					getRolesURL: {
+						value: ''
+					},
+
 					portletNamespace: {
 						value: ''
 					},
@@ -41,6 +49,7 @@ AUI.add(
 					strings: {
 						value: {
 							'auto-fill': Liferay.Language.get('autofill-x-from-data-provider-x'),
+							'belongs-to': Liferay.Language.get('belongs-to'),
 							contains: Liferay.Language.get('contains'),
 							delete: Liferay.Language.get('delete'),
 							edit: Liferay.Language.get('edit'),
@@ -60,6 +69,12 @@ AUI.add(
 				NAME: 'liferay-ddl-form-builder-rule-builder',
 
 				prototype: {
+					initializer: function() {
+						var instance = this;
+
+						instance._getUserRoles();
+					},
+
 					bindUI: function() {
 						var instance = this;
 
@@ -179,6 +194,7 @@ AUI.add(
 									functionsMetadata: instance.get('functionsMetadata'),
 									getDataProviderParametersSettingsURL: instance.get('getDataProviderParametersSettingsURL'),
 									getDataProviders: instance._dataProviders,
+									getRoles: instance.get('getRoles'),
 									pages: instance.getPages(),
 									portletNamespace: instance.get('portletNamespace')
 								}
@@ -326,6 +342,10 @@ AUI.add(
 					_getFieldLabel: function(fieldValue) {
 						var instance = this;
 
+						if (fieldValue === 'user') {
+							return 'User';
+						}
+
 						var fields = instance.getFields();
 
 						var fieldLabel;
@@ -348,12 +368,35 @@ AUI.add(
 							rulesDescription.push(
 								{
 									actions: instance._getActionsDescription(rules[i].actions),
-									conditions: rules[i].conditions
+									conditions: rules[i].conditions,
+									logicOperator: rules[i]['logical-operator']
 								}
 							);
 						}
 
 						return rulesDescription;
+					},
+
+					_getUserRoles: function() {
+						var instance = this;
+
+						var roles = instance.get('getRoles');
+
+						if (!roles.length) {
+							A.io.request(
+								instance.get('getRolesURL'),
+								{
+									method: 'GET',
+									on: {
+										success: function(event, id, xhr) {
+											var result = JSON.parse(xhr.responseText);
+
+											instance._parseDataUserRoles(result);
+										}
+									}
+								}
+							);
+						}
 					},
 
 					_handleAddRuleClick: function() {
@@ -417,6 +460,23 @@ AUI.add(
 						var instance = this;
 
 						instance._renderCards(val.newVal);
+					},
+
+					_parseDataUserRoles: function(result) {
+						var instance = this;
+
+						var roles = [];
+
+						for (var i = 0; i < result.length; i++) {
+							roles.push(
+								{
+									label: result[i].name,
+									value: result[i].name
+								}
+							);
+						}
+
+						instance.set('getRoles', roles);
 					},
 
 					_renderCards: function(rules) {

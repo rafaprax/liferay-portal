@@ -20,6 +20,10 @@ AUI.add(
 						value: []
 					},
 
+					getRoles: {
+						value: []
+					},
+
 					logicOperator: {
 						setter: function(val) {
 							return val.toUpperCase();
@@ -42,6 +46,7 @@ AUI.add(
 							autofill: Liferay.Language.get('autofill'),
 							cancel: Liferay.Language.get('cancel'),
 							description: Liferay.Language.get('define-condition-and-action-to-change-fields-and-elements-on-the-form'),
+							do: Liferay.Language.get('do'),
 							enable: Liferay.Language.get('enable'),
 							if: Liferay.Language.get('if'),
 							jumpToPage: Liferay.Language.get('jump-to-page'),
@@ -261,7 +266,11 @@ AUI.add(
 							}
 						);
 
-						return field.dataType;
+						if (field) {
+							return field.dataType;
+						}
+
+						return fieldName.toLowerCase();
 					},
 
 					_getOptionsLabel: function(field, optionValue) {
@@ -317,10 +326,13 @@ AUI.add(
 
 						var actionTemplateRenderer = SoyTemplateUtil.getTemplateRenderer('ddl.rule.action');
 
+						var strings = instance.get('strings');
+
 						actionListNode.append(
 							actionTemplateRenderer(
 								{
 									deleteIcon: Liferay.Util.getLexiconIconTpl('trash', 'icon-monospaced'),
+									do: strings.do,
 									index: index
 								}
 							)
