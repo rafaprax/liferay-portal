@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.lists.form.web.configuration.DDLFormWebConfigura
 import com.liferay.dynamic.data.lists.form.web.constants.DDLFormPortletKeys;
 import com.liferay.dynamic.data.lists.form.web.internal.converter.DDMFormRuleToDDLFormRuleConverter;
 import com.liferay.dynamic.data.lists.form.web.internal.display.context.DDLFormAdminDisplayContext;
+import com.liferay.dynamic.data.lists.form.web.internal.display.context.DDLFormAdminFieldLibraryDisplayContext;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.model.DDLRecordSetSettings;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalService;
@@ -35,6 +36,7 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
@@ -47,6 +49,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -59,6 +62,7 @@ import java.util.Map;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -291,6 +295,13 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 	}
 
 	@Reference(unbind = "-")
+	protected void setDDMStructureService(
+		DDMStructureService ddmStructureService) {
+
+		_ddmStructureService = ddmStructureService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setJSONFactory(JSONFactory jsonFactory) {
 		_jsonFactory = jsonFactory;
 	}
@@ -301,6 +312,14 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
+		PortletSession portletSession = renderRequest.getPortletSession();
+
+		String currentTab = ParamUtil.getString(
+			renderRequest, "currentTab",
+			GetterUtil.getString(portletSession.getAttribute("currentTab")));
+
+		portletSession.setAttribute("currentTab", currentTab);
 
 		long recordSetId = ParamUtil.getLong(renderRequest, "recordSetId");
 
@@ -333,11 +352,24 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 				_ddmFormFieldTypesJSONSerializer, _ddmFormJSONSerializer,
 				_ddmFormLayoutJSONSerializer, _ddmFormRenderer,
 				_ddmFormRulesToDDLFormRulesConverter, _ddmFormValuesFactory,
-				_ddmFormValuesMerger, _ddmStructureLocalService, _jsonFactory,
-				_storageEngine, _workflowEngineManager);
+				_ddmFormValuesMerger, _ddmStructureLocalService,
+				_ddmStructureService, _jsonFactory, _storageEngine,
+				_workflowEngineManager);
 
-		renderRequest.setAttribute(
-			WebKeys.PORTLET_DISPLAY_CONTEXT, ddlFormAdminDisplayContext);
+		if (currentTab.equals("field-library")) {
+			DDLFormAdminFieldLibraryDisplayContext
+				ddlFormAdminFieldLibraryDisplayContext =
+					new DDLFormAdminFieldLibraryDisplayContext(
+						ddlFormAdminDisplayContext);
+
+			renderRequest.setAttribute(
+				WebKeys.PORTLET_DISPLAY_CONTEXT,
+				ddlFormAdminFieldLibraryDisplayContext);
+		}
+		else {
+			renderRequest.setAttribute(
+				WebKeys.PORTLET_DISPLAY_CONTEXT, ddlFormAdminDisplayContext);
+		}
 	}
 
 	@Reference(unbind = "-")
@@ -376,6 +408,7 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 	private DDMFormValuesFactory _ddmFormValuesFactory;
 	private DDMFormValuesMerger _ddmFormValuesMerger;
 	private DDMStructureLocalService _ddmStructureLocalService;
+	private DDMStructureService _ddmStructureService;
 	private JSONFactory _jsonFactory;
 
 	@Reference
