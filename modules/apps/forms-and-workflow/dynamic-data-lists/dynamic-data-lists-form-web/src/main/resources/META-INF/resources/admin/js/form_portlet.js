@@ -41,6 +41,10 @@ AUI.add(
 					editForm: {
 					},
 
+					emptyName: {
+						value: Liferay.Language.get('untitled-form')
+					},
+
 					evaluatorURL: {
 					},
 
@@ -100,6 +104,10 @@ AUI.add(
 					},
 
 					sharedFormURL: {
+					},
+
+					showPagination: {
+						value: true
 					}
 				},
 
@@ -144,7 +152,11 @@ AUI.add(
 
 						instance.get('formBuilder').render(instance.one('#formBuilder'));
 
-						instance.get('ruleBuilder').render(instance.one('#ruleBuilder'));
+						var ruleBuilder = instance.get('ruleBuilder');
+
+						if (ruleBuilder) {
+							ruleBuilder.render(instance.one('#ruleBuilder'));
+						}
 
 						instance.createEditor(instance.ns('descriptionEditor'));
 						instance.createEditor(instance.ns('nameEditor'));
@@ -160,14 +172,39 @@ AUI.add(
 							formBuilder._layoutBuilder.after('layout-builder:moveEnd', A.bind(instance._afterFormBuilderLayoutBuilderMoveEnd, instance)),
 							formBuilder._layoutBuilder.after('layout-builder:moveStart', A.bind(instance._afterFormBuilderLayoutBuilderMoveStart, instance)),
 							instance.one('.back-url-link').on('click', A.bind('_onBack', instance)),
-							instance.one('#preview').on('click', A.bind('_onPreviewButtonClick', instance)),
-							instance.one('#publish').on('click', A.bind('_onPublishButtonClick', instance)),
 							instance.one('#save').on('click', A.bind('_onSaveButtonClick', instance)),
-							instance.one('#showRules').on('click', A.bind('_onRulesButtonClick', instance)),
-							instance.one('#showForm').on('click', A.bind('_onFormButtonClick', instance)),
-							instance.one('#requireAuthenticationCheckbox').on('change', A.bind('_onRequireAuthenticationCheckboxChanged', instance)),
 							Liferay.on('destroyPortlet', A.bind('_onDestroyPortlet', instance))
 						];
+
+						var preview = instance.one('#preview');
+
+						if (preview) {
+							instance._eventHandlers.push(preview.on('click', A.bind('_onPreviewButtonClick', instance)));
+						}
+
+						var publish = instance.one('#publish');
+
+						if (publish) {
+							instance._eventHandlers.push(publish.on('click', A.bind('_onPublishButtonClick', instance)));
+						}
+
+						var showRules = instance.one('#showRules');
+
+						if (showRules) {
+							instance._eventHandlers.push(showRules.on('click', A.bind('_onRulesButtonClick', instance)));
+						}
+
+						var showForm = instance.one('#showForm');
+
+						if (showForm) {
+							instance._eventHandlers.push(showForm.on('click', A.bind('_onFormButtonClick', instance)));
+						}
+
+						var requireAuthenticationCheckbox = instance.one('#requireAuthenticationCheckbox');
+
+						if (requireAuthenticationCheckbox) {
+							instance._eventHandlers.push(requireAuthenticationCheckbox.on('change', A.bind('_onRequireAuthenticationCheckboxChanged', instance)));
+						}
 
 						var autosaveInterval = instance.get('autosaveInterval');
 
@@ -182,7 +219,12 @@ AUI.add(
 						clearInterval(instance._intervalId);
 
 						instance.get('formBuilder').destroy();
-						instance.get('ruleBuilder').destroy();
+
+						var ruleBuilder = instance.get('ruleBuilder');
+
+						if (ruleBuilder) {
+							ruleBuilder.destroy();
+						}
 
 						(new A.EventHandle(instance._eventHandlers)).detach();
 					},
@@ -244,19 +286,23 @@ AUI.add(
 
 						var formBuilder = instance.get('formBuilder');
 
-						var ruleBuilder = instance.get('ruleBuilder');
-
 						var pages = formBuilder.get('layouts');
 
 						instance.definitionSerializer.set('pages', pages);
 
 						var definition = JSON.parse(instance.definitionSerializer.serialize());
 
-						var rules = JSON.stringify(ruleBuilder.get('rules'));
-
 						instance.layoutSerializer.set('pages', pages);
 
 						var layout = JSON.parse(instance.layoutSerializer.serialize());
+
+						var ruleBuilder = instance.get('ruleBuilder');
+
+						var rules = '';
+
+						if (ruleBuilder) {
+							rules = JSON.stringify(ruleBuilder.get('rules'));
+						}
 
 						return {
 							definition: definition,
@@ -387,34 +433,44 @@ AUI.add(
 
 						instance.one('#name').val(state.name);
 
-						instance.one('#rules').val(state.rules);
+						var rules = instance.one('#rules');
 
-						var publishCheckbox = instance.one('#publishCheckbox');
+						if (rules) {
+							rules.val(state.rules);
+						}
 
 						var settingsDDMForm = Liferay.component('settingsDDMForm');
 
-						var publishedField = settingsDDMForm.getField('published');
+						if (settingsDDMForm) {
+							var publishCheckbox = instance.one('#publishCheckbox');
 
-						publishedField.setValue(publishCheckbox.attr('checked'));
+							if (!publishCheckbox) {
+								return;
+							}
 
-						var requireAuthenticationCheckbox = instance.one('#requireAuthenticationCheckbox');
+							var publishedField = settingsDDMForm.getField('published');
 
-						var requireAuthenticationField = settingsDDMForm.getField('requireAuthentication');
+							publishedField.setValue(publishCheckbox.attr('checked'));
 
-						requireAuthenticationField.setValue(requireAuthenticationCheckbox.attr('checked'));
+							var requireAuthenticationCheckbox = instance.one('#requireAuthenticationCheckbox');
 
-						var settings = settingsDDMForm.toJSON();
+							var requireAuthenticationField = settingsDDMForm.getField('requireAuthentication');
 
-						var settingsInput = instance.one('#serializedSettingsDDMFormValues');
+							requireAuthenticationField.setValue(requireAuthenticationCheckbox.attr('checked'));
 
-						settingsInput.val(JSON.stringify(settings));
+							var settings = settingsDDMForm.toJSON();
+
+							var settingsInput = instance.one('#serializedSettingsDDMFormValues');
+
+							settingsInput.val(JSON.stringify(settings));
+						}
 					},
 
 					submitForm: function() {
 						var instance = this;
 
 						if (!instance.get('name').trim()) {
-							instance.set('name', Liferay.Language.get('untitled-form'));
+							instance.set('name', instance.get('emptyName'));
 						}
 
 						instance.serializeFormBuilder();
@@ -535,7 +591,7 @@ AUI.add(
 
 						var ddmStructureIdNode = instance.byId('ddmStructureId');
 
-						if (recordSetIdNode.val() === '0') {
+						if (recordSetIdNode && recordSetIdNode.val() === '0') {
 							recordSetIdNode.val(response.recordSetId);
 						}
 
@@ -556,7 +612,7 @@ AUI.add(
 						if (!instance.get('name').trim()) {
 							var formObject = A.QueryString.parse(formString);
 
-							formObject[instance.ns('name')] = Liferay.Language.get('untitled-form');
+							formObject[instance.ns('name')] = instance.get('emptyName');
 
 							formString = A.QueryString.stringify(formObject);
 						}
@@ -709,7 +765,9 @@ AUI.add(
 
 						var saveAndPublish = instance.one('input[name*="saveAndPublish"]');
 
-						saveAndPublish.set('value', 'false');
+						if (saveAndPublish) {
+							saveAndPublish.set('value', 'false');
+						}
 
 						instance.submitForm();
 					},
@@ -755,7 +813,8 @@ AUI.add(
 								getFieldTypeSettingFormContextURL: instance.get('getFieldTypeSettingFormContextURL'),
 								pagesJSON: layout.pages,
 								portletNamespace: instance.get('namespace'),
-								recordSetId: instance.get('recordSetId')
+								recordSetId: instance.get('recordSetId'),
+								showPagination: instance.get('showPagination')
 							}
 						);
 					},

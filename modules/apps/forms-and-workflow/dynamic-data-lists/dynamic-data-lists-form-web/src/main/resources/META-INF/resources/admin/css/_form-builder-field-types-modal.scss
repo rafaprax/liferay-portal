@@ -12,11 +12,28 @@
 		margin-top: 10px;
 	}
 
+	.form-builder-field-sets-list {
+		margin-top: 10px;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	.field-set-type {
+		text-align:center;
+		cursor: pointer;
+	}
+
 	.modal-body {
 		background-color: #FFF;
-		padding: 15px 25px 18px 25px;
+		overflow: hidden;
+		padding: 0;
 
-		.field-type {
+		.list-group {
+			margin-bottom: 0;
+		}
+
+		.field-type,
+		.field-set-type {
 			border-radius: 5px;
 			padding: 20px 0;
 
@@ -52,7 +69,7 @@
 
 @include sm {
 	.lfr-ddl-form-builder-field-types-modal {
-		max-height: 550px;
+		max-height: 750px;
 		width: 392px;
 	}
 }
@@ -61,7 +78,8 @@
 	.lfr-ddl-form-builder-field-types-modal {
 		width: 500px;
 
-		.field-type {
+		.field-type,
+		.field-set-type {
 			float: none;
 			width: auto;
 		}
