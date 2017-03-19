@@ -27,6 +27,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 
@@ -59,19 +60,26 @@ public class DDLXLSExporter extends BaseDDLExporter {
 	}
 
 	protected void createDataRow(
-		int rowIndex, Sheet sheet, CellStyle style,
+		int rowIndex, Sheet sheet, String status, CellStyle style,
 		List<DDMFormFieldRenderedValue> values) {
 
 		Row row = sheet.createRow(rowIndex);
 
 		int cellIndex = 0;
 
+		Cell cell = null;
+
 		for (DDMFormFieldRenderedValue value : values) {
-			Cell cell = row.createCell(cellIndex++, CellType.STRING);
+			cell = row.createCell(cellIndex++, CellType.STRING);
 
 			cell.setCellStyle(style);
 			cell.setCellValue(GetterUtil.getString(value.getValue()));
 		}
+
+		cell = row.createCell(cellIndex++, CellType.STRING);
+
+		cell.setCellStyle(style);
+		cell.setCellValue(status);
 	}
 
 	protected void createHeaderRow(
@@ -91,14 +99,21 @@ public class DDLXLSExporter extends BaseDDLExporter {
 
 		int cellIndex = 0;
 
+		Cell cell = null;
+
 		for (DDMFormField ddmFormField : ddmFormFields) {
 			LocalizedValue label = ddmFormField.getLabel();
 
-			Cell cell = row.createCell(cellIndex++, CellType.STRING);
+			cell = row.createCell(cellIndex++, CellType.STRING);
 
 			cell.setCellStyle(style);
 			cell.setCellValue(label.getString(getLocale()));
 		}
+
+		cell = row.createCell(cellIndex++, CellType.STRING);
+
+		cell.setCellStyle(style);
+		cell.setCellValue(LanguageUtil.get(getLocale(), "status"));
 	}
 
 	@Override
@@ -149,7 +164,10 @@ public class DDLXLSExporter extends BaseDDLExporter {
 					recordSet.getScope(), ddmFormFields, ddmFormValues,
 					ddmStructure);
 
-				createDataRow(rowIndex++, sheet, style, values);
+				String statusString = getStatusMessage(
+					recordVersion.getStatus());
+
+				createDataRow(rowIndex++, sheet, statusString, style, values);
 			}
 
 			workbook.write(byteArrayOutputStream);
