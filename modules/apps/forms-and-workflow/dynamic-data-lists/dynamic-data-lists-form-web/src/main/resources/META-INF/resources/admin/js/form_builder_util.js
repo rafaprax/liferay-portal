@@ -6,6 +6,7 @@ AUI.add(
 		var FieldTypes = Liferay.DDM.Renderer.FieldTypes;
 
 		var FormBuilderUtil = {
+
 			getFieldClass: function(type) {
 				var fieldType = FieldTypes.get(type);
 
