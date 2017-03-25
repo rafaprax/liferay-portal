@@ -1282,6 +1282,8 @@
 
 			iframeBody.addClass(dialog.iframeConfig.bodyCssClass);
 
+			event.win.focus();
+
 			var detachEventHandles = function() {
 				AArray.invoke(eventHandles, 'detach');
 
