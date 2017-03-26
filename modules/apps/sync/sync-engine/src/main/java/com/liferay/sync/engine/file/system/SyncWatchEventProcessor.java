@@ -361,6 +361,12 @@ public class SyncWatchEventProcessor implements Runnable {
 		Path sourceFilePath = Paths.get(syncFile.getFilePathName());
 
 		if (targetFilePath.equals(sourceFilePath)) {
+			if (isPendingTypePK(syncFile)) {
+				queueSyncWatchEvent(syncFile.getFilePathName(), syncWatchEvent);
+
+				return;
+			}
+
 			FileKeyUtil.writeFileKey(
 				targetFilePath, String.valueOf(syncFile.getSyncFileId()), true);
 		}
@@ -806,14 +812,17 @@ public class SyncWatchEventProcessor implements Runnable {
 	}
 
 	protected void renameFile(SyncWatchEvent syncWatchEvent) throws Exception {
+		Path sourceFilePath = Paths.get(
+			syncWatchEvent.getPreviousFilePathName());
+
+		SyncFile syncFile = SyncFileService.fetchSyncFile(
+			sourceFilePath.toString());
+
 		Path targetFilePath = Paths.get(syncWatchEvent.getFilePathName());
 
 		if (sanitizeFileName(targetFilePath)) {
 			return;
 		}
-
-		SyncFile syncFile = SyncFileService.fetchSyncFile(
-			FileKeyUtil.getFileKey(targetFilePath));
 
 		if (syncFile == null) {
 			if (Files.isDirectory(targetFilePath)) {

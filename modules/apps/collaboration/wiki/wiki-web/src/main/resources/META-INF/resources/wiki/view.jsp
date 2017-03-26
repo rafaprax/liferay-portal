@@ -354,9 +354,13 @@ if (portletTitleBasedNavigation) {
 										<div class="row">
 
 											<%
-											List<FileEntry> attachmentsFileEntries = wikiPage.getAttachmentsFileEntries();
+											Map<String, Object> data = new HashMap<String, Object>();
+
+											data.put("senna-off", "true");
 
 											DLMimeTypeDisplayContext dlMimeTypeDisplayContext = (DLMimeTypeDisplayContext)request.getAttribute(WikiWebKeys.DL_MIME_TYPE_DISPLAY_CONTEXT);
+
+											List<FileEntry> attachmentsFileEntries = wikiPage.getAttachmentsFileEntries();
 
 											for (FileEntry fileEntry : attachmentsFileEntries) {
 												String rowURL = PortletFileRepositoryUtil.getDownloadPortletFileEntryURL(themeDisplay, fileEntry, "status=" + WorkflowConstants.STATUS_APPROVED);
@@ -364,6 +368,7 @@ if (portletTitleBasedNavigation) {
 
 												<div class="col-md-4">
 													<liferay-frontend:horizontal-card
+														linkData="<%= data %>"
 														text="<%= fileEntry.getTitle() %>"
 														url="<%= rowURL %>"
 													>

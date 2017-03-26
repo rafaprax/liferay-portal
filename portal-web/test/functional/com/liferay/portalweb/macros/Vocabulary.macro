@@ -5,9 +5,7 @@
 		</execute>
 
 		<if>
-			<not>
-				<isset var="rowNumber" />
-			</not>
+			<contains string="${rowNumber}" substring="{rowNumber}" />
 			<then>
 				<var name="rowNumber" value="1" />
 			</then>
@@ -28,7 +26,7 @@
 	</command>
 
 	<command name="addCP" summary="Add a vocabulary named '${vocabularyName}'">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${vocabularyName}" />
@@ -80,7 +78,7 @@
 	</command>
 
 	<command name="addViewableByCP">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${vocabularyName}" />
@@ -100,7 +98,7 @@
 	</command>
 
 	<command name="addVocabularyWithNullTitle">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value=" " />
@@ -112,7 +110,7 @@
 	</command>
 
 	<command name="addWithAssociatedAssetTypeCP">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${vocabularyName}" />
@@ -123,6 +121,13 @@
 			<var name="required" value="${required}" />
 			<var name="rowNumber" value="${rowNumber}" />
 		</execute>
+
+		<if>
+			<isset var="assetSubtype" />
+			<then>
+				<execute function="Select" locator1="Select#ASSET_SUBTYPE" value1="${assetSubtype}" />
+			</then>
+		</if>
 
 		<execute macro="PortletEntry#save" />
 

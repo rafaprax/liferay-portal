@@ -313,8 +313,8 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 					catch (MustNotDuplicateFieldName mndfn) {
 						throw new UpgradeException(
 							String.format(
-								"The field name '%s' from structure ID %d " +
-									"cannot be defined more than once.",
+								"The field name '%s' from structure ID %d is " +
+									"defined more than once",
 								mndfn.getFieldName(), structureId));
 					}
 

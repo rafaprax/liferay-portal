@@ -22,7 +22,7 @@ import java.nio.file.Path;
 public class DummyWatcher extends Watcher {
 
 	public DummyWatcher() {
-		super(null, null);
+		super(0, null);
 	}
 
 	@Override
@@ -31,6 +31,10 @@ public class DummyWatcher extends Watcher {
 
 	@Override
 	public void addDownloadedFilePathName(String filePathName) {
+	}
+
+	@Override
+	public void addMovedFilePathName(String filePathName) {
 	}
 
 	@Override
@@ -47,6 +51,10 @@ public class DummyWatcher extends Watcher {
 
 	@Override
 	public void removeDownloadedFilePathName(String filePathName) {
+	}
+
+	@Override
+	public void removeMovedFilePathName(String filePathName) {
 	}
 
 	@Override

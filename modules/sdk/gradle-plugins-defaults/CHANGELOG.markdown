@@ -1275,11 +1275,16 @@ default value for the `mavenRootDir` property of `InstallCacheTask`.
 `gradlew writeArtifactPublishCommands` from a directory that does not contain
 any publishable subproject.
 
-## 3.5.4 - 2017-03-21
+## 3.5.4 - 2017-03-22
 
 ### Added
 - [LPS-71354]: Include only projects in one or more specific directories by
 setting the `build.include.dirs` system property.
+
+## 3.5.5 - 2017-03-22
+
+### Changed
+- [LPS-71164]: Update the [Liferay Gradle Plugins] dependency to version 3.2.26.
 
 [Liferay CDN]: https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public
 [Liferay Gradle Plugins]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-plugins
