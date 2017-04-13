@@ -5,10 +5,20 @@ AUI.add(
 
 		var CSS_CALCULATE_CONTAINER_FIELDS = A.getClassName('calculate', 'container', 'fields');
 
+		var OPERATORS_MAP = ['+', '-', '*', '/', '.'];
+
 		var FormBuilderActionCalculate = A.Component.create(
 			{
 				ATTRS: {
 					action: {
+						value: ''
+					},
+
+					functions: {
+						value: ''
+					},
+
+					getFunctionsURL: {
 						value: ''
 					},
 
@@ -18,6 +28,10 @@ AUI.add(
 
 					options: {
 						value: []
+					},
+
+					type: {
+						value: 'calculate'
 					}
 				},
 
@@ -28,12 +42,20 @@ AUI.add(
 				NAME: 'liferay-ddl-form-builder-action-calculate',
 
 				prototype: {
+					initializer: function() {
+						var instance = this;
+
+						instance._regexExpression = new RegExp('\\[([^\\]]+)\\]|sum|(.)', 'g');
+
+						instance.on('liferay-ddl-form-builder-calculator:clickedKey', A.bind(instance._handleClickedKey, instance));
+					},
+
 					getValue: function() {
 						var instance = this;
 
 						return {
 							action: 'calculate',
-							expression: instance._expressionField.getValue(),
+							expression: instance._getCalculateKeyActions().join().replace(/\,/g, ''),
 							target: instance._targetField.getValue()
 						};
 					},
@@ -49,7 +71,21 @@ AUI.add(
 
 						calculateContainer.setHTML(instance._getRuleContainerTemplate());
 
-						instance._getCalculator().render(calculateContainer.one('.' + CSS_CALCULATE_CONTAINER_CALCULATOR));
+						A.io.request(
+							instance.get('getFunctionsURL'),
+							{
+								method: 'GET',
+								on: {
+									success: function(event, id, xhr) {
+										var result = JSON.parse(xhr.responseText);
+
+										instance.set('functions', result);
+
+										instance._getCalculator().render(calculateContainer.one('.' + CSS_CALCULATE_CONTAINER_CALCULATOR));
+									}
+								}
+							}
+						);
 
 						var expressionField = instance._createExpressionField();
 
@@ -65,9 +101,12 @@ AUI.add(
 
 						var calculator = new Liferay.DDL.FormBuilderCalculator(
 							{
+								functions: instance.get('functions'),
 								options: instance.get('options')
 							}
 						);
+
+						calculator.addTarget(instance);
 
 						return calculator;
 					},
@@ -80,7 +119,9 @@ AUI.add(
 						var action = instance.get('action');
 
 						if (action && action.expression) {
-							value = action.expression;
+							instance._setCalculateKeyActions(action.expression.match(instance._regexExpression));
+
+							value = action.expression.replace(/\[|\]/g, '');
 						}
 
 						instance._expressionField = new Liferay.DDM.Field.Text(
@@ -124,6 +165,16 @@ AUI.add(
 						return instance._targetField;
 					},
 
+					_getCalculateKeyActions: function() {
+						var instance = this;
+
+						if (!instance._keyActions) {
+							instance._keyActions = [];
+						}
+
+						return instance._keyActions;
+					},
+
 					_getCalculator: function() {
 						var instance = this;
 
@@ -140,6 +191,47 @@ AUI.add(
 						var calculateTemplateRenderer = Liferay.DDM.SoyTemplateUtil.getTemplateRenderer('ddl.calculate.settings');
 
 						return calculateTemplateRenderer();
+					},
+
+					_handleClickedKey: function(event) {
+						var instance = this;
+
+						if (event.key !== undefined) {
+							if (event.key === 'backspace') {
+								instance._getCalculateKeyActions().pop();
+							}
+							else {
+								instance._removeRepeatedOperatorKey(event.key);
+
+								instance._getCalculateKeyActions().push(event.key);
+							}
+						}
+
+						instance._expressionField.setValue(instance._processExpressionString());
+					},
+
+					_processExpressionString: function(keyActions) {
+						var instance = this;
+
+						return instance._getCalculateKeyActions().join('').replace(/\[|\]/g, '');
+					},
+
+					_removeRepeatedOperatorKey: function(key) {
+						var instance = this;
+
+						if (OPERATORS_MAP.includes(key) && instance._getCalculateKeyActions().length >= 1) {
+							var lastKey = instance._getCalculateKeyActions()[instance._getCalculateKeyActions().length - 1];
+
+							if (OPERATORS_MAP.includes(lastKey)) {
+								instance._getCalculateKeyActions().pop();
+							}
+						}
+					},
+
+					_setCalculateKeyActions: function(value) {
+						var instance = this;
+
+						instance._keyActions = value;
 					}
 				}
 			}
