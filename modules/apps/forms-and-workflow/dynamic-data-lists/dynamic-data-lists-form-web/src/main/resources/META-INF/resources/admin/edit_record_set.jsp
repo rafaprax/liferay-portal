@@ -49,7 +49,39 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 	</aui:nav-bar>
 
 	<div class="autosave-bar management-bar management-bar-default">
-		<span class="autosave-feedback management-bar-text" id="<portlet:namespace />autosaveMessage"></span>
+		<div class="container-fluid-1280">
+			<span class="autosave-feedback management-bar-text" id="<portlet:namespace />autosaveMessage"></span>
+
+			<span class="publish-icon" data-original-title="<liferay-ui:message key="copy-url" />" id="<portlet:namespace />publishIcon" title="<liferay-ui:message key="copy-url" />">
+				<svg class="lexicon-icon">
+					<use xlink:href="<%= ddlFormAdminDisplayContext.getLexiconIconsPath() %>link" />
+				</svg>
+			</span>
+		</div>
+	</div>
+
+	<div class="edit-popover publish-popover-content">
+		<div class="form-group">
+			<label><liferay-ui:message key="copy-url" /></label>
+			<div class="input-group">
+				<input class="form-control" id="<portlet:namespace />clipboardEdit" readOnly type="text" value="<%= ddlFormAdminDisplayContext.getPublishedFormURL() %>" />
+
+				<div class="help-block"><liferay-ui:message key="copied-to-clipboard" /></div>
+
+				<span class="input-group-btn">
+					<button class="btn btn-default" data-clipboard data-target="#<portlet:namespace />clipboardEdit" type="button">
+						<span class="publish-button-text">
+							<liferay-ui:message key="copy" />
+						</span>
+						<span class="publish-button-success-icon">
+							<svg class="lexicon-icon">
+								<use xlink:href="<%= ddlFormAdminDisplayContext.getLexiconIconsPath() %>check" />
+							</svg>
+						</span>
+					</button>
+				</span>
+			</div>
+		</div>
 	</div>
 
 	<aui:form action="<%= saveRecordSetURL %>" cssClass="ddl-form-builder-form" enctype="multipart/form-data" method="post" name="editForm">
@@ -57,7 +89,6 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 		<aui:input name="recordSetId" type="hidden" value="<%= recordSetId %>" />
 		<aui:input name="groupId" type="hidden" value="<%= groupId %>" />
 		<aui:input name="ddmStructureId" type="hidden" value="<%= ddmStructureId %>" />
-		<aui:input name="saveAndPublish" type="hidden" value="<%= true %>" />
 		<aui:input name="serializedSettingsDDMFormValues" type="hidden" value="" />
 
 		<liferay-ui:error exception="<%= DDMFormLayoutValidationException.class %>" message="please-enter-a-valid-form-layout" />
@@ -161,50 +192,12 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 
 		<div class="container-fluid-1280">
 			<aui:button-row cssClass="ddl-form-builder-buttons">
-				<aui:button cssClass="btn-lg ddl-button" id="publish" type="submit" value="publish-form" />
+				<aui:button cssClass="btn-lg btn-primary ddl-button" id="publish" value='<%= ddlFormAdminDisplayContext.isFormPublished() ? "unpublish-form": "publish-form" %>' />
 
 				<aui:button cssClass="btn-lg ddl-button" id="save" value="save-form" />
 
 				<aui:button cssClass="btn-lg btn-link" id="preview" value="preview-form" />
 			</aui:button-row>
-		</div>
-
-		<div class="container-fluid-1280 ddl-publish-modal hide" id="<portlet:namespace />publishModal">
-			<div class="form-group">
-				<label class="control-label ddl-publish-checkbox" for="<portlet:namespace />publishCheckbox">
-					<span class="pull-left">
-						<small><liferay-ui:message key="publish-this-form" /></small>
-					</span>
-
-					<aui:input label="" name="publishCheckbox" type="toggle-switch" value="<%= ddlFormAdminDisplayContext.isFormPublished() %>" />
-				</label>
-
-				<label class="control-label ddl-publish-checkbox" for="<portlet:namespace />publishCheckbox">
-					<span class="pull-left">
-						<small><liferay-ui:message key="require-user-authentication" /></small>
-					</span>
-
-					<aui:input label="" name="requireAuthenticationCheckbox" type="toggle-switch" value="<%= ddlFormAdminDisplayContext.isAuthenticationRequired() %>" />
-				</label>
-			</div>
-
-			<div class="alert alert-info">
-				<a href="<%= ddlFormAdminDisplayContext.getPreviewFormURL() %>" target="_blank">
-					<liferay-ui:message key="click-here-to-preview-the-form-in-a-new-window" />
-				</a>
-			</div>
-
-			<div class="form-group">
-				<label><liferay-ui:message key="copy-this-url-to-share-the-form" /></label>
-
-				<div class="input-group">
-					<input class="form-control" id="<portlet:namespace />clipboard" readOnly type="text" value="<%= ddlFormAdminDisplayContext.getPublishedFormURL() %>" />
-
-					<span class="input-group-btn">
-						<button class="btn btn-default" data-clipboard data-target="#<portlet:namespace />clipboard" type="button"><liferay-ui:message key="copy-url" /></button>
-					</span>
-				</div>
-			</div>
 		</div>
 
 		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="publishRecordSet" var="publishRecordSetURL" />
@@ -273,6 +266,7 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 											layout: <%= ddlFormAdminDisplayContext.getSerializedDDMFormLayout() %>,
 											name: '<%= HtmlUtil.escapeJS(name) %>',
 											namespace: '<portlet:namespace />',
+											published: <%= ddlFormAdminDisplayContext.isFormPublished() %>,
 											publishRecordSetURL: '<%= publishRecordSetURL.toString() %>',
 											recordSetId: <%= recordSetId %>,
 											restrictedFormURL: '<%= ddlFormAdminDisplayContext.getRestrictedFormURL() %>',
@@ -281,11 +275,6 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 										}
 									)
 								);
-
-								<c:if test="<%= showPublishModal %>">
-									Liferay.component('formPortlet').openPublishModal();
-								</c:if>
-
 							},
 							['liferay-ddl-portlet'].concat(systemFieldModules)
 						);
@@ -374,6 +363,38 @@ renderResponse.setTitle((recordSet == null) ? LanguageUtil.get(request, "new-for
 	</aui:script>
 
 	<aui:script require="metal-clipboard/src/Clipboard">
-		new metalClipboardSrcClipboard.default();
+		var A = AUI();
+
+		var editClipboard = new metalClipboardSrcClipboard.default();
+
+		editClipboard.on('success', function() {
+			var popoverContent = A.one('.publish-popover-content.edit-popover');
+
+			popoverContent.one('.form-group').addClass('has-success');
+			popoverContent.one('.form-group').removeClass('has-error');
+
+			popoverContent.one('.btn').addClass('btn-success');
+			popoverContent.one('.btn').removeClass('btn-danger');
+
+			popoverContent.one('.help-block').html('<liferay-ui:message key="copied-to-clipboard" />');
+			popoverContent.one('.publish-button-text').html('<liferay-ui:message key="Copy" />');
+		});
+
+		editClipboard.on('error', function() {
+			var popoverContent = A.one('.publish-popover-content.edit-popover');
+
+			popoverContent.one('.form-group').addClass('has-error');
+			popoverContent.one('.form-group').removeClass('has-success');
+
+			popoverContent.one('.btn').addClass('btn-danger');
+			popoverContent.one('.btn').removeClass('btn-success');
+
+			popoverContent.one('.help-block').html('<liferay-ui:message key="sorry-something-wrong-happened" />');
+			popoverContent.one('.publish-button-text').html('<liferay-ui:message key="retry" />');
+		});
+
+		Liferay.on('destroyPortlet', function() {
+			editClipboard.dispose();
+		});
 	</aui:script>
 </div>
