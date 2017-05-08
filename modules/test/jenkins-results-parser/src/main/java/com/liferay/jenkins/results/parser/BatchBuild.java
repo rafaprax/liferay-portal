@@ -190,15 +190,23 @@ public class BatchBuild extends BaseBuild {
 
 		String status = getStatus();
 
-		if (!badBuildNumbers.isEmpty()) {
+		if (badBuildNumbers.size() >= MAX_REINVOCATIONS) {
 			return;
 		}
 
-		if (status.equals("completed") && result.equals("SUCCESS")) {
+		if ((status.equals("completed") && result.equals("SUCCESS")) ||
+			fromArchive) {
+
 			return;
 		}
+
+		boolean reinvoked = false;
 
 		for (Build downstreamBuild : getDownstreamBuilds("completed")) {
+			if (reinvoked) {
+				break;
+			}
+
 			for (ReinvokeRule reinvokeRule : reinvokeRules) {
 				String downstreamBuildResult = downstreamBuild.getResult();
 
@@ -213,6 +221,10 @@ public class BatchBuild extends BaseBuild {
 				}
 
 				reinvoke(reinvokeRule);
+
+				reinvoked = true;
+
+				break;
 			}
 		}
 	}

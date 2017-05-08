@@ -23,11 +23,16 @@ import com.liferay.project.templates.internal.util.WorkspaceUtil;
 import com.liferay.project.templates.util.FileTestUtil;
 import com.liferay.project.templates.util.StringTestUtil;
 
+import difflib.Delta;
+import difflib.DiffUtils;
+import difflib.Patch;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import java.net.URI;
@@ -56,6 +61,7 @@ import net.diibadaaba.zipdiff.DifferenceCalculator;
 import net.diibadaaba.zipdiff.Differences;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
@@ -1663,6 +1669,15 @@ public class ProjectTemplatesTest {
 			return;
 		}
 
+		StringBuilder message = new StringBuilder();
+
+		message.append("WAR ");
+		message.append(warFile1);
+		message.append(" and ");
+		message.append(warFile2);
+		message.append(" do not match:");
+		message.append(System.lineSeparator());
+
 		boolean realChange;
 
 		Map<String, ZipArchiveEntry> added = differences.getAdded();
@@ -1672,37 +1687,79 @@ public class ProjectTemplatesTest {
 		if (added.isEmpty() && !changed.isEmpty() && removed.isEmpty()) {
 			realChange = false;
 
-			for (String change : changed.keySet()) {
-				ZipArchiveEntry[] zipArchiveEntries = changed.get(change);
+			ZipFile zipFile1 = null;
+			ZipFile zipFile2 = null;
 
-				ZipArchiveEntry zipArchiveEntry1 = zipArchiveEntries[0];
-				ZipArchiveEntry zipArchiveEntry2 = zipArchiveEntries[0];
+			try {
+				zipFile1 = new ZipFile(warFile1);
+				zipFile2 = new ZipFile(warFile2);
 
-				if (zipArchiveEntry1.isDirectory() &&
-					zipArchiveEntry2.isDirectory() &&
-					(zipArchiveEntry1.getSize() ==
-						zipArchiveEntry2.getSize()) &&
-					(zipArchiveEntry1.getCompressedSize() <= 2) &&
-					(zipArchiveEntry2.getCompressedSize() <= 2)) {
+				for (String change : changed.keySet()) {
+					ZipArchiveEntry[] zipArchiveEntries = changed.get(change);
 
-					// Skip zipdiff bug
+					ZipArchiveEntry zipArchiveEntry1 = zipArchiveEntries[0];
+					ZipArchiveEntry zipArchiveEntry2 = zipArchiveEntries[0];
 
-					continue;
+					if (zipArchiveEntry1.isDirectory() &&
+						zipArchiveEntry2.isDirectory() &&
+						(zipArchiveEntry1.getSize() ==
+							zipArchiveEntry2.getSize()) &&
+						(zipArchiveEntry1.getCompressedSize() <= 2) &&
+						(zipArchiveEntry2.getCompressedSize() <= 2)) {
+
+						// Skip zipdiff bug
+
+						continue;
+					}
+
+					try (InputStream inputStream1 = zipFile1.getInputStream(
+							zipFile1.getEntry(zipArchiveEntry1.getName()));
+						InputStream inputStream2 = zipFile2.getInputStream(
+							zipFile2.getEntry(zipArchiveEntry2.getName()))) {
+
+						List<String> lines1 = StringTestUtil.readLines(
+							inputStream1);
+						List<String> lines2 = StringTestUtil.readLines(
+							inputStream2);
+
+						message.append(System.lineSeparator());
+
+						message.append("--- ");
+						message.append(zipArchiveEntry1.getName());
+						message.append(System.lineSeparator());
+
+						message.append("+++ ");
+						message.append(zipArchiveEntry2.getName());
+						message.append(System.lineSeparator());
+
+						Patch<String> diff = DiffUtils.diff(lines1, lines2);
+
+						for (Delta<String> delta : diff.getDeltas()) {
+							message.append('\t');
+							message.append(delta.getOriginal());
+							message.append(System.lineSeparator());
+
+							message.append('\t');
+							message.append(delta.getRevised());
+							message.append(System.lineSeparator());
+						}
+					}
+
+					realChange = true;
+
+					break;
 				}
-
-				realChange = true;
-
-				break;
+			}
+			finally {
+				ZipFile.closeQuietly(zipFile1);
+				ZipFile.closeQuietly(zipFile2);
 			}
 		}
 		else {
 			realChange = true;
 		}
 
-		Assert.assertFalse(
-			"WAR " + warFile1 + " and " + warFile2 + " do not match:\n" +
-				differences,
-			realChange);
+		Assert.assertFalse(message.toString(), realChange);
 	}
 
 	private static void _writeServiceClass(File projectDir) throws IOException {

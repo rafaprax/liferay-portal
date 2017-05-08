@@ -484,6 +484,9 @@ delete*, set*, and update* require propagation of transactions. All other
 methods support transactions but are assumed to be read only. If you want
 additional methods to fall under transactions, add the method name to this
 element.
+
+The tx-required attribute is deprecated in favor annotating the service impl
+method with com.liferay.portal.kernel.transaction.Transactional.
 -->
 <!ELEMENT tx-required (#PCDATA)>
 

@@ -83,7 +83,18 @@ public class UpgradeImageTypeContent extends UpgradeProcess {
 
 				long folderId = getFolderId(userId, groupId, resourcePrimKey);
 
-				FileEntry fileEntry = getFileEntry(groupId, folderId, id);
+				FileEntry fileEntry = null;
+
+				try {
+					fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+						groupId, folderId, id);
+				}
+				catch (PortalException pe) {
+					_log.error(
+						"Unable to get file entry with group ID " + groupId +
+							", folder ID " + folderId + ", and file name " + id,
+						pe);
+				}
 
 				if (fileEntry == null) {
 					continue;
@@ -141,8 +152,9 @@ public class UpgradeImageTypeContent extends UpgradeProcess {
 					long folderId = getFolderId(
 						userId, groupId, resourcePrimKey);
 
-					FileEntry fileEntry = getFileEntry(
-						groupId, folderId, String.valueOf(articleImageId));
+					FileEntry fileEntry =
+						PortletFileRepositoryUtil.fetchPortletFileEntry(
+							groupId, folderId, String.valueOf(articleImageId));
 
 					if (fileEntry != null) {
 						continue;
@@ -169,25 +181,6 @@ public class UpgradeImageTypeContent extends UpgradeProcess {
 		copyJournalArticleImagesToJournalRepository();
 
 		updateContentImages();
-	}
-
-	protected FileEntry getFileEntry(
-		long groupId, long folderId, String fileName) {
-
-		FileEntry fileEntry = null;
-
-		try {
-			fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
-				groupId, folderId, fileName);
-		}
-		catch (PortalException pe) {
-			_log.error(
-				"Unable to get file entry with group ID " + groupId +
-					", folder ID " + folderId + ", and file name " + fileName,
-				pe);
-		}
-
-		return fileEntry;
 	}
 
 	protected long getFolderId(long userId, long groupId, long resourcePrimKey)

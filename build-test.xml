@@ -31,7 +31,7 @@
 
 	<propertycopy from="browser.${browser.type}.version" name="browser.version" />
 
-	<propertycopy from="java.jdk.${java.jdk.type}.version" name="java.jdk.version" />
+	<propertycopy from="java.jdk.${java.jdk.architecture}.version" name="java.jdk.version" />
 
 	<propertycopy from="liferay.portal.${liferay.portal.branch}.bundle" name="liferay.portal.bundle" />
 
@@ -388,7 +388,7 @@ jdbc.counter.connectionProperties=oracle.jdbc.ReadTimeout=0;oracle.net.CONNECT_T
 	<macrodef name="get-env-java-jdk">
 		<sequential>
 			<propertycopy
-				from="env.option.java.jdk.${java.jdk.type}.${java.jdk.version}"
+				from="env.option.java.jdk.${java.jdk.type}.${java.jdk.version}.${java.jdk.architecture}"
 				name="env.option.java.jdk"
 				override="true"
 			/>
@@ -1184,7 +1184,7 @@ jdbc.counter.connectionProperties=oracle.jdbc.ReadTimeout=0;oracle.net.CONNECT_T
 				replace="\1"
 			/>
 
-			<property name="testray.run.id" value="${app.server.type}-${app.server.major.version} ${database.type}-${database.major.version} ${browser.type}-${browser.major.version} ${operating.system.type}-${operating.system.version} jdk${java.jdk.version}-${java.jdk.type}" />
+			<property name="testray.run.id" value="${app.server.type}-${app.server.major.version} ${database.type}-${database.major.version} ${browser.type}-${browser.major.version} ${operating.system.type}-${operating.system.version} ${java.jdk.type}-jdk${java.jdk.version}-${java.jdk.architecture}" />
 		</sequential>
 	</macrodef>
 
@@ -4224,6 +4224,7 @@ go]]></replacevalue>
 					<property name="liferay.portal.branch" value="${liferay.portal.branch}" />
 					<property name="liferay.portal.bundle" value="${liferay.portal.bundle}" />
 					<property name="liferay.portal.git.id" value="${liferay.portal.git.id}" />
+					<property name="java.jdk.architecture" value="${java.jdk.architecture}" />
 					<property name="java.jdk.type" value="${java.jdk.type}" />
 					<property name="java.jdk.version" value="${java.jdk.version}" />
 					<property name="operating.system.type" value="${operating.system.type}" />
@@ -6665,6 +6666,24 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 		</if>
 
 		<if>
+			<isset property="test.build.fix.pack.zip.url" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					test.build.fix.pack.zip.url=${test.build.fix.pack.zip.url}
+				</echo>
+			</then>
+		</if>
+
+		<if>
+			<isset property="test.build.fix.pack.zip.url.previous" />
+			<then>
+				<echo append="true" file="${test.ext.properties.file}">
+					test.build.fix.pack.zip.url.previous=${test.build.fix.pack.zip.url.previous}
+				</echo>
+			</then>
+		</if>
+
+		<if>
 			<isset property="test.case.required.property.names" />
 			<then>
 				<echo append="true" file="${test.ext.properties.file}">
@@ -8120,9 +8139,18 @@ ANT_OPTS=${env.ANT_OPTS}</echo>
 			<then>
 				<antcall target="prepare-patching-tool" />
 
-				<antcall target="install-patch">
-					<param name="patch.file.zip.url" value="${test.build.fix.pack.zip.url}" />
-				</antcall>
+				<get-testcase-property property.name="skip.install-patch" />
+
+				<if>
+					<not>
+						<equals arg1="${skip.install-patch}" arg2="true" />
+					</not>
+					<then>
+						<antcall target="install-patch">
+							<param name="patch.file.zip.url" value="${test.build.fix.pack.zip.url}" />
+						</antcall>
+					</then>
+				</if>
 			</then>
 		</if>
 	</target>

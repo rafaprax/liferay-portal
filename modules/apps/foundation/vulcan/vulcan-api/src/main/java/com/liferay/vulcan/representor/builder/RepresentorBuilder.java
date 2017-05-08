@@ -35,6 +35,12 @@ public interface RepresentorBuilder<T> {
 		public FirstStep<T> addField(
 			String key, Function<T, Object> fieldFunction);
 
+		public <S> FirstStep<T> addLink(
+			String key, Class<S> modelClass,
+			Function<T, Optional<S>> modelFunction);
+
+		public FirstStep<T> addLink(String key, String url);
+
 		public FirstStep<T> addType(String type);
 
 	}

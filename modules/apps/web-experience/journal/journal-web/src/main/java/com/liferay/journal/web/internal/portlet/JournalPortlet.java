@@ -16,6 +16,8 @@ package com.liferay.journal.web.internal.portlet;
 
 import com.liferay.asset.kernel.exception.AssetCategoryException;
 import com.liferay.asset.kernel.exception.AssetTagException;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.document.library.kernel.exception.DuplicateFileEntryException;
 import com.liferay.document.library.kernel.exception.FileSizeException;
 import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
@@ -884,6 +886,16 @@ public class JournalPortlet extends MVCPortlet {
 				portletPreferences.setValue(
 					"articleId", article.getArticleId());
 
+				AssetEntry assetEntry = _assetEntryLocalService.fetchEntry(
+					JournalArticle.class.getName(),
+					article.getResourcePrimKey());
+
+				if (assetEntry != null) {
+					portletPreferences.setValue(
+						"assetEntryId",
+						String.valueOf(assetEntry.getEntryId()));
+				}
+
 				portletPreferences.store();
 
 				updateContentSearch(
@@ -1368,6 +1380,13 @@ public class JournalPortlet extends MVCPortlet {
 	}
 
 	@Reference
+	protected void setAssetEntryLocalService(
+		AssetEntryLocalService assetEntryLocalService) {
+
+		_assetEntryLocalService = assetEntryLocalService;
+	}
+
+	@Reference
 	protected void setDDMStructureLocalService(
 		DDMStructureLocalService ddmStructureLocalService) {
 
@@ -1429,6 +1448,12 @@ public class JournalPortlet extends MVCPortlet {
 	@Reference
 	protected void setTrashEntryService(TrashEntryService trashEntryService) {
 		_trashEntryService = trashEntryService;
+	}
+
+	protected void unsetAssetEntryLocalService(
+		AssetEntryLocalService assetEntryLocalService) {
+
+		_assetEntryLocalService = null;
 	}
 
 	protected void unsetDDMStructureLocalService(
@@ -1502,6 +1527,7 @@ public class JournalPortlet extends MVCPortlet {
 
 	private static final Log _log = LogFactoryUtil.getLog(JournalPortlet.class);
 
+	private AssetEntryLocalService _assetEntryLocalService;
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private ItemSelector _itemSelector;
 	private JournalArticleService _journalArticleService;

@@ -54,6 +54,7 @@ import com.liferay.journal.exception.ArticleVersionException;
 import com.liferay.journal.exception.DuplicateArticleIdException;
 import com.liferay.journal.exception.InvalidDDMStructureException;
 import com.liferay.journal.exception.NoSuchArticleException;
+import com.liferay.journal.exception.RequiredArticleLocalizationException;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.model.JournalArticleDisplay;
@@ -3854,6 +3855,11 @@ public class JournalArticleLocalServiceImpl
 		JournalArticle article = journalArticlePersistence.findByG_A_V(
 			groupId, articleId, version);
 
+		if (Objects.equals(languageId, article.getDefaultLanguageId())) {
+			throw new RequiredArticleLocalizationException(
+				"Default article localization is required");
+		}
+
 		journalArticleLocalizationPersistence.removeByA_L(
 			article.getId(), languageId);
 
@@ -6332,15 +6338,17 @@ public class JournalArticleLocalServiceImpl
 					tempFileEntry.getFileEntryId());
 			}
 
-			JSONObject cdata = JSONFactoryUtil.createJSONObject(
+			JSONObject cdataJSONObject = JSONFactoryUtil.createJSONObject(
 				dynamicContentElement.getText());
 
-			cdata.put("resourcePrimKey", article.getResourcePrimKey());
-			cdata.put("uuid", fileEntry.getUuid());
+			cdataJSONObject.put("fileEntryId", fileEntry.getFileEntryId());
+			cdataJSONObject.put(
+				"resourcePrimKey", article.getResourcePrimKey());
+			cdataJSONObject.put("uuid", fileEntry.getUuid());
 
 			dynamicContentElement.clearContent();
 
-			dynamicContentElement.addCDATA(cdata.toString());
+			dynamicContentElement.addCDATA(cdataJSONObject.toString());
 		}
 	}
 

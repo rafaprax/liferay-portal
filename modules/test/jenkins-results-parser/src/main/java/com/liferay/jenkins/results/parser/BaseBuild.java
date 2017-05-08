@@ -803,12 +803,21 @@ public abstract class BaseBuild implements Build {
 
 	@Override
 	public void reinvoke(ReinvokeRule reinvokeRule) {
-		if (reinvokeRule != null) {
+		if ((reinvokeRule != null) && !fromArchive) {
 			String message = JenkinsResultsParserUtil.combine(
 				reinvokeRule.getName(), " failure detected at ", getBuildURL(),
-				". This build will be reinvoked.\n", reinvokeRule.toString());
+				". This build will be reinvoked.\n\n", reinvokeRule.toString(),
+				"\n\n");
 
 			System.out.println(message);
+
+			TopLevelBuild topLevelBuild = getTopLevelBuild();
+
+			if (topLevelBuild != null) {
+				message = JenkinsResultsParserUtil.combine(
+					message, "Top Level Build URL: ",
+					topLevelBuild.getBuildURL());
+			}
 
 			String notificationList = reinvokeRule.getNotificationList();
 
@@ -969,22 +978,21 @@ public abstract class BaseBuild implements Build {
 
 					if (this instanceof AxisBuild ||
 						this instanceof BatchBuild ||
-						this instanceof TopLevelBuild) {
+						this instanceof TopLevelBuild || fromArchive ||
+						(badBuildNumbers.size() >= MAX_REINVOCATIONS)) {
 
 						return;
 					}
 
 					if ((result != null) && !result.equals("SUCCESS")) {
 						for (ReinvokeRule reinvokeRule : reinvokeRules) {
-							if (!badBuildNumbers.isEmpty()) {
-								break;
-							}
-
 							if (!reinvokeRule.matches(this)) {
 								continue;
 							}
 
 							reinvoke(reinvokeRule);
+
+							break;
 						}
 					}
 				}
@@ -1702,17 +1710,21 @@ public abstract class BaseBuild implements Build {
 		setBuildNumber(-1);
 
 		downstreamBuilds.clear();
-
-		_consoleReadCursor = 0;
-
-		setStatus("starting");
 	}
 
 	protected void setBuildNumber(int buildNumber) {
-		_buildNumber = buildNumber;
+		if (_buildNumber != buildNumber) {
+			_buildNumber = buildNumber;
 
-		if (_buildNumber != -1) {
-			setStatus("running");
+			_consoleReadCursor = 0;
+			_consoleText = null;
+
+			if (_buildNumber == -1) {
+				setStatus("starting");
+			}
+			else {
+				setStatus("running");
+			}
 		}
 	}
 
@@ -1830,8 +1842,10 @@ public abstract class BaseBuild implements Build {
 				JenkinsResultsParserUtil.DEPENDENCIES_URL_FILE.substring(
 					"file:".length()),
 				"/", path),
-			replaceBuildURL(content));
+			JenkinsResultsParserUtil.redact(replaceBuildURL(content)));
 	}
+
+	protected static final int MAX_REINVOCATIONS = 1;
 
 	protected static final Pattern archiveBuildURLPattern = Pattern.compile(
 		JenkinsResultsParserUtil.combine(

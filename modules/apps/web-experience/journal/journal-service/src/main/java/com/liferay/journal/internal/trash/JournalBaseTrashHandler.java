@@ -20,6 +20,7 @@ import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.journal.service.JournalFolderLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ContainerModel;
+import com.liferay.portal.kernel.model.TrashedModel;
 import com.liferay.portal.kernel.trash.BaseTrashHandler;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
@@ -209,11 +210,11 @@ public abstract class JournalBaseTrashHandler extends BaseTrashHandler {
 	}
 
 	@Override
-	public List<TrashRenderer> getTrashModelTrashRenderers(
+	public List<TrashedModel> getTrashModelTrashedModels(
 			long classPK, int start, int end, OrderByComparator obc)
 		throws PortalException {
 
-		List<TrashRenderer> trashRenderers = new ArrayList<>();
+		List<TrashedModel> trashedModels = new ArrayList<>();
 
 		JournalFolder folder = JournalFolderLocalServiceUtil.getFolder(classPK);
 
@@ -223,33 +224,19 @@ public abstract class JournalBaseTrashHandler extends BaseTrashHandler {
 				start, end, obc);
 
 		for (Object folderOrArticle : foldersAndArticles) {
-			TrashRenderer trashRenderer = null;
-
 			if (folderOrArticle instanceof JournalFolder) {
 				JournalFolder curFolder = (JournalFolder)folderOrArticle;
 
-				TrashHandler trashHandler =
-					TrashHandlerRegistryUtil.getTrashHandler(
-						JournalFolder.class.getName());
-
-				trashRenderer = trashHandler.getTrashRenderer(
-					curFolder.getPrimaryKey());
+				trashedModels.add(curFolder);
 			}
 			else {
 				JournalArticle article = (JournalArticle)folderOrArticle;
 
-				TrashHandler trashHandler =
-					TrashHandlerRegistryUtil.getTrashHandler(
-						JournalArticle.class.getName());
-
-				trashRenderer = trashHandler.getTrashRenderer(
-					article.getResourcePrimKey());
+				trashedModels.add(article);
 			}
-
-			trashRenderers.add(trashRenderer);
 		}
 
-		return trashRenderers;
+		return trashedModels;
 	}
 
 	@Override

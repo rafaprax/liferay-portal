@@ -77,10 +77,10 @@ public class GetDataProviderParametersSettingsMVCResourceCommandTest {
 				createParametersJSONObject(
 					_ddmDataProvider,
 					getDataProviderFormValues(
-						"form-values-data-provider-settings.json"));
+						"form-values-data-provider-settings-1.json"));
 
 		String expectedValue = read(
-			"data-provider-input-output-parameters.json");
+			"data-provider-input-output-parameters-1.json");
 
 		JSONAssert.assertEquals(
 			expectedValue, parametersJSONObject.toString(), false);

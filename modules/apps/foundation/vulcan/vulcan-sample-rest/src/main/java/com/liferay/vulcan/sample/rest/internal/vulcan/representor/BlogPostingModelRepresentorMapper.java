@@ -58,7 +58,6 @@ public class BlogPostingModelRepresentorMapper
 			representorBuilder.getFirstStep(
 				blogsEntry -> String.valueOf(blogsEntry.getEntryId()));
 
-		firstStep.addEmbedded("author", User.class, this::_getUserOptional);
 		firstStep.addEmbedded("creator", User.class, this::_getUserOptional);
 		firstStep.addField("alternativeHeadline", BlogsEntry::getSubtitle);
 		firstStep.addField("articleBody", BlogsEntry::getContent);
@@ -86,6 +85,9 @@ public class BlogPostingModelRepresentorMapper
 			"publishedDate",
 			blogsEntry -> formatFunction.apply(
 				blogsEntry.getLastPublishDate()));
+		firstStep.addLink("author", User.class, this::_getUserOptional);
+		firstStep.addLink(
+			"license", "https://creativecommons.org/licenses/by/4.0/");
 		firstStep.addType("BlogPosting");
 	}
 

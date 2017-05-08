@@ -404,7 +404,7 @@ public class JournalDisplayContext {
 		return _folderId;
 	}
 
-	public String getFoldersJSON() throws Exception {
+	public JSONArray getFoldersJSONArray() throws Exception {
 		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
@@ -420,7 +420,11 @@ public class JournalDisplayContext {
 		jsonObject.put(
 			"name", LanguageUtil.get(themeDisplay.getLocale(), "home"));
 
-		return jsonObject.toString();
+		JSONArray rootJSONArray = JSONFactoryUtil.createJSONArray();
+
+		rootJSONArray.put(jsonObject);
+
+		return rootJSONArray;
 	}
 
 	public String getFolderTitle() throws PortalException {

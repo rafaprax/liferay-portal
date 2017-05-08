@@ -1,6 +1,10 @@
 {
 	"dependencies": {
-		"metal-components": "1.0.0-rc.19"
+		"metal": "^2.5.18",
+		"metal-dom": "^2.5.18",
+		"metal-soy": "^2.4.5",
+		"metal-state": "^2.6.4",
+		"metal-treeview": "^2.1.0"
 	},
 	"devDependencies": {
 		"liferay-module-config-generator": "^1.2.1",

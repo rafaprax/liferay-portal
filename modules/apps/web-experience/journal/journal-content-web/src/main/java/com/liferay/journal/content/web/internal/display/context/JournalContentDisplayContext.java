@@ -455,13 +455,18 @@ public class JournalContentDisplayContext {
 		PortletPreferences portletPreferences =
 			_portletRequest.getPreferences();
 
-		String articleId = portletPreferences.getValue(
-			"articleId", StringPool.BLANK);
-		long groupId = GetterUtil.getLong(
-			portletPreferences.getValue("groupId", StringPool.BLANK));
+		long assetEntryId = GetterUtil.getLong(
+			portletPreferences.getValue("assetEntryId", StringPool.BLANK));
+
+		AssetEntry assetEntry = AssetEntryLocalServiceUtil.fetchAssetEntry(
+			assetEntryId);
+
+		if (assetEntry == null) {
+			return null;
+		}
 
 		return JournalArticleLocalServiceUtil.fetchLatestArticle(
-			groupId, articleId, WorkflowConstants.STATUS_ANY);
+			assetEntry.getClassPK());
 	}
 
 	public List<ContentMetadataAssetAddonEntry>

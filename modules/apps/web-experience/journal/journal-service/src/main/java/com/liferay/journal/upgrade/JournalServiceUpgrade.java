@@ -48,6 +48,7 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ImageLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
+import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.settings.SettingsFactory;
 import com.liferay.portal.kernel.upgrade.UpgradeException;
@@ -92,7 +93,7 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 				_ddmStructureLocalService, _ddmTemplateLinkLocalService,
 				_defaultDDMStructureHelper, _groupLocalService,
 				_resourceActionLocalService, _resourceActions,
-				_userLocalService),
+				_resourceLocalService, _userLocalService),
 			new UpgradeJournalArticles(
 				_assetCategoryLocalService, _ddmStructureLocalService,
 				_groupLocalService, _layoutLocalService),
@@ -254,6 +255,13 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 	}
 
 	@Reference(unbind = "-")
+	protected void setResourceLocalService(
+		ResourceLocalService resourceLocalService) {
+
+		_resourceLocalService = resourceLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setSettingsFactory(SettingsFactory settingsFactory) {
 		_settingsFactory = settingsFactory;
 	}
@@ -282,6 +290,7 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 	private PrefsProps _prefsProps;
 	private ResourceActionLocalService _resourceActionLocalService;
 	private ResourceActions _resourceActions;
+	private ResourceLocalService _resourceLocalService;
 	private SettingsFactory _settingsFactory;
 	private UserLocalService _userLocalService;
 

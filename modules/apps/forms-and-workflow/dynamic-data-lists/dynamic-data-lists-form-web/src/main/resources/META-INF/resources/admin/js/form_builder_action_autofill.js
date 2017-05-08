@@ -164,7 +164,7 @@ AUI.add(
 								Lang.sub(
 									TPL_CONTAINER_INPUT_OUTPUT_FIELD,
 									{
-										field: label
+										field: label,
 										required: requiredField ? TPL_REQUIRED_ACTION : ''
 									}
 								)

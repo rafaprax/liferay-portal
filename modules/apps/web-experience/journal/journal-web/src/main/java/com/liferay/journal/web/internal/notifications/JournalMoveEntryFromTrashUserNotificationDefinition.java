@@ -31,11 +31,10 @@ import org.osgi.service.component.annotations.Component;
 	service = UserNotificationDefinition.class
 )
 public class JournalMoveEntryFromTrashUserNotificationDefinition
-	extends UserNotificationDefinition {
+	extends BaseJournalUserNotificationDefinition {
 
 	public JournalMoveEntryFromTrashUserNotificationDefinition() {
 		super(
-			JournalPortletKeys.JOURNAL, 0,
 			JournalArticleConstants.NOTIFICATION_TYPE_MOVE_ENTRY_FROM_TRASH,
 			"receive-a-notification-when-someone-restores-from-trash-web-" +
 				"content-you-are-subscribed-to");

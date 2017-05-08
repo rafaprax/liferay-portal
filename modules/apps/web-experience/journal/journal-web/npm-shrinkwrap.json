@@ -70,11 +70,6 @@
 			"resolved": "https://registry.npmjs.org/bootstrap/-/bootstrap-3.3.7.tgz",
 			"version": "3.3.7"
 		},
-		"bootstrap-sass": {
-			"from": "bootstrap-sass@>=3.3.6 <4.0.0",
-			"resolved": "https://registry.npmjs.org/bootstrap-sass/-/bootstrap-sass-3.3.7.tgz",
-			"version": "3.3.7"
-		},
 		"boxen": {
 			"dependencies": {
 				"object-assign": {
@@ -852,34 +847,9 @@
 			"version": "0.2.2"
 		},
 		"metal": {
-			"from": "metal@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal/-/metal-1.0.5.tgz",
-			"version": "1.0.5"
-		},
-		"metal-affix": {
-			"from": "metal-affix@>=1.0.0-rc.1 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-affix/-/metal-affix-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-alert": {
-			"from": "metal-alert@>=1.0.0-rc.5 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-alert/-/metal-alert-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-anim": {
-			"from": "metal-anim@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-anim/-/metal-anim-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-autocomplete": {
-			"from": "metal-autocomplete@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-autocomplete/-/metal-autocomplete-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-button-group": {
-			"from": "metal-button-group@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-button-group/-/metal-button-group-1.0.0.tgz",
-			"version": "1.0.0"
+			"from": "metal@>=2.5.18 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal/-/metal-2.6.4.tgz",
+			"version": "2.6.4"
 		},
 		"metal-cli": {
 			"dependencies": {
@@ -2594,140 +2564,50 @@
 			"resolved": "https://registry.npmjs.org/metal-cli/-/metal-cli-4.0.1.tgz",
 			"version": "4.0.1"
 		},
-		"metal-clipboard": {
-			"from": "metal-clipboard@>=1.0.0-rc.1 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-clipboard/-/metal-clipboard-1.0.0.tgz",
-			"version": "1.0.0"
-		},
 		"metal-component": {
-			"from": "metal-component@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-component/-/metal-component-1.0.5.tgz",
-			"version": "1.0.5"
-		},
-		"metal-components": {
-			"from": "metal-components@1.0.0-rc.19",
-			"resolved": "https://registry.npmjs.org/metal-components/-/metal-components-1.0.0-rc.19.tgz",
-			"version": "1.0.0-rc.19"
-		},
-		"metal-datatable": {
-			"from": "metal-datatable@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-datatable/-/metal-datatable-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-debounce": {
-			"from": "metal-debounce@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-debounce/-/metal-debounce-1.0.0.tgz",
-			"version": "1.0.0"
+			"from": "metal-component@>=2.9.0 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-component/-/metal-component-2.9.0.tgz",
+			"version": "2.9.0"
 		},
 		"metal-dom": {
-			"from": "metal-dom@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-dom/-/metal-dom-1.0.5.tgz",
-			"version": "1.0.5"
-		},
-		"metal-drag-drop": {
-			"from": "metal-drag-drop@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-drag-drop/-/metal-drag-drop-1.0.1.tgz",
-			"version": "1.0.1"
-		},
-		"metal-dropdown": {
-			"from": "metal-dropdown@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-dropdown/-/metal-dropdown-1.0.0.tgz",
-			"version": "1.0.0"
+			"from": "metal-dom@>=2.5.18 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-dom/-/metal-dom-2.9.0.tgz",
+			"version": "2.9.0"
 		},
 		"metal-events": {
-			"from": "metal-events@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-events/-/metal-events-1.0.5.tgz",
-			"version": "1.0.5"
+			"from": "metal-events@>=2.6.4 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-events/-/metal-events-2.6.4.tgz",
+			"version": "2.6.4"
 		},
 		"metal-incremental-dom": {
-			"from": "metal-incremental-dom@>=1.0.5 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-incremental-dom/-/metal-incremental-dom-1.0.5.tgz",
-			"version": "1.0.5"
+			"from": "metal-incremental-dom@>=2.9.0 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-incremental-dom/-/metal-incremental-dom-2.9.0.tgz",
+			"version": "2.9.0"
 		},
-		"metal-list": {
-			"from": "metal-list@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-list/-/metal-list-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-modal": {
-			"from": "metal-modal@>=1.0.0-rc.3 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-modal/-/metal-modal-1.0.1.tgz",
-			"version": "1.0.1"
-		},
-		"metal-popover": {
-			"from": "metal-popover@>=1.0.0-rc.3 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-popover/-/metal-popover-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-position": {
-			"from": "metal-position@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-position/-/metal-position-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-progressbar": {
-			"from": "metal-progressbar@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-progressbar/-/metal-progressbar-1.0.1.tgz",
-			"version": "1.0.1"
-		},
-		"metal-promise": {
-			"from": "metal-promise@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-promise/-/metal-promise-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-rating": {
-			"from": "metal-rating@>=1.0.0-rc.1 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-rating/-/metal-rating-1.0.1.tgz",
-			"version": "1.0.1"
-		},
-		"metal-scrollspy": {
-			"from": "metal-scrollspy@>=1.0.0-rc.1 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-scrollspy/-/metal-scrollspy-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-select": {
-			"from": "metal-select@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-select/-/metal-select-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-slider": {
-			"from": "metal-slider@>=1.0.0-rc.3 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-slider/-/metal-slider-1.1.1.tgz",
-			"version": "1.1.1"
+		"metal-keyboard-focus": {
+			"from": "metal-keyboard-focus@>=2.0.0 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-keyboard-focus/-/metal-keyboard-focus-2.0.1.tgz",
+			"version": "2.0.1"
 		},
 		"metal-soy": {
-			"from": "metal-soy@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-soy/-/metal-soy-1.0.5.tgz",
-			"version": "1.0.5"
+			"from": "metal-soy@>=2.4.5 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-soy/-/metal-soy-2.9.0.tgz",
+			"version": "2.9.0"
 		},
 		"metal-soy-bundle": {
-			"from": "metal-soy-bundle@>=1.1.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-soy-bundle/-/metal-soy-bundle-1.3.1.tgz",
-			"version": "1.3.1"
+			"from": "metal-soy-bundle@>=2.9.0 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-soy-bundle/-/metal-soy-bundle-2.9.0.tgz",
+			"version": "2.9.0"
 		},
 		"metal-state": {
-			"from": "metal-state@>=1.0.0 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-state/-/metal-state-1.0.5.tgz",
-			"version": "1.0.5"
-		},
-		"metal-switcher": {
-			"from": "metal-switcher@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-switcher/-/metal-switcher-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-toggler": {
-			"from": "metal-toggler@>=1.0.0-rc.1 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-toggler/-/metal-toggler-1.0.0.tgz",
-			"version": "1.0.0"
-		},
-		"metal-tooltip": {
-			"from": "metal-tooltip@>=1.0.0-rc.3 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-tooltip/-/metal-tooltip-1.0.0.tgz",
-			"version": "1.0.0"
+			"from": "metal-state@>=2.6.4 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-state/-/metal-state-2.9.0.tgz",
+			"version": "2.9.0"
 		},
 		"metal-treeview": {
-			"from": "metal-treeview@>=1.0.0-rc.2 <2.0.0",
-			"resolved": "https://registry.npmjs.org/metal-treeview/-/metal-treeview-1.0.0.tgz",
-			"version": "1.0.0"
+			"from": "metal-treeview@>=2.1.0 <3.0.0",
+			"resolved": "http://registry.npmjs.org/metal-treeview/-/metal-treeview-2.1.0.tgz",
+			"version": "2.1.0"
 		},
 		"micromatch": {
 			"from": "micromatch@>=2.3.7 <3.0.0",

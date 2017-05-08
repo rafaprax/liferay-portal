@@ -31,11 +31,10 @@ import org.osgi.service.component.annotations.Component;
 	service = UserNotificationDefinition.class
 )
 public class JournalMoveEntryToFolderUserNotificationDefinition
-	extends UserNotificationDefinition {
+	extends BaseJournalUserNotificationDefinition {
 
 	public JournalMoveEntryToFolderUserNotificationDefinition() {
 		super(
-			JournalPortletKeys.JOURNAL, 0,
 			JournalArticleConstants.NOTIFICATION_TYPE_MOVE_ENTRY_TO_FOLDER,
 			"receive-a-notification-when-someone-moves-to-folder-web-content-" +
 				"you-are-subscribed-to");
