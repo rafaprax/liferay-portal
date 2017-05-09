@@ -68,9 +68,6 @@ public class SoyPortlet extends MVCPortlet {
 
 		try {
 			_soyPortletHelper = new SoyPortletHelper(_bundle);
-			_templateResources =
-				SoyTemplateResourcesProvider.getBundleTemplateResources(
-					_bundle, templatePath);
 		}
 		catch (Exception e) {
 			throw new PortletException(e);
@@ -222,6 +219,12 @@ public class SoyPortlet extends MVCPortlet {
 
 	private List<TemplateResource> _getTemplateResources()
 		throws TemplateException {
+
+		if (_templateResources == null) {
+			_templateResources =
+				SoyTemplateResourcesProvider.getBundleTemplateResources(
+					_bundle, templatePath);
+		}
 
 		return _templateResources;
 	}

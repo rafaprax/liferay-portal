@@ -210,16 +210,23 @@ public class TemplateRendererTag extends ParamAndPropertyAncestorTagImpl {
 
 	private Template _getTemplate() throws TemplateException {
 		return TemplateManagerUtil.getTemplate(
-			TemplateConstants.LANG_TYPE_SOY, _templateResources, false);
+			TemplateConstants.LANG_TYPE_SOY, _getTemplateResources(), false);
 	}
 
-	private static final List<TemplateResource> _templateResources =
-		SoyTemplateResourcesProvider.getAllTemplateResources();
+	private List<TemplateResource> _getTemplateResources() {
+		if (_templateResources == null) {
+			_templateResources =
+				SoyTemplateResourcesProvider.getAllTemplateResources();
+		}
+
+		return _templateResources;
+	}
 
 	private String _componentId;
 	private Map<String, Object> _context;
 	private String _module;
 	private Template _template;
 	private String _templateNamespace;
+	private List<TemplateResource> _templateResources;
 
 }

@@ -18,30 +18,27 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.SingleVMPoolUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.template.soy.utils.TemplateSoyUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
@@ -55,52 +52,13 @@ public class SoyTemplateResourcesTracker {
 		return _templateResources;
 	}
 
-	public Bundle getBundle(long bundleId) {
-		return _bundleMap.get(bundleId);
-	}
-
-	public Collection<Bundle> getBundles() {
-		return _bundleMap.values();
-	}
-
-	public Bundle getTemplateBundle(String templateId) {
-		long bundleId = getBundleId(templateId);
-
-		Bundle bundle = getBundle(bundleId);
-
-		if (bundle == null) {
-			throw new IllegalStateException(
-				"There are no bundles providing " + bundleId);
-		}
-
-		return bundle;
-	}
-
-	protected static long getBundleId(String templateId) {
-		int pos = templateId.indexOf(TemplateConstants.BUNDLE_SEPARATOR);
-
-		if (pos == -1) {
-			if (_log.isDebugEnabled()) {
-				String message = String.format(
-					"The templateId \"%s\" does not map to a Soy template",
-					templateId);
-
-				_log.debug(message);
-			}
-
-			return -1;
-		}
-
-		return Long.valueOf(templateId.substring(0, pos));
-	}
-
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		int stateMask = Bundle.ACTIVE | Bundle.RESOLVED;
 
 		_bundleTracker = new BundleTracker<>(
 			bundleContext, stateMask,
-			new SoyCapabilityBundleTrackerCustomizer("soy"));
+			new SoyCapabilityBundleTrackerCustomizer());
 
 		_bundleTracker.open();
 	}
@@ -110,11 +68,14 @@ public class SoyTemplateResourcesTracker {
 		_bundleTracker.close();
 	}
 
+	@Reference(unbind = "-")
+	protected void setSoyTemplateBundleResourceParser(
+		SoyTemplateBundleResourceParser soyTemplateBundleResourceParser) {
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		SoyTemplateResourcesTracker.class);
 
-	private static final Map<Long, Bundle> _bundleMap =
-		new ConcurrentHashMap<>();
 	private static final List<TemplateResource> _templateResources =
 		new CopyOnWriteArrayList<>();
 
@@ -123,7 +84,7 @@ public class SoyTemplateResourcesTracker {
 	private static final class SoyCapabilityBundleTrackerCustomizer
 		implements BundleTrackerCustomizer<List<BundleCapability>> {
 
-		public SoyCapabilityBundleTrackerCustomizer(String namespace) {
+		public SoyCapabilityBundleTrackerCustomizer() {
 			_soyTofuCacheHandler = new SoyTofuCacheHandler(_portalCache);
 		}
 
@@ -131,12 +92,16 @@ public class SoyTemplateResourcesTracker {
 		public List<BundleCapability> addingBundle(
 			Bundle bundle, BundleEvent bundleEvent) {
 
-			_addTemplateResourcesToList(bundle);
-
 			BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
 
 			List<BundleCapability> bundleCapabilities =
 				bundleWiring.getCapabilities("soy");
+
+			if (ListUtil.isEmpty(bundleCapabilities)) {
+				return bundleCapabilities;
+			}
+
+			_addTemplateResourcesToList(bundle);
 
 			return bundleCapabilities;
 		}
@@ -165,23 +130,9 @@ public class SoyTemplateResourcesTracker {
 				_removeBundleTemplateResourcesFromList(bundle);
 
 			_soyTofuCacheHandler.removeIfAny(removedTemplateResources);
-
-			_bundleMap.remove(bundle.getBundleId());
 		}
 
 		private void _addTemplateResourcesToList(Bundle bundle) {
-			BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-
-			for (BundleWire bundleWire : bundleWiring.getRequiredWires("soy")) {
-				BundleRevision bundleRevision = bundleWire.getProvider();
-
-				Bundle providerBundle = bundleRevision.getBundle();
-
-				_bundleMap.put(providerBundle.getBundleId(), providerBundle);
-			}
-
-			_bundleMap.put(bundle.getBundleId(), bundle);
-
 			SoyTemplateResourcesCollector soyTemplateResourceCollector =
 				new SoyTemplateResourcesCollector(bundle, StringPool.SLASH);
 
@@ -218,7 +169,7 @@ public class SoyTemplateResourcesTracker {
 			while (iterator.hasNext()) {
 				TemplateResource templateResource = iterator.next();
 
-				long bundleId = SoyTemplateResourcesTracker.getBundleId(
+				long bundleId = TemplateSoyUtil.getBundleId(
 					templateResource.getTemplateId());
 
 				if (bundle.getBundleId() == bundleId) {

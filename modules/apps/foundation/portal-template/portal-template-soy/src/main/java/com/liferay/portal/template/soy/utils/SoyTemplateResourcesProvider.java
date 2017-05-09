@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
+import com.liferay.portal.template.soy.internal.SoyCapabilityBundleTracker;
 import com.liferay.portal.template.soy.internal.SoyTemplateResourcesCollector;
 import com.liferay.portal.template.soy.internal.SoyTemplateResourcesTracker;
 
@@ -63,8 +64,15 @@ public class SoyTemplateResourcesProvider {
 	public static Bundle getTemplateResourceBundle(
 		TemplateResource templateResource) {
 
-		return _soyTemplateResourcesTracker.getTemplateBundle(
+		return _soyCapabilityBundleTracker.getTemplateBundle(
 			templateResource.getTemplateId());
+	}
+
+	@Reference(unbind = "-")
+	protected void setSoyCapabilityBundleTracker(
+		SoyCapabilityBundleTracker soyCapabilityBundleTracker) {
+
+		_soyCapabilityBundleTracker = soyCapabilityBundleTracker;
 	}
 
 	@Reference(unbind = "-")
@@ -77,6 +85,7 @@ public class SoyTemplateResourcesProvider {
 	private static final Log _log = LogFactoryUtil.getLog(
 		SoyTemplateResourcesProvider.class);
 
+	private static SoyCapabilityBundleTracker _soyCapabilityBundleTracker;
 	private static SoyTemplateResourcesTracker _soyTemplateResourcesTracker;
 
 }
