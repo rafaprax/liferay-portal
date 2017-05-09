@@ -42,6 +42,7 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
@@ -108,6 +109,13 @@ public class SoyTemplateResourcesTracker {
 	@Deactivate
 	protected void deactivate() {
 		_bundleTracker.close();
+	}
+
+	@Reference(unbind = "-")
+	protected void setSoyTemplateBundleResourceParser(
+		SoyTemplateBundleResourceParser soyTemplateBundleResourceParser) {
+
+		System.out.println("test");
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
