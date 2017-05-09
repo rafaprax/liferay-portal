@@ -2329,13 +2329,15 @@ public class StagingImpl implements Staging {
 	public void unschedulePublishToRemote(PortletRequest portletRequest)
 		throws PortalException {
 
-		long groupId = ParamUtil.getLong(portletRequest, "groupId");
+		long stagingGroupId = ParamUtil.getLong(
+			portletRequest, "stagingGroupId");
 
 		String jobName = ParamUtil.getString(portletRequest, "jobName");
 		String groupName = getSchedulerGroupName(
-			DestinationNames.LAYOUTS_REMOTE_PUBLISHER, groupId);
+			DestinationNames.LAYOUTS_REMOTE_PUBLISHER, stagingGroupId);
 
-		_layoutService.unschedulePublishToRemote(groupId, jobName, groupName);
+		_layoutService.unschedulePublishToRemote(
+			stagingGroupId, jobName, groupName);
 	}
 
 	@Override

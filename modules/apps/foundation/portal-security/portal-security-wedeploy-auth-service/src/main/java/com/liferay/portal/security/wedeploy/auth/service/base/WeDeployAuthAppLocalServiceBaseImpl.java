@@ -42,6 +42,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.security.wedeploy.auth.model.WeDeployAuthApp;
 import com.liferay.portal.security.wedeploy.auth.service.WeDeployAuthAppLocalService;
 import com.liferay.portal.security.wedeploy.auth.service.persistence.WeDeployAuthAppPersistence;
+import com.liferay.portal.security.wedeploy.auth.service.persistence.WeDeployAuthTokenPersistence;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -354,6 +355,44 @@ public abstract class WeDeployAuthAppLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the we deploy auth token local service.
+	 *
+	 * @return the we deploy auth token local service
+	 */
+	public com.liferay.portal.security.wedeploy.auth.service.WeDeployAuthTokenLocalService getWeDeployAuthTokenLocalService() {
+		return weDeployAuthTokenLocalService;
+	}
+
+	/**
+	 * Sets the we deploy auth token local service.
+	 *
+	 * @param weDeployAuthTokenLocalService the we deploy auth token local service
+	 */
+	public void setWeDeployAuthTokenLocalService(
+		com.liferay.portal.security.wedeploy.auth.service.WeDeployAuthTokenLocalService weDeployAuthTokenLocalService) {
+		this.weDeployAuthTokenLocalService = weDeployAuthTokenLocalService;
+	}
+
+	/**
+	 * Returns the we deploy auth token persistence.
+	 *
+	 * @return the we deploy auth token persistence
+	 */
+	public WeDeployAuthTokenPersistence getWeDeployAuthTokenPersistence() {
+		return weDeployAuthTokenPersistence;
+	}
+
+	/**
+	 * Sets the we deploy auth token persistence.
+	 *
+	 * @param weDeployAuthTokenPersistence the we deploy auth token persistence
+	 */
+	public void setWeDeployAuthTokenPersistence(
+		WeDeployAuthTokenPersistence weDeployAuthTokenPersistence) {
+		this.weDeployAuthTokenPersistence = weDeployAuthTokenPersistence;
+	}
+
+	/**
 	 * Returns the counter local service.
 	 *
 	 * @return the counter local service
@@ -522,6 +561,10 @@ public abstract class WeDeployAuthAppLocalServiceBaseImpl
 	protected WeDeployAuthAppLocalService weDeployAuthAppLocalService;
 	@BeanReference(type = WeDeployAuthAppPersistence.class)
 	protected WeDeployAuthAppPersistence weDeployAuthAppPersistence;
+	@BeanReference(type = com.liferay.portal.security.wedeploy.auth.service.WeDeployAuthTokenLocalService.class)
+	protected com.liferay.portal.security.wedeploy.auth.service.WeDeployAuthTokenLocalService weDeployAuthTokenLocalService;
+	@BeanReference(type = WeDeployAuthTokenPersistence.class)
+	protected WeDeployAuthTokenPersistence weDeployAuthTokenPersistence;
 	@ServiceReference(type = com.liferay.counter.kernel.service.CounterLocalService.class)
 	protected com.liferay.counter.kernel.service.CounterLocalService counterLocalService;
 	@ServiceReference(type = com.liferay.portal.kernel.service.ClassNameLocalService.class)

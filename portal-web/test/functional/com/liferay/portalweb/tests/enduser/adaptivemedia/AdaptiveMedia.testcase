@@ -143,6 +143,41 @@
 		</execute>
 	</command>
 
+	<command name="AddDuplicateImageResolution" priority="4">
+		<execute macro="ProductMenu#gotoControlPanelConfiguration">
+			<var name="portlet" value="Adaptive Media" />
+		</execute>
+
+		<execute macro="AdaptiveMedia#addImageResolution">
+			<var name="customID" value="custom-id" />
+			<var name="imageName" value="Image Variant With Custom ID" />
+			<var name="maxHeight" value="350" />
+			<var name="maxWidth" value="450" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoControlPanelConfiguration">
+			<var name="portlet" value="Adaptive Media" />
+		</execute>
+
+		<execute macro="AdaptiveMedia#addImageResolution">
+			<var name="customID" value="custom-id" />
+			<var name="duplicate" value="true" />
+			<var name="imageName" value="Image Variant With Duplicate Custom ID" />
+			<var name="maxHeight" value="350" />
+			<var name="maxWidth" value="450" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoControlPanelConfiguration">
+			<var name="portlet" value="Adaptive Media" />
+		</execute>
+
+		<execute macro="AdaptiveMedia#viewNoImageResolution" />
+	</command>
+
 	<command name="AddImageVariantsForBlogEntry" priority="5">
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Adaptive Media" />

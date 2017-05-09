@@ -106,7 +106,12 @@ public class WeDeployAuthAppModelImpl extends BaseModelImpl<WeDeployAuthApp>
 	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(com.liferay.portal.security.wedeploy.auth.service.util.ServiceProps.get(
 				"value.object.finder.cache.enabled.com.liferay.portal.security.wedeploy.auth.model.WeDeployAuthApp"),
 			true);
-	public static final boolean COLUMN_BITMASK_ENABLED = false;
+	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.portal.security.wedeploy.auth.service.util.ServiceProps.get(
+				"value.object.column.bitmask.enabled.com.liferay.portal.security.wedeploy.auth.model.WeDeployAuthApp"),
+			true);
+	public static final long CLIENTID_COLUMN_BITMASK = 1L;
+	public static final long CLIENTSECRET_COLUMN_BITMASK = 2L;
+	public static final long WEDEPLOYAUTHAPPID_COLUMN_BITMASK = 4L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -390,7 +395,17 @@ public class WeDeployAuthAppModelImpl extends BaseModelImpl<WeDeployAuthApp>
 
 	@Override
 	public void setClientId(String clientId) {
+		_columnBitmask |= CLIENTID_COLUMN_BITMASK;
+
+		if (_originalClientId == null) {
+			_originalClientId = _clientId;
+		}
+
 		_clientId = clientId;
+	}
+
+	public String getOriginalClientId() {
+		return GetterUtil.getString(_originalClientId);
 	}
 
 	@JSON
@@ -406,7 +421,21 @@ public class WeDeployAuthAppModelImpl extends BaseModelImpl<WeDeployAuthApp>
 
 	@Override
 	public void setClientSecret(String clientSecret) {
+		_columnBitmask |= CLIENTSECRET_COLUMN_BITMASK;
+
+		if (_originalClientSecret == null) {
+			_originalClientSecret = _clientSecret;
+		}
+
 		_clientSecret = clientSecret;
+	}
+
+	public String getOriginalClientSecret() {
+		return GetterUtil.getString(_originalClientSecret);
+	}
+
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
@@ -508,6 +537,12 @@ public class WeDeployAuthAppModelImpl extends BaseModelImpl<WeDeployAuthApp>
 		WeDeployAuthAppModelImpl weDeployAuthAppModelImpl = this;
 
 		weDeployAuthAppModelImpl._setModifiedDate = false;
+
+		weDeployAuthAppModelImpl._originalClientId = weDeployAuthAppModelImpl._clientId;
+
+		weDeployAuthAppModelImpl._originalClientSecret = weDeployAuthAppModelImpl._clientSecret;
+
+		weDeployAuthAppModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -664,6 +699,9 @@ public class WeDeployAuthAppModelImpl extends BaseModelImpl<WeDeployAuthApp>
 	private boolean _setModifiedDate;
 	private String _name;
 	private String _clientId;
+	private String _originalClientId;
 	private String _clientSecret;
+	private String _originalClientSecret;
+	private long _columnBitmask;
 	private WeDeployAuthApp _escapedModel;
 }
