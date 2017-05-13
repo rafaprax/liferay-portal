@@ -14,6 +14,8 @@
 
 package com.liferay.portal.template.soy.internal;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
@@ -99,8 +101,19 @@ public class SoyTemplateResourcesCollector {
 				String templateId = getTemplateId(
 					providerBundle.getBundleId(), url);
 
-				TemplateResource templateResource = _getTemplateResource(
-					templateId, url);
+				TemplateResource templateResource = null;
+
+				try {
+					templateResource = _getTemplateResource(templateId, url);
+				}
+				catch (IllegalStateException ise) {
+					_log.error(
+						String.format(
+							"providerBundle = %s, templateId = %s",
+							providerBundle.getSymbolicName(), templateId));
+
+					throw ise;
+				}
 
 				templateResources.add(templateResource);
 			}
@@ -154,6 +167,9 @@ public class SoyTemplateResourcesCollector {
 	}
 
 	private static final String _SOY_FILE_EXTENSION = "*.soy";
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SoyTemplateResourcesCollector.class);
 
 	private final Bundle _bundle;
 	private final String _templatePath;
