@@ -85,6 +85,7 @@ import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -142,7 +143,17 @@ import jodd.bean.BeanUtil;
 public class PortletDataContextImpl implements PortletDataContext {
 
 	public PortletDataContextImpl(LockManager lockManager) {
-		initXStream();
+		this(lockManager, true);
+	}
+
+	public PortletDataContextImpl(
+		LockManager lockManager, boolean createXstream) {
+
+		if (createXstream) {
+			synchronized (PortletDataContextImpl.class) {
+				initXStream();
+			}
+		}
 
 		_lockManager = lockManager;
 	}
@@ -1372,8 +1383,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 		Attribute classNameAttribute = element.attribute("attached-class-name");
 
 		if ((object != null) && (classNameAttribute != null)) {
+			String className = classNameAttribute.getText();
+
+			BeanPropertiesUtil.setProperty(object, "className", className);
 			BeanPropertiesUtil.setProperty(
-				object, "className", classNameAttribute.getText());
+				object, "classNameId", PortalUtil.getClassNameId(className));
 		}
 
 		return object;
@@ -2642,21 +2656,25 @@ public class PortletDataContextImpl implements PortletDataContext {
 		Set<XStreamConfigurator> xStreamConfigurators =
 			XStreamConfiguratorRegistryUtil.getXStreamConfigurators();
 
+		ClassLoader classLoader =
+			XStreamConfiguratorRegistryUtil.getConfiguratorsClassLoader(
+				XStream.class.getClassLoader());
+
 		if ((_xStream != null) &&
-			xStreamConfigurators.equals(xStreamConfigurators)) {
+			xStreamConfigurators.equals(_xStreamConfigurators) &&
+			classLoader.equals(_classLoader)) {
 
 			return;
 		}
 
-		_xStreamConfigurators = xStreamConfigurators;
+		_classLoader = classLoader;
 
 		_xStream = new XStream(
-			null, new XppDriver(),
-			new ClassLoaderReference(
-				XStreamConfiguratorRegistryUtil.getConfiguratorsClassLoader(
-					XStream.class.getClassLoader())));
+			null, new XppDriver(), new ClassLoaderReference(classLoader));
 
 		_xStream.omitField(HashMap.class, "cache_bitmask");
+
+		_xStreamConfigurators = xStreamConfigurators;
 
 		if (xStreamConfigurators.isEmpty()) {
 			return;
@@ -2760,14 +2778,13 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletDataContextImpl.class);
 
+	private static ClassLoader _classLoader;
 	private static transient XStream _xStream;
 	private static Set<XStreamConfigurator> _xStreamConfigurators;
 
 	private final Map<String, long[]> _assetCategoryIdsMap = new HashMap<>();
 	private final Set<Long> _assetLinkIds = new HashSet<>();
 	private final Map<String, String[]> _assetTagNamesMap = new HashMap<>();
-	private final Map<String, Set<Serializable>> _classedModelPrimaryKeyMap =
-		new HashMap<>();
 	private long _companyGroupId;
 	private long _companyId;
 	private String _dataStrategy;

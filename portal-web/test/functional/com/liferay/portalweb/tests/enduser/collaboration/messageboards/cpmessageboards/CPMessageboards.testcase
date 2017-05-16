@@ -97,7 +97,7 @@
 	</command>
 
 	<command name="CKEditorSmoke" priority="5">
-		<property name="custom.properties" value="editor.wysiwyg.portal-web.docroot.html.portlet.message_boards.edit_message.html.jsp=ckeditor" />
+		<property name="custom.properties" value="editor.wysiwyg.portal-web.docroot.html.portlet.message_boards.edit_message.bb_code.jsp=ckeditor${line.separator}editor.wysiwyg.portal-web.docroot.html.portlet.message_boards.edit_message.html.jsp=ckeditor" />
 
 		<execute macro="Navigator#openURL" />
 
