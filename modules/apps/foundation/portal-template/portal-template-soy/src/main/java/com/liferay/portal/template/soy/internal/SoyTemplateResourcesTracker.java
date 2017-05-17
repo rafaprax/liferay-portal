@@ -47,7 +47,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 /**
  * @author Bruno Basto
  */
-@Component(service = SoyTemplateResourcesTracker.class)
+@Component(immediate = true, service = SoyTemplateResourcesTracker.class)
 public class SoyTemplateResourcesTracker {
 
 	public List<TemplateResource> getAllTemplateResources() {
