@@ -91,8 +91,16 @@ public class SoyTemplateResourcesTracker {
 		SoyTemplateBundleResourceParser soyTemplateBundleResourceParser) {
 	}
 
+	@Reference(unbind = "-")
+	protected void setSoyTemplateResourceLoader(
+		SoyTemplateResourceLoader soyTemplateResourceLoader) {
+
+		_soyTemplateResourceLoader = soyTemplateResourceLoader;
+	}
+
 	private static SoyProviderCapabilityBundleRegister
 		_soyProviderCapabilityBundleRegister;
+	private static SoyTemplateResourceLoader _soyTemplateResourceLoader;
 	private static final List<TemplateResource> _templateResources =
 		new CopyOnWriteArrayList<>();
 
@@ -160,7 +168,8 @@ public class SoyTemplateResourcesTracker {
 
 		private void _addTemplateResourcesToList(Bundle bundle) {
 			SoyTemplateResourcesCollector soyTemplateResourceCollector =
-				new SoyTemplateResourcesCollector(bundle, StringPool.SLASH);
+				new SoyTemplateResourcesCollector(
+					bundle, _soyTemplateResourceLoader, StringPool.SLASH);
 
 			try {
 				List<TemplateResource> templateResources =

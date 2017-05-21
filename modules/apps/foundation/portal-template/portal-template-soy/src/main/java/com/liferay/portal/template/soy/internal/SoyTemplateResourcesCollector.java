@@ -19,8 +19,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
-import com.liferay.portal.kernel.template.TemplateResourceLoaderUtil;
-import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portal.kernel.util.StringPool;
 
 import java.net.URL;
@@ -40,8 +38,12 @@ import org.osgi.framework.wiring.BundleWiring;
  */
 public class SoyTemplateResourcesCollector {
 
-	public SoyTemplateResourcesCollector(Bundle bundle, String templatePath) {
+	public SoyTemplateResourcesCollector(
+		Bundle bundle, SoyTemplateResourceLoader soyTemplateResourceLoader,
+		String templatePath) {
+
 		_bundle = bundle;
+		_soyTemplateResourceLoader = soyTemplateResourceLoader;
 		_templatePath = templatePath;
 	}
 
@@ -65,16 +67,17 @@ public class SoyTemplateResourcesCollector {
 			String templateId = getTemplateId(bundle.getBundleId(), url);
 
 			try {
-				TemplateResource templateResource = _getTemplateResource(
-					templateId, url);
+				TemplateResource templateResource =
+					_soyTemplateResourceLoader.getTemplateResource(templateId);
 
 				templateResources.add(templateResource);
 			}
-			catch (TemplateException te) {
-				throw new IllegalStateException(
+			catch (IllegalStateException ise) {
+				_log.error(
 					"Unable to collect template reosurces for bundle " +
-						bundle.getBundleId(),
-					te);
+						bundle.getBundleId());
+
+				throw ise;
 			}
 		}
 	}
@@ -104,7 +107,9 @@ public class SoyTemplateResourcesCollector {
 				TemplateResource templateResource = null;
 
 				try {
-					templateResource = _getTemplateResource(templateId, url);
+					templateResource =
+						_soyTemplateResourceLoader.getTemplateResource(
+							templateId);
 				}
 				catch (IllegalStateException ise) {
 					_log.error(
@@ -148,30 +153,13 @@ public class SoyTemplateResourcesCollector {
 			TemplateConstants.BUNDLE_SEPARATOR).concat(url.getPath());
 	}
 
-	private TemplateResource _getTemplateResource(String templateId, URL url)
-		throws TemplateException {
-
-		TemplateResource templateResource;
-
-		if (TemplateResourceLoaderUtil.hasTemplateResourceLoader(
-				TemplateConstants.LANG_TYPE_SOY)) {
-
-			templateResource = TemplateResourceLoaderUtil.getTemplateResource(
-				TemplateConstants.LANG_TYPE_SOY, templateId);
-		}
-		else {
-			templateResource = new URLTemplateResource(templateId, url);
-		}
-
-		return templateResource;
-	}
-
 	private static final String _SOY_FILE_EXTENSION = "*.soy";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		SoyTemplateResourcesCollector.class);
 
 	private final Bundle _bundle;
+	private final SoyTemplateResourceLoader _soyTemplateResourceLoader;
 	private final String _templatePath;
 
 }
