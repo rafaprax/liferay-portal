@@ -44,10 +44,8 @@ public class SoyTemplateResourcesProvider {
 		Bundle bundle, String templatePath) {
 
 		try {
-			SoyTemplateResourcesCollector soyTemplateResourcesCollector =
-				new SoyTemplateResourcesCollector(bundle, templatePath);
-
-			return soyTemplateResourcesCollector.getTemplateResources();
+			return _soyTemplateResourcesCollector.getTemplateResources(
+				bundle, templatePath);
 		}
 		catch (TemplateException te) {
 			if (_log.isDebugEnabled()) {
@@ -78,6 +76,13 @@ public class SoyTemplateResourcesProvider {
 	}
 
 	@Reference(unbind = "-")
+	protected void setSoyTemplateResourcesCollector(
+		SoyTemplateResourcesCollector soyTemplateResourcesCollector) {
+
+		_soyTemplateResourcesCollector = soyTemplateResourcesCollector;
+	}
+
+	@Reference(unbind = "-")
 	protected void setSoyTemplateResourcesTracker(
 		SoyTemplateResourcesTracker soyTemplateResourcesTracker) {
 
@@ -89,6 +94,7 @@ public class SoyTemplateResourcesProvider {
 
 	private static SoyProviderCapabilityBundleRegister
 		_soyProviderCapabilityBundleRegister;
+	private static SoyTemplateResourcesCollector _soyTemplateResourcesCollector;
 	private static SoyTemplateResourcesTracker _soyTemplateResourcesTracker;
 
 }

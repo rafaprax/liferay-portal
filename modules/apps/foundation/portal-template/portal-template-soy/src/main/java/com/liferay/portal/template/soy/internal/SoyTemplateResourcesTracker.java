@@ -91,8 +91,16 @@ public class SoyTemplateResourcesTracker {
 		SoyTemplateBundleResourceParser soyTemplateBundleResourceParser) {
 	}
 
+	@Reference(unbind = "-")
+	protected void setSoyTemplateResourcesCollector(
+		SoyTemplateResourcesCollector soyTemplateResourcesCollector) {
+
+		_soyTemplateResourcesCollector = soyTemplateResourcesCollector;
+	}
+
 	private static SoyProviderCapabilityBundleRegister
 		_soyProviderCapabilityBundleRegister;
+	private static SoyTemplateResourcesCollector _soyTemplateResourcesCollector;
 	private static final List<TemplateResource> _templateResources =
 		new CopyOnWriteArrayList<>();
 
@@ -159,12 +167,10 @@ public class SoyTemplateResourcesTracker {
 		}
 
 		private void _addTemplateResourcesToList(Bundle bundle) {
-			SoyTemplateResourcesCollector soyTemplateResourceCollector =
-				new SoyTemplateResourcesCollector(bundle, StringPool.SLASH);
-
 			try {
 				List<TemplateResource> templateResources =
-					soyTemplateResourceCollector.getTemplateResources();
+					_soyTemplateResourcesCollector.getTemplateResources(
+						bundle, StringPool.SLASH);
 
 				templateResources.stream().forEach(
 					templateResource -> {
