@@ -152,8 +152,8 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 
 		DDMForm ddmForm = DDMFormFactory.create(DDLRecordSetSettings.class);
 
-		ddmForm.addAvailableLocale(themeDisplay.getLocale());
-		ddmForm.setDefaultLocale(themeDisplay.getLocale());
+		ddmForm.addAvailableLocale(themeDisplay.getSiteDefaultLocale());
+		ddmForm.setDefaultLocale(themeDisplay.getSiteDefaultLocale());
 
 		Map<String, DDMFormField> ddmFormFieldsMap =
 			ddmForm.getDDMFormFieldsMap(false);

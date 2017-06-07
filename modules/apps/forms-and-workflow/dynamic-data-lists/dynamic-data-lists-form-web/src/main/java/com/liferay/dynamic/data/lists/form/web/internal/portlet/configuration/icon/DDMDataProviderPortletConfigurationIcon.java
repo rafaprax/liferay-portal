@@ -56,7 +56,8 @@ public class DDMDataProviderPortletConfigurationIcon
 			WebKeys.THEME_DISPLAY);
 
 		ResourceBundle resourceBundle =
-			_resourceBundleLoader.loadResourceBundle(themeDisplay.getLocale());
+			_resourceBundleLoader.loadResourceBundle(
+				themeDisplay.getSiteDefaultLocale());
 
 		return LanguageUtil.get(resourceBundle, getMessageKey());
 	}

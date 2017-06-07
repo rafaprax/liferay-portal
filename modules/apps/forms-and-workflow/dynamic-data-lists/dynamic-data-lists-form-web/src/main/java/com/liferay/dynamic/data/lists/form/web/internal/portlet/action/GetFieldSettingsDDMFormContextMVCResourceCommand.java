@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -110,7 +111,8 @@ public class GetFieldSettingsDDMFormContextMVCResourceCommand
 
 		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
 
-		ddmFormFieldOptions.setDefaultLocale(themeDisplay.getLocale());
+		ddmFormFieldOptions.setDefaultLocale(
+			themeDisplay.getSiteDefaultLocale());
 
 		addDataProviderDDMFormFieldOptionLabels(
 			resourceRequest, ddmFormFieldOptions, themeDisplay);
@@ -170,6 +172,10 @@ public class GetFieldSettingsDDMFormContextMVCResourceCommand
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		Locale defaultLocale = themeDisplay.getSiteDefaultLocale();
+
+		LocaleThreadLocal.setThemeDisplayLocale(defaultLocale);
+
 		String type = ParamUtil.getString(resourceRequest, "type");
 
 		Class<?> ddmFormFieldTypeSettings = getDDMFormFieldTypeSettings(type);
@@ -203,7 +209,7 @@ public class GetFieldSettingsDDMFormContextMVCResourceCommand
 		ddmFormRenderingContext.setHttpServletResponse(
 			_portal.getHttpServletResponse(resourceResponse));
 		ddmFormRenderingContext.setContainerId("settings");
-		ddmFormRenderingContext.setLocale(themeDisplay.getLocale());
+		ddmFormRenderingContext.setLocale(defaultLocale);
 		ddmFormRenderingContext.setPortletNamespace(
 			resourceResponse.getNamespace());
 

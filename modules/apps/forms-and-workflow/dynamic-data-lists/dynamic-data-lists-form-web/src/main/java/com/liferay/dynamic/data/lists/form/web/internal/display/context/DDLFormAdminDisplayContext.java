@@ -67,6 +67,7 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -191,11 +192,16 @@ public class DDLFormAdminDisplayContext {
 	}
 
 	public String getDDMFormContextProviderServletURL() {
-		String servletContextPath = getServletContextPath(
-			_ddmFormContextProviderServlet);
+		StringBundler sb = new StringBundler(6);
 
-		return servletContextPath.concat(
-			"/dynamic-data-mapping-form-context-provider/");
+		sb.append(getServletContextPath(_ddmFormContextProviderServlet));
+		sb.append("/dynamic-data-mapping-form-context-provider/");
+		sb.append(CharPool.QUESTION);
+		sb.append("defaultLanguageId");
+		sb.append(CharPool.EQUAL);
+		sb.append(getDefaultLanguageId());
+
+		return sb.toString();
 	}
 
 	public JSONArray getDDMFormFieldTypesJSONArray() throws PortalException {
@@ -284,7 +290,7 @@ public class DDLFormAdminDisplayContext {
 				recordSetOptional, _ddmFormFieldTypeServicesTracker,
 				_ddmFormTemplateContextFactory, themeDisplay.getRequest(),
 				themeDisplay.getResponse(), _jsonFactory,
-				_ddlFormAdminRequestHelper.getLocale());
+				themeDisplay.getSiteDefaultLocale());
 
 		Map<String, Object> formBuilderContext =
 			ddlFormBuilderContextFactory.create();

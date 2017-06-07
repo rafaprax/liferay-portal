@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -95,12 +96,16 @@ public class GetFunctionsMVCResourceCommand extends BaseMVCResourceCommand {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		Locale defaultLocale = themeDisplay.getSiteDefaultLocale();
+
+		LocaleThreadLocal.setThemeDisplayLocale(defaultLocale);
+
 		Set<Map.Entry<String, DDMExpressionFunction>> entries =
 			_ddmExpressionFunctions.entrySet();
 
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse,
-			toJSONArray(entries, themeDisplay.getLocale()));
+			toJSONArray(entries, defaultLocale));
 	}
 
 	protected void removeDDMExpressionFunction(
