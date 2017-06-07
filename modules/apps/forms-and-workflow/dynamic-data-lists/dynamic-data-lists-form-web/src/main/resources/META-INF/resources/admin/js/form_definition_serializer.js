@@ -65,8 +65,6 @@ AUI.add(
 
 						var definitionFields = fieldTypesDefinitions[field.get('type')];
 
-						var languageId = instance.get('defaultLanguageId');
-
 						definitionFields.forEach(
 							function(fieldSetting) {
 								var name = fieldSetting.name;
@@ -82,7 +80,9 @@ AUI.add(
 										function(option) {
 											var label = {};
 
-											label[languageId] = option.label;
+											if (option.label) {
+												label = option.label;
+											}
 
 											return {
 												label: label,
@@ -94,7 +94,9 @@ AUI.add(
 								else if (fieldSetting.localizable) {
 									config[name] = {};
 
-									config[name][languageId] = value;
+									if (value) {
+										config[name] = value;
+									}
 								}
 								else {
 									config[name] = value;
