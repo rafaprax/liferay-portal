@@ -290,7 +290,11 @@ AUI.add(
 
 				var value = secondOperand.getValue();
 
-				return value[0] || '';
+				if (A.Lang.isArray(value)) {
+					value = value[0];
+				}
+
+				return value || '';
 			},
 
 			_handleAddConditionClick: function() {
