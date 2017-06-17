@@ -160,8 +160,8 @@ public class DDMFormFieldTemplateContextFactory {
 		setDDMFormFieldTemplateContextValid(
 			ddmFormFieldEvaluationResult, ddmFormFieldTemplateContext);
 		setDDMFormFieldTemplateContextValue(
-			ddmFormFieldEvaluationResult, ddmFormFieldTemplateContext,
-			ddmFormFieldValue.getValue());
+			ddmFormField, ddmFormFieldEvaluationResult,
+			ddmFormFieldTemplateContext, ddmFormFieldValue.getValue());
 		setDDMFormFieldTemplateContextValueLocalizableValue(
 			ddmFormFieldTemplateContext, ddmFormFieldValue.getValue());
 		setDDMFormFieldTemplateContextValidation(
@@ -522,6 +522,7 @@ public class DDMFormFieldTemplateContextFactory {
 	}
 
 	protected void setDDMFormFieldTemplateContextValue(
+		DDMFormField ddmFormField,
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult,
 		Map<String, Object> ddmFormFieldTemplateContext, Value value) {
 
@@ -529,8 +530,7 @@ public class DDMFormFieldTemplateContextFactory {
 			Object evaluationResultValue =
 				ddmFormFieldEvaluationResult.getValue();
 
-			ddmFormFieldTemplateContext.put(
-				"value", evaluationResultValue.toString());
+			ddmFormFieldTemplateContext.put("value", evaluationResultValue);
 		}
 		else if (value != null) {
 			ddmFormFieldTemplateContext.put("value", value.getString(_locale));

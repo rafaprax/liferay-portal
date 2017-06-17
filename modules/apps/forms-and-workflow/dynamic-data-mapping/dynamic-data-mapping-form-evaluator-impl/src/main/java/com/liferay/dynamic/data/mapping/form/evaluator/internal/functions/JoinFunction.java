@@ -15,9 +15,10 @@
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
-
-import org.apache.commons.lang.math.NumberUtils;
+import com.liferay.portal.kernel.util.StringBundler;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -25,10 +26,10 @@ import org.osgi.service.component.annotations.Component;
  * @author Leonardo Barros
  */
 @Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=equals",
+	immediate = true, property = "ddm.form.evaluator.function.name=join",
 	service = DDMExpressionFunction.class
 )
-public class EqualsFunction implements DDMExpressionFunction {
+public class JoinFunction implements DDMExpressionFunction {
 
 	@Override
 	public Object evaluate(Object... parameters) {
@@ -36,22 +37,23 @@ public class EqualsFunction implements DDMExpressionFunction {
 			throw new IllegalArgumentException("Two parameters are expected");
 		}
 
-		Object parameter1 = parameters[0];
-		Object parameter2 = parameters[1];
-
-		if ((parameter1 == null) || (parameter2 == null)) {
-			return false;
+		if (!(parameters[0] instanceof JSONArray)) {
+			throw new IllegalArgumentException("JSONArray is expected");
 		}
 
-		if (NumberUtils.isNumber(parameter1.toString())) {
-			parameter1 = GetterUtil.getDouble(parameter1);
+		JSONArray jsonArray = (JSONArray)parameters[0];
+
+		StringBundler sb = new StringBundler(jsonArray.length() * 2 - 1);
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			sb.append(GetterUtil.getString(jsonArray.get(i)));
+
+			if (i < (jsonArray.length() - 1)) {
+				sb.append(CharPool.COMMA);
+			}
 		}
 
-		if (NumberUtils.isNumber(parameter2.toString())) {
-			parameter2 = GetterUtil.getDouble(parameter2);
-		}
-
-		return parameter1.equals(parameter2);
+		return sb.toString();
 	}
 
 }

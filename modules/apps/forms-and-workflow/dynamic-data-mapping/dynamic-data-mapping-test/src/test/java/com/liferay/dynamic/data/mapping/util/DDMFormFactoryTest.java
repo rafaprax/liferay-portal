@@ -83,7 +83,7 @@ public class DDMFormFactoryTest {
 
 		Assert.assertNotNull(indexTypeDDMFormField);
 		Assert.assertEquals("string", indexTypeDDMFormField.getDataType());
-		Assert.assertEquals("select", indexTypeDDMFormField.getType());
+		Assert.assertEquals("radio", indexTypeDDMFormField.getType());
 
 		DDMFormField labelDDMFormField = ddmFormFieldsMap.get("label");
 

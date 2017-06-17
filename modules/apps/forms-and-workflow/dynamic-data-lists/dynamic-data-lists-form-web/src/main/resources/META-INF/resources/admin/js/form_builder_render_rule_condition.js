@@ -176,7 +176,7 @@ AUI.add(
 				for (var i = 0; i < options.length; i++) {
 					option = options[i];
 
-					if (option.value === value) {
+					if (value.indexOf(option.value) > -1) {
 						dataType = option.dataType;
 
 						break;
@@ -231,7 +231,11 @@ AUI.add(
 			_getFirstOperandValue: function(index) {
 				var instance = this;
 
-				return instance._getFirstOperand(index).getValue();
+				var firstOperand = instance._getFirstOperand(index);
+
+				var value = firstOperand.getValue();
+
+				return value[0] || '';
 			},
 
 			_getOperator: function(index) {
@@ -243,7 +247,11 @@ AUI.add(
 			_getOperatorValue: function(index) {
 				var instance = this;
 
-				return instance._getOperator(index).getValue();
+				var operator = instance._getOperator(index);
+
+				var value = operator.getValue();
+
+				return value[0] || '';
 			},
 
 			_getSecondOperand: function(index, type) {
@@ -268,13 +276,25 @@ AUI.add(
 			_getSecondOperandTypeValue: function(index) {
 				var instance = this;
 
-				return instance._getSecondOperandType(index).getValue();
+				var secondOperandType = instance._getSecondOperandType(index);
+
+				var value = secondOperandType.getValue();
+
+				return value[0] || '';
 			},
 
 			_getSecondOperandValue: function(index, type) {
 				var instance = this;
 
-				return instance._getSecondOperand(index, type).getValue();
+				var secondOperand = instance._getSecondOperand(index, type);
+
+				var value = secondOperand.getValue();
+
+				if (A.Lang.isArray(value)) {
+					value = value[0];
+				}
+
+				return value || '';
 			},
 
 			_handleAddConditionClick: function() {
@@ -376,7 +396,7 @@ AUI.add(
 			_isFieldList: function(field) {
 				var instance = this;
 
-				var value = field.getValue();
+				var value = field.getValue()[0] || '';
 
 				return instance._getFieldOptions(value).length > 0 && instance._getFieldType(value) !== 'text';
 			},
@@ -441,7 +461,7 @@ AUI.add(
 				var value = [];
 
 				if (condition) {
-					value = condition.operands[0].value;
+					value = [condition.operands[0].value];
 				}
 
 				var fields = instance.get('fields').slice();
@@ -470,7 +490,7 @@ AUI.add(
 				var value = [];
 
 				if (condition) {
-					value = condition.operator;
+					value = [condition.operator];
 				}
 
 				var field = instance.createSelectField(
@@ -531,13 +551,12 @@ AUI.add(
 				var visible = instance._getSecondOperandTypeValue(index) === 'field';
 
 				if (condition && instance._isBinaryCondition(index) && visible) {
-					value = condition.operands[1].value;
+					value = [condition.operands[1].value];
 				}
 
 				var field = instance.createSelectField(
 					{
 						fieldName: index + '-condition-second-operand-select',
-						label: 'Put this label after',
 						options: instance.get('fields'),
 						showLabel: false,
 						value: value,
@@ -561,7 +580,7 @@ AUI.add(
 
 				if (condition && instance._isBinaryCondition(index) && visible) {
 					options = instance._getFieldOptions(instance._getFirstOperandValue(index));
-					value = condition.operands[1].value;
+					value = [condition.operands[1].value];
 				}
 
 				var field = instance.createSelectField(
@@ -585,7 +604,7 @@ AUI.add(
 				var value = [];
 
 				if (condition && instance._isBinaryCondition(index)) {
-					value = condition.operands[1].type;
+					value = [condition.operands[1].type];
 				}
 
 				var field = instance.createSelectField(
@@ -616,10 +635,7 @@ AUI.add(
 					instance._updateSecondOperandType(condition.operator, index);
 
 					if (condition.operands[0].type === 'user') {
-						field.set('value', condition.operands[1].value);
-					}
-					else {
-						field.set('value', condition.operands[1].type);
+						field.set('value', [condition.operands[1].value]);
 					}
 				}
 			},
@@ -711,9 +727,9 @@ AUI.add(
 
 				var secondOperandType = instance._getSecondOperandType(index);
 
-				var secondOperandTypeValue = secondOperandType ? secondOperandType.getValue() : '';
+				if (secondOperandType.get('visible')) {
+					var secondOperandTypeValue = instance._getSecondOperandTypeValue(index);
 
-				if (secondOperandTypeValue && secondOperandType.get('visible')) {
 					var secondOperandFields = instance._getSecondOperand(index, 'fields');
 
 					var secondOperandOptions = instance._getSecondOperand(index, 'options');

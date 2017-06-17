@@ -31,7 +31,6 @@ AUI.add(
 			{
 				ATTRS: {
 					dataSourceType: {
-						getter: '_getDataSourceType',
 						value: 'manual'
 					},
 
@@ -155,39 +154,15 @@ AUI.add(
 					getValue: function() {
 						var instance = this;
 
-						var value = instance.get('value');
-
-						if (!Lang.isArray(value)) {
-							value = [value];
-						}
-
-						value = value.join();
-
-						if (!value) {
-							var contextValue = instance._getContextValue();
-
-							var hasOption = instance._hasOption(contextValue);
-
-							if (contextValue && !hasOption) {
-								value = contextValue;
-							}
-						}
-
-						return value;
+						return instance.get('value') || [];
 					},
 
 					getValueSelected: function() {
 						var instance = this;
 
-						var value = instance.get('value');
+						var value = instance.get('value') || [];
 
-						if (!Lang.isArray(value)) {
-							value = [value];
-						}
-
-						var values = instance._getOptionsSelected(value);
-
-						return values;
+						return instance._getOptionsSelected(value);
 					},
 
 					openList: function() {
@@ -230,10 +205,6 @@ AUI.add(
 
 					setValue: function(value) {
 						var instance = this;
-
-						if (!Lang.isArray(value)) {
-							value = [value];
-						}
 
 						instance.set('value', value);
 
@@ -287,34 +258,6 @@ AUI.add(
 						);
 					},
 
-					_getContextValue: function() {
-						var instance = this;
-
-						var contextValue = instance.get('value');
-
-						if (Lang.isArray(contextValue)) {
-							contextValue = contextValue[0];
-						}
-
-						return contextValue;
-					},
-
-					_getDataSourceType: function(value) {
-						if (Lang.isString(value)) {
-							try {
-								value = JSON.parse(value);
-							}
-							catch (e) {
-							}
-						}
-
-						if (Lang.isArray(value)) {
-							value = value[0];
-						}
-
-						return value;
-					},
-
 					_getOptions: function(options) {
 						return options || [];
 					},
@@ -326,19 +269,17 @@ AUI.add(
 
 						var optionsSelected = [];
 
-						if (Lang.isArray(value)) {
-							value.forEach(
-								function(value, index) {
-									options.forEach(
-										function(option, index) {
-											if (value && option.value === value) {
-												optionsSelected.push(option);
-											}
+						value.forEach(
+							function(value, index) {
+								options.forEach(
+									function(option, index) {
+										if (value && option.value === value) {
+											optionsSelected.push(option);
 										}
-									);
-								}
-							);
-						}
+									}
+								);
+							}
+						);
 
 						return optionsSelected;
 					},
@@ -354,7 +295,7 @@ AUI.add(
 
 						var value = target.getAttribute('data-badge-value');
 
-						var values = instance._removeBadge(value);
+						var values = instance._removeValue(value);
 
 						instance.setValue(values);
 					},
@@ -384,26 +325,24 @@ AUI.add(
 					_handleItemClick: function(target) {
 						var instance = this;
 
-						var value;
+						var value = instance.get('value') || [];
 
 						var currentTarget = target;
 
-						if (instance.get('multiple')) {
-							value = instance.get('value').slice();
+						var itemValue = currentTarget.getAttribute('data-option-value');
 
+						if (instance.get('multiple')) {
 							instance._open = true;
 
-							var itemValue = currentTarget.getAttribute('data-option-value');
-
 							if (currentTarget.getAttribute('data-option-selected')) {
-								value = instance._removeBadge(itemValue);
+								value = instance._removeValue(itemValue);
 							}
 							else {
 								value.push(itemValue);
 							}
 						}
 						else {
-							value = currentTarget.getAttribute('data-option-value');
+							value = [itemValue];
 
 							instance._open = false;
 						}
@@ -480,7 +419,7 @@ AUI.add(
 						return false;
 					},
 
-					_removeBadge: function(value) {
+					_removeValue: function(value) {
 						var instance = this;
 
 						var values = instance.get('value');
@@ -496,10 +435,6 @@ AUI.add(
 
 					_selectDOMOption: function(optionNode, value) {
 						var selected = false;
-
-						if (Lang.isArray(value)) {
-							value = value[0];
-						}
 
 						if (value) {
 							if (optionNode.val()) {
@@ -518,13 +453,8 @@ AUI.add(
 					_setSelectNodeOptions: function(optionNode, value) {
 						var instance = this;
 
-						if (instance.get('multiple')) {
-							for (var i = 0; i < value.length; i++) {
-								instance._selectDOMOption(optionNode, value[i]);
-							}
-						}
-						else {
-							instance._selectDOMOption(optionNode, value);
+						for (var i = 0; i < value.length; i++) {
+							instance._selectDOMOption(optionNode, value[i]);
 						}
 					}
 				}
