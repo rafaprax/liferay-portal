@@ -41,7 +41,7 @@ public class CheckboxMultipleDDMFormFieldValueAccessorTest {
 	}
 
 	@Test
-	public void testGetCheckboxMultipleValue() {
+	public void testGetCheckboxMultipleValue1() {
 		JSONArray expectedJSONArray = createJSONArray("value 1");
 
 		DDMFormFieldValue ddmFormFieldValue =
@@ -55,19 +55,6 @@ public class CheckboxMultipleDDMFormFieldValueAccessorTest {
 
 		Assert.assertEquals(
 			expectedJSONArray.toString(), actualJSONArray.toString());
-	}
-
-	@Test
-	public void testGetCheckboxMultipleValue1() {
-		DDMFormFieldValue ddmFormFieldValue =
-			DDMFormValuesTestUtil.createDDMFormFieldValue(
-				"CheckboxMultiple", new UnlocalizedValue("value 1"));
-
-		JSONArray actualJSONArray =
-			_checkboxMultipleDDMFormFieldValueAccessor.getValue(
-				ddmFormFieldValue, LocaleUtil.US);
-
-		Assert.assertEquals("value 1", actualJSONArray.getString(0));
 	}
 
 	@Test

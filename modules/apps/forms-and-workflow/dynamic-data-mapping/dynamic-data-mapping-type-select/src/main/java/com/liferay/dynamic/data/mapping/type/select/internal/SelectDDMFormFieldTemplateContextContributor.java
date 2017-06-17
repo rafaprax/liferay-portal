@@ -26,13 +26,9 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +94,10 @@ public class SelectDDMFormFieldTemplateContextContributor
 		parameters.put("strings", stringsMap);
 
 		parameters.put(
-			"value", getValue(ddmFormFieldRenderingContext.getValue()));
+			"value",
+			getValue(
+				GetterUtil.getString(
+					ddmFormFieldRenderingContext.getValue(), "[]")));
 
 		return parameters;
 	}
@@ -132,31 +131,26 @@ public class SelectDDMFormFieldTemplateContextContributor
 	}
 
 	protected List<String> getValue(String valueString) {
-		String[] valuesStringArray = toStringArray(valueString);
-
-		return ListUtil.toList(valuesStringArray);
-	}
-
-	protected String[] toStringArray(String value) {
-		if (Validator.isNull(value)) {
-			return GetterUtil.DEFAULT_STRING_VALUES;
-		}
+		JSONArray jsonArray = null;
 
 		try {
-			JSONArray jsonArray = jsonFactory.createJSONArray(value);
-
-			return ArrayUtil.toStringArray(jsonArray);
+			jsonArray = jsonFactory.createJSONArray(valueString);
 		}
 		catch (JSONException jsone) {
-
-			// LPS-52675
-
 			if (_log.isDebugEnabled()) {
 				_log.debug(jsone, jsone);
 			}
 
-			return StringUtil.split(value);
+			jsonArray = jsonFactory.createJSONArray();
 		}
+
+		List<String> values = new ArrayList<>(jsonArray.length());
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			values.add(String.valueOf(jsonArray.get(i)));
+		}
+
+		return values;
 	}
 
 	@Reference

@@ -32,9 +32,9 @@ import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 	rules = {
 		@DDMFormRule(
 			actions = {
-				"call('getDataProviderInstanceOutputParameters', 'dataProviderInstanceId=ddmDataProviderInstanceId', 'ddmDataProviderInstanceOutput=outputParameterNames')"
+				"call('getDataProviderInstanceOutputParameters', concat('dataProviderInstanceId=', getValue('ddmDataProviderInstanceId')), 'ddmDataProviderInstanceOutput=outputParameterNames')"
 			},
-			condition = "not(equals(getValue('ddmDataProviderInstanceId'), 0))"
+			condition = "not(equals(getValue('ddmDataProviderInstanceId'), ''))"
 		)
 	}
 )
