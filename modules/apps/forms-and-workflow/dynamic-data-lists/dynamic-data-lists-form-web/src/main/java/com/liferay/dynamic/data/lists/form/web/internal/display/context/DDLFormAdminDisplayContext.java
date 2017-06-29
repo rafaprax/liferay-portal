@@ -498,16 +498,14 @@ public class DDLFormAdminDisplayContext {
 	}
 
 	public ResourceBundle getResourceBundle() {
-		Locale locale = getSiteDefaultLocale();
-
 		ResourceBundleLoader portalResourceBundleLoader =
 			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
 
 		ResourceBundle portalResourceBundle =
-			portalResourceBundleLoader.loadResourceBundle(locale);
+			portalResourceBundleLoader.loadResourceBundle(getUserLocale());
 
 		ResourceBundle portletResourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", getSiteDefaultLocale(), getClass());
+			"content.Language", getUserLocale(), getClass());
 
 		return new AggregateResourceBundle(
 			portletResourceBundle, portalResourceBundle);
@@ -944,6 +942,13 @@ public class DDLFormAdminDisplayContext {
 		RecordSetSearch recordSetSearch = getRecordSetSearch();
 
 		return recordSetSearch.getTotal();
+	}
+
+	protected Locale getUserLocale() {
+		ThemeDisplay themeDisplay =
+			_ddlFormAdminRequestHelper.getThemeDisplay();
+
+		return themeDisplay.getLocale();
 	}
 
 	protected boolean hasResults() throws PortalException {
