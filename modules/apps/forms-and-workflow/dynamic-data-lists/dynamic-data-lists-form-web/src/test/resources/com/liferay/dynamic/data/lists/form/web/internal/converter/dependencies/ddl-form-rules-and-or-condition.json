@@ -129,5 +129,46 @@
 			}
 		],
 		"logical-operator": "OR"
+	},
+	{
+		"actions": [
+			{
+				"action": "enable",
+				"target": "Field3"
+			},
+			{
+				"action": "show",
+				"target": "Field4"
+			}
+		],
+		"conditions": [
+			{
+				"operands": [
+					{
+						"type": "field",
+						"value": "Field2"
+					},
+					{
+						"type": "string",
+						"value": "4"
+					}
+				],
+				"operator": "contains"
+			},
+			{
+				"operands": [
+					{
+						"type": "double",
+						"value": "5.3"
+					},
+					{
+						"type": "double",
+						"value": "5.3"
+					}
+				],
+				"operator": "equals-to"
+			}
+		],
+		"logical-operator": "OR"
 	}
 ]
