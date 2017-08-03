@@ -101,6 +101,7 @@ public class ModulesStructureTest {
 
 					Path buildGradlePath = dirPath.resolve("build.gradle");
 					Path buildXMLPath = dirPath.resolve("build.xml");
+					Path ivyXmlPath = dirPath.resolve("ivy.xml");
 
 					boolean gitRepo = Files.exists(
 						dirPath.resolve(_GIT_REPO_FILE_NAME));
@@ -138,8 +139,6 @@ public class ModulesStructureTest {
 							"Forbidden " + buildXMLPath,
 							Files.exists(buildXMLPath));
 
-						Path ivyXmlPath = dirPath.resolve("ivy.xml");
-
 						Assert.assertFalse(
 							"Forbidden " + ivyXmlPath,
 							Files.exists(ivyXmlPath));
@@ -150,6 +149,7 @@ public class ModulesStructureTest {
 					if (Files.exists(buildXMLPath)) {
 						Assert.assertFalse(
 							"Forbidden " + buildGradlePath,
+							Files.notExists(ivyXmlPath) &&
 							Files.exists(buildGradlePath));
 
 						return FileVisitResult.SKIP_SUBTREE;
@@ -159,6 +159,28 @@ public class ModulesStructureTest {
 						_testThemeBuildScripts(dirPath);
 
 						return FileVisitResult.SKIP_SUBTREE;
+					}
+
+					return FileVisitResult.CONTINUE;
+				}
+
+			});
+	}
+
+	@Test
+	public void testScanGitHub() throws IOException {
+		Files.walkFileTree(
+			_modulesDirPath,
+			new SimpleFileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult visitFile(
+					Path path, BasicFileAttributes basicFileAttributes) {
+
+					String fileName = String.valueOf(path.getFileName());
+
+					if (fileName.equals("CODEOWNERS")) {
+						_testGitHubCodeOwners(path);
 					}
 
 					return FileVisitResult.CONTINUE;
@@ -702,6 +724,20 @@ public class ModulesStructureTest {
 		else {
 			Assert.assertFalse("Forbidden " + path, Files.exists(path));
 		}
+	}
+
+	private void _testGitHubCodeOwners(Path path) {
+		Path dirPath = path.getParent();
+
+		Assert.assertEquals(
+			"Forbidden " + path, ".github",
+			String.valueOf(dirPath.getFileName()));
+
+		Path rootDirPath = dirPath.getParent();
+
+		Assert.assertTrue(
+			"Forbidden " + path,
+			Files.exists(rootDirPath.resolve(_GIT_REPO_FILE_NAME)));
 	}
 
 	private void _testGitIgnoreFile(Path path) throws IOException {
