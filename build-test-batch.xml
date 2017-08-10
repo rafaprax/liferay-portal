@@ -2180,6 +2180,10 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-integration-test database.type="hypersonic" />
 	</target>
 
+	<target name="integration-mariadb100-jdk8">
+		<run-integration-test database.type="mariadb" />
+	</target>
+
 	<target name="integration-mysql56-jdk8">
 		<run-integration-test database.type="mysql" />
 	</target>
@@ -2304,6 +2308,10 @@ app.server.type=@{app.server.type}]]></echo>
 
 	<target name="modules-integration-hypersonic20-jdk8">
 		<run-modules-integration-test database.type="hypersonic" />
+	</target>
+
+	<target name="modules-integration-mariadb100-jdk8">
+		<run-modules-integration-test database.type="mariadb" />
 	</target>
 
 	<target name="modules-integration-mysql56-jdk8">
@@ -2874,17 +2882,6 @@ information. Make sure to commit in all build services results.
 					</then>
 				</if>
 
-				<local name="source.formatter.excludes" />
-
-				<if>
-					<not>
-						<resourcecontains resource="${project.dir}/portal-kernel/src/com/liferay/portal/kernel/util/ReleaseInfo.java" substring=" DXP " />
-					</not>
-					<then>
-						<property name="source.formatter.excludes" value="modules/private/**" />
-					</then>
-				</if>
-
 				<loadproperties>
 					<zipentry name="META-INF/MANIFEST.MF" zipfile="tools/sdk/dependencies/com.liferay.source.formatter/lib/com.liferay.source.formatter.jar" />
 				</loadproperties>
@@ -2895,7 +2892,7 @@ information. Make sure to commit in all build services results.
 					<property name="show.documentation" value="false" />
 					<property name="source.auto.fix" value="false" />
 					<property name="source.fail.on.error" value="true" />
-					<property name="source.formatter.excludes" value="${source.formatter.excludes}" />
+					<property if:true="${liferay.releng.public}" name="source.formatter.excludes" value="modules/private/**" />
 					<property name="source.print.errors" value="true" />
 					<property name="source.throw.exception" value="true" />
 					<property name="source.use.properties" value="false" />

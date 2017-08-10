@@ -2075,7 +2075,24 @@ to version 2.0.47.
 ## 3.4.22 - 2017-08-08
 
 ### Fixed
-- [LPS-74092]: Add theme WAR file as an artifact of the `default` configuration.
+- [LPS-74092]: Add the theme WAR file as an artifact of the `default`
+configuration.
+
+## 3.4.23 - 2017-08-09
+
+### Changed
+- [LPS-74104]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.0.48.
+- [LPS-74104]: Update the [Liferay Source Formatter] dependency to version
+1.0.437.
+
+## 3.4.24 - 2017-08-09
+
+### Changed
+- [LPS-73967]: Update the [Liferay Gradle Plugins Service Builder] dependency
+to version 1.0.45.
+- [LPS-73967]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.161.
 
 [Gradle Bundle Plugin]: https://github.com/TomDmitriev/gradle-bundle-plugin
 [Liferay Alloy Taglib]: https://github.com/liferay/alloy-taglibs
@@ -2258,7 +2275,9 @@ to version 2.0.47.
 [LPS-73818]: https://issues.liferay.com/browse/LPS-73818
 [LPS-73855]: https://issues.liferay.com/browse/LPS-73855
 [LPS-73935]: https://issues.liferay.com/browse/LPS-73935
+[LPS-73967]: https://issues.liferay.com/browse/LPS-73967
 [LPS-74034]: https://issues.liferay.com/browse/LPS-74034
 [LPS-74063]: https://issues.liferay.com/browse/LPS-74063
 [LPS-74092]: https://issues.liferay.com/browse/LPS-74092
+[LPS-74104]: https://issues.liferay.com/browse/LPS-74104
 [LRDOCS-3023]: https://issues.liferay.com/browse/LRDOCS-3023
