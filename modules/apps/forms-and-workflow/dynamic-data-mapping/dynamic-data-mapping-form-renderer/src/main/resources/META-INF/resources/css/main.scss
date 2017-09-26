@@ -1,15 +1,5 @@
-//┌─────────────┐
-//│ DDM Imports │
-//└─────────────┘
-
 @import "bourbon";
 @import "field-type-validation";
-
-//┌─────────────┐
-//│ DDM Extends │
-//└─────────────┘
-
-// Flex Space Between
 
 %flex-space-between {
 align-items: center;
@@ -17,18 +7,12 @@ display: flex;
 justify-content: space-between;
 }
 
-// Text Ellipsis
-
 %text-ellipsis {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-//┌───────────────┐
-//│ DDM Container │
-//└───────────────┘
-
-.ddl-form-builder-app {
+.ddm-form-builder-app {
 	.lfr-ddm-form-page {
 		> .row {
 			margin-left: 18px;
