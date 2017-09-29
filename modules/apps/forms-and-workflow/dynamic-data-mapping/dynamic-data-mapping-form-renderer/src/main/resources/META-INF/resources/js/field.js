@@ -217,7 +217,24 @@ AUI.add(
 
 						var container = document.createDocumentFragment();
 
-						new renderer(instance.getTemplateContext(), container);
+						try {
+							new renderer(instance.getTemplateContext(), container);
+						} catch (e) {
+							var type = instance.get('type');
+
+							var fieldType = FieldTypes.get(type);
+
+							var templateNamespace = fieldType.get('templateNamespace');
+
+							var messages = [];
+
+							messages.push('originalEType = ' + e.name);
+							messages.push('originalEMessage = ' + e.message);
+							messages.push('fieldType = ' + type);
+							messages.push('templateNamespace = ' + templateNamespace);
+
+							throw new Error(messages.join(', '));
+						}
 
 						return container.firstChild.outerHTML;
 					},
