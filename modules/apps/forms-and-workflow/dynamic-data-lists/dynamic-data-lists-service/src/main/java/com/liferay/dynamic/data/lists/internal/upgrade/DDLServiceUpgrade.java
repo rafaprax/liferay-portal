@@ -14,16 +14,19 @@
 
 package com.liferay.dynamic.data.lists.internal.upgrade;
 
+import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_0.UpgradeKernelPackage;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_0.UpgradeLastPublishDate;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_0.UpgradeSchema;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_1.UpgradeRecordGroup;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_2.UpgradeDDLRecordSetSettings;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_4.UpgradeDDLRecord;
+import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_4.UpgradeDDLRecordSetVersion;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_0_4.UpgradeDDLRecordVersion;
 import com.liferay.dynamic.data.lists.internal.upgrade.v1_1_0.UpgradeDDLRecordSetSettingsFieldValues;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
 import org.osgi.service.component.annotations.Component;
@@ -67,7 +70,11 @@ public class DDLServiceUpgrade implements UpgradeStepRegistrator {
 
 		registry.register(
 			"com.liferay.dynamic.data.lists.service", "1.0.3", "1.0.4",
-			new UpgradeDDLRecord(), new UpgradeDDLRecordVersion());
+			new UpgradeDDLRecord(),
+			new UpgradeDDLRecordSetVersion(
+				_counterLocalService, _ddmStructureLocalService,
+				_userLocalService),
+			new UpgradeDDLRecordVersion());
 
 		registry.register(
 			"com.liferay.dynamic.data.lists.service", "1.0.4", "1.1.0",
@@ -80,6 +87,15 @@ public class DDLServiceUpgrade implements UpgradeStepRegistrator {
 	}
 
 	@Reference
+	private CounterLocalService _counterLocalService;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
 	private JSONFactory _jsonFactory;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
