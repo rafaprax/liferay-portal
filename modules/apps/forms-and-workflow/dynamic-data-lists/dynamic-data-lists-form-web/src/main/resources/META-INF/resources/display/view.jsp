@@ -55,7 +55,7 @@ long recordSetId = ddlFormDisplayContext.getRecordSetId();
 				<portlet:actionURL name="addRecord" var="addRecordActionURL" />
 
 				<div class="portlet-forms">
-					<aui:form action="<%= addRecordActionURL %>" data-DDLRecordSetId="<%= recordSetId %>" method="post" name="fm">
+					<aui:form action="<%= addRecordActionURL %>" data-DDLRecordSetId="<%= recordSetId %>" data-formId="<%= recordSetId %>" method="post" name="fm">
 
 						<%
 						String redirectURL = ddlFormDisplayContext.getRedirectURL();
@@ -229,5 +229,9 @@ long recordSetId = ddlFormDisplayContext.getRecordSetId();
 		</div>
 	</div>
 </c:if>
+
+<aui:script use="aui-base">
+	Liferay.fire('ddmFormView', {formId: <%= recordSetId %>});
+</aui:script>
 
 <liferay-util:dynamic-include key="com.liferay.dynamic.data.lists.form.web#/display/view.jsp#post" />
