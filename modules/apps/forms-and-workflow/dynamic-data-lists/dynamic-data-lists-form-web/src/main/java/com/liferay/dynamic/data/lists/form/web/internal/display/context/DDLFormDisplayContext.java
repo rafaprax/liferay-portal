@@ -32,6 +32,8 @@ import com.liferay.dynamic.data.mapping.model.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutRow;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -73,7 +75,8 @@ public class DDLFormDisplayContext {
 			DDMFormRenderer ddmFormRenderer,
 			DDMFormValuesFactory ddmFormValuesFactory,
 			WorkflowDefinitionLinkLocalService
-				workflowDefinitionLinkLocalService)
+				workflowDefinitionLinkLocalService,
+			DDMFormValuesMerger ddmFormValuesMerger)
 		throws PortalException {
 
 		_renderRequest = renderRequest;
@@ -85,6 +88,7 @@ public class DDLFormDisplayContext {
 		_workflowDefinitionLinkLocalService =
 			workflowDefinitionLinkLocalService;
 		_containerId = StringUtil.randomString();
+		_ddmFormValuesMerger = ddmFormValuesMerger;
 
 		if (Validator.isNotNull(getPortletResource())) {
 			return;
@@ -128,8 +132,10 @@ public class DDLFormDisplayContext {
 				WorkflowConstants.STATUS_DRAFT);
 
 		if (ddlRecordVersion != null) {
-			ddmFormRenderingContext.setDDMFormValues(
-				ddlRecordVersion.getDDMFormValues());
+			DDMFormValues mergedDDMFormValues = _ddmFormValuesMerger.merge(
+					ddlRecordVersion.getDDMFormValues(),
+					ddmFormRenderingContext.getDDMFormValues());
+			ddmFormRenderingContext.setDDMFormValues(mergedDDMFormValues);
 		}
 
 		boolean showSubmitButton = isShowSubmitButton();
@@ -522,6 +528,7 @@ public class DDLFormDisplayContext {
 	private final DDLRecordVersionLocalService _ddlRecordVersionLocalService;
 	private final DDMFormRenderer _ddmFormRenderer;
 	private final DDMFormValuesFactory _ddmFormValuesFactory;
+	private final DDMFormValuesMerger _ddmFormValuesMerger;
 	private Boolean _hasViewPermission;
 	private DDLRecordSet _recordSet;
 	private long _recordSetId;
