@@ -114,9 +114,7 @@ public interface DDMFormInstanceSettings {
 		label = "%require-user-authentication", predefinedValue = "false",
 		properties = {"showAsSwitcher=true"}
 	)
-	public default boolean requireAuthentication() {
-		return false;
-	}
+	public boolean requireAuthentication();
 
 	@DDMFormField(
 		label = "%require-captcha", properties = {"showAsSwitcher=true"},

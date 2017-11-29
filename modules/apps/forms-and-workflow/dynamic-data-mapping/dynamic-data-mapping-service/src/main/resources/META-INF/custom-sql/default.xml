@@ -76,8 +76,9 @@
 						)
 				)
 				TEMP_TABLE
-					INNER JOIN DDMFormInstance ON
-						TEMP_TABLE.formInstanceId = DDMFormInstance.formInstanceId
+					INNER JOIN
+						DDMFormInstance ON
+							TEMP_TABLE.formInstanceId = DDMFormInstance.formInstanceId
 			ORDER BY
 				DDMFormInstance.formInstanceId DESC
 		]]>
@@ -90,7 +91,7 @@
 				DDMFormInstanceRecord
 			INNER JOIN
 				DDMFormInstanceRecordVersion ON
-					(DDMFormInstanceRecordVersion.formInstanceRecordId = DDMFormInstanceRecord.formInstanceRecordId)
+					DDMFormInstanceRecordVersion.formInstanceRecordId = DDMFormInstanceRecord.formInstanceRecordId
 			WHERE
 				(DDMFormInstanceRecordVersion.status = ?) AND
 				(DDMFormInstanceRecord.formInstanceId = ?)
@@ -104,7 +105,7 @@
 				DDMFormInstanceRecord
 			INNER JOIN
 				DDMFormInstanceRecordVersion ON
-					(DDMFormInstanceRecordVersion.formInstanceRecordId = DDMFormInstanceRecord.formInstanceRecordId)
+					DDMFormInstanceRecordVersion.formInstanceRecordId = DDMFormInstanceRecord.formInstanceRecordId
 			WHERE
 				(DDMFormInstanceRecordVersion.status = ?) AND
 				(DDMFormInstanceRecord.formInstanceId = ?)
