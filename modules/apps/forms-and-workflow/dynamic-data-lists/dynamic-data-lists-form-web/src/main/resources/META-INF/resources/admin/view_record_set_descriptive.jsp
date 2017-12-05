@@ -31,13 +31,13 @@ String href = (String)request.getAttribute(WebKeys.SEARCH_ENTRY_HREF);
 <div class="clamp-container">
 	<h4 class="truncate-text">
 		<aui:a cssClass="record-set-name" href="<%= href %>">
-			<%= HtmlUtil.escape(ddlRecordSet.getName(locale)) %>
+			<%= HtmlUtil.escape(ddlFormAdminDisplayContext.getFormName(ddlRecordSet)) %>
 		</aui:a>
 	</h4>
 
 	<h5 class="text-default">
 		<div class="record-set-description truncate-text">
-			<%= HtmlUtil.escape(ddlRecordSet.getDescription(locale)) %>
+			<%= HtmlUtil.escape(ddlFormAdminDisplayContext.getFormDescription(ddlRecordSet)) %>
 		</div>
 	</h5>
 

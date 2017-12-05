@@ -69,13 +69,13 @@ portletURL.setParameter("displayStyle", displayStyle);
 							cssClass="table-cell-content"
 							href="<%= rowURL %>"
 							name="name"
-							value="<%= HtmlUtil.escape(recordSet.getName(locale)) %>"
+							value="<%= HtmlUtil.escape(ddlFormAdminDisplayContext.getFormName(recordSet)) %>"
 						/>
 
 						<liferay-ui:search-container-column-text
 							cssClass="table-cell-content"
 							name="description"
-							value="<%= HtmlUtil.escape(recordSet.getDescription(locale)) %>"
+							value="<%= HtmlUtil.escape(ddlFormAdminDisplayContext.getFormDescription(recordSet)) %>"
 						/>
 
 						<liferay-ui:search-container-column-date

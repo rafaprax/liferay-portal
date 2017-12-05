@@ -42,7 +42,6 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -726,10 +725,16 @@ public class DDLRecordSetLocalServiceImpl
 			ServiceContext serviceContext, DDLRecordSet recordSet)
 		throws PortalException {
 
+		DDMStructure ddmStructure = recordSet.getDDMStructure();
+
+		DDMForm ddmForm = ddmStructure.getDDMForm();
+
+		Locale defaultLocale = ddmForm.getDefaultLocale();
+
 		// Record set
 
 		validateDDMStructureId(ddmStructureId);
-		validateName(nameMap);
+		validateName(nameMap, defaultLocale);
 
 		User user = userLocalService.getUser(userId);
 
@@ -767,8 +772,8 @@ public class DDLRecordSetLocalServiceImpl
 			recordSet.setVersionUserName(user.getFullName());
 		}
 
-		recordSet.setNameMap(nameMap);
-		recordSet.setDescriptionMap(descriptionMap);
+		recordSet.setNameMap(nameMap, defaultLocale);
+		recordSet.setDescriptionMap(descriptionMap, defaultLocale);
 		recordSet.setMinDisplayRows(minDisplayRows);
 
 		DDLRecordSet updatedRecordSet = ddlRecordSetPersistence.update(
@@ -872,6 +877,11 @@ public class DDLRecordSetLocalServiceImpl
 
 		validateDDMStructureId(ddmStructureId);
 
+		DDMStructure ddmStructure = ddmStructureLocalService.fetchStructure(
+			ddmStructureId);
+
+		DDMForm ddmForm = ddmStructure.getDDMForm();
+
 		if (Validator.isNotNull(recordSetKey)) {
 			DDLRecordSet recordSet = ddlRecordSetPersistence.fetchByG_R(
 				groupId, recordSetKey);
@@ -886,7 +896,7 @@ public class DDLRecordSetLocalServiceImpl
 			}
 		}
 
-		validateName(nameMap);
+		validateName(nameMap, ddmForm.getDefaultLocale());
 	}
 
 	protected void validateDDMStructureId(long ddmStructureId)
@@ -902,16 +912,15 @@ public class DDLRecordSetLocalServiceImpl
 		}
 	}
 
-	protected void validateName(Map<Locale, String> nameMap)
+	protected void validateName(
+			Map<Locale, String> nameMap, Locale defaultLocale)
 		throws PortalException {
 
-		Locale locale = LocaleUtil.getSiteDefault();
-
-		String name = nameMap.get(locale);
+		String name = nameMap.get(defaultLocale);
 
 		if (Validator.isNull(name)) {
 			throw new RecordSetNameException(
-				"Name is null for locale " + locale.getDisplayName());
+				"Name is null for locale " + defaultLocale.getDisplayName());
 		}
 	}
 

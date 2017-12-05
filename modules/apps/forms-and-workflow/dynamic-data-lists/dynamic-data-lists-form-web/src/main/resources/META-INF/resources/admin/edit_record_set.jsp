@@ -25,7 +25,7 @@ long recordSetId = BeanParamUtil.getLong(recordSet, request, "recordSetId");
 long groupId = BeanParamUtil.getLong(recordSet, request, "groupId", scopeGroupId);
 long ddmStructureId = BeanParamUtil.getLong(recordSet, request, "DDMStructureId");
 
-String defaultLanguageId = LocaleUtil.toLanguageId(LocaleUtil.getSiteDefault());
+String defaultLanguageId = ddlFormAdminDisplayContext.getDefaultLanguageId();
 
 Locale[] availableLocales = ddlFormAdminDisplayContext.getAvailableLocales();
 

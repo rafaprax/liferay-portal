@@ -259,11 +259,31 @@ public class DDLFormAdminDisplayContext {
 		DDLRecordSet recordSet = getRecordSet();
 
 		if (recordSet != null) {
-			ThemeDisplay themeDisplay =
-				ddlFormAdminRequestHelper.getThemeDisplay();
+			DDMStructure ddmStructure = recordSet.getDDMStructure();
+
+			DDMForm form = ddmStructure.getDDMForm();
+
+			Locale locale = form.getDefaultLocale();
 
 			return LocalizationUtil.getLocalization(
-				recordSet.getDescription(), themeDisplay.getLanguageId());
+				recordSet.getDescription(), locale.getLanguage());
+		}
+
+		return getJSONObjectLocalizedPropertyFromRequest("description");
+	}
+
+	public String getFormDescription(DDLRecordSet recordSet)
+		throws PortalException {
+
+		if (recordSet != null) {
+			DDMStructure ddmStructure = recordSet.getDDMStructure();
+
+			DDMForm form = ddmStructure.getDDMForm();
+
+			Locale locale = form.getDefaultLocale();
+
+			return LocalizationUtil.getLocalization(
+				recordSet.getDescription(), locale.getLanguage());
 		}
 
 		return getJSONObjectLocalizedPropertyFromRequest("description");
@@ -313,11 +333,29 @@ public class DDLFormAdminDisplayContext {
 		DDLRecordSet recordSet = getRecordSet();
 
 		if (recordSet != null) {
-			ThemeDisplay themeDisplay =
-				ddlFormAdminRequestHelper.getThemeDisplay();
+			DDMStructure ddmStructure = recordSet.getDDMStructure();
+
+			DDMForm form = ddmStructure.getDDMForm();
+
+			Locale locale = form.getDefaultLocale();
 
 			return LocalizationUtil.getLocalization(
-				recordSet.getName(), themeDisplay.getLanguageId());
+				recordSet.getName(), locale.getLanguage());
+		}
+
+		return getJSONObjectLocalizedPropertyFromRequest("name");
+	}
+
+	public String getFormName(DDLRecordSet recordSet) throws PortalException {
+		if (recordSet != null) {
+			DDMStructure ddmStructure = recordSet.getDDMStructure();
+
+			DDMForm form = ddmStructure.getDDMForm();
+
+			Locale locale = form.getDefaultLocale();
+
+			return LocalizationUtil.getLocalization(
+				recordSet.getName(), locale.getLanguage());
 		}
 
 		return getJSONObjectLocalizedPropertyFromRequest("name");
