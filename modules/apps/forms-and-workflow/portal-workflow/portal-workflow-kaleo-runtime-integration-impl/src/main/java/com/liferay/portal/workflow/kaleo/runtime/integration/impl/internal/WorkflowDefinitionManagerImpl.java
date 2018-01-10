@@ -235,17 +235,21 @@ public class WorkflowDefinitionManagerImpl
 
 			serviceContext.setCompanyId(companyId);
 
-			List<KaleoDefinition> kaleoDefinitions =
-				_kaleoDefinitionLocalService.getKaleoDefinitions(
-					start, end,
-					KaleoDefinitionOrderByComparator.getOrderByComparator(
-						orderByComparator, _kaleoWorkflowModelConverter),
-					serviceContext);
+			List<KaleoDefinitionVersion> kaleoDefinitionVersions =
+				_kaleoDefinitionVersionLocalService.
+					getLatestKaleoDefinitionVersions(
+						companyId, null, WorkflowConstants.STATUS_ANY, start,
+						end,
+						KaleoDefinitionVersionOrderByComparator.
+							getOrderByComparator(
+								orderByComparator,
+								_kaleoWorkflowModelConverter));
 
-			int size = kaleoDefinitions.size();
+			int size = kaleoDefinitionVersions.size();
 
 			return toWorkflowDefinitions(
-				kaleoDefinitions.toArray(new KaleoDefinition[size]));
+				kaleoDefinitionVersions.toArray(
+					new KaleoDefinitionVersion[size]));
 		}
 		catch (Exception e) {
 			throw new WorkflowException(e);
