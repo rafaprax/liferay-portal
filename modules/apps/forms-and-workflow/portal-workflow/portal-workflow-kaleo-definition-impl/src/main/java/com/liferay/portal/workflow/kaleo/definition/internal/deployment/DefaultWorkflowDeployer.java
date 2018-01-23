@@ -17,6 +17,7 @@ package com.liferay.portal.workflow.kaleo.definition.internal.deployment;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.workflow.kaleo.KaleoWorkflowModelConverter;
 import com.liferay.portal.workflow.kaleo.definition.Condition;
@@ -71,9 +72,16 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		KaleoDefinition kaleoDefinition =
-			_kaleoDefinitionLocalService.fetchKaleoDefinition(
-				name, serviceContext);
+		KaleoDefinitionVersion kaleoDefinitionVersion =
+			_kaleoDefinitionVersionLocalService.
+				fetchLatestKaleoDefinitionVersion(
+					serviceContext.getCompanyId(), name);
+
+		KaleoDefinition kaleoDefinition = null;
+
+		if (kaleoDefinitionVersion != null) {
+			kaleoDefinition = kaleoDefinitionVersion.fetchKaleoDefinition();
+		}
 
 		if (kaleoDefinition == null) {
 			kaleoDefinition = _kaleoDefinitionLocalService.addKaleoDefinition(
@@ -82,14 +90,16 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 		}
 		else {
 			kaleoDefinition =
-				_kaleoDefinitionLocalService.incrementKaleoDefinition(
-					definition, name, title, serviceContext);
+				_kaleoDefinitionLocalService.updatedKaleoDefinition(
+					kaleoDefinition.getKaleoDefinitionId(), title,
+					definition.getDescription(), definition.getContent(),
+					serviceContext);
 		}
 
-		KaleoDefinitionVersion kaleoDefinitionVersion =
-			_kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
-				kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
-				getVersion(kaleoDefinition.getVersion()));
+		kaleoDefinitionVersion =
+			_kaleoDefinitionVersionLocalService.
+				fetchLatestKaleoDefinitionVersion(
+					serviceContext.getCompanyId(), name);
 
 		long kaleoDefinitionVersionId =
 			kaleoDefinitionVersion.getKaleoDefinitionVersionId();
@@ -174,8 +184,10 @@ public class DefaultWorkflowDeployer implements WorkflowDeployer {
 			kaleoDefinition);
 	}
 
-	protected String getVersion(int version) {
-		return version + StringPool.PERIOD + 0;
+	protected int getNextVersion(String version) {
+		int[] versionParts = StringUtil.split(version, StringPool.PERIOD, 0);
+
+		return ++versionParts[0];
 	}
 
 	@Reference
