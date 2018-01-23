@@ -139,7 +139,7 @@
 	{@param? required: bool}
 	{@param? tip: string}
 
-	<label class="control-label{$readOnly ? ' disabled' : ''}" for="{$name}">
+	<label class="{$readOnly ? ' disabled' : ''}" for="{$name}">
 		{$label}
 
 		{if $required}
@@ -147,7 +147,7 @@
 		{/if}
 	</label>
 
-	<p class="liferay-ddm-form-field-tip">{$tip ? $tip: ''}</p>
+	<span class="form-text">{$tip ? $tip: ''}</span>
 {/template}
 
 /**
