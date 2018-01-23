@@ -240,11 +240,13 @@ AUI.add(
 
 						var index = options.indexOf(option);
 
-						var value = instance.getValue();
+						if (option.get("value").length > 0) {
+							var value = instance.getValue();
 
-						value.splice(index, 1);
+							value.splice(index, 1);
 
-						instance._setValue(value);
+							instance._setValue(value);
+						}
 
 						instance.fire('removeOption');
 
