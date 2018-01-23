@@ -41,10 +41,12 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -211,6 +213,23 @@ public abstract class BaseDDMFormExporter implements DDMFormExporter {
 		}
 
 		return ddmStructureVersions;
+	}
+
+	protected void removeTransientFields(
+		Map<String, DDMFormField> ddmFormFields) {
+
+		Iterator<Entry<String, DDMFormField>> ddmFormFieldsIterator =
+			ddmFormFields.entrySet().iterator();
+
+		while (ddmFormFieldsIterator.hasNext()) {
+			Entry<String, DDMFormField> entry = ddmFormFieldsIterator.next();
+
+			DDMFormField ddmFormField = entry.getValue();
+
+			if (ddmFormField.isTransient()) {
+				ddmFormFieldsIterator.remove();
+			}
+		}
 	}
 
 	protected static class DDMFormFieldRenderedValue {
