@@ -242,8 +242,7 @@ public class WorkflowDefinitionManagerImpl
 			List<KaleoDefinitionVersion> kaleoDefinitionVersions =
 				_kaleoDefinitionVersionLocalService.
 					getLatestKaleoDefinitionVersions(
-						companyId, null, WorkflowConstants.STATUS_ANY, start,
-						end,
+						companyId, start, end,
 						KaleoDefinitionVersionOrderByComparator.
 							getOrderByComparator(
 								orderByComparator,
