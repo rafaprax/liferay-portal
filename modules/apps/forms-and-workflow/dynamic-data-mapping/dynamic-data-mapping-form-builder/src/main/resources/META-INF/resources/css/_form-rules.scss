@@ -1,3 +1,9 @@
+.liferay-ddm-form-builder-calculator {
+	align-content: center;
+	display: flex;
+	justify-content: center;
+}
+
 .liferay-ddm-form-rule-builder {
 	.ddm-form-basic-info {
 		display: none;
@@ -18,8 +24,22 @@
 	width: 200px;
 }
 
-.liferay-ddm-form-builder-rule-builder-content .text-default {
-	font-weight: normal;
+.liferay-ddm-form-builder-rule-builder-content {
+	.liferay-ddm-form-builder-rule-condition-list, .liferay-ddm-form-builder-rule-action-list {
+		h4 {
+			align-items: center;
+			display: flex;
+			margin: 0;
+		}
+	}
+
+	.select-arrow-down-container:focus {
+		outline: none;
+	}
+
+	.text-default {
+		font-weight: normal;
+	}
 }
 
 .liferay-ddm-form-rule-builder-timeline {
@@ -115,7 +135,13 @@
 			padding-bottom: 0;
 		}
 
+		.calculate-container {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
 		.calculate-container-fields {
+			margin-top: 22px;
 			padding: 8px 25px 25px;
 
 			textarea {
@@ -143,29 +169,21 @@
 			padding-bottom: 30px;
 			padding-top: 30px;
 
-			.liferay-ddm-form-builder-calculator {
-				align-content: center;
-				align-items: center;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
 			.calculator-add-field-button-container {
-				display: inline-block;
 				margin: 0 auto;
 				padding: 0;
+				width: 206px;
 
 				.calculator-add-field-button {
 					height: 49px;
 					margin-bottom: 5px;
 					margin-left: 1px;
-					width: 206px;
+					width: inherit;
 				}
 
 				.form-builder-select-field {
-					margin-left: -9px;
-					margin-top: -28px;
+					margin-left: 0;
+					width: 206px;
 
 					.select-field-trigger {
 						display: none;
@@ -185,19 +203,15 @@
 				.calculator-buttons {
 					display: inline-block;
 					margin: 0;
-					overflow: hidden;
+					overflow: inherit;
 					padding: 0;
 
 					li.calculator-button, li.calculator-add-operator-button-area {
-						background-color: rgba(209, 214, 217, 0.5);
-						color: #869CAD;
 						cursor: pointer;
 						float: left;
-						font-size: 14px;
-						font-weight: 500;
 						height: 49px;
 						margin: 1px;
-						padding-top: 16px;
+						padding-top: 14px;
 						text-align: center;
 						width: 49px;
 					}
@@ -211,7 +225,7 @@
 						}
 
 						.form-builder-select-field {
-							margin-left: -10px;
+							margin-left: -19px;
 							margin-top: -10px;
 							position: absolute;
 
@@ -234,19 +248,12 @@
 					}
 
 					li.button-padding-icons {
+						padding-left: 8px;
 						padding-top: 10px;
 					}
 
 					li.button-two-columns {
 						width: 100px;
-					}
-
-					li.calculator-button:hover, li.calculator-add-operator-button-area:hover {
-						background-color: rgba(209, 214, 217, 0.7);
-					}
-
-					li.calculator-button:active, li.calculator-add-operator-button-area:active {
-						background-color: rgba(209, 214, 217, 0.85);
 					}
 
 					li.border-top-left {
@@ -284,7 +291,7 @@
 		.dropdown {
 			position: absolute;
 			right: 4px;
-			top: 8px;
+			top: 4px;
 		}
 
 		.btn {
@@ -327,6 +334,10 @@
 .liferay-ddm-form-rule-builder-footer {
 	margin: $baseline * 3 0;
 	padding: 12px 54px;
+
+	.btn:not(:last-child) {
+		margin-right: 5px;
+	}
 }
 
 .liferay-ddm-form-builder-rule-content {
