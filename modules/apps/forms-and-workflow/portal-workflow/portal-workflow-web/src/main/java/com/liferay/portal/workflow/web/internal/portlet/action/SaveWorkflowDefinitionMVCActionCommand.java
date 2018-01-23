@@ -17,10 +17,17 @@ package com.liferay.portal.workflow.web.internal.portlet.action;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowDefinition;
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionTitleException;
 import com.liferay.portal.workflow.web.internal.constants.WorkflowPortletKeys;
 
+import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.portlet.ActionRequest;
@@ -29,17 +36,17 @@ import javax.portlet.ActionResponse;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Leonardo Barros
+ * @author Jeyvison Nascimento
  */
 @Component(
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + WorkflowPortletKeys.CONTROL_PANEL_WORKFLOW,
-		"mvc.command.name=deleteWorkflowDefinition"
+		"mvc.command.name=saveWorkflowDefinition"
 	},
 	service = MVCActionCommand.class
 )
-public class DeleteWorkflowDefinitionMVCActionCommand
+public class SaveWorkflowDefinitionMVCActionCommand
 	extends DeployWorkflowDefinitionMVCActionCommand {
 
 	@Override
@@ -50,20 +57,34 @@ public class DeleteWorkflowDefinitionMVCActionCommand
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String name = ParamUtil.getString(actionRequest, "name");
-		int version = ParamUtil.getInteger(actionRequest, "version");
+		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
+			actionRequest, "title");
 
-		workflowDefinitionManager.undeployWorkflowDefinition(
-			themeDisplay.getCompanyId(), themeDisplay.getUserId(), name,
-			version);
+		String title = titleMap.get(LocaleUtil.getDefault());
+
+		if (titleMap.isEmpty() || Validator.isNull(title)) {
+			throw new WorkflowDefinitionTitleException();
+		}
+
+		String name = ParamUtil.getString(actionRequest, "name");
+
+		String content = ParamUtil.getString(actionRequest, "content");
+
+		WorkflowDefinition workflowDefinition =
+			workflowDefinitionManager.saveWorkflowDefinition(
+				themeDisplay.getCompanyId(), themeDisplay.getUserId(),
+				getTitle(titleMap), name, content.getBytes());
+
+		setRedirectAttribute(actionRequest, workflowDefinition);
+
+		sendRedirect(actionRequest, actionResponse);
 	}
 
 	@Override
 	protected String getSuccessMessage(ActionRequest actionRequest) {
 		ResourceBundle resourceBundle = getResourceBundle(actionRequest);
 
-		return LanguageUtil.get(
-			resourceBundle, "workflow-deleted-successfully");
+		return LanguageUtil.get(resourceBundle, "workflow-saved");
 	}
 
 }
