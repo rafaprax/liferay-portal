@@ -362,7 +362,7 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 			ddmFormAvailableLocales, ddmFormDefaultLocale);
 	}
 
-	private static final String[] _DDM_FORM_FIELD_INDEX_TYPES =
+	private static final String[] _ddmFormFieldIndexTypes =
 		{StringPool.BLANK, "keyword", "text"};
 
 	private DDMExpressionFactory _ddmExpressionFactory;
