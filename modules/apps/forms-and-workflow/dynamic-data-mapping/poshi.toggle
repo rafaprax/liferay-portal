@@ -4,9 +4,9 @@
 		<description>Toggle Description</description>
 		<owner>Clarissa Tampoya</owner>
 	</toggle>
-	<toggle name="LPS-71571">
-		<date>2017-06-28</date>
-		<description>Adding localization to Basic and Properties tabs on sidebar.</description>
+	<toggle name="LPS-75358">
+		<date>2018-01-04</date>
+		<description>Add support to Drag and Drop fields in Form Builder.</description>
 		<owner>Pedro Queiroz</owner>
 	</toggle>
 </toggles>
