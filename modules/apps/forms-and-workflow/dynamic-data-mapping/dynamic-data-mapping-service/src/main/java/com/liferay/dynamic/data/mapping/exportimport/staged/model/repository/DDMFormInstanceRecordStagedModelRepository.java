@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.List;
 import java.util.Objects;
@@ -80,6 +81,9 @@ public class DDMFormInstanceRecordStagedModelRepository
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
 			ddmFormInstanceRecord);
+
+		serviceContext.setAttribute(
+			"status", WorkflowConstants.STATUS_APPROVED);
 
 		if (portletDataContext.isDataStrategyMirror()) {
 			serviceContext.setUuid(ddmFormInstanceRecord.getUuid());
