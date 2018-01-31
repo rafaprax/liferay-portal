@@ -219,6 +219,7 @@ AUI.add(
 
 						if (instance.get('open') && !instance.hasFocus(event.target)) {
 							instance.close();
+							instance.set('field', null);
 						}
 					},
 

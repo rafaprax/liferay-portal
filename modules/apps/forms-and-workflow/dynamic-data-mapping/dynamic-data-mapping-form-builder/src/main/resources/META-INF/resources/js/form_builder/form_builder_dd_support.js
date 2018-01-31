@@ -512,6 +512,7 @@ AUI.add(
 
 						if (drop) {
 							drop.destroy();
+							drop = null;
 						}
 					}
 				);
