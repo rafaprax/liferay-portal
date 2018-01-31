@@ -298,11 +298,7 @@ AUI.add(
 
 						var target = event.target;
 
-						var addRepeatebleButton = target.hasClass('lfr-ddm-form-field-repeatable-add-button');
-
 						var closeIconNode = target.ancestor('.' + CSS_SELECT_BADGE_ITEM_CLOSE, true);
-
-						var deleteRepeatebleButton = target.hasClass('lfr-ddm-form-field-repeatable-delete-button');
 
 						var optionNode = target.ancestor('.' + CSS_SELECT_OPTION_ITEM, true);
 
@@ -312,7 +308,7 @@ AUI.add(
 						else if (optionNode) {
 							instance._handleItemClick(optionNode);
 						}
-						else if (!addRepeatebleButton && !deleteRepeatebleButton) {
+						else {
 							instance._handleSelectTriggerClick(event);
 						}
 
