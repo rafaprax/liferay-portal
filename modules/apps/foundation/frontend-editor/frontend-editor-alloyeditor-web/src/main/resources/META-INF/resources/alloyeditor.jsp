@@ -353,6 +353,13 @@ name = HtmlUtil.escapeJS(name);
 		setHTML: function(value) {
 			if (alloyEditor) {
 				alloyEditor.setHTML(value);
+				
+				Liferay.fire(
+					'editorRendered',
+					{
+					portletNamespace : '<portlet:namespace />'
+					}
+				);
 			}
 		}
 	};

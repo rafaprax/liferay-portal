@@ -246,9 +246,23 @@ name = HtmlUtil.escapeJS(name);
 		setHTML: function(value) {
 			if (window['<%= name %>'].instanceReady) {
 				tinyMCE.editors['<%= name %>'].setContent(value);
+				
+				Liferay.fire(
+					'editorRendered',
+					{
+					portletNamespace : '<portlet:namespace />'
+					}
+				);
 			}
 			else {
 				document.getElementById('<%= name %>').innerHTML = value;
+				
+				Liferay.fire(
+					'editorRendered',
+					{
+					portletNamespace : '<portlet:namespace />'
+					}
+				);
 			}
 		}
 	};

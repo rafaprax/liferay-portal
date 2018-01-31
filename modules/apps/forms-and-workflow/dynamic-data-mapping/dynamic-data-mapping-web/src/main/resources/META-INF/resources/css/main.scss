@@ -5,6 +5,10 @@
 	display: none;
 }
 
+.clickDisabled {
+  pointer-events: none;
+}
+
 .portlet-document-library, .portlet-dynamic-data-mapping {
 	.field-labels-inline {
 		clear: both;

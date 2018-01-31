@@ -59,7 +59,14 @@ AUI.add(
 
 		var DDMPortletSupport = function() {
 		};
+		
+		Liferay.on('editorRendered', function(event) {
 
+			var translationManagerId = event.portletNamespace + 'translationManager';
+
+			document.getElementById(translationManagerId).classList.remove('clickDisabled');
+		});
+		
 		DDMPortletSupport.ATTRS = {
 			doAsGroupId: {
 			},
@@ -759,7 +766,11 @@ AUI.add(
 
 						var localizationMap = instance.get('localizationMap');
 
+						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
+
 						var value = instance.getValue();
+
+						document.getElementById(translationManagerId).classList.add('clickDisabled');
 
 						if (AObject.keys(localizationMap).length != 0) {
 							this.removeNotAvailableLocales(localizationMap);
