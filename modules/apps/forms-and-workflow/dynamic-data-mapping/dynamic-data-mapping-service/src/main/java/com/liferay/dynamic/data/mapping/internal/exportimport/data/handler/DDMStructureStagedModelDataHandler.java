@@ -31,6 +31,7 @@ import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLinkLocal
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureVersionLocalService;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
@@ -216,6 +217,8 @@ public class DDMStructureStagedModelDataHandler
 			structureElement.addAttribute("preloaded", "true");
 		}
 
+		exportDDMStructureVersions(portletDataContext, structure);
+
 		exportDDMForm(portletDataContext, structure, structureElement);
 
 		exportDDMDataProviderInstances(
@@ -397,6 +400,21 @@ public class DDMStructureStagedModelDataHandler
 
 		structureKeys.put(
 			structure.getStructureKey(), importedStructure.getStructureKey());
+	}
+
+	protected void exportDDMStructureVersions(
+			PortletDataContext portletDataContext, DDMStructure structure)
+		throws PortalException {
+
+		List<DDMStructureVersion> structureVersions =
+			_ddmStructureVersionLocalService.getStructureVersions(
+				structure.getStructureId());
+
+		for (DDMStructureVersion structureVersion :structureVersions) {
+			StagedModelDataHandlerUtil.exportReferenceStagedModel(
+				portletDataContext, structure, structureVersion,
+				PortletDataContext.REFERENCE_TYPE_STRONG);
+		}
 	}
 
 	protected void exportDDMDataProviderInstances(
@@ -656,6 +674,9 @@ public class DDMStructureStagedModelDataHandler
 	@Reference
 	private DDMDataProviderInstanceLocalService
 		_ddmDataProviderInstanceLocalService;
+
+	@Reference
+	private DDMStructureVersionLocalService _ddmStructureVersionLocalService;
 
 	private DDMFormJSONDeserializer _ddmFormJSONDeserializer;
 	private DDMFormLayoutJSONDeserializer _ddmFormLayoutJSONDeserializer;

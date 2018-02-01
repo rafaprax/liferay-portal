@@ -171,10 +171,6 @@ public class DDMFormInstanceStagedModelRepository
 
 						StagedModelDataHandlerUtil.exportStagedModel(
 							portletDataContext, ddmFormInstanceVersion);
-
-						StagedModelDataHandlerUtil.exportStagedModel(
-							portletDataContext,
-							ddmFormInstanceVersion.getStructureVersion());
 					}
 
 					StagedModelDataHandlerUtil.exportStagedModel(
