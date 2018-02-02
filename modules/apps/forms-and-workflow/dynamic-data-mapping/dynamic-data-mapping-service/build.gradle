@@ -35,5 +35,4 @@ dependencies {
 	provided project(":apps:forms-and-workflow:dynamic-data-mapping:dynamic-data-mapping-data-provider-impl")
 	provided project(":apps:forms-and-workflow:dynamic-data-mapping:dynamic-data-mapping-expression")
 	provided project(":apps:forms-and-workflow:dynamic-data-mapping:dynamic-data-mapping-io")
-	provided project(":apps:forms-and-workflow:dynamic-data-mapping:dynamic-data-mapping-validator")
 }
