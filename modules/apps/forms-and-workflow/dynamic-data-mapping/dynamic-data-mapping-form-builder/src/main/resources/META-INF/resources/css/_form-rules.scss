@@ -288,7 +288,7 @@
 		}
 	}
 
-	.panel-body {
+	.timeline-item .panel-body {
 		position: relative;
 
 		.dropdown {
@@ -297,7 +297,7 @@
 			top: 4px;
 		}
 
-		.btn {
+		.dropdown-toggle-operator {
 			padding: 4px 12px;
 		}
 	}
