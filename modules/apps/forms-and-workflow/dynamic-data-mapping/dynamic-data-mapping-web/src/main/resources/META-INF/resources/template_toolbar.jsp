@@ -24,6 +24,8 @@ long templateId = ParamUtil.getLong(request, "templateId");
 long classNameId = ParamUtil.getLong(request, "classNameId");
 long classPK = ParamUtil.getLong(request, "classPK");
 
+long groupId = ParamUtil.getLong(request, "groupId", PortalUtil.getScopeGroupId(request, refererPortletName));
+
 long resourceClassNameId = ParamUtil.getLong(request, "resourceClassNameId");
 
 if (resourceClassNameId == 0) {
@@ -70,6 +72,17 @@ portletURL.setParameter("keywords", keywords);
 		<liferay-frontend:management-bar-action-buttons>
 			<liferay-frontend:management-bar-button href='<%= "javascript:" + renderResponse.getNamespace() + "deleteTemplates();" %>' icon="trash" label="delete" />
 		</liferay-frontend:management-bar-action-buttons>
+	</c:if>
+
+	<c:if test="<%= ddmDisplay.isShowAddButton(themeDisplay.getScopeGroup()) %>">
+		<liferay-frontend:management-bar-buttons>
+			<liferay-util:include page="/template_add_buttons.jsp" servletContext="<%= application %>">
+				<liferay-util:param name="groupId" value="<%= String.valueOf(groupId) %>" />
+				<liferay-util:param name="classNameId" value="<%= String.valueOf(classNameId) %>" />
+				<liferay-util:param name="classPK" value="<%= String.valueOf(classPK) %>" />
+				<liferay-util:param name="resourceClassNameId" value="<%= String.valueOf(resourceClassNameId) %>" />
+			</liferay-util:include>
+		</liferay-frontend:management-bar-buttons>
 	</c:if>
 </liferay-frontend:management-bar>
 
