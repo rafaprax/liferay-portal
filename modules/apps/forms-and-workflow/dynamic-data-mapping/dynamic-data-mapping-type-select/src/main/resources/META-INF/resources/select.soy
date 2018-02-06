@@ -115,15 +115,25 @@
 
 				{if not $readOnly}
 					<div class="drop-chosen {$open ? '' : 'hide'}">
-						<div class="search-chosen">
-							<div class="select-search-container">
-								{if $selectSearchIcon}
-									<a class="" href="javascript:;">{$selectSearchIcon}</a>
-								{/if}
-							</div>
-							<input autocomplete="off" class="drop-chosen-search" placeholder="{$strings.search}" type="text">
+						<div class="dropdown-menu" aria-labelledby="theDropdownToggleId">
+							<form>
+								<div class="dropdown-section">
+									<div class="input-group input-group-sm">
+										<div class="input-group-item">
+											<input autocomplete="off" class="drop-chosen-search form-control input-group-inset input-group-inset-after" placeholder="{$strings.search}" type="text">
+											<span class="input-group-inset-item input-group-inset-item-after">
+												<button class="btn btn-link" type="button">
+														{if $selectSearchIcon}
+															{$selectSearchIcon}
+														{/if}
+												</button>
+											</span>
+										</div>
+									</div>
+								</div>
+							{call .select_options data="all" /}
+							</form>
 						</div>
-						{call .select_options data="all" /}
 					</div>
 				{/if}
 			</div>
@@ -233,7 +243,7 @@
 	{@param? fixedOptions: list<[label: string, value: string]>}
 	{@param? multiple: bool}
 
-	<ul class="dropdown-menu dropdown-visible results-chosen">
+	<ul class="dropdown-visible results-chosen list-unstyled">
 		{if length($options) > 0}
 			<div class="inline-scroller">
 				{call .plot_dropdown_rows}
@@ -287,7 +297,6 @@
 
 		{let $attributes kind="attributes"}
 			class="
-				dropdown-item
 
 				{sp}select-option-item
 
@@ -296,17 +305,8 @@
 				{else}
 					{sp}unfixed
 				{/if}
-
-				{if $selected}
-					{sp}option-selected
-				{/if}
 			"
 			data-option-index="{index($option)}"
-
-			data-option-selected="
-			{if $selected}
-				true
-			{/if}"
 
 			data-option-value="{$option.value}"
 		{/let}
@@ -315,9 +315,26 @@
 			{if $multiple}
 				<input type="checkbox" value="" {if $selected == 'selected'}checked{/if}>
 			{/if}
-			<span title="{$option.label}">
+			{let $itemAttributes kind="attributes"}
+				class="
+					dropdown-item
+
+					{if $selected}
+						{sp}active
+					{/if}
+				"
+				data-option-selected="
+					{if $selected}
+						true
+					{/if}"
+
+				href="javascript:;"
+
+				title="{$option.label}"
+			{/let}
+			<a {$itemAttributes}>
 				{$option.label}
-			</span>
+			</a>
 		</li>
 	{/foreach}
 
