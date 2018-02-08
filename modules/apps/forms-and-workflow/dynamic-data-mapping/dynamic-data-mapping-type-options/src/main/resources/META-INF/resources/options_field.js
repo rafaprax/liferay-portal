@@ -242,9 +242,18 @@ AUI.add(
 
 						var value = instance.getValue();
 
-						value.splice(index, 1);
+						var itemsFound = value.filter(
+							function(item) {
+								return item.value === option.get('value');
+							}
+						);
 
-						instance._setValue(value);
+						if (itemsFound.length > 0) {
+
+							value.splice(index, 1);
+
+							instance._setValue(value);
+						}
 
 						instance.fire('removeOption');
 
@@ -304,10 +313,9 @@ AUI.add(
 						var value = instance.getValue();
 
 						if (value.length === 0 || value.length === 1 && value[0].label === '') {
-							value = [];
+							instance._setValue([]);
 						}
 
-						instance._setValue(value);
 					},
 
 					_afterEditableChange: function(event) {
