@@ -140,8 +140,8 @@ public class DDMStructureVersionStagedModelDataHandler
 
 		stagedModelDataHandler.importMissingReference(
 			portletDataContext, referenceElement);
-	
 	}
+
 	@Override
 	protected void doImportMissingReference(
 			PortletDataContext portletDataContext, String uuid, long groupId,

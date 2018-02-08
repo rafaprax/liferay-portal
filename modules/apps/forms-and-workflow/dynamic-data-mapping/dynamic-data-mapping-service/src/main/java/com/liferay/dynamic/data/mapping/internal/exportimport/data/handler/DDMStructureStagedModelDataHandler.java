@@ -402,21 +402,6 @@ public class DDMStructureStagedModelDataHandler
 			structure.getStructureKey(), importedStructure.getStructureKey());
 	}
 
-	protected void exportDDMStructureVersions(
-			PortletDataContext portletDataContext, DDMStructure structure)
-		throws PortalException {
-
-		List<DDMStructureVersion> structureVersions =
-			_ddmStructureVersionLocalService.getStructureVersions(
-				structure.getStructureId());
-
-		for (DDMStructureVersion structureVersion :structureVersions) {
-			StagedModelDataHandlerUtil.exportReferenceStagedModel(
-				portletDataContext, structure, structureVersion,
-				PortletDataContext.REFERENCE_TYPE_STRONG);
-		}
-	}
-
 	protected void exportDDMDataProviderInstances(
 			PortletDataContext portletDataContext, DDMStructure structure,
 			Element structureElement)
@@ -487,6 +472,20 @@ public class DDMStructureStagedModelDataHandler
 
 		portletDataContext.addZipEntry(
 			ddmFormLayoutPath, structureLayout.getDefinition());
+	}
+
+	protected void exportDDMStructureVersions(
+			PortletDataContext portletDataContext, DDMStructure structure)
+		throws PortalException {
+
+		List<DDMStructureVersion> structureVersions =
+			_ddmStructureVersionLocalService.getStructureVersions(
+				structure.getStructureId());
+
+		for (DDMStructureVersion structureVersion : structureVersions) {
+			StagedModelDataHandlerUtil.exportStagedModel(
+				portletDataContext, structureVersion);
+		}
 	}
 
 	protected DDMStructure fetchExistingStructure(
@@ -675,13 +674,13 @@ public class DDMStructureStagedModelDataHandler
 	private DDMDataProviderInstanceLocalService
 		_ddmDataProviderInstanceLocalService;
 
-	@Reference
-	private DDMStructureVersionLocalService _ddmStructureVersionLocalService;
-
 	private DDMFormJSONDeserializer _ddmFormJSONDeserializer;
 	private DDMFormLayoutJSONDeserializer _ddmFormLayoutJSONDeserializer;
 	private DDMStructureLayoutLocalService _ddmStructureLayoutLocalService;
 	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private DDMStructureVersionLocalService _ddmStructureVersionLocalService;
 
 	@Reference
 	private Portal _portal;
