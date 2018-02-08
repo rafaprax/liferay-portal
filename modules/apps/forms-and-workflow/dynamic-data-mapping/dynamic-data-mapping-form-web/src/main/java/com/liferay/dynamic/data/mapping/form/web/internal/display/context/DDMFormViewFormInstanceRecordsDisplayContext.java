@@ -23,7 +23,9 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
@@ -34,6 +36,8 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
@@ -56,6 +60,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -100,15 +105,29 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 	}
 
 	public String getColumnValue(
-		DDMFormField formField, List<DDMFormFieldValue> formFieldValues) {
+		DDMFormInstanceRecord formInstanceRecord, DDMFormField formField,
+		List<DDMFormFieldValue> formFieldValues) {
 
 		if (formFieldValues == null) {
 			return StringPool.BLANK;
 		}
 
+		String formFieldType = formField.getType();
+
+		try {
+			DDMFormField formFieldFromInstanceRecord =
+				getDDMFormFieldFromInstanceRecord(
+					formInstanceRecord, formField.getName());
+
+			formFieldType = formFieldFromInstanceRecord.getType();
+		}
+		catch (PortalException pe) {
+			_log.error(pe);
+		}
+
 		final DDMFormFieldValueRenderer fieldValueRenderer =
 			_ddmFormFieldTypeServicesTracker.getDDMFormFieldValueRenderer(
-				formField.getType());
+				formFieldType);
 
 		List<String> renderedFormFielValues = ListUtil.toList(
 			formFieldValues,
@@ -262,6 +281,26 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 		updateSearchContainerResults();
 	}
 
+	protected DDMFormField getDDMFormFieldFromInstanceRecord(
+			DDMFormInstanceRecord formInstanceRecord, String fieldName)
+		throws PortalException {
+
+		String version = formInstanceRecord.getFormInstanceVersion();
+
+		DDMFormInstanceVersion ddmFormInstanceVersion =
+			_ddmFormInstance.getFormInstanceVersion(version);
+
+		DDMStructureVersion ddmStructureVersion =
+			ddmFormInstanceVersion.getStructureVersion();
+
+		DDMForm form = ddmStructureVersion.getDDMForm();
+
+		Map<String, DDMFormField> formFieldsMap = form.getDDMFormFieldsMap(
+			true);
+
+		return formFieldsMap.get(fieldName);
+	}
+
 	protected List<DDMFormField> getNontransientFormFields(DDMForm form) {
 		List<DDMFormField> formfields = new ArrayList<>();
 
@@ -321,6 +360,9 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 	}
 
 	private static final int _MAX_COLUMNS = 5;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DDMFormViewFormInstanceRecordsDisplayContext.class);
 
 	private final List<DDMFormField> _ddmFormFields = new ArrayList<>();
 	private final DDMFormFieldTypeServicesTracker
