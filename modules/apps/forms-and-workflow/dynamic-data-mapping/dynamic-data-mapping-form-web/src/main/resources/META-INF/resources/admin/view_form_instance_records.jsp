@@ -85,7 +85,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "form-entries"));
 
 				Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap = ddmFormValues.getDDMFormFieldValuesMap();
 
-				for (DDMFormField ddmFormField : ddmFormViewFormInstanceRecordsDisplayContext.getDDMFormFields()) {
+				for (DDMFormField ddmFormField : ddmFormViewFormInstanceRecordsDisplayContext.getDDMFormFields(formInstanceRecord)) {
 				%>
 
 					<liferay-ui:search-container-column-text

@@ -23,7 +23,9 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
@@ -34,6 +36,8 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
@@ -126,7 +130,27 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 			renderedFormFielValues, StringPool.COMMA_AND_SPACE);
 	}
 
-	public List<DDMFormField> getDDMFormFields() {
+	public List<DDMFormField> getDDMFormFields(
+		DDMFormInstanceRecord formInstanceRecord) {
+
+		try {
+			String version = formInstanceRecord.getFormInstanceVersion();
+
+			DDMFormInstanceVersion ddmFormInstanceVersion =
+				_ddmFormInstance.getFormInstanceVersion(version);
+
+			DDMStructureVersion ddmStuctureVersion =
+				ddmFormInstanceVersion.getStructureVersion();
+
+			List<DDMFormField> formfields = getNontransientFormFields(
+				ddmStuctureVersion.getDDMForm());
+
+			return formfields;
+		}
+		catch (PortalException pe) {
+			_log.error(pe);
+		}
+
 		return _ddmFormFields;
 	}
 
@@ -321,6 +345,9 @@ public class DDMFormViewFormInstanceRecordsDisplayContext {
 	}
 
 	private static final int _MAX_COLUMNS = 5;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DDMFormViewFormInstanceRecordsDisplayContext.class);
 
 	private final List<DDMFormField> _ddmFormFields = new ArrayList<>();
 	private final DDMFormFieldTypeServicesTracker
