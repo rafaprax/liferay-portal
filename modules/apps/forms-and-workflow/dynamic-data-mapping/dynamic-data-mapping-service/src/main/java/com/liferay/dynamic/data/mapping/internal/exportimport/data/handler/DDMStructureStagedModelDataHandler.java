@@ -359,6 +359,7 @@ public class DDMStructureStagedModelDataHandler
 					structure.getType(), serviceContext);
 
 				importedStructure.setVersion(structure.getVersion());
+				importedStructure.setModifiedDate(structure.getModifiedDate());
 
 				importedStructure =
 					_ddmStructureLocalService.updateDDMStructure(
@@ -391,6 +392,7 @@ public class DDMStructureStagedModelDataHandler
 				serviceContext);
 
 			importedStructure.setVersion(structure.getVersion());
+			importedStructure.setModifiedDate(structure.getModifiedDate());
 
 			importedStructure = _ddmStructureLocalService.updateDDMStructure(
 				importedStructure);
