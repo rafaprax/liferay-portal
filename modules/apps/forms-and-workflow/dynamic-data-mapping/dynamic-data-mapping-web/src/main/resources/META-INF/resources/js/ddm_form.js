@@ -59,14 +59,7 @@ AUI.add(
 
 		var DDMPortletSupport = function() {
 		};
-		
-		Liferay.on('editorRendered', function(event) {
 
-			var translationManagerId = event.portletNamespace + 'translationManager';
-
-			document.getElementById(translationManagerId).classList.remove('clickDisabled');
-		});
-		
 		DDMPortletSupport.ATTRS = {
 			doAsGroupId: {
 			},
@@ -3034,7 +3027,8 @@ AUI.add(
 								),
 								formNode.on('submit', instance._onSubmitForm, instance),
 								Liferay.after('form:registered', instance._afterFormRegistered, instance),
-								Liferay.on('submitForm', instance._onLiferaySubmitForm, instance)
+								Liferay.on('submitForm', instance._onLiferaySubmitForm, instance),
+								Liferay.on('editorRendered', instance._onLiferayEditorRendered, instance)
 							);
 						}
 					},
@@ -3264,6 +3258,12 @@ AUI.add(
 
 							liferayForm.formValidator.set('rules', validatorRules);
 						}
+					},
+
+					_onLiferayEditorRendered: function(event) {
+						var translationManagerId = event.portletNamespace + 'translationManager';
+
+						document.getElementById(translationManagerId).classList.remove('clickDisabled');
 					},
 
 					_onLiferaySubmitForm: function(event) {
