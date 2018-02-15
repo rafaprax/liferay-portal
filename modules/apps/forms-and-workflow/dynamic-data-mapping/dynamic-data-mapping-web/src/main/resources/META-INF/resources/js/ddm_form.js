@@ -759,7 +759,11 @@ AUI.add(
 
 						var localizationMap = instance.get('localizationMap');
 
+						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
+
 						var value = instance.getValue();
+
+						document.getElementById(translationManagerId).classList.add('clickDisabled');
 
 						if (AObject.keys(localizationMap).length != 0) {
 							this.removeNotAvailableLocales(localizationMap);
@@ -946,6 +950,10 @@ AUI.add(
 						var fieldValue = instance.getFieldInfo(values, 'instanceId', instanceId);
 
 						var localizationMap = {};
+
+						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
+
+						document.getElementById(translationManagerId).classList.add('clickDisabled');
 
 						if (fieldValue && fieldValue.value) {
 							localizationMap = fieldValue.value;
@@ -3019,7 +3027,8 @@ AUI.add(
 								),
 								formNode.on('submit', instance._onSubmitForm, instance),
 								Liferay.after('form:registered', instance._afterFormRegistered, instance),
-								Liferay.on('submitForm', instance._onLiferaySubmitForm, instance)
+								Liferay.on('submitForm', instance._onLiferaySubmitForm, instance),
+								Liferay.on('editorRendered', instance._onLiferayEditorRendered, instance)
 							);
 						}
 					},
@@ -3249,6 +3258,12 @@ AUI.add(
 
 							liferayForm.formValidator.set('rules', validatorRules);
 						}
+					},
+
+					_onLiferayEditorRendered: function(event) {
+						var translationManagerId = event.portletNamespace + 'translationManager';
+
+						document.getElementById(translationManagerId).classList.remove('clickDisabled');
 					},
 
 					_onLiferaySubmitForm: function(event) {
