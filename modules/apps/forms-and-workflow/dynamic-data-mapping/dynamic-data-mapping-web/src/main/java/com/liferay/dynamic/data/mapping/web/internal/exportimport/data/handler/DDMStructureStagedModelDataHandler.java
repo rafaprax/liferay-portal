@@ -342,17 +342,19 @@ public class DDMStructureStagedModelDataHandler
 				// Force a new structure key if a structure with the same key
 				// already exists
 
+				String structureKey = null;
+
 				existingStructure = _ddmStructureLocalService.fetchStructure(
 					targetGroupId, structure.getClassNameId(),
 					structure.getStructureKey());
 
-				if (existingStructure != null) {
-					structure.setStructureKey(null);
+				if (existingStructure == null) {
+					structureKey = structure.getStructureKey();
 				}
 
 				importedStructure = _ddmStructureLocalService.addStructure(
 					userId, targetGroupId, parentStructureId,
-					structure.getClassNameId(), structure.getStructureKey(),
+					structure.getClassNameId(), structureKey,
 					structure.getNameMap(), structure.getDescriptionMap(),
 					ddmForm, ddmFormLayout, structure.getStorageType(),
 					structure.getType(), serviceContext);
