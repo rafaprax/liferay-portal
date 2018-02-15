@@ -954,7 +954,7 @@ AUI.add(
 						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
 
 						document.getElementById(translationManagerId).classList.add('clickDisabled');
-						
+
 						if (fieldValue && fieldValue.value) {
 							localizationMap = fieldValue.value;
 						}

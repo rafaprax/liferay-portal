@@ -282,7 +282,7 @@ name = HtmlUtil.escapeJS(name);
 				ckEditorInstance.setData(data);
 
 				win._setStyles();
-				
+
 				Liferay.fire(
 					'editorRendered',
 					{

@@ -182,7 +182,7 @@ name = HtmlUtil.escapeJS(name);
 		setHTML: function(value) {
 			if (window['<%= name %>'].instanceReady) {
 				document.getElementById('<%= name %>').value = value || '';
-				
+
 				Liferay.fire(
 					'editorRendered',
 					{

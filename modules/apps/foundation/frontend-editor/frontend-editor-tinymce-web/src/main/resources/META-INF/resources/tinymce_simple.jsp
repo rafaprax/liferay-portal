@@ -246,7 +246,7 @@ name = HtmlUtil.escapeJS(name);
 		setHTML: function(value) {
 			if (window['<%= name %>'].instanceReady) {
 				tinyMCE.editors['<%= name %>'].setContent(value);
-				
+
 				Liferay.fire(
 					'editorRendered',
 					{
@@ -256,7 +256,7 @@ name = HtmlUtil.escapeJS(name);
 			}
 			else {
 				document.getElementById('<%= name %>').innerHTML = value;
-				
+
 				Liferay.fire(
 					'editorRendered',
 					{
