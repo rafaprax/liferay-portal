@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.web.internal.exportimport.data.handler;
+package com.liferay.dynamic.data.mapping.internal.exportimport.data.handler;
 
 import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONDeserializer;
@@ -31,6 +31,7 @@ import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLinkLocal
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureVersionLocalService;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
@@ -216,6 +217,8 @@ public class DDMStructureStagedModelDataHandler
 			structureElement.addAttribute("preloaded", "true");
 		}
 
+		exportDDMStructureVersions(portletDataContext, structure);
+
 		exportDDMForm(portletDataContext, structure, structureElement);
 
 		exportDDMDataProviderInstances(
@@ -252,9 +255,7 @@ public class DDMStructureStagedModelDataHandler
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
-		DDMStructure existingStructure = null;
-
-		existingStructure = fetchExistingStructure(
+		DDMStructure existingStructure = fetchExistingStructure(
 			uuid, groupId, classNameId, structureKey, preloaded);
 
 		Map<Long, Long> structureIds =
@@ -356,6 +357,13 @@ public class DDMStructureStagedModelDataHandler
 					structure.getNameMap(), structure.getDescriptionMap(),
 					ddmForm, ddmFormLayout, structure.getStorageType(),
 					structure.getType(), serviceContext);
+
+				importedStructure.setVersion(structure.getVersion());
+				importedStructure.setModifiedDate(structure.getModifiedDate());
+
+				importedStructure =
+					_ddmStructureLocalService.updateDDMStructure(
+						importedStructure);
 			}
 			else if (isModifiedStructure(existingStructure, structure)) {
 				importedStructure = _ddmStructureLocalService.updateStructure(
@@ -382,6 +390,12 @@ public class DDMStructureStagedModelDataHandler
 				structure.getDescriptionMap(), ddmForm, ddmFormLayout,
 				structure.getStorageType(), structure.getType(),
 				serviceContext);
+
+			importedStructure.setVersion(structure.getVersion());
+			importedStructure.setModifiedDate(structure.getModifiedDate());
+
+			importedStructure = _ddmStructureLocalService.updateDDMStructure(
+				importedStructure);
 		}
 
 		portletDataContext.importClassedModel(structure, importedStructure);
@@ -460,6 +474,20 @@ public class DDMStructureStagedModelDataHandler
 
 		portletDataContext.addZipEntry(
 			ddmFormLayoutPath, structureLayout.getDefinition());
+	}
+
+	protected void exportDDMStructureVersions(
+			PortletDataContext portletDataContext, DDMStructure structure)
+		throws PortalException {
+
+		List<DDMStructureVersion> structureVersions =
+			_ddmStructureVersionLocalService.getStructureVersions(
+				structure.getStructureId());
+
+		for (DDMStructureVersion structureVersion : structureVersions) {
+			StagedModelDataHandlerUtil.exportStagedModel(
+				portletDataContext, structureVersion);
+		}
 	}
 
 	protected DDMStructure fetchExistingStructure(
@@ -652,6 +680,9 @@ public class DDMStructureStagedModelDataHandler
 	private DDMFormLayoutJSONDeserializer _ddmFormLayoutJSONDeserializer;
 	private DDMStructureLayoutLocalService _ddmStructureLayoutLocalService;
 	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private DDMStructureVersionLocalService _ddmStructureVersionLocalService;
 
 	@Reference
 	private Portal _portal;

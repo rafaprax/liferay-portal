@@ -18,9 +18,10 @@ import com.liferay.dynamic.data.mapping.io.DDMFormValuesJSONDeserializer;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceSettings;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMFormInstanceVersionLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
@@ -29,6 +30,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.lar.BaseStagedModelDataHandler;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.xml.Element;
 
@@ -69,19 +71,13 @@ public class DDMFormInstanceStagedModelDataHandler
 			portletDataContext, formInstance, ddmStructure,
 			PortletDataContext.REFERENCE_TYPE_STRONG);
 
-		List<DDMTemplate> ddmTemplates = ddmStructure.getTemplates();
-
 		Element formInstanceElement = portletDataContext.getExportDataElement(
 			formInstance);
 
-		for (DDMTemplate ddmTemplate : ddmTemplates) {
-			StagedModelDataHandlerUtil.exportReferenceStagedModel(
-				portletDataContext, formInstance, ddmTemplate,
-				PortletDataContext.REFERENCE_TYPE_STRONG);
-		}
-
 		exportFormInstanceSettings(
 			portletDataContext, formInstance, formInstanceElement);
+
+		exportDDMFormInstanceVersions(portletDataContext, formInstance);
 
 		portletDataContext.addClassedModel(
 			formInstanceElement,
@@ -155,6 +151,22 @@ public class DDMFormInstanceStagedModelDataHandler
 			formInstance, importedFormInstance);
 	}
 
+	protected void exportDDMFormInstanceVersions(
+			PortletDataContext portletDataContext, DDMFormInstance formInstance)
+		throws PortalException {
+
+		List<DDMFormInstanceVersion> formInstanceVersions =
+			_ddmFormInstanceVersionLocalService.getFormInstanceVersions(
+				formInstance.getFormInstanceId());
+
+		for (DDMFormInstanceVersion formInstanceVersion :
+				formInstanceVersions) {
+
+			StagedModelDataHandlerUtil.exportStagedModel(
+				portletDataContext, formInstanceVersion);
+		}
+	}
+
 	protected void exportFormInstanceSettings(
 		PortletDataContext portletDataContext, DDMFormInstance formInstance,
 		Element formInstanceElement) {
@@ -192,32 +204,19 @@ public class DDMFormInstanceStagedModelDataHandler
 		return _stagedModelRepository;
 	}
 
-	@Reference(unbind = "-")
-	protected void setDDMFormInstanceLocalService(
-		DDMFormInstanceLocalService ddmFormInstanceLocalService) {
+	@Reference
+	private DDMFormInstanceLocalService _ddmFormInstanceLocalService;
 
-		_ddmFormInstanceLocalService = ddmFormInstanceLocalService;
-	}
+	@Reference
+	private DDMFormInstanceVersionLocalService
+		_ddmFormInstanceVersionLocalService;
 
-	@Reference(unbind = "-")
-	protected void setDDMFormValuesJSONDeserializer(
-		DDMFormValuesJSONDeserializer ddmFormValuesJSONDeserializer) {
-
-		_ddmFormValuesJSONDeserializer = ddmFormValuesJSONDeserializer;
-	}
+	@Reference
+	private DDMFormValuesJSONDeserializer _ddmFormValuesJSONDeserializer;
 
 	@Reference(
-		target = "(model.class.name=com.liferay.dynamic.data.mapping.model.DDMFormInstance)",
-		unbind = "-"
+		target = "(model.class.name=com.liferay.dynamic.data.mapping.model.DDMFormInstance)"
 	)
-	protected void setStagedModelRepository(
-		StagedModelRepository<DDMFormInstance> stagedModelRepository) {
-
-		_stagedModelRepository = stagedModelRepository;
-	}
-
-	private DDMFormInstanceLocalService _ddmFormInstanceLocalService;
-	private DDMFormValuesJSONDeserializer _ddmFormValuesJSONDeserializer;
 	private StagedModelRepository<DDMFormInstance> _stagedModelRepository;
 
 }
