@@ -763,7 +763,7 @@ AUI.add(
 
 						var value = instance.getValue();
 
-						document.getElementById(translationManagerId).classList.add('clickDisabled');
+						document.getElementById(translationManagerId).classList.add('click-disabled');
 
 						if (AObject.keys(localizationMap).length != 0) {
 							this.removeNotAvailableLocales(localizationMap);
@@ -953,7 +953,7 @@ AUI.add(
 
 						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
 
-						document.getElementById(translationManagerId).classList.add('clickDisabled');
+						document.getElementById(translationManagerId).classList.add('click-disabled');
 
 						if (fieldValue && fieldValue.value) {
 							localizationMap = fieldValue.value;
@@ -3263,7 +3263,7 @@ AUI.add(
 					_onLiferayEditorRendered: function(event) {
 						var translationManagerId = event.portletNamespace + 'translationManager';
 
-						document.getElementById(translationManagerId).classList.remove('clickDisabled');
+						document.getElementById(translationManagerId).classList.remove('click-disabled');
 					},
 
 					_onLiferaySubmitForm: function(event) {
