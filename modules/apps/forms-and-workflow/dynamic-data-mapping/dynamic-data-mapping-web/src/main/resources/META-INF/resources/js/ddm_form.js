@@ -174,6 +174,22 @@ AUI.add(
 				return root || instance;
 			},
 
+			_disableTranslationManagerClick: function() {
+				var instance = this;
+
+				var translationManagerNode = instance._getTranslationManagerNode();
+
+				translationManagerNode.addClass('click-disabled');
+			},
+
+			_enableTranslationManagerClick: function() {
+				var instance = this;
+
+				var translationManagerNode = instance._getTranslationManagerNode();
+
+				translationManagerNode.removeClass('click-disabled');
+			},
+
 			_getField: function(fieldNode) {
 				var instance = this;
 
@@ -273,6 +289,15 @@ AUI.add(
 				}
 
 				return translationManager;
+			},
+
+			_getTranslationManagerNode: function() {
+				var instance = this;
+
+				var translationManagerId = instance.get('portletNamespace') + 'translationManager';
+
+				return A.one('#' + translationManagerId);
+
 			},
 
 			_valueFields: function() {
@@ -757,13 +782,11 @@ AUI.add(
 					updateLocalizationMap: function(locale) {
 						var instance = this;
 
+						instance._disableTranslationManagerClick();
+
 						var localizationMap = instance.get('localizationMap');
 
-						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
-
 						var value = instance.getValue();
-
-						document.getElementById(translationManagerId).classList.add('click-disabled');
 
 						if (AObject.keys(localizationMap).length != 0) {
 							this.removeNotAvailableLocales(localizationMap);
@@ -943,6 +966,8 @@ AUI.add(
 					_valueLocalizationMap: function() {
 						var instance = this;
 
+						instance._disableTranslationManagerClick();
+
 						var instanceId = instance.get('instanceId');
 
 						var values = instance.get('values');
@@ -950,10 +975,6 @@ AUI.add(
 						var fieldValue = instance.getFieldInfo(values, 'instanceId', instanceId);
 
 						var localizationMap = {};
-
-						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
-
-						document.getElementById(translationManagerId).classList.add('click-disabled');
 
 						if (fieldValue && fieldValue.value) {
 							localizationMap = fieldValue.value;
@@ -3261,9 +3282,9 @@ AUI.add(
 					},
 
 					_onLiferayEditorRendered: function(event) {
-						var translationManagerId = event.portletNamespace + 'translationManager';
+						var instance = this;
 
-						document.getElementById(translationManagerId).classList.remove('click-disabled');
+						instance._enableTranslationManagerClick();
 					},
 
 					_onLiferaySubmitForm: function(event) {
