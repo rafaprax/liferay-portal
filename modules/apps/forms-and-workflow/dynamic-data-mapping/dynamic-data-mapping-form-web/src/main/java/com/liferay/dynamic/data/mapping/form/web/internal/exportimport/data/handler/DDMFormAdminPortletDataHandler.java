@@ -179,18 +179,6 @@ public class DDMFormAdminPortletDataHandler extends BasePortletDataHandler {
 					portletDataContext, structureElement);
 			}
 
-			Element structureVersionsElement =
-				portletDataContext.getImportDataGroupElement(
-					DDMStructureVersion.class);
-
-			List<Element> structureVersionElements =
-				structureVersionsElement.elements();
-
-			for (Element structureVersionElement : structureVersionElements) {
-				StagedModelDataHandlerUtil.importStagedModel(
-					portletDataContext, structureVersionElement);
-			}
-
 			Element dataProviderInstancesElement =
 				portletDataContext.getImportDataGroupElement(
 					DDMDataProviderInstance.class);
