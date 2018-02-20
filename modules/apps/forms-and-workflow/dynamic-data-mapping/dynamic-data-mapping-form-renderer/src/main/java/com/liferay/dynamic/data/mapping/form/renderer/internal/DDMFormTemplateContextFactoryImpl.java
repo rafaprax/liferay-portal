@@ -31,6 +31,7 @@ import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
@@ -39,6 +40,7 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.template.soy.utils.SoyHTMLSanitizer;
 
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ import java.util.stream.Stream;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -162,7 +165,8 @@ public class DDMFormTemplateContextFactoryImpl
 		templateContext.put(
 			"requiredFieldsWarningMessageHTML",
 			_soyHTMLSanitizer.sanitize(
-				getRequiredFieldsWarningMessageHTML(resourceBundle)));
+				getRequiredFieldsWarningMessageHTML(
+					resourceBundle, ddmFormRenderingContext)));
 
 		templateContext.put("rules", toObjectList(ddmForm.getDDMFormRules()));
 		templateContext.put(
@@ -227,7 +231,8 @@ public class DDMFormTemplateContextFactoryImpl
 	}
 
 	protected String getRequiredFieldsWarningMessageHTML(
-		ResourceBundle resourceBundle) {
+		ResourceBundle resourceBundle,
+		DDMFormRenderingContext ddmFormRenderingContext) {
 
 		StringBundler sb = new StringBundler(3);
 
@@ -235,8 +240,36 @@ public class DDMFormTemplateContextFactoryImpl
 		sb.append(
 			LanguageUtil.format(
 				resourceBundle, "all-fields-marked-with-x-are-required",
-				"<i class=\"icon-asterisk text-warning\"></i>", false));
+				getRequiredMarkTagHTML(ddmFormRenderingContext), false));
 		sb.append("</label>");
+
+		return sb.toString();
+	}
+
+	protected String getRequiredMarkTagHTML(
+		DDMFormRenderingContext ddmFormRenderingContext) {
+
+		HttpServletRequest request =
+			ddmFormRenderingContext.getHttpServletRequest();
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		String pathThemeImages;
+
+		if (themeDisplay != null) {
+			pathThemeImages = themeDisplay.getPathThemeImages();
+		}
+		else {
+			pathThemeImages = request.getParameter("pathThemeImages");
+		}
+
+		StringBundler sb = new StringBundler(4);
+
+		sb.append("<svg aria-hidden=\"true\" class=\"lexicon-icon ");
+		sb.append("lexicon-icon-asterisk reference-mark\"><use xlink:href=\"");
+		sb.append(pathThemeImages);
+		sb.append("/lexicon/icons.svg#asterisk\" /></svg>");
 
 		return sb.toString();
 	}
