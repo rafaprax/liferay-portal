@@ -32,12 +32,14 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.language.LanguageConstants;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +47,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Marcellus Tavares
@@ -152,6 +156,8 @@ public class DDMFormFieldTemplateContextFactory {
 		setDDMFormFieldTemplateContextOptions(
 			ddmFormFieldTemplateContext, ddmFormFieldEvaluationResult,
 			ddmFormField.getDDMFormFieldOptions());
+		setDDMFormFieldTemplateContextPathThemeImages(
+			ddmFormFieldTemplateContext);
 		setDDMFormFieldTemplateContextReadOnly(
 			ddmFormFieldTemplateContext, ddmFormFieldEvaluationResult);
 		setDDMFormFieldTemplateContextRepeatable(
@@ -471,6 +477,27 @@ public class DDMFormFieldTemplateContextFactory {
 			ddmFormFieldTemplateContext.put(
 				"options", createOptions(ddmFormFieldOptions));
 		}
+	}
+
+	protected void setDDMFormFieldTemplateContextPathThemeImages(
+		Map<String, Object> ddmFormFieldTemplateContext) {
+
+		HttpServletRequest request =
+			_ddmFormRenderingContext.getHttpServletRequest();
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		String pathThemeImages;
+
+		if (themeDisplay != null) {
+			pathThemeImages = themeDisplay.getPathThemeImages();
+		}
+		else {
+			pathThemeImages = request.getParameter("pathThemeImages");
+		}
+
+		ddmFormFieldTemplateContext.put("pathThemeImages", pathThemeImages);
 	}
 
 	protected void setDDMFormFieldTemplateContextReadOnly(
