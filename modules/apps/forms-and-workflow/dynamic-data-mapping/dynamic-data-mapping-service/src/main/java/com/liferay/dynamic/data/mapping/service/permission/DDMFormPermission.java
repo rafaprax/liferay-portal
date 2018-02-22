@@ -14,16 +14,15 @@
 
 package com.liferay.dynamic.data.mapping.service.permission;
 
-import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.portlet.PortletProvider;
-import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.BaseResourcePermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.ResourcePermissionChecker;
+import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leonardo Barros
@@ -51,11 +50,8 @@ public class DDMFormPermission extends BaseResourcePermissionChecker {
 	public static boolean contains(
 		PermissionChecker permissionChecker, long groupId, String actionId) {
 
-		String portletId = PortletProviderUtil.getPortletId(
-			DDMFormInstance.class.getName(), PortletProvider.Action.EDIT);
-
-		return contains(
-			permissionChecker, RESOURCE_NAME, portletId, groupId, actionId);
+		return _portletResourcePermission.contains(
+			permissionChecker, groupId, actionId);
 	}
 
 	@Override
@@ -64,5 +60,14 @@ public class DDMFormPermission extends BaseResourcePermissionChecker {
 
 		return contains(permissionChecker, classPK, actionId);
 	}
+
+	@Reference(target = "(resource.name=" + RESOURCE_NAME + ")", unbind = "-")
+	protected void setPortletResourcePermission(
+		PortletResourcePermission portletResourcePermission) {
+
+		_portletResourcePermission = portletResourcePermission;
+	}
+
+	private static PortletResourcePermission _portletResourcePermission;
 
 }
