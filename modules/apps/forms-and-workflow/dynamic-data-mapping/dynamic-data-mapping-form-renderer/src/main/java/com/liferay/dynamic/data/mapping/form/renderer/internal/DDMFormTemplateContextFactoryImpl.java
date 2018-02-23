@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
+import com.liferay.dynamic.data.mapping.form.renderer.internal.util.DDMFormTemplateContextFactoryUtil;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormJSONSerializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormLayoutJSONSerializer;
@@ -162,7 +163,8 @@ public class DDMFormTemplateContextFactoryImpl
 		templateContext.put(
 			"requiredFieldsWarningMessageHTML",
 			_soyHTMLSanitizer.sanitize(
-				getRequiredFieldsWarningMessageHTML(resourceBundle)));
+				getRequiredFieldsWarningMessageHTML(
+					resourceBundle, ddmFormRenderingContext)));
 
 		templateContext.put("rules", toObjectList(ddmForm.getDDMFormRules()));
 		templateContext.put(
@@ -227,7 +229,8 @@ public class DDMFormTemplateContextFactoryImpl
 	}
 
 	protected String getRequiredFieldsWarningMessageHTML(
-		ResourceBundle resourceBundle) {
+		ResourceBundle resourceBundle,
+		DDMFormRenderingContext ddmFormRenderingContext) {
 
 		StringBundler sb = new StringBundler(3);
 
@@ -235,8 +238,23 @@ public class DDMFormTemplateContextFactoryImpl
 		sb.append(
 			LanguageUtil.format(
 				resourceBundle, "all-fields-marked-with-x-are-required",
-				"<i class=\"icon-asterisk text-warning\"></i>", false));
+				getRequiredMarkTagHTML(ddmFormRenderingContext), false));
 		sb.append("</label>");
+
+		return sb.toString();
+	}
+
+	protected String getRequiredMarkTagHTML(
+		DDMFormRenderingContext ddmFormRenderingContext) {
+
+		StringBundler sb = new StringBundler(4);
+
+		sb.append("<svg aria-hidden=\"true\" class=\"lexicon-icon ");
+		sb.append("lexicon-icon-asterisk reference-mark\"><use xlink:href=\"");
+		sb.append(
+			DDMFormTemplateContextFactoryUtil.getPathThemeImages(
+				ddmFormRenderingContext.getHttpServletRequest()));
+		sb.append("/lexicon/icons.svg#asterisk\" /></svg>");
 
 		return sb.toString();
 	}
