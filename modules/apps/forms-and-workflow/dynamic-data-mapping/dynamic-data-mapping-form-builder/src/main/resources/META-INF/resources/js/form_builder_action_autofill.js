@@ -7,7 +7,7 @@ AUI.add(
 
 		var TPL_CONTAINER_INPUT_OUTPUT_COMPONENT = '<div class="col-md-9 container-input-field container-input-field-{index}"></div>';
 
-		var TPL_CONTAINER_INPUT_OUTPUT_FIELD = '<div class="col-md-3 container-input-label">{field}{required}</div>';
+		var TPL_CONTAINER_INPUT_OUTPUT_FIELD = '<div class="col-md-3 container-input-label">{field}&nbsp;{required}</div>';
 
 		var TPL_LABEL_ACTION = '<h4>{message}</h4>';
 
