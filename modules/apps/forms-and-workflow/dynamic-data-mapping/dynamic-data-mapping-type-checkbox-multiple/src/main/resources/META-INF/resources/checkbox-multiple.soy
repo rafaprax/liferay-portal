@@ -33,7 +33,7 @@
 		{if $showLabel}
 			<div>
 				<label for="{$name}">
-					{$label}
+					{$label}{sp}
 
 					{if $required and length($options) > 1}
 						<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
@@ -76,7 +76,7 @@
 							<span class="toggle-switch-handle"></span>
 						</span>
 						<span class="toggle-switch-text toggle-switch-text-right">
-							{$option.label}
+							{$option.label}{sp}
 
 							{if $required and length($options) == 1}
 								<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">

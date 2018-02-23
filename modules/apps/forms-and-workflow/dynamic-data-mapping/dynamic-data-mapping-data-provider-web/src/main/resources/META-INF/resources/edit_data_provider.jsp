@@ -53,7 +53,7 @@ renderResponse.setTitle((ddmDataProviderInstance == null) ? LanguageUtil.get(req
 		<aui:fieldset-group markupView="lexicon">
 			<aui:fieldset>
 				<liferay-util:buffer var="requiredMark">
-					<span class="hide-accessible"><liferay-ui:message key="required" /></span>
+					<span class="hide-accessible"><liferay-ui:message key="required" />&nbsp;</span>
 					<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
 						<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#asterisk" />
 					</svg>
