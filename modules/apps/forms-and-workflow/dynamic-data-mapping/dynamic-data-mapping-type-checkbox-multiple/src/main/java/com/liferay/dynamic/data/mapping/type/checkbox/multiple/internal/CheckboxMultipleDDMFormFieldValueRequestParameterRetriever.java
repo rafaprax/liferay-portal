@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueRequest
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Objects;
@@ -61,8 +62,13 @@ public class CheckboxMultipleDDMFormFieldValueRequestParameterRetriever
 			return GetterUtil.DEFAULT_STRING_VALUES;
 		}
 
-		return jsonFactory.looseDeserialize(
-			defaultDDMFormFieldParameterValue, String[].class);
+		try {
+			return jsonFactory.looseDeserialize(
+				defaultDDMFormFieldParameterValue, String[].class);
+		}
+		catch (Exception e) {
+			return StringUtil.split(defaultDDMFormFieldParameterValue);
+		}
 	}
 
 	@Reference
