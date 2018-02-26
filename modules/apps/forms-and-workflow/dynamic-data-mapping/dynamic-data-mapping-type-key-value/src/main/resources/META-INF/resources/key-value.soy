@@ -11,8 +11,8 @@
  * Prints the DDM form key/value field.
  */
 {template .render}
-
 	{@param name: string}
+	{@param pathThemeImages: string}
 	{@param placeholder: string}
 	{@param showLabel: bool}
 	{@param strings: [keyLabel: string]}
@@ -31,7 +31,9 @@
 				{$label}
 
 				{if $required}
-					<span class="icon-asterisk text-warning"></span>
+					<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+						<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+					</svg>
 				{/if}
 			</label>
 		{/if}
