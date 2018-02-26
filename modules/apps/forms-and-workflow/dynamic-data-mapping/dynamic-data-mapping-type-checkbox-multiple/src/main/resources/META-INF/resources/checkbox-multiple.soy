@@ -15,6 +15,7 @@
 	{@param label: string}
 	{@param name: string}
 	{@param options: list<[label: string, value: ?]>}
+	{@param pathThemeImages: string}
 	{@param readOnly: bool}
 	{@param showAsSwitcher: bool}
 	{@param showLabel: bool}
@@ -35,7 +36,9 @@
 					{$label}
 
 					{if $required and length($options) > 1}
-						<span class="icon-asterisk text-warning"></span>
+						<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+							<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+						</svg>
 					{/if}
 				</label>
 
@@ -76,7 +79,9 @@
 							{$option.label}
 
 							{if $required and length($options) == 1}
-								<span class="icon-asterisk text-warning"></span>
+								<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+									<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+								</svg>
 							{/if}
 						</span>
 					</label>
@@ -101,7 +106,9 @@
 					</label>
 
 					{if $required and length($options) == 1}
-						<span class="icon-asterisk text-warning"></span>
+						<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+							<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+						</svg>
 					{/if}
 				</div>
 			{/if}
