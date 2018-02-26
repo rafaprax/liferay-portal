@@ -317,6 +317,9 @@ AUI.add(
 						else if (Lang.isObject(settingsFormFieldContextValue)) {
 							return A.Object.isEmpty(settingsFormFieldContextValue);
 						}
+						else if(Lang.isBoolean(settingsFormFieldContextValue)) {
+							return !settingsFormFieldContextValue;
+						}
 
 						return true;
 					},
@@ -375,7 +378,6 @@ AUI.add(
 											}
 
 											if (instance._isSameType(previousSettingsFormFieldContext, settingsFormFieldContext)) {
-
 												if (!instance._isValueEmpty(previousSettingsFormFieldContext.value)) {
 													settingsFormFieldContext.value = previousSettingsFormFieldContext.value;
 													settingsFormFieldContext.dataType = previousSettingsFormFieldContext.dataType;
