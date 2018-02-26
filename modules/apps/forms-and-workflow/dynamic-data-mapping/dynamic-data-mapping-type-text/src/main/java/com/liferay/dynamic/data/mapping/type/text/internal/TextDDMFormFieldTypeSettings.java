@@ -63,13 +63,15 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 						@DDMFormLayoutColumn(
 							size = 12,
 							value = {
-								"predefinedValue", "dataSourceType",
+								"predefinedValue", "placeholder",
+								"visibilityExpression", "validation",
+								"fieldNamespace", "indexType", "localizable",
+								"readOnly", "dataType", "type", "name",
+								"showLabel", "repeatable",
+								"autocompleteEnabled", "dataSourceType",
 								"ddmDataProviderInstanceId",
 								"ddmDataProviderInstanceOutput", "options",
-								"placeholder", "visibilityExpression",
-								"validation", "fieldNamespace", "indexType",
-								"localizable", "readOnly", "dataType", "type",
-								"name", "showLabel", "repeatable", "tooltip"
+								"tooltip"
 							}
 						)
 					}
@@ -82,11 +84,16 @@ public interface TextDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
 	@DDMFormField(
+		label = "%autocompleteEnabled", properties = {"showAsSwitcher=true"}
+	)
+	public boolean autocompleteEnabled();
+
+	@DDMFormField(
 		label = "%create-list",
 		optionLabels = {"%manually", "%from-data-provider"},
 		optionValues = {"manual", "data-provider"},
 		properties = {"showLabel=false"}, type = "radio",
-		visibilityExpression = "TRUE"
+		visibilityExpression = "autocompleteEnabled"
 	)
 	public String dataSourceType();
 
@@ -97,7 +104,7 @@ public interface TextDDMFormFieldTypeSettings
 			"ddmDataProviderInstanceId=getDataProviderInstances"
 		},
 		type = "select",
-		visibilityExpression = "equals(dataSourceType, \"data-provider\")"
+		visibilityExpression = "equals(dataSourceType, \"data-provider\") and autocompleteEnabled"
 	)
 	public long ddmDataProviderInstanceId();
 
@@ -107,7 +114,7 @@ public interface TextDDMFormFieldTypeSettings
 			"tooltip=%choose-an-output-parameter-for-a-data-provider-previously-created"
 		},
 		type = "select",
-		visibilityExpression = "equals(dataSourceType, \"data-provider\")"
+		visibilityExpression = "equals(dataSourceType, \"data-provider\") and autocompleteEnabled"
 	)
 	public String ddmDataProviderInstanceOutput();
 
@@ -124,7 +131,7 @@ public interface TextDDMFormFieldTypeSettings
 		dataType = "ddm-options", label = "%options",
 		properties = {"showLabel=false", "allowEmptyOptions=true"},
 		required = false, type = "options",
-		visibilityExpression = "equals(dataSourceType, \"manual\")"
+		visibilityExpression = "equals(dataSourceType, \"manual\") and autocompleteEnabled"
 	)
 	public DDMFormFieldOptions options();
 
