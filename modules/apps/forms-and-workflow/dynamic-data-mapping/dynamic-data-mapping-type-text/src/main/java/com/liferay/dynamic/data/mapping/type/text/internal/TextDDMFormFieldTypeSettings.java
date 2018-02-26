@@ -84,7 +84,7 @@ public interface TextDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
 	@DDMFormField(
-		label = "%autocompleteEnabled", properties = {"showAsSwitcher=true"}
+		label = "%autocomplete-enabled", properties = {"showAsSwitcher=true"}
 	)
 	public boolean autocompleteEnabled();
 
