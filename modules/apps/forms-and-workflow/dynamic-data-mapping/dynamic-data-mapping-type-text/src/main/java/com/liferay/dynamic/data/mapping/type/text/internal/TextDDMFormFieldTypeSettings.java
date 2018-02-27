@@ -67,9 +67,8 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 								"visibilityExpression", "validation",
 								"fieldNamespace", "indexType", "localizable",
 								"readOnly", "dataType", "type", "name",
-								"showLabel", "repeatable",
-								"autocompleteEnabled", "dataSourceType",
-								"ddmDataProviderInstanceId",
+								"showLabel", "repeatable", "autocomplete",
+								"dataSourceType", "ddmDataProviderInstanceId",
 								"ddmDataProviderInstanceOutput", "options",
 								"tooltip"
 							}
@@ -83,10 +82,8 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 public interface TextDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
-	@DDMFormField(
-		label = "%autocomplete-enabled", properties = {"showAsSwitcher=true"}
-	)
-	public boolean autocompleteEnabled();
+	@DDMFormField(label = "%autocomplete", properties = {"showAsSwitcher=true"})
+	public boolean autocomplete();
 
 	@DDMFormField(
 		label = "%create-list",

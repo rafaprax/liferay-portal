@@ -155,8 +155,7 @@ public class TextDDMFormFieldTemplateContextContributor
 	}
 
 	protected boolean isAutocompleteEnabled(DDMFormField ddmFormField) {
-		return GetterUtil.getBoolean(
-			ddmFormField.getProperty("autocompleteEnabled"));
+		return GetterUtil.getBoolean(ddmFormField.getProperty("autocomplete"));
 	}
 
 	@Reference
