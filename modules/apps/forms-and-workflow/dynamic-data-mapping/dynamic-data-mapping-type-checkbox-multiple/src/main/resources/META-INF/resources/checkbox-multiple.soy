@@ -15,6 +15,7 @@
 	{@param label: string}
 	{@param name: string}
 	{@param options: list<[label: string, value: ?]>}
+	{@param pathThemeImages: string}
 	{@param readOnly: bool}
 	{@param showAsSwitcher: bool}
 	{@param showLabel: bool}
@@ -32,10 +33,12 @@
 		{if $showLabel}
 			<div>
 				<label for="{$name}">
-					{$label}
+					{$label}{sp}
 
 					{if $required and length($options) > 1}
-						<span class="icon-asterisk text-warning"></span>
+						<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+							<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+						</svg>
 					{/if}
 				</label>
 
@@ -73,10 +76,12 @@
 							<span class="toggle-switch-handle"></span>
 						</span>
 						<span class="toggle-switch-text toggle-switch-text-right">
-							{$option.label}
+							{$option.label}{sp}
 
 							{if $required and length($options) == 1}
-								<span class="icon-asterisk text-warning"></span>
+								<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+									<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+								</svg>
 							{/if}
 						</span>
 					</label>
@@ -95,12 +100,14 @@
 							type="checkbox"
 							value="{$option.value}" />
 
-						<span class="form-check-description">{$option.label}</span>
-					</label>
+						<span class="form-check-description">{$option.label}{sp}</span>
 
-					{if $required and length($options) == 1}
-						<span class="icon-asterisk text-warning"></span>
-					{/if}
+						{if $required and length($options) == 1}
+							<svg aria-hidden="true" class="lexicon-icon lexicon-icon-asterisk reference-mark">
+								<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk" />
+							</svg>
+						{/if}
+					</label>
 				</div>
 			{/if}
 		{/foreach}
