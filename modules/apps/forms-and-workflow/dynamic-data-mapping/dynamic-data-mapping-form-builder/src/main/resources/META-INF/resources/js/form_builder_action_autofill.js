@@ -365,6 +365,7 @@ AUI.add(
 							{
 								hasInputs: inputs.length > 0,
 								hasRequiredInputs: !AObject.isEmpty(instance._getRequiredInputs()),
+								pathThemeImages: themeDisplay.getPathThemeImages(),
 								strings: strings
 							},
 							container
