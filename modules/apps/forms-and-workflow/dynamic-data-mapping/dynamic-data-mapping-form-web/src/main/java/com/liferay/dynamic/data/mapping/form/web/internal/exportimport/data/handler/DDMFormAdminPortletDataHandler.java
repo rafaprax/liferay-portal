@@ -20,7 +20,9 @@ import com.liferay.dynamic.data.mapping.exportimport.staged.model.repository.DDM
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.service.permission.DDMFormPermission;
 import com.liferay.exportimport.kernel.lar.BasePortletDataHandler;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
@@ -150,6 +152,20 @@ public class DDMFormAdminPortletDataHandler extends BasePortletDataHandler {
 			for (Element formInstanceElement : formInstanceElements) {
 				StagedModelDataHandlerUtil.importStagedModel(
 					portletDataContext, formInstanceElement);
+			}
+
+			Element formInstanceVersionsElement =
+				portletDataContext.getImportDataGroupElement(
+					DDMFormInstanceVersion.class);
+
+			List<Element> formInstanceVersionElements =
+				formInstanceVersionsElement.elements();
+
+			for (Element formInstanceVersionElement :
+					formInstanceVersionElements) {
+
+				StagedModelDataHandlerUtil.importStagedModel(
+					portletDataContext, formInstanceVersionElement);
 			}
 
 			Element structuresElement =

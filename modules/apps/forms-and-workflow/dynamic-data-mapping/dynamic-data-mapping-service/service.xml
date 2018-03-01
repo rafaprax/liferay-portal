@@ -199,6 +199,7 @@
 
 		<reference entity="DDMFormInstance" package-path="com.liferay.dynamic.data.mapping" />
 		<reference entity="DDMFormInstanceRecordVersion" package-path="com.liferay.dynamic.data.mapping" />
+		<reference entity="DDMFormInstanceVersion" package-path="com.liferay.dynamic.data.mapping" />
 		<reference entity="User" package-path="com.liferay.portal" />
 		<reference entity="WorkflowInstanceLink" package-path="com.liferay.portal" />
 		<reference entity="AssetEntry" package-path="com.liferay.portlet.asset" />
@@ -260,7 +261,7 @@
 
 		<reference entity="DDMFormInstanceRecord" package-path="com.liferay.dynamic.data.mapping" />
 	</entity>
-	<entity local-service="true" name="DDMFormInstanceVersion" remote-service="true">
+	<entity local-service="true" name="DDMFormInstanceVersion" remote-service="true" uuid="true">
 
 		<!-- PK fields -->
 
@@ -276,6 +277,7 @@
 		<column name="userId" type="long" />
 		<column name="userName" type="String" />
 		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
 
 		<!-- Other fields -->
 
@@ -289,6 +291,7 @@
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
 		<column name="statusDate" type="Date" />
+		<column name="lastPublishDate" type="Date" />
 
 		<!-- Finder methods -->
 
@@ -303,6 +306,10 @@
 			<finder-column name="formInstanceId" />
 			<finder-column name="status" />
 		</finder>
+
+		<!-- References -->
+
+		<reference entity="User" package-path="com.liferay.portal" />
 	</entity>
 	<entity local-service="true" name="DDMStorageLink" remote-service="false" uuid="true">
 
@@ -494,7 +501,7 @@
 			<finder-column name="structureId" />
 		</finder>
 	</entity>
-	<entity local-service="true" name="DDMStructureVersion" remote-service="true">
+	<entity local-service="true" name="DDMStructureVersion" remote-service="true" uuid="true">
 
 		<!-- PK fields -->
 
@@ -510,6 +517,7 @@
 		<column name="userId" type="long" />
 		<column name="userName" type="String" />
 		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
 
 		<!-- Other fields -->
 
@@ -525,6 +533,7 @@
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
 		<column name="statusDate" type="Date" />
+		<column name="lastPublishDate" type="Date" />
 
 		<!-- Finder methods -->
 
@@ -539,6 +548,11 @@
 			<finder-column name="structureId" />
 			<finder-column name="status" />
 		</finder>
+
+		<!-- References -->
+
+		<reference entity="DDMStructureLayout" package-path="com.liferay.dynamic.data.mapping" />
+		<reference entity="User" package-path="com.liferay.portal" />
 	</entity>
 	<entity local-service="true" name="DDMTemplate" remote-service="true" uuid="true">
 

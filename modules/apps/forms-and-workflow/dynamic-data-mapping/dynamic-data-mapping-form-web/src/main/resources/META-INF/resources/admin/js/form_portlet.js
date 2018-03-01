@@ -163,7 +163,7 @@ AUI.add(
 							var autosaveInterval = Liferay.DDM.FormSettings.autosaveInterval;
 
 							if (autosaveInterval > 0) {
-								instance._intervalId = setInterval(A.bind('_autosave', instance), autosaveInterval * MINUTE);
+								instance._intervalId = setInterval(A.bind('_autosave', instance, true), autosaveInterval * MINUTE);
 							}
 						}
 					},
@@ -456,7 +456,7 @@ AUI.add(
 						instance.disableNameEditor();
 					},
 
-					_autosave: function(callback) {
+					_autosave: function(saveAsDraft, callback) {
 						var instance = this;
 
 						callback = callback || EMPTY_FN;
@@ -470,6 +470,8 @@ AUI.add(
 								var editForm = instance.get('editForm');
 
 								var formData = instance._getFormData(A.IO.stringify(editForm.form));
+
+								formData.saveAsDraft = saveAsDraft;
 
 								A.io.request(
 									Liferay.DDM.FormSettings.autosaveURL,
@@ -753,6 +755,7 @@ AUI.add(
 						var instance = this;
 
 						instance._autosave(
+							true,
 							function() {
 								var previewURL = instance._createPreviewURL();
 
@@ -765,6 +768,7 @@ AUI.add(
 						var instance = this;
 
 						instance._autosave(
+							false,
 							function() {
 								var publishedValue = instance.get('published');
 
