@@ -36,6 +36,15 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 				"call('getDataProviderInstanceOutputParameters', concat('dataProviderInstanceId=', getValue('ddmDataProviderInstanceId')), 'ddmDataProviderInstanceOutput=outputParameterNames')"
 			},
 			condition = "not(equals(getValue('ddmDataProviderInstanceId'), ''))"
+		),
+		@DDMFormRule(
+			actions = {
+				"setVisible('dataSourceType', getValue('autocomplete'))",
+				"setVisible('ddmDataProviderInstanceId', equals(getValue('dataSourceType'), \"data-provider\") and getValue('autocomplete'))",
+				"setVisible('ddmDataProviderInstanceOutput', equals(getValue('dataSourceType'), \"data-provider\") and getValue('autocomplete'))",
+				"setVisible('options', equals(getValue('dataSourceType'), \"manual\") and getValue('autocomplete'))"
+			},
+			condition = "TRUE"
 		)
 	}
 )
@@ -63,13 +72,14 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 						@DDMFormLayoutColumn(
 							size = 12,
 							value = {
-								"predefinedValue", "dataSourceType",
-								"ddmDataProviderInstanceId",
+								"predefinedValue", "placeholder",
+								"visibilityExpression", "validation",
+								"fieldNamespace", "indexType", "localizable",
+								"readOnly", "dataType", "type", "name",
+								"showLabel", "repeatable", "autocomplete",
+								"dataSourceType", "ddmDataProviderInstanceId",
 								"ddmDataProviderInstanceOutput", "options",
-								"placeholder", "visibilityExpression",
-								"validation", "fieldNamespace", "indexType",
-								"localizable", "readOnly", "dataType", "type",
-								"name", "showLabel", "repeatable", "tooltip"
+								"tooltip"
 							}
 						)
 					}
@@ -81,12 +91,14 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 public interface TextDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
+	@DDMFormField(label = "%autocomplete", properties = {"showAsSwitcher=true"})
+	public boolean autocomplete();
+
 	@DDMFormField(
 		label = "%create-list",
 		optionLabels = {"%manually", "%from-data-provider"},
 		optionValues = {"manual", "data-provider"},
-		properties = {"showLabel=false"}, type = "radio",
-		visibilityExpression = "TRUE"
+		properties = {"showLabel=false"}, type = "radio"
 	)
 	public String dataSourceType();
 
@@ -96,8 +108,7 @@ public interface TextDDMFormFieldTypeSettings
 			"dataSourceType=data-provider",
 			"ddmDataProviderInstanceId=getDataProviderInstances"
 		},
-		type = "select",
-		visibilityExpression = "equals(dataSourceType, \"data-provider\")"
+		type = "select"
 	)
 	public long ddmDataProviderInstanceId();
 
@@ -106,8 +117,7 @@ public interface TextDDMFormFieldTypeSettings
 		properties = {
 			"tooltip=%choose-an-output-parameter-for-a-data-provider-previously-created"
 		},
-		type = "select",
-		visibilityExpression = "equals(dataSourceType, \"data-provider\")"
+		type = "select"
 	)
 	public String ddmDataProviderInstanceOutput();
 
@@ -123,8 +133,7 @@ public interface TextDDMFormFieldTypeSettings
 	@DDMFormField(
 		dataType = "ddm-options", label = "%options",
 		properties = {"showLabel=false", "allowEmptyOptions=true"},
-		required = false, type = "options",
-		visibilityExpression = "equals(dataSourceType, \"manual\")"
+		required = false, type = "options"
 	)
 	public DDMFormFieldOptions options();
 
