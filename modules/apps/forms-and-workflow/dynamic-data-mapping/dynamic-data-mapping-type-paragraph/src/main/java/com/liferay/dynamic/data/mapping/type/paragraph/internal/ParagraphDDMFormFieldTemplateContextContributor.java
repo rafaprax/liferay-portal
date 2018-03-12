@@ -45,11 +45,15 @@ public class ParagraphDDMFormFieldTemplateContextContributor
 
 		Map<String, Object> parameters = new HashMap<>();
 
-		parameters.put("html", _soyHTMLSanitizer.sanitize(ddmFormField.getProperty("text").toString()));
+		parameters.put(
+			"html",
+			_soyHTMLSanitizer.sanitize(
+				ddmFormField.getProperty("text").toString()));
 
 		return parameters;
 	}
 
 	@Reference
 	private SoyHTMLSanitizer _soyHTMLSanitizer;
+
 }
