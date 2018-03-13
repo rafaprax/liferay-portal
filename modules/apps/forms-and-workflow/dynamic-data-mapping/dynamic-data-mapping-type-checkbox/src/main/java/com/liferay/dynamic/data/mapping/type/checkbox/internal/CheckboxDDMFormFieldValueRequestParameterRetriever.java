@@ -36,7 +36,10 @@ public class CheckboxDDMFormFieldValueRequestParameterRetriever
 		String parameterValue = httpServletRequest.getParameter(
 			ddmFormFieldParameterName);
 
-		if (parameterValue == null) {
+		String actionValue = httpServletRequest.getParameter(
+			"javax.portlet.action");
+
+		if ((parameterValue == null) && (actionValue == null)) {
 			return defaultDDMFormFieldParameterValue;
 		}
 
