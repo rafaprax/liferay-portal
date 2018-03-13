@@ -16,6 +16,7 @@ package com.liferay.dynamic.data.mapping.type.checkbox.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueRequestParameterRetriever;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringPool;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,7 +38,7 @@ public class CheckboxDDMFormFieldValueRequestParameterRetriever
 			ddmFormFieldParameterName);
 
 		if (parameterValue == null) {
-			return defaultDDMFormFieldParameterValue;
+			return StringPool.FALSE;
 		}
 
 		return String.valueOf(GetterUtil.getBoolean(parameterValue));
