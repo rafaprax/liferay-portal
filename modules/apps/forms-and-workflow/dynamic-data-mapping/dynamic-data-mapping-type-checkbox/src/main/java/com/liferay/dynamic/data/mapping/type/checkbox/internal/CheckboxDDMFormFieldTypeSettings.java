@@ -69,8 +69,8 @@ public interface CheckboxDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
 	@DDMFormField(
-		dataType = "boolean", label = "%predefined-value",
-		properties = {"showAsSwitcher=true"}, type = "checkbox"
+		label = "%predefined-value", properties = {"showAsSwitcher=true"},
+		type = "checkbox"
 	)
 	@Override
 	public LocalizedValue predefinedValue();

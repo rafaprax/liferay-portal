@@ -31,9 +31,18 @@ AUI.add(
 						return A.merge(
 							CheckboxField.superclass.getTemplateContext.apply(instance, arguments),
 							{
+								predefinedValue: instance.getPredefinedValue(),
 								showAsSwitcher: instance.get('showAsSwitcher')
 							}
 						);
+					},
+
+					getPredefinedValue: function() {
+						var instance = this;
+
+						var predefinedValue = instance.get('predefinedValue');
+
+						return predefinedValue.toString();
 					},
 
 					getValue: function() {
