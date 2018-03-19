@@ -14,32 +14,24 @@
 
 package com.liferay.dynamic.data.mapping.service.permission;
 
-import com.liferay.dynamic.data.mapping.constants.DDMActionKeys;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.dynamic.data.mapping.util.DDMStructurePermissionSupport;
-import com.liferay.exportimport.kernel.staging.permission.StagingPermissionUtil;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerCustomizerFactory.ServiceWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.BaseResourcePermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
-import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.Validator;
-
-import java.util.Map;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Bruno Basto
+ * @deprecated As of 3.0.0, with no direct replacement
  */
 @Component(immediate = true, service = DDMStructurePermission.class)
+@Deprecated
 public class DDMStructurePermission extends BaseResourcePermissionChecker {
 
 	public static void check(
@@ -47,12 +39,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 			String actionId)
 		throws PortalException {
 
-		if (!contains(permissionChecker, structure, actionId)) {
-			throw new PrincipalException.MustHavePermission(
-				permissionChecker,
-				getStructureModelResourceName(structure.getClassName()),
-				structure.getStructureId(), actionId);
-		}
+		_ddmStructureModelResourcePermission.check(
+			permissionChecker, structure, actionId);
 	}
 
 	/**
@@ -68,7 +56,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		DDMStructure structure = _ddmStructureLocalService.getStructure(
 			groupId, classNameId, structureKey, true);
 
-		check(permissionChecker, structure, actionId);
+		_ddmStructureModelResourcePermission.check(
+			permissionChecker, structure, actionId);
 	}
 
 	public static void check(
@@ -79,29 +68,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		DDMStructure structure = _ddmStructureLocalService.getStructure(
 			structureId);
 
-		check(permissionChecker, structure, actionId);
-	}
-
-	public static void checkAddStruturePermission(
-			PermissionChecker permissionChecker, long groupId, long classNameId)
-		throws PortalException {
-
-		if (!containsAddStruturePermission(
-				permissionChecker, groupId, classNameId)) {
-
-			ServiceWrapper<DDMStructurePermissionSupport>
-				structurePermissionSupportServiceWrapper =
-					_ddmPermissionSupportTracker.
-						getDDMStructurePermissionSupportServiceWrapper(
-							classNameId);
-
-			throw new PrincipalException.MustHavePermission(
-				permissionChecker,
-				getResourceName(structurePermissionSupportServiceWrapper),
-				groupId,
-				getAddStructureActionId(
-					structurePermissionSupportServiceWrapper));
-		}
+		_ddmStructureModelResourcePermission.check(
+			permissionChecker, structure, actionId);
 	}
 
 	public static boolean contains(
@@ -109,7 +77,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 			String actionId)
 		throws PortalException {
 
-		return contains(permissionChecker, structure, null, actionId);
+		return _ddmStructureModelResourcePermission.contains(
+			permissionChecker, structure, actionId);
 	}
 
 	public static boolean contains(
@@ -117,30 +86,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 			String portletId, String actionId)
 		throws PortalException {
 
-		String structureModelResourceName = getStructureModelResourceName(
-			structure.getClassName());
-
-		if (Validator.isNotNull(portletId)) {
-			Boolean hasPermission = StagingPermissionUtil.hasPermission(
-				permissionChecker, structure.getGroupId(),
-				structureModelResourceName, structure.getStructureId(),
-				portletId, actionId);
-
-			if (hasPermission != null) {
-				return hasPermission.booleanValue();
-			}
-		}
-
-		if (permissionChecker.hasOwnerPermission(
-				structure.getCompanyId(), structureModelResourceName,
-				structure.getStructureId(), structure.getUserId(), actionId)) {
-
-			return true;
-		}
-
-		return permissionChecker.hasPermission(
-			structure.getGroupId(), structureModelResourceName,
-			structure.getStructureId(), actionId);
+		return _ddmStructureModelResourcePermission.contains(
+			permissionChecker, structure, actionId);
 	}
 
 	/**
@@ -156,7 +103,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		DDMStructure structure = _ddmStructureLocalService.getStructure(
 			groupId, classNameId, structureKey, true);
 
-		return contains(permissionChecker, structure, actionId);
+		return _ddmStructureModelResourcePermission.contains(
+			permissionChecker, structure, actionId);
 	}
 
 	public static boolean contains(
@@ -164,7 +112,11 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 			String actionId)
 		throws PortalException {
 
-		return contains(permissionChecker, structureId, null, actionId);
+		DDMStructure structure = _ddmStructureLocalService.getDDMStructure(
+			structureId);
+
+		return _ddmStructureModelResourcePermission.contains(
+			permissionChecker, structure, actionId);
 	}
 
 	public static boolean contains(
@@ -175,51 +127,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		DDMStructure structure = _ddmStructureLocalService.getStructure(
 			structureId);
 
-		return contains(permissionChecker, structure, portletId, actionId);
-	}
-
-	public static boolean containsAddStruturePermission(
-			PermissionChecker permissionChecker, long groupId, long classNameId)
-		throws PortalException {
-
-		ServiceWrapper<DDMStructurePermissionSupport>
-			structurePermissionSupportServiceWrapper =
-				_ddmPermissionSupportTracker.
-					getDDMStructurePermissionSupportServiceWrapper(classNameId);
-
-		return contains(
-			permissionChecker,
-			getResourceName(structurePermissionSupportServiceWrapper), groupId,
-			getAddStructureActionId(structurePermissionSupportServiceWrapper));
-	}
-
-	public static String getStructureModelResourceName(long classNameId)
-		throws PortalException {
-
-		return getStructureModelResourceName(
-			PortalUtil.getClassName(classNameId));
-	}
-
-	public static String getStructureModelResourceName(String className)
-		throws PortalException {
-
-		ServiceWrapper<DDMStructurePermissionSupport>
-			structurePermissionSupportServiceWrapper =
-				_ddmPermissionSupportTracker.
-					getDDMStructurePermissionSupportServiceWrapper(className);
-
-		Map<String, Object> properties =
-			structurePermissionSupportServiceWrapper.getProperties();
-
-		boolean defaultModelResourceName = MapUtil.getBoolean(
-			properties, "default.model.resource.name");
-
-		if (defaultModelResourceName) {
-			return DDMStructure.class.getName();
-		}
-
-		return ResourceActionsUtil.getCompositeModelName(
-			className, DDMStructure.class.getName());
+		return _ddmStructureModelResourcePermission.contains(
+			permissionChecker, structure, actionId);
 	}
 
 	@Override
@@ -227,7 +136,8 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		PermissionChecker permissionChecker, long classPK, String actionId) {
 
 		try {
-			return contains(permissionChecker, classPK, actionId);
+			return _ddmStructureModelResourcePermission.contains(
+				permissionChecker, classPK, actionId);
 		}
 		catch (PortalException pe) {
 
@@ -241,34 +151,6 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		}
 	}
 
-	protected static String getAddStructureActionId(
-		ServiceWrapper<DDMStructurePermissionSupport>
-			structurePermissionSupportServiceWrapper) {
-
-		Map<String, Object> properties =
-			structurePermissionSupportServiceWrapper.getProperties();
-
-		return MapUtil.getString(
-			properties, "add.structure.action.id", DDMActionKeys.ADD_STRUCTURE);
-	}
-
-	protected static String getResourceName(
-		ServiceWrapper<DDMStructurePermissionSupport>
-			structurePermissionSupportServiceWrapper) {
-
-		DDMStructurePermissionSupport structurePermissionSupport =
-			structurePermissionSupportServiceWrapper.getService();
-
-		return structurePermissionSupport.getResourceName();
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDMPermissionSupportTracker(
-		DDMPermissionSupportTracker ddmPermissionSupportTracker) {
-
-		_ddmPermissionSupportTracker = ddmPermissionSupportTracker;
-	}
-
 	@Reference(unbind = "-")
 	protected void setDDMStructureLocalService(
 		DDMStructureLocalService ddmStructureLocalService) {
@@ -276,10 +158,21 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 		_ddmStructureLocalService = ddmStructureLocalService;
 	}
 
+	@Reference(
+		target = "(model.class.name=com.liferay.dynamic.data.mapping..model.DDMStructure)",
+		unbind = "-"
+	)
+	protected void setModelResourcePermission(
+		ModelResourcePermission<DDMStructure> modelResourcePermission) {
+
+		_ddmStructureModelResourcePermission = modelResourcePermission;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMStructurePermission.class);
 
-	private static DDMPermissionSupportTracker _ddmPermissionSupportTracker;
 	private static DDMStructureLocalService _ddmStructureLocalService;
+	private static ModelResourcePermission<DDMStructure>
+		_ddmStructureModelResourcePermission;
 
 }
