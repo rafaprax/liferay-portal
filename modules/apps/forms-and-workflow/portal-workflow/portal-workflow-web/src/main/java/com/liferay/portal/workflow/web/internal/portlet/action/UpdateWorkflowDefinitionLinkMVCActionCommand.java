@@ -14,14 +14,21 @@
 
 package com.liferay.portal.workflow.web.internal.portlet.action;
 
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.workflow.constants.WorkflowWebKeys;
 import com.liferay.portal.workflow.web.internal.constants.WorkflowPortletKeys;
 
 import java.util.Enumeration;
+import java.util.ResourceBundle;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -45,6 +52,32 @@ public class UpdateWorkflowDefinitionLinkMVCActionCommand
 	extends BaseWorkflowDefinitionMVCActionCommand {
 
 	@Override
+	protected void addSuccessMessage(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
+
+		ResourceBundle resourceBundle = resourceBundleLoader.loadResourceBundle(
+			portal.getLocale(actionRequest));
+
+		String workflowDefinition = (String)actionRequest.getAttribute(
+			WorkflowWebKeys.WORKFLOW_DEFINITION_NAME);
+
+		String resource = ParamUtil.getString(actionRequest, "resource");
+
+		String successMessage = StringPool.BLANK;
+
+		if (Validator.isNull(workflowDefinition)) {
+			successMessage = LanguageUtil.format(
+				resourceBundle, "workflow-unassigned-from-x", resource);
+		}
+		else {
+			successMessage = LanguageUtil.format(
+				resourceBundle, "workflow-assigned-to-x", resource);
+		}
+
+		SessionMessages.add(actionRequest, "requestProcessed", successMessage);
+	}
+
+	@Override
 	protected void doProcessAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -53,6 +86,9 @@ public class UpdateWorkflowDefinitionLinkMVCActionCommand
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
+		String className = StringPool.BLANK;
+		String workflowDefinition = StringPool.BLANK;
 
 		Enumeration<String> enu = actionRequest.getParameterNames();
 
@@ -63,13 +99,19 @@ public class UpdateWorkflowDefinitionLinkMVCActionCommand
 				continue;
 			}
 
-			String className = name.substring(_PREFIX.length());
-			String workflowDefinition = ParamUtil.getString(
-				actionRequest, name);
+			className = name.substring(_PREFIX.length());
+			workflowDefinition = ParamUtil.getString(actionRequest, name);
 
+			break;
+		}
+
+		if (Validator.isNotNull(className)) {
 			_workflowDefinitionLinkLocalService.updateWorkflowDefinitionLink(
 				themeDisplay.getUserId(), themeDisplay.getCompanyId(), groupId,
 				className, 0, 0, workflowDefinition);
+
+			actionRequest.setAttribute(
+				WorkflowWebKeys.WORKFLOW_DEFINITION_NAME, workflowDefinition);
 		}
 
 		sendRedirect(actionRequest, actionResponse);
@@ -82,6 +124,9 @@ public class UpdateWorkflowDefinitionLinkMVCActionCommand
 		_workflowDefinitionLinkLocalService =
 			workflowDefinitionLinkLocalService;
 	}
+
+	@Reference
+	protected Portal portal;
 
 	private static final String _PREFIX = "workflowDefinitionName@";
 
