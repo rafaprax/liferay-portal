@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.service.permission;
 
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.permission.DDMPermissionSupport;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -70,6 +71,14 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 
 		_ddmStructureModelResourcePermission.check(
 			permissionChecker, structure, actionId);
+	}
+
+	public static void checkAddStruturePermission(
+			PermissionChecker permissionChecker, long groupId, long classNameId)
+		throws PortalException {
+
+		_ddmPermissionSupport.checkAddStruturePermission(
+			permissionChecker, groupId, classNameId);
 	}
 
 	public static boolean contains(
@@ -131,6 +140,26 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 			permissionChecker, structure, actionId);
 	}
 
+	public static boolean containsAddStruturePermission(
+			PermissionChecker permissionChecker, long groupId, long classNameId)
+		throws PortalException {
+
+		return _ddmPermissionSupport.containsAddStruturePermission(
+			permissionChecker, groupId, classNameId);
+	}
+
+	public static String getStructureModelResourceName(long classNameId)
+		throws PortalException {
+
+		return _ddmPermissionSupport.getStructureModelResourceName(classNameId);
+	}
+
+	public static String getStructureModelResourceName(String className)
+		throws PortalException {
+
+		return _ddmPermissionSupport.getStructureModelResourceName(className);
+	}
+
 	@Override
 	public Boolean checkResource(
 		PermissionChecker permissionChecker, long classPK, String actionId) {
@@ -152,6 +181,13 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 	}
 
 	@Reference(unbind = "-")
+	protected void setDDMPermissionSupport(
+		DDMPermissionSupport ddmPermissionSupport) {
+
+		_ddmPermissionSupport = ddmPermissionSupport;
+	}
+
+	@Reference(unbind = "-")
 	protected void setDDMStructureLocalService(
 		DDMStructureLocalService ddmStructureLocalService) {
 
@@ -159,7 +195,7 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 	}
 
 	@Reference(
-		target = "(model.class.name=com.liferay.dynamic.data.mapping..model.DDMStructure)",
+		target = "(model.class.name=com.liferay.dynamic.data.mapping.model.DDMStructure)",
 		unbind = "-"
 	)
 	protected void setModelResourcePermission(
@@ -171,6 +207,7 @@ public class DDMStructurePermission extends BaseResourcePermissionChecker {
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMStructurePermission.class);
 
+	private static DDMPermissionSupport _ddmPermissionSupport;
 	private static DDMStructureLocalService _ddmStructureLocalService;
 	private static ModelResourcePermission<DDMStructure>
 		_ddmStructureModelResourcePermission;

@@ -186,7 +186,7 @@ public class DDMDataProviderInstanceServiceImpl
 		_ddmDataProviderInstanceModelResourcePermission =
 			ModelResourcePermissionFactory.getInstance(
 				DDMDataProviderInstanceServiceImpl.class,
-				"_ddmDataProviderInstancePermissionModelResourcePermission",
+				"_ddmDataProviderInstanceModelResourcePermission",
 				DDMDataProviderInstance.class);
 	private static volatile PortletResourcePermission
 		_portletResourcePermission =

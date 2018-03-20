@@ -88,7 +88,7 @@ public class DDMFormInstanceVersionServiceImpl
 		_ddmFormInstanceVersionPermissionModelResourcePermission =
 			ModelResourcePermissionFactory.getInstance(
 				DDMFormInstanceVersionServiceImpl.class,
-				"_ddmFormInstancePermissionModelResourcePermission",
+				"_ddmFormInstanceVersionPermissionModelResourcePermission",
 				DDMFormInstance.class);
 
 }

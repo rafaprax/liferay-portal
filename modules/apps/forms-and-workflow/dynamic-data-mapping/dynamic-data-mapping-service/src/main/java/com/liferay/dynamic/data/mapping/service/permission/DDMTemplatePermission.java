@@ -16,7 +16,6 @@ package com.liferay.dynamic.data.mapping.service.permission;
 
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.permission.DDMPermissionSupport;
-import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -70,6 +69,24 @@ public class DDMTemplatePermission extends BaseResourcePermissionChecker {
 
 		_ddmTemplateModelResourcePermission.check(
 			permissionChecker, templateId, actionId);
+	}
+
+	public static void checkAddTemplatePermission(
+			PermissionChecker permissionChecker, long groupId, long classNameId,
+			long resourceClassNameId)
+		throws PortalException {
+
+		_ddmPermissionSupport.checkAddTemplatePermission(
+			permissionChecker, groupId, classNameId, resourceClassNameId);
+	}
+
+	public static void checkAddTemplatePermission(
+			PermissionChecker permissionChecker, long groupId, long classNameId,
+			String resourceClassName)
+		throws PortalException {
+
+		_ddmPermissionSupport.checkAddTemplatePermission(
+			permissionChecker, groupId, classNameId, resourceClassName);
 	}
 
 	public static boolean contains(
@@ -136,6 +153,38 @@ public class DDMTemplatePermission extends BaseResourcePermissionChecker {
 			permissionChecker, templateId, actionId);
 	}
 
+	public static boolean containsAddTemplatePermission(
+			PermissionChecker permissionChecker, long groupId, long classNameId,
+			long resourceClassNameId)
+		throws PortalException {
+
+		return _ddmPermissionSupport.containsAddTemplatePermission(
+			permissionChecker, groupId, classNameId, resourceClassNameId);
+	}
+
+	public static boolean containsAddTemplatePermission(
+			PermissionChecker permissionChecker, long groupId, long classNameId,
+			String resourceClassName)
+		throws PortalException {
+
+		return _ddmPermissionSupport.containsAddTemplatePermission(
+			permissionChecker, groupId, classNameId, resourceClassName);
+	}
+
+	public static String getTemplateModelResourceName(long resourceClassNameId)
+		throws PortalException {
+
+		return _ddmPermissionSupport.getTemplateModelResourceName(
+			resourceClassNameId);
+	}
+
+	public static String getTemplateModelResourceName(String resourceClassName)
+		throws PortalException {
+
+		return _ddmPermissionSupport.getTemplateModelResourceName(
+			resourceClassName);
+	}
+
 	@Override
 	public Boolean checkResource(
 		PermissionChecker permissionChecker, long classPK, String actionId) {
@@ -163,15 +212,8 @@ public class DDMTemplatePermission extends BaseResourcePermissionChecker {
 		_ddmPermissionSupport = ddmPermissionSupport;
 	}
 
-	@Reference(unbind = "-")
-	protected void setDDMTemplateLocalService(
-		DDMTemplateLocalService ddmTemplateLocalService) {
-
-		_ddmTemplateLocalService = ddmTemplateLocalService;
-	}
-
 	@Reference(
-		target = "(model.class.name=com.liferay.dynamic.data.mapping..model.DDMTemplate)",
+		target = "(model.class.name=com.liferay.dynamic.data.mapping.model.DDMTemplate)",
 		unbind = "-"
 	)
 	protected void setModelResourcePermission(
@@ -184,7 +226,6 @@ public class DDMTemplatePermission extends BaseResourcePermissionChecker {
 		DDMTemplatePermission.class);
 
 	private static DDMPermissionSupport _ddmPermissionSupport;
-	private static DDMTemplateLocalService _ddmTemplateLocalService;
 	private static ModelResourcePermission<DDMTemplate>
 		_ddmTemplateModelResourcePermission;
 
