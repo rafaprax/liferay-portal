@@ -19,6 +19,7 @@ Export-Package:\
 	com.liferay.dynamic.data.mapping.io,\
 	com.liferay.dynamic.data.mapping.io.exporter,\
 	com.liferay.dynamic.data.mapping.model,\
+	com.liferay.dynamic.data.mapping.permission,\
 	com.liferay.dynamic.data.mapping.render,\
 	com.liferay.dynamic.data.mapping.service,\
 	com.liferay.dynamic.data.mapping.service.persistence,\
