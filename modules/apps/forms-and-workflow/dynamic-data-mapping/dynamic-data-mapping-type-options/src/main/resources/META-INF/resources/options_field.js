@@ -1,6 +1,8 @@
 AUI.add(
 	'liferay-ddm-form-field-options',
 	function(A) {
+		var AObject = A.Object;
+
 		var Renderer = Liferay.DDM.Renderer;
 
 		var Util = Renderer.Util;
@@ -313,7 +315,6 @@ AUI.add(
 						if (value.length === 0 || value.length === 1 && value[0].label === '') {
 							instance._setValue([]);
 						}
-
 					},
 
 					_afterEditableChange: function(event) {
@@ -654,9 +655,11 @@ AUI.add(
 
 						var value = instance.get('value');
 
-						var editingLanguageId = instance._getCurrentEditingLanguageId();
-
-						value[editingLanguageId] = optionValues;
+						AObject.keys(value).forEach(
+							function(languageId) {
+								value[languageId] = optionValues;
+							}
+						);
 
 						instance.set('value', value);
 					},
