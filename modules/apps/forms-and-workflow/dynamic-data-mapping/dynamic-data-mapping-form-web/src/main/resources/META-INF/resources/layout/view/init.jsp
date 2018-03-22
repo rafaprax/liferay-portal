@@ -31,3 +31,7 @@ page import="com.liferay.portal.kernel.util.Validator" %>
 <liferay-util:html-top>
 	<meta content="initial-scale=1.0, width=device-width" name="viewport" />
 </liferay-util:html-top>
+
+<liferay-util:html-bottom>
+	<form action="#" id="hrefFm" method="post" name="hrefFm"></form>
+</liferay-util:html-bottom>
