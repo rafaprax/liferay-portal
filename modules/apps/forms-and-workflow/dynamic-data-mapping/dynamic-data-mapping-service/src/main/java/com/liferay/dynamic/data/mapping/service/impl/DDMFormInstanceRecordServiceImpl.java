@@ -15,12 +15,14 @@
 package com.liferay.dynamic.data.mapping.service.impl;
 
 import com.liferay.dynamic.data.mapping.constants.DDMActionKeys;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.service.base.DDMFormInstanceRecordServiceBaseImpl;
-import com.liferay.dynamic.data.mapping.service.permission.DDMFormInstancePermission;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionFactory;
 import com.liferay.portal.kernel.service.ServiceContext;
 
 import java.util.List;
@@ -38,7 +40,7 @@ public class DDMFormInstanceRecordServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		DDMFormInstancePermission.check(
+		_ddmFormInstanceModelResourcePermission.check(
 			getPermissionChecker(), ddmFormInstanceId,
 			DDMActionKeys.ADD_FORM_INSTANCE_RECORD);
 
@@ -55,7 +57,7 @@ public class DDMFormInstanceRecordServiceImpl
 			ddmFormInstanceRecordLocalService.getFormInstanceRecord(
 				ddmFormInstanceRecordId);
 
-		DDMFormInstancePermission.check(
+		_ddmFormInstanceModelResourcePermission.check(
 			getPermissionChecker(), ddmFormInstanceRecord.getFormInstance(),
 			ActionKeys.DELETE);
 
@@ -72,7 +74,7 @@ public class DDMFormInstanceRecordServiceImpl
 			ddmFormInstanceRecordLocalService.getFormInstanceRecord(
 				ddmFormInstanceRecordId);
 
-		DDMFormInstancePermission.check(
+		_ddmFormInstanceModelResourcePermission.check(
 			getPermissionChecker(), ddmFormInstanceRecord.getFormInstance(),
 			ActionKeys.VIEW);
 
@@ -84,7 +86,7 @@ public class DDMFormInstanceRecordServiceImpl
 			long ddmFormInstanceId)
 		throws PortalException {
 
-		DDMFormInstancePermission.contains(
+		_ddmFormInstanceModelResourcePermission.contains(
 			getPermissionChecker(), ddmFormInstanceId, ActionKeys.VIEW);
 
 		return ddmFormInstanceRecordLocalService.getFormInstanceRecords(
@@ -101,7 +103,7 @@ public class DDMFormInstanceRecordServiceImpl
 			ddmFormInstanceRecordLocalService.getFormInstanceRecord(
 				ddmFormInstanceRecordId);
 
-		DDMFormInstancePermission.check(
+		_ddmFormInstanceModelResourcePermission.check(
 			getPermissionChecker(), ddmFormInstanceRecord.getFormInstance(),
 			ActionKeys.UPDATE);
 
@@ -120,7 +122,7 @@ public class DDMFormInstanceRecordServiceImpl
 			ddmFormInstanceRecordLocalService.getFormInstanceRecord(
 				ddmFormInstanceRecordId);
 
-		DDMFormInstancePermission.check(
+		_ddmFormInstanceModelResourcePermission.check(
 			getPermissionChecker(), ddmFormInstanceRecord.getFormInstance(),
 			ActionKeys.UPDATE);
 
@@ -128,5 +130,12 @@ public class DDMFormInstanceRecordServiceImpl
 			getUserId(), ddmFormInstanceRecordId, majorVersion, ddmFormValues,
 			serviceContext);
 	}
+
+	private static volatile ModelResourcePermission<DDMFormInstance>
+		_ddmFormInstanceModelResourcePermission =
+			ModelResourcePermissionFactory.getInstance(
+				DDMFormInstanceRecordServiceImpl.class,
+				"_ddmFormInstanceModelResourcePermission",
+				DDMFormInstance.class);
 
 }
