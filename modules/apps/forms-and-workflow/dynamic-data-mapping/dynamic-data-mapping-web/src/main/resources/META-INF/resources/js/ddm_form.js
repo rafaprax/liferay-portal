@@ -659,12 +659,23 @@ AUI.add(
 					setValue: function(value) {
 						var instance = this;
 
-						var inputNode = instance.getInputNode();
+						var inputLocalized = Liferay.component(instance.getInputName());
 
-						if (Lang.isValue(value)) {
-							inputNode.val(value);
+						if (inputLocalized) {
+							var localizationMap = instance.get('localizationMap');
 
-							inputNode.set('defaultValue', value);
+							for (var languageId in localizationMap) {
+								inputLocalized.updateInputLanguage(localizationMap[languageId], languageId);
+							}
+						}
+						else {
+							var inputNode = instance.getInputNode();
+
+							if (Lang.isValue(value)) {
+								inputNode.val(value);
+
+								inputNode.set('defaultValue', value);
+							}
 						}
 					},
 
@@ -783,17 +794,28 @@ AUI.add(
 
 						var localizationMap = instance.get('localizationMap');
 
-						var value = instance.getValue();
+						var inputLocalized = Liferay.component(instance.getInputName());
 
-						if (AObject.keys(localizationMap).length != 0) {
-							this.removeNotAvailableLocales(localizationMap);
-						}
-
-						if (instance.get('localizable')) {
-							localizationMap[locale] = value;
+						if (inputLocalized) {
+							inputLocalized.get('items').forEach(
+								function(item) {
+									localizationMap[item] = inputLocalized.getValue(item);
+								}
+							);
 						}
 						else {
-							localizationMap = value;
+							var value = instance.getValue();
+
+							if (AObject.keys(localizationMap).length != 0) {
+								this.removeNotAvailableLocales(localizationMap);
+							}
+
+							if (instance.get('localizable')) {
+								localizationMap[locale] = value;
+							}
+							else {
+								localizationMap = value;
+							}
 						}
 
 						instance.set('localizationMap', localizationMap);
@@ -2600,10 +2622,21 @@ AUI.add(
 
 						var parsedValue = instance.getParsedValue(ImageField.superclass.getValue.apply(instance, arguments));
 
-						if (instance.isNotEmpty(parsedValue)) {
-							var altNode = A.one('#' + instance.getInputName() + 'Alt');
+						var inputLocalized = Liferay.component(instance.getInputName() + 'Alt');
 
-							parsedValue.alt = altNode.val();
+						if (instance.isNotEmpty(parsedValue)) {
+							if (inputLocalized) {
+								inputLocalized.get('items').forEach(
+									function(languageId) {
+										parsedValue['alt_' + languageId] = inputLocalized.getValue(languageId);
+									}
+								);
+							}
+							else {
+								var altNode = A.one('#' + instance.getInputName() + 'Alt');
+
+								parsedValue.alt = altNode.val();
+							}
 
 							value = JSON.stringify(parsedValue);
 						}
@@ -2627,14 +2660,25 @@ AUI.add(
 
 						var parsedValue = instance.getParsedValue(value);
 
+						var inputLocalized = Liferay.component(instance.getInputName() + 'Alt');
+
 						if (instance.isNotEmpty(parsedValue)) {
 							if (!parsedValue.name && parsedValue.title) {
 								parsedValue.name = parsedValue.title;
 							}
 
-							var altNode = A.one('#' + instance.getInputName() + 'Alt');
+							if (inputLocalized) {
+								inputLocalized.get('items').forEach(
+									function(languageId) {
+										inputLocalized.updateInputLanguage(parsedValue['alt_' + languageId], languageId);
+									}
+								);
+							}
+							else {
+								var altNode = A.one('#' + instance.getInputName() + 'Alt');
 
-							altNode.val(parsedValue.alt);
+								altNode.val(parsedValue.alt);
+							}
 
 							value = JSON.stringify(parsedValue);
 						}
@@ -2778,8 +2822,6 @@ AUI.add(
 						];
 
 						instance._eventHandles = eventHandles;
-
-						instance._updateValues();
 					},
 
 					destructor: function() {
@@ -2792,38 +2834,6 @@ AUI.add(
 						var instance = this;
 
 						return window[instance.getInputName() + 'Editor'];
-					},
-
-					getInputName: function() {
-						var instance = this;
-
-						var inputNode;
-
-						if (instance.get('localizable')) {
-							var fieldsNamespace = instance.get('fieldsNamespace');
-							var portletNamespace = instance.get('portletNamespace');
-
-							var prefix = [portletNamespace];
-
-							if (fieldsNamespace) {
-								prefix.push(fieldsNamespace);
-							}
-
-							inputNode = prefix.concat(
-								[
-									instance.get('name'),
-									'_',
-									INSTANCE_ID_PREFIX,
-									'_',
-									instance.get('instanceId')
-								]
-							).join('');
-						}
-						else {
-							inputNode = TextHTMLField.superclass.getInputName().apply(instance, arguments);
-						}
-
-						return inputNode;
 					},
 
 					getValue: function() {
@@ -2869,24 +2879,6 @@ AUI.add(
 						instance.get('container').toggle(!readOnly);
 					},
 
-					updateTranslationsDefaultValue: function() {
-						var instance = this;
-
-						var inputLocalized = Liferay.component(instance.getInputName());
-						var localizationMap = instance.get('localizationMap');
-
-						if (inputLocalized) {
-							inputLocalized.get('items').forEach(
-								function(item) {
-									localizationMap[item] = inputLocalized.getValue(item);
-								}
-							);
-						}
-						else {
-							TextHTMLField.superclass.updateTranslationsDefaultValue.apply(instance, arguments);
-						}
-					},
-
 					_afterRenderTextHTMLField: function() {
 						var instance = this;
 
@@ -2902,17 +2894,6 @@ AUI.add(
 						var languageId = event.item.getAttribute('data-value');
 
 						instance.set('displayLocale', languageId);
-					},
-
-					_updateValues: function() {
-						var instance = this;
-
-						var inputLocalized = Liferay.component(instance.getInputName());
-						var localizationMap = instance.get('localizationMap');
-
-						for (var languageId in localizationMap) {
-							inputLocalized.updateInputLanguage(localizationMap[languageId], languageId);
-						}
 					}
 				}
 			}
