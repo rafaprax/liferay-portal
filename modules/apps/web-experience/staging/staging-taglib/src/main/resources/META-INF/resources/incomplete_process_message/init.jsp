@@ -18,11 +18,12 @@
 
 <%
 boolean localPublishing = GetterUtil.getBoolean(request.getAttribute("liferay-staging:incomplete-process-message:localPublishing"));
-String taskExecutorClassName = GetterUtil.getString(request.getAttribute("liferay-staging:incomplete-process-message:taskExecutorClassName"));
 
 int incompleteBackgroundTaskCount = BackgroundTaskManagerUtil.getBackgroundTasksCount(groupId, taskExecutorClassName, false);
 
 if (localPublishing) {
 	incompleteBackgroundTaskCount += BackgroundTaskManagerUtil.getBackgroundTasksCount(liveGroupId, taskExecutorClassName, false);
 }
+
+String taskExecutorClassName = localPublishing ? BackgroundTaskExecutorNames.LAYOUT_STAGING_BACKGROUND_TASK_EXECUTOR : BackgroundTaskExecutorNames.LAYOUT_REMOTE_STAGING_BACKGROUND_TASK_EXECUTOR;
 %>
