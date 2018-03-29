@@ -38,8 +38,13 @@ portletURL.setParameter("displayStyle", displayStyle);
 				keyProperty="formInstanceId"
 				modelVar="formInstance"
 			>
+
+				<%
+				String mvcPath = ddmFormAdminDisplayContext.isShowEditFormInstanceIcon(formInstance) ? "/admin/edit_form_instance.jsp" : "/admin/view_form_instance_records.jsp";
+				%>
+
 				<portlet:renderURL var="rowURL">
-					<portlet:param name="mvcPath" value="/admin/edit_form_instance.jsp" />
+					<portlet:param name="mvcPath" value="<%= mvcPath %>" />
 					<portlet:param name="redirect" value="<%= currentURL %>" />
 					<portlet:param name="formInstanceId" value="<%= String.valueOf(formInstance.getFormInstanceId()) %>" />
 					<portlet:param name="displayStyle" value="<%= displayStyle %>" />
