@@ -1004,6 +1004,10 @@ AUI.add(
 
 						A.one('.ddm-form-builder-buttons').removeClass('hide');
 
+						if (A.one('.lfr-ddm-add-rule').hasClass('hide')) {
+							A.one('.lfr-ddm-add-rule').removeClass('hide');
+						}
+
 						instance.one('#showForm').addClass('active');
 					},
 
@@ -1021,6 +1025,10 @@ AUI.add(
 						}
 						else {
 							ruleBuilder.show();
+						}
+
+						if (!A.one('.form-builder-rule-builder-container')) {
+							A.one('.lfr-ddm-add-field').addClass('hide');
 						}
 
 						A.one('.portlet-forms').addClass('liferay-ddm-form-rule-builder');
