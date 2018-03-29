@@ -20,8 +20,11 @@
 	.ddm-form-basic-info {
 		.ddm-form-name,
 		.ddm-form-description {
-			color: $form-header-text-color;
 			margin: 0;
+		}
+
+		.ddm-form-description {
+			color: $form-header-text-color;
 		}
 
 		.ddm-form-description {
@@ -31,8 +34,9 @@
 		}
 
 		.ddm-form-name {
+			color: #272833;
 			font-size: 32px;
-			font-weight: 300;
+			font-weight: 500;
 			padding: $baseline * 5 0 0 0;
 		}
 	}
