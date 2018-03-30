@@ -56,7 +56,7 @@ boolean csvExportDisabled = StringUtil.equals("disabled", csvExport);
 			var csvWarning = A.one('#<portlet:namespace />csvWarning');
 
 			var showCSVWarning = function() {
-				if ((fileExtensionSelect.val()==='csv') && (<%= showCSVWarning %>)) {
+				if ((fileExtensionSelect.val() === 'csv') && <%= showCSVWarning %>) {
 					csvWarning.show();
 
 					new A.Alert(
@@ -79,7 +79,7 @@ boolean csvExportDisabled = StringUtil.equals("disabled", csvExport);
 				if (fileExtensionSelect) {
 					showCSVWarning();
 
-					fileExtensionSelect.on('change',showCSVWarning);
+					fileExtensionSelect.on('change', showCSVWarning);
 				}
 
 				form.append(content);
