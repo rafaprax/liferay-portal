@@ -109,6 +109,10 @@ public class DDMFormFieldTypesJSONSerializerImpl
 
 		Locale locale = LocaleThreadLocal.getThemeDisplayLocale();
 
+		if (locale == null) {
+			locale = LocaleThreadLocal.getDefaultLocale();
+		}
+
 		try {
 			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 				"content.Language", locale, ddmFormFieldType.getClass());
