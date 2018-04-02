@@ -40,18 +40,22 @@ AUI.add(
 				if (!instance.get('readOnly')) {
 					var evaluator = instance.get('evaluator');
 
+					if (!evaluator) {
+						return;
+					}
 					evaluator.evaluate(
 						instance,
 						function(result) {
-							if (callback) {
-								var hasErrors = instance.hasErrors();
-
-								if (!result || !Lang.isObject(result)) {
-									hasErrors = true;
-								}
-
-								callback.call(instance, hasErrors, result);
+							if (!callback) {
+								return;
 							}
+							var hasErrors = instance.hasErrors();
+
+							if (!result || !Lang.isObject(result)) {
+								hasErrors = true;
+							}
+
+							callback.call(instance, hasErrors, result);
 						}
 					);
 				}
