@@ -18,6 +18,10 @@ AUI.add(
 						value: false
 					},
 
+					builder: {
+						getter: '_getFormBuilder'
+					},
+
 					editable: {
 						value: true
 					},
@@ -509,30 +513,18 @@ AUI.add(
 						instance._bindOptionUI(instance._mainOption);
 					},
 
-					_getCurrentDefaultLanguageId: function() {
-						var instance = this;
-
-						var form = instance.get('parent');
-
-						if (!form) {
-							return instance.get('locale');
-						}
-						var builder = form.get('builder');
-
-						return builder.get('defaultLanguageId');
-					},
-
 					_getCurrentEditingLanguageId: function() {
 						var instance = this;
 
-						var form = instance.get('parent');
+						var builder = instance.get('builder');
 
-						if (!form) {
-							return instance.get('locale');
+						var currentEditingLanguageId = instance.get('locale');
+
+						if (builder) {
+							currentEditingLanguageId = builder.get('editingLanguageId');
 						}
-						var builder = form.get('builder');
 
-						return builder.get('editingLanguageId');
+						return currentEditingLanguageId;
 					},
 
 					_getCurrentLocaleOptionsValues: function() {
@@ -540,10 +532,38 @@ AUI.add(
 
 						var value = instance.get('value');
 
-						var defaultLanguageId = instance._getCurrentDefaultLanguageId();
+						var defaultLanguageId = instance._getDefaultLanguageId();
 						var editingLanguageId = instance._getCurrentEditingLanguageId();
 
 						return value[editingLanguageId] || value[defaultLanguageId] || [];
+					},
+
+					_getDefaultLanguageId: function() {
+						var instance = this;
+
+						var builder = instance.get('builder');
+
+						var defaultLanguageId = instance.get('locale');
+
+						if (builder) {
+							defaultLanguageId = builder.get('defaultLanguageId');
+						}
+
+						return defaultLanguageId;
+					},
+
+					_getFormBuilder: function() {
+						var instance = this;
+
+						var form = instance.get('parent');
+
+						var builder;
+
+						if (form) {
+							builder = form.get('builder');
+						}
+
+						return builder;
 					},
 
 					_getNodeIndex: function(node) {
