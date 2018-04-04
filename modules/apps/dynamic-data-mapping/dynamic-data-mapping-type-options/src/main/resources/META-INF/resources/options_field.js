@@ -693,22 +693,6 @@ AUI.add(
 						instance._skipOptionValueChange = false;
 					},
 
-					_setContext: function(val) {
-						var instance = this;
-
-						var context = OptionsField.superclass._setContext.apply(instance, arguments);
-
-						var locale = instance._getCurrentEditingLanguageId();
-
-						var value = context.value;
-
-						if (value && !value[locale]) {
-							value[locale] = value[context.defaultLanguageId];
-						}
-
-						return context;
-					},
-
 					_setValue: function(optionValues) {
 						var instance = this;
 
