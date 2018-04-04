@@ -56,6 +56,12 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
+						var builder = instance.get('builder');
+
+						if (builder) {
+							builder.after('editingLanguageIdChange', instance._afterEditingLanguageIdChange.bind(instance));
+						}
+
 						var sortableList = instance.get('sortableList');
 
 						instance._eventHandlers.push(
@@ -336,6 +342,28 @@ AUI.add(
 								}
 							}
 						);
+					},
+
+					_afterEditingLanguageIdChange: function() {
+						var instance = this;
+
+						var defaultLanguage = instance._getDefaultLanguageId();
+						var editingLanguage = instance._getCurrentEditingLanguageId();
+
+						var value = instance.get('value');
+
+						if (editingLanguage != defaultLanguage) {
+							if (value) {
+								if (!value[editingLanguage]) {
+									value[editingLanguage] = value[defaultLanguage];
+								}
+								else {
+									instance._syncOptionsKeys(value[defaultLanguage], value[editingLanguage]);
+								}
+							}
+						}
+
+						instance.set('value', value);
 					},
 
 					_afterErrorMessageChange: function(event) {
@@ -692,6 +720,26 @@ AUI.add(
 						value[editingLanguageId] = optionValues;
 
 						instance.set('value', value);
+					},
+
+					_syncOptionsKeys: function(defaultLanguageOptions, editingLanguageOptions) {
+						var instance = this;
+
+						AObject.keys(defaultLanguageOptions).forEach(
+							function(optionIndex) {
+								var defaultLanguageOption = defaultLanguageOptions[optionIndex];
+								var editingLanguageOption = editingLanguageOptions[optionIndex];
+
+								if (editingLanguageOption) {
+									if (editingLanguageOption.value != defaultLanguageOption.value) {
+										editingLanguageOption.value = defaultLanguageOption.value;
+									}
+								}
+								else {
+									editingLanguageOptions.push(defaultLanguageOption);
+								}
+							}
+						);
 					},
 
 					_syncOptionUI: function(option) {
