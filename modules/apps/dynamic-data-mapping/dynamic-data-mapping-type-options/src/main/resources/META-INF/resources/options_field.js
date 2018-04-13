@@ -55,8 +55,15 @@ AUI.add(
 				prototype: {
 					initializer: function() {
 						var instance = this;
-
+						
+						var builder = instance.get('builder');
 						var sortableList = instance.get('sortableList');
+
+						if (builder) {
+							instance._eventHandlers.push(
+								builder.after('editingLanguageIdChange', instance._afterEditingLanguageIdChange.bind(instance))
+							);
+						}
 
 						instance._eventHandlers.push(
 							instance.on('liferay-ddm-form-field-key-value:destroy', instance._onDestroyOption),
@@ -336,6 +343,26 @@ AUI.add(
 								}
 							}
 						);
+					},
+
+					_afterEditingLanguageIdChange: function() {
+						var instance = this;
+
+						var defaultLanguage = instance._getDefaultLanguageId();
+						var editingLanguage = instance._getCurrentEditingLanguageId();
+
+						var value = instance.get('value');
+
+						if (value && (editingLanguage != defaultLanguage)) {
+							if (value[editingLanguage]) {
+								instance._syncOptionsKeys(value[defaultLanguage], value[editingLanguage]);
+							}
+							else {
+								value[editingLanguage] = value[defaultLanguage];
+							}
+						}
+
+						instance.set('value', value);
 					},
 
 					_afterErrorMessageChange: function(event) {
@@ -692,6 +719,26 @@ AUI.add(
 						value[editingLanguageId] = optionValues;
 
 						instance.set('value', value);
+					},
+
+					_syncOptionsKeys: function(defaultLanguageOptions, editingLanguageOptions) {
+						var instance = this;
+
+						AObject.keys(defaultLanguageOptions).forEach(
+							function(optionIndex) {
+								var defaultLanguageOption = defaultLanguageOptions[optionIndex];
+								var editingLanguageOption = editingLanguageOptions[optionIndex];
+
+								if (editingLanguageOption) {
+									if (editingLanguageOption.value != defaultLanguageOption.value) {
+										editingLanguageOption.value = defaultLanguageOption.value;
+									}
+								}
+								else {
+									editingLanguageOptions.push(defaultLanguageOption);
+								}
+							}
+						);
 					},
 
 					_syncOptionUI: function(option) {
