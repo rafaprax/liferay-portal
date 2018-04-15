@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.type.checkbox.multiple.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueRequestParameterRetriever;
+import com.liferay.dynamic.data.mapping.util.DDMFormThreadLocal;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -48,7 +49,7 @@ public class CheckboxMultipleDDMFormFieldValueRequestParameterRetriever
 			getDefaultDDMFormFieldParameterValues(
 				defaultDDMFormFieldParameterValue);
 
-		String[] parameterValues = ParamUtil.getParameterValues(
+		String[] parameterValues = getParameterValues(
 			httpServletRequest, ddmFormFieldParameterName,
 			defaultDDMFormFieldParameterValues);
 
@@ -75,6 +76,20 @@ public class CheckboxMultipleDDMFormFieldValueRequestParameterRetriever
 
 			return StringUtil.split(defaultDDMFormFieldParameterValue);
 		}
+	}
+
+	protected String[] getParameterValues(
+		HttpServletRequest httpServletRequest, String ddmFormFieldParameterName,
+		String[] defaultDDMFormFieldParameterValues) {
+
+		if (DDMFormThreadLocal.isFormSubmission()) {
+			return ParamUtil.getParameterValues(
+				httpServletRequest, ddmFormFieldParameterName);
+		}
+
+		return ParamUtil.getParameterValues(
+			httpServletRequest, ddmFormFieldParameterName,
+			defaultDDMFormFieldParameterValues);
 	}
 
 	@Reference

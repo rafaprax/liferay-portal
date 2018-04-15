@@ -100,7 +100,6 @@
 
 		{if not $displayValue}
 			{call .hidden_input}
-				{param displayValue: $displayValue /}
 				{param name: $name /}
 			{/call}
 		{/if}
@@ -113,11 +112,10 @@
  */
 {template .hidden_input}
 	{@param name: string}
-	{@param displayValue: bool}
 
 	<input id="{$name}"
 		name="{$name}"
 		type="hidden"
-		value="{$displayValue ? 'true' : 'false'}"
+		value="false"
 	/>
 {/template}
