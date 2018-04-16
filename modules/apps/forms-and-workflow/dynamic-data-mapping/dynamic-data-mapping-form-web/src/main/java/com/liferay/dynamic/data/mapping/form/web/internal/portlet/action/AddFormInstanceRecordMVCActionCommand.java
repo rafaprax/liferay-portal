@@ -30,6 +30,7 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordVersionLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.util.DDMFormThreadLocal;
 import com.liferay.portal.kernel.captcha.CaptchaTextException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -48,6 +49,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
 import javax.portlet.PortletSession;
 
 import org.osgi.service.component.annotations.Component;
@@ -66,6 +68,21 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class AddFormInstanceRecordMVCActionCommand
 	extends BaseMVCActionCommand {
+
+	@Override
+	public boolean processAction(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws PortletException {
+
+		try {
+			DDMFormThreadLocal.setFormSubmission(true);
+
+			return super.processAction(actionRequest, actionResponse);
+		}
+		finally {
+			DDMFormThreadLocal.setFormSubmission(false);
+		}
+	}
 
 	@Override
 	protected void doProcessAction(
