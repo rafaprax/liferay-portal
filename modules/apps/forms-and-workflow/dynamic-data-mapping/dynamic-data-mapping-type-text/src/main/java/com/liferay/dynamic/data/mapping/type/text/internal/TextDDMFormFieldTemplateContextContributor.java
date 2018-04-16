@@ -169,17 +169,17 @@ public class TextDDMFormFieldTemplateContextContributor
 		Value value, Locale locale,
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
 
-		if (value != null) {
-			String valueString = value.getString(locale);
-
-			if (ddmFormFieldRenderingContext.isViewMode()) {
-				valueString = HtmlUtil.extractText(valueString);
-			}
-
-			return valueString;
+		if (value == null) {
+			return StringPool.BLANK;
 		}
 
-		return StringPool.BLANK;
+		String valueString = value.getString(locale);
+
+		if (ddmFormFieldRenderingContext.isViewMode()) {
+			valueString = HtmlUtil.extractText(valueString);
+		}
+
+		return valueString;
 	}
 	
 	protected String getValue(	
