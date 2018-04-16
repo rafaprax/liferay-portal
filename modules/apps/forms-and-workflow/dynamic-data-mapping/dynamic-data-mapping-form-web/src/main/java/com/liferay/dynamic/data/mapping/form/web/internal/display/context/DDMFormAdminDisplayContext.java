@@ -28,6 +28,7 @@ import com.liferay.dynamic.data.mapping.form.web.internal.search.FormInstanceSea
 import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.resource.DDMFormInstancePermission;
 import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.resource.DDMFormPermission;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializer;
+import com.liferay.dynamic.data.mapping.io.exporter.DDMExporterFactory;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -77,11 +78,13 @@ import com.liferay.portal.kernel.workflow.WorkflowEngineManager;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -99,6 +102,7 @@ public class DDMFormAdminDisplayContext {
 		RenderRequest renderRequest, RenderResponse renderResponse,
 		AddDefaultSharedFormLayoutPortalInstanceLifecycleListener
 			addDefaultSharedFormLayoutPortalInstanceLifecycleListener,
+		DDMExporterFactory ddmExporterFactory,
 		DDMFormWebConfiguration formWebConfiguration,
 		DDMFormInstanceRecordLocalService formInstanceRecordLocalService,
 		DDMFormInstanceService formInstanceService,
@@ -115,6 +119,7 @@ public class DDMFormAdminDisplayContext {
 		_renderResponse = renderResponse;
 		_addDefaultSharedFormLayoutPortalInstanceLifecycleListener =
 			addDefaultSharedFormLayoutPortalInstanceLifecycleListener;
+		_ddmExporterFactory = ddmExporterFactory;
 		_ddmFormWebConfiguration = formWebConfiguration;
 		_ddmFormInstanceRecordLocalService = formInstanceRecordLocalService;
 		_ddmFormInstanceService = formInstanceService;
@@ -134,6 +139,10 @@ public class DDMFormAdminDisplayContext {
 
 	public int getAutosaveInterval() {
 		return _ddmFormWebConfiguration.autosaveInterval();
+	}
+
+	public Map getAvailableExportFormats() {
+		return new TreeMap<>(_ddmExporterFactory.getAvailableFormatsMap());
 	}
 
 	public Locale[] getAvailableLocales() {
@@ -942,6 +951,7 @@ public class DDMFormAdminDisplayContext {
 
 	private final AddDefaultSharedFormLayoutPortalInstanceLifecycleListener
 		_addDefaultSharedFormLayoutPortalInstanceLifecycleListener;
+	private final DDMExporterFactory _ddmExporterFactory;
 	private final DDMFormFieldTypeServicesTracker
 		_ddmFormFieldTypeServicesTracker;
 	private final DDMFormFieldTypesJSONSerializer
