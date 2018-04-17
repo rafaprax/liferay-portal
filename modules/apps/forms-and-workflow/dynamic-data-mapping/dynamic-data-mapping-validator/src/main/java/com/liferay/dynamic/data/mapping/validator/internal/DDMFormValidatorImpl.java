@@ -289,8 +289,18 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 		}
 		catch (DDMExpressionException ddmee) {
 			throw new MustSetValidValidationExpression(
-				ddmFormField.getName(), validationExpression);
+				ddmFormField.getName(),
+				getExpressionValue(validationExpression));
 		}
+	}
+
+	private String getExpressionValue(String validationExpression) {
+		int firstIndex = StringUtil.indexOfAny(
+			validationExpression, new String[]{StringPool.QUOTE});
+		int lastIndex = StringUtil.lastIndexOfAny(
+			validationExpression, new String[]{StringPool.QUOTE});
+
+		return validationExpression.substring(firstIndex + 1, lastIndex);
 	}
 
 	protected void validateDDMFormFieldVisibilityExpression(
