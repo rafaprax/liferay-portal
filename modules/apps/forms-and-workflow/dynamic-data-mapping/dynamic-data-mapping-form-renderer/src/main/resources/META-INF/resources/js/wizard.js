@@ -193,10 +193,15 @@ AUI.add(
 						var instance = this;
 
 						var items = instance.get('items');
+						var selected = instance.get('selected');
 
 						items.splice(index, 1);
 
 						instance.set('items', items);
+
+						if (selected > 0) {
+							instance.set('selected', selected - 1);
+						}
 					},
 
 					_setState: function(index, state) {
