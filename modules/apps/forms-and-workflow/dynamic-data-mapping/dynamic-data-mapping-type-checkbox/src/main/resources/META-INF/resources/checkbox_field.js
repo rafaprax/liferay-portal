@@ -50,6 +50,20 @@ AUI.add(
 						return inputNode.attr('checked');
 					},
 
+					hasFocus: function(node) {
+						var instance = this;
+
+						var hasFocus = false;
+
+						if (node && node.hasClass('toggle-switch')) {
+							hasFocus = (node.getAttribute('type') === instance.get('type'));
+						}
+
+						hasFocus = CheckboxField.superclass.hasFocus.apply(instance, arguments);
+
+						return hasFocus;
+					},
+
 					setValue: function(value) {
 						var instance = this;
 
