@@ -89,17 +89,21 @@ AUI.add(
 						return container.one('.form-control');
 					},
 
-					hasFocus: function() {
+					hasFocus: function(node) {
 						var instance = this;
-
-						var datePicker = instance.datePicker;
 
 						var hasFocus = DateField.superclass.hasFocus.apply(instance, arguments);
 
-						if (datePicker.calendar) {
-							var calendarNode = datePicker.calendar.get('boundingBox');
+						var nodeClass = '';
 
-							hasFocus = hasFocus || calendarNode.contains(document.activeElement);
+						if (node) {
+							nodeClass = node.getAttribute('class');
+
+							nodeClass = '.' + nodeClass.replace(' ', '.');
+
+							if (instance.datePicker.getCalendar().get('boundingBox').one(nodeClass)) {
+								hasFocus = true;
+							}
 						}
 
 						return hasFocus;
