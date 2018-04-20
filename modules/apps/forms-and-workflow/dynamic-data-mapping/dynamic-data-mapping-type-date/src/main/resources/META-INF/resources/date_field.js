@@ -148,6 +148,21 @@ AUI.add(
 						return instance;
 					},
 
+					hasFocus: function(node) {
+						var instance = this;
+
+						var hasFocus = false;
+
+						if (datePicker.getCalendar().get('boundingBox').contains(node)) {
+							hasFocus = true;
+						}
+						else {
+							hasFocus = DateField.superclass.hasFocus.apply(instance, arguments);
+						}
+
+						return hasFocus;
+					},
+
 					setValue: function(isoDate) {
 						var instance = this;
 
