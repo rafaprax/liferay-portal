@@ -65,15 +65,20 @@ AUI.add(
 
 				var evaluator = instance.get('evaluator');
 
-				if (evaluator && evaluator.isEvaluating()) {
+				if (evaluator) {
+					if (!evaluator.isEvaluating()) {
+						evaluator.evaluate(instance);
+					}
+
 					evaluator.onceAfter(
-						'evaluationEnded',
-						function() {
-							if (!instance.hasFocus()) {
-								instance.showErrorMessage();
+							'evaluationEnded',
+							function() {
+								evaluator.set('evaluationDone', true);
+								if (!instance.hasFocus()) {
+									instance.showErrorMessage();
+								}
 							}
-						}
-					);
+						);
 				}
 				else {
 					instance.showErrorMessage();

@@ -44,6 +44,11 @@ AUI.add(
 					evaluate: function(trigger, callback) {
 						var instance = this;
 
+						if (instance.get('evaluationDone')) {
+							instance.set('evaluationDone', false);
+							return;
+						}
+
 						var enabled = instance.get('enabled');
 
 						var form = instance.get('form');
