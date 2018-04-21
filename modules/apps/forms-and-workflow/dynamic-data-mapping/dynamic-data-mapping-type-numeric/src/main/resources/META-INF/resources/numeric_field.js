@@ -29,6 +29,13 @@ AUI.add(
 						value: ''
 					},
 
+					symbols: {
+						value: {
+							decimalSymbol: '.',
+							thousandsSeparator: ','
+						}
+					},
+
 					type: {
 						value: 'numeric'
 					}
@@ -96,13 +103,14 @@ AUI.add(
 					getDecimalMaskConfig: function() {
 						var instance = this;
 
+						var symbols = instance.get('symbols');
+
 						return {
 							allowDecimal: true,
 							decimalLimit: 6,
-							decimalSymbol: ',',
-							includeThousandsSeparator: true,
-							prefix: '',
-							thousandsSeparatorSymbol: '.'
+							decimalSymbol: symbols.decimalSymbol,
+							includeThousandsSeparator: false,
+							prefix: ''
 						};
 					},
 
