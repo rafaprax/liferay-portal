@@ -107,7 +107,7 @@ AUI.add(
 
 						return {
 							allowDecimal: true,
-							decimalLimit: 6,
+							decimalLimit: 2,
 							decimalSymbol: symbols.decimalSymbol,
 							includeThousandsSeparator: false,
 							prefix: ''
