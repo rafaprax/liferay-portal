@@ -94,12 +94,6 @@ AUI.add(
 						return 'input';
 					},
 
-					getEvaluationContext: function(context) {
-						return {
-							dataType: context.dataType
-						}
-					},
-
 					getDecimalMaskConfig: function() {
 						var instance = this;
 
@@ -114,9 +108,13 @@ AUI.add(
 						};
 					},
 
-					getIntegerMaskConfig: function() {
-						var instance = this;
+					getEvaluationContext: function(context) {
+						return {
+							dataType: context.dataType
+						};
+					},
 
+					getIntegerMaskConfig: function() {
 						return {
 							allowLeadingZeroes: true,
 							includeThousandsSeparator: false,
@@ -147,11 +145,11 @@ AUI.add(
 						var fieldNode = instance.getInputNode();
 						var fieldSidebar = A.one('.' + CSS_SETTINGS_SIDEBAR + ' .liferay-ddm-form-field-numeric');
 
-						if ((instance.maskedInputController) && (instance.get('dataType') == instance.lastDataType)) {
+						if (instance.maskedInputController && (instance.get('dataType') == instance.lastDataType)) {
 							return;
 						}
 
-						if ((instance.maskedInputController) && (fieldSidebar)) {
+						if (instance.maskedInputController && fieldSidebar) {
 							fieldNode = fieldSidebar.one('input');
 						}
 
