@@ -133,10 +133,6 @@ public class CheckboxMultipleDDMFormFieldTemplateContextContributor
 		String predefinedValueString = predefinedValue.getString(
 			ddmFormFieldRenderingContext.getLocale());
 
-		if (ddmFormFieldRenderingContext.isViewMode()) {
-			predefinedValueString = HtmlUtil.extractText(predefinedValueString);
-		}
-
 		return predefinedValueString;
 	}
 
