@@ -45,8 +45,12 @@ import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceModifiedDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceNameComparator;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -59,6 +63,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -77,13 +82,16 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowEngineManager;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -135,6 +143,25 @@ public class DDMFormAdminDisplayContext {
 		formAdminRequestHelper = new DDMFormAdminRequestHelper(renderRequest);
 	}
 
+	public DropdownItemList getActionItemsDropdownItemList() {
+		return new DropdownItemList(
+			PortalUtil.getHttpServletRequest(_renderRequest)) {
+
+			{
+				add(
+					dropdownItem -> {
+						dropdownItem.setHref(
+							"javascript:" + _renderResponse.getNamespace() +
+								"deleteFormInstances();");
+						dropdownItem.setIcon("trash");
+						dropdownItem.setLabel("recycle-bin");
+						dropdownItem.setQuickAction(true);
+					});
+			}
+
+		};
+	}
+
 	public int getAutosaveInterval() {
 		return _ddmFormWebConfiguration.autosaveInterval();
 	}
@@ -159,8 +186,43 @@ public class DDMFormAdminDisplayContext {
 		return new Locale[] {getSiteDefaultLocale()};
 	}
 
+	public String getClearResultsURL() throws PortletException {
+		PortletURL clearResultsURL = PortletURLUtil.clone(
+			getPortletURL(), _renderResponse);
+
+		clearResultsURL.setParameter("keywords", StringPool.BLANK);
+
+		return clearResultsURL.toString();
+	}
+
 	public long getCompanyId() {
 		return formAdminRequestHelper.getCompanyId();
+	}
+
+	public CreationMenu getCreationMenu() {
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			_renderRequest);
+
+		return new CreationMenu(request) {
+			{
+				ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+					WebKeys.THEME_DISPLAY);
+
+				if (isShowAddButton()) {
+					addPrimaryDropdownItem(
+						dropdownItem -> {
+							dropdownItem.setHref(
+								_renderResponse.createRenderURL(), "mvcPath",
+								"/admin/edit_form_instance.jsp", "redirect",
+								PortalUtil.getCurrentURL(request), "groupId",
+								String.valueOf(themeDisplay.getScopeGroupId()));
+
+							dropdownItem.setLabel(
+								LanguageUtil.get(request, "new-form"));
+						});
+				}
+			}
+		};
 	}
 
 	public JSONArray getDDMFormFieldTypesJSONArray() throws PortalException {
@@ -268,6 +330,31 @@ public class DDMFormAdminDisplayContext {
 
 	public String[] getDisplayViews() {
 		return _DISPLAY_VIEWS;
+	}
+
+	public DropdownItemList getFilterItemsDropdownItemList() throws Exception {
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			_renderRequest);
+
+		return new DropdownItemList(request) {
+			{
+				addGroup(
+					dropdownGroupItem -> {
+						dropdownGroupItem.setDropdownItems(
+							getFilterNavigationDropdownItems());
+						dropdownGroupItem.setLabel(
+							LanguageUtil.get(request, "filter-by-navigation"));
+					});
+
+				addGroup(
+					dropdownGroupItem -> {
+						dropdownGroupItem.setDropdownItems(
+							getOrderByDropdownItemList());
+						dropdownGroupItem.setLabel(
+							LanguageUtil.get(request, "order-by"));
+					});
+			}
+		};
 	}
 
 	public String getFormDescription() throws PortalException {
@@ -422,7 +509,8 @@ public class DDMFormAdminDisplayContext {
 	}
 
 	public String getOrderByCol() {
-		return ParamUtil.getString(_renderRequest, "orderByCol", "create-date");
+		return ParamUtil.getString(
+			_renderRequest, "orderByCol", "modified-date");
 	}
 
 	public String getOrderByType() {
@@ -535,21 +623,57 @@ public class DDMFormAdminDisplayContext {
 			getFormLayoutURL(formAdminRequestHelper.getThemeDisplay(), false);
 	}
 
+	public String getSortingURL() throws Exception {
+		PortletURL sortingURL = PortletURLUtil.clone(
+			getPortletURL(), _renderResponse);
+
+		String orderByType = ParamUtil.getString(_renderRequest, "orderByType");
+
+		sortingURL.setParameter(
+			"orderByType", orderByType.equals("asc") ? "desc" : "asc");
+
+		return sortingURL.toString();
+	}
+
 	public DDMStructureService getStructureService() {
 		return _ddmStructureService;
 	}
 
 	public boolean isAuthenticationRequired() throws PortalException {
 		DDMFormInstance formInstance = getDDMFormInstance();
+	public int getTotalItems() {
+		SearchContainer<?> searchContainer = getSearch();
 
 		if (formInstance == null) {
 			return false;
 		}
+		return searchContainer.getTotal();
+	}
 
 		DDMFormInstanceSettings formInstanceSettings =
 			formInstance.getSettingsModel();
+	public ViewTypeItemList getViewTypesItemList() throws Exception {
+		PortletURL portletURL = PortletURLUtil.clone(
+			getPortletURL(), _renderResponse);
+
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			_renderRequest);
 
 		return formInstanceSettings.requireAuthentication();
+		return new ViewTypeItemList(request, portletURL, getDisplayStyle()) {
+			{
+				String[] viewTypes = getDisplayViews();
+
+				for (String viewType : viewTypes) {
+					if (viewType.equals("descriptive")) {
+						addListViewTypeItem();
+					}
+					else {
+						addTableViewTypeItem();
+					}
+				}
+			}
+		};
 	}
 
 	public boolean isFormInstanceRecordWorkflowHandlerDeployed() {
@@ -564,9 +688,16 @@ public class DDMFormAdminDisplayContext {
 
 		if (formInstanceRecordWorkflowHandler != null) {
 			return true;
+	public boolean isDisabledManagementBar() {
+		if (hasResults()) {
+			return false;
 		}
 
-		return false;
+		if (isSearch()) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public boolean isFormPublished() throws PortalException {
@@ -746,6 +877,26 @@ public class DDMFormAdminDisplayContext {
 		return displayStyle;
 	}
 
+	protected List<DropdownItem> getFilterNavigationDropdownItems() {
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			_renderRequest);
+
+		return new DropdownItemList(request) {
+			{
+				add(
+					dropdownItem -> {
+						dropdownItem.setActive(true);
+
+						dropdownItem.setHref(
+							_renderResponse.createRenderURL(), "navigation",
+							"all");
+
+						dropdownItem.setLabel("all");
+					});
+			}
+		};
+	}
+
 	protected Locale[] getFormAvailableLocales() {
 		try {
 			DDMStructure structure = getDDMStructure();
@@ -878,20 +1029,35 @@ public class DDMFormAdminDisplayContext {
 		return ParamUtil.getString(_renderRequest, "keywords");
 	}
 
+	protected Consumer<DropdownItem> getOrderByDropdownItem(String orderByCol) {
+
+		return dropdownItem -> {
+			dropdownItem.setActive(orderByCol.equals(getOrderByCol()));
+			dropdownItem.setHref(getPortletURL(), "orderByCol", orderByCol);
+			dropdownItem.setLabel(orderByCol);
+		};
+	}
+
+	protected DropdownItemList getOrderByDropdownItemList() {
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			_renderRequest);
+
+		return new DropdownItemList(request) {
+			{
+				add(getOrderByDropdownItem("modified-date"));
+				add(getOrderByDropdownItem("name"));
+			}
+		};
+	}
+
 	protected Locale getSiteDefaultLocale() {
 		ThemeDisplay themeDisplay = formAdminRequestHelper.getThemeDisplay();
 
 		return themeDisplay.getSiteDefaultLocale();
 	}
 
-	protected int getTotal() throws PortalException {
-		SearchContainer<?> searchContainer = getSearch();
-
-		return searchContainer.getTotal();
-	}
-
-	protected boolean hasResults() throws PortalException {
-		if (getTotal() > 0) {
+	protected boolean hasResults() {
+		if (getTotalItems() > 0) {
 			return true;
 		}
 
