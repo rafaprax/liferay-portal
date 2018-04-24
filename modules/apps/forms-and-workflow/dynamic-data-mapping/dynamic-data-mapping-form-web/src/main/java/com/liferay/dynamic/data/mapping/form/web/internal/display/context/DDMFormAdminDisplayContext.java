@@ -813,11 +813,7 @@ public class DDMFormAdminDisplayContext {
 
 		OrderByComparator<DDMFormInstance> orderByComparator = null;
 
-		if (orderByCol.equals("create-date")) {
-			orderByComparator = new DDMFormInstanceCreateDateComparator(
-				orderByAsc);
-		}
-		else if (orderByCol.equals("modified-date")) {
+		if (orderByCol.equals("modified-date")) {
 			orderByComparator = new DDMFormInstanceModifiedDateComparator(
 				orderByAsc);
 		}
