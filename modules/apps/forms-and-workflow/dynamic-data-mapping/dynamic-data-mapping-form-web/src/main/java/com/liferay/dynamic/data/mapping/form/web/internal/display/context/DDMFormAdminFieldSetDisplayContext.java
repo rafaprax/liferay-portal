@@ -32,7 +32,6 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureModifiedDateComparator;
@@ -54,7 +53,6 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.kernel.workflow.WorkflowEngineManager;
 
 import java.util.List;
 import java.util.Locale;
@@ -86,8 +84,7 @@ public class DDMFormAdminFieldSetDisplayContext
 		DDMFormValuesMerger formValuesMerger,
 		DDMStructureLocalService structureLocalService,
 		DDMStructureService structureService, JSONFactory jsonFactory,
-		StorageEngine storageEngine,
-		WorkflowEngineManager workflowEngineManager) {
+		StorageEngine storageEngine) {
 
 		super(
 			renderRequest, renderResponse,
@@ -96,8 +93,9 @@ public class DDMFormAdminFieldSetDisplayContext
 			formInstanceRecordLocalService, formInstanceService,
 			formFieldTypeServicesTracker, formFieldTypesJSONSerializer,
 			formRenderer, formValuesFactory, formValuesMerger,
-			structureLocalService, structureService, jsonFactory, storageEngine,
-			workflowEngineManager);
+			structureLocalService, structureService, jsonFactory,
+			storageEngine);
+	}
 
 	public DropdownItemList getActionItemsDropdownItemList() {
 		RenderResponse renderResponse = getRenderResponse();
@@ -172,7 +170,7 @@ public class DDMFormAdminFieldSetDisplayContext
 	}
 
 	@Override
-	public String getFormDescription() throws PortalException {
+	public String getFormDescription() {
 		DDMStructure structure = getDDMStructure();
 
 		if (structure != null) {
@@ -184,7 +182,7 @@ public class DDMFormAdminFieldSetDisplayContext
 	}
 
 	@Override
-	public String getFormLocalizedDescription() throws PortalException {
+	public String getFormLocalizedDescription() {
 		DDMStructure structure = getDDMStructure();
 
 		JSONFactory jsonFactory = getJSONFactory();
@@ -207,7 +205,7 @@ public class DDMFormAdminFieldSetDisplayContext
 	}
 
 	@Override
-	public String getFormLocalizedName() throws PortalException {
+	public String getFormLocalizedName() {
 		DDMStructure structure = getDDMStructure();
 
 		JSONFactory jsonFactory = getJSONFactory();
@@ -230,7 +228,7 @@ public class DDMFormAdminFieldSetDisplayContext
 	}
 
 	@Override
-	public String getFormName() throws PortalException {
+	public String getFormName() {
 		DDMStructure structure = getDDMStructure();
 
 		if (structure != null) {
@@ -295,19 +293,6 @@ public class DDMFormAdminFieldSetDisplayContext
 	public boolean isShowAddButton() {
 		return DDMFormPermission.contains(
 			getPermissionChecker(), getScopeGroupId(), "ADD_STRUCTURE");
-	}
-
-	@Override
-	public boolean isShowSearch() throws PortalException {
-		if (hasResults()) {
-			return true;
-		}
-
-		if (isSearch()) {
-			return true;
-		}
-
-		return false;
 	}
 
 	protected OrderByComparator<DDMStructure> getDDMStructureOrderByComparator(

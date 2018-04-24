@@ -29,7 +29,6 @@ import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.re
 import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.resource.DDMFormPermission;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializer;
 import com.liferay.dynamic.data.mapping.io.exporter.DDMExporterFactory;
-import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
@@ -42,7 +41,6 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
-import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceModifiedDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceNameComparator;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
@@ -67,27 +65,19 @@ import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
-import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.workflow.WorkflowEngineManager;
-import com.liferay.portal.kernel.workflow.WorkflowHandler;
-import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -118,8 +108,7 @@ public class DDMFormAdminDisplayContext {
 		DDMFormValuesMerger formValuesMerger,
 		DDMStructureLocalService structureLocalService,
 		DDMStructureService structureService, JSONFactory jsonFactory,
-		StorageEngine storageEngine,
-		WorkflowEngineManager workflowEngineManager) {
+		StorageEngine storageEngine) {
 
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
@@ -138,7 +127,6 @@ public class DDMFormAdminDisplayContext {
 		_ddmStructureService = structureService;
 		_jsonFactory = jsonFactory;
 		_storageEngine = storageEngine;
-		_workflowEngineManager = workflowEngineManager;
 
 		formAdminRequestHelper = new DDMFormAdminRequestHelper(renderRequest);
 	}
@@ -199,7 +187,7 @@ public class DDMFormAdminDisplayContext {
 		return formAdminRequestHelper.getCompanyId();
 	}
 
-	public CreationMenu getCreationMenu() throws PortalException {
+	public CreationMenu getCreationMenu() {
 		HttpServletRequest request = PortalUtil.getHttpServletRequest(
 			_renderRequest);
 
@@ -555,23 +543,6 @@ public class DDMFormAdminDisplayContext {
 		return _renderResponse;
 	}
 
-	public ResourceBundle getResourceBundle() {
-		ResourceBundleLoader portalResourceBundleLoader =
-			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
-
-		ThemeDisplay themeDisplay = formAdminRequestHelper.getThemeDisplay();
-
-		ResourceBundle portalResourceBundle =
-			portalResourceBundleLoader.loadResourceBundle(
-				themeDisplay.getLocale());
-
-		ResourceBundle portletResourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", themeDisplay.getLocale(), getClass());
-
-		return new AggregateResourceBundle(
-			portletResourceBundle, portalResourceBundle);
-	}
-
 	public String getRestrictedFormURL() {
 		return _addDefaultSharedFormLayoutPortalInstanceLifecycleListener.
 			getFormLayoutURL(formAdminRequestHelper.getThemeDisplay(), true);
@@ -668,7 +639,7 @@ public class DDMFormAdminDisplayContext {
 		};
 	}
 
-	public boolean isDisabledManagementBar() throws PortalException {
+	public boolean isDisabledManagementBar() {
 		if (hasResults()) {
 			return false;
 		}
@@ -748,18 +719,6 @@ public class DDMFormAdminDisplayContext {
 			ActionKeys.PERMISSIONS);
 	}
 
-	public boolean isShowSearch() throws PortalException {
-		if (hasResults()) {
-			return true;
-		}
-
-		if (isSearch()) {
-			return true;
-		}
-
-		return false;
-	}
-
 	public boolean isShowViewEntriesFormInstanceIcon(
 			DDMFormInstance formInstance)
 		throws PortalException {
@@ -804,9 +763,7 @@ public class DDMFormAdminDisplayContext {
 		return orderByComparator;
 	}
 
-	protected DDMFormInstanceRecord getDDMFormInstanceRecord()
-		throws PortalException {
-
+	protected DDMFormInstanceRecord getDDMFormInstanceRecord() {
 		long formInstanceRecordId = ParamUtil.getLong(
 			_renderRequest, "formInstanceRecordId");
 
@@ -1074,18 +1031,6 @@ public class DDMFormAdminDisplayContext {
 		ddmFormInstanceSearch.setTotal(total);
 	}
 
-	protected JSONObject toJSONObject(
-		DDMDataProviderInstance ddmDataProviderInstance, Locale locale) {
-
-		JSONObject jsonObject = _jsonFactory.createJSONObject();
-
-		jsonObject.put(
-			"id", ddmDataProviderInstance.getDataProviderInstanceId());
-		jsonObject.put("name", ddmDataProviderInstance.getName(locale));
-
-		return jsonObject;
-	}
-
 	protected final DDMFormAdminRequestHelper formAdminRequestHelper;
 
 	private static final String[] _DISPLAY_VIEWS = {"descriptive", "list"};
@@ -1117,6 +1062,5 @@ public class DDMFormAdminDisplayContext {
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private final StorageEngine _storageEngine;
-	private final WorkflowEngineManager _workflowEngineManager;
 
 }
