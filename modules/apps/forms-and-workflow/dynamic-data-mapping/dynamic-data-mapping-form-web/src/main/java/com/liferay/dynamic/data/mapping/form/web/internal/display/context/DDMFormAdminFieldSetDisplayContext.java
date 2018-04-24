@@ -37,17 +37,22 @@ import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureModifiedDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureNameComparator;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowEngineManager;
 
@@ -58,6 +63,8 @@ import java.util.Map;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Leonardo Barros
@@ -91,6 +98,53 @@ public class DDMFormAdminFieldSetDisplayContext
 			formRenderer, formValuesFactory, formValuesMerger,
 			structureLocalService, structureService, jsonFactory, storageEngine,
 			workflowEngineManager);
+
+	public DropdownItemList getActionItemsDropdownItemList() {
+		RenderResponse renderResponse = getRenderResponse();
+
+		return new DropdownItemList(
+			PortalUtil.getHttpServletRequest(getRenderRequest())) {
+
+			{
+				add(
+					dropdownItem -> {
+						dropdownItem.setHref(
+							"javascript:" + renderResponse.getNamespace() +
+								"deleteStructures();");
+						dropdownItem.setIcon("trash");
+						dropdownItem.setLabel("recycle-bin");
+						dropdownItem.setQuickAction(true);
+					});
+			}
+
+		};
+	}
+
+	public CreationMenu getCreationMenu() {
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			getRenderRequest());
+		RenderResponse renderResponse = getRenderResponse();
+
+		return new CreationMenu(request) {
+			{
+				ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+					WebKeys.THEME_DISPLAY);
+
+				if (isShowAddButton()) {
+					addPrimaryDropdownItem(
+						dropdownItem -> {
+							dropdownItem.setHref(
+								renderResponse.createRenderURL(), "mvcPath",
+								"/admin/edit_element_set.jsp", "redirect",
+								PortalUtil.getCurrentURL(request), "groupId",
+								String.valueOf(themeDisplay.getScopeGroupId()));
+
+							dropdownItem.setLabel(
+								LanguageUtil.get(request, "new-element-set"));
+						});
+				}
+			}
+		};
 	}
 
 	@Override
@@ -284,31 +338,15 @@ public class DDMFormAdminFieldSetDisplayContext
 		FieldSetSearchTerms fieldSetSearchTerms =
 			(FieldSetSearchTerms)fieldSetSearch.getSearchTerms();
 
-		List<DDMStructure> results = null;
-
 		DDMStructureService structureService = getStructureService();
 
-		if (fieldSetSearchTerms.isAdvancedSearch()) {
-			results = structureService.search(
-				getCompanyId(), new long[] {getScopeGroupId()},
-				PortalUtil.getClassNameId(DDMFormInstance.class),
-				fieldSetSearchTerms.getName(),
-				fieldSetSearchTerms.getDescription(),
-				StorageType.JSON.toString(),
-				DDMStructureConstants.TYPE_FRAGMENT,
-				WorkflowConstants.STATUS_ANY,
-				fieldSetSearchTerms.isAndOperator(), fieldSetSearch.getStart(),
-				fieldSetSearch.getEnd(), fieldSetSearch.getOrderByComparator());
-		}
-		else {
-			results = structureService.search(
-				getCompanyId(), new long[] {getScopeGroupId()},
-				PortalUtil.getClassNameId(DDMFormInstance.class),
-				fieldSetSearchTerms.getKeywords(),
-				DDMStructureConstants.TYPE_FRAGMENT,
-				WorkflowConstants.STATUS_ANY, fieldSetSearch.getStart(),
-				fieldSetSearch.getEnd(), fieldSetSearch.getOrderByComparator());
-		}
+		List<DDMStructure> results = structureService.search(
+			getCompanyId(), new long[] {getScopeGroupId()},
+			PortalUtil.getClassNameId(DDMFormInstance.class),
+			fieldSetSearchTerms.getKeywords(),
+			DDMStructureConstants.TYPE_FRAGMENT, WorkflowConstants.STATUS_ANY,
+			fieldSetSearch.getStart(), fieldSetSearch.getEnd(),
+			fieldSetSearch.getOrderByComparator());
 
 		fieldSetSearch.setResults(results);
 	}
@@ -317,29 +355,13 @@ public class DDMFormAdminFieldSetDisplayContext
 		FieldSetSearchTerms fieldSetSearchTerms =
 			(FieldSetSearchTerms)fieldSetSearch.getSearchTerms();
 
-		int total = 0;
-
 		DDMStructureService structureService = getStructureService();
 
-		if (fieldSetSearchTerms.isAdvancedSearch()) {
-			total = structureService.searchCount(
-				getCompanyId(), new long[] {getScopeGroupId()},
-				PortalUtil.getClassNameId(DDMFormInstance.class),
-				fieldSetSearchTerms.getName(),
-				fieldSetSearchTerms.getDescription(),
-				StorageType.JSON.toString(),
-				DDMStructureConstants.TYPE_FRAGMENT,
-				WorkflowConstants.STATUS_ANY,
-				fieldSetSearchTerms.isAndOperator());
-		}
-		else {
-			total = structureService.searchCount(
-				getCompanyId(), new long[] {getScopeGroupId()},
-				PortalUtil.getClassNameId(DDMFormInstance.class),
-				fieldSetSearchTerms.getKeywords(),
-				DDMStructureConstants.TYPE_FRAGMENT,
-				WorkflowConstants.STATUS_ANY);
-		}
+		int total = structureService.searchCount(
+			getCompanyId(), new long[] {getScopeGroupId()},
+			PortalUtil.getClassNameId(DDMFormInstance.class),
+			fieldSetSearchTerms.getKeywords(),
+			DDMStructureConstants.TYPE_FRAGMENT, WorkflowConstants.STATUS_ANY);
 
 		fieldSetSearch.setTotal(total);
 	}
