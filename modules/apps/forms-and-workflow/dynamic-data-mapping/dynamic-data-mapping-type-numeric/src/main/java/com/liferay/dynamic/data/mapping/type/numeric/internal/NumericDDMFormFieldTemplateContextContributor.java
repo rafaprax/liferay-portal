@@ -22,6 +22,9 @@ import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.petra.string.StringPool;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -62,6 +65,20 @@ public class NumericDDMFormFieldTemplateContextContributor
 			"predefinedValue",
 			getValueString(ddmFormField.getPredefinedValue(), locale));
 
+		Map<String, String> symbolMap = new HashMap<>();
+
+		DecimalFormatSymbols decimalFormatSymbols = getDecimalFormatSymbols(
+			locale);
+
+		symbolMap.put(
+			"decimalSymbol",
+			String.valueOf(decimalFormatSymbols.getDecimalSeparator()));
+		symbolMap.put(
+			"thousandsSeparator",
+			String.valueOf(decimalFormatSymbols.getGroupingSeparator()));
+
+		parameters.put("symbols", symbolMap);
+
 		LocalizedValue tooltip = (LocalizedValue)ddmFormField.getProperty(
 			"tooltip");
 
@@ -88,6 +105,13 @@ public class NumericDDMFormFieldTemplateContextContributor
 		}
 
 		return ddmFormField.getDataType();
+	}
+
+	protected DecimalFormatSymbols getDecimalFormatSymbols(Locale locale) {
+		DecimalFormat formatter = (DecimalFormat)DecimalFormat.getInstance(
+			locale);
+
+		return formatter.getDecimalFormatSymbols();
 	}
 
 	protected String getValueString(Value value, Locale locale) {
