@@ -2106,8 +2106,8 @@
 			<var name="portlet" value="Forms" />
 		</execute>
 
-		<execute macro="Portlet#viewDefaultDisplayStyle">
-			<var name="displayStyle" value="descriptive" />
+		<execute macro="LexiconEntry#viewActiveDisplayStyle">
+			<var name="displayStyle" value="list" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -2124,12 +2124,12 @@
 
 		<execute macro="FormFields#viewSelectOption">
 			<var name="fieldName" value="DisplayView" />
-			<var name="selectOption" value="Descriptive" />
+			<var name="selectOption" value="List" />
 		</execute>
 
 		<execute macro="FormFields#selectSelectOption">
 			<var name="fieldName" value="DisplayView" />
-			<var name="selectOption" value="List" />
+			<var name="selectOption" value="Table" />
 		</execute>
 
 		<execute macro="PortletEntry#save" />
@@ -2141,7 +2141,7 @@
 		</execute>
 
 		<execute macro="Portlet#viewDefaultDisplayStyle">
-			<var name="displayStyle" value="list" />
+			<var name="displayStyle" value="table" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -2166,8 +2166,8 @@
 			<var name="portlet" value="Forms" />
 		</execute>
 
-		<execute macro="Portlet#viewDefaultDisplayStyle">
-			<var name="displayStyle" value="descriptive" />
+		<execute macro="LexiconEntry#viewActiveDisplayStyle">
+			<var name="displayStyle" value="list" />
 		</execute>
 	</command>
 
