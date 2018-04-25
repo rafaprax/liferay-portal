@@ -31,9 +31,15 @@ public class UpgradeJournalArticleImage extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
+		upgradeIndexes();
+
 		updateJournalArticleImagesInstanceId();
 
 		updateJournalArticleImagesName();
+	}
+
+	protected void upgradeIndexes() throws Exception {
+		runSQL("drop index IX_103D6207 on JournAlarticleImage");
 	}
 
 	protected void updateJournalArticleImagesInstanceId() throws Exception {
