@@ -20,10 +20,16 @@ import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.util.BaseDDMDisplay;
 import com.liferay.dynamic.data.mapping.util.DDMDisplay;
+import com.liferay.dynamic.data.mapping.util.DDMDisplayTabItem;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portlet.PortletResponseImpl;
+import com.liferay.portlet.RenderResponseImpl;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
@@ -37,6 +43,36 @@ import org.osgi.service.component.annotations.Reference;
 	service = DDMDisplay.class
 )
 public class DDLDDMDisplay extends BaseDDMDisplay {
+
+	@Override
+	public DDMDisplayTabItem getDefaultTabItem() {
+		return new DDMDisplayTabItem() {
+
+			@Override
+			public String getTitle(
+				LiferayPortletRequest liferayPortletRequest,
+				LiferayPortletResponse liferayPortletResponse) {
+
+				RenderResponseImpl renderResponseImpl =
+					(RenderResponseImpl)PortletResponseImpl.
+						getPortletResponseImpl(liferayPortletResponse);
+
+				String viewStructuresTitle = DDLDDMDisplay.this.getTitle(
+					renderResponseImpl.getLocale());
+
+				if (Objects.equals(
+						viewStructuresTitle, renderResponseImpl.getTitle())) {
+
+					return viewStructuresTitle;
+				}
+				else {
+					return getViewTemplatesTitle(
+						null, liferayPortletRequest.getLocale());
+				}
+			}
+
+		};
+	}
 
 	@Override
 	public String getPortletId() {
