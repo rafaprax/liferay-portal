@@ -85,10 +85,13 @@ AUI.add(
 					var root = instance.getRoot();
 
 					if (root) {
-						Liferay.fire('ddmFieldValidationError', {
-							fieldName: instance.get('fieldName'),
-							formId: root.getFormId()
-						});
+						Liferay.fire(
+							'ddmFieldValidationError',
+							{
+								fieldName: instance.get('fieldName'),
+								formId: root.getFormId()
+							}
+						);
 					}
 				}
 			},

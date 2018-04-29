@@ -102,11 +102,14 @@ AUI.add(
 					var root = instance.getRoot();
 
 					if (root) {
-						Liferay.fire("ddmFieldStartedFilling", {
-							fieldName: instance.get("fieldName"),
-							formId: root.getFormId(),
-							page: root.getCurrentPage() || 1
-						});
+						Liferay.fire(
+							'ddmFieldStartedFilling',
+							{
+								fieldName: instance.get('fieldName'),
+								formId: root.getFormId(),
+								page: root.getCurrentPage() || 1
+							}
+						);
 					}
 				}
 			},
@@ -130,12 +133,15 @@ AUI.add(
 				if (root) {
 					var now = new Date();
 
-					Liferay.fire("ddmFieldBlur", {
-						fieldName: instance.get("fieldName"),
-						focusDuration: (now - (instance.get('fieldFocusDate') || now)),
-						formId: root.getFormId(),
-						page: root.getCurrentPage() || 1
-					});
+					Liferay.fire(
+						'ddmFieldBlur',
+						{
+							fieldName: instance.get('fieldName'),
+							focusDuration: (now - (instance.get('fieldFocusDate') || now)),
+							formId: root.getFormId(),
+							page: root.getCurrentPage() || 1
+						}
+					);
 				}
 			},
 
@@ -149,11 +155,14 @@ AUI.add(
 				if (root) {
 					instance.set('fieldFocusDate', new Date());
 
-					Liferay.fire("ddmFieldFocus", {
-						fieldName: instance.get("fieldName"),
-						formId: root.getFormId(),
-						page: root.getCurrentPage() || 1
-					});
+					Liferay.fire(
+						'ddmFieldFocus',
+						{
+							fieldName: instance.get('fieldName'),
+							formId: root.getFormId(),
+							page: root.getCurrentPage() || 1
+						}
+					);
 				}
 			},
 
