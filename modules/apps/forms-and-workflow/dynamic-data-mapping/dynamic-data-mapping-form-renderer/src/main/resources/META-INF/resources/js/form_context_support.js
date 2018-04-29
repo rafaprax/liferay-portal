@@ -41,6 +41,24 @@ AUI.add(
 				);
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				if (instance._scheduledToDisposal) {
+					instance._scheduledToDisposal.forEach(
+						function(component) {
+							if (component.destroy) {
+								component.destroy();
+							}
+						}
+					);
+
+					instance._scheduledToDisposal = null;
+				}
+
+				instance.get('visitor').destroy();
+			},
+
 			_createField: function(context, fieldsMap) {
 				var instance = this;
 
@@ -79,6 +97,8 @@ AUI.add(
 				var fieldClass = AObject.getValue(window, fieldClassName.split('.'));
 
 				var field = new fieldClass(config);
+
+				instance._scheduleFieldDisposal(field);
 
 				fieldsMap[name].push(field);
 
@@ -133,9 +153,9 @@ AUI.add(
 
 							repeatedSiblings.forEach(
 								function(repeatedSibling) {
-									var repeatedContext = repeatedSibling.get('context');
-
 									if (repeatedSibling) {
+										var repeatedContext = repeatedSibling.get('context');
+
 										var foundFieldContext = AArray.find(
 											columnFieldContexts,
 											function(columnFieldContext) {
@@ -144,6 +164,8 @@ AUI.add(
 
 													return true;
 												}
+
+												return false;
 											}
 										);
 
@@ -177,6 +199,16 @@ AUI.add(
 				visitor.set('pages', context.pages);
 
 				instance.set('fields', instance._createFieldsFromContext(context));
+			},
+
+			_scheduleFieldDisposal: function(field) {
+				var instance = this;
+
+				if (!instance._scheduledToDisposal) {
+					instance._scheduledToDisposal = [];
+				}
+
+				instance._scheduledToDisposal.push(field);
 			},
 
 			_valueFields: function(val) {

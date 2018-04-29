@@ -15,6 +15,18 @@ AUI.add(
 				instance._domEvents = [];
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				instance._domEvents.forEach(
+					function(domEvent) {
+						domEvent.handler.detach();
+					}
+				);
+
+				instance._domEvents = null;
+			},
+
 			bindContainerEvent: function(eventName, callback, selector, volatile) {
 				var instance = this;
 

@@ -26,6 +26,12 @@ AUI.add(
 				);
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				instance._errorMessageNode = null;
+			},
+
 			clearValidationStatus: function() {
 				var instance = this;
 

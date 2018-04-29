@@ -20,6 +20,15 @@ AUI.add(
 				instance.after('render', instance._afterPaginatedFormRender);
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				if (instance.pagination) {
+					instance.pagination.destroy();
+					instance.pagination = null;
+				}
+			},
+
 			getCurrentPage: function() {
 				var instance = this;
 
