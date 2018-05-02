@@ -378,7 +378,12 @@ AUI.add(
 							}
 						}
 						else {
-							value = [itemValue];
+							if (value.indexOf(itemValue) == -1) {
+								value = [itemValue];
+							}
+							else {
+								value = [];
+							}
 
 							instance._open = false;
 						}
