@@ -5,7 +5,7 @@ AUI.add(
 
 		var SoyTemplateUtil = Liferay.DDM.SoyTemplateUtil;
 
-		var ACTION_LABEL = '<span class="label label-lg label-secondary">{content}</span>';
+		var ACTION_LABEL = '<span class="label label-lg label-secondary truncate-text">{content}</span>';
 
 		var MAP_ACTION_DESCRIPTIONS = {
 			'auto-fill': 'auto-fill',
