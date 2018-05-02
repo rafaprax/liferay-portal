@@ -19,9 +19,9 @@ AUI.add(
 
 		var CSS_SELECT_BADGE_ITEM_CLOSE = A.getClassName('trigger', 'badge', 'item', 'close');
 
-		var CSS_SELECT_OPTION_ITEM = A.getClassName('select', 'option', 'item');
-
 		var CSS_SELECT_DROPDOWN_ITEM = A.getClassName('dropdown', 'item');
+
+		var CSS_SELECT_OPTION_ITEM = A.getClassName('select', 'option', 'item');
 
 		var CSS_SELECT_TRIGGER_ACTION = A.getClassName('select', 'field', 'trigger');
 
@@ -232,28 +232,6 @@ AUI.add(
 						instance.render();
 					},
 
-					_validateValue: function(value) {
-						var instance = this;
-
-						var fixedOptions = instance.get('fixedOptions');
-
-						var options = instance.get('options');
-
-						var fieldOptions = options.concat(fixedOptions);
-
-						var valid = false;
-
-						for (var indexOption in fieldOptions) {
-							for (var indexValue in value) {
-								if (fieldOptions[indexOption].value == value[indexValue]) {
-									valid = true;
-								}
-							}
-						}
-
-						return (value.length == 0) || valid;
-					},
-
 					showErrorMessage: function() {
 						var instance = this;
 
@@ -280,7 +258,7 @@ AUI.add(
 					_afterClickOutside: function(event) {
 						var instance = this;
 
-						if (!instance._preventDocumentClick && instance._isClickingOutSide(event)) {
+						if (!instance._preventDocumentClick && instance._isClickingOutside(event)) {
 							instance.closeList();
 						}
 
@@ -339,10 +317,7 @@ AUI.add(
 						var optionNode = target.ancestor('.' + CSS_SELECT_OPTION_ITEM, true);
 
 						if (instance.get('multiple')) {
-							var optionNode = target.ancestor('.' + CSS_SELECT_DROPDOWN_ITEM, true);
-						} else {
-							var optionNode = target.ancestor('.' + CSS_SELECT_OPTION_ITEM, true);
-
+							optionNode = target.ancestor('.' + CSS_SELECT_DROPDOWN_ITEM, true);
 						}
 
 						if (closeIconNode) {
@@ -378,7 +353,12 @@ AUI.add(
 							}
 						}
 						else {
-							value = [itemValue];
+							if (value.indexOf(itemValue) == -1) {
+								value = [itemValue];
+							}
+							else {
+								value = [];
+							}
 
 							instance._open = false;
 						}
@@ -422,7 +402,7 @@ AUI.add(
 						return hasOption;
 					},
 
-					_isClickingOutSide: function(event) {
+					_isClickingOutside: function(event) {
 						var instance = this;
 
 						var container = instance.get('container');
@@ -493,6 +473,28 @@ AUI.add(
 						for (var i = 0; i < value.length; i++) {
 							instance._selectDOMOption(optionNode, value[i]);
 						}
+					},
+
+					_validateValue: function(value) {
+						var instance = this;
+
+						var fixedOptions = instance.get('fixedOptions');
+
+						var options = instance.get('options');
+
+						var fieldOptions = options.concat(fixedOptions);
+
+						var valid = false;
+
+						for (var indexOption in fieldOptions) {
+							for (var indexValue in value) {
+								if (fieldOptions[indexOption].value == value[indexValue]) {
+									valid = true;
+								}
+							}
+						}
+
+						return (value.length == 0) || valid;
 					}
 				}
 			}
