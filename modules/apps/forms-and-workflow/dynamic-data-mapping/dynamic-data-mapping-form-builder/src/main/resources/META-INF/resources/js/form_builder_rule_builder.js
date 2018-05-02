@@ -5,7 +5,11 @@ AUI.add(
 
 		var SoyTemplateUtil = Liferay.DDM.SoyTemplateUtil;
 
-		var ACTION_LABEL = '<span class="label label-lg label-secondary">{content}</span>';
+		var ACTION_TRUNCATE = '<span class="text-truncate">{content}</span>';
+
+		var ACTION_TRUNCATE_INLINE = '<span class="text-truncate-inline">' + ACTION_TRUNCATE + '</span>';
+
+		var ACTION_LABEL = '<span class="label label-lg label-secondary">' + ACTION_TRUNCATE_INLINE + '</span>';
 
 		var MAP_ACTION_DESCRIPTIONS = {
 			'auto-fill': 'auto-fill',

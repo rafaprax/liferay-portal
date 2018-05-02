@@ -136,8 +136,11 @@
  */
 {template .label}
 	{@param? content: string}
-
-	<span class="label label-lg label-secondary">{$content}</span>
+		<span class="label label-lg label-secondary">
+			<span class="text-truncate-inline">
+				<span class="text-truncate">{$content}</span>
+			</span>
+		</span>
 {/template}
 
 /**
