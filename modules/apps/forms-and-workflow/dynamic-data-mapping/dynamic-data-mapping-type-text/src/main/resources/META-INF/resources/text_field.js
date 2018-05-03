@@ -5,6 +5,8 @@ AUI.add(
 
 		var Util = Renderer.Util;
 
+		var ENTER_KEY = 13;
+
 		new A.TooltipDelegate(
 			{
 				position: 'left',
@@ -57,7 +59,8 @@ AUI.add(
 						instance._eventHandlers.push(
 							instance.after('optionsChange', instance._afterOptionsChange),
 							instance.after('valueChange', instance._onTextFieldValueChange),
-							instance.bindInputEvent('focus', A.bind('_onTextFieldFocus', instance))
+							instance.bindInputEvent('focus', A.bind('_onTextFieldFocus', instance)),
+							instance.bindInputEvent('keydown', A.bind('_handleEnterKeyDown', instance))
 						);
 
 						instance.evaluate = A.debounce(
@@ -183,13 +186,25 @@ AUI.add(
 						);
 					},
 
+					_handleEnterKeyDown: function(event) {
+						var instance = this;
+
+						var displayStyle = instance.get('displayStyle');
+
+						if ((displayStyle === 'singleline') && (event.keyCode === ENTER_KEY) && (event.which === ENTER_KEY)) {
+							event.preventDefault();
+						}
+					},
+
 					_onTextFieldFocus: function() {
 						var instance = this;
 
-						var input = instance.get('container').one('input');
+						var container = instance.get('container');
 
-						if ((input.getData('predefined-value') == input.val()) && (input.getData('interaction'))) {
-							input.setData('interaction', false);
+						var textField = container.one('input') || container.one('textarea');
+
+						if ((textField.getData('predefined-value') == textField.val()) && (textField.getData('interaction'))) {
+							textField.setData('interaction', false);
 							instance.set('value', '');
 							instance.setValue('');
 						}
