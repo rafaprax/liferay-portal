@@ -39,7 +39,7 @@
 			basic: list<[description: string, icon: html, label: string, name: string]>,
 			customized: list<[description: string, icon: html, label: string, name: string]>
 		]}
-	{@param strings: [basic: string, customized: string, elements: string, element_set: string]}
+	{@param strings: [basic: string, customized: string, elements: string, element_set: string, emptyListText: string]}
 	{@param? icons: [angleDown: html, angleRight: html]}
 
 	<div class="sidebar-body">
@@ -92,6 +92,7 @@
 				{if $fieldSets}
 					{call .render_field_set_list_group}
 						{param fieldSets: $fieldSets /}
+						{param message: $strings.emptyListText /}
 					{/call}
 				{/if}
 			</div>
@@ -137,7 +138,7 @@
  */
 {template .render_field_set_list_group}
 	{@param fieldSets: list<[description: string, icon: html, id: string, name: string]>}
-
+	{@param? message: string}
 	<div class="list-group-body">
 		{foreach $fieldSet in $fieldSets}
 			<div class="list-group-item list-group-item-flex list-group-item-action lfr-ddm-form-builder-field-set-item lfr-ddm-form-builder-draggable-item"
@@ -149,6 +150,18 @@
 					{param name: $fieldSet.name /}
 				{/call}
 			</div>
+			{ifempty}
+				<div class="main-content-body">
+					<div class="sheet">
+						<div class="taglib-empty-result-message-header"></div>
+
+						{if $message}
+							<div class="sheet-text text-center text-muted">
+								<p class="text-default">{$message}</p>
+							</div>
+						{/if}
+					</div>
+				</div>
 		{/foreach}
 	</div>
 {/template}

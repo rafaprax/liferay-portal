@@ -25,7 +25,8 @@ AUI.add(
 							basic: Liferay.Language.get('field-types-basic-elements'),
 							customized: Liferay.Language.get('field-types-customized-elements'),
 							element_set: Liferay.Language.get('element-sets'),
-							elements: Liferay.Language.get('elements')
+							elements: Liferay.Language.get('elements'),
+							emptyListText: Liferay.Language.get('there-are-no-element-sets-yet')
 						}
 					}
 				},
