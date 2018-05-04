@@ -418,14 +418,16 @@ AUI.add(
 							function(settingsFormFieldContext) {
 								var fieldLocalizable = settingsFormFieldContext.localizable;
 								var fieldName = settingsFormFieldContext.fieldName;
+								var fieldVisibility = settingsFormFieldContext.visible;
 
 								FormBuilderUtil.visitLayout(
 									previousSettingsContext.pages,
 									function(previousSettingsFormFieldContext) {
 										var previousFieldLocalizable = previousSettingsFormFieldContext.localizable;
 										var previousFieldName = previousSettingsFormFieldContext.fieldName;
+										var previousFieldVisibility = previousSettingsFormFieldContext.visible;
 
-										if ((ignoredFieldNames.indexOf(fieldName) === -1) && (fieldName === previousFieldName)) {
+										if ((ignoredFieldNames.indexOf(fieldName) === -1) && (fieldName === previousFieldName) && fieldVisibility && previousFieldVisibility) {
 											if (fieldLocalizable && previousFieldLocalizable) {
 												settingsFormFieldContext.localizedValue = previousSettingsFormFieldContext.localizedValue;
 											}

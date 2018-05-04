@@ -95,7 +95,6 @@ AUI.add(
 
 				instance._updateInstanceIdConfiguration(config, newInstanceId);
 				instance._updateNameConfiguration(config, oldInstanceId, newInstanceId);
-				instance._updateValueConfiguration(config);
 
 				return config;
 			},
@@ -262,24 +261,6 @@ AUI.add(
 				if (name) {
 					config.name = config.context.name = name.replace(oldInstanceId, newInstanceId);
 				}
-			},
-
-			_updateValueConfiguration: function(config) {
-				var instance = this;
-
-				var value = instance.getValue();
-
-				if (Lang.isArray(value)) {
-					value = [];
-				}
-				else if (Lang.isObject(value)) {
-					value = {};
-				}
-				else {
-					value = '';
-				}
-
-				config.value = config.context.value = value;
 			},
 
 			_valueRepetitions: function() {
