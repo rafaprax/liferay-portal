@@ -357,7 +357,7 @@ AUI.add(
 							}
 						}
 						else {
-							if (itemValue == '') {
+							if (itemValue === '') {
 								value = [];
 							}
 							else {
@@ -484,17 +484,13 @@ AUI.add(
 
 						var showPlaceholderOption = false;
 
-						var fixedOptions = instance.get('fixedOptions');
-						var multiple = instance.get('multiple');
-						var options = instance.get('options');
-
-						if (fixedOptions && options && !multiple) {
+						if (instance.get('fixedOptions') && instance.get('options') && !instance.get('multiple')) {
 							showPlaceholderOption = true;
 						}
 
 						return showPlaceholderOption;
 					},
-					
+
 					_showSearch: function() {
 						var instance = this;
 
@@ -516,6 +512,10 @@ AUI.add(
 					_validateValue: function(value) {
 						var instance = this;
 
+						if (value.length == 0) {
+							return true;
+						}
+
 						var fixedOptions = instance.get('fixedOptions');
 
 						var options = instance.get('options');
@@ -532,7 +532,7 @@ AUI.add(
 							}
 						}
 
-						return (value.length == 0) || valid;
+						return valid;
 					}
 				}
 			}
