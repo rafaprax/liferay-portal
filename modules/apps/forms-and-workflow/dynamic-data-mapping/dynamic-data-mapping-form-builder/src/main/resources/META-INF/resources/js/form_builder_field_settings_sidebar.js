@@ -90,7 +90,7 @@ AUI.add(
 
 						previousField.get('container').addClass(previousField._yuid);
 
-						instance.settingsForm.destroy();
+						instance.destroyFieldSettingsForm();
 
 						instance._changeFieldTypeMenu(fieldType);
 
@@ -123,6 +123,8 @@ AUI.add(
 						if (instance.settingsForm) {
 							instance.settingsForm.destroy();
 						}
+
+						instance.settingsForm = null;
 					},
 
 					getFieldSettings: function() {
@@ -347,6 +349,8 @@ AUI.add(
 						if (content) {
 							content.hide();
 						}
+
+						instance.destroyFieldSettingsForm();
 					},
 
 					_isFieldNode: function(node) {
@@ -381,6 +385,8 @@ AUI.add(
 
 						field.loadSettingsForm().then(
 							function(settingsForm) {
+								instance.destroyFieldSettingsForm();
+
 								instance.settingsForm = settingsForm;
 
 								instance._configureSideBar(field);

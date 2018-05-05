@@ -26,6 +26,12 @@ AUI.add(
 				);
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				instance._errorMessageNode = null;
+			},
+
 			clearValidationStatus: function() {
 				var instance = this;
 
@@ -79,10 +85,13 @@ AUI.add(
 					var root = instance.getRoot();
 
 					if (root) {
-						Liferay.fire('ddmFieldValidationError', {
-							fieldName: instance.get('fieldName'),
-							formId: root.getFormId()
-						});
+						Liferay.fire(
+							'ddmFieldValidationError',
+							{
+								fieldName: instance.get('fieldName'),
+								formId: root.getFormId()
+							}
+						);
 					}
 				}
 			},

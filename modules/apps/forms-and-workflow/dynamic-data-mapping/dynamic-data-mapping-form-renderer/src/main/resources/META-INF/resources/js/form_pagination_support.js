@@ -20,6 +20,15 @@ AUI.add(
 				instance.after('render', instance._afterPaginatedFormRender);
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				if (instance.pagination) {
+					instance.pagination.destroy();
+					instance.pagination = null;
+				}
+			},
+
 			getCurrentPage: function() {
 				var instance = this;
 
@@ -217,15 +226,21 @@ AUI.add(
 				var formId = instance.getFormId();
 
 				if (formId > 0) {
-					Liferay.fire("ddmFormPageHide", {
-						formId: formId,
-						page: event.prevVal
-					});
+					Liferay.fire(
+						'ddmFormPageHide',
+						{
+							formId: formId,
+							page: event.prevVal
+						}
+					);
 
-					Liferay.fire("ddmFormPageShow", {
-						formId: formId,
-						page: event.newVal
-					});
+					Liferay.fire(
+						'ddmFormPageShow',
+						{
+							formId: formId,
+							page: event.newVal
+						}
+					);
 				}
 			},
 

@@ -25,9 +25,12 @@ AUI.add(
 				var evaluationTriggerEvents = instance.get('evaluationTriggerEvents');
 
 				instance._eventHandlers.push(
-					instance.after(evaluationTriggerEvents, function() {
-						instance.evaluate();
-					})
+					instance.after(
+						evaluationTriggerEvents,
+						function() {
+							instance.evaluate();
+						}
+					)
 				);
 			},
 

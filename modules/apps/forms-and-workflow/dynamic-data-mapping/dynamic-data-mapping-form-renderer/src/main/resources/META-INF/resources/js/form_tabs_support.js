@@ -14,11 +14,11 @@ AUI.add(
 			destructor: function() {
 				var instance = this;
 
-				var tabView = instance.getTabView();
-
-				if (tabView) {
-					tabView.destroy();
+				if (instance._tabView) {
+					instance._tabView.destroy();
 				}
+
+				instance._tabView = null;
 			},
 
 			getTabView: function() {
