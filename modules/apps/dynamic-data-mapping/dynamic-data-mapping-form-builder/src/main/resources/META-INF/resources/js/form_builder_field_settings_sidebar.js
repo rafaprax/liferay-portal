@@ -406,44 +406,57 @@ AUI.add(
 						);
 					},
 
+					_doMergeFieldContext: function(settingsFormFieldContext, previousSettingsFormFieldContext) {
+						var instance = this;
+
+						var ignoredFieldNames = ['dataType', 'type', 'validation'];
+
+						var fieldName = settingsFormFieldContext.fieldName;
+						
+						if (ignoredFieldNames.indexOf(fieldName) === -1) {
+							if (fieldName === 'repeatable' && settingsFormFieldContext.visible) {
+								settingsFormFieldContext.repeatable = previousSettingsFormFieldContext.repeatable;
+							}
+
+							if (settingsFormFieldContext.localized && previousFieldLocalizable) {
+								settingsFormFieldContext.localizedValue = previousSettingsFormFieldContext.localizedValue;
+							}
+
+							if (instance._isSameType(previousSettingsFormFieldContext, settingsFormFieldContext)) {
+								if (!instance._isValueEmpty(previousSettingsFormFieldContext.value)) {
+									settingsFormFieldContext.value = previousSettingsFormFieldContext.value;
+									settingsFormFieldContext.dataType = previousSettingsFormFieldContext.dataType;
+								}
+							}
+							else if (settingsFormFieldContext.localizedValue) {
+								var settingsFormFieldContextLocalizedValueKeys = Object.keys(settingsFormFieldContext.localizedValue);
+
+								settingsFormFieldContextLocalizedValueKeys.forEach(
+									function(key) {
+										settingsFormFieldContext.localizedValue[key] = settingsFormFieldContext.value;
+									}
+								);
+							}
+						}
+					},
+
 					_mergeFieldContext: function(newSettingsContext, previousSettingsContext) {
 						var instance = this;
 
 						var FormBuilderUtil = Liferay.DDM.FormBuilderUtil;
 
-						var ignoredFieldNames = ['dataType', 'type', 'validation'];
-
 						FormBuilderUtil.visitLayout(
 							newSettingsContext.pages,
 							function(settingsFormFieldContext) {
-								var fieldLocalizable = settingsFormFieldContext.localizable;
 								var fieldName = settingsFormFieldContext.fieldName;
 
 								FormBuilderUtil.visitLayout(
 									previousSettingsContext.pages,
 									function(previousSettingsFormFieldContext) {
-										var previousFieldLocalizable = previousSettingsFormFieldContext.localizable;
 										var previousFieldName = previousSettingsFormFieldContext.fieldName;
 
-										if ((ignoredFieldNames.indexOf(fieldName) === -1) && (fieldName === previousFieldName)) {
-											if (fieldLocalizable && previousFieldLocalizable) {
-												settingsFormFieldContext.localizedValue = previousSettingsFormFieldContext.localizedValue;
-											}
-											if (instance._isSameType(previousSettingsFormFieldContext, settingsFormFieldContext)) {
-												if (!instance._isValueEmpty(previousSettingsFormFieldContext.value)) {
-													settingsFormFieldContext.value = previousSettingsFormFieldContext.value;
-													settingsFormFieldContext.dataType = previousSettingsFormFieldContext.dataType;
-												}
-											}
-											else if (settingsFormFieldContext.localizedValue) {
-												var settingsFormFieldContextLocalizedValueKeys = Object.keys(settingsFormFieldContext.localizedValue);
-
-												settingsFormFieldContextLocalizedValueKeys.forEach(
-													function(key, index) {
-														settingsFormFieldContext.localizedValue[key] = settingsFormFieldContext.value;
-													}
-												);
-											}
+										if (fieldName === previousFieldName) {
+											instance._doMergeFieldContext(newSettingsContext, previousSettingsFormFieldContext);
 										}
 									}
 								);
