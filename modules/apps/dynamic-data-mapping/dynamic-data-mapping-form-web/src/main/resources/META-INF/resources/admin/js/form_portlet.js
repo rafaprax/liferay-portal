@@ -632,6 +632,18 @@ AUI.add(
 						}
 					},
 
+					_destroyAlert: function(alert) {
+						var boundingBox = alert.get('boundingBox');
+
+						var ancestor = boundingBox.ancestor('.lfr-alert-wrapper');
+
+						if (ancestor) {
+							ancestor.remove();
+						}
+
+						alert.destroy();
+					},
+
 					_fillRuleDraft: function() {
 						var instance = this;
 
@@ -994,7 +1006,7 @@ AUI.add(
 						var alert = instance.get('alert');
 
 						if (alert) {
-							alert.destroy();
+							instance._destroyAlert(alert);
 						}
 
 						var icon = 'exclamation-full';
@@ -1022,7 +1034,7 @@ AUI.add(
 
 						var alertBoundingBox = alert.get('boundingBox');
 
-						alertBoundingBox.setStyle('wordWrap', 'break-word');
+						alertBoundingBox.setStyle({'wordWrap': 'break-word'});
 
 						var alertParent = alertBoundingBox.get('parentNode');
 

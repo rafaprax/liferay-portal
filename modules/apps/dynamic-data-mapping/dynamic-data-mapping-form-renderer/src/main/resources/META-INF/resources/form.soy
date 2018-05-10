@@ -37,6 +37,7 @@
 			'liferay-ddm-form-renderer',
 			'liferay-ddm-form-renderer-field',
 			'liferay-ddm-soy-template-util',
+
 			function(A) {lb}
 				var SoyTemplateUtil = Liferay.DDM.SoyTemplateUtil;
 
@@ -51,13 +52,10 @@
 				var destroyFormHandle = function(event) {lb}
 					var form = Liferay.component('{$containerId}DDMForm');
 
-					var portlet = event.portlet;
-
-					if (portlet && portlet.contains(form.get('container'))) {lb}
+					if ('{$portletNamespace}'.indexOf(event.portletId) > -1) {lb}
 						form.destroy();
-
-						Liferay.detach('destroyPortlet', destroyFormHandle);
 					{rb}
+					Liferay.detach('destroyPortlet', destroyFormHandle);
 				{rb};
 
 				Liferay.on('destroyPortlet', destroyFormHandle);
