@@ -26,9 +26,12 @@ AUI.add(
 					strings: {
 						value: {
 							email: Liferay.Language.get('email'),
-							errorMessageGoesHere: Liferay.Language.get('error-message-goes-here'),
+							errorMessage: Liferay.Language.get('error-message'),
+							ifInput: Liferay.Language.get('if-input'),
+							showErrorMessage: Liferay.Language.get('show-error-message'),
 							url: Liferay.Language.get('url'),
-							validation: Liferay.Language.get('validation')
+							validationMessage: Liferay.Language.get('validation'),
+							theValue: Liferay.Language.get('the-value')
 						}
 					},
 
@@ -55,13 +58,63 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
+						var evaluator = instance.get('evaluator');
+
 						instance._eventHandlers.push(
+							evaluator.after('evaluationEnded', A.bind('_loadValidationFieldType', instance)),
 							instance.after('valueChange', A.bind('_afterValueChange', instance)),
+							instance.after('render', instance._loadValidationFieldType, instance),
 							instance.bindContainerEvent('change', A.bind('_setErrorMessage', instance), '.message-input'),
-							instance.bindContainerEvent('change', A.bind('_setParameterValue', instance), '.parameter-input'),
 							instance.bindContainerEvent('change', A.bind('_syncValidationUI', instance), '.enable-validation'),
 							instance.bindContainerEvent('change', A.bind('_syncValidationUI', instance), 'select')
 						);
+					},
+
+					createDecimalField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								cssClass: 'validation-input',
+								dataType: 'double'
+							}
+						);
+
+						return new Liferay.DDM.Field.Numeric(config);
+					},
+
+					createIntegerField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								cssClass: 'validation-input'
+							}
+						);
+
+						return new Liferay.DDM.Field.Numeric(config);
+					},
+
+					createTextField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								cssClass: 'validation-input'
+							}
+						);
+
+						return new Liferay.DDM.Field.Text(config);
 					},
 
 					extractParameterValue: function(regex, expression) {
@@ -77,28 +130,15 @@ AUI.add(
 					getTemplateContext: function() {
 						var instance = this;
 
-						var strings = instance.get('strings');
-
-						var parameterMessage = '';
-
-						var selectedValidation = instance.get('selectedValidation');
-
-						if (selectedValidation) {
-							parameterMessage = selectedValidation.parameterMessage;
-						}
-
 						var value = instance.get('value');
 
 						return A.merge(
 							ValidationField.superclass.getTemplateContext.apply(instance, arguments),
 							{
 								enableValidationValue: !!(value && value.expression),
-								errorMessagePlaceholder: strings.errorMessageGoesHere,
 								errorMessageValue: instance.get('errorMessageValue'),
-								parameterMessagePlaceholder: parameterMessage,
-								parameterValue: instance.get('parameterValue'),
-								validationMessage: strings.validation,
-								validationsOptions: instance._getValidationsOptions()
+								validationsOptions: instance._getValidationsOptions(),
+								strings: instance.get('strings')
 							}
 						);
 					},
@@ -138,6 +178,48 @@ AUI.add(
 						instance.evaluate();
 					},
 
+					_createField: function(dataType) {
+						var instance = this;
+
+						var parameterMessage = '';
+
+						var selectedValidation = instance.get('selectedValidation');
+
+						if (selectedValidation) {
+							parameterMessage = selectedValidation.parameterMessage;
+						}
+
+						var strings = instance.get('strings');
+
+						var fieldConfig = {
+							fieldName: '',
+							label: strings.theValue,
+							options: [],
+							placeholder: parameterMessage,
+							readOnly: false,
+							showLabel: true,
+							strings: {},
+							value: instance.get('parameterValue'),
+							visible: true
+						};
+
+						var field;
+
+						if (dataType == 'integer') {
+							field = instance.createIntegerField(fieldConfig);
+						}
+						else if (dataType == 'double') {
+							field = instance.createDecimalField(fieldConfig);
+						}
+						else {
+							field = instance.createTextField(fieldConfig);
+						}
+
+						field.after('blur', A.bind('_setParameterValue', instance));
+
+						return field;
+					},
+
 					_getEnableValidationValue: function() {
 						var instance = this;
 
@@ -163,7 +245,7 @@ AUI.add(
 
 						var container = instance.get('container');
 
-						var parameterNode = container.one('.parameter-input');
+						var parameterNode = container.one('.validation-input input');
 
 						return parameterNode.val();
 					},
@@ -217,6 +299,26 @@ AUI.add(
 						);
 					},
 
+					_loadValidationFieldType: function() {
+						var instance = this;
+
+						var container = instance.get('container');
+
+						var fieldSettingsForm = instance.get('parent');
+
+						var currentField = fieldSettingsForm.get('field');
+
+						var dataType = currentField.get('dataType');
+
+						if (instance._validationField) {
+							instance._validationField.destroy();
+						}
+
+						instance._validationField = instance._createField(dataType);
+
+						instance._validationField.render(container.one('.validation-input'));
+					},
+
 					_setErrorMessage: function(event) {
 						var instance = this;
 
@@ -229,9 +331,9 @@ AUI.add(
 					_setParameterValue: function(event) {
 						var instance = this;
 
-						var input = event.target;
+						var field = event.target;
 
-						instance.set('parameterValue', input.val());
+						instance.set('parameterValue', field.getValue());
 						instance.set('value', instance.getValue());
 					},
 
