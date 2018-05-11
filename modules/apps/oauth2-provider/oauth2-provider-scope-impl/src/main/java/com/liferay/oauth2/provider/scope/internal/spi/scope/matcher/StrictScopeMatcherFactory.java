@@ -12,17 +12,22 @@
  * details.
  */
 
-package com.liferay.polls.constants;
+package com.liferay.oauth2.provider.scope.internal.spi.scope.matcher;
+
+import com.liferay.oauth2.provider.scope.spi.scope.matcher.ScopeMatcher;
+import com.liferay.oauth2.provider.scope.spi.scope.matcher.ScopeMatcherFactory;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Tomas Polesovsky
  */
-public class PollsWebKeys {
+@Component(immediate = true, property = "type=strict")
+public class StrictScopeMatcherFactory implements ScopeMatcherFactory {
 
-	public static final String ADD_CHOICE_ACTION = "addChoice";
-
-	public static final String DELETE_CHOICE_ACTION = "deleteChoice";
-
-	public static final String POLLS_QUESTION = "POLLS_QUESTION";
+	@Override
+	public ScopeMatcher create(String input) {
+		return input::equals;
+	}
 
 }

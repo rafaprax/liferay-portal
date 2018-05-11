@@ -12,17 +12,26 @@
  * details.
  */
 
-package com.liferay.polls.constants;
+package com.liferay.oauth2.provider.scope.internal.jaxrs.feature;
+
+import com.liferay.oauth2.provider.scope.spi.scope.finder.ScopeFinder;
+
+import java.util.Collection;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class PollsWebKeys {
+public class CollectionScopeFinder implements ScopeFinder {
 
-	public static final String ADD_CHOICE_ACTION = "addChoice";
+	public CollectionScopeFinder(Collection<String> scopes) {
+		_scopes = scopes;
+	}
 
-	public static final String DELETE_CHOICE_ACTION = "deleteChoice";
+	@Override
+	public Collection<String> findScopes() {
+		return _scopes;
+	}
 
-	public static final String POLLS_QUESTION = "POLLS_QUESTION";
+	private final Collection<String> _scopes;
 
 }

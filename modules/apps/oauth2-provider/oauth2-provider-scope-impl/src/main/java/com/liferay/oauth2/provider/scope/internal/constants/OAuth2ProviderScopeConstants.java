@@ -12,17 +12,13 @@
  * details.
  */
 
-package com.liferay.polls.constants;
+package com.liferay.oauth2.provider.scope.internal.constants;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Tomas Polesovsky
  */
-public class PollsWebKeys {
+public class OAuth2ProviderScopeConstants {
 
-	public static final String ADD_CHOICE_ACTION = "addChoice";
-
-	public static final String DELETE_CHOICE_ACTION = "deleteChoice";
-
-	public static final String POLLS_QUESTION = "POLLS_QUESTION";
+	public static final String OSGI_JAXRS_NAME = "osgi.jaxrs.name";
 
 }
