@@ -766,11 +766,17 @@ AUI.add(
 
 							instance.updateTranslationsDefaultValue();
 
-							fieldJSON.value = instance.get('localizationMap');
+							var localizationMap = instance.get('localizationMap');
+
+							fieldJSON.value = localizationMap;
 
 							var form = instance.getForm();
 
-							form.addAvailableLanguageIds(AObject.keys(fieldJSON.value));
+							if (localizationMap == "false" || localizationMap == "true") {
+								localizationMap = new Boolean(localizationMap);
+							}
+
+							form.addAvailableLanguageIds(AObject.keys(localizationMap));
 						}
 
 						var fields = instance.get('fields');
@@ -790,6 +796,10 @@ AUI.add(
 						var value = instance.getValue();
 
 						if (Lang.isObject(localizationMap)) {
+							if (localizationMap == "false" || localizationMap =="true") {
+								localizationMap = new Boolean(localizationMap);
+							}
+
 							if (AObject.keys(localizationMap).length != 0) {
 								this.removeNotAvailableLocales(localizationMap);
 							}
