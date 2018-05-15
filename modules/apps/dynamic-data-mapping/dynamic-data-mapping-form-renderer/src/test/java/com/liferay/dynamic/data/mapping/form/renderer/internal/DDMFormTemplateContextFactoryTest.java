@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.ReflectionUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.template.soy.utils.SoyHTMLSanitizer;
@@ -221,9 +222,17 @@ public class DDMFormTemplateContextFactoryTest extends PowerMockito {
 			_ddmFormTemplateContextFactory.create(
 				ddmForm, ddmFormRenderingContext);
 
-		String expectedRequiredFieldsWarningHTML =
-			"<label class=\"required-warning\">All fields marked with '*' " +
-				"are required.</label>";
+		StringBundler sb = new StringBundler(7);
+
+		sb.append("<div class=\"row\">");
+		sb.append("<div class=\"col-md-12\">");
+		sb.append("<label class=\"required-warning\">");
+		sb.append("All fields marked with '*' are required.");
+		sb.append("</label>");
+		sb.append("</div>");
+		sb.append("</div>");
+
+		String expectedRequiredFieldsWarningHTML = sb.toString();
 
 		SanitizedContent sanitizedContent =
 			(SanitizedContent)templateContext.get(
