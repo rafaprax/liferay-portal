@@ -303,6 +303,28 @@ AUI.add(
 						);
 					},
 
+					_loadValidationFieldType: function(event) {
+						var instance = this;
+
+						var validationContainer = A.one('.lfr-ddm-form-field-validation');
+
+						var validationFieldContainer = validationContainer.one('.lfr-ddm-form-field-container');
+
+						if (validationFieldContainer) {
+							validationFieldContainer.remove();
+						}
+
+						var context = instance.get('context');
+
+						var validation = context.validation;
+
+						var dataType = validation.dataType;
+
+						instance._validationField = instance._createField(dataType);
+
+						instance._validationField.render(validationContainer.one('.validation-input'));
+					},
+
 					_setErrorMessage: function(event) {
 						var instance = this;
 
