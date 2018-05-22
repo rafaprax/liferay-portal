@@ -10,6 +10,10 @@ AUI.add(
 		var ValidationField = A.Component.create(
 			{
 				ATTRS: {
+					dataType: {
+						value: ''
+					},
+
 					errorMessageValue: {
 						value: ''
 					},
