@@ -350,7 +350,7 @@ AUI.add(
 
 						var input = event.target;
 
-						instance.set('parameterValue', input.val());
+						instance.set('parameterValue', input.get('value'));
 						instance.set('value', instance.getValue());
 					},
 
