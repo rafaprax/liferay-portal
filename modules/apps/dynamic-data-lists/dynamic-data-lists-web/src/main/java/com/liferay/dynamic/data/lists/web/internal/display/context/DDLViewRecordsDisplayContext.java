@@ -54,6 +54,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchContextFactory;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -98,7 +99,14 @@ public class DDLViewRecordsDisplayContext {
 
 		_formDDMTemplateId = formDDMTemplateId;
 
-		_user = (User)_liferayPortletRequest.getAttribute(WebKeys.USER);
+		User user = (User)_liferayPortletRequest.getAttribute(WebKeys.USER);
+
+		if (user == null) {
+			user = UserLocalServiceUtil.getDefaultUser(
+				PortalUtil.getCompanyId(liferayPortletRequest));
+		}
+
+		_user = user;
 	}
 
 	public List<DropdownItem> getActionItemsDropdownItems()
