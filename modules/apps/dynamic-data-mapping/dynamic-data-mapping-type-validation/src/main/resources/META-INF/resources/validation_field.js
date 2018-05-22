@@ -59,9 +59,10 @@ AUI.add(
 						var instance = this;
 
 						instance._eventHandlers.push(
+							instance.after('render', instance._loadValidationFieldType, instance),
+							instance.after('validationChange', A.bind('_loadValidationFieldType', instance)),
 							instance.after('valueChange', A.bind('_afterValueChange', instance)),
 							instance.bindContainerEvent('change', A.bind('_setErrorMessage', instance), '.message-input'),
-							instance.bindContainerEvent('change', A.bind('_setParameterValue', instance), '.parameter-input'),
 							instance.bindContainerEvent('change', A.bind('_syncValidationUI', instance), '.enable-validation'),
 							instance.bindContainerEvent('change', A.bind('_syncValidationUI', instance), 'select')
 						);
