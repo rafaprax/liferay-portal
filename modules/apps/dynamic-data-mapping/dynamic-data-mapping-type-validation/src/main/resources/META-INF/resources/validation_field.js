@@ -124,6 +124,12 @@ AUI.add(
 						return matches && matches[2] || '';
 					},
 
+					getEvaluationContext: function(context) {
+						return {
+							validation: context.validation
+						};
+					},
+
 					getTemplateContext: function() {
 						var instance = this;
 
