@@ -67,6 +67,53 @@ AUI.add(
 						);
 					},
 
+					createDecimalField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								cssClass: 'validation-input',
+								dataType: 'double'
+							}
+						);
+
+						return new Liferay.DDM.Field.Numeric(config);
+					},
+
+					createIntegerField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								cssClass: 'validation-input'
+							}
+						);
+
+						return new Liferay.DDM.Field.Numeric(config);
+					},
+
+					createTextField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								cssClass: 'validation-input'
+							}
+						);
+
+						return new Liferay.DDM.Field.Text(config);
+					},
+
 					extractParameterValue: function(regex, expression) {
 						var instance = this;
 
@@ -136,6 +183,45 @@ AUI.add(
 						var instance = this;
 
 						instance.evaluate();
+					},
+
+					_createField: function(dataType) {
+						var instance = this;
+
+						var parameterMessage = '';
+
+						var selectedValidation = instance.get('selectedValidation');
+
+						if (selectedValidation) {
+							parameterMessage = selectedValidation.parameterMessage;
+						}
+
+						var fieldConfig = {
+							fieldName: '',
+							options: [],
+							placeholder: parameterMessage,
+							readOnly: false,
+							showLabel: false,
+							strings: {},
+							value: instance.get('parameterValue'),
+							visible: true
+						};
+
+						var field;
+
+						if (dataType == 'double') {
+							field = instance.createDecimalField(fieldConfig);
+						}
+						else if (dataType == 'integer') {
+							field = instance.createIntegerField(fieldConfig);
+						}
+						else {
+							field = instance.createTextField(fieldConfig);
+						}
+
+						field.after('blur', A.bind('_setParameterValue', instance));
+
+						return field;
 					},
 
 					_getEnableValidationValue: function() {
