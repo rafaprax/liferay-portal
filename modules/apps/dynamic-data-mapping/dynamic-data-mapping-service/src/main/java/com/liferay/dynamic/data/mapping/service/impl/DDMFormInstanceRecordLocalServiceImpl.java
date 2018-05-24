@@ -240,6 +240,24 @@ public class DDMFormInstanceRecordLocalServiceImpl
 	}
 
 	@Override
+	public DDMFormValues getDDMFormValues(long storageId, DDMForm ddmForm)
+		throws StorageException {
+
+		DDMStorageAdapter ddmStorageAdapter = getDDMStorageAdapter();
+
+		DDMStorageAdapterGetRequest.Builder builder =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(storageId, ddmForm);
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			builder.build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
+	@Override
 	public DDMFormInstanceRecord getFormInstanceRecord(
 			long ddmFormInstanceRecordId)
 		throws PortalException {
