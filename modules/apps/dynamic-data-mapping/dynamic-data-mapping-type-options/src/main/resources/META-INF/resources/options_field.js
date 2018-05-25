@@ -622,7 +622,6 @@ AUI.add(
 
 						instance._skipOptionValueChange = true;
 
-						option.set('value', contextValue.label);
 						option.set('key', contextValue.value);
 
 						option.setValue(contextValue.label);
