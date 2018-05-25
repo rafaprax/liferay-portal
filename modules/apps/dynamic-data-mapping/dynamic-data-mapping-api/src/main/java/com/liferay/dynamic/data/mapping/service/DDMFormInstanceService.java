@@ -16,7 +16,9 @@ package com.liferay.dynamic.data.mapping.service;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 
 import com.liferay.portal.kernel.exception.PortalException;
@@ -59,6 +61,15 @@ public interface DDMFormInstanceService extends BaseService {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link DDMFormInstanceServiceUtil} to access the ddm form instance remote service. Add custom service methods to {@link com.liferay.dynamic.data.mapping.service.impl.DDMFormInstanceServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public DDMFormInstance addFormInstance(long groupId, long ddmStructureId,
+		long ddmStructureClassNameId, String ddmStructureKey,
+		DDMForm ddmStructureDDMForm, DDMFormLayout ddmStructureDDMFormLayout,
+		String ddmStructureStorageType, Map<Locale, String> nameMap,
+		Map<Locale, String> descriptionMap,
+		DDMFormValues settingsDDMFormValues,
+		ServiceContext ddmFormServiceContext,
+		ServiceContext ddmStructureserviceContext) throws PortalException;
+
 	public DDMFormInstance addFormInstance(long groupId, long ddmStructureId,
 		Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 		DDMFormValues settingsDDMFormValues, ServiceContext serviceContext)
@@ -118,6 +129,13 @@ public interface DDMFormInstanceService extends BaseService {
 	*/
 	public DDMFormInstance updateFormInstance(long formInstanceId,
 		DDMFormValues settingsDDMFormValues) throws PortalException;
+
+	public DDMFormInstance updateFormInstance(long ddmFormInstanceId,
+		long ddmStructureId, DDMForm structureDDMForm,
+		DDMFormLayout structureDDMFormLayout, Map<Locale, String> nameMap,
+		Map<Locale, String> descriptionMap,
+		DDMFormValues settingsDDMFormValues, ServiceContext serviceContext)
+		throws PortalException;
 
 	public DDMFormInstance updateFormInstance(long ddmFormInstanceId,
 		long ddmStructureId, Map<Locale, String> nameMap,
