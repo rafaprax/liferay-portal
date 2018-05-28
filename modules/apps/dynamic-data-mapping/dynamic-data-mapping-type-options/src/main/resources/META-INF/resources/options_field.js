@@ -136,7 +136,7 @@ AUI.add(
 							}
 						}
 
-						mainOption.set('key', '');
+						mainOption.setKey('');
 					},
 
 					getLastOption: function() {
@@ -174,12 +174,12 @@ AUI.add(
 
 						instance.eachOption(
 							function(item) {
-								var key = item.get('key');
+								var key = item.getKey();
 
 								if (key) {
 									values.push(
 										{
-											label: item.get('value'),
+											label: item.getValue(),
 											value: key
 										}
 									);
@@ -254,7 +254,7 @@ AUI.add(
 
 						var value = instance.get('value');
 
-						var optionTextValue = option.get('value');
+						var optionTextValue = option.getValue();
 
 						optionTextValue = optionTextValue.trim();
 
@@ -387,7 +387,7 @@ AUI.add(
 
 						if (name) {
 							var valueInItem = function(value, item) {
-								return item.value === value && item.value !== option.get('key');
+								return item.value === value && item.value !== option.getKey();
 							};
 
 							var optionsValues = instance.getValue();
@@ -681,9 +681,7 @@ AUI.add(
 
 						instance._skipOptionValueChange = true;
 
-						option.set('value', contextValue.label);
-						option.set('key', contextValue.value);
-
+						option.setKey(contextValue.value);
 						option.setValue(contextValue.label);
 
 						if (contextValue.value && option.normalizeKey(contextValue.label) !== contextValue.value) {
