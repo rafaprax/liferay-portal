@@ -58,6 +58,7 @@ AUI.add(
 							instance.on('liferay-ddm-form-field-key-value:destroy', instance._onDestroyOption),
 							instance.after('liferay-ddm-form-field-key-value:render', instance._afterRenderOption),
 							instance.after('liferay-ddm-form-field-key-value:blur', instance._afterBlur),
+							instance.after('liferay-ddm-form-field-key-value:keyChange', instance._afterOptionKeyChange),
 							instance.after('liferay-ddm-form-field-key-value:valueChange', instance._afterOptionValueChange),
 							instance.after('editableChange', instance._afterEditableChange),
 							sortableList.after('drag:end', A.bind('_afterSortableListDragEnd', instance)),
@@ -339,6 +340,14 @@ AUI.add(
 						var mainOption = instance._mainOption;
 
 						mainOption.set('errorMessage', event.newVal);
+					},
+
+					_afterOptionKeyChange: function() {
+						var instance = this;
+
+						var value = instance.getValue();
+
+						instance._setValue(value);
 					},
 
 					_afterOptionNormalizeKey: function(key, option) {
