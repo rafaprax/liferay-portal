@@ -101,7 +101,7 @@ public class SaveFormInstanceMVCCommandHelper {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DDMFormInstance.class.getName(), portletRequest);
 
-		DDMStructure ddmStructure = ddmStructureLocalService.fetchDDMStructure(
+		DDMStructure ddmStructure = ddmStructureLocalService.getDDMStructure(
 			ddmStructureId);
 
 		return formInstanceService.addFormInstance(
