@@ -95,6 +95,40 @@ public class DDMFormInstanceServiceSoap {
 		}
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMFormInstanceSoap addFormInstance(
+		long groupId, long ddmStructureId, long ddmStructureClassNameId,
+		String ddmStructureKey,
+		com.liferay.dynamic.data.mapping.model.DDMForm ddmStructureDDMForm,
+		com.liferay.dynamic.data.mapping.model.DDMFormLayout ddmStructureDDMFormLayout,
+		String ddmStructureStorageType, String[] nameMapLanguageIds,
+		String[] nameMapValues, String[] descriptionMapLanguageIds,
+		String[] descriptionMapValues,
+		com.liferay.dynamic.data.mapping.storage.DDMFormValues settingsDDMFormValues,
+		com.liferay.portal.kernel.service.ServiceContext ddmFormServiceContext,
+		com.liferay.portal.kernel.service.ServiceContext ddmStructureserviceContext)
+		throws RemoteException {
+		try {
+			Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(nameMapLanguageIds,
+					nameMapValues);
+			Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(descriptionMapLanguageIds,
+					descriptionMapValues);
+
+			com.liferay.dynamic.data.mapping.model.DDMFormInstance returnValue = DDMFormInstanceServiceUtil.addFormInstance(groupId,
+					ddmStructureId, ddmStructureClassNameId, ddmStructureKey,
+					ddmStructureDDMForm, ddmStructureDDMFormLayout,
+					ddmStructureStorageType, nameMap, descriptionMap,
+					settingsDDMFormValues, ddmFormServiceContext,
+					ddmStructureserviceContext);
+
+			return com.liferay.dynamic.data.mapping.model.DDMFormInstanceSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	public static void deleteFormInstance(long ddmFormInstanceId)
 		throws RemoteException {
 		try {
@@ -251,6 +285,35 @@ public class DDMFormInstanceServiceSoap {
 		try {
 			com.liferay.dynamic.data.mapping.model.DDMFormInstance returnValue = DDMFormInstanceServiceUtil.updateFormInstance(formInstanceId,
 					settingsDDMFormValues);
+
+			return com.liferay.dynamic.data.mapping.model.DDMFormInstanceSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.dynamic.data.mapping.model.DDMFormInstanceSoap updateFormInstance(
+		long ddmFormInstanceId, long ddmStructureId,
+		com.liferay.dynamic.data.mapping.model.DDMForm structureDDMForm,
+		com.liferay.dynamic.data.mapping.model.DDMFormLayout structureDDMFormLayout,
+		String[] nameMapLanguageIds, String[] nameMapValues,
+		String[] descriptionMapLanguageIds, String[] descriptionMapValues,
+		com.liferay.dynamic.data.mapping.storage.DDMFormValues settingsDDMFormValues,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws RemoteException {
+		try {
+			Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(nameMapLanguageIds,
+					nameMapValues);
+			Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(descriptionMapLanguageIds,
+					descriptionMapValues);
+
+			com.liferay.dynamic.data.mapping.model.DDMFormInstance returnValue = DDMFormInstanceServiceUtil.updateFormInstance(ddmFormInstanceId,
+					ddmStructureId, structureDDMForm, structureDDMFormLayout,
+					nameMap, descriptionMap, settingsDDMFormValues,
+					serviceContext);
 
 			return com.liferay.dynamic.data.mapping.model.DDMFormInstanceSoap.toSoapModel(returnValue);
 		}
