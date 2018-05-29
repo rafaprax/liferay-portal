@@ -119,6 +119,27 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 		Assert.assertFalse(parameters.containsKey("fileEntryURL"));
 	}
 
+	@Test
+	public void testGetParametersShouldUseFileEntryTitle() {
+		DDMFormField ddmFormField = new DDMFormField("field", "numeric");
+
+		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
+
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
+			new DDMFormFieldRenderingContext();
+
+		ddmFormFieldRenderingContext.setHttpServletRequest(
+			createHttpServletRequest());
+		ddmFormFieldRenderingContext.setReadOnly(true);
+		ddmFormFieldRenderingContext.setValue(
+			"{\"uuid\": \"0000-1111\", \"title\": \"old title\"}");
+
+		Map<String, Object> parameters = spy.getParameters(
+			ddmFormField, ddmFormFieldRenderingContext);
+
+		Assert.assertEquals("new title", parameters.get("fileEntryTitle"));
+	}
+
 	protected DocumentLibraryDDMFormFieldTemplateContextContributor
 		createSpy() {
 
@@ -156,6 +177,12 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 	protected void setUpFileEntry() {
 		_fileEntry.setUuid("0000-1111");
 		_fileEntry.setGroupId(12345);
+
+		when(
+			_fileEntry.getTitle()
+		).thenReturn(
+			"new title"
+		);
 	}
 
 	protected void setUpHtml() throws Exception {
