@@ -265,13 +265,13 @@ AUI.add(
 					createFieldFromContext: function(fieldContext) {
 						var instance = this;
 
-						var newFieldName = fieldContext.fieldName + Util.generateInstanceId(6);
+						var currentFieldName = fieldContext.fieldName;
 
 						var config = A.merge(
 							fieldContext,
 							{
-								fieldName: newFieldName,
-								name: newFieldName
+								fieldName: currentFieldName,
+								name: currentFieldName
 							}
 						);
 
@@ -297,7 +297,7 @@ AUI.add(
 								var fieldName = settingsFieldContext.fieldName;
 
 								if (fieldName === 'name') {
-									settingsFieldContext.value = newFieldName;
+									settingsFieldContext.value = currentFieldName;
 								}
 							}
 						);
