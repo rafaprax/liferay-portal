@@ -15,9 +15,7 @@
 package com.liferay.dynamic.data.mapping.form.web.internal.portlet.action;
 
 import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
-import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
-import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseTransactionalMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
@@ -47,12 +45,7 @@ public class DeleteFormInstanceMVCActionCommand
 	protected void doDeleteFormInstance(long formInstanceId)
 		throws PortalException {
 
-		DDMFormInstance formInstance = _formInstanceService.getFormInstance(
-			formInstanceId);
-
 		_formInstanceService.deleteFormInstance(formInstanceId);
-
-		_ddmStructureService.deleteStructure(formInstance.getStructureId());
 	}
 
 	@Override
@@ -86,14 +79,6 @@ public class DeleteFormInstanceMVCActionCommand
 		_formInstanceService = formInstanceService;
 	}
 
-	@Reference(unbind = "-")
-	protected void setDDMStructureService(
-		DDMStructureService ddmStructureService) {
-
-		_ddmStructureService = ddmStructureService;
-	}
-
-	private DDMStructureService _ddmStructureService;
 	private DDMFormInstanceService _formInstanceService;
 
 }
