@@ -18,6 +18,10 @@ AUI.add(
 						value: false
 					},
 
+					builder: {
+						getter: '_getFormBuilder'
+					},
+
 					editable: {
 						value: true
 					},
@@ -52,12 +56,20 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
+						var builder = instance.get('builder');
 						var sortableList = instance.get('sortableList');
+
+						if (builder) {
+							instance._eventHandlers.push(
+								builder.after('editingLanguageIdChange', instance._afterEditingLanguageIdChange.bind(instance))
+							);
+						}
 
 						instance._eventHandlers.push(
 							instance.on('liferay-ddm-form-field-key-value:destroy', instance._onDestroyOption),
 							instance.after('liferay-ddm-form-field-key-value:render', instance._afterRenderOption),
 							instance.after('liferay-ddm-form-field-key-value:blur', instance._afterBlur),
+							instance.after('liferay-ddm-form-field-key-value:keyChange', instance._afterOptionKeyChange),
 							instance.after('liferay-ddm-form-field-key-value:valueChange', instance._afterOptionValueChange),
 							instance.after('editableChange', instance._afterEditableChange),
 							sortableList.after('drag:end', A.bind('_afterSortableListDragEnd', instance)),
@@ -124,7 +136,7 @@ AUI.add(
 							}
 						}
 
-						mainOption.set('key', '');
+						mainOption.setKey('');
 					},
 
 					getLastOption: function() {
@@ -162,12 +174,12 @@ AUI.add(
 
 						instance.eachOption(
 							function(item) {
-								var key = item.get('key');
+								var key = item.getKey();
 
 								if (key) {
 									values.push(
 										{
-											label: item.get('value'),
+											label: item.getValue(),
 											value: key
 										}
 									);
@@ -242,7 +254,7 @@ AUI.add(
 
 						var value = instance.get('value');
 
-						var optionTextValue = option.get('value');
+						var optionTextValue = option.getValue();
 
 						optionTextValue = optionTextValue.trim();
 
@@ -314,7 +326,6 @@ AUI.add(
 						if (value.length === 0 || value.length === 1 && value[0].label === '') {
 							instance._setValue([]);
 						}
-
 					},
 
 					_afterEditableChange: function(event) {
@@ -333,12 +344,40 @@ AUI.add(
 						);
 					},
 
+					_afterEditingLanguageIdChange: function() {
+						var instance = this;
+
+						var defaultLanguage = instance._getDefaultLanguageId();
+						var editingLanguage = instance._getCurrentEditingLanguageId();
+
+						var value = instance.get('value');
+
+						if (value && (editingLanguage != defaultLanguage)) {
+							if (value[editingLanguage]) {
+								instance._syncOptionsKeys(value[defaultLanguage], value[editingLanguage]);
+							}
+							else {
+								value[editingLanguage] = value[defaultLanguage];
+							}
+						}
+
+						instance.set('value', value);
+					},
+
 					_afterErrorMessageChange: function(event) {
 						var instance = this;
 
 						var mainOption = instance._mainOption;
 
 						mainOption.set('errorMessage', event.newVal);
+					},
+
+					_afterOptionKeyChange: function() {
+						var instance = this;
+
+						var value = instance.getValue();
+
+						instance._setValue(value);
 					},
 
 					_afterOptionNormalizeKey: function(key, option) {
@@ -348,7 +387,7 @@ AUI.add(
 
 						if (name) {
 							var valueInItem = function(value, item) {
-								return item.value === value && item.value !== option.get('key');
+								return item.value === value && item.value !== option.getKey();
 							};
 
 							var optionsValues = instance.getValue();
@@ -460,19 +499,23 @@ AUI.add(
 					_canSortNode: function(event) {
 						var instance = this;
 
+						var canSortNode;
 						var sortable = instance.get('sortable');
 
-						if (!sortable) {
-							return false;
+						if (sortable) {
+							var dragNode = event.drag.get('node');
+							var dropNode = event.drop.get('node');
+
+							var lastOption = instance.getLastOption();
+							var lastOptionContainer = lastOption.get('container');
+
+							canSortNode = (lastOptionContainer !== dropNode) && (lastOptionContainer !== dragNode);
+						}
+						else {
+							canSortNode = false;
 						}
 
-						var dragNode = event.drag.get('node');
-						var dropNode = event.drop.get('node');
-
-						var lastOption = instance.getLastOption();
-						var lastOptionContainer = lastOption.get('container');
-
-						return lastOptionContainer !== dropNode && lastOptionContainer !== dragNode;
+						return canSortNode;
 					},
 
 					_createMainOption: function() {
@@ -500,30 +543,18 @@ AUI.add(
 						instance._bindOptionUI(instance._mainOption);
 					},
 
-					_getCurrentDefaultLanguageId: function() {
-						var instance = this;
-
-						var form = instance.get('parent');
-
-						if (!form) {
-							return instance.get('locale');
-						}
-						var builder = form.get('builder');
-
-						return builder.get('defaultLanguageId');
-					},
-
 					_getCurrentEditingLanguageId: function() {
 						var instance = this;
 
-						var form = instance.get('parent');
+						var builder = instance.get('builder');
 
-						if (!form) {
-							return instance.get('locale');
+						var currentEditingLanguageId = instance.get('locale');
+
+						if (builder) {
+							currentEditingLanguageId = builder.get('editingLanguageId');
 						}
-						var builder = form.get('builder');
 
-						return builder.get('editingLanguageId');
+						return currentEditingLanguageId;
 					},
 
 					_getCurrentLocaleOptionsValues: function() {
@@ -531,10 +562,38 @@ AUI.add(
 
 						var value = instance.get('value');
 
-						var defaultLanguageId = instance._getCurrentDefaultLanguageId();
+						var defaultLanguageId = instance._getDefaultLanguageId();
 						var editingLanguageId = instance._getCurrentEditingLanguageId();
 
 						return value[editingLanguageId] || value[defaultLanguageId] || [];
+					},
+
+					_getDefaultLanguageId: function() {
+						var instance = this;
+
+						var builder = instance.get('builder');
+
+						var defaultLanguageId = instance.get('locale');
+
+						if (builder) {
+							defaultLanguageId = builder.get('defaultLanguageId');
+						}
+
+						return defaultLanguageId;
+					},
+
+					_getFormBuilder: function() {
+						var instance = this;
+
+						var form = instance.get('parent');
+
+						var builder;
+
+						if (form) {
+							builder = form.get('builder');
+						}
+
+						return builder;
 					},
 
 					_getNodeIndex: function(node) {
@@ -622,9 +681,7 @@ AUI.add(
 
 						instance._skipOptionValueChange = true;
 
-						option.set('value', contextValue.label);
-						option.set('key', contextValue.value);
-
+						option.setKey(contextValue.value);
 						option.setValue(contextValue.label);
 
 						if (contextValue.value && option.normalizeKey(contextValue.label) !== contextValue.value) {
@@ -637,22 +694,6 @@ AUI.add(
 						instance._skipOptionValueChange = false;
 					},
 
-					_setContext: function(val) {
-						var instance = this;
-
-						var context = OptionsField.superclass._setContext.apply(instance, arguments);
-
-						var locale = instance._getCurrentEditingLanguageId();
-
-						var value = context.value;
-
-						if (value && !value[locale]) {
-							value[locale] = value[context.defaultLanguageId];
-						}
-
-						return context;
-					},
-
 					_setValue: function(optionValues) {
 						var instance = this;
 
@@ -663,6 +704,26 @@ AUI.add(
 						value[editingLanguageId] = optionValues;
 
 						instance.set('value', value);
+					},
+
+					_syncOptionsKeys: function(defaultLanguageOptions, editingLanguageOptions) {
+						var instance = this;
+
+						AObject.keys(defaultLanguageOptions).forEach(
+							function(optionIndex) {
+								var defaultLanguageOption = defaultLanguageOptions[optionIndex];
+								var editingLanguageOption = editingLanguageOptions[optionIndex];
+
+								if (editingLanguageOption) {
+									if (editingLanguageOption.value != defaultLanguageOption.value) {
+										editingLanguageOption.value = defaultLanguageOption.value;
+									}
+								}
+								else {
+									editingLanguageOptions.push(defaultLanguageOption);
+								}
+							}
+						);
 					},
 
 					_syncOptionUI: function(option) {
