@@ -224,6 +224,20 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 		}
 	}
 
+	protected String getOptionSelectedValue(
+		List<KeyValuePair> options, String ddmFormFieldName) {
+
+		String ddmFormFieldValue = getDDMFormFieldValue(ddmFormFieldName);
+
+		for (KeyValuePair option : options) {
+			if (option.getValue().equals(ddmFormFieldValue)) {
+				return ddmFormFieldValue;
+			}
+		}
+
+		return "[]";
+	}
+
 	protected void setDDMFormFieldOptions(
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult,
 		List<KeyValuePair> options) {
