@@ -309,6 +309,11 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 					ddmDataProviderResponseOutput.getValue(List.class);
 
 				setDDMFormFieldOptions(ddmFormFieldName, options);
+
+				String optionSelectedValue = getOptionSelectedValue(
+	options, ddmFormFieldName);
+
+				setDDMFormFieldValue(ddmFormFieldName, optionSelectedValue);
 			}
 			else {
 				String value = ddmDataProviderResponseOutput.getValue(
