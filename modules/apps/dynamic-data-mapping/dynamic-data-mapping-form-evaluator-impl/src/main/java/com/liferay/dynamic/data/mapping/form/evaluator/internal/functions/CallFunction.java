@@ -272,11 +272,15 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 		}
 	}
 
-	protected void setDDMFormFieldValue(String ddmFormFieldName, String value) {
+	protected void setDDMFormFieldValue(String ddmFormFieldName, String value)
+	{
+
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
 			getDDMFormFieldEvaluationResult(ddmFormFieldName);
 
-		if (ddmFormFieldEvaluationResult != null) {
+		if (ddmFormFieldEvaluationResult != null &&
+			!getDDMFormFieldValue(ddmFormFieldName).equals(value)) {
+
 			ddmFormFieldEvaluationResult.setValue(value);
 
 			ddmFormFieldEvaluationResult.setProperty("valueChanged", true);
