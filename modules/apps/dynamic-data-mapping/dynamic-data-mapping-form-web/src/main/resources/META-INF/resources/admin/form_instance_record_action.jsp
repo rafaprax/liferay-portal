@@ -29,7 +29,7 @@ DDMFormInstanceRecord formInstanceRecord = (DDMFormInstanceRecord)row.getObject(
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowViewEntriesFormInstanceIcon(ddmFormAdminDisplayContext.getDDMFormInstance()) %>">
+	<c:if test="<%=ddmFormAdminDisplayContext.isShowViewEntriesIcon(ddmFormAdminDisplayContext.getDDMFormInstance())%>">
 		<portlet:renderURL var="viewURL">
 			<portlet:param name="mvcPath" value="/admin/view_form_instance_record.jsp" />
 			<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -43,7 +43,7 @@ DDMFormInstanceRecord formInstanceRecord = (DDMFormInstanceRecord)row.getObject(
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowDeleteFormInstanceIcon(ddmFormAdminDisplayContext.getDDMFormInstance()) %>">
+	<c:if test="<%=ddmFormAdminDisplayContext.isShowDeleteElemenSetIcon(ddmFormAdminDisplayContext.getDDMFormInstance())%>">
 		<portlet:actionURL name="deleteFormInstanceRecord" var="deleteURL">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="formInstanceRecordId" value="<%= String.valueOf(formInstanceRecord.getFormInstanceRecordId()) %>" />

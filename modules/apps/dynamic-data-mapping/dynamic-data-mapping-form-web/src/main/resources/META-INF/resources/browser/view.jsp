@@ -23,7 +23,7 @@
 
 <clay:management-toolbar
 	clearResultsURL="<%= ddmFormBrowserDisplayContext.getClearResultsURL() %>"
-	disabled="<%= ddmFormBrowserDisplayContext.isDisabledManagementBar() %>"
+	disabled="<%= ddmFormAdminPermissionCheckerHelper.isDisabledManagementBar() %>"
 	filterDropdownItems="<%= ddmFormBrowserDisplayContext.getFilterItemsDropdownItems() %>"
 	itemsTotal="<%= ddmFormBrowserDisplayContext.getTotalItems() %>"
 	namespace="<%= renderResponse.getNamespace() %>"

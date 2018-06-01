@@ -25,7 +25,7 @@ String currentTab = ParamUtil.getString(request, "currentTab", "forms");
 	clearResultsURL="<%= ddmFormAdminDisplayContext.getClearResultsURL() %>"
 	componentId="ddmFormManagementToolbar"
 	creationMenu="<%= ddmFormAdminDisplayContext.getCreationMenu() %>"
-	disabled="<%= ddmFormAdminDisplayContext.isDisabledManagementBar() %>"
+	disabled="<%= ddmFormAdminPermissionCheckerHelper.isDisabledManagementBar() %>"
 	filterDropdownItems="<%= ddmFormAdminDisplayContext.getFilterItemsDropdownItems() %>"
 	itemsTotal="<%= ddmFormAdminDisplayContext.getTotalItems() %>"
 	namespace="<%= renderResponse.getNamespace() %>"
