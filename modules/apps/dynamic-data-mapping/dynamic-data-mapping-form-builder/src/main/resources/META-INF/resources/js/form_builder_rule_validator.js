@@ -136,6 +136,23 @@ AUI.add(
 						return valid;
 					},
 
+					_isValidValues: function(object) {
+						var valid = false;
+
+						AObject.keys(object).forEach(
+							function(key) {
+								if (object[key] != null) {
+									valid = true;
+								}
+								else {
+									valid = false;
+								}
+							}
+						);
+
+						return valid;
+					},
+
 					_validateAction: function(action) {
 						var instance = this;
 
