@@ -18,8 +18,7 @@ import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderException;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistry;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.portal.kernel.util.KeyValuePair;
 
 import java.util.ArrayList;
@@ -45,21 +44,10 @@ public class DDMStorageTypesDataProvider implements DDMDataProvider {
 
 		List<KeyValuePair> keyValuePairs = new ArrayList<>();
 
-		StorageAdapter storageAdapter =
-			storageAdapterRegistry.getDefaultStorageAdapter();
-
-		String storageTypeDefault = storageAdapter.getStorageType();
-
-		keyValuePairs.add(
-			new KeyValuePair(storageTypeDefault, storageTypeDefault));
-
-		Set<String> storageTypes = storageAdapterRegistry.getStorageTypes();
+		Set<String> storageTypes =
+			ddmStorageAdapterTracker.getDDMStorageAdapterTypes();
 
 		for (String storageType : storageTypes) {
-			if (storageType.equals(storageTypeDefault)) {
-				continue;
-			}
-
 			keyValuePairs.add(new KeyValuePair(storageType, storageType));
 		}
 
@@ -77,6 +65,6 @@ public class DDMStorageTypesDataProvider implements DDMDataProvider {
 	}
 
 	@Reference
-	protected StorageAdapterRegistry storageAdapterRegistry;
+	protected DDMStorageAdapterTracker ddmStorageAdapterTracker;
 
 }
