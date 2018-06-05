@@ -21,7 +21,10 @@ import java.util.Set;
 
 /**
  * @author Marcellus Tavares
+ * @deprecated As of 4.0.0, replaced by {@link
+ * DDMFormInstanceRecordWriterTracker}
  */
+@Deprecated
 @ProviderType
 public interface DDMExporterFactory {
 
