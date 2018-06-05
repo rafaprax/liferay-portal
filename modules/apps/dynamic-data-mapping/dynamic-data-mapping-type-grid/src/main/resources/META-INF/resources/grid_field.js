@@ -112,7 +112,11 @@ AUI.add(
 					_getLocalizedLabel: function(option) {
 						var defaultLanguageId = themeDisplay.getDefaultLanguageId();
 
-						return option.label[defaultLanguageId] ? option.label[defaultLanguageId] : option.label;
+						if (option.label) {
+							return option.label[defaultLanguageId] ? option.label[defaultLanguageId] : option.label
+						}
+
+						return option.value;
 					},
 
 					_mapItemsLabels: function(items) {
