@@ -253,6 +253,73 @@ AUI.add(
 						A.one('#field-type-menu-content').html(instance._getFieldTypeMenuLayout(fieldType));
 					},
 
+					_configureEditMode: function() {
+						var instance = this;
+
+						var builder = instance.get('builder');
+
+						var contentBox = instance.get('contentBox');
+
+						var editMode = builder.isEditMode();
+
+						if (contentBox.one('.liferay-ddm-form-field-options')) {
+							var closeOptions = contentBox.one('.liferay-ddm-form-field-options').all('button.close');
+							var options = contentBox.one('.liferay-ddm-form-field-options').all('input.field');
+
+							if (editMode) {
+								closeOptions.attr('disabled', true);
+
+								if (options) {
+									options.each(
+										function(option, key) {
+											if (option._node.value == '') {
+												option.attr('disabled', true);
+											}
+										}
+									);
+								}
+							}
+							else {
+								closeOptions.attr('disabled', false);
+								options.attr('disabled', false);
+							}
+						}
+
+						var settingsPanel = builder.getFieldSettingsPanel();
+						var settingsPanelNode = settingsPanel.get('contentBox');
+
+						var controlInputs = contentBox.all('.custom-control-input');
+						var dropdownFieldToolbar = settingsPanelNode.one('.dropdown-action');
+						var duplicateFieldButton = dropdownFieldToolbar.one('.dropdown-item[data-handler="duplicateField"]');
+						var fieldTypeButton = settingsPanelNode.one('#field-type-menu-content');
+						var removeFieldButton = dropdownFieldToolbar.one('.dropdown-item[data-handler="_removeFieldCol"]');
+						var sidebarBack = settingsPanelNode.one('.form-builder-sidebar-back');
+						var switchers = contentBox.all('.toggle-switch');
+
+						if (editMode) {
+							duplicateFieldButton.addClass('disabled');
+							fieldTypeButton.attr('disabled', true);
+							removeFieldButton.addClass('disabled');
+							sidebarBack.addClass('disabled');
+
+							if (switchers || controlInputs) {
+								controlInputs.attr('disabled', true);
+								switchers.attr('disabled', true);
+							}
+						}
+						else {
+							if (switchers) {
+								controlInputs.attr('disabled', false);
+								switchers.attr('disabled', false);
+							}
+
+							duplicateFieldButton.removeClass('disabled');
+							fieldTypeButton.attr('disabled', false);
+							removeFieldButton.removeClass('disabled');
+							sidebarBack.removeClass('disabled');
+						}
+					},
+
 					_configureSideBar: function(field) {
 						var instance = this;
 
@@ -278,6 +345,8 @@ AUI.add(
 						instance._enableSidebarHeader();
 
 						settingsForm.render();
+
+						instance._configureEditMode();
 
 						instance._setFocusToFirstPageField(settingsForm);
 

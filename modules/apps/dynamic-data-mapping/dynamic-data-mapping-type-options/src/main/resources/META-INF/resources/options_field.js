@@ -18,6 +18,10 @@ AUI.add(
 						value: false
 					},
 
+					builder: {
+						getter: '_getFormBuilder'
+					},
+
 					editable: {
 						value: true
 					},
@@ -52,17 +56,27 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
-						var sortableList = instance.get('sortableList');
-
 						instance._eventHandlers.push(
 							instance.on('liferay-ddm-form-field-key-value:destroy', instance._onDestroyOption),
 							instance.after('liferay-ddm-form-field-key-value:render', instance._afterRenderOption),
 							instance.after('liferay-ddm-form-field-key-value:blur', instance._afterBlur),
 							instance.after('liferay-ddm-form-field-key-value:valueChange', instance._afterOptionValueChange),
-							instance.after('editableChange', instance._afterEditableChange),
-							sortableList.after('drag:end', A.bind('_afterSortableListDragEnd', instance)),
-							sortableList.after('drag:start', A.bind('_afterSortableListDragStart', instance))
+							instance.after('editableChange', instance._afterEditableChange)
 						);
+
+						var builder = instance.get('builder');
+
+						if (builder.isEditMode()) {
+							instance.set('sortable', false);
+						}
+						else {
+							var sortableList = instance.get('sortableList');
+
+							instance._eventHandlers.push(
+								sortableList.after('drag:end', A.bind('_afterSortableListDragEnd', instance)),
+								sortableList.after('drag:start', A.bind('_afterSortableListDragStart', instance))
+							);
+						}
 
 						instance._createMainOption();
 					},
@@ -500,30 +514,18 @@ AUI.add(
 						instance._bindOptionUI(instance._mainOption);
 					},
 
-					_getCurrentDefaultLanguageId: function() {
-						var instance = this;
-
-						var form = instance.get('parent');
-
-						if (!form) {
-							return instance.get('locale');
-						}
-						var builder = form.get('builder');
-
-						return builder.get('defaultLanguageId');
-					},
-
 					_getCurrentEditingLanguageId: function() {
 						var instance = this;
 
-						var form = instance.get('parent');
+						var builder = instance.get('builder');
 
-						if (!form) {
-							return instance.get('locale');
+						var currentEditingLanguageId = instance.get('locale');
+
+						if (builder) {
+							currentEditingLanguageId = builder.get('editingLanguageId');
 						}
-						var builder = form.get('builder');
 
-						return builder.get('editingLanguageId');
+						return currentEditingLanguageId;
 					},
 
 					_getCurrentLocaleOptionsValues: function() {
@@ -531,10 +533,38 @@ AUI.add(
 
 						var value = instance.get('value');
 
-						var defaultLanguageId = instance._getCurrentDefaultLanguageId();
+						var defaultLanguageId = instance._getDefaultLanguageId();
 						var editingLanguageId = instance._getCurrentEditingLanguageId();
 
 						return value[editingLanguageId] || value[defaultLanguageId] || [];
+					},
+
+					_getDefaultLanguageId: function() {
+						var instance = this;
+
+						var builder = instance.get('builder');
+
+						var defaultLanguageId = instance.get('locale');
+
+						if (builder) {
+							defaultLanguageId = builder.get('defaultLanguageId');
+						}
+
+						return defaultLanguageId;
+					},
+
+					_getFormBuilder: function() {
+						var instance = this;
+
+						var form = instance.get('parent');
+
+						var builder;
+
+						if (form) {
+							builder = form.get('builder');
+						}
+
+						return builder;
 					},
 
 					_getNodeIndex: function(node) {
@@ -570,7 +600,11 @@ AUI.add(
 					_onOptionClickClose: function(option) {
 						var instance = this;
 
-						instance.removeOption(option);
+						var builder = instance.get('builder');
+
+						if (!builder.isEditMode()) {
+							instance.removeOption(option);
+						}
 					},
 
 					_renderOptions: function() {
@@ -672,9 +706,11 @@ AUI.add(
 
 						container.toggleClass('last-option', addLastOptionClass);
 
-						var sortableList = instance.get('sortableList');
+						if (!instance.get('builder').isEditMode()) {
+							var sortableList = instance.get('sortableList');
 
-						sortableList.add(container);
+							sortableList.add(container);
+						}
 					},
 
 					_valueSortableList: function() {
