@@ -35,6 +35,24 @@ public class DDMFormInstanceServiceWrapper implements DDMFormInstanceService,
 
 	@Override
 	public com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
+		long groupId, long ddmStructureId, long ddmStructureClassNameId,
+		String ddmStructureKey,
+		com.liferay.dynamic.data.mapping.model.DDMForm ddmStructureDDMForm,
+		com.liferay.dynamic.data.mapping.model.DDMFormLayout ddmStructureDDMFormLayout,
+		String ddmStructureStorageType,
+		java.util.Map<java.util.Locale, String> nameMap,
+		java.util.Map<java.util.Locale, String> descriptionMap,
+		com.liferay.dynamic.data.mapping.storage.DDMFormValues settingsDDMFormValues,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmFormInstanceService.addFormInstance(groupId, ddmStructureId,
+			ddmStructureClassNameId, ddmStructureKey, ddmStructureDDMForm,
+			ddmStructureDDMFormLayout, ddmStructureStorageType, nameMap,
+			descriptionMap, settingsDDMFormValues, serviceContext);
+	}
+
+	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
 		long groupId, long ddmStructureId,
 		java.util.Map<java.util.Locale, String> nameMap,
 		java.util.Map<java.util.Locale, String> descriptionMap,
@@ -133,6 +151,21 @@ public class DDMFormInstanceServiceWrapper implements DDMFormInstanceService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _ddmFormInstanceService.updateFormInstance(formInstanceId,
 			settingsDDMFormValues);
+	}
+
+	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMFormInstance updateFormInstance(
+		long ddmFormInstanceId, long ddmStructureId,
+		com.liferay.dynamic.data.mapping.model.DDMForm structureDDMForm,
+		com.liferay.dynamic.data.mapping.model.DDMFormLayout structureDDMFormLayout,
+		java.util.Map<java.util.Locale, String> nameMap,
+		java.util.Map<java.util.Locale, String> descriptionMap,
+		com.liferay.dynamic.data.mapping.storage.DDMFormValues settingsDDMFormValues,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmFormInstanceService.updateFormInstance(ddmFormInstanceId,
+			ddmStructureId, structureDDMForm, structureDDMFormLayout, nameMap,
+			descriptionMap, settingsDDMFormValues, serviceContext);
 	}
 
 	@Override
