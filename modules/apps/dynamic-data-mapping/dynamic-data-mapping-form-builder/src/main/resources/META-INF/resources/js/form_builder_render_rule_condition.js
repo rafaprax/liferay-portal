@@ -239,7 +239,8 @@ AUI.add(
 					var condition = {
 						'operands': [
 							{
-								label: instance._getFieldLabel(instance._getFirstOperandValue(index)),
+								label: instance._getFieldProperty(instance._getFirstOperandValue(index), 'label'),
+								repeatable: instance._getFieldProperty(instance._getFirstOperandValue(index), 'repeatable'),
 								type: type,
 								value: instance._getFirstOperandValue(index)
 							}
@@ -260,7 +261,7 @@ AUI.add(
 							);
 						}
 						else if (instance._isConstant(secondOperandTypeValue)) {
-							var dataType = instance._getFieldDataType(instance._getFirstOperandValue(index));
+							var dataType = instance._getFieldProperty(instance._getFirstOperandValue(index), 'dataType');
 							var secondOperandValueFromInputTypes = instance._getSecondOperandValueFromInputTypes(index);
 
 							if (secondOperandValueFromInputTypes) {
@@ -298,60 +299,20 @@ AUI.add(
 				return conditions;
 			},
 
-			_getDataType: function(value, options) {
+			_getFieldProperty: function(fieldValue, property) {
 				var instance = this;
 
-				var option;
-
-				var dataType;
-
-				for (var i = 0; i < options.length; i++) {
-					option = options[i];
-
-					if (value.indexOf(option.value) > -1) {
-						dataType = option.dataType;
-
-						break;
+				var field = instance.get('fields').find(
+					function(currentField) {
+						return currentField.value === fieldValue;
 					}
+				);
+
+				if (property === 'options') {
+					return (field && field[property]) || [];
 				}
 
-				return dataType;
-			},
-
-			_getFieldLabel: function(fieldValue) {
-				var instance = this;
-
-				var field = instance.get('fields').find(
-					function(currentField) {
-						return currentField.value === fieldValue;
-					}
-				);
-
-				return field && field.label;
-			},
-
-			_getFieldOptions: function(fieldName) {
-				var instance = this;
-
-				var field = instance.get('fields').find(
-					function(currentField) {
-						return currentField.value === fieldName;
-					}
-				);
-
-				return (field && field.options) || [];
-			},
-
-			_getFieldType: function(fieldValue) {
-				var instance = this;
-
-				var field = instance.get('fields').find(
-					function(currentField) {
-						return currentField.value === fieldValue;
-					}
-				);
-
-				return field && field.type;
+				return field && field[property];
 			},
 
 			_getFirstOperand: function(index) {
@@ -386,6 +347,26 @@ AUI.add(
 				var value = operator.getValue();
 
 				return value[0] || '';
+			},
+
+			_getProperty: function(value, options, property) {
+				var instance = this;
+
+				var option;
+
+				var propertyValue;
+
+				for (var i = 0; i < options.length; i++) {
+					option = options[i];
+
+					if (value.indexOf(option.value) > -1) {
+						propertyValue = option[property];
+
+						break;
+					}
+				}
+
+				return propertyValue;
 			},
 
 			_getSecondOperand: function(index, type) {
@@ -493,9 +474,11 @@ AUI.add(
 					var index = fieldName.split('-')[0];
 
 					if (fieldName.match('-condition-first-operand')) {
-						var dataType = instance._getDataType(field.getValue(), options);
+						var dataType = instance._getProperty(field.getValue(), options, 'dataType');
 
 						var operatorSelected = instance._getOperator(index);
+
+						var repeatable = instance._getProperty(field.getValue(), options, 'repeatable');
 
 						operatorSelected.cleanSelect();
 
@@ -505,7 +488,7 @@ AUI.add(
 
 						instance._clearOperatorField(index);
 
-						instance._updateOperatorList(dataType, index);
+						instance._updateOperatorList(dataType, index, repeatable);
 					}
 					else if (fieldName.match('-condition-operator')) {
 						var operator = event.newVal[0];
@@ -611,7 +594,7 @@ AUI.add(
 
 				var value = field.getValue()[0] || '';
 
-				return instance._getFieldOptions(value).length > 0 && instance._getFieldType(value) !== 'text';
+				return instance._getFieldProperty(value, 'options').length > 0 && instance._getFieldProperty(value, 'type') !== 'text';
 			},
 
 			_isNumeric: function(operandTypeValue) {
@@ -727,7 +710,7 @@ AUI.add(
 				field.render(container);
 
 				if (condition) {
-					instance._updateOperatorList(instance._getFieldDataType(condition.operands[0].value), index);
+					instance._updateOperatorList(instance._getFieldProperty(condition.operands[0].value, 'dataType'), index, condition.operands[0].repeatable);
 				}
 			},
 
@@ -738,7 +721,7 @@ AUI.add(
 
 				var secondOperandTypeValue = instance._getSecondOperandTypeValue(index);
 
-				var type = instance._getFieldType(instance._getFirstOperandValue(index));
+				var type = instance._getFieldProperty(instance._getFirstOperandValue(index), 'type');
 
 				var config = {
 					options: [],
@@ -791,7 +774,7 @@ AUI.add(
 					instance._isFieldList(instance._getFirstOperand(index));
 
 				if (condition && instance._isBinaryCondition(index) && visible) {
-					options = instance._getFieldOptions(instance._getFirstOperandValue(index));
+					options = instance._getFieldProperty(instance._getFirstOperandValue(index), 'options');
 					if (!instance._isEmpty(condition.operands[1].value)) {
 						value = [condition.operands[1].value];
 					}
@@ -828,7 +811,7 @@ AUI.add(
 						options: [
 							{
 								label: instance.get('strings').value,
-								value: instance._getFieldDataType(instance._getFirstOperandValue(index))
+								value: instance._getFieldProperty(instance._getFirstOperandValue(index), 'dataType')
 							},
 							{
 								label: instance.get('strings').otherField,
@@ -886,7 +869,7 @@ AUI.add(
 				}
 			},
 
-			_updateOperatorList: function(dataType, conditionIndex) {
+			_updateOperatorList: function(dataType, conditionIndex, repeatable) {
 				var instance = this;
 
 				var operator = instance._getOperator(conditionIndex);
@@ -897,26 +880,54 @@ AUI.add(
 
 				if (dataType === 'string') {
 					for (var i = 0; i < operatorTypes.text.length; i++) {
-						options.push(
-							A.merge(
-								{
-									value: operatorTypes.text[i].name
-								},
-								operatorTypes.text[i]
-							)
-						);
+						if (repeatable) {
+							if (operatorTypes.text[i].name === 'is-empty' || operatorTypes.text[i].name === 'not-is-empty') {
+								options.push(
+										A.merge(
+												{
+													value: operatorTypes.text[i].name
+												},
+												operatorTypes.text[i]
+										)
+								);
+							}
+						}
+						else {
+							options.push(
+									A.merge(
+											{
+												value: operatorTypes.text[i].name
+											},
+											operatorTypes.text[i]
+									)
+							);
+						}
 					}
 				}
 				else if (dataType === 'double' || dataType === 'integer') {
 					for (var j = 0; j < operatorTypes.number.length; j++) {
-						options.push(
-							A.merge(
-								{
-									value: operatorTypes.number[j].name
-								},
-								operatorTypes.number[j]
-							)
-						);
+						if (repeatable) {
+							if (operatorTypes.number[j].name === 'is-empty' || operatorTypes.number[j].name === 'not-is-empty') {
+								options.push(
+										A.merge(
+												{
+													value: operatorTypes.number[j].name
+												},
+												operatorTypes.number[j]
+										)
+								);
+							}
+						}
+						else {
+							options.push(
+									A.merge(
+											{
+												value: operatorTypes.number[j].name
+											},
+											operatorTypes.number[j]
+									)
+							);
+						}
 					}
 				}
 				else if (dataType === 'user') {
@@ -955,16 +966,16 @@ AUI.add(
 						secondOperandOptions.cleanSelect();
 					}
 					else if (instance._isConstant(secondOperandTypeValue)) {
-						var options = instance._getFieldOptions(instance._getFirstOperandValue(index));
+						var options = instance._getFieldProperty(instance._getFirstOperandValue(index), 'options');
 						var secondOperand = '';
 
-						if ((options.length > 0) && instance._getFieldType(instance._getFirstOperandValue(index)) !== 'text') {
+						if ((options.length > 0) && instance._getFieldProperty(instance._getFirstOperandValue(index), 'type') !== 'text') {
 							secondOperandOptions.set('options', options);
 							secondOperandOptions.set('visible', true);
 
 							secondOperandFields.cleanSelect();
 						}
-						else if (instance._getFieldType(instance._getFirstOperandValue(index)) == 'date') {
+						else if (instance._getFieldProperty(instance._getFirstOperandValue(index), 'type') == 'date') {
 							secondOperand = instance._getSecondOperand(index, 'input-date');
 
 							secondOperand.set('visible', true);
@@ -972,7 +983,7 @@ AUI.add(
 							secondOperandOptions.cleanSelect();
 						}
 						else {
-							var type = instance._getFieldDataType(instance._getFirstOperandValue(index));
+							var type = instance._getFieldProperty(instance._getFirstOperandValue(index), 'dataType');
 
 							if (type == 'integer') {
 								secondOperand = instance._getSecondOperand(index, 'input-integer');
@@ -1020,7 +1031,7 @@ AUI.add(
 						options = [
 							{
 								label: instance.get('strings').value,
-								value: instance._getFieldDataType(instance._getFirstOperandValue(index))
+								value: instance._getFieldProperty(instance._getFirstOperandValue(index), 'dataType')
 							},
 							{
 								label: instance.get('strings').otherField,
