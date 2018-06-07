@@ -41,6 +41,8 @@ import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -504,6 +506,17 @@ public class DDMStructureStagedModelDataHandler
 			serializedDDMFormLayout);
 	}
 
+	protected String getJSONArrayFirstValue(String value) {
+		try {
+			JSONArray jsonArray = jsonFactory.createJSONArray(value);
+
+			return jsonArray.getString(0);
+		}
+		catch (Exception e) {
+			return value;
+		}
+	}
+
 	protected void importDDMDataProviderInstances(
 			PortletDataContext portletDataContext, Element structureElement,
 			DDMForm ddmForm)
@@ -541,9 +554,11 @@ public class DDMStructureStagedModelDataHandler
 				continue;
 			}
 
-			long oldDDMDataProviderInstanceId = Long.valueOf(
-				String.valueOf(
-					ddmFormField.getProperty("ddmDataProviderInstanceId")));
+			long oldDDMDataProviderInstanceId = GetterUtil.getLong(
+				getJSONArrayFirstValue(
+					GetterUtil.getString(
+						ddmFormField.getProperty(
+							"ddmDataProviderInstanceId"))));
 
 			long newDDMDataProviderInstanceId = MapUtil.getLong(
 				dataProviderInstanceIdsMap, oldDDMDataProviderInstanceId);
@@ -632,6 +647,9 @@ public class DDMStructureStagedModelDataHandler
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
 	}
+
+	@Reference
+	protected JSONFactory jsonFactory;
 
 	private static final String _DDM_DATA_PROVIDER_INSTANCE_IDS =
 		"ddm-data-provider-instance-ids";
