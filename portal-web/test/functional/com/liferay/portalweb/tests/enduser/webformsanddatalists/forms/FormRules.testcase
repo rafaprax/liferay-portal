@@ -102,7 +102,7 @@
 
 		<execute macro="FormFields#selectRadioOption">
 			<var name="fieldName" value="dataSourceType" />
-			<var name="radioOption" value="From Autofill" />
+			<var name="radioOption" value="From Autofill Rule" />
 		</execute>
 
 		<execute macro="Form#closeSidebar" />
