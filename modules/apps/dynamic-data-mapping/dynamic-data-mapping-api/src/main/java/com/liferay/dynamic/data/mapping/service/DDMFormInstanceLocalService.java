@@ -16,8 +16,10 @@ package com.liferay.dynamic.data.mapping.service;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceSettings;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
@@ -90,6 +92,13 @@ public interface DDMFormInstanceLocalService extends BaseLocalService,
 		long ddmStructureId, Map<Locale, String> nameMap,
 		Map<Locale, String> descriptionMap,
 		String serializedSettingsDDMFormValues, ServiceContext serviceContext)
+		throws PortalException;
+
+	public DDMFormInstance addFormInstance(long userId, long groupId,
+		long classNameId, String structureKey, Map<Locale, String> nameMap,
+		Map<Locale, String> descriptionMap, DDMForm ddmForm,
+		DDMFormLayout ddmFormLayout, DDMFormValues settingsDDMFormValues,
+		String storageType, ServiceContext serviceContext)
 		throws PortalException;
 
 	public void addFormInstanceResources(DDMFormInstance ddmFormInstance,

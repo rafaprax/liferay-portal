@@ -46,6 +46,22 @@ public class DDMFormInstanceServiceWrapper implements DDMFormInstanceService,
 	}
 
 	@Override
+	public com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
+		long groupId, long classNameId, String structureKey,
+		java.util.Map<java.util.Locale, String> nameMap,
+		java.util.Map<java.util.Locale, String> descriptionMap,
+		com.liferay.dynamic.data.mapping.model.DDMForm ddmForm,
+		com.liferay.dynamic.data.mapping.model.DDMFormLayout ddmFormLayout,
+		com.liferay.dynamic.data.mapping.storage.DDMFormValues settingsDDMFormValues,
+		String storageType,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _ddmFormInstanceService.addFormInstance(groupId, classNameId,
+			structureKey, nameMap, descriptionMap, ddmForm, ddmFormLayout,
+			settingsDDMFormValues, storageType, serviceContext);
+	}
+
+	@Override
 	public void deleteFormInstance(long ddmFormInstanceId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_ddmFormInstanceService.deleteFormInstance(ddmFormInstanceId);

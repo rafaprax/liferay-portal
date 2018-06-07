@@ -195,7 +195,11 @@ public class DDMFormInstanceStagedModelRepository
 		throws PortalException {
 
 		for (Long ddmStructureId : ddmStructureIds) {
-			_ddmStructureLocalService.deleteStructure(ddmStructureId);
+			if (_ddmStructureLocalService.fetchDDMStructure(ddmStructureId) !=
+					null) {
+
+				_ddmStructureLocalService.deleteStructure(ddmStructureId);
+			}
 		}
 	}
 

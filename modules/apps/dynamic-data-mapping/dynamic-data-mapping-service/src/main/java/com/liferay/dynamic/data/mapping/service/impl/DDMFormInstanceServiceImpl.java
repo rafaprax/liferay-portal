@@ -16,7 +16,9 @@ package com.liferay.dynamic.data.mapping.service.impl;
 
 import com.liferay.dynamic.data.mapping.constants.DDMActionKeys;
 import com.liferay.dynamic.data.mapping.constants.DDMConstants;
+import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.base.DDMFormInstanceServiceBaseImpl;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -51,6 +53,24 @@ public class DDMFormInstanceServiceImpl extends DDMFormInstanceServiceBaseImpl {
 		return ddmFormInstanceLocalService.addFormInstance(
 			getUserId(), groupId, ddmStructureId, nameMap, descriptionMap,
 			settingsDDMFormValues, serviceContext);
+	}
+
+	@Override
+	public DDMFormInstance addFormInstance(
+			long groupId, long classNameId, String structureKey,
+			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
+			DDMForm ddmForm, DDMFormLayout ddmFormLayout,
+			DDMFormValues settingsDDMFormValues, String storageType,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId, DDMActionKeys.ADD_FORM_INSTANCE);
+
+		return ddmFormInstanceLocalService.addFormInstance(
+			getUserId(), groupId, classNameId, structureKey, nameMap,
+			descriptionMap, ddmForm, ddmFormLayout, settingsDDMFormValues,
+			storageType, serviceContext);
 	}
 
 	@Override

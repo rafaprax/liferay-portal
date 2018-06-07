@@ -78,6 +78,22 @@ public class DDMFormInstanceLocalServiceUtil {
 			descriptionMap, serializedSettingsDDMFormValues, serviceContext);
 	}
 
+	public static com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
+		long userId, long groupId, long classNameId, String structureKey,
+		java.util.Map<java.util.Locale, String> nameMap,
+		java.util.Map<java.util.Locale, String> descriptionMap,
+		com.liferay.dynamic.data.mapping.model.DDMForm ddmForm,
+		com.liferay.dynamic.data.mapping.model.DDMFormLayout ddmFormLayout,
+		com.liferay.dynamic.data.mapping.storage.DDMFormValues settingsDDMFormValues,
+		String storageType,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addFormInstance(userId, groupId, classNameId, structureKey,
+			nameMap, descriptionMap, ddmForm, ddmFormLayout,
+			settingsDDMFormValues, storageType, serviceContext);
+	}
+
 	public static void addFormInstanceResources(
 		com.liferay.dynamic.data.mapping.model.DDMFormInstance ddmFormInstance,
 		boolean addGroupPermissions, boolean addGuestPermissions)
