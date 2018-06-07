@@ -63,7 +63,7 @@ AUI.add(
 
 						for (var i = 0; i < fields.length; i++) {
 							if (type === 'list') {
-								if (listType.indexOf(fields[i].type) !== -1) {
+								if (listType.indexOf(fields[i].type) !== -1 && fields[i].dataSourceType == 'from-autofill') {
 									fieldsFiltered.push(fields[i]);
 								}
 							}
