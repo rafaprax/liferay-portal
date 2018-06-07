@@ -104,9 +104,6 @@ AUI.add(
 					},
 
 					_afterDataProviderChange: function(event) {
-						if (!event.newVal || !event.newVal[0]) {
-							return;
-						}
 
 						var instance = this;
 
@@ -115,6 +112,23 @@ AUI.add(
 						var index = instance.get('index');
 
 						boundingBox.one('.additional-info-' + index).empty();
+
+						if (!event.newVal || !event.newVal[0]) {
+
+							instance._inputParameters.forEach(
+								function(param) {
+									param.field.set('value', []);
+								}
+							);
+
+							instance._outputParameters.forEach(
+								function(param) {
+									param.field.set('value', []);
+								}
+							);
+
+							return;
+						}
 
 						A.io.request(
 							Liferay.DDM.Settings.getDataProviderParametersSettingsURL,
