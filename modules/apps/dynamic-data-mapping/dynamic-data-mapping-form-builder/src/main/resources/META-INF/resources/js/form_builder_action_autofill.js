@@ -104,7 +104,6 @@ AUI.add(
 					},
 
 					_afterDataProviderChange: function(event) {
-
 						var instance = this;
 
 						var boundingBox = instance.get('boundingBox');
@@ -114,7 +113,6 @@ AUI.add(
 						boundingBox.one('.additional-info-' + index).empty();
 
 						if (!event.newVal || !event.newVal[0]) {
-
 							instance._inputParameters.forEach(
 								function(param) {
 									param.field.set('value', []);

@@ -234,7 +234,9 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 		String ddmFormFieldValue = getDDMFormFieldValue(ddmFormFieldName);
 
 		for (KeyValuePair option : options) {
-			if (option.getValue().equals(ddmFormFieldValue)) {
+			String optionValue = option.getValue();
+
+			if (Objects.equals(optionValue, ddmFormFieldValue)) {
 				return ddmFormFieldValue;
 			}
 		}
@@ -276,14 +278,14 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 		}
 	}
 
-	protected void setDDMFormFieldValue(String ddmFormFieldName, String value)
-	{
-
+	protected void setDDMFormFieldValue(String ddmFormFieldName, String value) {
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
 			getDDMFormFieldEvaluationResult(ddmFormFieldName);
 
+		String ddmFormFieldValue = getDDMFormFieldValue(ddmFormFieldName);
+
 		if (ddmFormFieldEvaluationResult != null &&
-			!getDDMFormFieldValue(ddmFormFieldName).equals(value)) {
+			!Objects.equals(ddmFormFieldValue, value)) {
 
 			ddmFormFieldEvaluationResult.setValue(value);
 
@@ -314,10 +316,8 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 
 				setDDMFormFieldOptions(ddmFormFieldName, options);
 
-				String optionSelectedValue = getOptionSelectedValue(
-	options, ddmFormFieldName);
-
-				setDDMFormFieldValue(ddmFormFieldName, optionSelectedValue);
+				setDDMFormFieldValue(ddmFormFieldName, getOptionSelectedValue(
+					options, ddmFormFieldName));
 			}
 			else {
 				String value = ddmDataProviderResponseOutput.getValue(
