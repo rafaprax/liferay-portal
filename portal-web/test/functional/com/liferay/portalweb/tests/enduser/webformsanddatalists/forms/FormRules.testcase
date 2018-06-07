@@ -100,6 +100,11 @@
 			<var name="fieldValue" value="Countries" />
 		</execute>
 
+		<execute macro="FormFields#selectRadioOption">
+			<var name="fieldName" value="dataSourceType" />
+			<var name="radioOption" value="From Autofill" />
+		</execute>
+
 		<execute macro="Form#closeSidebar" />
 
 		<execute macro="FormsAdminNavigator#gotoRules" />
