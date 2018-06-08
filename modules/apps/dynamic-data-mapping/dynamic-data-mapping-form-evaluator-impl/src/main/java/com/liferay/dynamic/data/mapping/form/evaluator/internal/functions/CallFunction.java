@@ -228,7 +228,7 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 		}
 	}
 
-	protected String getOptionSelectedValue(
+	protected String getSelectedOptionValue(
 		List<KeyValuePair> options, String ddmFormFieldName) {
 
 		String ddmFormFieldValue = getDDMFormFieldValue(ddmFormFieldName);
@@ -316,7 +316,7 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 
 				setDDMFormFieldValue(
 					ddmFormFieldName,
-					getOptionSelectedValue(options, ddmFormFieldName));
+					getSelectedOptionValue(options, ddmFormFieldName));
 			}
 			else {
 				String value = ddmDataProviderResponseOutput.getValue(
