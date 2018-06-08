@@ -45,9 +45,9 @@ PortletURL portletURL = ddmFormAdminDisplayContext.getPortletURL();
 				</portlet:renderURL>
 
 				<%
-				if (!ddmFormAdminDisplayContext.isShowEditFormInstanceIcon(formInstance)) {
-					rowURL = null;
-				}
+					if (!ddmFormAdminPermissionCheckerHelper.isShowEditIcon(formInstance)) {
+							rowURL = null;
+						}
 				%>
 
 				<c:choose>

@@ -22,6 +22,7 @@ import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderer;
 import com.liferay.dynamic.data.mapping.form.values.factory.DDMFormValuesFactory;
 import com.liferay.dynamic.data.mapping.form.web.internal.configuration.DDMFormWebConfiguration;
 import com.liferay.dynamic.data.mapping.form.web.internal.constants.DDMFormWebKeys;
+import com.liferay.dynamic.data.mapping.form.web.internal.display.context.DDMFormAdminFieldSetDisplayContext.DDMFormAdminFormInstancePermissionCheckerHelper;
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.DDMFormAdminRequestHelper;
 import com.liferay.dynamic.data.mapping.form.web.internal.instance.lifecycle.AddDefaultSharedFormLayoutPortalInstanceLifecycleListener;
 import com.liferay.dynamic.data.mapping.form.web.internal.search.FormInstanceSearch;
@@ -60,6 +61,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
@@ -188,7 +190,11 @@ public class DDMFormAdminDisplayContext {
 	}
 
 	public CreationMenu getCreationMenu() {
-		if (!isShowAddButton()) {
+		DDMFormAdminPermissionCheckerHelper<?>
+			ddmFormAdminPermissionCheckerHelper =
+				getDDMFormAdminPermissionCheckerHelper();
+
+		if (!ddmFormAdminPermissionCheckerHelper.isShowAddButton()) {
 			return null;
 		}
 
@@ -684,19 +690,95 @@ public class DDMFormAdminDisplayContext {
 
 		};
 	}
-
-	public boolean isDisabledManagementBar() {
-		if (hasResults()) {
-			return false;
-		}
-
-		if (isSearch()) {
-			return false;
-		}
-
-		return true;
+	
+	public DDMFormAdminPermissionCheckerHelper<?> getDDMFormAdminPermissionCheckerHelper() {
+		return new DDMFormAdminFormInstancePermissionCheckerHelper();
 	}
+	
+	 class DDMFormAdminFormInstancePermissionCheckerHelper implements DDMFormAdminPermissionCheckerHelper<DDMFormInstance> {
+		@Override
+		public boolean isDisabledManagementBar() {
+			if (hasResults()) {
+				return false;
+			}
 
+			if (isSearch()) {
+				return false;
+			}
+
+			return true;
+		}
+		
+		@Override
+		public boolean isShowAddButton() {
+			return DDMFormPermission.contains(
+				formAdminRequestHelper.getPermissionChecker(),
+				formAdminRequestHelper.getScopeGroupId(),
+				DDMActionKeys.ADD_FORM_INSTANCE);
+		}
+
+		@Override
+		public boolean isShowCopyButton() {
+			return isShowAddButton();
+		}
+
+		@Override
+		public boolean isShowCopyURLIcon(DDMFormInstance formInstance)
+			throws PortalException {
+
+			return DDMFormInstancePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), formInstance,
+				ActionKeys.VIEW);
+		}
+
+		@Override
+		public boolean isShowDeleteIcon(DDMFormInstance formInstance)
+			throws PortalException {
+
+			return DDMFormInstancePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), formInstance,
+				ActionKeys.DELETE);
+		}
+
+		@Override
+		public boolean isShowEditIcon(DDMFormInstance formInstance)
+			throws PortalException {
+
+			return DDMFormInstancePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), formInstance,
+				ActionKeys.UPDATE);
+		}
+
+		@Override
+		public boolean isShowExportIcon(DDMFormInstance formInstance)
+			throws PortalException {
+
+			return DDMFormInstancePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), formInstance,
+				ActionKeys.VIEW);
+		}
+
+		@Override
+		public boolean isShowPermissionsIcon(DDMFormInstance formInstance)
+			throws PortalException {
+
+			return DDMFormInstancePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), formInstance,
+				ActionKeys.PERMISSIONS);
+		}
+
+		@Override
+		public boolean isShowViewEntriesIcon(
+				DDMFormInstance formInstance)
+			throws PortalException {
+
+			return DDMFormInstancePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), formInstance,
+				ActionKeys.VIEW);
+		}
+
+	}
+	
 	public boolean isFormPublished() throws PortalException {
 		return isFormPublished(getDDMFormInstance());
 	}
@@ -714,65 +796,7 @@ public class DDMFormAdminDisplayContext {
 		return formInstanceSettings.published();
 	}
 
-	public boolean isShowAddButton() {
-		return DDMFormPermission.contains(
-			formAdminRequestHelper.getPermissionChecker(),
-			formAdminRequestHelper.getScopeGroupId(),
-			DDMActionKeys.ADD_FORM_INSTANCE);
-	}
-
-	public boolean isShowCopyFormInstanceButton() {
-		return isShowAddButton();
-	}
-
-	public boolean isShowCopyURLFormInstanceIcon(DDMFormInstance formInstance)
-		throws PortalException {
-
-		return DDMFormInstancePermission.contains(
-			formAdminRequestHelper.getPermissionChecker(), formInstance,
-			ActionKeys.VIEW);
-	}
-
-	public boolean isShowDeleteFormInstanceIcon(DDMFormInstance formInstance)
-		throws PortalException {
-
-		return DDMFormInstancePermission.contains(
-			formAdminRequestHelper.getPermissionChecker(), formInstance,
-			ActionKeys.DELETE);
-	}
-
-	public boolean isShowEditFormInstanceIcon(DDMFormInstance formInstance)
-		throws PortalException {
-
-		return DDMFormInstancePermission.contains(
-			formAdminRequestHelper.getPermissionChecker(), formInstance,
-			ActionKeys.UPDATE);
-	}
-
-	public boolean isShowExportFormInstanceIcon(DDMFormInstance formInstance)
-		throws PortalException {
-
-		return DDMFormInstancePermission.contains(
-			formAdminRequestHelper.getPermissionChecker(), formInstance,
-			ActionKeys.VIEW);
-	}
-
-	public boolean isShowPermissionsIcon(DDMFormInstance formInstance)
-		throws PortalException {
-
-		return DDMFormInstancePermission.contains(
-			formAdminRequestHelper.getPermissionChecker(), formInstance,
-			ActionKeys.PERMISSIONS);
-	}
-
-	public boolean isShowViewEntriesFormInstanceIcon(
-			DDMFormInstance formInstance)
-		throws PortalException {
-
-		return DDMFormInstancePermission.contains(
-			formAdminRequestHelper.getPermissionChecker(), formInstance,
-			ActionKeys.VIEW);
-	}
+	
 
 	protected DDMForm getDDMForm() throws PortalException {
 		DDMStructure structure = getDDMStructure();
@@ -1088,8 +1112,8 @@ public class DDMFormAdminDisplayContext {
 	private final DDMFormValuesMerger _ddmFormValuesMerger;
 	private final DDMFormWebConfiguration _ddmFormWebConfiguration;
 	private DDMStructure _ddmStructure;
-	private final DDMStructureLocalService _ddmStructureLocalService;
-	private final DDMStructureService _ddmStructureService;
+	protected final DDMStructureLocalService _ddmStructureLocalService;
+	protected final DDMStructureService _ddmStructureService;
 	private String _displayStyle;
 	private final JSONFactory _jsonFactory;
 	private final RenderRequest _renderRequest;

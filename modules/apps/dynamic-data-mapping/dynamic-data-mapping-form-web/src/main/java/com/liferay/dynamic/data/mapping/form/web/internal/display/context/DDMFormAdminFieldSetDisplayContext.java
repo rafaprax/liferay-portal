@@ -22,6 +22,7 @@ import com.liferay.dynamic.data.mapping.form.web.internal.instance.lifecycle.Add
 import com.liferay.dynamic.data.mapping.form.web.internal.search.FieldSetSearch;
 import com.liferay.dynamic.data.mapping.form.web.internal.search.FieldSetSearchTerms;
 import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.resource.DDMFormPermission;
+import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.resource.DDMStructurePermission;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializer;
 import com.liferay.dynamic.data.mapping.io.exporter.DDMExporterFactory;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -46,6 +47,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
@@ -63,7 +65,6 @@ import java.util.Map;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -119,7 +120,11 @@ public class DDMFormAdminFieldSetDisplayContext
 	}
 
 	public CreationMenu getCreationMenu() {
-		if (!isShowAddButton()) {
+		DDMFormAdminPermissionCheckerHelper<?>
+			ddmFormAdminPermissionCheckerHelper =
+				getDDMFormAdminPermissionCheckerHelper();
+		
+		if (!ddmFormAdminPermissionCheckerHelper.isShowAddButton()) {
 			return null;
 		}
 
@@ -333,10 +338,12 @@ public class DDMFormAdminFieldSetDisplayContext
 		return "structure";
 	}
 
-	@Override
-	public boolean isShowAddButton() {
-		return DDMFormPermission.contains(
-			getPermissionChecker(), getScopeGroupId(), "ADD_STRUCTURE");
+	public boolean isShowDeleteIcon(DDMStructure ddmStructure)
+		throws PortalException {
+
+		return DDMStructurePermission.contains(
+			formAdminRequestHelper.getPermissionChecker(), ddmStructure,
+			ActionKeys.DELETE);
 	}
 
 	protected OrderByComparator<DDMStructure> getDDMStructureOrderByComparator(
@@ -367,9 +374,7 @@ public class DDMFormAdminFieldSetDisplayContext
 		FieldSetSearchTerms fieldSetSearchTerms =
 			(FieldSetSearchTerms)fieldSetSearch.getSearchTerms();
 
-		DDMStructureService structureService = getStructureService();
-
-		List<DDMStructure> results = structureService.search(
+		List<DDMStructure> results = _ddmStructureService.search(
 			getCompanyId(), new long[] {getScopeGroupId()},
 			PortalUtil.getClassNameId(DDMFormInstance.class),
 			fieldSetSearchTerms.getKeywords(),
@@ -384,15 +389,93 @@ public class DDMFormAdminFieldSetDisplayContext
 		FieldSetSearchTerms fieldSetSearchTerms =
 			(FieldSetSearchTerms)fieldSetSearch.getSearchTerms();
 
-		DDMStructureService structureService = getStructureService();
-
-		int total = structureService.searchCount(
+		int total = _ddmStructureService.searchCount(
 			getCompanyId(), new long[] {getScopeGroupId()},
 			PortalUtil.getClassNameId(DDMFormInstance.class),
 			fieldSetSearchTerms.getKeywords(),
 			DDMStructureConstants.TYPE_FRAGMENT, WorkflowConstants.STATUS_ANY);
 
 		fieldSetSearch.setTotal(total);
+	}
+	
+	public DDMFormAdminPermissionCheckerHelper<DDMStructure> getDDMFormAdminPermissionCheckerHelper() {
+		return new DDMFormAdminFormInstancePermissionCheckerHelper();
+	}
+	
+	 class DDMFormAdminFormInstancePermissionCheckerHelper implements DDMFormAdminPermissionCheckerHelper<DDMStructure> {
+		@Override
+		public boolean isDisabledManagementBar() {
+			if (hasResults()) {
+				return false;
+			}
+
+			if (isSearch()) {
+				return false;
+			}
+
+			return true;
+		}
+		
+		@Override
+		public boolean isShowAddButton() {
+			return DDMFormPermission.contains(
+				getPermissionChecker(), getScopeGroupId(), "ADD_STRUCTURE");
+		}
+
+		@Override
+		public boolean isShowCopyButton() {
+			return isShowAddButton();
+		}
+
+		@Override
+		public boolean isShowCopyURLIcon(DDMStructure ddmStructure)
+			throws PortalException {
+
+			return false;
+		}
+
+		@Override
+		public boolean isShowDeleteIcon(DDMStructure ddmStructure)
+			throws PortalException {
+
+			return DDMStructurePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), ddmStructure,
+				ActionKeys.DELETE);
+		}
+
+		@Override
+		public boolean isShowEditIcon(DDMStructure ddmStructure)
+			throws PortalException {
+
+			return DDMStructurePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), ddmStructure,
+				ActionKeys.UPDATE);
+		}
+
+		@Override
+		public boolean isShowExportIcon(DDMStructure ddmStructure)
+			throws PortalException {
+
+			return false;
+		}
+
+		@Override
+		public boolean isShowPermissionsIcon(DDMStructure ddmStructure)
+			throws PortalException {
+
+			return DDMStructurePermission.contains(
+				formAdminRequestHelper.getPermissionChecker(), ddmStructure,
+				ActionKeys.PERMISSIONS);
+		}
+
+		@Override
+		public boolean isShowViewEntriesIcon(
+				DDMStructure ddmStructure)
+			throws PortalException {
+
+			return false;
+		}
+
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

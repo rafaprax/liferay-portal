@@ -33,7 +33,7 @@ renderResponse.setTitle(LanguageUtil.get(request, "form-entries"));
 	actionDropdownItems="<%= ddmFormViewFormInstanceRecordsDisplayContext.getActionItemsDropdownItems() %>"
 	clearResultsURL="<%= ddmFormViewFormInstanceRecordsDisplayContext.getClearResultsURL() %>"
 	componentId="ddmFormInstanceRecordsManagementToolbar"
-	disabled="<%= ddmFormViewFormInstanceRecordsDisplayContext.isDisabledManagementBar() %>"
+	disabled="<%= ddmFormAdminPermissionCheckerHelper.isDisabledManagementBar() %>"
 	filterDropdownItems="<%= ddmFormViewFormInstanceRecordsDisplayContext.getFilterItemsDropdownItems() %>"
 	itemsTotal="<%= ddmFormViewFormInstanceRecordsDisplayContext.getTotalItems() %>"
 	namespace="<%= renderResponse.getNamespace() %>"

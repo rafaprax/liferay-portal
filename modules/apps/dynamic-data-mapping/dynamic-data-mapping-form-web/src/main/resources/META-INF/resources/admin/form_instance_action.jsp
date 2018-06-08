@@ -29,7 +29,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowCopyURLFormInstanceIcon(formInstance) && ddmFormAdminDisplayContext.isFormPublished(formInstance) %>">
+	<c:if test="<%=ddmFormAdminPermissionCheckerHelper.isShowCopyURLIcon(formInstance) && ddmFormAdminDisplayContext.isFormPublished(formInstance)%>">
 		<liferay-ui:icon
 			message="copy-url"
 			onClick='<%= "Liferay.fire('" + renderResponse.getNamespace() + "copyFormURL', { url:'" + ddmFormAdminDisplayContext.getPublishedFormURL(formInstance) + "' , node: this});" %>'
@@ -37,7 +37,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowViewEntriesFormInstanceIcon(formInstance) %>">
+	<c:if test="<%=ddmFormAdminPermissionCheckerHelper.isShowViewEntriesIcon(formInstance)%>">
 		<portlet:renderURL var="viewEntriesURL">
 			<portlet:param name="mvcPath" value="/admin/view_form_instance_records.jsp" />
 			<portlet:param name="redirect" value="<%= PortalUtil.getCurrentURL(request) %>" />
@@ -50,7 +50,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowEditFormInstanceIcon(formInstance) %>">
+	<c:if test="<%=ddmFormAdminPermissionCheckerHelper.isShowEditIcon(formInstance)%>">
 		<portlet:renderURL var="editURL">
 			<portlet:param name="mvcPath" value="/admin/edit_form_instance.jsp" />
 			<portlet:param name="redirect" value="<%= PortalUtil.getCurrentURL(request) %>" />
@@ -63,7 +63,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowCopyFormInstanceButton() %>">
+	<c:if test="<%=ddmFormAdminPermissionCheckerHelper.isShowCopyButton()%>">
 		<liferay-portlet:actionURL name="copyFormInstance" var="copyFormInstanceURL">
 			<portlet:param name="groupId" value="<%= String.valueOf(scopeGroupId) %>" />
 			<portlet:param name="formInstanceId" value="<%= String.valueOf(formInstance.getFormInstanceId()) %>" />
@@ -75,7 +75,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowExportFormInstanceIcon(formInstance) %>">
+	<c:if test="<%=ddmFormAdminPermissionCheckerHelper.isShowExportIcon(formInstance)%>">
 		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="exportFormInstance" var="exportFormInstanceURL">
 			<portlet:param name="formInstanceId" value="<%= String.valueOf(formInstance.getFormInstanceId()) %>" />
 		</liferay-portlet:resourceURL>
@@ -97,7 +97,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowPermissionsIcon(formInstance) %>">
+	<c:if test="<%= ddmFormAdminPermissionCheckerHelper.isShowPermissionsIcon(formInstance) %>">
 		<liferay-security:permissionsURL
 			modelResource="<%= DDMFormInstance.class.getName() %>"
 			modelResourceDescription="<%= formInstance.getName(locale) %>"
@@ -114,7 +114,7 @@ DDMFormInstance formInstance = (DDMFormInstance)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= ddmFormAdminDisplayContext.isShowDeleteFormInstanceIcon(formInstance) %>">
+	<c:if test="<%=ddmFormAdminPermissionCheckerHelper.isShowDeleteIcon(formInstance)%>">
 		<portlet:actionURL name="deleteFormInstance" var="deleteURL">
 			<portlet:param name="formInstanceId" value="<%= String.valueOf(formInstance.getFormInstanceId()) %>" />
 		</portlet:actionURL>

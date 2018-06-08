@@ -14,6 +14,7 @@
  */
 --%>
 
+<%@page import="com.liferay.dynamic.data.mapping.form.web.internal.display.context.DDMFormAdminPermissionCheckerHelper"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
@@ -82,6 +83,8 @@ page import="java.util.Set" %>
 
 <%
 DDMFormAdminDisplayContext ddmFormAdminDisplayContext = (DDMFormAdminDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
+
+DDMFormAdminPermissionCheckerHelper ddmFormAdminPermissionCheckerHelper = ddmFormAdminDisplayContext.getDDMFormAdminPermissionCheckerHelper();
 %>
 
 <%@ include file="/admin/init-ext.jsp" %>
