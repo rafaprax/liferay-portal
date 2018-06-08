@@ -38,20 +38,15 @@ AUI.add(
 					},
 
 					_checkRequiredInputIsFilled: function(inputs, requiredInputs) {
-						var valid = false;
+						var instance = this;
 
 						for (var input in inputs) {
-							if (requiredInputs[input]) {
-								if (inputs[input]) {
-									valid = true;
-								}
-								else {
-									valid = false;
-								}
+							if (requiredInputs[input] && !inputs[input]) {
+								return false;
 							}
 						}
 
-						return valid;
+						return true;
 					},
 
 					_isEmpty: function(content) {
@@ -137,20 +132,15 @@ AUI.add(
 					},
 
 					_isValidValues: function(object) {
-						var valid = false;
+						var instance = this;
 
-						AObject.keys(object).forEach(
-							function(key) {
-								if (object[key] != null) {
-									valid = true;
-								}
-								else {
-									valid = false;
-								}
+						for (var key in object) {
+							if (!object[key]) {
+								return false;
 							}
-						);
+						}
 
-						return valid;
+						return true;
 					},
 
 					_validateAction: function(action) {
