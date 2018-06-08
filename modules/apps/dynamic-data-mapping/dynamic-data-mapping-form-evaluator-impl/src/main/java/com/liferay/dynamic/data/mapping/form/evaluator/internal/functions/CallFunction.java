@@ -213,7 +213,7 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 			JSONArray jsonArray = _jsonFactory.createJSONArray(
 				String.valueOf(value));
 
-			if (jsonArray.isNull(0)) {
+			if (jsonArray.length() == 0) {
 				return _EMPTY_JSON_ARRAY_STRING;
 			}
 
