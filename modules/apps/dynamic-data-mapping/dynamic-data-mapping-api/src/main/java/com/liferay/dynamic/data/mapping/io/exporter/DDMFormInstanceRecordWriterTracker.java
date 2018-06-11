@@ -16,6 +16,7 @@ package com.liferay.dynamic.data.mapping.io.exporter;
 
 import aQute.bnd.annotation.ProviderType;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,6 +28,6 @@ public interface DDMFormInstanceRecordWriterTracker {
 	public DDMFormInstanceRecordWriter getDDMFormInstanceRecordWriter(
 		String type);
 
-	public Set<String> getDDMFormInstanceRecordWriterTypes();
+	public Map<String, String> getDDMFormInstanceRecordWriterExtensions();
 
 }

@@ -156,9 +156,9 @@ public class DDMFormAdminDisplayContext {
 		return _ddmFormWebConfiguration.autosaveInterval();
 	}
 
-	public Set<String> getAvailableExportFormats() {
+	public Map<String, String> getAvailableExportExtensions() {
 		return _ddmFormInstanceRecordWriterTracker.
-			getDDMFormInstanceRecordWriterTypes();
+			getDDMFormInstanceRecordWriterExtensions();
 	}
 
 	public Locale[] getAvailableLocales() {

@@ -15,57 +15,19 @@
 package com.liferay.dynamic.data.mapping.io.internal.exporter;
 
 import com.liferay.dynamic.data.mapping.io.exporter.DDMFormInstanceRecordWriter;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import org.osgi.framework.BundleContext;
 
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author Leonardo Barros
  */
-@PrepareForTest(ServiceTrackerMapFactory.class)
-@RunWith(PowerMockRunner.class)
 public class DDMFormInstanceRecordWriterTrackerImplTest extends PowerMockito {
-
-	@Before
-	public void setUp() throws Exception {
-		mockStatic(ServiceTrackerMapFactory.class);
-	}
-
-	@Test
-	public void testActivate() {
-		DDMFormInstanceRecordWriterTrackerImpl
-			ddmFormInstanceRecordWriterTracker =
-				new DDMFormInstanceRecordWriterTrackerImpl();
-
-		BundleContext bundleContext = mock(BundleContext.class);
-
-		when(
-			ServiceTrackerMapFactory.openSingleValueMap(
-				bundleContext, DDMFormInstanceRecordWriter.class,
-				"ddm.form.instance.record.writer.type")
-		).thenReturn(
-			_ddmFormInstanceRecordWriterServiceTrackerMap
-		);
-
-		ddmFormInstanceRecordWriterTracker.activate(bundleContext);
-
-		Assert.assertNotNull(
-			ddmFormInstanceRecordWriterTracker.
-				ddmFormInstanceRecordWriterServiceTrackerMap);
-	}
 
 	@Test
 	public void testDeactivate() {
@@ -73,15 +35,15 @@ public class DDMFormInstanceRecordWriterTrackerImplTest extends PowerMockito {
 			ddmFormInstanceRecordWriterTracker =
 				new DDMFormInstanceRecordWriterTrackerImpl();
 
-		ddmFormInstanceRecordWriterTracker.
-			ddmFormInstanceRecordWriterServiceTrackerMap =
-				_ddmFormInstanceRecordWriterServiceTrackerMap;
+		addDDMFormInstanceRecordCSVWriter(ddmFormInstanceRecordWriterTracker);
 
 		ddmFormInstanceRecordWriterTracker.deactivate();
 
-		Mockito.verify(
-			_ddmFormInstanceRecordWriterServiceTrackerMap, Mockito.times(1)
-		).close();
+		Map<String, String> ddmFormInstanceRecordWriterExtensions =
+			ddmFormInstanceRecordWriterTracker.
+				getDDMFormInstanceRecordWriterExtensions();
+
+		Assert.assertTrue(ddmFormInstanceRecordWriterExtensions.isEmpty());
 	}
 
 	@Test
@@ -90,18 +52,15 @@ public class DDMFormInstanceRecordWriterTrackerImplTest extends PowerMockito {
 			ddmFormInstanceRecordWriterTracker =
 				new DDMFormInstanceRecordWriterTrackerImpl();
 
-		ddmFormInstanceRecordWriterTracker.
-			ddmFormInstanceRecordWriterServiceTrackerMap =
-				_ddmFormInstanceRecordWriterServiceTrackerMap;
+		addDDMFormInstanceRecordCSVWriter(ddmFormInstanceRecordWriterTracker);
 
-		ddmFormInstanceRecordWriterTracker.getDDMFormInstanceRecordWriter(
-			"json");
+		DDMFormInstanceRecordWriter ddmFormInstanceRecordWriter =
+			ddmFormInstanceRecordWriterTracker.getDDMFormInstanceRecordWriter(
+				"csv");
 
-		Mockito.verify(
-			_ddmFormInstanceRecordWriterServiceTrackerMap, Mockito.times(1)
-		).getService(
-			"json"
-		);
+		Assert.assertTrue(
+			ddmFormInstanceRecordWriter instanceof
+				DDMFormInstanceRecordCSVWriter);
 	}
 
 	@Test
@@ -110,20 +69,82 @@ public class DDMFormInstanceRecordWriterTrackerImplTest extends PowerMockito {
 			ddmFormInstanceRecordWriterTracker =
 				new DDMFormInstanceRecordWriterTrackerImpl();
 
-		ddmFormInstanceRecordWriterTracker.
-			ddmFormInstanceRecordWriterServiceTrackerMap =
-				_ddmFormInstanceRecordWriterServiceTrackerMap;
+		addDDMFormInstanceRecordCSVWriter(ddmFormInstanceRecordWriterTracker);
+		addDDMFormInstanceRecordJSONWriter(ddmFormInstanceRecordWriterTracker);
 
-		ddmFormInstanceRecordWriterTracker.
-			getDDMFormInstanceRecordWriterTypes();
+		Map<String, String> ddmFormInstanceRecordWriterExtensions =
+			ddmFormInstanceRecordWriterTracker.
+				getDDMFormInstanceRecordWriterExtensions();
 
-		Mockito.verify(
-			_ddmFormInstanceRecordWriterServiceTrackerMap, Mockito.times(1)
-		).keySet();
+		Assert.assertEquals(
+			"csv", ddmFormInstanceRecordWriterExtensions.get("csv"));
+		Assert.assertEquals(
+			"json", ddmFormInstanceRecordWriterExtensions.get("json"));
 	}
 
-	@Mock
-	private ServiceTrackerMap<String, DDMFormInstanceRecordWriter>
-		_ddmFormInstanceRecordWriterServiceTrackerMap;
+	@Test
+	public void testRemoveDDMFormInstanceRecordWriter() {
+		DDMFormInstanceRecordWriterTrackerImpl
+			ddmFormInstanceRecordWriterTracker =
+				new DDMFormInstanceRecordWriterTrackerImpl();
+
+		addDDMFormInstanceRecordCSVWriter(ddmFormInstanceRecordWriterTracker);
+		addDDMFormInstanceRecordJSONWriter(ddmFormInstanceRecordWriterTracker);
+
+		DDMFormInstanceRecordWriter ddmFormInstanceRecordWriter =
+			new DDMFormInstanceRecordCSVWriter();
+
+		Map<String, Object> properties = new HashMap() {
+			{
+				put("ddm.form.instance.record.writer.type", "csv");
+				put("ddm.form.instance.record.writer.extension", "csv");
+			}
+		};
+
+		ddmFormInstanceRecordWriterTracker.removeDDMFormInstanceRecordWriter(
+			ddmFormInstanceRecordWriter, properties);
+
+		ddmFormInstanceRecordWriter =
+			ddmFormInstanceRecordWriterTracker.getDDMFormInstanceRecordWriter(
+				"csv");
+
+		Assert.assertNull(ddmFormInstanceRecordWriter);
+	}
+
+	protected void addDDMFormInstanceRecordCSVWriter(
+		DDMFormInstanceRecordWriterTrackerImpl
+			ddmFormInstanceRecordWriterTracker) {
+
+		DDMFormInstanceRecordWriter ddmFormInstanceRecordWriter =
+			new DDMFormInstanceRecordCSVWriter();
+
+		Map<String, Object> properties = new HashMap() {
+			{
+				put("ddm.form.instance.record.writer.type", "csv");
+				put("ddm.form.instance.record.writer.extension", "csv");
+			}
+		};
+
+		ddmFormInstanceRecordWriterTracker.addDDMFormInstanceRecordWriter(
+			ddmFormInstanceRecordWriter, properties);
+	}
+
+	protected void addDDMFormInstanceRecordJSONWriter(
+		DDMFormInstanceRecordWriterTrackerImpl
+			ddmFormInstanceRecordWriterTracker) {
+
+		DDMFormInstanceRecordWriter ddmFormInstanceRecordWriter =
+			new DDMFormInstanceRecordJSONWriter();
+
+		Map<String, Object> properties = new HashMap() {
+			{
+				put("ddm.form.instance.record.writer.type", "json");
+				put("ddm.form.instance.record.writer.extension", "json");
+			}
+		};
+
+		ddmFormInstanceRecordWriterTracker.addDDMFormInstanceRecordWriter(
+			ddmFormInstanceRecordWriter, properties);
+	}
 
 }
