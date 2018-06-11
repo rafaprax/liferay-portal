@@ -55,6 +55,16 @@ AUI.add(
 				instance._removeCurrentFieldFromRepetitionList();
 
 				instance._syncOtherRepeatableFields();
+
+				if (instance._DOMEventHandlers) {
+					instance._DOMEventHandlers.forEach(
+						function(handler) {
+							handler.detach();
+						}
+					);
+
+					instance._DOMEventHandlers = null;
+				}
 			},
 
 			copy: function() {

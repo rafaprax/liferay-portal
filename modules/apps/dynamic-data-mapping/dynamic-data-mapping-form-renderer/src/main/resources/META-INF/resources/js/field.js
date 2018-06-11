@@ -225,9 +225,13 @@ AUI.add(
 
 						var container = document.createDocumentFragment();
 
-						new renderer(instance.getTemplateContext(), container);
+						const metalComponent = new renderer(instance.getTemplateContext(), container);
 
-						return container.firstChild.outerHTML;
+						const html = container.firstChild.outerHTML;
+
+						metalComponent.dispose();
+
+						return html;
 					},
 
 					getTemplateContext: function() {

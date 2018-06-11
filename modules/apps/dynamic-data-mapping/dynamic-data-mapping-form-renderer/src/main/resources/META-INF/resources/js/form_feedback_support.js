@@ -19,6 +19,12 @@ AUI.add(
 				instance._createSpinner();
 			},
 
+			destructor: function() {
+				var instance = this;
+
+				instance._spinner = null;
+			},
+
 			clearValidationStatus: function() {
 				var instance = this;
 

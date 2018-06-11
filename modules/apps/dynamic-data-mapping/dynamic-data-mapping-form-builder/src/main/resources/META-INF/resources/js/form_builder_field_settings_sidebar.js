@@ -90,7 +90,7 @@ AUI.add(
 
 						previousField.get('container').addClass(previousField._yuid);
 
-						instance.settingsForm.destroy();
+						instance.destroyFieldSettingsForm();
 
 						instance._changeFieldTypeMenu(fieldType);
 
@@ -123,6 +123,8 @@ AUI.add(
 						if (instance.settingsForm) {
 							instance.settingsForm.destroy();
 						}
+
+						instance.settingsForm = null;
 					},
 
 					getFieldSettings: function() {
@@ -435,6 +437,8 @@ AUI.add(
 						if (content) {
 							content.hide();
 						}
+
+						instance.destroyFieldSettingsForm();
 					},
 
 					_isCopySettings: function(settingsFormFieldContext, previousSettingsFormFieldContext) {
@@ -492,6 +496,8 @@ AUI.add(
 
 					_loadFieldSettingsForm: function(field) {
 						var instance = this;
+
+						instance.destroyFieldSettingsForm();
 
 						field.loadSettingsForm().then(
 							function(settingsForm) {
