@@ -213,6 +213,10 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 			JSONArray jsonArray = _jsonFactory.createJSONArray(
 				String.valueOf(value));
 
+			if (jsonArray.length() == 0) {
+				return _EMPTY_JSON_ARRAY_STRING;
+			}
+
 			return (String)jsonArray.get(0);
 		}
 		catch (JSONException jsone) {
@@ -222,6 +226,20 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 
 			return String.valueOf(value);
 		}
+	}
+
+	protected String getSelectedOptionValue(
+		List<KeyValuePair> options, String ddmFormFieldName) {
+
+		String ddmFormFieldValue = getDDMFormFieldValue(ddmFormFieldName);
+
+		for (KeyValuePair option : options) {
+			if (Objects.equals(option.getValue(), ddmFormFieldValue)) {
+				return ddmFormFieldValue;
+			}
+		}
+
+		return _EMPTY_JSON_ARRAY_STRING;
 	}
 
 	protected void setDDMFormFieldOptions(
@@ -262,7 +280,11 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
 			getDDMFormFieldEvaluationResult(ddmFormFieldName);
 
-		if (ddmFormFieldEvaluationResult != null) {
+		String ddmFormFieldValue = getDDMFormFieldValue(ddmFormFieldName);
+
+		if ((ddmFormFieldEvaluationResult != null) &&
+			!Objects.equals(ddmFormFieldValue, value)) {
+
 			ddmFormFieldEvaluationResult.setValue(value);
 
 			ddmFormFieldEvaluationResult.setProperty("valueChanged", true);
@@ -291,6 +313,10 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 					ddmDataProviderResponseOutput.getValue(List.class);
 
 				setDDMFormFieldOptions(ddmFormFieldName, options);
+
+				setDDMFormFieldValue(
+					ddmFormFieldName,
+					getSelectedOptionValue(options, ddmFormFieldName));
 			}
 			else {
 				String value = ddmDataProviderResponseOutput.getValue(
@@ -300,6 +326,8 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 			}
 		}
 	}
+
+	private static final String _EMPTY_JSON_ARRAY_STRING = "[]";
 
 	private static final Log _log = LogFactoryUtil.getLog(CallFunction.class);
 

@@ -38,13 +38,15 @@ AUI.add(
 					},
 
 					_checkRequiredInputIsFilled: function(inputs, requiredInputs) {
+						var instance = this;
+
 						for (var input in inputs) {
-							if (requiredInputs[input]) {
-								return true;
+							if (requiredInputs[input] && !inputs[input]) {
+								return false;
 							}
 						}
 
-						return false;
+						return true;
 					},
 
 					_isEmpty: function(content) {
@@ -129,6 +131,18 @@ AUI.add(
 						return valid;
 					},
 
+					_isValidValues: function(object) {
+						var instance = this;
+
+						for (var key in object) {
+							if (!object[key]) {
+								return false;
+							}
+						}
+
+						return true;
+					},
+
 					_validateAction: function(action) {
 						var instance = this;
 
@@ -145,10 +159,10 @@ AUI.add(
 							var requiredInputs = action.requiredInputs;
 
 							if (!AObject.isEmpty(requiredInputs)) {
-								return !AObject.isEmpty(outputs) && !AObject.isEmpty(inputs) && instance._checkRequiredInputIsFilled(inputs, requiredInputs);
+								return instance._isValidValues(outputs) && instance._checkRequiredInputIsFilled(inputs, requiredInputs);
 							}
 
-							valid = !AObject.isEmpty(outputs);
+							valid = instance._isValidValues(outputs);
 						}
 						else if (action.action === 'calculate') {
 							valid = action.expression && action.target;
