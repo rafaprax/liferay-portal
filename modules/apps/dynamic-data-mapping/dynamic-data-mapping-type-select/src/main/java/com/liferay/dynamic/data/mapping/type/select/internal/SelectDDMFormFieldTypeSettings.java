@@ -96,7 +96,9 @@ public interface SelectDDMFormFieldTypeSettings
 
 	@DDMFormField(
 		label = "%create-list",
-		optionLabels = {"%manually", "%from-data-provider", "%from-autofill"},
+		optionLabels = {
+			"%manually", "%from-data-provider", "%from-autofill-rule"
+		},
 		optionValues = {"manual", "data-provider", "from-autofill"},
 		predefinedValue = "[\"manual\"]", type = "radio"
 	)
