@@ -95,10 +95,6 @@ AUI.add(
 			mode: {
 			},
 
-			translationManager: {
-				getter: '_getTranslationManager'
-			},
-
 			values: {
 				value: {}
 			}
@@ -209,12 +205,6 @@ AUI.add(
 
 				field.addTarget(form);
 
-				var translationManager = instance.get('translationManager');
-
-				if (translationManager) {
-					translationManager.addTarget(field);
-				}
-
 				return field;
 			},
 
@@ -261,18 +251,6 @@ AUI.add(
 				portletURL.setWindowState('pop_up');
 
 				return portletURL.toString();
-			},
-
-			_getTranslationManager: function(translationManager) {
-				var instance = this;
-
-				if (!A.instanceOf(instance, Liferay.DDM.Form)) {
-					var form = instance.getForm();
-
-					translationManager = form.get('translationManager');
-				}
-
-				return translationManager;
 			},
 
 			_valueFields: function() {
@@ -345,12 +323,26 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
-						instance.after(
-							{
-								'translationmanager:deleteAvailableLocale': instance._afterDeleteAvailableLocale,
-								'translationmanager:editingLocaleChange': instance._afterEditingLocaleChange
-							}
-						);
+						Liferay.on('inputLocalized:localeChanged', A.bind('_onLocaleChanged', instance));
+					},
+
+					_onLocaleChanged: function(event) {
+						var instance = this;
+
+						var currentLocale = instance.get('displayLocale');
+						var displayLocale = event.item.getAttribute('data-value');
+
+						instance.updateLocalizationMap(currentLocale);
+						instance.addLocaleToLocalizationMap(displayLocale);
+
+						//var localizable = instance.get('localizable');
+
+						instance.set('displayLocale', displayLocale);
+						//instance.set('readOnly', defaultLocale !== event.newVal && !localizable);
+
+						instance.syncLabelUI();
+						instance.syncValueUI();
+						instance.syncReadOnlyUI();
 					},
 
 					renderUI: function() {
@@ -589,26 +581,6 @@ AUI.add(
 						instance.get('container').remove(true);
 					},
 
-					removeNotAvailableLocales: function(localizationMap) {
-						var instance = this;
-
-						var parent = instance.get('parent');
-
-						var translationManager = parent.get('translationManager');
-
-						var availableLocales = translationManager.get('availableLocales');
-
-						if (availableLocales.length == 0) {
-							return;
-						}
-
-						for (var localization in localizationMap) {
-							if (availableLocales.indexOf(localization) == -1) {
-								delete localizationMap[localization];
-							}
-						}
-					},
-
 					renderRepeatableUI: function() {
 						var instance = this;
 
@@ -764,8 +736,6 @@ AUI.add(
 						if (dataType) {
 							instance.updateLocalizationMap(instance.get('displayLocale'));
 
-							instance.updateTranslationsDefaultValue();
-
 							fieldJSON.value = instance.get('localizationMap');
 
 							if (instance.get('localizable')) {
@@ -792,12 +762,6 @@ AUI.add(
 
 						var value = instance.getValue();
 
-						if (Lang.isObject(localizationMap)) {
-							if (AObject.keys(localizationMap).length != 0) {
-								this.removeNotAvailableLocales(localizationMap);
-							}
-						}
-
 						if (instance.get('localizable')) {
 							localizationMap[locale] = value;
 						}
@@ -806,27 +770,6 @@ AUI.add(
 						}
 
 						instance.set('localizationMap', localizationMap);
-					},
-
-					updateTranslationsDefaultValue: function() {
-						var instance = this;
-
-						var localizationMap = instance.get('localizationMap');
-						var parent = instance.get('parent');
-
-						var translationManager = parent.get('translationManager');
-
-						if (translationManager) {
-							translationManager.get('availableLocales').forEach(
-								function(item, index) {
-									var value = localizationMap[item];
-
-									if (Lang.isUndefined(value)) {
-										localizationMap[item] = instance.getValue();
-									}
-								}
-							);
-						}
 					},
 
 					_addFieldValidation: function(newField, originalField) {
@@ -870,53 +813,6 @@ AUI.add(
 
 							labelNode.append(tipNode);
 						}
-					},
-
-					_afterDeleteAvailableLocale: function(event) {
-						var instance = this;
-
-						var localizationMap = instance.get('localizationMap');
-
-						delete localizationMap[event.locale];
-
-						instance.set('localizationMap', localizationMap);
-					},
-
-					_afterEditingLocaleChange: function(event) {
-						var instance = this;
-
-						var translationManager = event.target;
-
-						var availableLocales = translationManager.get('availableLocales');
-
-						var defaultLocale = translationManager.get('defaultLocale');
-
-						var changeableDefaultLanguage = translationManager.get('changeableDefaultLanguage');
-
-						if (changeableDefaultLanguage && availableLocales && (availableLocales.indexOf(defaultLocale) == -1)) {
-							availableLocales.push(defaultLocale);
-
-							instance.set('availableLocales', availableLocales);
-						}
-
-						var locales = [defaultLocale].concat(availableLocales);
-
-						if (locales.indexOf(event.prevVal) > -1) {
-							instance.updateLocalizationMap(event.prevVal);
-						}
-
-						if (locales.indexOf(event.newVal) > -1) {
-							instance.addLocaleToLocalizationMap(event.newVal);
-						}
-
-						var localizable = instance.get('localizable');
-
-						instance.set('displayLocale', event.newVal);
-						instance.set('readOnly', defaultLocale !== event.newVal && !localizable);
-
-						instance.syncLabelUI();
-						instance.syncValueUI();
-						instance.syncReadOnlyUI();
 					},
 
 					_getLocalizable: function() {
@@ -2840,28 +2736,6 @@ AUI.add(
 						instance.get('container').toggle(!readOnly);
 					},
 
-					updateTranslationsDefaultValue: function() {
-						var instance = this;
-
-						var inputLocalized = Liferay.component(instance.getInputName());
-						var localizationMap = instance.get('localizationMap');
-
-						if (inputLocalized) {
-							inputLocalized.get('items').forEach(
-								function(item) {
-									var value = inputLocalized.getValue(item);
-
-									if (value.trim() !== '') {
-										localizationMap[item] = value;
-									}
-								}
-							);
-						}
-						else {
-							TextHTMLField.superclass.updateTranslationsDefaultValue.apply(instance, arguments);
-						}
-					},
-
 					_afterRenderTextHTMLField: function() {
 						var instance = this;
 
@@ -3075,7 +2949,6 @@ AUI.add(
 					},
 
 					displayLocale: {
-						valueFn: '_valueDisplayLocale'
 					},
 
 					formNode: {
@@ -3093,10 +2966,6 @@ AUI.add(
 
 					requestedLocale: {
 						validator: Lang.isString
-					},
-
-					translationManager: {
-						valueFn: '_valueTranslationManager'
 					}
 				},
 
@@ -3149,10 +3018,6 @@ AUI.add(
 						AArray.invoke(instance.eventHandlers, 'detach');
 						AArray.invoke(instance.get('fields'), 'destroy');
 
-						if (instance._translationManagerHandle) {
-							instance._translationManagerHandle.detach();
-						}
-
 						instance.get('container').remove();
 
 						instance.eventHandlers = null;
@@ -3163,12 +3028,6 @@ AUI.add(
 								item.destroy();
 							}
 						);
-
-						var translationManager = instance.get('translationManager');
-
-						if (translationManager) {
-							translationManager.destroy();
-						}
 
 						instance.repeatableInstances = null;
 					},
@@ -3410,37 +3269,6 @@ AUI.add(
 						instance.updateDDMFormInputValue();
 					},
 
-					_onTranslationManagerRegistered: function(event) {
-						var instance = this;
-
-						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
-
-						var translationManager = instance.get('translationManager');
-
-						translationManager.destroy();
-
-						translationManager = Liferay.component(translationManagerId);
-
-						translationManager.addTarget(instance);
-
-						AArray.each(
-							instance.get('fields'),
-							function(field) {
-								translationManager.addTarget(field);
-							}
-						);
-
-						instance.set('translationManager', translationManager);
-					},
-
-					_valueDisplayLocale: function() {
-						var instance = this;
-
-						var translationManager = instance.get('translationManager');
-
-						return translationManager.get('editingLocale');
-					},
-
 					_valueFormNode: function() {
 						var instance = this;
 
@@ -3461,31 +3289,6 @@ AUI.add(
 						}
 
 						return Liferay.Form.get(formName);
-					},
-
-					_valueTranslationManager: function() {
-						var instance = this;
-
-						var translationManagerId = instance.get('portletNamespace') + 'translationManager';
-
-						var translationManager = Liferay.component(translationManagerId);
-
-						if (!translationManager) {
-							translationManager = new Liferay.TranslationManager(
-								{
-									defaultLocale: instance.get('requestedLocale') || themeDisplay.getLanguageId()
-								}
-							);
-
-							instance._translationManagerHandle = Liferay.once(
-								translationManagerId + ':registered',
-								instance._onTranslationManagerRegistered.bind(instance)
-							);
-						}
-
-						translationManager.addTarget(instance);
-
-						return translationManager;
 					}
 				}
 			}
