@@ -69,16 +69,11 @@ boolean showCSVWarning = StringUtil.equals("enabled-with-warning", csvExport);
 				if ((fileExtensionSelect.val() === 'csv') && <%= showCSVWarning %>) {
 					csvWarning.show();
 
-					new A.Alert(
-						{
-							bodyContent: '<liferay-ui:message key="csv-warning-message" />',
-							boundingBox: '#<portlet:namespace />csvWarning',
-							closeable: false,
-							cssClass: 'alert-warning',
-							destroyOnHide: false,
-							render: true
-						}
-					);
+					csvWarning.html('<clay:alert
+										message='<%= LanguageUtil.get(resourceBundle, "csv-warning-message") %>'
+										style="warning"
+										title='<%= LanguageUtil.get(resourceBundle, "warning") %>'
+									/>');
 				}
 				else {
 					csvWarning.hide();
@@ -121,6 +116,18 @@ boolean showCSVWarning = StringUtil.equals("enabled-with-warning", csvExport);
 										click: function() {
 											submitForm(form, url, false);
 
+											dialog.hide();
+										}
+									}
+								}
+							],
+							header: [
+								{
+									cssClass: 'close',
+									discardDefaultButtonCssClasses: true,
+									labelHTML: Liferay.Util.getLexiconIconTpl('times'),
+									on: {
+										click: function() {
 											dialog.hide();
 										}
 									}
