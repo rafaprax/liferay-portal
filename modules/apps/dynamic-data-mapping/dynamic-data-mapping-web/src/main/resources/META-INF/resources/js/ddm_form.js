@@ -2789,58 +2789,12 @@ AUI.add(
 								'render': instance._afterRenderTextHTMLField
 							}
 						);
-
-						var eventHandles = [
-							Liferay.on('inputLocalized:localeChanged', A.bind('_onLocaleChanged', instance))
-						];
-
-						instance._eventHandles = eventHandles;
-
-						instance._updateValues();
-					},
-
-					destructor: function() {
-						var instance = this;
-
-						(new A.EventHandle(instance._eventHandles)).detach();
 					},
 
 					getEditor: function() {
 						var instance = this;
 
 						return window[instance.getInputName() + 'Editor'];
-					},
-
-					getInputName: function() {
-						var instance = this;
-
-						var inputNode;
-
-						if (instance.get('localizable')) {
-							var fieldsNamespace = instance.get('fieldsNamespace');
-							var portletNamespace = instance.get('portletNamespace');
-
-							var prefix = [portletNamespace];
-
-							if (fieldsNamespace) {
-								prefix.push(fieldsNamespace);
-							}
-
-							inputNode = prefix.concat(
-								[
-									instance.get('name'),
-									'_',
-									INSTANCE_ID_PREFIX,
-									'_',
-									instance.get('instanceId')
-								]
-							).join('');
-						}
-						else {
-							inputNode = TextHTMLField.superclass.getInputName().apply(instance, arguments);
-						}
-
-						return inputNode;
 					},
 
 					getValue: function() {
@@ -2915,25 +2869,6 @@ AUI.add(
 
 						container.placeAfter(instance.readOnlyText);
 						container.placeAfter(instance.readOnlyLabel);
-					},
-
-					_onLocaleChanged: function(event) {
-						var instance = this;
-
-						var languageId = event.item.getAttribute('data-value');
-
-						instance.set('displayLocale', languageId);
-					},
-
-					_updateValues: function() {
-						var instance = this;
-
-						var inputLocalized = Liferay.component(instance.getInputName());
-						var localizationMap = instance.get('localizationMap');
-
-						for (var languageId in localizationMap) {
-							inputLocalized.updateInputLanguage(localizationMap[languageId], languageId);
-						}
 					}
 				}
 			}
