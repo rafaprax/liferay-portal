@@ -121,7 +121,7 @@ AUI.add(
 						if (instance._isFormView()) {
 							instance.get('ruleBuilder').render(instance.one('#ruleBuilder'));
 							instance.createCopyPublishFormURLPopover();
-							instance.createPublishTooltip();
+							instance.createAutoSaveTooltip();
 						}
 					},
 
@@ -157,10 +157,7 @@ AUI.add(
 								A.one(nameEditor.element.$).on('keyup', A.bind('handleEditorTitleCopyAndPaste', instance)),
 								A.one(nameEditor.element.$).on('keypress', A.bind('handleEditorTitleCopyAndPaste', instance)),
 								instance.one('#preview').on('click', A.bind('_onPreviewButtonClick', instance)),
-								instance.one('#publish').on('click', A.bind('_onPublishButtonClick', instance)),
-								instance.one('#publishIcon').on('click', A.bind('_onPublishIconClick', instance)),
-								instance.one('#showForm').on('click', A.bind('_onFormButtonClick', instance)),
-								instance.one('#showRules').on('click', A.bind('_onRulesButtonClick', instance))
+								instance.one('#publish').on('click', A.bind('_onPublishButtonClick', instance))
 							);
 
 							var autosaveInterval = Liferay.DDM.FormSettings.autosaveInterval;
@@ -181,7 +178,7 @@ AUI.add(
 						if (instance._isFormView()) {
 							instance.get('ruleBuilder').destroy();
 							instance._copyPublishFormURLPopover.destroy();
-							instance._publishTooltip.destroy();
+							instance._autoSaveTooltip.destroy();
 						}
 
 						(new A.EventHandle(instance._eventHandlers)).detach();
@@ -195,6 +192,22 @@ AUI.add(
 						if (instance.isNotAllowedKey(e, textLimit) && (charCode != 91)) {
 							e.preventDefault();
 						}
+					},
+
+					createAutoSaveTooltip: function() {
+						var instance = this;
+
+						instance._autoSaveTooltip = new A.TooltipDelegate(
+							{
+								cssClass: 'clay-tooltip',
+								position: 'bottom',
+								trigger: '#autosaveMessage',
+								triggerHideEvent: ['blur', 'mouseleave'],
+								triggerShowEvent: ['focus', 'mouseover'],
+								visible: false,
+								zIndex: 900
+							}
+						);
 					},
 
 					createCopyPublishFormURLPopover: function() {
@@ -232,21 +245,6 @@ AUI.add(
 								}
 							);
 						}
-					},
-
-					createPublishTooltip: function() {
-						var instance = this;
-
-						instance._publishTooltip = new A.TooltipDelegate(
-							{
-								position: 'left',
-								trigger: '.publish-icon',
-								triggerHideEvent: ['blur', 'mouseleave'],
-								triggerShowEvent: ['focus', 'mouseover'],
-								visible: false,
-								zIndex: 900
-							}
-						);
 					},
 
 					disableDescriptionEditor: function() {
@@ -727,8 +725,6 @@ AUI.add(
 						A.one('.ddm-form-builder-buttons').addClass('hide');
 
 						instance.get(STR_TRANSLATION_MANAGER).hide();
-
-						instance.one('#showForm').removeClass('active');
 					},
 
 					_hideRuleBuilder: function() {
@@ -741,8 +737,6 @@ AUI.add(
 						var ruleBuilderAncestorNode = ruleBuilderNode.ancestor();
 
 						ruleBuilderAncestorNode.addClass('hide');
-
-						instance.one('#showRules').removeClass('active');
 
 						A.one('.portlet-forms').removeClass('liferay-ddm-form-rule-builder');
 					},
@@ -804,12 +798,6 @@ AUI.add(
 
 					_onFormButtonClick: function() {
 						var instance = this;
-
-						var ruleTab = instance.one('#showRules');
-
-						if (ruleTab.hasClass('disabled')) {
-							ruleTab.removeClass('disabled');
-						}
 
 						instance._hideRuleBuilder();
 
@@ -922,12 +910,6 @@ AUI.add(
 					_onRulesButtonClick: function() {
 						var instance = this;
 
-						var ruleTab = instance.one('#showRules');
-
-						if (ruleTab.hasClass('disabled')) {
-							return;
-						}
-
 						instance._hideFormBuilder();
 
 						instance._showRuleBuilder();
@@ -1034,8 +1016,6 @@ AUI.add(
 						A.one('.lfr-ddm-plus-button').removeClass('hide');
 
 						instance.get(STR_TRANSLATION_MANAGER).show();
-
-						instance.one('#showForm').addClass('active');
 					},
 
 					_showRuleBuilder: function() {
@@ -1059,8 +1039,6 @@ AUI.add(
 						}
 
 						A.one('.portlet-forms').addClass('liferay-ddm-form-rule-builder');
-
-						instance.one('#showRules').addClass('active');
 					},
 
 					_syncDescription: function() {
@@ -1112,7 +1090,13 @@ AUI.add(
 							]
 						);
 
-						instance.one('#autosaveMessage').set('innerHTML', autosaveMessage);
+						var autoSaveMessage = instance.one('#autosaveMessage');
+
+						autoSaveMessage.set('innerHTML', autosaveMessage);
+
+						var title = Liferay.Language.get('every-change-is-automatically-saved');
+
+						autoSaveMessage.attr('title', title);
 					}
 				}
 			}
