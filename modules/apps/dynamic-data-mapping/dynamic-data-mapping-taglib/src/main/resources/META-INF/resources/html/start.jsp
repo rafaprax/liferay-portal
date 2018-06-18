@@ -1,14 +1,4 @@
-<%@ taglib prefix="liferay-util" uri="http://liferay.com/tld/util" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Locale" %>
-<%@ page import="com.liferay.portal.kernel.util.LocaleUtil" %>
-<%@ page import="com.liferay.portal.kernel.theme.ThemeDisplay" %>
-<%@ page import="com.liferay.portal.kernel.util.WebKeys" %>
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.LocalizationUtil" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.LinkedHashSet" %>
-<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %><%--
+<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -28,21 +18,33 @@
 
 <div class="lfr-ddm-container" id="<%= randomNamespace %>">
 	<c:if test="<%= ddmForm != null %>">
-		<div class="input-group-item input-group-item-shrink input-localized-content" role="menu" style="margin-top: 24px; padding-top: 8px; border-top: solid 1px #ccc; justify-content: flex-end;">
+		<div class="input-group-item input-group-item-shrink input-localized-content" role="menu" style="border-top: solid 1px #ccc; justify-content: flex-end; margin-top: 24px; padding-top: 8px;">
+
 			<%
-            List<String> languageIds = new ArrayList<String>();
+			List<String> languageIds = new ArrayList<String>();
 
-            Locale defaultLocale = LocaleUtil.getSiteDefault();
-            String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
+			Locale defaultLocale = LocaleUtil.getSiteDefault();
 
-            languageIds.add(defaultLanguageId);
+			String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
 
-            Set<Locale> availableLocales = LanguageUtil.getAvailableLocales(themeDisplay.getSiteGroupId());
+			languageIds.add(defaultLanguageId);
+
+			Set<Locale> availableLocales = LanguageUtil.getAvailableLocales(themeDisplay.getSiteGroupId());
 
 			String normalizedDefaultLanguageId = StringUtil.replace(defaultLanguageId, '_', '-');
 			%>
 
-			<liferay-ui:icon-menu direction="left-side" id="Menu" icon="<%= StringUtil.toLowerCase(normalizedDefaultLanguageId) %>" markupView="lexicon" message="<%= StringPool.BLANK %>" showWhenSingleIcon="<%= true %>" triggerCssClass="input-localized-trigger" triggerLabel="<%= normalizedDefaultLanguageId %>" triggerType="button">
+			<liferay-ui:icon-menu
+				direction="left-side"
+				icon="<%= StringUtil.toLowerCase(normalizedDefaultLanguageId) %>"
+				id="Menu"
+				markupView="lexicon"
+				message="<%= StringPool.BLANK %>"
+				showWhenSingleIcon="<%= true %>"
+				triggerCssClass="input-localized-trigger"
+				triggerLabel="<%= normalizedDefaultLanguageId %>"
+				triggerType="button"
+			>
 				<div id="<portlet:namespace />PaletteBoundingBox">
 					<div class="input-localized-palette-container palette-container" id="<portlet:namespace />PaletteContentBox">
 
@@ -162,7 +164,7 @@
 					'<span class="inline-item">{flag}</span><span class="btn-section">{languageId}</span>',
 					{
 						flag: Liferay.Util.getLexiconIconTpl(languageId.toLowerCase()),
-						languageId: languageId,
+						languageId: languageId
 					}
 				);
 
@@ -179,5 +181,5 @@
 					item: event.target
 				}
 			);
-		}
+		};
 	</aui:script>
