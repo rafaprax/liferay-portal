@@ -353,23 +353,6 @@ AUI.add(
 						Liferay.on('inputLocalized:localeChanged', A.bind('_onLocaleChanged', instance));
 					},
 
-					_onLocaleChanged: function(event) {
-						var instance = this;
-
-						var currentLocale = instance.get('displayLocale');
-						var displayLocale = event.item.getAttribute('data-value');
-						var inputName = instance.getInputName();
-						var inputNode = instance.getInputNode();
-
-						instance.updateLocalizationMap(currentLocale);
-						instance.addLocaleToLocalizationMap(displayLocale);
-
-						instance.set('displayLocale', displayLocale);
-
-						instance.syncValueUI();
-						instance.syncReadOnlyUI();
-					},
-
 					renderUI: function() {
 						var instance = this;
 
@@ -842,6 +825,21 @@ AUI.add(
 						event.stopPropagation();
 					},
 
+					_onLocaleChanged: function(event) {
+						var instance = this;
+
+						var currentLocale = instance.get('displayLocale');
+						var displayLocale = event.item.getAttribute('data-value');
+
+						instance.updateLocalizationMap(currentLocale);
+						instance.addLocaleToLocalizationMap(displayLocale);
+
+						instance.set('displayLocale', displayLocale);
+
+						instance.syncValueUI();
+						instance.syncReadOnlyUI();
+					},
+
 					_removeFieldValidation: function(field) {
 						var instance = this;
 
@@ -1023,8 +1021,10 @@ AUI.add(
 
 						var datePicker = instance.getDatePicker();
 
+						var value;
+
 						if (!datePicker) {
-							return '';
+							value = '';
 						}
 
 						var selectedDate = datePicker.getDate();
@@ -1033,7 +1033,9 @@ AUI.add(
 
 						var inputNode = instance.getInputNode();
 
-						return inputNode.val() ? formattedDate : '';
+						value = inputNode.val() ? formattedDate : '';
+
+						return value;
 					},
 
 					repeat: function() {
@@ -3103,13 +3105,17 @@ AUI.add(
 
 										var dragNode = event.drag.get('node');
 
-										var dragNodeAncestor =  dragNode.ancestor();
+										var dragNodeAncestor = dragNode.ancestor();
+
+										var conditionFulfilled;
 
 										if (dropNodeAncestor.get('id') != dragNodeAncestor.get('id')) {
-											return false;
+											conditionFulfilled = false;
 										}
 
-										return dropNode.getData('fieldName') === fieldName;
+										conditionFulfilled = dropNode.getData('fieldName') === fieldName;
+
+										return conditionFulfilled;
 									}
 								}
 							);
