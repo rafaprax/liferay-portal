@@ -86,6 +86,7 @@ AUI.add(
 			},
 
 			displayLocale: {
+				valueFn: '_valueDisplayLocale'
 			},
 
 			fields: {
@@ -119,6 +120,20 @@ AUI.add(
 				var fieldInstanceId = fieldNode.getData('fieldNamespace');
 
 				return fieldInstanceId.replace(INSTANCE_ID_PREFIX, '');
+			},
+
+			getDefaultLocale: function() {
+				var instance = this;
+
+				var defaultLocale = themeDisplay.getDefaultLanguageId();
+
+				var definition = instance.get('definition');
+
+				if (definition) {
+					defaultLocale = definition.defaultLanguageId;
+				}
+
+				return defaultLocale;
 			},
 
 			getFieldInfo: function(tree, key, value) {
@@ -253,6 +268,18 @@ AUI.add(
 				return portletURL.toString();
 			},
 
+			_valueDisplayLocale: function() {
+				var instance = this;
+
+				var displayLocale = instance.get('displayLocale');
+
+				if (!displayLocale) {
+					displayLocale = instance.getDefaultLocale();
+				}
+
+				return displayLocale;
+			},
+
 			_valueFields: function() {
 				var instance = this;
 
@@ -331,16 +358,14 @@ AUI.add(
 
 						var currentLocale = instance.get('displayLocale');
 						var displayLocale = event.item.getAttribute('data-value');
+						var inputName = instance.getInputName();
+						var inputNode = instance.getInputNode();
 
 						instance.updateLocalizationMap(currentLocale);
 						instance.addLocaleToLocalizationMap(displayLocale);
 
-						//var localizable = instance.get('localizable');
-
 						instance.set('displayLocale', displayLocale);
-						//instance.set('readOnly', defaultLocale !== event.newVal && !localizable);
 
-						instance.syncLabelUI();
 						instance.syncValueUI();
 						instance.syncReadOnlyUI();
 					},
@@ -353,7 +378,6 @@ AUI.add(
 							instance.syncRepeatablelUI();
 						}
 
-						instance.syncLabelUI();
 						instance.syncValueUI();
 
 						AArray.invoke(instance.get('fields'), 'renderUI');
@@ -377,26 +401,20 @@ AUI.add(
 
 						var localizationMap = instance.get('localizationMap');
 
-						if (!localizationMap[locale]) {
+						if (Lang.isUndefined(localizationMap[locale])) {
 							var predefinedValue = instance.getPredefinedValueByLocale(locale);
 
 							if (predefinedValue) {
 								localizationMap[locale] = predefinedValue;
 							}
 							else {
-								var name = instance.get('name');
+								var defaultLocale = instance.getDefaultLocale();
 
-								var field = instance.getFieldByNameInFieldDefinition(name);
-
-								if (field && field.type) {
-									var type = field.type;
-
-									if (type === 'radio' || type === 'select') {
-										localizationMap[locale] = instance.getValue();
-									}
-									else {
-										localizationMap[locale] = '';
-									}
+								if (defaultLocale && localizationMap[defaultLocale]) {
+									localizationMap[locale] = localizationMap[defaultLocale];
+								}
+								else {
+									localizationMap[locale] = '';
 								}
 							}
 						}
@@ -424,20 +442,6 @@ AUI.add(
 						field.set('parent', parent);
 
 						return field;
-					},
-
-					getDefaultLocale: function() {
-						var instance = this;
-
-						var defaultLocale = themeDisplay.getDefaultLanguageId();
-
-						var definition = instance.get('definition');
-
-						if (definition) {
-							defaultLocale = definition.defaultLanguageId;
-						}
-
-						return defaultLocale;
 					},
 
 					getFieldByNameInFieldDefinition: function(name) {
@@ -522,8 +526,16 @@ AUI.add(
 
 						var predefinedValue;
 
-						if (field && field.predefinedValue && field.predefinedValue[locale]) {
-							predefinedValue = field.predefinedValue[locale];
+						if (field) {
+							var type = field.type;
+
+							if (field.predefinedValue && field.predefinedValue[locale]) {
+								predefinedValue = field.predefinedValue[locale];
+							}
+
+							if (type == 'select' && predefinedValue == '[""]') {
+								predefinedValue = '';
+							}
 						}
 
 						return predefinedValue;
@@ -635,23 +647,7 @@ AUI.add(
 
 						if (Lang.isValue(value)) {
 							inputNode.val(value);
-
-							inputNode.set('defaultValue', value);
 						}
-					},
-
-					syncLabelUI: function() {
-						var instance = this;
-
-						var defaultLocale = instance.getDefaultLocale();
-
-						var fieldDefinition = instance.getFieldDefinition();
-
-						var labelsMap = fieldDefinition.label;
-
-						var label = labelsMap[instance.get('displayLocale')] || labelsMap[defaultLocale];
-
-						instance.setLabel(label);
 					},
 
 					syncReadOnlyUI: function() {
@@ -1081,6 +1077,9 @@ AUI.add(
 
 							datePicker.selectDates(date);
 						}
+						else {
+							datePicker.selectDates('');
+						}
 					}
 				}
 			}
@@ -1302,9 +1301,13 @@ AUI.add(
 					syncUI: function() {
 						var instance = this;
 
-						var clearButtonNode = A.one('#' + instance.getInputName() + 'ClearButton');
-
 						var parsedValue = instance.getParsedValue(instance.getValue());
+
+						var titleNode = A.one('#' + instance.getInputName() + 'Title');
+
+						titleNode.val(parsedValue.title || '');
+
+						var clearButtonNode = A.one('#' + instance.getInputName() + 'ClearButton');
 
 						clearButtonNode.toggle(!!parsedValue.classPK);
 					},
@@ -1340,14 +1343,6 @@ AUI.add(
 						url.setWindowState('pop_up');
 
 						return url;
-					},
-
-					setTitle: function(title) {
-						var instance = this;
-
-						var titleNode = A.one('#' + instance.getInputName() + 'Title');
-
-						titleNode.val(title);
 					},
 
 					setValue: function(value) {
@@ -1415,7 +1410,6 @@ AUI.add(
 					_handleClearButtonClick: function() {
 						var instance = this;
 
-						instance.setTitle('');
 						instance.setValue('');
 					},
 
@@ -1438,12 +1432,11 @@ AUI.add(
 								if (event.details.length > 0) {
 									var selectedWebContent = event.details[0];
 
-									instance.setTitle(selectedWebContent.assettitle || '');
-
 									instance.setValue(
 										{
 											className: selectedWebContent.assetclassname,
-											classPK: selectedWebContent.assetclasspk
+											classPK: selectedWebContent.assetclasspk,
+											title: selectedWebContent.assettitle || ''
 										}
 									);
 								}
@@ -2946,9 +2939,6 @@ AUI.add(
 
 					ddmFormValuesInput: {
 						setter: A.one
-					},
-
-					displayLocale: {
 					},
 
 					formNode: {
