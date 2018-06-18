@@ -18,6 +18,87 @@
 
 <div class="lfr-ddm-container" id="<%= randomNamespace %>">
 	<c:if test="<%= ddmForm != null %>">
+		<div class="input-group-item input-group-item-shrink input-localized-content" role="menu" style="border-top: solid 1px #ccc; justify-content: flex-end; margin-top: 24px; padding-top: 8px;">
+
+			<%
+			List<String> languageIds = new ArrayList<String>();
+
+			Locale defaultLocale = LocaleUtil.getSiteDefault();
+
+			String defaultLanguageId = LocaleUtil.toLanguageId(defaultLocale);
+
+			languageIds.add(defaultLanguageId);
+
+			Set<Locale> availableLocales = LanguageUtil.getAvailableLocales(themeDisplay.getSiteGroupId());
+
+			String normalizedDefaultLanguageId = StringUtil.replace(defaultLanguageId, '_', '-');
+			%>
+
+			<liferay-ui:icon-menu
+				direction="left-side"
+				icon="<%= StringUtil.toLowerCase(normalizedDefaultLanguageId) %>"
+				id="Menu"
+				markupView="lexicon"
+				message="<%= StringPool.BLANK %>"
+				showWhenSingleIcon="<%= true %>"
+				triggerCssClass="input-localized-trigger"
+				triggerLabel="<%= normalizedDefaultLanguageId %>"
+				triggerType="button"
+			>
+				<div id="<portlet:namespace />PaletteBoundingBox">
+					<div class="input-localized-palette-container palette-container" id="<portlet:namespace />PaletteContentBox">
+
+						<%
+						LinkedHashSet<String> uniqueLanguageIds = new LinkedHashSet<String>();
+
+						uniqueLanguageIds.add(defaultLanguageId);
+
+						for (Locale availableLocale : availableLocales) {
+							String curLanguageId = LocaleUtil.toLanguageId(availableLocale);
+
+							uniqueLanguageIds.add(curLanguageId);
+						}
+
+						int index = 0;
+
+						for (String curLanguageId : uniqueLanguageIds) {
+							String linkCssClass = "dropdown-item palette-item";
+
+							Locale curLocale = LocaleUtil.fromLanguageId(curLanguageId);
+
+							String title = HtmlUtil.escapeAttribute(curLocale.getDisplayName(LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request)))) + " " + LanguageUtil.get(LocaleUtil.getDefault(), "translation");
+
+							Map<String, Object> data = new HashMap<String, Object>();
+
+							data.put("languageid", curLanguageId);
+
+							Map<String, Object> iconData = new HashMap<>();
+							iconData.put("index", index++);
+							iconData.put("languageid", curLanguageId);
+							iconData.put("value", curLanguageId);
+							%>
+
+							<liferay-ui:icon
+								alt="<%= title %>"
+								data="<%= iconData %>"
+								icon="<%= StringUtil.toLowerCase(StringUtil.replace(curLanguageId, '_', '-')) %>"
+								iconCssClass="inline-item inline-item-before"
+								linkCssClass="<%= linkCssClass %>"
+								markupView="lexicon"
+								message="<%= StringUtil.replace(curLanguageId, '_', '-') %>"
+								onClick="event.preventDefault(); fireLocaleChanged(event);"
+								url="javascript:;"
+							>
+							</liferay-ui:icon>
+
+						<%
+						}
+						%>
+
+					</div>
+				</div>
+			</liferay-ui:icon-menu>
+		</div>
 
 		<%
 		request.setAttribute("checkRequired", checkRequired);
@@ -70,3 +151,35 @@
 			Liferay.on('destroyPortlet', onDestroyPortlet);
 		</aui:script>
 	</c:if>
+
+	<aui:script use="aui-base">
+		Liferay.on(
+			'inputLocalized:localeChanged',
+			function(event) {
+				var languageId = event.item.getAttribute('data-value');
+
+				languageId = languageId.replace('_', '-');
+
+				var triggerContent = AUI().Lang.sub(
+					'<span class="inline-item">{flag}</span><span class="btn-section">{languageId}</span>',
+					{
+						flag: Liferay.Util.getLexiconIconTpl(languageId.toLowerCase()),
+						languageId: languageId
+					}
+				);
+
+				var trigger = A.one('#<portlet:namespace />Menu');
+
+				trigger.setHTML(triggerContent);
+			}
+		);
+
+		window.fireLocaleChanged = function(event) {
+			Liferay.fire(
+				'inputLocalized:localeChanged',
+				{
+					item: event.target
+				}
+			);
+		};
+	</aui:script>
