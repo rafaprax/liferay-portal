@@ -88,8 +88,8 @@ public class DDLServiceUpgrade implements UpgradeStepRegistrator {
 			"1.1.3", "1.2.0",
 			new com.liferay.dynamic.data.lists.internal.upgrade.v1_2_0.
 				UpgradeDDLRecordSet(
-					_classNameLocalService, _ddmFormInstanceLocalService,
-					_ddmStructureLinkLocalService,
+					_classNameLocalService, _counterLocalService,
+					_ddmFormInstanceLocalService, _ddmStructureLinkLocalService,
 					_portletPreferencesLocalService,
 					_resourcePermissionLocalService),
 			new com.liferay.dynamic.data.lists.internal.upgrade.v1_2_0.

@@ -50,7 +50,7 @@ public class UpgradeDDLRecordSetTest {
 
 	protected void setUpUpgradeDDLRecordSetSettings() {
 		_upgradeDDLRecordSet = new UpgradeDDLRecordSet(
-			null, null, null, null, null);
+			null, null, null,null, null, null);
 	}
 
 	private UpgradeDDLRecordSet _upgradeDDLRecordSet;

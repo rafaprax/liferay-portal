@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.lists.internal.upgrade.v1_2_0;
 
+import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.dynamic.data.lists.model.DDLRecordSetConstants;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalService;
@@ -44,12 +45,14 @@ public class UpgradeDDLRecordSet extends UpgradeProcess {
 
 	public UpgradeDDLRecordSet(
 		ClassNameLocalService classNameLocalService,
+		CounterLocalService counterLocalService,
 		DDMFormInstanceLocalService ddmFormInstanceLocalService,
 		DDMStructureLinkLocalService ddmStructureLinkLocalService,
 		PortletPreferencesLocalService portletPreferencesLocalService,
 		ResourcePermissionLocalService resourcePermissionLocalService) {
 
 		_classNameLocalService = classNameLocalService;
+		_counterLocalService = counterLocalService;
 		_ddmFormInstanceLocalService = ddmFormInstanceLocalService;
 		_ddmStructureLinkLocalService = ddmStructureLinkLocalService;
 		_portletPreferencesLocalService = portletPreferencesLocalService;
@@ -134,7 +137,18 @@ public class UpgradeDDLRecordSet extends UpgradeProcess {
 						"com_liferay_dynamic_data_lists_form_web_portlet_" +
 							"DDLFormAdminPortlet",
 						"com_liferay_dynamic_data_mapping_form_web_portlet_" +
-							"DDMFormAdminPortlet");
+							"DDMFormAdminPortlet",
+						false);
+
+					upgradeResourcePermission(
+						"com.liferay.dynamic.data.lists",
+						"com.liferay.dynamic.data.mapping", true);
+
+					upgradeResourcePermission(
+						"com.liferay.dynamic.data.lists.model.DDLRecordSet",
+						"com.liferay.dynamic.data.mapping.model." +
+							"DDMFormInstance",
+						true);
 
 					updateInstanceablePortletPreferences(
 						ddmFormInstance.getFormInstanceId(), recordSetId,
@@ -285,7 +299,8 @@ public class UpgradeDDLRecordSet extends UpgradeProcess {
 		actionableDynamicQuery.performActions();
 	}
 
-	protected void upgradeResourcePermission(String oldName, String newName)
+	protected void upgradeResourcePermission(
+			String oldName, String newName, boolean addNewEntry)
 		throws Exception {
 
 		ActionableDynamicQuery actionableDynamicQuery =
@@ -308,14 +323,32 @@ public class UpgradeDDLRecordSet extends UpgradeProcess {
 						resourcePermission.setPrimKey(newName);
 					}
 
+					if (addNewEntry) {
+						ResourcePermission existingResourcePermission =
+							_resourcePermissionLocalService.
+								fetchResourcePermission(
+									resourcePermission.getCompanyId(),
+									resourcePermission.getName(),
+									resourcePermission.getScope(),
+									resourcePermission.getPrimKey(),
+									resourcePermission.getRoleId());
+
+						if (existingResourcePermission == null) {
+							resourcePermission.setResourcePermissionId(
+								_counterLocalService.increment());
+						}
+					}
+
 					_resourcePermissionLocalService.updateResourcePermission(
 						resourcePermission);
+
 				});
 
 		actionableDynamicQuery.performActions();
 	}
 
 	private final ClassNameLocalService _classNameLocalService;
+	private final CounterLocalService _counterLocalService;
 	private final DDMFormInstanceLocalService _ddmFormInstanceLocalService;
 	private final DDMStructureLinkLocalService _ddmStructureLinkLocalService;
 	private final PortletPreferencesLocalService
