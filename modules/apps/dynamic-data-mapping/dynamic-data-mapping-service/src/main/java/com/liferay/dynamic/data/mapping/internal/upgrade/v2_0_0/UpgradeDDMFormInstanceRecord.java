@@ -99,9 +99,10 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		StringBundler sb1 = new StringBundler(4);
+		StringBundler sb1 = new StringBundler(5);
 
-		sb1.append("select DDLRecord.*, DDMFormInstance.version as ");
+		sb1.append("select DDLRecord.*, DDMFormInstance.groupId as ");
+		sb1.append("formInstanceGroupId, DDMFormInstance.version as ");
 		sb1.append("formInstanceVersion from DDLRecord inner join ");
 		sb1.append("DDMFormInstance on DDLRecord.recordSetId = ");
 		sb1.append("DDMFormInstance.formInstanceId");
@@ -125,7 +126,7 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 			while (rs.next()) {
 				String uuid = PortalUUIDUtil.generate();
 				long recordId = rs.getLong("recordId");
-				long groupId = rs.getLong("groupId");
+				long groupId = rs.getLong("formInstanceGroupId");
 				long userId = rs.getLong("userId");
 				Timestamp createDate = rs.getTimestamp("createDate");
 				Timestamp modifiedDate = rs.getTimestamp("modifiedDate");
