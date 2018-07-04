@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 
 import java.sql.PreparedStatement;
@@ -53,18 +53,17 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 			String formInstanceName)
 		throws Exception {
 
-		String defaultLanguageId = LocalizationUtil.getDefaultLanguageId(
-			formInstanceName);
+		Locale defautLocale = LocaleUtil.fromLanguageId(
+			LocalizationUtil.getDefaultLanguageId(formInstanceName));
 		Map<Locale, String> localizationMap =
 			LocalizationUtil.getLocalizationMap(formInstanceName);
 
-		if (Validator.isNotNull(defaultLanguageId) &&
-			localizationMap.containsKey(defaultLanguageId)) {
+		if ((defautLocale != null) &&
+			localizationMap.containsKey(defautLocale)) {
 
 			String title = LanguageUtil.format(
-				getResourceBundle(LanguageUtil.getLocale(defaultLanguageId)),
-				"new-entry-for-form-x", localizationMap.get(defaultLanguageId),
-				false);
+				getResourceBundle(defautLocale), "new-entry-for-form-x",
+				localizationMap.get(defautLocale), false);
 
 			_assetEntryLocalService.updateEntry(
 				userId, groupId, createDate, modifiedDate,
