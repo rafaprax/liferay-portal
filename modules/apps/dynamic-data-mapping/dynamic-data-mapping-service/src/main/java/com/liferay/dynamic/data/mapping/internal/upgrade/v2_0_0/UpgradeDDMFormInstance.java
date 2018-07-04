@@ -58,25 +58,6 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 		_resourcePermissionLocalService = resourcePermissionLocalService;
 	}
 
-	public long getLatestStructureVersionId(long ddmStructureId)
-		throws SQLException {
-
-		try (PreparedStatement ps = connection.prepareStatement(
-				"select structureVersionId from DDMStructureVersion where " +
-					"structureId = ? order by createDate desc")) {
-
-			ps.setLong(1, ddmStructureId);
-
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					return rs.getLong("structureVersionId");
-				}
-
-				return 0;
-			}
-		}
-	}
-
 	protected void deleteDDLRecordSet(long ddmStructureId, long recordSetId)
 		throws SQLException {
 
@@ -105,21 +86,30 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		StringBundler sb = new StringBundler(5);
+		StringBundler sb1 = new StringBundler(7);
 
-		sb.append("insert into DDMFormInstance(uuid_, formInstanceId, ");
-		sb.append("groupId, companyId, userId, userName, versionUserId, ");
-		sb.append("versionUserName, createDate, modifiedDate, structureId, ");
-		sb.append("version, name, description, settings_, lastPublishDate) ");
-		sb.append("values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sb1.append("select DDLRecordSet.*, TEMP.structureVersionId from ");
+		sb1.append("DDLRecordSet inner join (select structureId, ");
+		sb1.append("max(structureVersionId) as structureVersionId from ");
+		sb1.append("DDMStructureVersion group by ");
+		sb1.append("DDMStructureVersion.structureId) TEMP on ");
+		sb1.append("DDLRecordSet.DDMStructureId = TEMP.structureId where ");
+		sb1.append("scope = 2");
+
+		StringBundler sb2 = new StringBundler(5);
+
+		sb2.append("insert into DDMFormInstance(uuid_, formInstanceId, ");
+		sb2.append("groupId, companyId, userId, userName, versionUserId, ");
+		sb2.append("versionUserName, createDate, modifiedDate, structureId, ");
+		sb2.append("version, name, description, settings_, lastPublishDate) ");
+		sb2.append("values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 		try (PreparedStatement ps1 = connection.prepareStatement(
-				"select DDLRecordSet.* from DDLRecordSet where " +
-					"DDLRecordSet.scope = " + _SCOPE_FORMS);
+				sb1.toString());
 			ResultSet rs = ps1.executeQuery();
 			PreparedStatement ps2 =
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
-					connection, sb.toString())) {
+					connection, sb2.toString())) {
 
 			while (rs.next()) {
 				long recordSetId = rs.getLong("recordSetId");
@@ -133,6 +123,7 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 				String description = rs.getString("description");
 				String settings = rs.getString("settings_");
 				Timestamp lastPublishDate = rs.getTimestamp("lastPublishDate");
+				long structureVersionId = rs.getLong("structureVersionId");
 
 				ps2.setString(1, PortalUUIDUtil.generate());
 				ps2.setLong(2, recordSetId);
@@ -156,8 +147,8 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 				upgradeDDMFormInstanceVersion(
 					groupId, companyId, userId, userName, createDate,
-					recordSetId, structureId, name, description, settings,
-					lastPublishDate);
+					recordSetId, structureVersionId, name, description,
+					settings, lastPublishDate);
 
 				upgradeResourcePermission(
 					recordSetId,
@@ -297,7 +288,7 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 	protected void upgradeDDMFormInstanceVersion(
 			long groupId, long companyId, long userId, String userName,
-			Timestamp createDate, long formInstanceId, long structureId,
+			Timestamp createDate, long formInstanceId, long structureVersionId,
 			String name, String description, String settings,
 			Timestamp statusDate)
 		throws SQLException {
@@ -322,7 +313,7 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 			ps2.setString(5, userName);
 			ps2.setTimestamp(6, createDate);
 			ps2.setLong(7, formInstanceId);
-			ps2.setLong(8, getLatestStructureVersionId(structureId));
+			ps2.setLong(8, structureVersionId);
 			ps2.setString(9, name);
 			ps2.setString(10, description);
 			ps2.setString(11, settings);
@@ -395,8 +386,6 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 		actionableDynamicQuery.performActions();
 	}
-
-	private static final int _SCOPE_FORMS = 2;
 
 	private final ClassNameLocalService _classNameLocalService;
 	private final CounterLocalService _counterLocalService;

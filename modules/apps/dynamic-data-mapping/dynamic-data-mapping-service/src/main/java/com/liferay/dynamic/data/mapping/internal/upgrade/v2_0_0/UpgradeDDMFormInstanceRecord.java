@@ -49,26 +49,14 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 
 	protected void addAssetEntry(
 			String uuid, long formInstanceRecordId, long groupId, long userId,
-			Timestamp createDate, Timestamp modifiedDate, long formInstanceId)
+			Timestamp createDate, Timestamp modifiedDate,
+			String formInstanceName)
 		throws Exception {
 
-		String defaultLanguageId = null;
-		Map<Locale, String> localizationMap = null;
-
-		try (PreparedStatement ps = connection.prepareStatement(
-				"select name from DDMFormInstance where formInstanceId = ?")) {
-
-			ps.setLong(1, formInstanceId);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next()) {
-				String name = rs.getString("name");
-
-				defaultLanguageId = LocalizationUtil.getDefaultLanguageId(name);
-				localizationMap = LocalizationUtil.getLocalizationMap(name);
-			}
-		}
+		String defaultLanguageId = LocalizationUtil.getDefaultLanguageId(
+			formInstanceName);
+		Map<Locale, String> localizationMap =
+			LocalizationUtil.getLocalizationMap(formInstanceName);
 
 		if (Validator.isNotNull(defaultLanguageId) &&
 			localizationMap.containsKey(defaultLanguageId)) {
@@ -99,11 +87,12 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		StringBundler sb1 = new StringBundler(5);
+		StringBundler sb1 = new StringBundler(6);
 
 		sb1.append("select DDLRecord.*, DDMFormInstance.groupId as ");
 		sb1.append("formInstanceGroupId, DDMFormInstance.version as ");
-		sb1.append("formInstanceVersion from DDLRecord inner join ");
+		sb1.append("formInstanceVersion, DDMFormInstance.name as ");
+		sb1.append("formInstanceName from DDLRecord inner join ");
 		sb1.append("DDMFormInstance on DDLRecord.recordSetId = ");
 		sb1.append("DDMFormInstance.formInstanceId");
 
@@ -130,7 +119,6 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 				long userId = rs.getLong("userId");
 				Timestamp createDate = rs.getTimestamp("createDate");
 				Timestamp modifiedDate = rs.getTimestamp("modifiedDate");
-				long recordSetId = rs.getLong("recordSetId");
 
 				ps2.setString(1, uuid);
 				ps2.setLong(2, recordId);
@@ -143,7 +131,7 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 				ps2.setTimestamp(9, createDate);
 				ps2.setTimestamp(10, modifiedDate);
 
-				ps2.setLong(11, recordSetId);
+				ps2.setLong(11, rs.getLong("recordSetId"));
 				ps2.setString(12, rs.getString("formInstanceVersion"));
 				ps2.setLong(13, rs.getLong("DDMStorageId"));
 				ps2.setString(14, rs.getString("version"));
@@ -153,7 +141,7 @@ public class UpgradeDDMFormInstanceRecord extends UpgradeProcess {
 
 				addAssetEntry(
 					uuid, recordId, groupId, userId, createDate, modifiedDate,
-					recordSetId);
+					rs.getString("formInstanceName"));
 
 				ps2.addBatch();
 			}
