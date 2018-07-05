@@ -49,8 +49,7 @@ public class UpgradeDDMFormInstanceTest {
 	}
 
 	protected void setUpUpgradeDDMFormInstanceSettings() {
-		_upgradeDDMFormInstance = new UpgradeDDMFormInstance(
-			null, null, null, null);
+		_upgradeDDMFormInstance = new UpgradeDDMFormInstance(null, null, null);
 	}
 
 	private UpgradeDDMFormInstance _upgradeDDMFormInstance;
