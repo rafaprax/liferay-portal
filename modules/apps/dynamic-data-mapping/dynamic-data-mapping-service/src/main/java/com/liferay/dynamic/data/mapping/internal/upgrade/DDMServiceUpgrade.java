@@ -134,7 +134,8 @@ public class DDMServiceUpgrade implements UpgradeStepRegistrator {
 			new com.liferay.dynamic.data.mapping.internal.upgrade.v1_2_1.
 				UpgradeDDMFormInstance(
 					_classNameLocalService, _counterLocalService,
-					_portletPreferencesLocalService,
+					_portletPreferencesLocalService, _resourceActions,
+					_resourceActionLocalService,
 					_resourcePermissionLocalService),
 			new com.liferay.dynamic.data.mapping.internal.upgrade.v1_2_1.
 				UpgradeDDMFormInstanceRecordVersion(),
