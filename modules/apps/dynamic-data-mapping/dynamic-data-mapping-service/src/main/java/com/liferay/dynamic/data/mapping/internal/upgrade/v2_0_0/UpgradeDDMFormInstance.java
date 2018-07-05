@@ -19,18 +19,13 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceConstants;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.Junction;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
-import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -38,8 +33,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
-import java.util.Objects;
 
 /**
  * @author Leonardo Barros
@@ -49,12 +42,10 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 	public UpgradeDDMFormInstance(
 		ClassNameLocalService classNameLocalService,
 		CounterLocalService counterLocalService,
-		PortletPreferencesLocalService portletPreferencesLocalService,
 		ResourcePermissionLocalService resourcePermissionLocalService) {
 
 		_classNameLocalService = classNameLocalService;
 		_counterLocalService = counterLocalService;
-		_portletPreferencesLocalService = portletPreferencesLocalService;
 		_resourcePermissionLocalService = resourcePermissionLocalService;
 	}
 
@@ -162,19 +153,6 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 							"model.DDMStructure",
 					false);
 
-				upgradeResourcePermission(
-					"com_liferay_dynamic_data_lists_form_web_portlet_" +
-						"DDLFormAdminPortlet",
-					"com_liferay_dynamic_data_mapping_form_web_portlet_" +
-						"DDMFormAdminPortlet");
-
-				updateInstanceablePortletPreferences(
-					recordSetId,
-					"com_liferay_dynamic_data_lists_form_web_portlet_" +
-						"DDLFormPortlet",
-					"com_liferay_dynamic_data_mapping_form_web_portlet_" +
-						"DDMFormPortlet");
-
 				deleteDDLRecordSet(structureId, recordSetId);
 
 				ps2.addBatch();
@@ -235,55 +213,6 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 			ps.executeUpdate();
 		}
-	}
-
-	protected void updateInstanceablePortletPreferences(
-			long recordSetId, String oldPortletId, String newPortletId)
-		throws Exception {
-
-		ActionableDynamicQuery actionableDynamicQuery =
-			_portletPreferencesLocalService.getActionableDynamicQuery();
-
-		actionableDynamicQuery.setAddCriteriaMethod(
-			dynamicQuery -> {
-				Junction junction = RestrictionsFactoryUtil.disjunction();
-
-				Property property = PropertyFactoryUtil.forName("portletId");
-
-				junction.add(property.eq(oldPortletId));
-				junction.add(property.like(oldPortletId + "_INSTANCE_%"));
-				junction.add(
-					property.like(oldPortletId + "_USER_%_INSTANCE_%"));
-
-				dynamicQuery.add(junction);
-			});
-		actionableDynamicQuery.setPerformActionMethod(
-			(ActionableDynamicQuery.PerformActionMethod<PortletPreferences>)
-				portletPreference -> updatePortletPreferences(
-					recordSetId, recordSetId, oldPortletId, newPortletId,
-					portletPreference));
-
-		actionableDynamicQuery.performActions();
-	}
-
-	protected void updatePortletPreferences(
-		long ddmFormInstanceId, long recordSetId, String oldPortletId,
-		String newPortletId, PortletPreferences portletPreferences) {
-
-		portletPreferences.setPortletId(
-			StringUtil.replace(
-				portletPreferences.getPortletId(), oldPortletId, newPortletId));
-
-		String preferences = portletPreferences.getPreferences();
-
-		preferences = StringUtil.replace(
-			preferences, String.valueOf(recordSetId),
-			String.valueOf(ddmFormInstanceId));
-
-		portletPreferences.setPreferences(preferences);
-
-		_portletPreferencesLocalService.updatePortletPreferences(
-			portletPreferences);
 	}
 
 	protected void upgradeDDMFormInstanceVersion(
@@ -357,40 +286,8 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 		actionableDynamicQuery.performActions();
 	}
 
-	protected void upgradeResourcePermission(String oldName, String newName)
-		throws Exception {
-
-		ActionableDynamicQuery actionableDynamicQuery =
-			_resourcePermissionLocalService.getActionableDynamicQuery();
-
-		actionableDynamicQuery.setAddCriteriaMethod(
-			dynamicQuery -> {
-				Property nameProperty = PropertyFactoryUtil.forName("name");
-
-				dynamicQuery.add(nameProperty.eq(oldName));
-			});
-		actionableDynamicQuery.setPerformActionMethod(
-			(ActionableDynamicQuery.PerformActionMethod<ResourcePermission>)
-				resourcePermission -> {
-					resourcePermission.setName(newName);
-
-					if (Objects.equals(
-							resourcePermission.getPrimKey(), oldName)) {
-
-						resourcePermission.setPrimKey(newName);
-					}
-
-					_resourcePermissionLocalService.updateResourcePermission(
-						resourcePermission);
-				});
-
-		actionableDynamicQuery.performActions();
-	}
-
 	private final ClassNameLocalService _classNameLocalService;
 	private final CounterLocalService _counterLocalService;
-	private final PortletPreferencesLocalService
-		_portletPreferencesLocalService;
 	private final ResourcePermissionLocalService
 		_resourcePermissionLocalService;
 

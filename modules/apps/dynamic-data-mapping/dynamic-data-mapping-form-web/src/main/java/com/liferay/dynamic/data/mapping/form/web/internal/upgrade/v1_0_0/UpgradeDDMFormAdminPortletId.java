@@ -20,18 +20,19 @@ import com.liferay.portal.kernel.upgrade.BaseUpgradePortletId;
 /**
  * @author Rafael Praxedes
  */
-public class UpgradeDDMFormPortletId extends BaseUpgradePortletId {
+public class UpgradeDDMFormAdminPortletId extends BaseUpgradePortletId {
 
 	@Override
 	protected String[][] getRenamePortletIdsArray() {
 		return new String[][] {
 			new String[] {
-				_OLD_PORTLET_NAME, DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM
+				_OLD_PORTLET_NAME,
+				DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM_ADMIN
 			}
 		};
 	}
 
 	private static final String _OLD_PORTLET_NAME =
-		"com_liferay_dynamic_data_lists_form_web_portlet_DDLFormPortlet";
+		"com_liferay_dynamic_data_lists_form_web_portlet_DDLFormAdminPortlet";
 
 }
