@@ -12,25 +12,20 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.internal.upgrade.v1_2_1;
+package com.liferay.dynamic.data.mapping.internal.upgrade.v2_0_0;
 
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceConstants;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.Junction;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
-import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -38,8 +33,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
-import java.util.Objects;
 
 /**
  * @author Leonardo Barros
@@ -49,32 +42,11 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 	public UpgradeDDMFormInstance(
 		ClassNameLocalService classNameLocalService,
 		CounterLocalService counterLocalService,
-		PortletPreferencesLocalService portletPreferencesLocalService,
 		ResourcePermissionLocalService resourcePermissionLocalService) {
 
 		_classNameLocalService = classNameLocalService;
 		_counterLocalService = counterLocalService;
-		_portletPreferencesLocalService = portletPreferencesLocalService;
 		_resourcePermissionLocalService = resourcePermissionLocalService;
-	}
-
-	public long getLatestStructureVersionId(long ddmStructureId)
-		throws SQLException {
-
-		try (PreparedStatement ps = connection.prepareStatement(
-				"select structureVersionId from DDMStructureVersion where " +
-					"structureId = ? order by createDate desc")) {
-
-			ps.setLong(1, ddmStructureId);
-
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					return rs.getLong("structureVersionId");
-				}
-
-				return 0;
-			}
-		}
 	}
 
 	protected void deleteDDLRecordSet(long ddmStructureId, long recordSetId)
@@ -105,21 +77,30 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		StringBundler sb = new StringBundler(5);
+		StringBundler sb1 = new StringBundler(7);
 
-		sb.append("insert into DDMFormInstance(uuid_, formInstanceId, ");
-		sb.append("groupId, companyId, userId, userName, versionUserId, ");
-		sb.append("versionUserName, createDate, modifiedDate, structureId, ");
-		sb.append("version, name, description, settings_, lastPublishDate) ");
-		sb.append("values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sb1.append("select DDLRecordSet.*, TEMP.structureVersionId from ");
+		sb1.append("DDLRecordSet inner join (select structureId, ");
+		sb1.append("max(structureVersionId) as structureVersionId from ");
+		sb1.append("DDMStructureVersion group by ");
+		sb1.append("DDMStructureVersion.structureId) TEMP on ");
+		sb1.append("DDLRecordSet.DDMStructureId = TEMP.structureId where ");
+		sb1.append("scope = 2");
+
+		StringBundler sb2 = new StringBundler(5);
+
+		sb2.append("insert into DDMFormInstance(uuid_, formInstanceId, ");
+		sb2.append("groupId, companyId, userId, userName, versionUserId, ");
+		sb2.append("versionUserName, createDate, modifiedDate, structureId, ");
+		sb2.append("version, name, description, settings_, lastPublishDate) ");
+		sb2.append("values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 		try (PreparedStatement ps1 = connection.prepareStatement(
-				"select DDLRecordSet.* from DDLRecordSet where " +
-					"DDLRecordSet.scope = " + _SCOPE_FORMS);
+				sb1.toString());
 			ResultSet rs = ps1.executeQuery();
 			PreparedStatement ps2 =
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
-					connection, sb.toString())) {
+					connection, sb2.toString())) {
 
 			while (rs.next()) {
 				long recordSetId = rs.getLong("recordSetId");
@@ -133,6 +114,7 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 				String description = rs.getString("description");
 				String settings = rs.getString("settings_");
 				Timestamp lastPublishDate = rs.getTimestamp("lastPublishDate");
+				long structureVersionId = rs.getLong("structureVersionId");
 
 				ps2.setString(1, PortalUUIDUtil.generate());
 				ps2.setLong(2, recordSetId);
@@ -156,8 +138,8 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 
 				upgradeDDMFormInstanceVersion(
 					groupId, companyId, userId, userName, createDate,
-					recordSetId, structureId, name, description, settings,
-					lastPublishDate);
+					recordSetId, structureVersionId, name, description,
+					settings, lastPublishDate);
 
 				upgradeResourcePermission(
 					recordSetId,
@@ -170,19 +152,6 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 						"DDMFormInstance-com.liferay.dynamic.data.mapping." +
 							"model.DDMStructure",
 					false);
-
-				upgradeResourcePermission(
-					"com_liferay_dynamic_data_lists_form_web_portlet_" +
-						"DDLFormAdminPortlet",
-					"com_liferay_dynamic_data_mapping_form_web_portlet_" +
-						"DDMFormAdminPortlet");
-
-				updateInstanceablePortletPreferences(
-					recordSetId,
-					"com_liferay_dynamic_data_lists_form_web_portlet_" +
-						"DDLFormPortlet",
-					"com_liferay_dynamic_data_mapping_form_web_portlet_" +
-						"DDMFormPortlet");
 
 				deleteDDLRecordSet(structureId, recordSetId);
 
@@ -246,58 +215,9 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 		}
 	}
 
-	protected void updateInstanceablePortletPreferences(
-			long recordSetId, String oldPortletId, String newPortletId)
-		throws Exception {
-
-		ActionableDynamicQuery actionableDynamicQuery =
-			_portletPreferencesLocalService.getActionableDynamicQuery();
-
-		actionableDynamicQuery.setAddCriteriaMethod(
-			dynamicQuery -> {
-				Junction junction = RestrictionsFactoryUtil.disjunction();
-
-				Property property = PropertyFactoryUtil.forName("portletId");
-
-				junction.add(property.eq(oldPortletId));
-				junction.add(property.like(oldPortletId + "_INSTANCE_%"));
-				junction.add(
-					property.like(oldPortletId + "_USER_%_INSTANCE_%"));
-
-				dynamicQuery.add(junction);
-			});
-		actionableDynamicQuery.setPerformActionMethod(
-			(ActionableDynamicQuery.PerformActionMethod<PortletPreferences>)
-				portletPreference -> updatePortletPreferences(
-					recordSetId, recordSetId, oldPortletId, newPortletId,
-					portletPreference));
-
-		actionableDynamicQuery.performActions();
-	}
-
-	protected void updatePortletPreferences(
-		long ddmFormInstanceId, long recordSetId, String oldPortletId,
-		String newPortletId, PortletPreferences portletPreferences) {
-
-		portletPreferences.setPortletId(
-			StringUtil.replace(
-				portletPreferences.getPortletId(), oldPortletId, newPortletId));
-
-		String preferences = portletPreferences.getPreferences();
-
-		preferences = StringUtil.replace(
-			preferences, String.valueOf(recordSetId),
-			String.valueOf(ddmFormInstanceId));
-
-		portletPreferences.setPreferences(preferences);
-
-		_portletPreferencesLocalService.updatePortletPreferences(
-			portletPreferences);
-	}
-
 	protected void upgradeDDMFormInstanceVersion(
 			long groupId, long companyId, long userId, String userName,
-			Timestamp createDate, long formInstanceId, long structureId,
+			Timestamp createDate, long formInstanceId, long structureVersionId,
 			String name, String description, String settings,
 			Timestamp statusDate)
 		throws SQLException {
@@ -322,7 +242,7 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 			ps2.setString(5, userName);
 			ps2.setTimestamp(6, createDate);
 			ps2.setLong(7, formInstanceId);
-			ps2.setLong(8, getLatestStructureVersionId(structureId));
+			ps2.setLong(8, structureVersionId);
 			ps2.setString(9, name);
 			ps2.setString(10, description);
 			ps2.setString(11, settings);
@@ -366,42 +286,8 @@ public class UpgradeDDMFormInstance extends UpgradeProcess {
 		actionableDynamicQuery.performActions();
 	}
 
-	protected void upgradeResourcePermission(String oldName, String newName)
-		throws Exception {
-
-		ActionableDynamicQuery actionableDynamicQuery =
-			_resourcePermissionLocalService.getActionableDynamicQuery();
-
-		actionableDynamicQuery.setAddCriteriaMethod(
-			dynamicQuery -> {
-				Property nameProperty = PropertyFactoryUtil.forName("name");
-
-				dynamicQuery.add(nameProperty.eq(oldName));
-			});
-		actionableDynamicQuery.setPerformActionMethod(
-			(ActionableDynamicQuery.PerformActionMethod<ResourcePermission>)
-				resourcePermission -> {
-					resourcePermission.setName(newName);
-
-					if (Objects.equals(
-							resourcePermission.getPrimKey(), oldName)) {
-
-						resourcePermission.setPrimKey(newName);
-					}
-
-					_resourcePermissionLocalService.updateResourcePermission(
-						resourcePermission);
-				});
-
-		actionableDynamicQuery.performActions();
-	}
-
-	private static final int _SCOPE_FORMS = 2;
-
 	private final ClassNameLocalService _classNameLocalService;
 	private final CounterLocalService _counterLocalService;
-	private final PortletPreferencesLocalService
-		_portletPreferencesLocalService;
 	private final ResourcePermissionLocalService
 		_resourcePermissionLocalService;
 

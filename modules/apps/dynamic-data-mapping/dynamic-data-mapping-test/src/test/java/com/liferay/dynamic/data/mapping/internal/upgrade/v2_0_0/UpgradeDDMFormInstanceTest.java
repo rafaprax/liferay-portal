@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.internal.upgrade.v1_2_1;
+package com.liferay.dynamic.data.mapping.internal.upgrade.v2_0_0;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,8 +49,7 @@ public class UpgradeDDMFormInstanceTest {
 	}
 
 	protected void setUpUpgradeDDMFormInstanceSettings() {
-		_upgradeDDMFormInstance = new UpgradeDDMFormInstance(
-			null, null, null, null);
+		_upgradeDDMFormInstance = new UpgradeDDMFormInstance(null, null, null);
 	}
 
 	private UpgradeDDMFormInstance _upgradeDDMFormInstance;
