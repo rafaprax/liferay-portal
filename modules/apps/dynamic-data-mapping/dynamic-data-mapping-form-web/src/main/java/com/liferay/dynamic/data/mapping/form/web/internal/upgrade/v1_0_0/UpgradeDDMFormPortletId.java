@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.upgrade.BaseUpgradePortletId;
 /**
  * @author Rafael Praxedes
  */
-public class UpgradeDDMFormWebPortletId extends BaseUpgradePortletId {
+public class UpgradeDDMFormPortletId extends BaseUpgradePortletId {
 
 	@Override
 	protected String[][] getRenamePortletIdsArray() {
