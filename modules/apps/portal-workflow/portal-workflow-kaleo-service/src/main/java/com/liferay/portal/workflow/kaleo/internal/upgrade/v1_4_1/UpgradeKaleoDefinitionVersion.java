@@ -40,6 +40,8 @@ import com.liferay.portal.workflow.kaleo.internal.upgrade.v1_4_1.util.KaleoTimer
 import com.liferay.portal.workflow.kaleo.internal.upgrade.v1_4_1.util.KaleoTimerTable;
 import com.liferay.portal.workflow.kaleo.internal.upgrade.v1_4_1.util.KaleoTransitionTable;
 
+import java.io.IOException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,6 +72,8 @@ public class UpgradeKaleoDefinitionVersion extends UpgradeProcess {
 
 		removeKaleoDefinitionId();
 		removeStartKaleoNodeId();
+
+		_removeDuplicatedKaleoDefinitions();
 	}
 
 	protected String getVersion(int version) {
@@ -285,6 +289,35 @@ public class UpgradeKaleoDefinitionVersion extends UpgradeProcess {
 			for (PreparedStatement preparedStatement : preparedStatements) {
 				DataAccess.cleanUp(preparedStatement);
 			}
+		}
+	}
+
+	private void _removeDuplicatedKaleoDefinitions()
+		throws IOException, SQLException {
+
+		StringBundler sb1 = new StringBundler(2);
+
+		sb1.append("select name, MAX(version) version from KaleoDefinition ");
+		sb1.append("group by name");
+
+		try (LoggingTimer loggingTimer = new LoggingTimer();
+			PreparedStatement ps1 = connection.prepareStatement(sb1.toString());
+			ResultSet rs = ps1.executeQuery()) {
+
+			while (rs.next()) {
+				String name = rs.getString("name");
+				int version = rs.getInt("version");
+
+				StringBundler sb2 = new StringBundler(4);
+
+				sb2.append("delete from KaleoDefinition where name = '");
+				sb2.append(name);
+				sb2.append("' and version <> ");
+				sb2.append(version);
+
+				runSQL(sb2.toString());
+			}
+
 		}
 	}
 
