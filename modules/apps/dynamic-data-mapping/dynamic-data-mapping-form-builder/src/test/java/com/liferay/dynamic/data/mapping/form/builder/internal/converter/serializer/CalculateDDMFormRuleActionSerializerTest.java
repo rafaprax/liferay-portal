@@ -50,21 +50,25 @@ public class CalculateDDMFormRuleActionSerializerTest extends PowerMockito {
 		when(
 			_calculateDDMFormRuleAction.getExpression()
 		).thenReturn(
-			"(text + text1) * 2"
+			"(N+Num2+Num3+Num4) * 0.25"
 		);
 
 		when(
 			_calculateDDMFormRuleAction.getTarget()
 		).thenReturn(
-			"text2"
+			"result"
 		);
 
 		DDMForm ddmForm = new DDMForm();
 
-		DDMFormField ddmFormField1 = new DDMFormField("text", "string");
-		DDMFormField ddmFormField2 = new DDMFormField("text1", "string");
+		DDMFormField ddmFormField1 = new DDMFormField("Num", "numeric");
+		DDMFormField ddmFormField2 = new DDMFormField("Num2", "numeric");
+		DDMFormField ddmFormField3 = new DDMFormField("Num3", "numeric");
+		DDMFormField ddmFormField4 = new DDMFormField("Num4", "numeric");
 
-		ddmForm.setDDMFormFields(Arrays.asList(ddmFormField1, ddmFormField2));
+		ddmForm.setDDMFormFields(
+			Arrays.asList(
+				ddmFormField1, ddmFormField2, ddmFormField3, ddmFormField4));
 
 		when(
 			_serviceContext.getAttribute("form")
@@ -87,7 +91,8 @@ public class CalculateDDMFormRuleActionSerializerTest extends PowerMockito {
 			_ddmFormRuleSerializerContext);
 
 		Assert.assertEquals(
-			"calculate('text2', (getValue('text') + getValue('text1')) * 2)",
+			"calculate('result', (getValue('N')+getValue('Num2')" +
+				"+getValue('Num3')+getValue('Num4')) * 0.25)",
 			result);
 	}
 

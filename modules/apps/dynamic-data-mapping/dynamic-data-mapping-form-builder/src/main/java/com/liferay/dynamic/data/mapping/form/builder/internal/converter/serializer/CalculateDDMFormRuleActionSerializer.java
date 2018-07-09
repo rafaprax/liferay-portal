@@ -66,6 +66,8 @@ public class CalculateDDMFormRuleActionSerializer
 
 		StringBuffer sb = new StringBuffer();
 
+		int countReplacedFields = 0;
+
 		for (int i = 0; i < expression.length(); i++) {
 			char token = expression.charAt(i);
 
@@ -90,7 +92,9 @@ public class CalculateDDMFormRuleActionSerializer
 
 				if (end > start) {
 					newExpression = replace(
-						expression, newExpression, start, end);
+						countReplacedFields, expression, newExpression, start,
+						end);
+					countReplacedFields++;
 				}
 
 				start = Integer.MAX_VALUE;
@@ -99,7 +103,8 @@ public class CalculateDDMFormRuleActionSerializer
 		}
 
 		if (end > start) {
-			newExpression = replace(expression, newExpression, start, end);
+			newExpression = replace(
+				countReplacedFields, expression, newExpression, start, end);
 		}
 
 		return String.format(
@@ -111,7 +116,7 @@ public class CalculateDDMFormRuleActionSerializer
 		String compareStr, Set<String> ddmFormFields) {
 
 		for (String ddmFormField : ddmFormFields) {
-			if (ddmFormField.contains(compareStr)) {
+			if (ddmFormField.startsWith(compareStr)) {
 				return true;
 			}
 		}
@@ -125,15 +130,20 @@ public class CalculateDDMFormRuleActionSerializer
 	}
 
 	protected String replace(
-		String expression, String newExpression, int start, int end) {
+		int countReplacedFields, String expression, String newExpression,
+		int start, int end) {
 
 		String matchFound = expression.substring(start, end);
 
 		String matchReplacement = String.format(
 			_FUNCTION_CALL_UNARY_EXPRESSION_FORMAT, "getValue", matchFound);
 
+		int lengthNewChars = matchReplacement.length() - matchFound.length();
+
+		int startNewExpression = start + (countReplacedFields * lengthNewChars);
+
 		return StringUtil.replaceFirst(
-			newExpression, matchFound, matchReplacement, start);
+			newExpression, matchFound, matchReplacement, startNewExpression);
 	}
 
 	private static final String _FUNCTION_CALL_BINARY_EXPRESSION_FORMAT =
