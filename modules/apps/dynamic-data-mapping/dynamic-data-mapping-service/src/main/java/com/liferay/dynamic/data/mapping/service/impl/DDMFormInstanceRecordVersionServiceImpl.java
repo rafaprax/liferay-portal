@@ -34,6 +34,25 @@ public class DDMFormInstanceRecordVersionServiceImpl
 	extends DDMFormInstanceRecordVersionServiceBaseImpl {
 
 	@Override
+	public DDMFormInstanceRecordVersion fetchLatestFormInstanceRecordVersion(
+			long userId, long ddmFormInstanceRecordId,
+			String ddmFormInstanceRecordVersion, int status)
+		throws PortalException {
+
+		DDMFormInstanceRecordVersion latestFormInstanceRecordVersion =
+			ddmFormInstanceRecordVersionLocalService.
+				fetchLatestFormInstanceRecordVersion(
+					userId, ddmFormInstanceRecordId,
+					ddmFormInstanceRecordVersion, status);
+
+		_ddmFormInstanceModelResourcePermission.check(
+			getPermissionChecker(),
+			latestFormInstanceRecordVersion.getFormInstance(), ActionKeys.VIEW);
+
+		return latestFormInstanceRecordVersion;
+	}
+
+	@Override
 	public DDMFormInstanceRecordVersion getFormInstanceRecordVersion(
 			long ddmFormInstanceRecordVersionId)
 		throws PortalException {
