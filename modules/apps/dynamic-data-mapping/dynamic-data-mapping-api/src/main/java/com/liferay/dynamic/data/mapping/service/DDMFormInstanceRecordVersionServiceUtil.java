@@ -42,6 +42,15 @@ public class DDMFormInstanceRecordVersionServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.dynamic.data.mapping.service.impl.DDMFormInstanceRecordVersionServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion fetchLatestFormInstanceRecordVersion(
+		long userId, long ddmFormInstanceRecordId,
+		String ddmFormInstanceRecordVersion, int status)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .fetchLatestFormInstanceRecordVersion(userId,
+			ddmFormInstanceRecordId, ddmFormInstanceRecordVersion, status);
+	}
+
 	public static com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion getFormInstanceRecordVersion(
 		long ddmFormInstanceRecordVersionId)
 		throws com.liferay.portal.kernel.exception.PortalException {
