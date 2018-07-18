@@ -24,16 +24,14 @@ import com.liferay.dynamic.data.mapping.form.web.internal.search.FieldSetRowChec
 import com.liferay.dynamic.data.mapping.form.web.internal.search.FieldSetSearch;
 import com.liferay.dynamic.data.mapping.form.web.internal.search.FieldSetSearchTerms;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializer;
-import com.liferay.dynamic.data.mapping.io.exporter.DDMExporterFactory;
+import com.liferay.dynamic.data.mapping.io.exporter.DDMFormInstanceRecordWriterTracker;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
-import com.liferay.dynamic.data.mapping.service.DDMFormInstanceVersionLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureModifiedDateComparator;
@@ -78,30 +76,27 @@ public class DDMFormAdminFieldSetDisplayContext
 		RenderRequest renderRequest, RenderResponse renderResponse,
 		AddDefaultSharedFormLayoutPortalInstanceLifecycleListener
 			addDefaultSharedFormLayoutPortalInstanceLifecycleListener,
-		DDMExporterFactory ddmExporterFactory,
 		DDMFormWebConfiguration ddmFormWebConfiguration,
 		DDMFormInstanceRecordLocalService formInstanceRecordLocalService,
+		DDMFormInstanceRecordWriterTracker ddmFormInstanceRecordWriterTracker,
 		DDMFormInstanceService formInstanceService,
-		DDMFormInstanceVersionLocalService formInstanceVersionLocalService,
 		DDMFormFieldTypeServicesTracker formFieldTypeServicesTracker,
 		DDMFormFieldTypesJSONSerializer formFieldTypesJSONSerializer,
 		DDMFormRenderer formRenderer, DDMFormValuesFactory formValuesFactory,
 		DDMFormValuesMerger formValuesMerger,
 		DDMStructureLocalService structureLocalService,
-		DDMStructureService structureService, JSONFactory jsonFactory,
-		StorageEngine storageEngine) {
+		DDMStructureService structureService, JSONFactory jsonFactory) {
 
 		super(
 			renderRequest, renderResponse,
 			addDefaultSharedFormLayoutPortalInstanceLifecycleListener,
-			ddmExporterFactory, ddmFormWebConfiguration,
-			formInstanceRecordLocalService, formInstanceService,
-			formInstanceVersionLocalService, formFieldTypeServicesTracker,
-			formFieldTypesJSONSerializer, formRenderer, formValuesFactory,
-			formValuesMerger, structureLocalService, structureService,
-			jsonFactory, storageEngine);
+			ddmFormWebConfiguration, formInstanceRecordLocalService,
+			ddmFormInstanceRecordWriterTracker, formInstanceService,
+			formFieldTypeServicesTracker, formFieldTypesJSONSerializer,
+			formRenderer, formValuesFactory, formValuesMerger,
+			structureLocalService, structureService, jsonFactory);
 
-		_fieldSetPermissionCheckerHelper = new FieldSetPermissionCheckerHelper(
+         _fieldSetPermissionCheckerHelper = new FieldSetPermissionCheckerHelper(
 			formAdminRequestHelper);
 	}
 
@@ -169,7 +164,7 @@ public class DDMFormAdminFieldSetDisplayContext
 			}
 			catch (PortalException pe) {
 				if (_log.isDebugEnabled()) {
-					_log.debug(pe, pe);
+					_log.debug(pe);
 				}
 			}
 		}

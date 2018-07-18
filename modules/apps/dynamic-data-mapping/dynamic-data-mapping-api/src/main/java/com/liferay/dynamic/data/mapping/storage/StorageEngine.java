@@ -18,6 +18,8 @@ package com.liferay.dynamic.data.mapping.storage;
  * @author Eduardo Lundgren
  * @author Brian Wing Shun Chan
  * @author Marcellus Tavares
+ * @deprecated As of 4.0.0, with no direct replacement
  */
+@Deprecated
 public interface StorageEngine extends StorageAdapter {
 }

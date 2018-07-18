@@ -19,7 +19,9 @@ import java.util.List;
 
 /**
  * @author Miguel Angelo Caldas Gallindo
+ * @deprecated As of 4.0.0, with no direct replacement
  */
+@Deprecated
 public class VariableDependencies {
 
 	public VariableDependencies(String variableName) {

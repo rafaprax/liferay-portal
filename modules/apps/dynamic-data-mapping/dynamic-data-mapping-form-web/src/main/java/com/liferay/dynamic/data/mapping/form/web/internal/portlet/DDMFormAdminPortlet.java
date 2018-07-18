@@ -25,7 +25,7 @@ import com.liferay.dynamic.data.mapping.form.web.internal.display.context.DDMFor
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.DDMFormAdminFieldSetDisplayContext;
 import com.liferay.dynamic.data.mapping.form.web.internal.instance.lifecycle.AddDefaultSharedFormLayoutPortalInstanceLifecycleListener;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesJSONSerializer;
-import com.liferay.dynamic.data.mapping.io.exporter.DDMExporterFactory;
+import com.liferay.dynamic.data.mapping.io.exporter.DDMFormInstanceRecordWriterTracker;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -34,11 +34,9 @@ import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
-import com.liferay.dynamic.data.mapping.service.DDMFormInstanceVersionLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.dynamic.data.mapping.util.DDMFormLayoutFactory;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
@@ -200,16 +198,15 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 				new DDMFormAdminFieldSetDisplayContext(
 					renderRequest, renderResponse,
 					_addDefaultSharedFormLayoutPortalInstanceLifecycleListener,
-					_ddmExporterFactory,
 					_ddmFormWebConfigurationActivator.
 						getDDMFormWebConfiguration(),
-					_ddmFormInstanceRecordLocalService, _ddmFormInstanceService,
-					_ddmFormInstanceVersionLocalService,
-					_ddmFormFieldTypeServicesTracker,
+					_ddmFormInstanceRecordLocalService,
+					_ddmFormInstanceRecordWriterTracker,
+					_ddmFormInstanceService, _ddmFormFieldTypeServicesTracker,
 					_ddmFormFieldTypesJSONSerializer, _ddmFormRenderer,
 					_ddmFormValuesFactory, _ddmFormValuesMerger,
 					_ddmStructureLocalService, _ddmStructureService,
-					_jsonFactory, _storageEngine));
+					_jsonFactory));
 		}
 		else {
 			ThemeDisplay themeDisplay =
@@ -243,16 +240,15 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 				new DDMFormAdminDisplayContext(
 					renderRequest, renderResponse,
 					_addDefaultSharedFormLayoutPortalInstanceLifecycleListener,
-					_ddmExporterFactory,
 					_ddmFormWebConfigurationActivator.
 						getDDMFormWebConfiguration(),
-					_ddmFormInstanceRecordLocalService, _ddmFormInstanceService,
-					_ddmFormInstanceVersionLocalService,
-					_ddmFormFieldTypeServicesTracker,
+					_ddmFormInstanceRecordLocalService,
+					_ddmFormInstanceRecordWriterTracker,
+					_ddmFormInstanceService, _ddmFormFieldTypeServicesTracker,
 					_ddmFormFieldTypesJSONSerializer, _ddmFormRenderer,
 					_ddmFormValuesFactory, _ddmFormValuesMerger,
 					_ddmStructureLocalService, _ddmStructureService,
-					_jsonFactory, _storageEngine));
+					_jsonFactory));
 		}
 	}
 
@@ -270,9 +266,6 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 		_addDefaultSharedFormLayoutPortalInstanceLifecycleListener;
 
 	@Reference
-	private DDMExporterFactory _ddmExporterFactory;
-
-	@Reference
 	private DDMFormFieldTypeServicesTracker _ddmFormFieldTypeServicesTracker;
 
 	@Reference
@@ -286,11 +279,11 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 		_ddmFormInstanceRecordLocalService;
 
 	@Reference
-	private DDMFormInstanceService _ddmFormInstanceService;
+	private DDMFormInstanceRecordWriterTracker
+		_ddmFormInstanceRecordWriterTracker;
 
 	@Reference
-	private DDMFormInstanceVersionLocalService
-		_ddmFormInstanceVersionLocalService;
+	private DDMFormInstanceService _ddmFormInstanceService;
 
 	@Reference
 	private DDMFormRenderer _ddmFormRenderer;
@@ -321,8 +314,5 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 
 	@Reference
 	private Portal _portal;
-
-	@Reference
-	private StorageEngine _storageEngine;
 
 }
