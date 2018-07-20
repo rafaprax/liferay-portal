@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponseStatus;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderTracker;
+import com.liferay.dynamic.data.mapping.data.provider.internal.rest.DDMRESTDataProviderSettings;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceService;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
@@ -63,10 +64,12 @@ public class DDMDataProviderInvokerImplTest extends PowerMockito {
 			expectedDDMDataProviderResponse
 		);
 
-		DDMDataProviderInvokerImpl.DDMDataProviderInvokeCommand command =
-			new DDMDataProviderInvokerImpl.DDMDataProviderInvokeCommand(
-				"ddmDataProviderInstanceName", ddmDataProvider,
-				ddmDataProviderRequest);
+		DDMRESTDataProviderSettings ddmRESTDataProviderSettings = mock(
+			DDMRESTDataProviderSettings.class);
+
+		DDMDataProviderInvokeCommand command = new DDMDataProviderInvokeCommand(
+			"ddmDataProviderInstanceName", ddmDataProvider,
+			ddmDataProviderRequest, ddmRESTDataProviderSettings);
 
 		DDMDataProviderResponse ddmDataProviderResponse = command.run();
 

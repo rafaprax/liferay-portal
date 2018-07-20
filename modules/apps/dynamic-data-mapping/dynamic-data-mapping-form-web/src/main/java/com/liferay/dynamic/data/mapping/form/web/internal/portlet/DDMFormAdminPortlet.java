@@ -34,6 +34,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
+import com.liferay.dynamic.data.mapping.service.DDMFormInstanceVersionLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
@@ -52,7 +53,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
-
 import java.util.Map;
 
 import javax.portlet.Portlet;
@@ -202,7 +202,9 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 						getDDMFormWebConfiguration(),
 					_ddmFormInstanceRecordLocalService,
 					_ddmFormInstanceRecordWriterTracker,
-					_ddmFormInstanceService, _ddmFormFieldTypeServicesTracker,
+					_ddmFormInstanceService,
+					_ddmFormInstanceVersionLocalService,
+					_ddmFormFieldTypeServicesTracker,
 					_ddmFormFieldTypesJSONSerializer, _ddmFormRenderer,
 					_ddmFormValuesFactory, _ddmFormValuesMerger,
 					_ddmStructureLocalService, _ddmStructureService,
@@ -244,7 +246,9 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 						getDDMFormWebConfiguration(),
 					_ddmFormInstanceRecordLocalService,
 					_ddmFormInstanceRecordWriterTracker,
-					_ddmFormInstanceService, _ddmFormFieldTypeServicesTracker,
+					_ddmFormInstanceService,
+					_ddmFormInstanceVersionLocalService,
+					_ddmFormFieldTypeServicesTracker,
 					_ddmFormFieldTypesJSONSerializer, _ddmFormRenderer,
 					_ddmFormValuesFactory, _ddmFormValuesMerger,
 					_ddmStructureLocalService, _ddmStructureService,
@@ -273,6 +277,10 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 
 	@Reference
 	private DDMFormInstanceLocalService _ddmFormInstanceLocalService;
+
+	@Reference
+	private DDMFormInstanceVersionLocalService
+		_ddmFormInstanceVersionLocalService;
 
 	@Reference
 	private DDMFormInstanceRecordLocalService

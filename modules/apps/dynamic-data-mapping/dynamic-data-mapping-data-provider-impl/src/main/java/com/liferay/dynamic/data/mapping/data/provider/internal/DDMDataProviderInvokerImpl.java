@@ -15,11 +15,13 @@
 package com.liferay.dynamic.data.mapping.data.provider.internal;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderInstanceSettings;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderInvoker;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponseStatus;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderTracker;
+import com.liferay.dynamic.data.mapping.data.provider.internal.rest.DDMRESTDataProviderSettings;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -28,9 +30,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.util.Validator;
 
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.netflix.hystrix.exception.HystrixRuntimeException.FailureType;
 
@@ -123,7 +122,10 @@ public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 		DDMDataProviderInvokeCommand ddmDataProviderInvokeCommand =
 			new DDMDataProviderInvokeCommand(
 				ddmDataProviderInstance.getNameCurrentValue(), ddmDataProvider,
-				ddmDataProviderRequest);
+				ddmDataProviderRequest,
+				ddmDataProviderInstanceSettings.getSettings(
+					ddmDataProviderInstance,
+					DDMRESTDataProviderSettings.class));
 
 		return ddmDataProviderInvokeCommand.execute();
 	}
@@ -173,38 +175,10 @@ public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 	protected DDMDataProviderInstanceService ddmDataProviderInstanceService;
 
 	@Reference
+	protected DDMDataProviderInstanceSettings ddmDataProviderInstanceSettings;
+
+	@Reference
 	protected DDMDataProviderTracker ddmDataProviderTracker;
-
-	protected static class DDMDataProviderInvokeCommand
-		extends HystrixCommand<DDMDataProviderResponse> {
-
-		public DDMDataProviderInvokeCommand(
-			String ddmDataProviderInstanceName, DDMDataProvider ddmDataProvider,
-			DDMDataProviderRequest ddmDataProviderRequest) {
-
-			super(
-				Setter.withGroupKey(_hystrixCommandGroupKey).andCommandKey(
-					HystrixCommandKey.Factory.asKey(
-						"DDMDataProviderInvokeCommand#" +
-							ddmDataProviderInstanceName)));
-
-			_ddmDataProvider = ddmDataProvider;
-			_ddmDataProviderRequest = ddmDataProviderRequest;
-		}
-
-		@Override
-		protected DDMDataProviderResponse run() throws Exception {
-			return _ddmDataProvider.getData(_ddmDataProviderRequest);
-		}
-
-		private static final HystrixCommandGroupKey _hystrixCommandGroupKey =
-			HystrixCommandGroupKey.Factory.asKey(
-				"DDMDataProviderInvokeCommandGroup");
-
-		private final DDMDataProvider _ddmDataProvider;
-		private final DDMDataProviderRequest _ddmDataProviderRequest;
-
-	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMDataProviderInvokerImpl.class);

@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * @author Miguel Angelo Caldas Gallindo
+ * @deprecated As of Judson (7.1.x), with no direct replacement
  */
 public class VariableDependencies {
 
