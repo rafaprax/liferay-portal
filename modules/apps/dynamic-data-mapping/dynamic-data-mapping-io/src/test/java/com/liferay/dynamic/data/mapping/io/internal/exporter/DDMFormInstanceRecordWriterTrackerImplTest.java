@@ -83,6 +83,22 @@ public class DDMFormInstanceRecordWriterTrackerImplTest extends PowerMockito {
 	}
 
 	@Test
+	public void testGetDDMFormInstanceRecordWriterDefaultUpperCaseExtension() {
+		DDMFormInstanceRecordWriterTrackerImpl
+			ddmFormInstanceRecordWriterTracker =
+				new DDMFormInstanceRecordWriterTrackerImpl();
+
+		addDDMFormInstanceRecordXMLWriter(ddmFormInstanceRecordWriterTracker);
+
+		Map<String, String> ddmFormInstanceRecordWriterExtensions =
+			ddmFormInstanceRecordWriterTracker.
+				getDDMFormInstanceRecordWriterExtensions();
+
+		Assert.assertEquals(
+			"XML", ddmFormInstanceRecordWriterExtensions.get("xml"));
+	}
+
+	@Test
 	public void testRemoveDDMFormInstanceRecordWriter() {
 		DDMFormInstanceRecordWriterTrackerImpl
 			ddmFormInstanceRecordWriterTracker =
@@ -140,6 +156,23 @@ public class DDMFormInstanceRecordWriterTrackerImplTest extends PowerMockito {
 			{
 				put("ddm.form.instance.record.writer.type", "json");
 				put("ddm.form.instance.record.writer.extension", "json");
+			}
+		};
+
+		ddmFormInstanceRecordWriterTracker.addDDMFormInstanceRecordWriter(
+			ddmFormInstanceRecordWriter, properties);
+	}
+
+	protected void addDDMFormInstanceRecordXMLWriter(
+		DDMFormInstanceRecordWriterTrackerImpl
+			ddmFormInstanceRecordWriterTracker) {
+
+		DDMFormInstanceRecordWriter ddmFormInstanceRecordWriter =
+			new DDMFormInstanceRecordXMLWriter();
+
+		Map<String, Object> properties = new HashMap() {
+			{
+				put("ddm.form.instance.record.writer.type", "xml");
 			}
 		};
 
