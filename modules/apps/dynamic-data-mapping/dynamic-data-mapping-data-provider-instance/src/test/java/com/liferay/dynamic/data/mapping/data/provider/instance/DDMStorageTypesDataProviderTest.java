@@ -16,8 +16,7 @@ package com.liferay.dynamic.data.mapping.data.provider.instance;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistry;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.portal.kernel.util.KeyValuePair;
 
 import java.util.ArrayList;
@@ -44,23 +43,11 @@ import org.powermock.api.mockito.PowerMockito;
 public class DDMStorageTypesDataProviderTest extends PowerMockito {
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		_ddmStorageTypesDataProvider = new DDMStorageTypesDataProvider();
 
-		_ddmStorageTypesDataProvider.storageAdapterRegistry =
-			_storageAdapterRegistry;
-
-		when(
-			_storageAdapterRegistry.getDefaultStorageAdapter()
-		).thenReturn(
-			_defaultStorageAdapter
-		);
-
-		when(
-			_defaultStorageAdapter.getStorageType()
-		).thenReturn(
-			"json"
-		);
+		_ddmStorageTypesDataProvider.ddmStorageAdapterTracker =
+			_ddmStorageAdapterTracker;
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
@@ -94,7 +81,7 @@ public class DDMStorageTypesDataProviderTest extends PowerMockito {
 
 	private void _testStorageTypes(Set<String> expectedSet) throws Exception {
 		when(
-			_storageAdapterRegistry.getStorageTypes()
+			_ddmStorageAdapterTracker.getDDMStorageAdapterTypes()
 		).thenReturn(
 			expectedSet
 		);
@@ -125,12 +112,9 @@ public class DDMStorageTypesDataProviderTest extends PowerMockito {
 		Assert.assertEquals(keyValuePairs, optional.get());
 	}
 
+	@Mock
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+
 	private DDMStorageTypesDataProvider _ddmStorageTypesDataProvider;
-
-	@Mock
-	private StorageAdapter _defaultStorageAdapter;
-
-	@Mock
-	private StorageAdapterRegistry _storageAdapterRegistry;
 
 }
