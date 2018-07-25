@@ -15,27 +15,19 @@
 package com.liferay.dynamic.data.mapping.data.provider.instance;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
-import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderContext;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderException;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
-import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponseOutput;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
 import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLocalService;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,38 +42,20 @@ import org.osgi.service.component.annotations.Reference;
 public class DDMDataProviderInstancesDataProvider implements DDMDataProvider {
 
 	@Override
-	public List<KeyValuePair> getData(
-			DDMDataProviderContext ddmDataProviderContext)
-		throws DDMDataProviderException {
-
-		return Collections.emptyList();
-	}
-
-	@Override
 	public DDMDataProviderResponse getData(
 			DDMDataProviderRequest ddmDataProviderRequest)
 		throws DDMDataProviderException {
 
-		List<KeyValuePair> data = new ArrayList<>();
+		List<KeyValuePair> keyValuePairs = new ArrayList<>();
 
 		try {
-			HttpServletRequest request =
-				ddmDataProviderRequest.getHttpServletRequest();
+			long scopeGroupId = ddmDataProviderRequest.getGroupId();
 
-			long scopeGroupId = ParamUtil.getLong(request, "scopeGroupId");
-
-			if (scopeGroupId == 0) {
-				ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-					WebKeys.THEME_DISPLAY);
-
-				scopeGroupId = themeDisplay.getScopeGroupId();
-			}
-
-			long[] groupIds = _portal.getCurrentAndAncestorSiteGroupIds(
+			long[] groupIds = portal.getCurrentAndAncestorSiteGroupIds(
 				scopeGroupId);
 
 			List<DDMDataProviderInstance> ddmDataProviderInstances =
-				_ddmDataProviderInstanceLocalService.getDataProviderInstances(
+				ddmDataProviderInstanceLocalService.getDataProviderInstances(
 					groupIds);
 
 			for (DDMDataProviderInstance ddmDataProviderInstance :
@@ -92,7 +66,8 @@ public class DDMDataProviderInstancesDataProvider implements DDMDataProvider {
 				String label = ddmDataProviderInstance.getName(
 					LocaleThreadLocal.getThemeDisplayLocale());
 
-				data.add(new KeyValuePair(String.valueOf(value), label));
+				keyValuePairs.add(
+					new KeyValuePair(String.valueOf(value), label));
 			}
 		}
 		catch (Exception e) {
@@ -101,8 +76,12 @@ public class DDMDataProviderInstancesDataProvider implements DDMDataProvider {
 			}
 		}
 
-		return DDMDataProviderResponse.of(
-			DDMDataProviderResponseOutput.of("Default-Output", "list", data));
+		DDMDataProviderResponse.Builder builder =
+			DDMDataProviderResponse.Builder.newBuilder();
+
+		return builder.withOutput(
+			"Default-Output", keyValuePairs
+		).build();
 	}
 
 	@Override
@@ -110,14 +89,14 @@ public class DDMDataProviderInstancesDataProvider implements DDMDataProvider {
 		throw new UnsupportedOperationException();
 	}
 
+	@Reference
+	protected DDMDataProviderInstanceLocalService
+		ddmDataProviderInstanceLocalService;
+
+	@Reference
+	protected Portal portal;
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMDataProviderInstancesDataProvider.class);
-
-	@Reference
-	private DDMDataProviderInstanceLocalService
-		_ddmDataProviderInstanceLocalService;
-
-	@Reference
-	private Portal _portal;
 
 }
