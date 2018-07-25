@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.TreeMap;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -93,8 +93,8 @@ public class DDMFormInstanceRecordWriterTrackerImpl
 	}
 
 	private final Map<String, String> _ddmFormInstanceRecordWriterExtensions =
-		new ConcurrentHashMap<>();
+		new TreeMap<>();
 	private final Map<String, DDMFormInstanceRecordWriter>
-		_ddmFormInstanceRecordWriters = new ConcurrentHashMap<>();
+		_ddmFormInstanceRecordWriters = new TreeMap<>();
 
 }
