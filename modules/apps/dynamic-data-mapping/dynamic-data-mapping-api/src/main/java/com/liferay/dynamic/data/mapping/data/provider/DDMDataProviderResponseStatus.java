@@ -14,15 +14,11 @@
 
 package com.liferay.dynamic.data.mapping.data.provider;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * @author Marcellus Tavares
+ * @author Leonardo Barros
  */
-public interface DDMDataProviderContextContributor {
+public enum DDMDataProviderResponseStatus {
 
-	public Map<String, String> getParameters(HttpServletRequest request);
+	OK, SERVICE_UNAVAILABLE, SHORT_CIRCUIT, TIMEOUT, UNAUTHORIZED, UNKNOWN_ERROR
 
 }

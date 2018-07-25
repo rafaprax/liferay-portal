@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.data.provider.instance;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
+<<<<<<< HEAD
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderContext;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderException;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
@@ -22,10 +23,15 @@ import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponseOutput;
 import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
 import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistry;
+=======
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderException;
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
+>>>>>>> cd8226d25ae3... LPS-81563 Add tests
 import com.liferay.portal.kernel.util.KeyValuePair;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -40,14 +46,6 @@ import org.osgi.service.component.annotations.Reference;
 	property = "ddm.data.provider.instance.id=ddm-storage-types"
 )
 public class DDMStorageTypesDataProvider implements DDMDataProvider {
-
-	@Override
-	public List<KeyValuePair> getData(
-			DDMDataProviderContext ddmDataProviderContext)
-		throws DDMDataProviderException {
-
-		return Collections.emptyList();
-	}
 
 	@Override
 	public DDMDataProviderResponse getData(
@@ -73,8 +71,12 @@ public class DDMStorageTypesDataProvider implements DDMDataProvider {
 			data.add(new KeyValuePair(storageType, storageType));
 		}
 
-		return DDMDataProviderResponse.of(
-			DDMDataProviderResponseOutput.of("Default-Output", "list", data));
+		DDMDataProviderResponse.Builder builder =
+			DDMDataProviderResponse.Builder.newBuilder();
+
+		builder.withOutput("Default-Output", keyValuePairs);
+
+		return builder.build();
 	}
 
 	@Override
