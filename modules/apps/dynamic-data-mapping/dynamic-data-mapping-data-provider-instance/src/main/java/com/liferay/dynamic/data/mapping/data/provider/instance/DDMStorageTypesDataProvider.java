@@ -39,7 +39,7 @@ public class DDMStorageTypesDataProvider implements DDMDataProvider {
 
 	@Override
 	public DDMDataProviderResponse getData(
-		DDMDataProviderRequest ddmDataProviderRequest)
+			DDMDataProviderRequest ddmDataProviderRequest)
 		throws DDMDataProviderException {
 
 		List<KeyValuePair> keyValuePairs = new ArrayList<>();
