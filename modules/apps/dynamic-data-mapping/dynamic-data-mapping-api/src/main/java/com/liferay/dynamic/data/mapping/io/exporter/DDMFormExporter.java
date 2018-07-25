@@ -23,7 +23,7 @@ import java.util.Locale;
 /**
  * @author Marcellus Tavares
  * @author Manuel de la Peña
- * @deprecated As of 4.0.0, replaced by {@link DDMFormInstanceRecordExporter}
+ * @deprecated As of Judson (7.1.x), replaced by {@link DDMFormInstanceRecordExporter}
  */
 @Deprecated
 public interface DDMFormExporter {

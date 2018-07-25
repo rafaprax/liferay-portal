@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * @author Marcellus Tavares
- * @deprecated As of 4.0.0, replaced by {@link
+ * @deprecated As of Judson (7.1.x), replaced by {@link
  * DDMFormInstanceRecordWriterTracker}
  */
 @Deprecated

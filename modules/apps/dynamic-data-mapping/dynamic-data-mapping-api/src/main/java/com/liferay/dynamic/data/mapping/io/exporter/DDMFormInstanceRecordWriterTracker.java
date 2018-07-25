@@ -17,7 +17,6 @@ package com.liferay.dynamic.data.mapping.io.exporter;
 import aQute.bnd.annotation.ProviderType;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Leonardo Barros
