@@ -15,7 +15,6 @@
 package com.liferay.dynamic.data.mapping.data.provider.instance;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
-import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderException;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
 import com.liferay.dynamic.data.mapping.model.DDMDataProviderInstance;
@@ -43,16 +42,13 @@ public class DDMDataProviderInstancesDataProvider implements DDMDataProvider {
 
 	@Override
 	public DDMDataProviderResponse getData(
-			DDMDataProviderRequest ddmDataProviderRequest)
-		throws DDMDataProviderException {
+		DDMDataProviderRequest ddmDataProviderRequest) {
 
 		List<KeyValuePair> keyValuePairs = new ArrayList<>();
 
 		try {
-			long scopeGroupId = ddmDataProviderRequest.getGroupId();
-
 			long[] groupIds = portal.getCurrentAndAncestorSiteGroupIds(
-				scopeGroupId);
+				ddmDataProviderRequest.getGroupId());
 
 			List<DDMDataProviderInstance> ddmDataProviderInstances =
 				ddmDataProviderInstanceLocalService.getDataProviderInstances(
