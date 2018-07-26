@@ -15,7 +15,6 @@
 package com.liferay.dynamic.data.mapping.data.provider.instance;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProvider;
-import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderException;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderOutputParametersSettings;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderParameterSettings;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
@@ -54,8 +53,7 @@ public class DDMDataProviderInstanceOutputParametersDataProvider
 
 	@Override
 	public DDMDataProviderResponse getData(
-			DDMDataProviderRequest ddmDataProviderRequest)
-		throws DDMDataProviderException {
+		DDMDataProviderRequest ddmDataProviderRequest) {
 
 		Optional<Long> optionalDataProviderInstanceId =
 			ddmDataProviderRequest.getParameter(
