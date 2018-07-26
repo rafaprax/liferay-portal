@@ -25,9 +25,12 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.List;
 import java.util.Map;
@@ -121,7 +124,7 @@ public class DDMFormFieldOptionsFactoryImpl
 				).withCompanyId(
 					portal.getCompanyId(httpServletRequest)
 				).withGroupId(
-					portal.getScopeGroupId(httpServletRequest)
+					getGroupId(httpServletRequest)
 				).withLocale(
 					ddmFormFieldRenderingContext.getLocale()
 				).withParameter(
@@ -159,6 +162,21 @@ public class DDMFormFieldOptionsFactoryImpl
 		}
 
 		return ddmFormFieldOptions;
+	}
+
+	protected long getGroupId(HttpServletRequest httpServletRequest) {
+		long scopeGroupId = ParamUtil.getLong(
+			httpServletRequest, "scopeGroupId");
+
+		if (scopeGroupId == 0) {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)httpServletRequest.getAttribute(
+					WebKeys.THEME_DISPLAY);
+
+			scopeGroupId = themeDisplay.getScopeGroupId();
+		}
+
+		return scopeGroupId;
 	}
 
 	protected String getJSONArrayFirstValue(String value) {
