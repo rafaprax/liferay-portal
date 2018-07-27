@@ -84,6 +84,8 @@ public class CallFunction extends BaseDDMFormRuleFunction {
 				_portal.getScopeGroupId(_httpServletRequest)
 			).withLocale(
 				_portal.getLocale(_httpServletRequest)
+			).withParameter(
+				"httpServletRequest", _httpServletRequest
 			);
 
 			Map<String, String> parameterMap = extractParameters(
