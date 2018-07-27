@@ -362,8 +362,9 @@ public class DDMRESTDataProvider implements DDMDataProvider {
 	}
 
 	protected String normalizePath(String path) {
-		if (StringUtil.startsWith(path, StringPool.PERIOD) ||
-			StringUtil.startsWith(path, StringPool.DOLLAR)) {
+		if (StringUtil.startsWith(path, StringPool.DOLLAR) ||
+			StringUtil.startsWith(path, StringPool.PERIOD) ||
+			StringUtil.startsWith(path, StringPool.STAR)) {
 
 			return path;
 		}
