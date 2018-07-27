@@ -31,11 +31,16 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -52,6 +57,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import javax.servlet.http.HttpServletRequest;
 
 import jodd.http.HttpException;
 import jodd.http.HttpRequest;
@@ -215,7 +222,9 @@ public class DDMRESTDataProvider implements DDMDataProvider {
 
 	protected DDMDataProviderResponse doGetData(
 			DDMDataProviderRequest ddmDataProviderRequest)
-		throws PortalException {
+		throws Exception {
+
+		preparePermissionThreadLocal(ddmDataProviderRequest);
 
 		Optional<DDMDataProviderInstance> ddmDataProviderInstance =
 			fetchDDMDataProviderInstance(
@@ -362,6 +371,26 @@ public class DDMRESTDataProvider implements DDMDataProvider {
 		return StringPool.PERIOD.concat(path);
 	}
 
+	protected void preparePermissionThreadLocal(
+			DDMDataProviderRequest ddmDataProviderRequest)
+		throws Exception {
+
+		if (PermissionThreadLocal.getPermissionChecker() == null) {
+			Optional<HttpServletRequest> optionalHttpServletRequest =
+				ddmDataProviderRequest.getParameter(
+					"httpServletRequest", HttpServletRequest.class);
+
+			if (optionalHttpServletRequest.isPresent()) {
+				User user = portal.getUser(optionalHttpServletRequest.get());
+
+				PermissionChecker permissionChecker =
+					PermissionCheckerFactoryUtil.create(user);
+
+				PermissionThreadLocal.setPermissionChecker(permissionChecker);
+			}
+		}
+	}
+
 	@Reference(unbind = "-")
 	protected void setMultiVMPool(MultiVMPool multiVMPool) {
 		_portalCache =
@@ -418,6 +447,9 @@ public class DDMRESTDataProvider implements DDMDataProvider {
 
 	@Reference
 	protected DDMDataProviderInstanceSettings ddmDataProviderInstanceSettings;
+
+	@Reference
+	protected Portal portal;
 
 	private final Pattern _pathParameterPattern = Pattern.compile("\\{(.*)\\}");
 	private PortalCache<String, DDMDataProviderResponse> _portalCache;

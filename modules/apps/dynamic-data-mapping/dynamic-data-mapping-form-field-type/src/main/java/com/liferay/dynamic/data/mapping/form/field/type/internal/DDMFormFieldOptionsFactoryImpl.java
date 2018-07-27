@@ -130,6 +130,8 @@ public class DDMFormFieldOptionsFactoryImpl
 				).withParameter(
 					"filterParameterValue",
 					String.valueOf(ddmFormFieldRenderingContext.getValue())
+				).withParameter(
+					"httpServletRequest", httpServletRequest
 				).build();
 
 			DDMDataProviderResponse ddmDataProviderResponse =
