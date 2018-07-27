@@ -19,6 +19,7 @@ package com.liferay.dynamic.data.mapping.data.provider;
  */
 public enum DDMDataProviderResponseStatus {
 
-	OK, SERVICE_UNAVAILABLE, SHORT_CIRCUIT, TIMEOUT, UNAUTHORIZED, UNKNOWN_ERROR
+	COMMAND_EXCEPTION, OK, SERVICE_UNAVAILABLE, SHORT_CIRCUIT, TIMEOUT,
+	UNAUTHORIZED, UNKNOWN_ERROR
 
 }
