@@ -27,6 +27,9 @@ import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.KeyValuePair;
@@ -41,7 +44,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +62,16 @@ public class DDMRESTDataProviderTest {
 	@Rule
 	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
+
+	@Before
+	public void setUp() throws Exception {
+		setUpPermissionThreadLocal();
+	}
+
+	@After
+	public void tearDown() {
+		PermissionThreadLocal.setPermissionChecker(_originalPermissionChecker);
+	}
 
 	@Test
 	public void testGetCountries() throws Exception {
@@ -86,10 +101,13 @@ public class DDMRESTDataProviderTest {
 		ddmFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
 				"username", "test@liferay.com"));
+		ddmFormValues.addDDMFormFieldValue(
+			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
+				"timeout", "1000"));
 
 		DDMFormFieldValue outputParameters =
-			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
-				"outputParameters", StringPool.BLANK);
+			DDMFormValuesTestUtil.createDDMFormFieldValue(
+				"outputParameters", null);
 
 		ddmFormValues.addDDMFormFieldValue(outputParameters);
 
@@ -167,10 +185,13 @@ public class DDMRESTDataProviderTest {
 		ddmFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
 				"username", "test@liferay.com"));
+		ddmFormValues.addDDMFormFieldValue(
+			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
+				"timeout", "1000"));
 
 		DDMFormFieldValue outputParameters =
-			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
-				"outputParameters", StringPool.BLANK);
+			DDMFormValuesTestUtil.createDDMFormFieldValue(
+				"outputParameters", null);
 
 		ddmFormValues.addDDMFormFieldValue(outputParameters);
 
@@ -186,15 +207,18 @@ public class DDMRESTDataProviderTest {
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
 				"outputParameterType", "[\"list\"]"));
 
+		long ddmDataProviderInstanceId = saveDDMDataProviderInstance(
+			ddmFormValues);
+
 		DDMDataProviderRequest.Builder builder =
 			DDMDataProviderRequest.Builder.newBuilder();
 
-		DDMDataProviderRequest ddmDataProviderRequest = builder.withParameter(
-			"filterParameterValue", "brazil"
-		).build();
-
-		long ddmDataProviderInstanceId = saveDDMDataProviderInstance(
-			ddmFormValues);
+		DDMDataProviderRequest ddmDataProviderRequest =
+			builder.withDDMDataProviderId(
+				String.valueOf(ddmDataProviderInstanceId)
+			).withParameter(
+				"filterParameterValue", "brazil"
+			).build();
 
 		DDMDataProviderResponse ddmDataProviderResponse =
 			_ddmDataProvider.getData(ddmDataProviderRequest);
@@ -215,7 +239,7 @@ public class DDMRESTDataProviderTest {
 		KeyValuePair actualKeyValuePair = expectedKeyValuePairs.get(0);
 
 		Assert.assertEquals("48", actualKeyValuePair.getKey());
-		Assert.assertEquals("Brazil", (String)actualKeyValuePair.getValue());
+		Assert.assertEquals("Brazil", actualKeyValuePair.getValue());
 
 		_ddmDataProviderInstanceLocalService.deleteDataProviderInstance(
 			ddmDataProviderInstanceId);
@@ -237,7 +261,7 @@ public class DDMRESTDataProviderTest {
 
 		Map<Locale, String> nameMap = new HashMap<>();
 
-		nameMap.put(LocaleUtil.BRAZIL, "Teste");
+		nameMap.put(LocaleUtil.US, "Test");
 
 		DDMDataProviderInstance ddmDataProviderInstance =
 			_ddmDataProviderInstanceLocalService.addDataProviderInstance(
@@ -245,6 +269,14 @@ public class DDMRESTDataProviderTest {
 				nameMap, null, ddmFormValues, "rest", new ServiceContext());
 
 		return ddmDataProviderInstance.getDataProviderInstanceId();
+	}
+
+	protected void setUpPermissionThreadLocal() throws Exception {
+		_originalPermissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		PermissionThreadLocal.setPermissionChecker(
+			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser()));
 	}
 
 	@Inject(
@@ -255,5 +287,7 @@ public class DDMRESTDataProviderTest {
 	@Inject(type = DDMDataProviderInstanceLocalService.class)
 	private DDMDataProviderInstanceLocalService
 		_ddmDataProviderInstanceLocalService;
+
+	private PermissionChecker _originalPermissionChecker;
 
 }

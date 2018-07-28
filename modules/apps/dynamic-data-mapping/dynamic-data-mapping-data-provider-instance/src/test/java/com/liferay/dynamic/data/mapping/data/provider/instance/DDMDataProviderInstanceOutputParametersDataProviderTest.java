@@ -79,7 +79,7 @@ public class DDMDataProviderInstanceOutputParametersDataProviderTest
 			DDMDataProviderRequest.Builder.newBuilder();
 
 		DDMDataProviderRequest ddmDataProviderRequest = builder.withParameter(
-			"dataProviderInstanceId", 1L
+			"dataProviderInstanceId", "1"
 		).build();
 
 		when(
@@ -191,7 +191,7 @@ public class DDMDataProviderInstanceOutputParametersDataProviderTest
 			DDMDataProviderRequest.Builder.newBuilder();
 
 		DDMDataProviderRequest ddmDataProviderRequest = builder.withParameter(
-			"dataProviderInstanceId", 1L
+			"dataProviderInstanceId", "1"
 		).build();
 
 		when(
@@ -221,7 +221,7 @@ public class DDMDataProviderInstanceOutputParametersDataProviderTest
 			DDMDataProviderRequest.Builder.newBuilder();
 
 		DDMDataProviderRequest ddmDataProviderRequest = builder.withParameter(
-			"dataProviderInstanceId", 1L
+			"dataProviderInstanceId", "1"
 		).build();
 
 		when(
