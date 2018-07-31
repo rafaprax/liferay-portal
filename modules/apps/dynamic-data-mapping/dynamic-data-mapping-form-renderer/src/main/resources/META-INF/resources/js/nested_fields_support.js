@@ -19,6 +19,8 @@ AUI.add(
 				var instance = this;
 
 				AArray.invoke(instance.get('fields'), 'destroy');
+
+				instance.set('fields', []);
 			},
 
 			appendChild: function(field) {

@@ -209,7 +209,7 @@ AUI.add(
 					hasFocus: function(node) {
 						var instance = this;
 
-						return instance._validationOptions.hasFocus(node);
+						return instance._validationOptions && instance._validationOptions.hasFocus(node);
 					},
 
 					_afterValueChange: function() {

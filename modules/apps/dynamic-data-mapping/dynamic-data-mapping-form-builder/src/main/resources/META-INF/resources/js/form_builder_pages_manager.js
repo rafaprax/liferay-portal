@@ -192,6 +192,10 @@ AUI.add(
 					destructor: function() {
 						var instance = this;
 
+						if (instance._pagination) {
+							instance._pagination.destroy();
+						}
+
 						(new A.EventHandle(instance._eventHandlers)).detach();
 					},
 

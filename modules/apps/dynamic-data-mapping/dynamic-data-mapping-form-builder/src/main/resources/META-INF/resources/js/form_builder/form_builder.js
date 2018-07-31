@@ -834,7 +834,7 @@ AUI.add(
 						var instance = this;
 
 						instance._eventHandlers.push(
-							A.one('.' + CSS_LAYOUT_BUILDER_CONTAINER).delegate('hover', A.bind('onHoverColumn', instance), '.col', instance)
+							A.one('.' + CSS_LAYOUT_BUILDER_CONTAINER).delegate('hover', A.debounce(A.bind('onHoverColumn', instance), 100), '.col', instance)
 						);
 
 						instance._fieldToolbar.destroy();

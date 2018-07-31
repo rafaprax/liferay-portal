@@ -229,7 +229,7 @@ AUI.add(
 
 							var dropChosen = container.one('.drop-chosen');
 
-							if (dropChosen.one('a[title="' + title + '"]')) {
+							if (dropChosen && dropChosen.one('a[title="' + title + '"]')) {
 								return true;
 							}
 

@@ -73,6 +73,17 @@ AUI.add(
 						);
 					},
 
+					destructor: function() {
+						var instance = this;
+
+						if (instance._autoComplete) {
+							instance._autoComplete.destroy();
+						}
+
+						instance._autoComplete = null;
+						instance.evaluate = null;
+					},
+
 					getAutoComplete: function() {
 						var instance = this;
 

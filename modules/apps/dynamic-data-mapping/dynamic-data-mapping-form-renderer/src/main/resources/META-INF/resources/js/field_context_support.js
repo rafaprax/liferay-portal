@@ -49,7 +49,7 @@ AUI.add(
 							instance.set(attributeName, context[attributeName]);
 						}
 
-						instance.after(attributeName + 'Change', A.bind(instance._afterAttributeChange, instance, attributeName));
+						instance._eventHandlers.push(instance.after(attributeName + 'Change', A.bind(instance._afterAttributeChange, instance, attributeName)));
 					}
 
 					instance._setStateRepaintableAttributeValue(attributeName, !!attributes[attributeName].state);
@@ -66,7 +66,7 @@ AUI.add(
 							};
 
 							instance.addAttr(attr, config);
-							instance.after(attr + 'Change', A.bind(instance._afterAttributeChange, instance, attr));
+							instance._eventHandlers.push(instance.after(attr + 'Change', A.bind(instance._afterAttributeChange, instance, attr)));
 						}
 					}
 				);

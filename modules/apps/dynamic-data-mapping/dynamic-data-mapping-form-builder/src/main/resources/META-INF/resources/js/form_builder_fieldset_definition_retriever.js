@@ -1,8 +1,6 @@
 AUI.add(
 	'liferay-ddm-form-builder-fieldset-definition-retriever',
 	function(A) {
-		var CACHE = {};
-
 		var FormBuilderFieldSetDefinitionRetriever = A.Component.create(
 			{
 				EXTENDS: A.Base,
@@ -23,43 +21,32 @@ AUI.add(
 									return parsed;
 								};
 
-								var id = fieldSet.get('id');
+								var payload = {
+									ddmStructureId: fieldSet.get('id'),
+									languageId: themeDisplay.getLanguageId(),
+									pathThemeImages: themeDisplay.getPathThemeImages(),
+									portletNamespace: Liferay.DDM.Settings.portletNamespace,
+									scopeGroupId: themeDisplay.getScopeGroupId()
+								};
 
-								var cachedDefinitionJSON = CACHE[id];
+								A.io.request(
+									Liferay.DDM.Settings.fieldSetDefinitionURL,
+									{
+										data: payload,
+										dataType: 'JSON',
+										method: 'GET',
+										on: {
+											failure: function(error) {
+												reject(error);
+											},
+											success: function(event, status, xhr) {
+												var definitionJSON = xhr.responseText;
 
-								if (cachedDefinitionJSON) {
-									resolveJSON(cachedDefinitionJSON);
-								}
-								else {
-									var payload = {
-										ddmStructureId: id,
-										languageId: themeDisplay.getLanguageId(),
-										pathThemeImages: themeDisplay.getPathThemeImages(),
-										portletNamespace: Liferay.DDM.Settings.portletNamespace,
-										scopeGroupId: themeDisplay.getScopeGroupId()
-									};
-
-									A.io.request(
-										Liferay.DDM.Settings.fieldSetDefinitionURL,
-										{
-											data: payload,
-											dataType: 'JSON',
-											method: 'GET',
-											on: {
-												failure: function(error) {
-													reject(error);
-												},
-												success: function(event, status, xhr) {
-													var definitionJSON = xhr.responseText;
-
-													CACHE[id] = definitionJSON;
-
-													resolveJSON(definitionJSON);
-												}
+												resolveJSON(definitionJSON);
 											}
 										}
-									);
-								}
+									}
+								);
 							}
 						);
 					}

@@ -1,6 +1,5 @@
 import Component from 'metal-component';
 import Soy from 'metal-soy';
-import {renderToString} from 'incremental-dom-string';
 
 import templates from './form.soy';
 
@@ -14,24 +13,18 @@ if (!window.ddm) {
 
 for (let template in templates) {
 	if (template !== 'templates') {
-		class C extends Component {};
+		class C extends Component {}
+
 		Soy.register(C, templates, template);
+
 		FormTemplates.push(
 			{
-				key: template,
-				component: C
+				component: C,
+				key: template
 			}
 		);
+
 		window.ddm[template] = C;
-		// window.ddm[template] = function(data, element) {
-		// 	const renderer = templates[template];
-		// 	Object.keys(data).forEach((key) => {
-		// 		if (data[key] && data[key].contentKind === 'HTML') {
-		// 			data[key] = Soy.toIncDom(data[key].content);
-		// 		}
-		// 	});
-		// 	return renderToString(() => renderer(data));
-		// };
 	}
 }
 

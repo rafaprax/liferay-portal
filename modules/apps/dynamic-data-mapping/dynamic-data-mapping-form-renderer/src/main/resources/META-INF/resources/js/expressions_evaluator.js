@@ -1,8 +1,6 @@
 AUI.add(
 	'liferay-ddm-form-renderer-expressions-evaluator',
 	function(A) {
-		var CACHE = {};
-
 		var ExpressionsEvaluator = A.Component.create(
 			{
 				ATTRS: {
@@ -67,31 +65,7 @@ AUI.add(
 							instance.fire(
 								'evaluate',
 								{
-									callback: function(result) {
-										instance._evaluating = false;
-
-										var triggers = {};
-
-										while (instance._queue.size() > 0) {
-											var next = instance._queue.next();
-
-											if (!triggers[next.get('name')]) {
-												instance.fire(
-													'evaluationEnded',
-													{
-														result: result,
-														trigger: next
-													}
-												);
-											}
-
-											triggers[next.get('name')] = true;
-										}
-
-										if (callback) {
-											callback.apply(instance, arguments);
-										}
-									},
+									callback: A.rbind(instance._handleEvaluation, instance, callback),
 									trigger: trigger
 								}
 							);
@@ -137,48 +111,67 @@ AUI.add(
 
 						var type = payload.type;
 
-						if (payload.newField && CACHE[type]) {
-							callback.call(instance, JSON.parse(CACHE[type]));
-						}
-						else {
-							instance._request = A.io.request(
-								instance.get('evaluatorURL'),
-								{
-									data: A.merge(
-										payload,
-										{
-											trigger: event.trigger ? event.trigger.get('fieldName') || '' : ''
+						instance._request = A.io.request(
+							instance.get('evaluatorURL'),
+							{
+								data: A.merge(
+									payload,
+									{
+										trigger: event.trigger ? event.trigger.get('fieldName') || '' : ''
+									}
+								),
+								method: 'POST',
+								on: {
+									failure: function(event) {
+										if (event.details[1].statusText !== 'abort') {
+											callback.call(instance, null);
 										}
-									),
-									method: 'POST',
-									on: {
-										failure: function(event) {
-											if (event.details[1].statusText !== 'abort') {
-												callback.call(instance, null);
-											}
-											else {
-												callback.call(instance, {});
-											}
-										},
-										success: function(event, id, xhr) {
-											var result = xhr.responseText;
-
-											if (payload.newField) {
-												CACHE[type] = result;
-											}
-
-											callback.call(instance, JSON.parse(result));
+										else {
+											callback.call(instance, {});
 										}
+									},
+									success: function(event, id, xhr) {
+										var result = xhr.responseText;
+
+										callback.call(instance, JSON.parse(result));
 									}
 								}
-							);
-						}
+							}
+						);
 					},
 
 					_getEnabled: function(enabled) {
 						var instance = this;
 
 						return enabled && !!instance.get('evaluatorURL');
+					},
+
+					_handleEvaluation: function(result, callback) {
+						var instance = this;
+
+						instance._evaluating = false;
+
+						var triggers = {};
+
+						while (instance._queue.size() > 0) {
+							var next = instance._queue.next();
+
+							if (!triggers[next.get('name')]) {
+								instance.fire(
+									'evaluationEnded',
+									{
+										result: result,
+										trigger: next
+									}
+								);
+							}
+
+							triggers[next.get('name')] = true;
+						}
+
+						if (callback) {
+							callback.apply(instance, arguments);
+						}
 					},
 
 					_start: function(event) {

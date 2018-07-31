@@ -177,7 +177,6 @@
 							},
 							path: 'numeric_field.js',
 							requires: [
-								'aui-autosize-deprecated',
 								'aui-tooltip',
 								'liferay-ddm-form-renderer-field'
 							]
@@ -293,7 +292,6 @@
 							},
 							path: 'text_field.js',
 							requires: [
-								'aui-autosize-deprecated',
 								'aui-tooltip',
 								'autocomplete',
 								'autocomplete-highlighters',

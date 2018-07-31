@@ -221,6 +221,8 @@ AUI.add(
 							instance._copyPublishFormURLPopover.destroy();
 						}
 
+						instance.savedState = null;
+
 						(new A.EventHandle(instance._eventHandlers)).detach();
 					},
 

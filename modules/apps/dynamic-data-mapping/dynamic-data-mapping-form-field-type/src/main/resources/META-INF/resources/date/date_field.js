@@ -41,7 +41,9 @@ AUI.add(
 					destructor: function() {
 						var instance = this;
 
-						instance.datePicker.destroy();
+						if (instance.datePicker) {
+							instance.datePicker.destroy();
+						}
 					},
 
 					formatDate: function(isoDate) {
