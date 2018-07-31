@@ -947,6 +947,8 @@ AUI.add(
 
 				var secondOperandType = instance._getSecondOperandType(index);
 
+				var contentBox = instance.get('contentBox');
+
 				if (secondOperandType.get('visible')) {
 					var secondOperandTypeValue = instance._getSecondOperandTypeValue(index);
 
@@ -957,11 +959,15 @@ AUI.add(
 					instance._hideSecondOperandField(index);
 
 					if (secondOperandTypeValue === 'field') {
+						contentBox.one('.condition-type-value-options-' + index).show();
+
 						secondOperandFields.set('visible', true);
 
 						secondOperandOptions.cleanSelect();
 					}
 					else if (instance._isConstant(secondOperandTypeValue)) {
+						contentBox.one('.condition-type-value-' + index).show();
+
 						var options = instance._getFieldProperty(instance._getFirstOperandValue(index), 'options');
 						var secondOperand = '';
 
@@ -1044,13 +1050,22 @@ AUI.add(
 
 				var secondOperandType = instance._getSecondOperandType(index);
 
+				var contentBox = instance.get('contentBox');
+
 				if (secondOperandType) {
 					if (instance._getFirstOperandValue(index) && instance._getOperatorValue(index) && !instance._isUnaryCondition(index)) {
 						secondOperandType.set('visible', true);
+
+						contentBox.one('.condition-the-' + index).show();
+
 					}
 					else {
 						instance._hideSecondOperandField(index);
 						instance._hideSecondOperandTypeField(index);
+
+						contentBox.one('.condition-the-' + index).hide();
+						contentBox.one('.condition-type-value-' + index).hide();
+						contentBox.one('.condition-type-value-options-' + index).hide();
 					}
 				}
 			}

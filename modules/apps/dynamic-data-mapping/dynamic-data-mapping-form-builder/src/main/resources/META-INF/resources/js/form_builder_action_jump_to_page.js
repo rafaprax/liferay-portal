@@ -54,10 +54,16 @@ AUI.add(
 
 						var index = instance.get('index');
 
+						var fieldMessageContainer = instance.get('boundingBox').one('.target-message-' + index);
+
 						var fieldsListContainer = instance.get('boundingBox').one('.target-' + index);
 
 						instance._createSourceField().render(fieldsListContainer);
 						instance._createTargetField().render(fieldsListContainer);
+
+						fieldMessageContainer.hide();
+						fieldMessageContainer.html('');
+						fieldsListContainer.show();
 					},
 
 					_clearTargetValue: function() {
