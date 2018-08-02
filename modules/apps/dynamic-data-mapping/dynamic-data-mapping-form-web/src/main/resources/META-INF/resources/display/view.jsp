@@ -191,6 +191,7 @@ Locale displayLocale = LocaleUtil.fromLanguageId(languageId);
 									{
 										data: {
 											<portlet:namespace />formInstanceId: <%= formInstanceId %>,
+											<portlet:namespace />languageId: '<%= languageId %>',
 											<portlet:namespace />serializedDDMFormValues: JSON.stringify(<portlet:namespace />form.toJSON())
 										},
 										method: 'POST'
