@@ -14,61 +14,73 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
-
-import java.util.List;
-import java.util.Map;
+import com.liferay.dynamic.data.mapping.expression.UpdateFieldPropertyRequest;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import org.powermock.api.mockito.PowerMockito;
 
 /**
  * @author Leonardo Barros
  */
-public class SetInvalidFunctionTest extends BaseDDMFormRuleFunctionTestCase {
+@RunWith(MockitoJUnitRunner.class)
+public class SetInvalidFunctionTest extends PowerMockito {
 
 	@Test
-	public void testEvaluate() {
-		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult1 =
-			createDDMFormFieldEvaluationResult(
-				"Field_1", "valid", RandomTestUtil.randomBoolean());
+	public void testApply() {
+		DefaultDDMExpressionObserver defaultDDMExpressionObserver =
+			new DefaultDDMExpressionObserver();
 
-		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult2 =
-			createDDMFormFieldEvaluationResult(
-				"Field_1", "valid", RandomTestUtil.randomBoolean());
+		DefaultDDMExpressionObserver spy = spy(defaultDDMExpressionObserver);
 
-		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult3 =
-			createDDMFormFieldEvaluationResult("Field_2", "valid", true);
+		SetInvalidFunction setInvalidFunction = new SetInvalidFunction();
 
-		Map<String, List<DDMFormFieldEvaluationResult>>
-			ddmFormFieldEvaluationResultsMap =
-				createDDMFormFieldEvaluationResultsMap(
-					ddmFormFieldEvaluationResult1,
-					ddmFormFieldEvaluationResult2,
-					ddmFormFieldEvaluationResult3);
+		Boolean result = setInvalidFunction.apply(
+			spy, "contact", "Custom error message");
 
-		SetInvalidFunction setInvalidFunction = new SetInvalidFunction(
-			ddmFormFieldEvaluationResultsMap);
+		ArgumentCaptor<UpdateFieldPropertyRequest> argumentCaptor =
+			ArgumentCaptor.forClass(UpdateFieldPropertyRequest.class);
 
-		setInvalidFunction.evaluate("Field_1", "Error Field 1");
+		Mockito.verify(
+			spy, Mockito.times(1)
+		).updateFieldProperty(
+			argumentCaptor.capture()
+		);
 
-		Assert.assertFalse(ddmFormFieldEvaluationResult1.isValid());
+		UpdateFieldPropertyRequest updateFieldPropertyRequest =
+			argumentCaptor.getValue();
+
+		Assert.assertEquals("contact", updateFieldPropertyRequest.getField());
+		Assert.assertEquals("valid", updateFieldPropertyRequest.getProperty());
 		Assert.assertEquals(
-			"Error Field 1", ddmFormFieldEvaluationResult1.getErrorMessage());
+			"Custom error message",
+			updateFieldPropertyRequest.getParameter("errorMessage").get());
+		Assert.assertEquals(false, updateFieldPropertyRequest.getValue());
 
-		Assert.assertFalse(ddmFormFieldEvaluationResult2.isValid());
-		Assert.assertEquals(
-			"Error Field 1", ddmFormFieldEvaluationResult2.getErrorMessage());
-
-		Assert.assertTrue(ddmFormFieldEvaluationResult3.isValid());
+		Assert.assertTrue(result);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testIllegalArgument() throws Exception {
-		SetInvalidFunction setInvalidFunction = new SetInvalidFunction(null);
+	@Test
+	public void testIsObservable() {
+		SetInvalidFunction setInvalidFunction = new SetInvalidFunction();
 
-		setInvalidFunction.evaluate("param1");
+		Assert.assertTrue(setInvalidFunction.isObservable());
+	}
+
+	@Test
+	public void testNullObserver() {
+		SetInvalidFunction setInvalidFunction = new SetInvalidFunction();
+
+		Boolean result = setInvalidFunction.apply(
+			null, "field", "errorMessage");
+
+		Assert.assertFalse(result);
 	}
 
 }

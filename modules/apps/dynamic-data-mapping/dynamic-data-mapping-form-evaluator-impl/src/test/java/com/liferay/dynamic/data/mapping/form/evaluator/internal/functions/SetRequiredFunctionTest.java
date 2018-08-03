@@ -12,39 +12,21 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.expression.internal;
+package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- * @author Miguel Angelo Caldas Gallindo
+ * @author Leonardo Barros
  */
-public class Variable {
+public class SetRequiredFunctionTest {
 
-	public Variable(String name) {
-		_name = name;
+	@Test
+	public void testGetPropertyName() {
+		SetRequiredFunction setRequiredFunction = new SetRequiredFunction();
+
+		Assert.assertEquals("required", setRequiredFunction.getPropertyName());
 	}
-
-	public String getExpressionString() {
-		return _expressionString;
-	}
-
-	public String getName() {
-		return _name;
-	}
-
-	public Object getValue() {
-		return _value;
-	}
-
-	public void setExpressionString(String expressionString) {
-		_expressionString = expressionString;
-	}
-
-	public void setValue(Object value) {
-		_value = value;
-	}
-
-	private String _expressionString;
-	private final String _name;
-	private Object _value;
 
 }

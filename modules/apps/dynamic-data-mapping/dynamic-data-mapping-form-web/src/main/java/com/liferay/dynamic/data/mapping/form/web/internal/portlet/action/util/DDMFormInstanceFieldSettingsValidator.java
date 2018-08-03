@@ -16,10 +16,7 @@ package com.liferay.dynamic.data.mapping.form.web.internal.portlet.action.util;
 
 import com.liferay.dynamic.data.mapping.form.builder.context.DDMFormContextVisitor;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationException;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluator;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorContext;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
 import com.liferay.dynamic.data.mapping.form.web.FormInstanceFieldSettingsException;
