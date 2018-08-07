@@ -20,8 +20,11 @@ import com.liferay.portal.configuration.persistence.listener.ConfigurationModelL
 import com.liferay.portal.configuration.persistence.listener.ConfigurationModelListenerException;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.Dictionary;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -62,8 +65,15 @@ public class DDMFormWebConfigurationModelListener
 		throws Exception {
 
 		if (autosaveInterval < 0) {
-			throw new Exception(
-				"The autosave interval must greater than or equal to 0");
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+				"content.Language", LocaleThreadLocal.getThemeDisplayLocale(),
+				getClass());
+
+			String message = ResourceBundleUtil.getString(
+				resourceBundle,
+				"the-autosave-interval-must-be-greater-than-or-equal-to-0");
+
+			throw new Exception(message);
 		}
 	}
 
