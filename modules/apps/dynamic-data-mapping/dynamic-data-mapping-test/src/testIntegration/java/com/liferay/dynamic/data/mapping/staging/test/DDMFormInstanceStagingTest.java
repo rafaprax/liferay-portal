@@ -45,8 +45,7 @@ public class DDMFormInstanceStagingTest {
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_liveGroup.getGroupId());
 
-		DDMFormStagingTestUtil.enableLocalStaging(
-			_liveGroup, true, false, true);
+		DDMFormStagingTestUtil.enableLocalStaging(_liveGroup, true);
 
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser());

@@ -14,8 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.test.util;
 
-import com.liferay.document.library.constants.DLPortletKeys;
-import com.liferay.dynamic.data.lists.constants.DDLPortletKeys;
 import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.service.StagingLocalServiceUtil;
@@ -34,8 +32,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 public class DDMFormStagingTestUtil {
 
 	public static void enableLocalStaging(
-			Group group, boolean enableFormsStaging, boolean enableDDLStaging,
-			boolean enableDLStaging)
+			Group group, boolean enableFormsStaging)
 		throws PortalException {
 
 		ServiceContext serviceContext =
@@ -46,14 +43,6 @@ public class DDMFormStagingTestUtil {
 			StagingUtil.getStagedPortletId(
 				DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM),
 			enableFormsStaging);
-		addStagingAttribute(
-			serviceContext,
-			StagingUtil.getStagedPortletId(DDLPortletKeys.DYNAMIC_DATA_LISTS),
-			enableDDLStaging);
-		addStagingAttribute(
-			serviceContext,
-			StagingUtil.getStagedPortletId(DLPortletKeys.DOCUMENT_LIBRARY),
-			enableDLStaging);
 		addStagingAttribute(
 			serviceContext, PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL,
 			false);
