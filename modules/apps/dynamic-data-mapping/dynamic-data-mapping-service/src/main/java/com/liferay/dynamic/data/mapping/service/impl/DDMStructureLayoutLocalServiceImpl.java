@@ -26,6 +26,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
 import com.liferay.dynamic.data.mapping.service.base.DDMStructureLayoutLocalServiceBaseImpl;
 import com.liferay.dynamic.data.mapping.validator.DDMFormLayoutValidator;
+import com.liferay.dynamic.data.mapping.validator.DDMFormLayoutValidatorValidateRequest;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
@@ -151,7 +152,10 @@ public class DDMStructureLayoutLocalServiceImpl
 	protected void validate(DDMFormLayout ddmFormLayout)
 		throws PortalException {
 
-		ddmFormLayoutValidator.validate(ddmFormLayout);
+		DDMFormLayoutValidatorValidateRequest.Builder builder =
+			DDMFormLayoutValidatorValidateRequest.Builder.newBuilder(ddmFormLayout);
+
+		ddmFormLayoutValidator.validate(builder.build());
 	}
 
 	@ServiceReference(type = DDMFormLayoutDeserializerTracker.class)
