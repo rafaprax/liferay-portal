@@ -14,30 +14,13 @@
 
 package com.liferay.dynamic.data.mapping.validator;
 
-import com.liferay.dynamic.data.mapping.model.DDMForm;
-
 /**
- * @author Marcellus Tavares
+ * @author Leonardo Barros
  */
-public interface DDMFormValidator {
+public enum DDMFormLayoutValidatorErrorStatus {
 
-	/**
-	 * @deprecated As of Judson (7.1.x), replaced by
-	 * {@link DDMFormValidator#validate(DDMFormValidatorValidateRequest)}
-	 */
-	@Deprecated
-	public default void validate(DDMForm ddmForm)
-		throws DDMFormValidationException {
-
-		DDMFormValidatorValidateRequest validateFormRequest =
-			DDMFormValidatorValidateRequest.Builder.newBuilder(
-				ddmForm
-			).build();
-
-		validate(validateFormRequest);
-	}
-
-	public void validate(DDMFormValidatorValidateRequest validateFormRequest)
-		throws DDMFormValidationException;
+	INVALID_COLUMN_SIZE_EXCEPTION, INVALID_ROW_SIZE_EXCEPTION,
+	MUST_NOT_DUPLICATE_FIELD_NAME_EXCEPTION, MUST_SET_DEFAULT_LOCALE_EXCEPTION,
+	MUST_SET_EQUAL_LOCALE_FOR_LAYOUT_EXCEPTION
 
 }
