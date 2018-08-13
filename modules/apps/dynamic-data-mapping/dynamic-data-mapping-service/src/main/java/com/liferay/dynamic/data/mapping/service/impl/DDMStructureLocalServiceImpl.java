@@ -2004,6 +2004,7 @@ public class DDMStructureLocalServiceImpl
 			DDMFormValidatorValidateRequest.Builder.newBuilder(
 				ddmForm
 			);
+
 		ddmFormValidator.validate(builder.build());
 	}
 
