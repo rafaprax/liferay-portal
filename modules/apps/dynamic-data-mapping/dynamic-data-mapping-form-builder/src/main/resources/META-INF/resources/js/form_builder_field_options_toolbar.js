@@ -107,18 +107,29 @@ AUI.add(
 
 						var dropdown = target.ancestor('.dropdown-menu');
 
-						var handlerName = target.getData('handler');
-
 						var formBuilder = instance.get('formBuilder');
 
-						var field = instance.get('field');
+						var field = '';
+
+						var fieldToolBar = dropdown.previous('#dropdownFieldToolbar');
+
+						if (fieldToolBar) {
+							field = formBuilder._sidebar.get('field');
+						}
+						else {
+							field = instance.get('field');
+						}
+
+						var handlerName = target.getData('handler');
 
 						var fieldSelected = dropdown.one('.dropdown-item[data-handler="' + handlerName + '"]');
 
-						var fieldSelectedDisabled = fieldSelected.hasClass('disabled');
+						if (fieldSelected) {
+							var fieldSelectedDisabled = fieldSelected.hasClass('disabled');
 
-						if (handlerName && !fieldSelectedDisabled && formBuilder[handlerName]) {
-							formBuilder[handlerName](field, event);
+							if (handlerName && !fieldSelectedDisabled && formBuilder[handlerName]) {
+								formBuilder[handlerName](field, event);
+							}
 						}
 					}
 				}
