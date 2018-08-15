@@ -24,9 +24,14 @@ import com.liferay.document.library.web.internal.display.context.logic.FileVersi
 import com.liferay.document.library.web.internal.display.context.util.DLRequestHelper;
 import com.liferay.document.library.web.internal.settings.DLPortletInstanceSettings;
 import com.liferay.dynamic.data.mapping.exception.StorageException;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -51,27 +56,44 @@ public class DefaultDLEditFileEntryDisplayContext
 
 	public DefaultDLEditFileEntryDisplayContext(
 		HttpServletRequest request, HttpServletResponse response,
-		DLFileEntryType dlFileEntryType, DLValidator dlValidator,
-		StorageEngine storageEngine) {
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DLFileEntryType dlFileEntryType, DLValidator dlValidator) {
 
-		this(request, dlFileEntryType, dlValidator, null, storageEngine);
+		this(
+			request, ddmStorageAdapterTracker, ddmStorageLinkLocalService,
+			dlFileEntryType, dlValidator, null);
 	}
 
 	public DefaultDLEditFileEntryDisplayContext(
 		HttpServletRequest request, HttpServletResponse response,
-		DLValidator dlValidator, FileEntry fileEntry,
-		StorageEngine storageEngine) {
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DLValidator dlValidator, FileEntry fileEntry) {
 
 		this(
-			request, (DLFileEntryType)null, dlValidator, fileEntry,
-			storageEngine);
+			request, ddmStorageAdapterTracker, ddmStorageLinkLocalService,
+			(DLFileEntryType)null, dlValidator, fileEntry);
 	}
 
 	@Override
 	public DDMFormValues getDDMFormValues(long classPK)
 		throws StorageException {
 
-		return _storageEngine.getDDMFormValues(classPK);
+		try {
+			DDMStorageLink ddmStorageLink =
+				_ddmStorageLinkLocalService.getClassStorageLink(classPK);
+
+			DDMStructure ddmStructure = ddmStorageLink.getStructure();
+
+			return getDDMFormValues(ddmStorageLink.getClassPK(), ddmStructure);
+		}
+		catch (StorageException se) {
+			throw se;
+		}
+		catch (Exception e) {
+			throw new StorageException(e);
+		}
 	}
 
 	@Override
@@ -226,16 +248,39 @@ public class DefaultDLEditFileEntryDisplayContext
 		return true;
 	}
 
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws StorageException {
+
+		String storageType = ddmStructure.getStorageType();
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(storageType);
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
 	private DefaultDLEditFileEntryDisplayContext(
-		HttpServletRequest request, DLFileEntryType dlFileEntryType,
-		DLValidator dlValidator, FileEntry fileEntry,
-		StorageEngine storageEngine) {
+		HttpServletRequest request,
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DLFileEntryType dlFileEntryType, DLValidator dlValidator,
+		FileEntry fileEntry) {
 
 		try {
 			_dlRequestHelper = new DLRequestHelper(request);
+			_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
+			_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
 			_dlValidator = dlValidator;
 			_fileEntry = fileEntry;
-			_storageEngine = storageEngine;
 
 			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 				WebKeys.THEME_DISPLAY);
@@ -295,6 +340,8 @@ public class DefaultDLEditFileEntryDisplayContext
 	private static final UUID _UUID = UUID.fromString(
 		"63326141-02F6-42B5-AE38-ABC73FA72BB5");
 
+	private final DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+	private final DDMStorageLinkLocalService _ddmStorageLinkLocalService;
 	private final DLFileEntryType _dlFileEntryType;
 	private final DLRequestHelper _dlRequestHelper;
 	private final DLValidator _dlValidator;
@@ -304,6 +351,5 @@ public class DefaultDLEditFileEntryDisplayContext
 	private final FileVersionDisplayContextHelper
 		_fileVersionDisplayContextHelper;
 	private final boolean _showSelectFolder;
-	private final StorageEngine _storageEngine;
 
 }

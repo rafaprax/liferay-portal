@@ -20,22 +20,32 @@ import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.service.DLFileEntryMetadataLocalService;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMContent;
+import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
+import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.Field;
-import com.liferay.dynamic.data.mapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
-import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterSaveRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterSaveResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.Portal;
 
-import java.io.Serializable;
-
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -44,13 +54,25 @@ import java.util.Map;
 public class GoogleDocsMetadataHelper {
 
 	public static DDMStructure getGoogleDocsDDMStructure(
-		DLFileEntryType dlFileEntryType) {
+		DDMStructureLinkLocalService ddmStructureLinkLocalService,
+		DDMStructureLocalService ddmStructureLocalService,
+		DLFileEntryType dlFileEntryType, Portal portal) {
 
-		if (dlFileEntryType == null) {
-			return null;
+		List<DDMStructureLink> ddmStructureLinks =
+			ddmStructureLinkLocalService.getStructureLinks(
+				portal.getClassNameId(DLFileEntryType.class),
+				dlFileEntryType.getFileEntryTypeId());
+
+		List<DDMStructure> ddmStructures = new ArrayList<>();
+
+		for (DDMStructureLink ddmStructureLink : ddmStructureLinks) {
+			DDMStructure ddmStructure = ddmStructureLocalService.fetchStructure(
+				ddmStructureLink.getStructureId());
+
+			if (ddmStructure != null) {
+				ddmStructures.add(ddmStructure);
+			}
 		}
-
-		List<DDMStructure> ddmStructures = dlFileEntryType.getDDMStructures();
 
 		for (DDMStructure ddmStructure : ddmStructures) {
 			String structureKey = ddmStructure.getStructureKey();
@@ -66,23 +88,26 @@ public class GoogleDocsMetadataHelper {
 	}
 
 	public GoogleDocsMetadataHelper(
-		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter,
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DDMStructureLinkLocalService ddmStructureLinkLocalService,
 		DDMStructureLocalService ddmStructureLocalService,
 		DLFileEntry dlFileEntry,
 		DLFileEntryMetadataLocalService dlFileEntryMetadataLocalService,
-		FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter,
-		StorageEngine storageEngine) {
+		Portal portal) {
 
 		try {
-			_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+			_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
+			_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
+			_ddmStructureLinkLocalService = ddmStructureLinkLocalService;
 			_ddmStructureLocalService = ddmStructureLocalService;
 			_dlFileEntryMetadataLocalService = dlFileEntryMetadataLocalService;
-			_fieldsToDDMFormValuesConverter = fieldsToDDMFormValuesConverter;
-			_storageEngine = storageEngine;
+			_portal = portal;
 
 			_dlFileVersion = dlFileEntry.getFileVersion();
 			_ddmStructure = getGoogleDocsDDMStructure(
-				dlFileEntry.getDLFileEntryType());
+				_ddmStructureLinkLocalService, _ddmStructureLocalService,
+				dlFileEntry.getDLFileEntryType(), portal);
 		}
 		catch (PortalException pe) {
 			throw new SystemException(pe);
@@ -90,23 +115,26 @@ public class GoogleDocsMetadataHelper {
 	}
 
 	public GoogleDocsMetadataHelper(
-		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter,
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DDMStructureLinkLocalService ddmStructureLinkLocalService,
 		DDMStructureLocalService ddmStructureLocalService,
 		DLFileVersion dlFileVersion,
 		DLFileEntryMetadataLocalService dlFileEntryMetadataLocalService,
-		FieldsToDDMFormValuesConverter fieldsToDDMFormValuesConverter,
-		StorageEngine storageEngine) {
+		Portal portal) {
 
-		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
+		_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
+		_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
+		_ddmStructureLinkLocalService = ddmStructureLinkLocalService;
 		_ddmStructureLocalService = ddmStructureLocalService;
 		_dlFileVersion = dlFileVersion;
 		_dlFileEntryMetadataLocalService = dlFileEntryMetadataLocalService;
-		_fieldsToDDMFormValuesConverter = fieldsToDDMFormValuesConverter;
-		_storageEngine = storageEngine;
+		_portal = portal;
 
 		try {
 			_ddmStructure = getGoogleDocsDDMStructure(
-				dlFileVersion.getDLFileEntryType());
+				_ddmStructureLinkLocalService, _ddmStructureLocalService,
+				dlFileVersion.getDLFileEntryType(), portal);
 		}
 		catch (PortalException pe) {
 			throw new SystemException(pe);
@@ -116,25 +144,36 @@ public class GoogleDocsMetadataHelper {
 	public boolean containsField(String fieldName) {
 		initDLFileEntryMetadataAndFields();
 
-		Field field = _fieldsMap.get(fieldName);
+		Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap =
+			_ddmFormValues.getDDMFormFieldValuesMap();
 
-		if (field != null) {
-			return true;
-		}
-
-		return false;
+		return ddmFormFieldValuesMap.containsKey(fieldName);
 	}
 
 	public String getFieldValue(String fieldName) {
-		Field field = _getField(fieldName);
-
-		Serializable value = field.getValue();
-
-		if (value == null) {
-			return null;
+		if (!containsField(fieldName)) {
+			throw new IllegalArgumentException("Unknown field " + fieldName);
 		}
 
-		return value.toString();
+		Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap =
+			_ddmFormValues.getDDMFormFieldValuesMap();
+
+		List<DDMFormFieldValue> ddmFormFieldValues = ddmFormFieldValuesMap.get(
+			fieldName);
+
+		DDMFormFieldValue firstDDMFormFieldValue = ddmFormFieldValues.get(0);
+
+		Value value = firstDDMFormFieldValue.getValue();
+
+		if (value instanceof UnlocalizedValue) {
+			UnlocalizedValue unlocalizedValue = (UnlocalizedValue)value;
+
+			Locale defaultLocale = unlocalizedValue.getDefaultLocale();
+
+			return unlocalizedValue.getString(defaultLocale);
+		}
+
+		return null;
 	}
 
 	public boolean isGoogleDocs() {
@@ -155,31 +194,34 @@ public class GoogleDocsMetadataHelper {
 
 			long ddmStructureId = _ddmStructure.getStructureId();
 
-			Fields fields = new Fields();
+			DDMForm ddmForm = _ddmStructure.getDDMForm();
 
-			fields.put(
-				new Field(
-					ddmStructureId,
-					GoogleDocsConstants.DDM_FIELD_NAME_DESCRIPTION, ""));
-			fields.put(
-				new Field(
-					ddmStructureId,
-					GoogleDocsConstants.DDM_FIELD_NAME_EMBEDDABLE_URL, ""));
-			fields.put(
-				new Field(
-					ddmStructureId, GoogleDocsConstants.DDM_FIELD_NAME_ICON_URL,
-					""));
-			fields.put(
-				new Field(
-					ddmStructureId, GoogleDocsConstants.DDM_FIELD_NAME_ID, ""));
-			fields.put(
-				new Field(
-					ddmStructureId, GoogleDocsConstants.DDM_FIELD_NAME_NAME,
-					""));
-			fields.put(
-				new Field(
-					ddmStructureId, GoogleDocsConstants.DDM_FIELD_NAME_URL,
-					""));
+			_ddmFormValues = new DDMFormValues(ddmForm);
+
+			_ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					GoogleDocsConstants.DDM_FIELD_NAME_DESCRIPTION,
+					new UnlocalizedValue("")));
+			_ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					GoogleDocsConstants.DDM_FIELD_NAME_EMBEDDABLE_URL,
+					new UnlocalizedValue("")));
+			_ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					GoogleDocsConstants.DDM_FIELD_NAME_ICON_URL,
+					new UnlocalizedValue("")));
+			_ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					GoogleDocsConstants.DDM_FIELD_NAME_ID,
+					new UnlocalizedValue("")));
+			_ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					GoogleDocsConstants.DDM_FIELD_NAME_NAME,
+					new UnlocalizedValue("")));
+			_ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					GoogleDocsConstants.DDM_FIELD_NAME_URL,
+					new UnlocalizedValue("")));
 
 			ServiceContext serviceContext = new ServiceContext();
 
@@ -187,11 +229,8 @@ public class GoogleDocsMetadataHelper {
 			serviceContext.setScopeGroupId(_dlFileVersion.getGroupId());
 			serviceContext.setUserId(_dlFileVersion.getUserId());
 
-			DDMFormValues ddmFormValues = toDDMFormValues(fields);
-
-			long ddmStorageId = _storageEngine.create(
-				_dlFileVersion.getCompanyId(), ddmStructureId, ddmFormValues,
-				serviceContext);
+			long ddmStorageId = createDLFileEntryMetadata(
+				_ddmFormValues, _ddmStructure, serviceContext);
 
 			_dlFileEntryMetadata.setDDMStorageId(ddmStorageId);
 
@@ -212,16 +251,59 @@ public class GoogleDocsMetadataHelper {
 		}
 	}
 
+	protected DDMFormFieldValue createDDMFormFieldValue(
+		String name, Value value) {
+
+		DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
+
+		ddmFormFieldValue.setName(name);
+		ddmFormFieldValue.setValue(value);
+
+		return ddmFormFieldValue;
+	}
+
+	protected long createDLFileEntryMetadata(
+			DDMFormValues ddmFormValues, DDMStructure ddmStructure,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterSaveRequest ddmStorageAdapterSaveRequest =
+			DDMStorageAdapterSaveRequest.Builder.newBuilder(
+				serviceContext.getUserId(), serviceContext.getScopeGroupId(),
+				ddmFormValues
+			).withClassName(
+				DDMContent.class.getName()
+			).build();
+
+		DDMStorageAdapterSaveResponse ddmStorageAdapterSaveResponse =
+			ddmStorageAdapter.save(ddmStorageAdapterSaveRequest);
+
+		long ddmContentId = ddmStorageAdapterSaveResponse.getPrimaryKey();
+
+		DDMStructureVersion ddmStructureVersion =
+			ddmStructure.getLatestStructureVersion();
+
+		long classNameId = _portal.getClassNameId(DDMContent.class.getName());
+
+		_ddmStorageLinkLocalService.addStorageLink(
+			classNameId, ddmContentId,
+			ddmStructureVersion.getStructureVersionId(), serviceContext);
+
+		return ddmContentId;
+	}
+
 	protected void initDLFileEntryMetadataAndFields() {
-		if (_fieldsMap != null) {
+		if (_ddmFormValues != null) {
 			return;
 		}
 
 		if (_dlFileVersion == null) {
 			return;
 		}
-
-		_fieldsMap = new HashMap<>();
 
 		_dlFileEntryMetadata =
 			_dlFileEntryMetadataLocalService.fetchFileEntryMetadata(
@@ -233,17 +315,20 @@ public class GoogleDocsMetadataHelper {
 		}
 
 		try {
-			DDMFormValues ddmFormValues = _storageEngine.getDDMFormValues(
-				_dlFileEntryMetadata.getDDMStorageId());
+			DDMStorageAdapter ddmStorageAdapter =
+				_ddmStorageAdapterTracker.getDDMStorageAdapter(
+					_ddmStructure.getStorageType());
 
-			_fields = _ddmFormValuesToFieldsConverter.convert(
-				_ddmStructureLocalService.getDDMStructure(
-					_ddmStructure.getStructureId()),
-				ddmFormValues);
+			DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+				DDMStorageAdapterGetRequest.Builder.newBuilder(
+					_dlFileEntryMetadata.getDDMStorageId(),
+					_ddmStructure.getDDMForm()
+				).build();
 
-			for (Field field : _fields) {
-				_fieldsMap.put(field.getName(), field);
-			}
+			DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+				ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+			_ddmFormValues = ddmStorageAdapterGetResponse.getDDMFormValues();
 		}
 		catch (PortalException pe) {
 			throw new SystemException(
@@ -253,39 +338,16 @@ public class GoogleDocsMetadataHelper {
 		}
 	}
 
-	protected DDMFormValues toDDMFormValues(Fields fields)
-		throws PortalException {
-
-		return _fieldsToDDMFormValuesConverter.convert(
-			_ddmStructureLocalService.getDDMStructure(
-				_ddmStructure.getStructureId()),
-			fields);
-	}
-
-	private Field _getField(String fieldName) {
-		initDLFileEntryMetadataAndFields();
-
-		Field field = _fieldsMap.get(fieldName);
-
-		if (field == null) {
-			throw new IllegalArgumentException("Unknown field " + fieldName);
-		}
-
-		return field;
-	}
-
-	private final DDMFormValuesToFieldsConverter
-		_ddmFormValuesToFieldsConverter;
+	private DDMFormValues _ddmFormValues;
+	private final DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+	private final DDMStorageLinkLocalService _ddmStorageLinkLocalService;
 	private final DDMStructure _ddmStructure;
+	private final DDMStructureLinkLocalService _ddmStructureLinkLocalService;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private DLFileEntryMetadata _dlFileEntryMetadata;
 	private final DLFileEntryMetadataLocalService
 		_dlFileEntryMetadataLocalService;
 	private DLFileVersion _dlFileVersion;
-	private Fields _fields;
-	private Map<String, Field> _fieldsMap;
-	private final FieldsToDDMFormValuesConverter
-		_fieldsToDDMFormValuesConverter;
-	private final StorageEngine _storageEngine;
+	private final Portal _portal;
 
 }

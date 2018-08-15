@@ -26,12 +26,23 @@ import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.base.DDLRecordLocalServiceBaseImpl;
 import com.liferay.dynamic.data.lists.util.DDL;
 import com.liferay.dynamic.data.mapping.exception.StorageException;
+import com.liferay.dynamic.data.mapping.model.DDMContent;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterDeleteRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterSaveRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterSaveResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.dynamic.data.mapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
@@ -62,6 +73,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
@@ -130,9 +142,8 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		record.setVersionUserId(user.getUserId());
 		record.setVersionUserName(user.getFullName());
 
-		long ddmStorageId = storageEngine.create(
-			recordSet.getCompanyId(), recordSet.getDDMStructureId(),
-			ddmFormValues, serviceContext);
+		long ddmStorageId = createStorage(
+			ddmFormValues, recordSet.getDDMStructure(), serviceContext);
 
 		record.setDDMStorageId(ddmStorageId);
 
@@ -267,6 +278,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		type = SystemEventConstants.TYPE_DELETE
 	)
 	public DDLRecord deleteRecord(DDLRecord record) throws PortalException {
+		DDLRecordSet recordSet = record.getRecordSet();
 
 		// Record
 
@@ -282,7 +294,8 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 			// Dynamic data mapping storage
 
-			storageEngine.deleteByClass(recordVersion.getDDMStorageId());
+			deleteStorage(
+				recordVersion.getDDMStorageId(), recordSet.getDDMStructure());
 
 			// Workflow
 
@@ -338,8 +351,8 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		DDLRecordSet recordSet = record.getRecordSet();
 
-		DDMFormValues ddmFormValues = storageEngine.getDDMFormValues(
-			record.getDDMStorageId());
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			record.getDDMStorageId(), recordSet.getDDMStructure());
 
 		Fields fields = ddmFormValuesToFieldsConverter.convert(
 			recordSet.getDDMStructure(), ddmFormValues);
@@ -450,7 +463,20 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 	public DDMFormValues getDDMFormValues(long ddmStorageId)
 		throws StorageException {
 
-		return storageEngine.getDDMFormValues(ddmStorageId);
+		try {
+			DDMStorageLink ddmStorageLink =
+				ddmStorageLinkLocalService.getClassStorageLink(ddmStorageId);
+
+			DDMStructure ddmStructure = ddmStorageLink.getStructure();
+
+			return getDDMFormValues(ddmStorageLink.getClassPK(), ddmStructure);
+		}
+		catch (StorageException se) {
+			throw se;
+		}
+		catch (Exception e) {
+			throw new StorageException(e);
+		}
 	}
 
 	/**
@@ -664,20 +690,22 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		DDLRecordVersion recordVersion =
+		DDLRecordVersion ddlRecordVersion =
 			ddlRecordVersionLocalService.getRecordVersion(recordId, version);
 
-		if (!recordVersion.isApproved()) {
+		if (!ddlRecordVersion.isApproved()) {
 			return;
 		}
 
-		DDMFormValues ddmFormValues = storageEngine.getDDMFormValues(
-			recordVersion.getDDMStorageId());
+		DDLRecordSet ddlRecordSet = ddlRecordVersion.getRecordSet();
+
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			ddlRecordVersion.getDDMStorageId(), ddlRecordSet.getDDMStructure());
 
 		serviceContext.setCommand(Constants.REVERT);
 
 		ddlRecordLocalService.updateRecord(
-			userId, recordId, true, recordVersion.getDisplayIndex(),
+			userId, recordId, true, ddlRecordVersion.getDisplayIndex(),
 			ddmFormValues, serviceContext);
 	}
 
@@ -874,12 +902,13 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		DDLRecordVersion recordVersion = record.getLatestRecordVersion();
 
-		if (recordVersion.isApproved()) {
-			DDLRecordSet recordSet = record.getRecordSet();
+		DDLRecordSet recordSet = record.getRecordSet();
 
-			long ddmStorageId = storageEngine.create(
-				recordSet.getCompanyId(), recordSet.getDDMStructureId(),
-				ddmFormValues, serviceContext);
+		DDMStructure ddmStructure = recordSet.getDDMStructure();
+
+		if (recordVersion.isApproved()) {
+			long ddmStorageId = createStorage(
+				ddmFormValues, ddmStructure, serviceContext);
 
 			String version = getNextVersion(
 				recordVersion.getVersion(), majorVersion,
@@ -890,8 +919,9 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 				WorkflowConstants.STATUS_DRAFT);
 		}
 		else {
-			storageEngine.update(
-				recordVersion.getDDMStorageId(), ddmFormValues, serviceContext);
+			updateStorage(
+				recordVersion.getDDMStorageId(), ddmFormValues, ddmStructure,
+				serviceContext);
 
 			String version = recordVersion.getVersion();
 
@@ -905,9 +935,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 			ddlRecordVersionPersistence.remove(recordVersion);
 
-			// Dynamic data mapping storage
-
-			storageEngine.deleteByClass(recordVersion.getDDMStorageId());
+			deleteStorage(recordVersion.getDDMStorageId(), ddmStructure);
 
 			return record;
 		}
@@ -960,18 +988,20 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		DDLRecordVersion recordVersion = record.getLatestRecordVersion();
 
+		DDMStructure ddmStructure = recordSet.getDDMStructure();
+
 		if (mergeFields) {
-			DDMFormValues existingDDMFormValues =
-				storageEngine.getDDMFormValues(recordVersion.getDDMStorageId());
+			DDMFormValues existingDDMFormValues = getDDMFormValues(
+				recordVersion.getDDMStorageId(), ddmStructure);
 
 			Fields existingFields = ddmFormValuesToFieldsConverter.convert(
-				recordSet.getDDMStructure(), existingDDMFormValues);
+				ddmStructure, existingDDMFormValues);
 
 			fields = ddm.mergeFields(fields, existingFields);
 		}
 
 		DDMFormValues ddmFormValues = fieldsToDDMFormValuesConverter.convert(
-			recordSet.getDDMStructure(), fields);
+			ddmStructure, fields);
 
 		return ddlRecordLocalService.updateRecord(
 			userId, recordId, majorVersion, displayIndex, ddmFormValues,
@@ -1141,6 +1171,38 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		return recordVersion;
 	}
 
+	protected long createStorage(
+			DDMFormValues ddmFormValues, DDMStructure ddmStructure,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterSaveRequest.Builder builder =
+			DDMStorageAdapterSaveRequest.Builder.newBuilder(
+				serviceContext.getUserId(), serviceContext.getScopeGroupId(),
+				ddmFormValues
+			).withClassName(
+				DDMContent.class.getName()
+			);
+
+		DDMStorageAdapterSaveResponse ddmStorageAdapterSaveResponse =
+			ddmStorageAdapter.save(builder.build());
+
+		long storageId = ddmStorageAdapterSaveResponse.getPrimaryKey();
+
+		DDMStructureVersion ddmStructureVersion =
+			ddmStructure.getLatestStructureVersion();
+
+		ddmStorageLinkLocalService.addStorageLink(
+			portal.getClassNameId(DDMContent.class.getName()), storageId,
+			ddmStructureVersion.getStructureVersionId(), serviceContext);
+
+		return storageId;
+	}
+
 	protected void deleteAssetEntry(long recordId) throws PortalException {
 		assetEntryLocalService.deleteEntry(
 			DDLFormRecord.class.getName(), recordId);
@@ -1154,6 +1216,21 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		ratingsStatsLocalService.deleteStats(
 			DDLRecord.class.getName(), recordId);
+	}
+
+	protected void deleteStorage(long storageId, DDMStructure ddmStructure)
+		throws StorageException {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterDeleteRequest.Builder builder =
+			DDMStorageAdapterDeleteRequest.Builder.newBuilder(
+				storageId
+			);
+
+		ddmStorageAdapter.delete(builder.build());
 	}
 
 	protected void deleteWorkflowInstanceLink(
@@ -1172,6 +1249,25 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 			DDLRecord.class);
 
 		return indexer;
+	}
+
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws PortalException {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
 	}
 
 	protected String getNextVersion(
@@ -1262,10 +1358,19 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 			return false;
 		}
 
-		DDMFormValues lastDDMFormValues = storageEngine.getDDMFormValues(
-			lastRecordVersion.getDDMStorageId());
-		DDMFormValues latestDDMFormValues = storageEngine.getDDMFormValues(
-			latestRecordVersion.getDDMStorageId());
+		DDLRecordSet lastRecordVersionRecordSet =
+			lastRecordVersion.getRecordSet();
+
+		DDMFormValues lastDDMFormValues = getDDMFormValues(
+			lastRecordVersion.getDDMStorageId(),
+			lastRecordVersionRecordSet.getDDMStructure());
+
+		DDLRecordSet latestRecordVersionRecordSet =
+			latestRecordVersion.getRecordSet();
+
+		DDMFormValues latestDDMFormValues = getDDMFormValues(
+			latestRecordVersion.getDDMStorageId(),
+			latestRecordVersionRecordSet.getDDMStructure());
 
 		if (!lastDDMFormValues.equals(latestDDMFormValues)) {
 			return false;
@@ -1367,6 +1472,26 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		ddlRecordVersionPersistence.update(recordVersion);
 	}
 
+	protected void updateStorage(
+			long storageId, DDMFormValues ddmFormValues,
+			DDMStructure ddmStructure, ServiceContext serviceContext)
+		throws StorageException {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterSaveRequest.Builder builder =
+			DDMStorageAdapterSaveRequest.Builder.newBuilder(
+				serviceContext.getUserId(), serviceContext.getScopeGroupId(),
+				ddmFormValues
+			).withPrimaryKey(
+				storageId
+			);
+
+		ddmStorageAdapter.save(builder.build());
+	}
+
 	protected void validate(long groupId, DDLRecordSet recordSet)
 		throws PortalException {
 
@@ -1382,6 +1507,12 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 	@ServiceReference(type = DDMFormValuesToFieldsConverter.class)
 	protected DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter;
 
+	@ServiceReference(type = DDMStorageAdapterTracker.class)
+	protected DDMStorageAdapterTracker ddmStorageAdapterTracker;
+
+	@ServiceReference(type = DDMStructureLinkLocalService.class)
+	protected DDMStorageLinkLocalService ddmStorageLinkLocalService;
+
 	@ServiceReference(type = DDMStructureLocalService.class)
 	protected DDMStructureLocalService ddmStructureLocalService;
 
@@ -1391,8 +1522,8 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 	@ServiceReference(type = IndexerRegistry.class)
 	protected IndexerRegistry indexerRegistry;
 
-	@ServiceReference(type = StorageEngine.class)
-	protected StorageEngine storageEngine;
+	@ServiceReference(type = Portal.class)
+	protected Portal portal;
 
 	private List<Serializable> _getSerializableValues(Serializable value) {
 		List<Serializable> serializableValues = null;

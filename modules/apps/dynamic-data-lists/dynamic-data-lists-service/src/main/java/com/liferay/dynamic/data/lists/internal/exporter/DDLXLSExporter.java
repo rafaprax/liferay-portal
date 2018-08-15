@@ -23,10 +23,14 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetService;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetVersionService;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldValueRendererRegistry;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -199,13 +203,15 @@ public class DDLXLSExporter extends BaseDDLExporter {
 			CellStyle cellStyle = createCellStyle(
 				workbook, false, "Courier New", (short)12);
 
+			DDMStructure ddmStructure = recordSet.getDDMStructure();
+
 			while (iterator.hasNext()) {
 				DDLRecord record = iterator.next();
 
 				DDLRecordVersion recordVersion = record.getRecordVersion();
 
-				DDMFormValues ddmFormValues = _storageEngine.getDDMFormValues(
-					recordVersion.getDDMStorageId());
+				DDMFormValues ddmFormValues = getDDMFormValues(
+					recordVersion.getDDMStorageId(), ddmStructure);
 
 				Map<String, DDMFormFieldRenderedValue> values =
 					getRenderedValues(
@@ -248,6 +254,25 @@ public class DDLXLSExporter extends BaseDDLExporter {
 		return _ddmFormFieldValueRendererRegistry;
 	}
 
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws Exception {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
 	@Reference(unbind = "-")
 	protected void setDDLRecordLocalService(
 		DDLRecordLocalService ddlRecordLocalService) {
@@ -284,8 +309,10 @@ public class DDLXLSExporter extends BaseDDLExporter {
 	}
 
 	@Reference(unbind = "-")
-	protected void setStorageEngine(StorageEngine storageEngine) {
-		_storageEngine = storageEngine;
+	protected void setDDMStorageAdapterTracker(
+		DDMStorageAdapterTracker ddmStorageAdapterTracker) {
+
+		_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
 	}
 
 	private DDLRecordLocalService _ddlRecordLocalService;
@@ -294,6 +321,6 @@ public class DDLXLSExporter extends BaseDDLExporter {
 	private DDMFormFieldTypeServicesTracker _ddmFormFieldTypeServicesTracker;
 	private DDMFormFieldValueRendererRegistry
 		_ddmFormFieldValueRendererRegistry;
-	private StorageEngine _storageEngine;
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
 
 }
