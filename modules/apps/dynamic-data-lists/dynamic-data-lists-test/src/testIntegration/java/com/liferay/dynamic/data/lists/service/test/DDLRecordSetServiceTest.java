@@ -23,7 +23,7 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalServiceUtil;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetVersionLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
@@ -74,8 +74,13 @@ public class DDLRecordSetServiceTest {
 	public static void setUpClass() {
 		Registry registry = RegistryUtil.getRegistry();
 
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put(
+			"ddm.storage.adapter.type", FailStorageAdapter.STORAGE_TYPE);
+
 		_serviceRegistration = registry.registerService(
-			StorageAdapter.class, new FailStorageAdapter());
+			DDMStorageAdapter.class, new FailStorageAdapter(), properties);
 	}
 
 	@AfterClass
@@ -354,7 +359,7 @@ public class DDLRecordSetServiceTest {
 			ddlRecordSet.getRecordSetId(), ddmStructure);
 	}
 
-	private static ServiceRegistration<StorageAdapter> _serviceRegistration;
+	private static ServiceRegistration<DDMStorageAdapter> _serviceRegistration;
 
 	private Set<Locale> _availableLocales;
 	private DDLRecordSetTestHelper _ddlRecordSetTestHelper;
