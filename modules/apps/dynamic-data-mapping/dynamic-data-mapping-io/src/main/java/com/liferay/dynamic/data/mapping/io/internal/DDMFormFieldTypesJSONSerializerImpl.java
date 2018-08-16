@@ -14,7 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.io.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
@@ -140,14 +139,8 @@ public class DDMFormFieldTypesJSONSerializerImpl
 			_ddmFormFieldTypeServicesTracker.getDDMFormFieldRenderer(
 				ddmFormFieldType.getName());
 
-		if (ddmFormFieldRenderer instanceof BaseDDMFormFieldRenderer) {
-			BaseDDMFormFieldRenderer baseDDMFormFieldRenderer =
-				(BaseDDMFormFieldRenderer)ddmFormFieldRenderer;
-
-			jsonObject.put(
-				"templateNamespace",
-				baseDDMFormFieldRenderer.getTemplateNamespace());
-		}
+		jsonObject.put(
+			"templateNamespace", ddmFormFieldRenderer.getTemplateNamespace());
 
 		return jsonObject;
 	}
