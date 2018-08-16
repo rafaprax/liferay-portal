@@ -80,7 +80,7 @@ Locale displayLocale = LocaleUtil.fromLanguageId(languageId);
 						<liferay-ui:error exception="<%= DDMFormValuesValidationException.class %>" message="field-validation-failed" />
 
 						<%
-						for (DDMFormValuesValidatorErrorStatus errorStatus : DDMFormValuesValidatorErrorStatus.values()) {
+						for (Status errorStatus : Status.values()) {
 						%>
 
 							<liferay-ui:error key="<%= errorStatus.name() %>" />
