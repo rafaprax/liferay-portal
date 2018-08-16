@@ -14,46 +14,58 @@
 
 package com.liferay.dynamic.data.mapping.form.field.type.validation.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
-import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRenderer;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderResponse;
 import com.liferay.portal.kernel.template.TemplateResource;
 
-import java.util.Map;
-
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Bruno Basto
  */
-@Component(
-	immediate = true, property = "ddm.form.field.type.name=validation",
-	service = DDMFormFieldRenderer.class
-)
-public class ValidationDDMFormFieldRenderer extends BaseDDMFormFieldRenderer {
+@Component(immediate = true, property = "ddm.form.field.type.name=validation")
+public class ValidationDDMFormFieldRenderer implements DDMFormFieldRenderer {
 
-	@Override
-	public String getTemplateLanguage() {
-		return TemplateConstants.LANG_TYPE_SOY;
-	}
-
-	@Override
 	public String getTemplateNamespace() {
-		return "DDMValidation.render";
+		return _TEMPLATE_NAMESPACE;
 	}
 
 	@Override
 	public TemplateResource getTemplateResource() {
-		return _templateResource;
+		return ddmFormFieldTemplateRenderer.getTemplateResource(_TEMPLATE_PATH);
 	}
 
-	@Activate
-	protected void activate(Map<String, Object> properties) {
-		_templateResource = getTemplateResource(
-			"/META-INF/resources/validation/validation.soy");
+	@Override
+	public DDMFormFieldRendererRenderResponse render(
+		DDMFormFieldRendererRenderRequest ddmFormFieldRendererRenderRequest) {
+
+		DDMFormFieldTemplateRendererRenderRequest.Builder builder =
+			DDMFormFieldTemplateRendererRenderRequest.Builder.newBuilder(
+				_TEMPLATE_NAMESPACE, _TEMPLATE_PATH
+			).withDDMFormFieldRendererRenderRequest(
+				ddmFormFieldRendererRenderRequest
+			);
+
+		DDMFormFieldTemplateRendererRenderResponse
+			ddmFormFieldTemplateRendererRenderResponse =
+				ddmFormFieldTemplateRenderer.render(builder.build());
+
+		return DDMFormFieldRendererRenderResponse.Builder.newBuilder(
+			ddmFormFieldTemplateRendererRenderResponse.getContent()
+		).build();
 	}
 
-	private TemplateResource _templateResource;
+	@Reference
+	protected DDMFormFieldTemplateRenderer ddmFormFieldTemplateRenderer;
+
+	private static final String _TEMPLATE_NAMESPACE = "DDMValidation.render";
+
+	private static final String _TEMPLATE_PATH =
+		"/META-INF/resources/validation/validation.soy";
 
 }

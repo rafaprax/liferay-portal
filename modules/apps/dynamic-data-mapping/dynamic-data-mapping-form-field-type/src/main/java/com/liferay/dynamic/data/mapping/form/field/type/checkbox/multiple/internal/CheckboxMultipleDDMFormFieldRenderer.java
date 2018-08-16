@@ -14,76 +14,68 @@
 
 package com.liferay.dynamic.data.mapping.form.field.type.checkbox.multiple.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.portal.kernel.template.Template;
-import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRenderer;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderResponse;
 import com.liferay.portal.kernel.template.TemplateResource;
 
-import java.util.Map;
-
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Dylan Rebelak
  */
 @Component(
-	immediate = true, property = "ddm.form.field.type.name=checkbox_multiple",
-	service = DDMFormFieldRenderer.class
+	immediate = true, property = "ddm.form.field.type.name=checkbox_multiple"
 )
 public class CheckboxMultipleDDMFormFieldRenderer
-	extends BaseDDMFormFieldRenderer {
+	implements DDMFormFieldRenderer {
 
-	@Override
-	public String getTemplateLanguage() {
-		return TemplateConstants.LANG_TYPE_SOY;
-	}
-
-	@Override
 	public String getTemplateNamespace() {
-		return "DDMCheckboxMultiple.render";
+		return _TEMPLATE_NAMESPACE;
 	}
 
 	@Override
 	public TemplateResource getTemplateResource() {
-		return _templateResource;
-	}
-
-	@Activate
-	protected void activate(Map<String, Object> properties) {
-		_templateResource = getTemplateResource(
-			"/META-INF/resources/checkbox-multiple/checkbox-multiple.soy");
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		_templateResource = null;
+		return ddmFormFieldTemplateRenderer.getTemplateResource(_TEMPLATE_PATH);
 	}
 
 	@Override
-	protected void populateRequiredContext(
-		Template template, DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldRendererRenderResponse render(
+		DDMFormFieldRendererRenderRequest ddmFormFieldRendererRenderRequest) {
 
-		super.populateRequiredContext(
-			template, ddmFormField, ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateRendererRenderRequest.Builder builder =
+			DDMFormFieldTemplateRendererRenderRequest.Builder.newBuilder(
+				_TEMPLATE_NAMESPACE, _TEMPLATE_PATH
+			).withDDMFormFieldRendererRenderRequest(
+				ddmFormFieldRendererRenderRequest
+			).withDDMFormFieldTemplateContextContributor(
+				checkboxMultipleDDMFormFieldTemplateContextContributor
+			);
 
-		Map<String, Object> parameters =
-			checkboxMultipleDDMFormFieldTemplateContextContributor.
-				getParameters(ddmFormField, ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateRendererRenderResponse
+			ddmFormFieldTemplateRendererRenderResponse =
+				ddmFormFieldTemplateRenderer.render(builder.build());
 
-		template.putAll(parameters);
+		return DDMFormFieldRendererRenderResponse.Builder.newBuilder(
+			ddmFormFieldTemplateRendererRenderResponse.getContent()
+		).build();
 	}
 
 	@Reference
 	protected CheckboxMultipleDDMFormFieldTemplateContextContributor
 		checkboxMultipleDDMFormFieldTemplateContextContributor;
 
-	private TemplateResource _templateResource;
+	@Reference
+	protected DDMFormFieldTemplateRenderer ddmFormFieldTemplateRenderer;
+
+	private static final String _TEMPLATE_NAMESPACE =
+		"DDMCheckboxMultiple.render";
+
+	private static final String _TEMPLATE_PATH =
+		"/META-INF/resources/checkbox-multiple/checkbox-multiple.soy";
 
 }

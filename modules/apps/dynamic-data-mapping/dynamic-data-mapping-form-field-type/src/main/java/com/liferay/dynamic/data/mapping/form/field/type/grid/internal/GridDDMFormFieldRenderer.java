@@ -14,69 +14,64 @@
 
 package com.liferay.dynamic.data.mapping.form.field.type.grid.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.portal.kernel.template.Template;
-import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRenderer;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderResponse;
 import com.liferay.portal.kernel.template.TemplateResource;
 
-import java.util.Map;
-
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Pedro Queiroz
  */
-@Component(
-	immediate = true, property = "ddm.form.field.type.name=grid",
-	service = DDMFormFieldRenderer.class
-)
-public class GridDDMFormFieldRenderer extends BaseDDMFormFieldRenderer {
+@Component(immediate = true, property = "ddm.form.field.type.name=grid")
+public class GridDDMFormFieldRenderer implements DDMFormFieldRenderer {
 
-	@Override
-	public String getTemplateLanguage() {
-		return TemplateConstants.LANG_TYPE_SOY;
-	}
-
-	@Override
 	public String getTemplateNamespace() {
-		return "DDMGrid.render";
+		return _TEMPLATE_NAMESPACE;
 	}
 
 	@Override
 	public TemplateResource getTemplateResource() {
-		return _templateResource;
-	}
-
-	@Activate
-	protected void activate(Map<String, Object> properties) {
-		_templateResource = getTemplateResource(
-			"/META-INF/resources/grid/grid.soy");
+		return ddmFormFieldTemplateRenderer.getTemplateResource(_TEMPLATE_PATH);
 	}
 
 	@Override
-	protected void populateRequiredContext(
-		Template template, DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldRendererRenderResponse render(
+		DDMFormFieldRendererRenderRequest ddmFormFieldRendererRenderRequest) {
 
-		super.populateRequiredContext(
-			template, ddmFormField, ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateRendererRenderRequest.Builder builder =
+			DDMFormFieldTemplateRendererRenderRequest.Builder.newBuilder(
+				_TEMPLATE_NAMESPACE, _TEMPLATE_PATH
+			).withDDMFormFieldRendererRenderRequest(
+				ddmFormFieldRendererRenderRequest
+			).withDDMFormFieldTemplateContextContributor(
+				gridDDMFormFieldTemplateContextContributor
+			);
 
-		Map<String, Object> parameters =
-			gridDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateRendererRenderResponse
+			ddmFormFieldTemplateRendererRenderResponse =
+				ddmFormFieldTemplateRenderer.render(builder.build());
 
-		template.putAll(parameters);
+		return DDMFormFieldRendererRenderResponse.Builder.newBuilder(
+			ddmFormFieldTemplateRendererRenderResponse.getContent()
+		).build();
 	}
+
+	@Reference
+	protected DDMFormFieldTemplateRenderer ddmFormFieldTemplateRenderer;
 
 	@Reference
 	protected GridDDMFormFieldTemplateContextContributor
 		gridDDMFormFieldTemplateContextContributor;
 
-	private TemplateResource _templateResource;
+	private static final String _TEMPLATE_NAMESPACE = "DDMGrid.render";
+
+	private static final String _TEMPLATE_PATH =
+		"/META-INF/resources/grid/grid.soy";
 
 }
