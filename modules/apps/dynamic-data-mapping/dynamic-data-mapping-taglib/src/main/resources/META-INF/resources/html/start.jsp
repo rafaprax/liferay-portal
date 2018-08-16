@@ -120,28 +120,33 @@
 
 		<aui:input name="<%= HtmlUtil.getAUICompatibleId(ddmFormValuesInputName) %>" type="hidden" />
 
+		<aui:input name="ddmFormFieldNamespace" type="hidden" value="<%= fieldsNamespace %>" />
+
 		<aui:script use="aui-base,liferay-ddm-form">
 			var Lang = A.Lang;
 
-			var liferayDDMForm = new Liferay.DDM.Form(
-				{
-					container: '#<%= randomNamespace %>',
-					ddmFormValuesInput: '#<portlet:namespace /><%= HtmlUtil.getAUICompatibleId(ddmFormValuesInputName) %>',
-					documentLibrarySelectorURL: '<%= documentLibrarySelectorURL %>',
-					definition: <%= DDMUtil.getDDMFormJSONString(ddmForm) %>,
-					doAsGroupId: <%= scopeGroupId %>,
-					fieldsNamespace: '<%= HtmlUtil.escapeJS(fieldsNamespace) %>',
-					imageSelectorURL: '<%= imageSelectorURL %>',
-					mode: '<%= HtmlUtil.escapeJS(mode) %>',
-					p_l_id: <%= themeDisplay.getPlid() %>,
-					portletNamespace: '<portlet:namespace />',
-					repeatable: <%= repeatable %>,
-					requestedLocale: '<%= (requestedLocale == null) ? StringPool.BLANK : HtmlUtil.escapeJS(requestedLocale.toString()) %>'
+			var liferayDDMForm = Liferay.component(
+				'<portlet:namespace /><%= HtmlUtil.escapeJS(fieldsNamespace) %>ddmForm',
+				new Liferay.DDM.Form(
+					{
+						container: '#<%= randomNamespace %>',
+						ddmFormValuesInput: '#<portlet:namespace /><%= HtmlUtil.getAUICompatibleId(ddmFormValuesInputName) %>',
+						documentLibrarySelectorURL: '<%= documentLibrarySelectorURL %>',
+						definition: <%= DDMUtil.getDDMFormJSONString(ddmForm) %>,
+						doAsGroupId: <%= scopeGroupId %>,
+						fieldsNamespace: '<%= HtmlUtil.escapeJS(fieldsNamespace) %>',
+						imageSelectorURL: '<%= imageSelectorURL %>',
+						mode: '<%= HtmlUtil.escapeJS(mode) %>',
+						p_l_id: <%= themeDisplay.getPlid() %>,
+						portletNamespace: '<portlet:namespace />',
+						repeatable: <%= repeatable %>,
+						requestedLocale: '<%= (requestedLocale == null) ? StringPool.BLANK : HtmlUtil.escapeJS(requestedLocale.toString()) %>'
 
-					<c:if test="<%= ddmFormValues != null %>">
-						, values: <%= DDMUtil.getDDMFormValuesJSONString(ddmFormValues) %>
-					</c:if>
-				}
+						<c:if test="<%= ddmFormValues != null %>">
+							, values: <%= DDMUtil.getDDMFormValuesJSONString(ddmFormValues) %>
+						</c:if>
+					}
+				)
 			);
 
 			var onLocaleChange = function(event) {
