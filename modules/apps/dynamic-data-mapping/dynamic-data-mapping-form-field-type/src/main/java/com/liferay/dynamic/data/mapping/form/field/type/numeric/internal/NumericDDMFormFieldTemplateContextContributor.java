@@ -16,10 +16,10 @@ package com.liferay.dynamic.data.mapping.form.field.type.numeric.internal;
 
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.model.Value;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leonardo Barros
@@ -48,56 +49,63 @@ public class NumericDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
+		boolean viewMode =
+			ddmFormFieldTemplateContextContributorGetRequest.isViewMode();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
+		Map<String, Object> properties =
+			ddmFormFieldTemplateContextContributorGetRequest.getProperties();
 
-		parameters.put(
-			"dataType",
-			getDataType(ddmFormField, ddmFormFieldRenderingContext));
+		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
+			(DDMFormFieldEvaluationResult)properties.get(
+				"ddmFormFieldEvaluationResult");
 
-		LocalizedValue placeholder = (LocalizedValue)ddmFormField.getProperty(
-			"placeholder");
+		String predefinedValue =
+			_ddmFormFieldTemplateContextContributorHelper.getValueString(
+				ddmFormField.getPredefinedValue(), locale, viewMode);
 
-		Locale locale = ddmFormFieldRenderingContext.getLocale();
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		parameters.put(
+		builder = builder.withParameter(
+			"dataType", getDataType(ddmFormField, ddmFormFieldEvaluationResult)
+		).withParameter(
 			"placeholder",
-			getValueString(placeholder, locale, ddmFormFieldRenderingContext));
-
-		String predefinedValue = getValueString(
-			ddmFormField.getPredefinedValue(), locale,
-			ddmFormFieldRenderingContext);
-
-		parameters.put(
-			"predefinedValue", getFormattedValue(predefinedValue, locale));
-
-		parameters.put("symbols", getSymbolsMap(locale));
-
-		LocalizedValue tooltip = (LocalizedValue)ddmFormField.getProperty(
-			"tooltip");
-
-		parameters.put(
+			_ddmFormFieldTemplateContextContributorHelper.getPlaceholder(
+				ddmFormField, locale, viewMode)
+		).withParameter(
+			"predefinedValue", getFormattedValue(predefinedValue, locale)
+		).withParameter(
+			"symbols", getSymbolsMap(locale)
+		).withParameter(
 			"tooltip",
-			getValueString(tooltip, locale, ddmFormFieldRenderingContext));
+			_ddmFormFieldTemplateContextContributorHelper.getTooltip(
+				ddmFormField, locale, viewMode)
+		);
 
-		String value = HtmlUtil.extractText(
-			ddmFormFieldRenderingContext.getValue());
+		if (value != null) {
+			builder = builder.withParameter(
+				"value",
+				getFormattedValue(
+					HtmlUtil.extractText(value.toString()), locale)
+			);
+		}
 
-		parameters.put("value", getFormattedValue(value, locale));
-
-		return parameters;
+		return builder.build();
 	}
 
 	protected String getDataType(
 		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
-			(DDMFormFieldEvaluationResult)ddmFormFieldRenderingContext.
-				getProperty("ddmFormFieldEvaluationResult");
+		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult) {
 
 		if (ddmFormFieldEvaluationResult != null) {
 			String dataType = ddmFormFieldEvaluationResult.getProperty(
@@ -141,21 +149,8 @@ public class NumericDDMFormFieldTemplateContextContributor
 		return symbolsMap;
 	}
 
-	protected String getValueString(
-		Value value, Locale locale,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		if (value == null) {
-			return StringPool.BLANK;
-		}
-
-		String valueString = value.getString(locale);
-
-		if (ddmFormFieldRenderingContext.isViewMode()) {
-			valueString = HtmlUtil.extractText(value.getString(locale));
-		}
-
-		return valueString;
-	}
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 }

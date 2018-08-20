@@ -15,15 +15,27 @@
 package com.liferay.dynamic.data.mapping.form.field.type.options.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,42 +54,121 @@ public class OptionsDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
-
-		parameters.put(
-			"allowEmptyOptions",
-			GetterUtil.getBoolean(
-				ddmFormField.getProperty("allowEmptyOptions")));
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
 
 		DDMForm ddmForm = ddmFormField.getDDMForm();
 
-		parameters.put(
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
+
+		return builder.withParameter(
+			"allowEmptyOptions",
+			GetterUtil.getBoolean(ddmFormField.getProperty("allowEmptyOptions"))
+		).withParameter(
 			"defaultLanguageId",
-			LocaleUtil.toLanguageId(ddmForm.getDefaultLocale()));
+			LocaleUtil.toLanguageId(ddmForm.getDefaultLocale())
+		).withParameter(
+			"value", getValue(ddmFormField, value)
+		).build();
+	}
 
-		parameters.put(
-			"value", getValue(ddmFormField, ddmFormFieldRenderingContext));
+	protected List<Object> createDefaultOptions(DDMForm ddmForm) {
+		List<Object> options = new ArrayList<>();
 
-		return parameters;
+		String defaultOptionLabel = getDefaultOptionLabel(ddmForm);
+
+		options.add(createOption(defaultOptionLabel, defaultOptionLabel));
+
+		return options;
+	}
+
+	protected Map<String, String> createOption(String label, String value) {
+		Map<String, String> map = new HashMap<>();
+
+		map.put("label", label);
+		map.put("value", value);
+
+		return map;
+	}
+
+	protected List<Object> createOptions(JSONArray jsonArray) {
+		List<Object> options = new ArrayList<>();
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			Map<String, String> option = createOption(
+				jsonObject.getString("label"), jsonObject.getString("value"));
+
+			options.add(option);
+		}
+
+		return options;
+	}
+
+	protected String getDefaultOptionLabel(DDMForm ddmForm) {
+		ResourceBundle resourceBundle =
+			_ddmFormFieldTemplateContextContributorHelper.getResourceBundle(
+				ddmForm.getDefaultLocale());
+
+		return LanguageUtil.get(resourceBundle, "option");
 	}
 
 	protected Map<String, Object> getValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormField ddmFormField, Object value) {
 
-		OptionsDDMFormFieldContextHelper optionsDDMFormFieldContextHelper =
-			new OptionsDDMFormFieldContextHelper(
-				jsonFactory, ddmFormField,
-				ddmFormFieldRenderingContext.getValue());
+		DDMForm ddmForm = ddmFormField.getDDMForm();
 
-		return optionsDDMFormFieldContextHelper.getValue();
+		Map<String, Object> localizedValue = new HashMap<>();
+
+		if (value == null) {
+			localizedValue.put(
+				LocaleUtil.toLanguageId(ddmForm.getDefaultLocale()),
+				createDefaultOptions(ddmForm));
+
+			return localizedValue;
+		}
+
+		try {
+			JSONObject jsonObject = jsonFactory.createJSONObject(
+				value.toString());
+
+			Iterator<String> itr = jsonObject.keys();
+
+			while (itr.hasNext()) {
+				String languageId = itr.next();
+
+				List<Object> options = createOptions(
+					jsonObject.getJSONArray(languageId));
+
+				localizedValue.put(languageId, options);
+			}
+
+			return localizedValue;
+		}
+		catch (JSONException jsone) {
+			_log.error("Unable to parse JSON array", jsone);
+
+			return localizedValue;
+		}
 	}
 
 	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
+
+	@Reference
 	protected JSONFactory jsonFactory;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		OptionsDDMFormFieldTemplateContextContributor.class);
 
 }

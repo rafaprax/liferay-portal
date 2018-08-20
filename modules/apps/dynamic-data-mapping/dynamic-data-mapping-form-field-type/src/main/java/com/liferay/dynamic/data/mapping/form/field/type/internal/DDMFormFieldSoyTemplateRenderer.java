@@ -16,10 +16,12 @@ package com.liferay.dynamic.data.mapping.form.field.type.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderRequest;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderRequest;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderResponse;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.language.LanguageConstants;
@@ -147,27 +149,37 @@ public class DDMFormFieldSoyTemplateRenderer
 		DDMFormFieldTemplateContextContributor
 			ddmFormFieldTemplateContextContributor) {
 
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
-			new DDMFormFieldRenderingContext();
+		DDMFormField ddmFormField =
+			ddmFormFieldRendererRenderRequest.getDDMFormField();
 
-		ddmFormFieldRenderingContext.setHttpServletRequest(
-			ddmFormFieldRendererRenderRequest.getRequest());
-		ddmFormFieldRenderingContext.setHttpServletResponse(
-			ddmFormFieldRendererRenderRequest.getResponse());
-		ddmFormFieldRenderingContext.setLocale(
-			ddmFormFieldRendererRenderRequest.getLocale());
-		ddmFormFieldRenderingContext.setProperties(
-			ddmFormFieldRendererRenderRequest.getProperties());
+		DDMFormFieldTemplateContextContributorGetRequest.Builder builder =
+			DDMFormFieldTemplateContextContributorGetRequest.Builder.newBuilder(
+			).withReadOnly(
+				ddmFormFieldRendererRenderRequest.isReadOnly() ||
+				ddmFormField.isReadOnly()
+			).withValue(
+				ddmFormFieldRendererRenderRequest.getValue()
+			).withDDMFormField(
+				ddmFormField
+			).withRequest(
+				ddmFormFieldRendererRenderRequest.getRequest()
+			).withResponse(
+				ddmFormFieldRendererRenderRequest.getResponse()
+			);
 
-		Object value = ddmFormFieldRendererRenderRequest.getValue();
+		Map<String, Object> properties =
+			ddmFormFieldRendererRenderRequest.getProperties();
 
-		if (value != null) {
-			ddmFormFieldRenderingContext.setValue(value.toString());
+		for (Map.Entry<String, Object> entry : properties.entrySet()) {
+			builder = builder.withProperty(entry.getKey(), entry.getValue());
 		}
 
-		return ddmFormFieldTemplateContextContributor.getParameters(
-			ddmFormFieldRendererRenderRequest.getDDMFormField(),
-			ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateContextContributorGetResponse
+			ddmFormFieldTemplateContextContributorGetResponse =
+				ddmFormFieldTemplateContextContributor.get(builder.build());
+
+		return ddmFormFieldTemplateContextContributorGetResponse.
+			getParameters();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

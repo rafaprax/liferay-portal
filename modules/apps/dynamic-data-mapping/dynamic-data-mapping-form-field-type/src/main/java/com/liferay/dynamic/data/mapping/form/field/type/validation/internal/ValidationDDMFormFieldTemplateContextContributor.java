@@ -15,15 +15,14 @@
 package com.liferay.dynamic.data.mapping.form.field.type.validation.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,34 +44,33 @@ public class ValidationDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
 
-		parameters.put(
-			"value", getValue(ddmFormField, ddmFormFieldRenderingContext));
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		return parameters;
+		return builder.withParameter(
+			"value", getValue(value)
+		).build();
 	}
 
-	protected Map<String, String> getValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	protected Map<String, String> getValue(Object value) {
+		Map<String, String> valueMap = new HashMap<>();
 
-		Map<String, String> value = new HashMap<>();
-
-		String valueString = ddmFormFieldRenderingContext.getValue();
-
-		if (Validator.isNotNull(valueString)) {
+		if (value != null) {
 			try {
 				JSONObject valueJSONObject = jsonFactory.createJSONObject(
-					valueString);
+					value.toString());
 
-				value.put(
+				valueMap.put(
 					"errorMessage", valueJSONObject.getString("errorMessage"));
-				value.put(
+				valueMap.put(
 					"expression", valueJSONObject.getString("expression"));
 			}
 			catch (JSONException jsone) {
@@ -82,11 +80,11 @@ public class ValidationDDMFormFieldTemplateContextContributor
 			}
 		}
 		else {
-			value.put("errorMessage", StringPool.BLANK);
-			value.put("expression", StringPool.BLANK);
+			valueMap.put("errorMessage", StringPool.BLANK);
+			valueMap.put("expression", StringPool.BLANK);
 		}
 
-		return value;
+		return valueMap;
 	}
 
 	@Reference

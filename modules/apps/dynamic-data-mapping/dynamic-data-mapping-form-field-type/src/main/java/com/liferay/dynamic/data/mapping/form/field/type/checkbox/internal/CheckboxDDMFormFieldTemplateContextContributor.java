@@ -15,15 +15,16 @@
 package com.liferay.dynamic.data.mapping.form.field.type.checkbox.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -39,42 +40,40 @@ public class CheckboxDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
 
-		parameters.put(
-			"predefinedValue",
-			GetterUtil.getBoolean(
-				getPredefinedValue(
-					ddmFormField, ddmFormFieldRenderingContext)));
+		boolean predefinedValue = GetterUtil.getBoolean(
+			_ddmFormFieldTemplateContextContributorHelper.getPredefinedValue(
+				ddmFormField, locale, false));
 
 		boolean showAsSwitcher = GetterUtil.getBoolean(
 			ddmFormField.getProperty("showAsSwitcher"));
 
-		parameters.put("showAsSwitcher", showAsSwitcher);
+		boolean value = GetterUtil.getBoolean(
+			ddmFormFieldTemplateContextContributorGetRequest.getValue());
 
-		parameters.put(
-			"value",
-			GetterUtil.getBoolean(ddmFormFieldRenderingContext.getValue()));
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		return parameters;
+		return builder.withParameter(
+			"predefinedValue", predefinedValue
+		).withParameter(
+			"showAsSwitcher", showAsSwitcher
+		).withParameter(
+			"value", value
+		).build();
 	}
 
-	protected String getPredefinedValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		LocalizedValue predefinedValue = ddmFormField.getPredefinedValue();
-
-		if (predefinedValue == null) {
-			return null;
-		}
-
-		return predefinedValue.getString(
-			ddmFormFieldRenderingContext.getLocale());
-	}
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 }

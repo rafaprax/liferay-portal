@@ -15,10 +15,12 @@
 package com.liferay.dynamic.data.mapping.form.field.type.radio.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -27,8 +29,8 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -49,37 +51,59 @@ public class RadioDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
+		boolean viewMode =
+			ddmFormFieldTemplateContextContributorGetRequest.isViewMode();
+		Map<String, Object> properties =
+			ddmFormFieldTemplateContextContributorGetRequest.getProperties();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
 
-		parameters.put(
-			"inline",
-			GetterUtil.getBoolean(ddmFormField.getProperty("inline")));
-		parameters.put(
-			"options", getOptions(ddmFormField, ddmFormFieldRenderingContext));
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
+
+		DDMFormFieldOptions ddmFormFieldOptions = getDDMFormFieldOptions(
+			ddmFormField, locale,
+			(List<Map<String, String>>)properties.get("options"));
+
+		builder = builder.withParameter(
+			"inline", GetterUtil.getBoolean(ddmFormField.getProperty("inline"))
+		).withParameter(
+			"options",
+			_ddmFormFieldTemplateContextContributorHelper.getOptions(
+				ddmFormFieldOptions, locale, viewMode)
+		);
 
 		String predefinedValue = getPredefinedValue(
-			ddmFormField, ddmFormFieldRenderingContext);
+			ddmFormField, locale, viewMode);
 
 		if (predefinedValue != null) {
-			parameters.put("predefinedValue", predefinedValue);
+			builder = builder.withParameter("predefinedValue", predefinedValue);
 		}
 
-		parameters.put(
-			"value",
-			getValue(
-				GetterUtil.getString(
-					ddmFormFieldRenderingContext.getValue(), "[]")));
+		if (value == null) {
+			builder = builder.withParameter("value", "[]");
+		}
+		else {
+			builder = builder.withParameter(
+				"value", getValue(GetterUtil.getString(value.toString(), "[]"))
+			);
+		}
 
-		return parameters;
+		return builder.build();
 	}
 
 	protected DDMFormFieldOptions getDDMFormFieldOptions(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormField ddmFormField, Locale locale,
+		List<Map<String, String>> options) {
 
 		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
 
@@ -87,42 +111,21 @@ public class RadioDDMFormFieldTemplateContextContributor
 			ddmFormField.getProperty("dataSourceType"), "manual");
 
 		if (Objects.equals(dataSourceType, "manual")) {
-			List<Map<String, String>> keyValuePairs =
-				(List<Map<String, String>>)
-					ddmFormFieldRenderingContext.getProperty("options");
-
-			if (keyValuePairs.isEmpty()) {
+			if (options.isEmpty()) {
 				return ddmFormField.getDDMFormFieldOptions();
 			}
 
-			for (Map<String, String> keyValuePair : keyValuePairs) {
+			for (Map<String, String> option : options) {
 				ddmFormFieldOptions.addOptionLabel(
-					keyValuePair.get("value"),
-					ddmFormFieldRenderingContext.getLocale(),
-					keyValuePair.get("label"));
+					option.get("value"), locale, option.get("label"));
 			}
 		}
 
 		return ddmFormFieldOptions;
 	}
 
-	protected List<Object> getOptions(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		RadioDDMFormFieldContextHelper radioDDMFormFieldContextHelper =
-			new RadioDDMFormFieldContextHelper(
-				getDDMFormFieldOptions(
-					ddmFormField, ddmFormFieldRenderingContext),
-				ddmFormFieldRenderingContext.getLocale());
-
-		return radioDDMFormFieldContextHelper.getOptions(
-			ddmFormFieldRenderingContext);
-	}
-
 	protected String getPredefinedValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormField ddmFormField, Locale locale, boolean viewMode) {
 
 		LocalizedValue predefinedValue = ddmFormField.getPredefinedValue();
 
@@ -131,10 +134,9 @@ public class RadioDDMFormFieldTemplateContextContributor
 		}
 
 		String predefinedValueString = GetterUtil.getString(
-			predefinedValue.getString(ddmFormFieldRenderingContext.getLocale()),
-			"[]");
+			predefinedValue.getString(locale), "[]");
 
-		if (ddmFormFieldRenderingContext.isViewMode()) {
+		if (viewMode) {
 			predefinedValueString = HtmlUtil.extractText(predefinedValueString);
 		}
 
@@ -155,6 +157,10 @@ public class RadioDDMFormFieldTemplateContextContributor
 			return valueString;
 		}
 	}
+
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 	@Reference
 	protected JSONFactory jsonFactory;

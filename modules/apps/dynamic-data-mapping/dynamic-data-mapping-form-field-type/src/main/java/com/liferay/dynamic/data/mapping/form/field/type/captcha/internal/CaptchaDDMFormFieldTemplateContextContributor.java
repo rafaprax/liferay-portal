@@ -16,17 +16,17 @@ package com.liferay.dynamic.data.mapping.form.field.type.captcha.internal;
 
 import com.liferay.captcha.taglib.servlet.taglib.CaptchaTag;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.template.soy.utils.SoyHTMLSanitizer;
 import com.liferay.taglib.servlet.PageContextFactoryUtil;
 import com.liferay.taglib.servlet.PipingServletResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,46 +49,52 @@ public class CaptchaDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		Map<String, Object> parameters = new HashMap<>();
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
 		String html = StringPool.BLANK;
 
 		try {
-			html = renderCaptchaTag(ddmFormField, ddmFormFieldRenderingContext);
+			html = renderCaptchaTag(
+				ddmFormFieldTemplateContextContributorGetRequest);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			if (_log.isWarnEnabled()) {
+				_log.warn(e, e);
+			}
 		}
 
-		parameters.put("html", _soyHTMLSanitizer.sanitize(html));
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		return parameters;
+		return builder.withParameter(
+			"html", _soyHTMLSanitizer.sanitize(html)
+		).build();
 	}
 
 	protected String renderCaptchaTag(
-			DDMFormField ddmFormField,
-			DDMFormFieldRenderingContext ddmFormFieldRenderingContext)
+			DDMFormFieldTemplateContextContributorGetRequest
+				ddmFormFieldTemplateContextContributorGetRequest)
 		throws Exception {
+
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		HttpServletRequest request =
+			ddmFormFieldTemplateContextContributorGetRequest.getRequest();
+		HttpServletResponse response =
+			ddmFormFieldTemplateContextContributorGetRequest.getResponse();
 
 		CaptchaTag captchaTag = new CaptchaTag();
 
 		captchaTag.setUrl(
 			GetterUtil.getString(ddmFormField.getProperty("url")));
 
-		HttpServletRequest httpServletRequest =
-			ddmFormFieldRenderingContext.getHttpServletRequest();
-		HttpServletResponse httpServletResponse =
-			ddmFormFieldRenderingContext.getHttpServletResponse();
-
 		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
 		PageContext pageContext = PageContextFactoryUtil.create(
-			httpServletRequest,
-			new PipingServletResponse(httpServletResponse, unsyncStringWriter));
+			request, new PipingServletResponse(response, unsyncStringWriter));
 
 		captchaTag.setPageContext(pageContext);
 
@@ -96,6 +102,9 @@ public class CaptchaDDMFormFieldTemplateContextContributor
 
 		return unsyncStringWriter.toString();
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		CaptchaDDMFormFieldTemplateContextContributor.class);
 
 	@Reference
 	private SoyHTMLSanitizer _soyHTMLSanitizer;
