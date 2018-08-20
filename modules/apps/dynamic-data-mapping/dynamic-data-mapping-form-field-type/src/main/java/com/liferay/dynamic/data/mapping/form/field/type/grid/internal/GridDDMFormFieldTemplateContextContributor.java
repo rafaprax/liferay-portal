@@ -15,14 +15,14 @@
 package com.liferay.dynamic.data.mapping.form.field.type.grid.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.json.JSONFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -41,44 +41,47 @@ public class GridDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
+		boolean viewMode =
+			ddmFormFieldTemplateContextContributorGetRequest.isViewMode();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
 
-		parameters.put(
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
+
+		builder = builder.withParameter(
 			"columns",
-			getOptions("columns", ddmFormField, ddmFormFieldRenderingContext));
-		parameters.put(
+			_ddmFormFieldTemplateContextContributorHelper.getOptions(
+				(DDMFormFieldOptions)ddmFormField.getProperty("columns"),
+				locale, viewMode)
+		).withParameter(
 			"rows",
-			getOptions("rows", ddmFormField, ddmFormFieldRenderingContext));
-		parameters.put(
-			"value",
-			jsonFactory.looseDeserialize(
-				ddmFormFieldRenderingContext.getValue()));
+			_ddmFormFieldTemplateContextContributorHelper.getOptions(
+				(DDMFormFieldOptions)ddmFormField.getProperty("rows"), locale,
+				viewMode)
+		);
 
-		return parameters;
+		if (value != null) {
+			builder = builder.withParameter(
+				"value", jsonFactory.looseDeserialize(value.toString())
+			);
+		}
+
+		return builder.build();
 	}
 
-	protected DDMFormFieldOptions getDDMFormFieldOptions(
-		String optionType, DDMFormField ddmFormField) {
-
-		return (DDMFormFieldOptions)ddmFormField.getProperty(optionType);
-	}
-
-	protected List<Object> getOptions(
-		String key, DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		GridDDMFormFieldContextHelper gridDDMFormFieldContextHelper =
-			new GridDDMFormFieldContextHelper(
-				getDDMFormFieldOptions(key, ddmFormField),
-				ddmFormFieldRenderingContext.getLocale());
-
-		return gridDDMFormFieldContextHelper.getOptions(
-			ddmFormFieldRenderingContext);
-	}
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 	@Reference
 	protected JSONFactory jsonFactory;

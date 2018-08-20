@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldTypeSett
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormFieldTemplateContextContributorTestUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
@@ -53,8 +54,9 @@ public class CheckboxDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setLocale(LocaleUtil.US);
 
 		Map<String, Object> parameters =
-			_checkboxDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_checkboxDDMFormFieldTemplateContextContributor);
 
 		boolean predefinedValue = (boolean)parameters.get("predefinedValue");
 
@@ -77,8 +79,9 @@ public class CheckboxDDMFormFieldTemplateContextContributorTest
 		ddmFormField.setProperty("predefinedValue", predefinedValue);
 
 		Map<String, Object> parameters =
-			_checkboxDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_checkboxDDMFormFieldTemplateContextContributor);
 
 		boolean actualPredefinedValue = (boolean)parameters.get(
 			"predefinedValue");
@@ -102,8 +105,9 @@ public class CheckboxDDMFormFieldTemplateContextContributorTest
 		ddmFormField.setProperty("predefinedValue", predefinedValue);
 
 		Map<String, Object> parameters =
-			_checkboxDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_checkboxDDMFormFieldTemplateContextContributor);
 
 		boolean actualPredefinedValue = (boolean)parameters.get(
 			"predefinedValue");

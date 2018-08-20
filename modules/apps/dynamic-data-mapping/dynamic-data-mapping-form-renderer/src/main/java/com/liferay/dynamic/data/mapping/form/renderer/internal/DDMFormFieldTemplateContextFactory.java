@@ -17,6 +17,8 @@ package com.liferay.dynamic.data.mapping.form.renderer.internal;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueAccessor;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRendererConstants;
@@ -326,6 +328,42 @@ public class DDMFormFieldTemplateContextFactory {
 		return sb.toString();
 	}
 
+	protected Map<String, Object> getParameters(
+		DDMFormField ddmFormField,
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext,
+		DDMFormFieldTemplateContextContributor
+			ddmFormFieldTemplateContextContributor) {
+
+		DDMFormFieldTemplateContextContributorGetRequest.Builder builder =
+			DDMFormFieldTemplateContextContributorGetRequest.Builder.newBuilder(
+			).withReadOnly(
+				ddmFormFieldRenderingContext.isReadOnly() ||
+				ddmFormField.isReadOnly()
+			).withValue(
+				ddmFormFieldRenderingContext.getValue()
+			).withDDMFormField(
+				ddmFormField
+			).withRequest(
+				ddmFormFieldRenderingContext.getHttpServletRequest()
+			).withResponse(
+				ddmFormFieldRenderingContext.getHttpServletResponse()
+			);
+
+		Map<String, Object> properties =
+			ddmFormFieldRenderingContext.getProperties();
+
+		for (Map.Entry<String, Object> entry : properties.entrySet()) {
+			builder = builder.withProperty(entry.getKey(), entry.getValue());
+		}
+
+		DDMFormFieldTemplateContextContributorGetResponse
+			ddmFormFieldTemplateContextContributorGetResponse =
+				ddmFormFieldTemplateContextContributor.get(builder.build());
+
+		return ddmFormFieldTemplateContextContributorGetResponse.
+			getParameters();
+	}
+
 	protected void setDDMFormFieldTemplateContextContributedParameters(
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult,
 		Map<String, Object> ddmFormFieldTemplateContext,
@@ -345,9 +383,9 @@ public class DDMFormFieldTemplateContextFactory {
 			createDDDMFormFieldRenderingContext(
 				ddmFormFieldEvaluationResult, ddmFormFieldTemplateContext);
 
-		Map<String, Object> contributedParameters =
-			ddmFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+		Map<String, Object> contributedParameters = getParameters(
+			ddmFormField, ddmFormFieldRenderingContext,
+			ddmFormFieldTemplateContextContributor);
 
 		if ((contributedParameters == null) ||
 			contributedParameters.isEmpty()) {

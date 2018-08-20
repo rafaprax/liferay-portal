@@ -12,31 +12,26 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.form.field.type;
+package com.liferay.dynamic.data.mapping.test.util;
 
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 
 import java.util.Map;
 
 /**
- * @author Marcellus Tavares
+ * @author Leonardo Barros
  */
-public interface DDMFormFieldTemplateContextContributor {
+public class DDMFormFieldTemplateContextContributorTestUtil {
 
-	public DDMFormFieldTemplateContextContributorGetResponse get(
-		DDMFormFieldTemplateContextContributorGetRequest
-			ddmFormFieldTemplateContextContributorGetRequest);
-
-	/**
-	 * @deprecated As of Judson (7.1.x), replaced by {
-	 * @link DDMFormFieldTemplateContextContributor#get(
-	 * DDMFormFieldTemplateContextContributorGetRequest)}
-	 */
-	@Deprecated
-	public default Map<String, Object> getParameters(
+	public static Map<String, Object> getParameters(
 		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext,
+		DDMFormFieldTemplateContextContributor
+			ddmFormFieldTemplateContextContributor) {
 
 		DDMFormFieldTemplateContextContributorGetRequest.Builder builder =
 			DDMFormFieldTemplateContextContributorGetRequest.Builder.newBuilder(
@@ -61,8 +56,8 @@ public interface DDMFormFieldTemplateContextContributor {
 		}
 
 		DDMFormFieldTemplateContextContributorGetResponse
-			ddmFormFieldTemplateContextContributorGetResponse = get(
-				builder.build());
+			ddmFormFieldTemplateContextContributorGetResponse =
+				ddmFormFieldTemplateContextContributor.get(builder.build());
 
 		return ddmFormFieldTemplateContextContributorGetResponse.
 			getParameters();

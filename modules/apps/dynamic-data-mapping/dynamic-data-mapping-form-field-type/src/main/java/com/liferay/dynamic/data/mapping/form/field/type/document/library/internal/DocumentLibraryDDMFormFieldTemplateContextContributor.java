@@ -16,8 +16,8 @@ package com.liferay.dynamic.data.mapping.form.field.type.document.library.intern
 
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -65,51 +65,62 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		Map<String, Object> parameters = new HashMap<>();
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
 		HttpServletRequest request =
-			ddmFormFieldRenderingContext.getHttpServletRequest();
+			ddmFormFieldTemplateContextContributorGetRequest.getRequest();
+		boolean readOnly =
+			ddmFormFieldTemplateContextContributorGetRequest.isReadOnly();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
+		Map<String, Object> properties =
+			ddmFormFieldTemplateContextContributorGetRequest.getProperties();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
 
-		if (ddmFormFieldRenderingContext.isReadOnly() &&
-			Validator.isNotNull(ddmFormFieldRenderingContext.getValue())) {
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-			JSONObject valueJSONObject = getValueJSONObject(
-				ddmFormFieldRenderingContext.getValue());
+		if (readOnly && Validator.isNotNull(value)) {
+			JSONObject valueJSONObject = getValueJSONObject(value.toString());
 
 			if ((valueJSONObject != null) && (valueJSONObject.length() > 0)) {
 				FileEntry fileEntry = getFileEntry(valueJSONObject);
 
-				parameters.put("fileEntryTitle", getFileEntryTitle(fileEntry));
-				parameters.put(
-					"fileEntryURL", getFileEntryURL(request, fileEntry));
+				builder = builder.withParameter(
+					"fileEntryTitle", getFileEntryTitle(fileEntry)
+				).withParameter(
+					"fileEntryURL", getFileEntryURL(request, fileEntry)
+				);
 			}
 		}
 
-		parameters.put(
-			"groupId", ddmFormFieldRenderingContext.getProperty("groupId"));
-
-		parameters.put(
-			"itemSelectorAuthToken", getItemSelectorAuthToken(request));
-		parameters.put("lexiconIconsPath", getLexiconIconsPath(request));
-
 		Map<String, String> stringsMap = new HashMap<>();
 
-		ResourceBundle resourceBundle = getResourceBundle(
-			ddmFormFieldRenderingContext.getLocale());
+		ResourceBundle resourceBundle = getResourceBundle(locale);
 
 		stringsMap.put("select", LanguageUtil.get(resourceBundle, "select"));
 
-		parameters.put("strings", stringsMap);
-		parameters.put(
-			"value",
-			jsonFactory.looseDeserialize(
-				ddmFormFieldRenderingContext.getValue()));
+		builder = builder.withParameter(
+			"strings", stringsMap
+		).withParameter(
+			"groupId", properties.get("groupId")
+		).withParameter(
+			"itemSelectorAuthToken", getItemSelectorAuthToken(request)
+		).withParameter(
+			"lexiconIconsPath", getLexiconIconsPath(request)
+		);
 
-		return parameters;
+		if (Validator.isNotNull(value)) {
+			builder = builder.withParameter(
+				"value", jsonFactory.looseDeserialize(value.toString())
+			);
+		}
+
+		return builder.build();
 	}
 
 	protected FileEntry getFileEntry(JSONObject valueJSONObject) {

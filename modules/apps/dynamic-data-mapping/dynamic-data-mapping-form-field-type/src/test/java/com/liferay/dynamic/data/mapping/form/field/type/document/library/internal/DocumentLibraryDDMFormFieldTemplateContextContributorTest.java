@@ -18,6 +18,7 @@ import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldTypeSettingsTestCase;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormFieldTemplateContextContributorTestUtil;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -94,8 +95,9 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setValue(
 			"{\"uuid\": \"0000-1111\", \"title\": \"File Title\"}");
 
-		Map<String, Object> parameters = spy.getParameters(
-			ddmFormField, ddmFormFieldRenderingContext);
+		Map<String, Object> parameters =
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext, spy);
 
 		Assert.assertTrue(parameters.containsKey("fileEntryURL"));
 	}
@@ -103,8 +105,6 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 	@Test
 	public void testGetParametersShouldContainItemSelectorAuthToken() {
 		DDMFormField ddmFormField = new DDMFormField("field", "numeric");
-
-		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
 
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
 			new DDMFormFieldRenderingContext();
@@ -114,8 +114,11 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setValue(
 			"{\"uuid\": \"0000-1111\", \"title\": \"Title\"}");
 
-		Map<String, Object> parameters = spy.getParameters(
-			ddmFormField, ddmFormFieldRenderingContext);
+		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
+
+		Map<String, Object> parameters =
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext, spy);
 
 		Assert.assertEquals("token", parameters.get("itemSelectorAuthToken"));
 	}
@@ -123,8 +126,6 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 	@Test
 	public void testGetParametersShouldNotContainFileEntryURL() {
 		DDMFormField ddmFormField = new DDMFormField("field", "numeric");
-
-		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
 
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
 			new DDMFormFieldRenderingContext();
@@ -135,8 +136,11 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setValue(
 			"{\"uuid\": \"0000-1111\", \"title\": \"File Title\"}");
 
-		Map<String, Object> parameters = spy.getParameters(
-			ddmFormField, ddmFormFieldRenderingContext);
+		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
+
+		Map<String, Object> parameters =
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext, spy);
 
 		Assert.assertFalse(parameters.containsKey("fileEntryURL"));
 	}
@@ -144,8 +148,6 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 	@Test
 	public void testGetParametersShouldUseFileEntryTitle() {
 		DDMFormField ddmFormField = new DDMFormField("field", "numeric");
-
-		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
 
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
 			new DDMFormFieldRenderingContext();
@@ -156,8 +158,11 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setValue(
 			"{\"uuid\": \"0000-1111\", \"title\": \"Old Title\"}");
 
-		Map<String, Object> parameters = spy.getParameters(
-			ddmFormField, ddmFormFieldRenderingContext);
+		DocumentLibraryDDMFormFieldTemplateContextContributor spy = createSpy();
+
+		Map<String, Object> parameters =
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext, spy);
 
 		Assert.assertEquals("New Title", parameters.get("fileEntryTitle"));
 	}

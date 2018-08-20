@@ -15,20 +15,15 @@
 package com.liferay.dynamic.data.mapping.form.field.type.checkbox.multiple.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
@@ -48,120 +43,76 @@ public class CheckboxMultipleDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
+		Map<String, Object> properties =
+			ddmFormFieldTemplateContextContributorGetRequest.getProperties();
+		Object value =
+			ddmFormFieldTemplateContextContributorGetRequest.getValue();
+		boolean viewMode =
+			ddmFormFieldTemplateContextContributorGetRequest.isViewMode();
 
-		parameters.put(
-			"inline",
-			GetterUtil.getBoolean(ddmFormField.getProperty("inline")));
-		parameters.put(
-			"options", getOptions(ddmFormField, ddmFormFieldRenderingContext));
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		List<String> predefinedValue = getValue(
-			getPredefinedValue(ddmFormField, ddmFormFieldRenderingContext));
+		DDMFormFieldOptions ddmFormFieldOptions = getDDMFormFieldOptions(
+			ddmFormField, locale,
+			(List<Map<String, String>>)properties.get("options"));
+
+		builder = builder.withParameter(
+			"inline", GetterUtil.getBoolean(ddmFormField.getProperty("inline"))
+		).withParameter(
+			"options",
+			_ddmFormFieldTemplateContextContributorHelper.getOptions(
+				ddmFormFieldOptions, locale, viewMode)
+		).withParameter(
+			"showAsSwitcher",
+			GetterUtil.getBoolean(ddmFormField.getProperty("showAsSwitcher"))
+		).withParameter(
+			"value",
+			_ddmFormFieldTemplateContextContributorHelper.getValue(
+				GetterUtil.getString(value, "[]"))
+		);
+
+		List<String> predefinedValue =
+			_ddmFormFieldTemplateContextContributorHelper.getValue(
+				_ddmFormFieldTemplateContextContributorHelper.
+					getPredefinedValue(ddmFormField, locale, false));
 
 		if (predefinedValue != null) {
-			parameters.put("predefinedValue", predefinedValue);
+			builder = builder.withParameter("predefinedValue", predefinedValue);
 		}
 
-		parameters.put(
-			"showAsSwitcher",
-			GetterUtil.getBoolean(ddmFormField.getProperty("showAsSwitcher")));
-		parameters.put(
-			"value",
-			getValue(
-				GetterUtil.getString(
-					ddmFormFieldRenderingContext.getValue(), "[]")));
-
-		return parameters;
+		return builder.build();
 	}
 
 	protected DDMFormFieldOptions getDDMFormFieldOptions(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormField ddmFormField, Locale locale,
+		List<Map<String, String>> options) {
 
 		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
 
-		List<Map<String, String>> keyValuePairs =
-			(List<Map<String, String>>)
-				ddmFormFieldRenderingContext.getProperty("options");
-
-		if (keyValuePairs.isEmpty()) {
+		if (options.isEmpty()) {
 			return ddmFormField.getDDMFormFieldOptions();
 		}
 
-		for (Map<String, String> keyValuePair : keyValuePairs) {
+		for (Map<String, String> option : options) {
 			ddmFormFieldOptions.addOptionLabel(
-				keyValuePair.get("value"),
-				ddmFormFieldRenderingContext.getLocale(),
-				keyValuePair.get("label"));
+				option.get("value"), locale, option.get("label"));
 		}
 
 		return ddmFormFieldOptions;
 	}
 
-	protected List<Object> getOptions(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		CheckboxMultipleDDMFormFieldContextHelper
-			checkboxMultipleDDMFormFieldContextHelper =
-				new CheckboxMultipleDDMFormFieldContextHelper(
-					jsonFactory,
-					getDDMFormFieldOptions(
-						ddmFormField, ddmFormFieldRenderingContext),
-					ddmFormFieldRenderingContext.getLocale());
-
-		return checkboxMultipleDDMFormFieldContextHelper.getOptions(
-			ddmFormFieldRenderingContext);
-	}
-
-	protected String getPredefinedValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		LocalizedValue predefinedValue = ddmFormField.getPredefinedValue();
-
-		if (predefinedValue == null) {
-			return null;
-		}
-
-		String predefinedValueString = predefinedValue.getString(
-			ddmFormFieldRenderingContext.getLocale());
-
-		return predefinedValueString;
-	}
-
-	protected List<String> getValue(String valueString) {
-		JSONArray jsonArray = null;
-
-		try {
-			jsonArray = jsonFactory.createJSONArray(valueString);
-		}
-		catch (JSONException jsone) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(jsone, jsone);
-			}
-
-			jsonArray = jsonFactory.createJSONArray();
-		}
-
-		List<String> values = new ArrayList<>(jsonArray.length());
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			values.add(String.valueOf(jsonArray.get(i)));
-		}
-
-		return values;
-	}
-
 	@Reference
-	protected JSONFactory jsonFactory;
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		CheckboxMultipleDDMFormFieldTemplateContextContributor.class);
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 }

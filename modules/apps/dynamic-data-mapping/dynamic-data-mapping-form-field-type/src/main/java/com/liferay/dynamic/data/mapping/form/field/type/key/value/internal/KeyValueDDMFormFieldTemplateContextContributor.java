@@ -15,11 +15,10 @@
 package com.liferay.dynamic.data.mapping.form.field.type.key.value.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.model.Value;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 
@@ -28,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -43,22 +43,14 @@ public class KeyValueDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
-
-		parameters.put(
-			"autoFocus",
-			GetterUtil.getBoolean(ddmFormField.getProperty("autoFocus")));
-
-		LocalizedValue placeholder = (LocalizedValue)ddmFormField.getProperty(
-			"placeholder");
-
-		Locale locale = ddmFormFieldRenderingContext.getLocale();
-
-		parameters.put("placeholder", getValueString(placeholder, locale));
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
 
 		Map<String, String> stringsMap = new HashMap<>();
 
@@ -66,22 +58,28 @@ public class KeyValueDDMFormFieldTemplateContextContributor
 		stringsMap.put("done", LanguageUtil.get(locale, "done"));
 		stringsMap.put("keyLabel", LanguageUtil.get(locale, "field-name"));
 
-		parameters.put("strings", stringsMap);
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		LocalizedValue tooltip = (LocalizedValue)ddmFormField.getProperty(
-			"tooltip");
-
-		parameters.put("tooltip", getValueString(tooltip, locale));
-
-		return parameters;
+		return builder.withParameter(
+			"autoFocus",
+			GetterUtil.getBoolean(ddmFormField.getProperty("autoFocus"))
+		).withParameter(
+			"placeholder",
+			_ddmFormFieldTemplateContextContributorHelper.getPlaceholder(
+				ddmFormField, locale, false)
+		).withParameter(
+			"strings", stringsMap
+		).withParameter(
+			"tooltip",
+			_ddmFormFieldTemplateContextContributorHelper.getTooltip(
+				ddmFormField, locale, false)
+		).build();
 	}
 
-	protected String getValueString(Value value, Locale locale) {
-		if (value != null) {
-			return value.getString(locale);
-		}
-
-		return StringPool.BLANK;
-	}
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 }

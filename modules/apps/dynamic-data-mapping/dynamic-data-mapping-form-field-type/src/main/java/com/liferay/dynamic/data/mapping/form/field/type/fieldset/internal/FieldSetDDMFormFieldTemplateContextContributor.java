@@ -15,17 +15,18 @@
 package com.liferay.dynamic.data.mapping.form.field.type.fieldset.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutColumn;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -46,15 +47,19 @@ public class FieldSetDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Map<String, Object> properties =
+			ddmFormFieldTemplateContextContributorGetRequest.getProperties();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
 
 		Map<String, List<Object>> nestedFieldsMap =
-			(Map<String, List<Object>>)ddmFormFieldRenderingContext.getProperty(
-				"nestedFields");
+			(Map<String, List<Object>>)properties.get("nestedFields");
 
 		String[] nestedFieldNames = getNestedFieldNames(
 			GetterUtil.getString(ddmFormField.getProperty("nestedFieldNames")),
@@ -63,26 +68,32 @@ public class FieldSetDDMFormFieldTemplateContextContributor
 		List<Object> nestedFields = getNestedFields(
 			nestedFieldsMap, nestedFieldNames);
 
-		parameters.put("nestedFields", nestedFields);
-
 		String orientation = GetterUtil.getString(
 			ddmFormField.getProperty("orientation"), "horizontal");
 
 		int columnSize = getColumnSize(nestedFields.size(), orientation);
 
-		parameters.put("columnSize", columnSize);
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
+
+		builder = builder.withParameter(
+			"nestedFields", nestedFields
+		).withParameter(
+			"columnSize", columnSize
+		);
 
 		LocalizedValue label = ddmFormField.getLabel();
 
 		if (label != null) {
-			parameters.put(
-				"label",
-				label.getString(ddmFormFieldRenderingContext.getLocale()));
-
-			parameters.put("showLabel", true);
+			builder = builder.withParameter(
+				"label", label.getString(locale)
+			).withParameter(
+				"showLabel", true
+			);
 		}
 
-		return parameters;
+		return builder.build();
 	}
 
 	protected int getColumnSize(int nestedFieldsSize, String orientation) {
