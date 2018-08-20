@@ -17,15 +17,61 @@ package com.liferay.dynamic.data.mapping.form.field.type;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.template.TemplateResource;
 
 /**
  * @author Pablo Carvalho
  */
 public interface DDMFormFieldRenderer {
 
-	public String render(
+	public String getTemplateNamespace();
+
+	public TemplateResource getTemplateResource();
+
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {
+	 * @link DDMFormFieldRenderer#render(DDMFormFieldRendererRenderRequest)}
+	 */
+	@Deprecated
+	public default String render(
 			DDMFormField ddmFormField,
 			DDMFormFieldRenderingContext ddmFormFieldRenderingContext)
-		throws PortalException;
+		throws PortalException {
+
+		DDMFormFieldRendererRenderRequest.Builder builder =
+			DDMFormFieldRendererRenderRequest.Builder.newBuilder(
+			).withLabel(
+				ddmFormFieldRenderingContext.getLabel()
+			).withName(
+				ddmFormFieldRenderingContext.getName()
+			).withReadOnly(
+				ddmFormFieldRenderingContext.isReadOnly() ||
+				ddmFormField.isReadOnly()
+			).withRequired(
+				ddmFormFieldRenderingContext.isRequired()
+			).withShowLabel(
+				ddmFormField.isShowLabel()
+			).withTip(
+				ddmFormFieldRenderingContext.getTip()
+			).withValue(
+				ddmFormFieldRenderingContext.getValue()
+			).withValue(
+				ddmFormFieldRenderingContext.isVisible()
+			).withDDMFormField(
+				ddmFormField
+			).withRequest(
+				ddmFormFieldRenderingContext.getHttpServletRequest()
+			).withResponse(
+				ddmFormFieldRenderingContext.getHttpServletResponse()
+			);
+
+		DDMFormFieldRendererRenderResponse ddmFormFieldRendererRenderResponse =
+			render(builder.build());
+
+		return ddmFormFieldRendererRenderResponse.getContent();
+	}
+
+	public DDMFormFieldRendererRenderResponse render(
+		DDMFormFieldRendererRenderRequest ddmFormFieldRendererRenderRequest);
 
 }

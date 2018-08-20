@@ -14,72 +14,64 @@
 
 package com.liferay.dynamic.data.mapping.form.field.type.captcha.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.portal.kernel.template.Template;
-import com.liferay.portal.kernel.template.TemplateConstants;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRenderer;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateRendererRenderResponse;
 import com.liferay.portal.kernel.template.TemplateResource;
 
-import java.util.Map;
-
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
  */
-@Component(
-	immediate = true, property = "ddm.form.field.type.name=captcha",
-	service = DDMFormFieldRenderer.class
-)
-public class CaptchaDDMFormFieldRenderer extends BaseDDMFormFieldRenderer {
+@Component(immediate = true, property = "ddm.form.field.type.name=captcha")
+public class CaptchaDDMFormFieldRenderer implements DDMFormFieldRenderer {
 
-	@Override
-	public String getTemplateLanguage() {
-		return TemplateConstants.LANG_TYPE_SOY;
-	}
-
-	@Override
 	public String getTemplateNamespace() {
-		return "DDMCaptcha.render";
+		return _TEMPLATE_NAMESPACE;
 	}
 
 	@Override
 	public TemplateResource getTemplateResource() {
-		return _templateResource;
-	}
-
-	@Activate
-	protected void activate(Map<String, Object> properties) {
-		_templateResource = getTemplateResource(
-			"/META-INF/resources/captcha/captcha.soy");
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		_templateResource = null;
+		return ddmFormFieldTemplateRenderer.getTemplateResource(_TEMPLATE_PATH);
 	}
 
 	@Override
-	protected void populateOptionalContext(
-		Template template, DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldRendererRenderResponse render(
+		DDMFormFieldRendererRenderRequest ddmFormFieldRendererRenderRequest) {
 
-		Map<String, Object> parameters =
-			captchaDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateRendererRenderRequest.Builder builder =
+			DDMFormFieldTemplateRendererRenderRequest.Builder.newBuilder(
+				_TEMPLATE_NAMESPACE, _TEMPLATE_PATH
+			).withDDMFormFieldRendererRenderRequest(
+				ddmFormFieldRendererRenderRequest
+			).withDDMFormFieldTemplateContextContributor(
+				captchaDDMFormFieldTemplateContextContributor
+			);
 
-		template.putAll(parameters);
+		DDMFormFieldTemplateRendererRenderResponse
+			ddmFormFieldTemplateRendererRenderResponse =
+				ddmFormFieldTemplateRenderer.render(builder.build());
+
+		return DDMFormFieldRendererRenderResponse.Builder.newBuilder(
+			ddmFormFieldTemplateRendererRenderResponse.getContent()
+		).build();
 	}
 
 	@Reference
 	protected CaptchaDDMFormFieldTemplateContextContributor
 		captchaDDMFormFieldTemplateContextContributor;
 
-	private TemplateResource _templateResource;
+	@Reference
+	protected DDMFormFieldTemplateRenderer ddmFormFieldTemplateRenderer;
+
+	private static final String _TEMPLATE_NAMESPACE = "DDMCaptcha.render";
+
+	private static final String _TEMPLATE_PATH =
+		"/META-INF/resources/captcha/captcha.soy";
 
 }

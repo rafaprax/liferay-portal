@@ -37,7 +37,9 @@ import java.util.Locale;
 
 /**
  * @author Marcellus Tavares
+ * @deprecated As of Judson (7.1.x), with no replacement
  */
+@Deprecated
 public abstract class BaseDDMFormFieldRenderer implements DDMFormFieldRenderer {
 
 	public abstract String getTemplateLanguage();
