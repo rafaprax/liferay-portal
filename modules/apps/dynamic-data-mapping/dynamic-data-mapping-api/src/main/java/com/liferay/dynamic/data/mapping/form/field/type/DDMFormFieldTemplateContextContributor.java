@@ -24,8 +24,48 @@ import java.util.Map;
  */
 public interface DDMFormFieldTemplateContextContributor {
 
-	public Map<String, Object> getParameters(
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest);
+
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {
+	 * @link DDMFormFieldTemplateContextContributor#get(
+	 * DDMFormFieldTemplateContextContributorGetRequest)}
+	 */
+	@Deprecated
+	public default Map<String, Object> getParameters(
 		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext);
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+
+		DDMFormFieldTemplateContextContributorGetRequest.Builder builder =
+			DDMFormFieldTemplateContextContributorGetRequest.Builder.newBuilder(
+			).withReadOnly(
+				ddmFormFieldRenderingContext.isReadOnly() ||
+				ddmFormField.isReadOnly()
+			).withValue(
+				ddmFormFieldRenderingContext.getValue()
+			).withDDMFormField(
+				ddmFormField
+			).withRequest(
+				ddmFormFieldRenderingContext.getHttpServletRequest()
+			).withResponse(
+				ddmFormFieldRenderingContext.getHttpServletResponse()
+			);
+
+		Map<String, Object> properties =
+			ddmFormFieldRenderingContext.getProperties();
+
+		for (Map.Entry<String, Object> entry : properties.entrySet()) {
+			builder = builder.withProperty(entry.getKey(), entry.getValue());
+		}
+
+		DDMFormFieldTemplateContextContributorGetResponse
+			ddmFormFieldTemplateContextContributorGetResponse = get(
+				builder.build());
+
+		return ddmFormFieldTemplateContextContributorGetResponse.
+			getParameters();
+	}
 
 }

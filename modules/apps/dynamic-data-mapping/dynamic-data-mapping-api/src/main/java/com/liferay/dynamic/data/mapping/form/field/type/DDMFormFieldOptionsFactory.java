@@ -23,8 +23,38 @@ import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
  */
 public interface DDMFormFieldOptionsFactory {
 
-	public DDMFormFieldOptions create(
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {
+	 * @link DDMFormFieldOptionsFactory#create(
+	 * DDMFormFieldOptionsFactoryCreateRequest)}
+	 */
+	@Deprecated
+	public default DDMFormFieldOptions create(
 		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext);
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+
+		DDMFormFieldOptionsFactoryCreateRequest
+			ddmFormFieldOptionsFactoryCreateRequest =
+				DDMFormFieldOptionsFactoryCreateRequest.Builder.newBuilder(
+					ddmFormField
+				).withLocale(
+					ddmFormFieldRenderingContext.getLocale()
+				).withRequest(
+					ddmFormFieldRenderingContext.getHttpServletRequest()
+				).withValue(
+					ddmFormFieldRenderingContext.getValue()
+				).build();
+
+		DDMFormFieldOptionsFactoryCreateResponse
+			ddmFormFieldOptionsFactoryCreateResponse = create(
+				ddmFormFieldOptionsFactoryCreateRequest);
+
+		return ddmFormFieldOptionsFactoryCreateResponse.
+			getDDMFormFieldOptions();
+	}
+
+	public DDMFormFieldOptionsFactoryCreateResponse create(
+		DDMFormFieldOptionsFactoryCreateRequest
+			ddmFormFieldOptionsFactoryCreateRequest);
 
 }
