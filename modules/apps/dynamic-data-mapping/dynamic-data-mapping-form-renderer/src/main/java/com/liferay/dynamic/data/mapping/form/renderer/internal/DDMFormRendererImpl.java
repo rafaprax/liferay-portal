@@ -14,7 +14,6 @@
 
 package com.liferay.dynamic.data.mapping.form.renderer.internal;
 
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderer;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
@@ -112,8 +111,8 @@ public class DDMFormRendererImpl implements DDMFormRenderer {
 	protected void addDDMFormFieldRenderer(
 		DDMFormFieldRenderer ddmFormFieldRenderer) {
 
-		TemplateResource templateResource = getTemplateResource(
-			ddmFormFieldRenderer);
+		TemplateResource templateResource =
+			ddmFormFieldRenderer.getTemplateResource();
 
 		if (templateResource != null) {
 			_templateResources.add(templateResource);
@@ -150,19 +149,6 @@ public class DDMFormRendererImpl implements DDMFormRenderer {
 		URL templateURL = classLoader.getResource(templatePath);
 
 		return new URLTemplateResource(templateURL.getPath(), templateURL);
-	}
-
-	protected TemplateResource getTemplateResource(
-		DDMFormFieldRenderer ddmFormFieldRenderer) {
-
-		if (ddmFormFieldRenderer instanceof BaseDDMFormFieldRenderer) {
-			BaseDDMFormFieldRenderer baseDDMFormFieldRenderer =
-				(BaseDDMFormFieldRenderer)ddmFormFieldRenderer;
-
-			return baseDDMFormFieldRenderer.getTemplateResource();
-		}
-
-		return null;
 	}
 
 	protected TemplateResource getTemplateResource(String templatePath) {
@@ -210,8 +196,8 @@ public class DDMFormRendererImpl implements DDMFormRenderer {
 	protected void removeDDMFormFieldRenderer(
 		DDMFormFieldRenderer ddmFormFieldRenderer) {
 
-		TemplateResource templateResource = getTemplateResource(
-			ddmFormFieldRenderer);
+		TemplateResource templateResource =
+			ddmFormFieldRenderer.getTemplateResource();
 
 		if (templateResource != null) {
 			_templateResources.remove(templateResource);

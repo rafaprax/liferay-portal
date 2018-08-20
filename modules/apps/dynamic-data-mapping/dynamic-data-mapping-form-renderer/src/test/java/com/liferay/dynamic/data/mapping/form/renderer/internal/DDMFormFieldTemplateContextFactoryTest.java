@@ -17,8 +17,9 @@ package com.liferay.dynamic.data.mapping.form.renderer.internal;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.internal.DDMFormEvaluationResultBuilder;
-import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRenderer;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldRendererRenderResponse;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
@@ -457,17 +458,21 @@ public class DDMFormFieldTemplateContextFactoryTest {
 	}
 
 	protected DDMFormFieldRenderer getTextDDMFormFieldRenderer() {
-		return new BaseDDMFormFieldRenderer() {
-
-			public String getTemplateLanguage() {
-				return null;
-			}
+		return new DDMFormFieldRenderer() {
 
 			public String getTemplateNamespace() {
 				return "ddm.text";
 			}
 
 			public TemplateResource getTemplateResource() {
+				return null;
+			}
+
+			@Override
+			public DDMFormFieldRendererRenderResponse render(
+				DDMFormFieldRendererRenderRequest
+					ddmFormFieldRendererRenderRequest) {
+
 				return null;
 			}
 

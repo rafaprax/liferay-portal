@@ -15,15 +15,15 @@
 package com.liferay.dynamic.data.mapping.form.field.type.editor.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.petra.string.StringPool;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -39,25 +39,28 @@ public class EditorDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
 
-		LocalizedValue placeholder = (LocalizedValue)ddmFormField.getProperty(
-			"placeholder");
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
-		String placeholderString = StringPool.BLANK;
-
-		if (placeholder != null) {
-			placeholderString = placeholder.getString(
-				ddmFormFieldRenderingContext.getLocale());
-		}
-
-		parameters.put("placeholder", placeholderString);
-
-		return parameters;
+		return builder.withParameter(
+			"placeholder",
+			_ddmFormFieldTemplateContextContributorHelper.getPlaceholder(
+				ddmFormField, locale, false)
+		).build();
 	}
+
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 }

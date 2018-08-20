@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormFieldTemplateContextContributorTestUtil;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -74,16 +75,10 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 
 		ddmFormField.setProperty("multiple", "true");
 
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
-			new DDMFormFieldRenderingContext();
-
-		ddmFormFieldRenderingContext.setProperty(
-			"ddmFormFieldEvaluationResult", null);
-
 		Assert.assertEquals(
 			true,
 			_selectDDMFormFieldTemplateContextContributor.getMultiple(
-				ddmFormField, ddmFormFieldRenderingContext));
+				ddmFormField, null));
 	}
 
 	@Test
@@ -98,16 +93,10 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
 			new DDMFormFieldEvaluationResult(fieldName, fieldInstance);
 
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
-			new DDMFormFieldRenderingContext();
-
-		ddmFormFieldRenderingContext.setProperty(
-			"ddmFormFieldEvaluationResult", ddmFormFieldEvaluationResult);
-
 		Assert.assertEquals(
 			true,
 			_selectDDMFormFieldTemplateContextContributor.getMultiple(
-				ddmFormField, ddmFormFieldRenderingContext));
+				ddmFormField, ddmFormFieldEvaluationResult));
 	}
 
 	@Test
@@ -124,16 +113,10 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 
 		ddmFormFieldEvaluationResult.setProperty("multiple", true);
 
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
-			new DDMFormFieldRenderingContext();
-
-		ddmFormFieldRenderingContext.setProperty(
-			"ddmFormFieldEvaluationResult", ddmFormFieldEvaluationResult);
-
 		Assert.assertEquals(
 			true,
 			_selectDDMFormFieldTemplateContextContributor.getMultiple(
-				ddmFormField, ddmFormFieldRenderingContext));
+				ddmFormField, ddmFormFieldEvaluationResult));
 	}
 
 	@Test
@@ -169,8 +152,9 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 
 		SelectDDMFormFieldTemplateContextContributor spy = createSpy();
 
-		Map<String, Object> parameters = spy.getParameters(
-			ddmFormField, ddmFormFieldRenderingContext);
+		Map<String, Object> parameters =
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext, spy);
 
 		Assert.assertTrue(parameters.containsKey("dataSourceType"));
 		Assert.assertEquals("data-provider", parameters.get("dataSourceType"));
@@ -229,8 +213,9 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 
 		SelectDDMFormFieldTemplateContextContributor spy = createSpy();
 
-		Map<String, Object> parameters = spy.getParameters(
-			ddmFormField, ddmFormFieldRenderingContext);
+		Map<String, Object> parameters =
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext, spy);
 
 		Assert.assertTrue(parameters.containsKey("dataSourceType"));
 		Assert.assertEquals("manual", parameters.get("dataSourceType"));
@@ -329,11 +314,8 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 	protected List<Object> getActualOptions(
 		DDMFormFieldOptions ddmFormFieldOptions, Locale locale) {
 
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
-			new DDMFormFieldRenderingContext();
-
 		return _selectDDMFormFieldTemplateContextContributor.getOptions(
-			ddmFormFieldOptions, locale, ddmFormFieldRenderingContext);
+			ddmFormFieldOptions, locale, false);
 	}
 
 	protected void setUpDDMFormFieldOptionsFactory(

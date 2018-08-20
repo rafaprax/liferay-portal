@@ -15,15 +15,15 @@
 package com.liferay.dynamic.data.mapping.form.field.type.date.internal;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributorGetResponse;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.DDMFormFieldTemplateContextContributorHelper;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
-import com.liferay.portal.kernel.util.GetterUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
@@ -39,38 +39,32 @@ public class DateDDMFormFieldTemplateContextContributor
 	implements DDMFormFieldTemplateContextContributor {
 
 	@Override
-	public Map<String, Object> getParameters(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldTemplateContextContributorGetResponse get(
+		DDMFormFieldTemplateContextContributorGetRequest
+			ddmFormFieldTemplateContextContributorGetRequest) {
 
-		Map<String, Object> parameters = new HashMap<>();
+		DDMFormField ddmFormField =
+			ddmFormFieldTemplateContextContributorGetRequest.getDDMFormField();
+		Locale locale =
+			ddmFormFieldTemplateContextContributorGetRequest.getLocale();
 
-		parameters.put(
-			"predefinedValue",
-			GetterUtil.getString(ddmFormField.getPredefinedValue(), ""));
+		String predefinedValue =
+			_ddmFormFieldTemplateContextContributorHelper.getPredefinedValue(
+				ddmFormField, locale, false);
 
-		String predefinedValue = getPredefinedValue(
-			ddmFormField, ddmFormFieldRenderingContext);
+		DDMFormFieldTemplateContextContributorGetResponse.Builder builder =
+			DDMFormFieldTemplateContextContributorGetResponse.Builder.
+				newBuilder();
 
 		if (predefinedValue != null) {
-			parameters.put("predefinedValue", predefinedValue);
+			builder = builder.withParameter("predefinedValue", predefinedValue);
 		}
 
-		return parameters;
+		return builder.build();
 	}
 
-	protected String getPredefinedValue(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
-
-		LocalizedValue predefinedValue = ddmFormField.getPredefinedValue();
-
-		if (predefinedValue == null) {
-			return null;
-		}
-
-		return predefinedValue.getString(
-			ddmFormFieldRenderingContext.getLocale());
-	}
+	@Reference
+	protected DDMFormFieldTemplateContextContributorHelper
+		_ddmFormFieldTemplateContextContributorHelper;
 
 }

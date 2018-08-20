@@ -17,6 +17,7 @@ package com.liferay.dynamic.data.mapping.form.field.type.radio.internal;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormFieldTemplateContextContributorTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.json.JSONFactoryImpl;
@@ -60,8 +61,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 		ddmFormField.setProperty("dataSourceType", "data-provider");
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertEquals(true, parameters.get("inline"));
 	}
@@ -81,8 +83,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 			"options", createDDMFormOptions());
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertEquals(
 			StringPool.BLANK, parameters.get("predefinedValue"));
@@ -103,8 +106,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 			"options", createDDMFormOptions());
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertTrue(parameters.containsKey("options"));
 
@@ -144,8 +148,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 		ddmFormField.setProperty("predefinedValue", predefinedValue);
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertEquals("value", parameters.get("predefinedValue"));
 	}
@@ -172,8 +177,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 		ddmFormField.setProperty("predefinedValue", predefinedValue);
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertEquals("value", parameters.get("predefinedValue"));
 	}
@@ -195,8 +201,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setValue("value");
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertEquals("value", parameters.get("value"));
 	}
@@ -218,8 +225,9 @@ public class RadioDDMFormFieldTemplateContextContributorTest
 		ddmFormFieldRenderingContext.setValue("[\"value\"]");
 
 		Map<String, Object> parameters =
-			_radioDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				_radioDDMFormFieldTemplateContextContributor);
 
 		Assert.assertEquals("value", parameters.get("value"));
 	}

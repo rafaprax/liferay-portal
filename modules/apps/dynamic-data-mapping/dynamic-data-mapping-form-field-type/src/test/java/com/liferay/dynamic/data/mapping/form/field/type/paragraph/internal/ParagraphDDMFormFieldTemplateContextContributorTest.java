@@ -20,6 +20,7 @@ import com.google.template.soy.data.UnsafeSanitizedContentOrdainer;
 import com.liferay.dynamic.data.mapping.form.field.type.BaseDDMFormFieldTypeSettingsTestCase;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormFieldTemplateContextContributorTestUtil;
 import com.liferay.portal.template.soy.utils.SoyHTMLSanitizer;
 
 import java.util.Map;
@@ -53,8 +54,9 @@ public class ParagraphDDMFormFieldTemplateContextContributorTest
 		ddmFormField.setProperty("text", text);
 
 		Map<String, Object> parameters =
-			_paragraphDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, new DDMFormFieldRenderingContext());
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, new DDMFormFieldRenderingContext(),
+				_paragraphDDMFormFieldTemplateContextContributor);
 
 		SanitizedContent sanitizedContent = (SanitizedContent)parameters.get(
 			"text");

@@ -16,6 +16,7 @@ package com.liferay.dynamic.data.mapping.form.field.type.fieldset.internal;
 
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormFieldTemplateContextContributorTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
@@ -99,8 +100,9 @@ public class FieldSetDDMFormFieldTemplateContextContributorTest {
 		ddmFormFieldRenderingContext.setLocale(LocaleUtil.US);
 
 		Map<String, Object> parameters =
-			fieldSetDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				fieldSetDDMFormFieldTemplateContextContributor);
 
 		Assert.assertTrue(parameters.containsKey("showLabel"));
 
@@ -164,8 +166,9 @@ public class FieldSetDDMFormFieldTemplateContextContributorTest {
 		ddmFormFieldRenderingContext.setLocale(LocaleUtil.US);
 
 		Map<String, Object> parameters =
-			fieldSetDDMFormFieldTemplateContextContributor.getParameters(
-				ddmFormField, ddmFormFieldRenderingContext);
+			DDMFormFieldTemplateContextContributorTestUtil.getParameters(
+				ddmFormField, ddmFormFieldRenderingContext,
+				fieldSetDDMFormFieldTemplateContextContributor);
 
 		Assert.assertFalse(parameters.containsKey("showLabel"));
 		Assert.assertTrue(parameters.containsKey("columnSize"));

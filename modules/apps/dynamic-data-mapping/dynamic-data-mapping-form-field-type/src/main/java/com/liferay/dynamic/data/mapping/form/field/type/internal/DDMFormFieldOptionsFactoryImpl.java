@@ -18,9 +18,10 @@ import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderInvoker;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldOptionsFactory;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldOptionsFactoryCreateRequest;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldOptionsFactoryCreateResponse;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
@@ -33,6 +34,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,38 +52,48 @@ public class DDMFormFieldOptionsFactoryImpl
 	implements DDMFormFieldOptionsFactory {
 
 	@Override
-	public DDMFormFieldOptions create(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+	public DDMFormFieldOptionsFactoryCreateResponse create(
+		DDMFormFieldOptionsFactoryCreateRequest
+			ddmFormFieldOptionsFactoryCreateRequest) {
+
+		DDMFormField ddmFormField =
+			ddmFormFieldOptionsFactoryCreateRequest.getDDMFormField();
+		Locale locale = ddmFormFieldOptionsFactoryCreateRequest.getLocale();
+		HttpServletRequest request =
+			ddmFormFieldOptionsFactoryCreateRequest.getRequest();
+		Object value = ddmFormFieldOptionsFactoryCreateRequest.getValue();
+		Map<String, Object> properties =
+			ddmFormFieldOptionsFactoryCreateRequest.getProperties();
 
 		String dataSourceType = GetterUtil.getString(
 			ddmFormField.getProperty("dataSourceType"), "manual");
 
+		DDMFormFieldOptions ddmFormFieldOptions = null;
+
 		if (Objects.equals(dataSourceType, "from-autofill")) {
-			DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
+			ddmFormFieldOptions = new DDMFormFieldOptions();
 
-			ddmFormFieldOptions.setDefaultLocale(
-				ddmFormFieldRenderingContext.getLocale());
-
-			return ddmFormFieldOptions;
+			ddmFormFieldOptions.setDefaultLocale(locale);
 		}
 		else if (Objects.equals(dataSourceType, "data-provider")) {
-			return createDDMFormFieldOptionsFromDataProvider(
-				ddmFormField, ddmFormFieldRenderingContext);
+			ddmFormFieldOptions = createDDMFormFieldOptionsFromDataProvider(
+				ddmFormField, locale, request, value);
 		}
 		else {
-			return createDDMFormFieldOptions(
-				ddmFormField, ddmFormFieldRenderingContext);
+			ddmFormFieldOptions = createDDMFormFieldOptions(
+				ddmFormField, locale, properties);
 		}
+
+		return DDMFormFieldOptionsFactoryCreateResponse.Builder.of(
+			ddmFormFieldOptions);
 	}
 
 	protected DDMFormFieldOptions createDDMFormFieldOptions(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormField ddmFormField, Locale locale,
+		Map<String, Object> properties) {
 
 		List<Map<String, String>> options =
-			(List<Map<String, String>>)
-				ddmFormFieldRenderingContext.getProperty("options");
+			(List<Map<String, String>>)properties.get("options");
 
 		if (options == null) {
 			return ddmFormField.getDDMFormFieldOptions();
@@ -91,29 +103,24 @@ public class DDMFormFieldOptionsFactoryImpl
 
 		for (Map<String, String> option : options) {
 			ddmFormFieldOptions.addOptionLabel(
-				option.get("value"), ddmFormFieldRenderingContext.getLocale(),
-				option.get("label"));
+				option.get("value"), locale, option.get("label"));
 		}
 
 		return ddmFormFieldOptions;
 	}
 
 	protected DDMFormFieldOptions createDDMFormFieldOptionsFromDataProvider(
-		DDMFormField ddmFormField,
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormField ddmFormField, Locale locale, HttpServletRequest request,
+		Object value) {
 
 		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
 
-		ddmFormFieldOptions.setDefaultLocale(
-			ddmFormFieldRenderingContext.getLocale());
+		ddmFormFieldOptions.setDefaultLocale(locale);
 
 		try {
 			String ddmDataProviderInstanceId = getJSONArrayFirstValue(
 				GetterUtil.getString(
 					ddmFormField.getProperty("ddmDataProviderInstanceId")));
-
-			HttpServletRequest httpServletRequest =
-				ddmFormFieldRenderingContext.getHttpServletRequest();
 
 			DDMDataProviderRequest.Builder builder =
 				DDMDataProviderRequest.Builder.newBuilder();
@@ -122,16 +129,15 @@ public class DDMFormFieldOptionsFactoryImpl
 				builder.withDDMDataProviderId(
 					ddmDataProviderInstanceId
 				).withCompanyId(
-					portal.getCompanyId(httpServletRequest)
+					portal.getCompanyId(request)
 				).withGroupId(
-					getGroupId(httpServletRequest)
+					getGroupId(request)
 				).withLocale(
-					ddmFormFieldRenderingContext.getLocale()
+					locale
 				).withParameter(
-					"filterParameterValue",
-					String.valueOf(ddmFormFieldRenderingContext.getValue())
+					"filterParameterValue", String.valueOf(value)
 				).withParameter(
-					"httpServletRequest", httpServletRequest
+					"httpServletRequest", request
 				).build();
 
 			DDMDataProviderResponse ddmDataProviderResponse =
@@ -152,9 +158,7 @@ public class DDMFormFieldOptionsFactoryImpl
 
 			for (KeyValuePair keyValuePair : keyValuesPairsOptional.get()) {
 				ddmFormFieldOptions.addOptionLabel(
-					keyValuePair.getKey(),
-					ddmFormFieldRenderingContext.getLocale(),
-					keyValuePair.getValue());
+					keyValuePair.getKey(), locale, keyValuePair.getValue());
 			}
 		}
 		catch (Exception e) {
