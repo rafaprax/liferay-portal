@@ -183,7 +183,9 @@ public class DefaultDLEditFileEntryDisplayContext
 	}
 
 	@Override
-	public boolean isDDMStructureVisible(DDMStructure ddmStructure) {
+	public boolean isDDMStructureVisible(
+		com.liferay.dynamic.data.mapping.kernel.DDMStructure ddmStructure) {
+
 		return true;
 	}
 

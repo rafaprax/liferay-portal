@@ -16,13 +16,14 @@ package com.liferay.document.library.uad.test;
 
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
-import com.liferay.dynamic.data.mapping.kernel.DDMForm;
-import com.liferay.dynamic.data.mapping.kernel.DDMFormField;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureLinkManagerUtil;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManager;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManagerUtil;
-import com.liferay.dynamic.data.mapping.kernel.StorageEngineManager;
+import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -68,11 +69,12 @@ public class DLFileEntryTypeUADTestHelper {
 		long classNameId = portal.getClassNameId(
 			"com.liferay.dynamic.data.lists.model.DDLRecordSet");
 
-		DDMStructure ddmStructure = DDMStructureManagerUtil.addStructure(
+		DDMStructure ddmStructure = _ddmStructureLocalService.addStructure(
 			TestPropsValues.getUserId(), TestPropsValues.getGroupId(), null,
 			classNameId, RandomTestUtil.randomString(), nameMap, descriptionMap,
-			ddmForm, StorageEngineManager.STORAGE_TYPE_DEFAULT,
-			DDMStructureManager.STRUCTURE_TYPE_DEFAULT, serviceContext);
+			ddmForm, _ddm.getDefaultDDMFormLayout(ddmForm),
+			StorageType.JSON.toString(), DDMStructureConstants.TYPE_DEFAULT,
+			serviceContext);
 
 		return _dlFileEntryTypeLocalService.addFileEntryType(
 			userId, TestPropsValues.getGroupId(), RandomTestUtil.randomString(),
@@ -86,18 +88,18 @@ public class DLFileEntryTypeUADTestHelper {
 		for (DLFileEntryType dlFileEntryType : dlFileEntryTypes) {
 			_dlFileEntryTypeLocalService.deleteFileEntryType(dlFileEntryType);
 
-			for (DDMStructure ddmStructure :
-					dlFileEntryType.getDDMStructures()) {
+			for (com.liferay.dynamic.data.mapping.kernel.DDMStructure
+					ddmStructure : dlFileEntryType.getDDMStructures()) {
 
 				long classNameId = portal.getClassNameId(
 					"com.liferay.document.library.kernel.model." +
 						"DLFileEntryType");
 
-				DDMStructureLinkManagerUtil.deleteStructureLink(
+				_ddmStructureLinkLocalService.deleteStructureLink(
 					classNameId, dlFileEntryType.getFileEntryTypeId(),
 					ddmStructure.getStructureId());
 
-				DDMStructureManagerUtil.deleteStructure(
+				_ddmStructureLocalService.deleteStructure(
 					ddmStructure.getStructureId());
 			}
 		}
@@ -105,6 +107,15 @@ public class DLFileEntryTypeUADTestHelper {
 
 	@Reference
 	protected Portal portal;
+
+	@Reference
+	private DDM _ddm;
+
+	@Reference
+	private DDMStructureLinkLocalService _ddmStructureLinkLocalService;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
 
 	@Reference
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;

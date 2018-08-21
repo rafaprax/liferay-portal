@@ -27,6 +27,7 @@ import com.liferay.dynamic.data.lists.util.DDL;
 import com.liferay.dynamic.data.lists.web.internal.configuration.activator.DDLWebConfigurationActivator;
 import com.liferay.dynamic.data.lists.web.internal.display.context.DDLDisplayContext;
 import com.liferay.dynamic.data.mapping.security.permission.DDMPermissionSupport;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistry;
@@ -117,7 +118,8 @@ public class DDLPortlet extends MVCPortlet {
 				renderRequest, renderResponse, _ddl, _ddlRecordSetLocalService,
 				_ddlWebConfigurationActivator.getDDLWebConfiguration(),
 				_ddmDisplayRegistry, _ddmPermissionSupport,
-				_ddmStorageAdapterTracker, _ddmTemplateLocalService);
+				_ddmStorageAdapterTracker, _ddmStorageLinkLocalService,
+				_ddmTemplateLocalService);
 
 			renderRequest.setAttribute(
 				WebKeys.PORTLET_DISPLAY_CONTEXT, ddlDisplayContext);
@@ -281,6 +283,9 @@ public class DDLPortlet extends MVCPortlet {
 
 	@Reference
 	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+
+	@Reference
+	private DDMStorageLinkLocalService _ddmStorageLinkLocalService;
 
 	private DDMTemplateLocalService _ddmTemplateLocalService;
 

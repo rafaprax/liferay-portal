@@ -20,8 +20,8 @@ import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
 import com.liferay.document.library.kernel.util.DLUtil;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManagerUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -70,13 +70,13 @@ public class EditFileEntryTypeMVCRenderCommand implements MVCRenderCommand {
 					WebKeys.DOCUMENT_LIBRARY_FILE_ENTRY_TYPE, dlFileEntryType);
 
 				DDMStructure ddmStructure =
-					DDMStructureManagerUtil.fetchStructure(
+					_ddmStructureLocalService.fetchStructure(
 						dlFileEntryType.getGroupId(),
 						_portal.getClassNameId(DLFileEntryMetadata.class),
 						DLUtil.getDDMStructureKey(dlFileEntryType));
 
 				if (ddmStructure == null) {
-					ddmStructure = DDMStructureManagerUtil.fetchStructure(
+					ddmStructure = _ddmStructureLocalService.fetchStructure(
 						dlFileEntryType.getGroupId(),
 						_portal.getClassNameId(DLFileEntryMetadata.class),
 						DLUtil.getDeprecatedDDMStructureKey(dlFileEntryType));
@@ -109,6 +109,9 @@ public class EditFileEntryTypeMVCRenderCommand implements MVCRenderCommand {
 
 		_dlFileEntryTypeService = dlFileEntryTypeService;
 	}
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
 
 	private DLFileEntryTypeService _dlFileEntryTypeService;
 

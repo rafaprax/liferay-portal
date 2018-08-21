@@ -31,7 +31,6 @@ import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
@@ -1510,7 +1509,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 	@ServiceReference(type = DDMStorageAdapterTracker.class)
 	protected DDMStorageAdapterTracker ddmStorageAdapterTracker;
 
-	@ServiceReference(type = DDMStructureLinkLocalService.class)
+	@ServiceReference(type = DDMStorageLinkLocalService.class)
 	protected DDMStorageLinkLocalService ddmStorageLinkLocalService;
 
 	@ServiceReference(type = DDMStructureLocalService.class)
