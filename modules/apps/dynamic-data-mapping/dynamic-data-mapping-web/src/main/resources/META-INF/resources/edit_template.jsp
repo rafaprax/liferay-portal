@@ -17,20 +17,31 @@
 <%@ include file="/init.jsp" %>
 
 <%
+DDMTemplate template = (DDMTemplate)request.getAttribute(DDMWebKeys.DYNAMIC_DATA_MAPPING_TEMPLATE);
+
+long classNameId = BeanParamUtil.getLong(template, request, "classNameId");
+long classPK = BeanParamUtil.getLong(template, request, "classPK");
+long resourceClassNameId = BeanParamUtil.getLong(template, request, "resourceClassNameId");
+
+PortletURL backURL = renderResponse.createRenderURL();
+
+backURL.setParameter("mvcPath", "/view_template.jsp");
+backURL.setParameter("classNameId", String.valueOf(classNameId));
+backURL.setParameter("classPK", String.valueOf(classPK));
+backURL.setParameter("resourceClassNameId", String.valueOf(resourceClassNameId));
+
+portletDisplay.setShowBackIcon(true);
+portletDisplay.setURLBack(backURL.toString());
+
 String closeRedirect = ParamUtil.getString(request, "closeRedirect");
 
 String portletResource = ParamUtil.getString(request, "portletResource");
 
 String portletResourceNamespace = ParamUtil.getString(request, "portletResourceNamespace");
 
-DDMTemplate template = (DDMTemplate)request.getAttribute(DDMWebKeys.DYNAMIC_DATA_MAPPING_TEMPLATE);
-
 long templateId = BeanParamUtil.getLong(template, request, "templateId");
 
 long groupId = BeanParamUtil.getLong(template, request, "groupId", PortalUtil.getScopeGroupId(request, refererPortletName));
-long classNameId = BeanParamUtil.getLong(template, request, "classNameId");
-long classPK = BeanParamUtil.getLong(template, request, "classPK");
-long resourceClassNameId = BeanParamUtil.getLong(template, request, "resourceClassNameId");
 
 boolean cacheable = BeanParamUtil.getBoolean(template, request, "cacheable", true);
 boolean smallImage = BeanParamUtil.getBoolean(template, request, "smallImage");
