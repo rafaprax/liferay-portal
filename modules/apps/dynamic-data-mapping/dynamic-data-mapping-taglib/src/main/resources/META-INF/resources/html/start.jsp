@@ -120,8 +120,6 @@
 
 		<aui:input name="<%= HtmlUtil.getAUICompatibleId(ddmFormValuesInputName) %>" type="hidden" />
 
-		<aui:input name="ddmFormFieldNamespace" type="hidden" value="<%= fieldsNamespace %>" />
-
 		<aui:script use="aui-base,liferay-ddm-form">
 			var Lang = A.Lang;
 
