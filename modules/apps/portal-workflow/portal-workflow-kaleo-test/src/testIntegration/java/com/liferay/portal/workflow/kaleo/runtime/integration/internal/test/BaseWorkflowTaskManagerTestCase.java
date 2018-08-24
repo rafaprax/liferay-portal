@@ -335,10 +335,12 @@ public abstract class BaseWorkflowTaskManagerTestCase {
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_MAIL_ENGINE_CLASS_NAME, Level.OFF)) {
 
-			DDMForm ddmForm = DDMFormTestUtil.createDDMForm(
-				RandomTestUtil.randomString());
+			String fieldName = RandomTestUtil.randomString();
 
-			DDMFormValues ddmFormValues = createDDMFormValues(ddmForm);
+			DDMForm ddmForm = DDMFormTestUtil.createDDMForm(fieldName);
+
+			DDMFormValues ddmFormValues = createDDMFormValues(
+				ddmForm, fieldName);
 
 			return DDLRecordLocalServiceUtil.addRecord(
 				adminUser.getUserId(), group.getGroupId(),
@@ -466,13 +468,15 @@ public abstract class BaseWorkflowTaskManagerTestCase {
 		}
 	}
 
-	protected DDMFormValues createDDMFormValues(DDMForm ddmForm) {
+	protected DDMFormValues createDDMFormValues(
+		DDMForm ddmForm, String fieldName) {
+
 		DDMFormValues ddmFormValues = DDMFormValuesTestUtil.createDDMFormValues(
 			ddmForm);
 
 		DDMFormFieldValue ddmFormFieldValue =
 			DDMFormValuesTestUtil.createLocalizedDDMFormFieldValue(
-				RandomTestUtil.randomString(), StringPool.BLANK);
+				fieldName, StringPool.BLANK);
 
 		ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 
