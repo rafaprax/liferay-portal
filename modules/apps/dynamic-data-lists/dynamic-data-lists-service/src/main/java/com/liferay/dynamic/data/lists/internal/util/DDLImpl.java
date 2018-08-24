@@ -23,16 +23,19 @@ import com.liferay.dynamic.data.lists.service.DDLRecordLocalService;
 import com.liferay.dynamic.data.lists.service.DDLRecordService;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
 import com.liferay.dynamic.data.lists.util.DDL;
+import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.dynamic.data.mapping.model.Value;
+import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.Field;
-import com.liferay.dynamic.data.mapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.util.DDM;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -41,14 +44,16 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -102,22 +107,31 @@ public class DDLImpl implements DDL {
 			recordVersion = record.getLatestRecordVersion();
 		}
 
-		DDMFormValues ddmFormValues = _storageEngine.getDDMFormValues(
-			recordVersion.getDDMStorageId());
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			recordVersion.getDDMStorageId(), ddmStructure);
 
-		Fields fields = _ddmFormValuesToFieldsConverter.convert(
-			ddmStructure, ddmFormValues);
+		Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap =
+			ddmFormValues.getDDMFormFieldValuesMap();
 
-		for (Field field : fields) {
-			String fieldName = field.getName();
-			String fieldType = field.getType();
-			Object[] fieldValues = getFieldValues(field, locale);
+		for (Map.Entry<String, List<DDMFormFieldValue>> entry :
+				ddmFormFieldValuesMap.entrySet()) {
 
-			if (fieldValues.length == 0) {
+			List<DDMFormFieldValue> ddmFormFieldValues = entry.getValue();
+
+			if (ddmFormFieldValues.isEmpty()) {
 				continue;
 			}
 
-			Stream<Object> fieldValuesStream = Arrays.stream(fieldValues);
+			DDMFormFieldValue firstDDMFormFieldValue = ddmFormFieldValues.get(
+				0);
+
+			String fieldType = firstDDMFormFieldValue.getType();
+
+			String fieldName = entry.getKey();
+			List<Object> fieldValues = getFieldValues(
+				ddmFormFieldValues, locale);
+
+			Stream<Object> fieldValuesStream = fieldValues.stream();
 
 			if (fieldType.equals(DDMFormFieldType.DOCUMENT_LIBRARY)) {
 				Stream<String> fieldValuesStringStream = fieldValuesStream.map(
@@ -320,35 +334,40 @@ public class DDLImpl implements DDL {
 
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 
-		Fields fields = _ddm.getFields(
-			ddmStructure.getStructureId(), serviceContext);
+		String serializedDDMFormValues = GetterUtil.getString(
+			serviceContext.getAttribute("ddmFormValues"));
+
+		DDMForm ddmForm = ddmStructure.getFullHierarchyDDMForm();
+
+		DDMFormValues ddmFormValues = _ddm.getDDMFormValues(
+			ddmForm, serializedDDMFormValues);
 
 		if (record != null) {
 			if (checkPermission) {
 				record = _ddlRecordService.updateRecord(
 					recordId, majorVersion,
-					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, fields,
-					mergeFields, serviceContext);
+					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, ddmFormValues,
+					serviceContext);
 			}
 			else {
 				record = _ddlRecordLocalService.updateRecord(
 					serviceContext.getUserId(), recordId, majorVersion,
-					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, fields,
-					mergeFields, serviceContext);
+					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, ddmFormValues,
+					serviceContext);
 			}
 		}
 		else {
 			if (checkPermission) {
 				record = _ddlRecordService.addRecord(
 					serviceContext.getScopeGroupId(), recordSetId,
-					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, fields,
+					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, ddmFormValues,
 					serviceContext);
 			}
 			else {
 				record = _ddlRecordLocalService.addRecord(
 					serviceContext.getUserId(),
 					serviceContext.getScopeGroupId(), recordSetId,
-					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, fields,
+					DDLRecordConstants.DISPLAY_INDEX_DEFAULT, ddmFormValues,
 					serviceContext);
 			}
 		}
@@ -371,6 +390,25 @@ public class DDLImpl implements DDL {
 			recordId, recordSetId, mergeFields, true, serviceContext);
 	}
 
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws Exception {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
 	protected String getDocumentLibraryFieldValue(Object fieldValue) {
 		try {
 			JSONObject fieldValueJSONObject = JSONFactoryUtil.createJSONObject(
@@ -386,18 +424,18 @@ public class DDLImpl implements DDL {
 		}
 	}
 
-	protected Object[] getFieldValues(Field field, Locale locale) {
-		Object fieldValue = field.getValue(locale);
+	protected List<Object> getFieldValues(
+		List<DDMFormFieldValue> ddmFormFieldValues, Locale locale) {
 
-		if (fieldValue == null) {
-			return new Object[0];
+		List<Object> values = new ArrayList<>();
+
+		for (DDMFormFieldValue ddmFormFieldValue : ddmFormFieldValues) {
+			Value value = ddmFormFieldValue.getValue();
+
+			values.add(value.getString(locale));
 		}
 
-		if (isArray(fieldValue)) {
-			return (Object[])fieldValue;
-		}
-
-		return new Object[] {fieldValue};
+		return values;
 	}
 
 	protected String getFileEntryTitle(String uuid, long groupId) {
@@ -462,59 +500,25 @@ public class DDLImpl implements DDL {
 		return clazz.isArray();
 	}
 
-	@Reference(unbind = "-")
-	protected void setDDLRecordLocalService(
-		DDLRecordLocalService ddlRecordLocalService) {
-
-		_ddlRecordLocalService = ddlRecordLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDLRecordService(DDLRecordService ddlRecordService) {
-		_ddlRecordService = ddlRecordService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDLRecordSetLocalService(
-		DDLRecordSetLocalService ddlRecordSetLocalService) {
-
-		_ddlRecordSetLocalService = ddlRecordSetLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDM(DDM ddm) {
-		_ddm = ddm;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDDMFormValuesToFieldsConverter(
-		DDMFormValuesToFieldsConverter ddmFormValuesToFieldsConverter) {
-
-		_ddmFormValuesToFieldsConverter = ddmFormValuesToFieldsConverter;
-	}
-
-	@Reference(unbind = "-")
-	protected void setDLAppLocalService(DLAppLocalService dlAppLocalService) {
-		_dlAppLocalService = dlAppLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setLayoutService(LayoutService layoutService) {
-		_layoutService = layoutService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setStorageEngine(StorageEngine storageEngine) {
-		_storageEngine = storageEngine;
-	}
-
+	@Reference
 	private DDLRecordLocalService _ddlRecordLocalService;
+
+	@Reference
 	private DDLRecordService _ddlRecordService;
+
+	@Reference
 	private DDLRecordSetLocalService _ddlRecordSetLocalService;
+
+	@Reference
 	private DDM _ddm;
-	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
+
+	@Reference
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+
+	@Reference
 	private DLAppLocalService _dlAppLocalService;
+
+	@Reference
 	private LayoutService _layoutService;
-	private StorageEngine _storageEngine;
 
 }

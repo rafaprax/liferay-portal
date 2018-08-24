@@ -22,12 +22,12 @@ import com.liferay.document.library.kernel.exception.RequiredFileEntryTypeExcept
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
-import com.liferay.dynamic.data.mapping.kernel.DDMForm;
-import com.liferay.dynamic.data.mapping.kernel.NoSuchStructureException;
-import com.liferay.dynamic.data.mapping.kernel.RequiredStructureException;
-import com.liferay.dynamic.data.mapping.kernel.StructureDefinitionException;
-import com.liferay.dynamic.data.mapping.kernel.StructureDuplicateElementException;
-import com.liferay.dynamic.data.mapping.kernel.StructureNameException;
+import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
+import com.liferay.dynamic.data.mapping.exception.RequiredStructureException;
+import com.liferay.dynamic.data.mapping.exception.StructureDefinitionException;
+import com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException;
+import com.liferay.dynamic.data.mapping.exception.StructureNameException;
+import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.dynamic.data.mapping.util.DDMBeanTranslator;
 import com.liferay.portal.kernel.model.Group;
@@ -199,8 +199,7 @@ public class EditFileEntryTypeMVCActionCommand extends BaseMVCActionCommand {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DLFileEntryType.class.getName(), actionRequest);
 
-		DDMForm ddmForm = _ddmBeanTranslator.translate(
-			_ddm.getDDMForm(actionRequest));
+		DDMForm ddmForm = _ddm.getDDMForm(actionRequest);
 
 		serviceContext.setAttribute("ddmForm", ddmForm);
 

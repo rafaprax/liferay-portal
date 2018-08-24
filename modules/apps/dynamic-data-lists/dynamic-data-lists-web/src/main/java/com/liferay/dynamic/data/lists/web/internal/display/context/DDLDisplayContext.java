@@ -31,12 +31,17 @@ import com.liferay.dynamic.data.lists.web.internal.search.RecordSetSearch;
 import com.liferay.dynamic.data.lists.web.internal.security.permission.resource.DDLPermission;
 import com.liferay.dynamic.data.lists.web.internal.security.permission.resource.DDLRecordSetPermission;
 import com.liferay.dynamic.data.lists.web.internal.security.permission.resource.DDMTemplatePermission;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMTemplate;
 import com.liferay.dynamic.data.mapping.security.permission.DDMPermissionSupport;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.util.DDMDisplay;
 import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistry;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
@@ -90,8 +95,9 @@ public class DDLDisplayContext {
 			DDLWebConfiguration ddlWebConfiguration,
 			DDMDisplayRegistry ddmDisplayRegistry,
 			DDMPermissionSupport ddmPermissionSupport,
-			DDMTemplateLocalService ddmTemplateLocalService,
-			StorageEngine storageEngine)
+			DDMStorageAdapterTracker ddmStorageAdapterTracker,
+			DDMStorageLinkLocalService ddmStorageLinkLocalService,
+			DDMTemplateLocalService ddmTemplateLocalService)
 		throws PortalException {
 
 		_renderRequest = renderRequest;
@@ -101,8 +107,9 @@ public class DDLDisplayContext {
 		_ddlWebConfiguration = ddlWebConfiguration;
 		_ddmDisplayRegistry = ddmDisplayRegistry;
 		_ddmPermissionSupport = ddmPermissionSupport;
+		_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
+		_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
 		_ddmTemplateLocalService = ddmTemplateLocalService;
-		_storageEngine = storageEngine;
 
 		HttpServletRequest httpServletRequest =
 			PortalUtil.getHttpServletRequest(_renderRequest);
@@ -225,7 +232,12 @@ public class DDLDisplayContext {
 	}
 
 	public DDMFormValues getDDMFormValues(long classPK) throws PortalException {
-		return _storageEngine.getDDMFormValues(classPK);
+		DDMStorageLink ddmStorageLink =
+			_ddmStorageLinkLocalService.getClassStorageLink(classPK);
+
+		DDMStructure ddmStructure = ddmStorageLink.getStructure();
+
+		return getDDMFormValues(ddmStorageLink.getClassPK(), ddmStructure);
 	}
 
 	public long getDisplayDDMTemplateId() {
@@ -739,6 +751,25 @@ public class DDLDisplayContext {
 			DDLPortletKeys.DYNAMIC_DATA_LISTS);
 	}
 
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws PortalException {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
 	protected List<DropdownItem> getFilterNavigationDropdownItems() {
 		return new DropdownItemList() {
 			{
@@ -916,6 +947,8 @@ public class DDLDisplayContext {
 	private final DDLWebConfiguration _ddlWebConfiguration;
 	private final DDMDisplayRegistry _ddmDisplayRegistry;
 	private final DDMPermissionSupport _ddmPermissionSupport;
+	private final DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+	private final DDMStorageLinkLocalService _ddmStorageLinkLocalService;
 	private final DDMTemplateLocalService _ddmTemplateLocalService;
 	private DDMTemplate _displayDDMTemplate;
 	private DDMTemplate _formDDMTemplate;
@@ -930,6 +963,5 @@ public class DDLDisplayContext {
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private Boolean _showConfigurationIcon;
-	private final StorageEngine _storageEngine;
 
 }
