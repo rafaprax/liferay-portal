@@ -110,10 +110,16 @@ public class DDMExpressionBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling {@link
-	 * #visitChildren} on {@code ctx}.
-	 * </p>
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitArray(@NotNull DDMExpressionParser.ArrayContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitToLogicalAndExpression(@NotNull DDMExpressionParser.ToLogicalAndExpressionContext ctx) { return visitChildren(ctx); }
 
@@ -250,10 +256,16 @@ public class DDMExpressionBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling {@link
-	 * #visitChildren} on {@code ctx}.
-	 * </p>
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitToStringArray(@NotNull DDMExpressionParser.ToStringArrayContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitToFunctionCallExpression(@NotNull DDMExpressionParser.ToFunctionCallExpressionContext ctx) { return visitChildren(ctx); }
 
@@ -270,10 +282,16 @@ public class DDMExpressionBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling {@link
-	 * #visitChildren} on {@code ctx}.
-	 * </p>
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitToFloatingPointArray(@NotNull DDMExpressionParser.ToFloatingPointArrayContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitSubtractionExpression(@NotNull DDMExpressionParser.SubtractionExpressionContext ctx) { return visitChildren(ctx); }
 
@@ -380,20 +398,32 @@ public class DDMExpressionBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling {@link
-	 * #visitChildren} on {@code ctx}.
-	 * </p>
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitFunctionParameter(@NotNull DDMExpressionParser.FunctionParameterContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitMultiplicationExpression(@NotNull DDMExpressionParser.MultiplicationExpressionContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation returns the result of calling {@link
-	 * #visitChildren} on {@code ctx}.
-	 * </p>
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitToIntegerArray(@NotNull DDMExpressionParser.ToIntegerArrayContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitEqualsExpression(@NotNull DDMExpressionParser.EqualsExpressionContext ctx) { return visitChildren(ctx); }
 

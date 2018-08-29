@@ -35,6 +35,10 @@ public class JumpPageFunction
 
 	@Override
 	public Boolean apply(Number fromPage, Number toPage) {
+		if (_ddmExpressionActionHandler == null) {
+			return false;
+		}
+
 		ExecuteActionRequest.Builder builder =
 			ExecuteActionRequest.Builder.newBuilder("jumpPage");
 

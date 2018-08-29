@@ -39,7 +39,9 @@ public class MinFunction
 			values
 		).collect(
 			Collectors.minBy((num1, num2) -> num1.compareTo(num2))
-		).get();
+		).orElse(
+			BigDecimal.ZERO
+		);
 	}
 
 }

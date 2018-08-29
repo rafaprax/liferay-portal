@@ -28,6 +28,11 @@ import org.osgi.service.component.annotations.Component;
 public class SetEnabledFunction extends SetPropertyFunction<Boolean> {
 
 	@Override
+	public Boolean apply(String field, Boolean value) {
+		return super.apply(field, !value);
+	}
+
+	@Override
 	protected String getPropertyName() {
 		return "readOnly";
 	}

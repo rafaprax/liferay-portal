@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -188,6 +189,16 @@ public class CallFunction
 			return StringPool.BLANK;
 		}
 
+		Class<?> clazz = value.getClass();
+
+		if (clazz.isArray()) {
+			Object[] valueArray = (Object[])value;
+
+			if (ArrayUtil.isNotEmpty(valueArray)) {
+				value = ((Object[])value)[0];
+			}
+		}
+
 		try {
 			JSONArray jsonArray = jsonFactory.createJSONArray(
 				String.valueOf(value));
@@ -211,6 +222,19 @@ public class CallFunction
 				field, "options", options);
 
 		_ddmExpressionObserver.updateFieldProperty(builder.build());
+
+		if (options.size() == 1) {
+			KeyValuePair keyValuePair = options.get(0);
+
+			JSONArray valueJSONArray = jsonFactory.createJSONArray();
+
+			valueJSONArray.put(keyValuePair.getValue());
+
+			builder = UpdateFieldPropertyRequest.Builder.newBuilder(
+				field, "value", valueJSONArray);
+
+			_ddmExpressionObserver.updateFieldProperty(builder.build());
+		}
 	}
 
 	protected void setDDMFormFieldValue(String field, String value) {
