@@ -15,10 +15,10 @@
 package com.liferay.dynamic.data.mapping.form.evaluator.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluator;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorContext;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateRequest;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateResponse;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldContextKey;
 import com.liferay.dynamic.data.mapping.io.DDMFormDeserializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormDeserializerDeserializeRequest;
 import com.liferay.dynamic.data.mapping.io.DDMFormDeserializerDeserializeResponse;
@@ -35,8 +35,8 @@ import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
+
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -70,23 +70,10 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = deserialize(
 			serializedDDMFormValues, ddmForm);
 
-		Registry registry = RegistryUtil.getRegistry();
-
-		DDMFormEvaluator ddmFormEvaluator = registry.getService(
-			DDMFormEvaluator.class);
-
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, LocaleUtil.US);
-
-		ddmFormEvaluatorContext.addProperty("groupId", 1L);
-
-		DDMFormEvaluationResult ddmFormEvaluationResult =
-			ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
-
 		JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 
 		String actualResult = jsonSerializer.serializeDeep(
-			ddmFormEvaluationResult);
+			doEvaluate(ddmForm, ddmFormValues));
 
 		String expectedResult = read(
 			"ddm-form-evaluator-result-sum-values-repeatable-field.json");
@@ -107,26 +94,13 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = deserialize(
 			serializedDDMFormValues, ddmForm);
 
-		Registry registry = RegistryUtil.getRegistry();
-
-		DDMFormEvaluator ddmFormEvaluator = registry.getService(
-			DDMFormEvaluator.class);
-
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, LocaleUtil.US);
-
-		ddmFormEvaluatorContext.addProperty("groupId", 1L);
-
-		DDMFormEvaluationResult ddmFormEvaluationResult =
-			ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
-
 		JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
+
+		String actualResult = jsonSerializer.serializeDeep(
+			doEvaluate(ddmForm, ddmFormValues));
 
 		String expectedResult = read(
 			"ddm-form-evaluator-result-valid-fields-data.json");
-
-		String actualResult = jsonSerializer.serializeDeep(
-			ddmFormEvaluationResult);
 
 		JSONAssert.assertEquals(expectedResult, actualResult, false);
 	}
@@ -144,24 +118,19 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = deserialize(
 			serializedDDMFormValues, ddmForm);
 
-		Registry registry = RegistryUtil.getRegistry();
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse =
+			doEvaluate(ddmForm, ddmFormValues);
 
-		DDMFormEvaluator ddmFormEvaluator = registry.getService(
-			DDMFormEvaluator.class);
+		Map<DDMFormFieldContextKey, Map<String, Object>>
+			ddmFormFieldsPropertyChanges =
+				ddmFormEvaluatorEvaluateResponse.
+					getDDMFormFieldsPropertyChanges();
 
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, LocaleUtil.US);
+		Map<String, Object> fieldPropertyChanges =
+			ddmFormFieldsPropertyChanges.get(
+				new DDMFormFieldContextKey("Confirmation", "hany"));
 
-		ddmFormEvaluatorContext.addProperty("groupId", 1L);
-
-		DDMFormEvaluationResult ddmFormEvaluationResult =
-			ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
-
-		DDMFormFieldEvaluationResult checkboxDDMFormFieldEvaluationResult =
-			ddmFormEvaluationResult.getDDMFormFieldEvaluationResult(
-				"Confirmation", "hany");
-
-		Assert.assertFalse(checkboxDDMFormFieldEvaluationResult.isVisible());
+		Assert.assertFalse((Boolean)fieldPropertyChanges.get("visible"));
 	}
 
 	@Test
@@ -177,24 +146,19 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = deserialize(
 			serializedDDMFormValues, ddmForm);
 
-		Registry registry = RegistryUtil.getRegistry();
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse =
+			doEvaluate(ddmForm, ddmFormValues);
 
-		DDMFormEvaluator ddmFormEvaluator = registry.getService(
-			DDMFormEvaluator.class);
+		Map<DDMFormFieldContextKey, Map<String, Object>>
+			ddmFormFieldsPropertyChanges =
+				ddmFormEvaluatorEvaluateResponse.
+					getDDMFormFieldsPropertyChanges();
 
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, LocaleUtil.US);
+		Map<String, Object> ddmFormFieldPropertyChanges =
+			ddmFormFieldsPropertyChanges.get(
+				new DDMFormFieldContextKey("Phone", "hany"));
 
-		ddmFormEvaluatorContext.addProperty("groupId", 1L);
-
-		DDMFormEvaluationResult ddmFormEvaluationResult =
-			ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
-
-		DDMFormFieldEvaluationResult checkboxDDMFormFieldEvaluationResult =
-			ddmFormEvaluationResult.getDDMFormFieldEvaluationResult(
-				"Phone", "hany");
-
-		Assert.assertTrue(checkboxDDMFormFieldEvaluationResult.isVisible());
+		Assert.assertTrue((Boolean)ddmFormFieldPropertyChanges.get("visible"));
 	}
 
 	@Test
@@ -210,24 +174,19 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = deserialize(
 			serializedDDMFormValues, ddmForm);
 
-		Registry registry = RegistryUtil.getRegistry();
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse =
+			doEvaluate(ddmForm, ddmFormValues);
 
-		DDMFormEvaluator ddmFormEvaluator = registry.getService(
-			DDMFormEvaluator.class);
+		Map<DDMFormFieldContextKey, Map<String, Object>>
+			ddmFormFieldsPropertyChanges =
+				ddmFormEvaluatorEvaluateResponse.
+					getDDMFormFieldsPropertyChanges();
 
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, LocaleUtil.US);
+		Map<String, Object> ddmFormFieldPropertyChanges =
+			ddmFormFieldsPropertyChanges.get(
+				new DDMFormFieldContextKey("Phone", "hany"));
 
-		ddmFormEvaluatorContext.addProperty("groupId", 1L);
-
-		DDMFormEvaluationResult ddmFormEvaluationResult =
-			ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
-
-		DDMFormFieldEvaluationResult phoneDDMFormFieldEvaluationResult =
-			ddmFormEvaluationResult.getDDMFormFieldEvaluationResult(
-				"Phone", "hany");
-
-		Assert.assertFalse(phoneDDMFormFieldEvaluationResult.isVisible());
+		Assert.assertFalse((Boolean)ddmFormFieldPropertyChanges.get("visible"));
 	}
 
 	@Test
@@ -243,24 +202,19 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = deserialize(
 			serializedDDMFormValues, ddmForm);
 
-		Registry registry = RegistryUtil.getRegistry();
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse =
+			doEvaluate(ddmForm, ddmFormValues);
 
-		DDMFormEvaluator ddmFormEvaluator = registry.getService(
-			DDMFormEvaluator.class);
+		Map<DDMFormFieldContextKey, Map<String, Object>>
+			ddmFormFieldsPropertyChanges =
+				ddmFormEvaluatorEvaluateResponse.
+					getDDMFormFieldsPropertyChanges();
 
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, LocaleUtil.US);
+		Map<String, Object> ddmFormFieldPropertyChanges =
+			ddmFormFieldsPropertyChanges.get(
+				new DDMFormFieldContextKey("Phone", "hany"));
 
-		ddmFormEvaluatorContext.addProperty("groupId", 1L);
-
-		DDMFormEvaluationResult ddmFormEvaluationResult =
-			ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
-
-		DDMFormFieldEvaluationResult phoneDDMFormFieldEvaluationResult =
-			ddmFormEvaluationResult.getDDMFormFieldEvaluationResult(
-				"Phone", "hany");
-
-		Assert.assertTrue(phoneDDMFormFieldEvaluationResult.isVisible());
+		Assert.assertTrue((Boolean)ddmFormFieldPropertyChanges.get("visible"));
 	}
 
 	protected DDMForm deserialize(String content) {
@@ -293,8 +247,23 @@ public class DDMFormEvaluatorTest extends BaseDDMServiceTestCase {
 		return ddmFormValuesDeserializerDeserializeResponse.getDDMFormValues();
 	}
 
+	protected DDMFormEvaluatorEvaluateResponse doEvaluate(
+		DDMForm ddmForm, DDMFormValues ddmFormValues) {
+
+		DDMFormEvaluatorEvaluateRequest.Builder builder =
+			DDMFormEvaluatorEvaluateRequest.Builder.newBuilder(
+				ddmForm, ddmFormValues, LocaleUtil.US);
+
+		builder.withGroupId(1L);
+
+		return _ddmFormEvaluator.evaluate(builder.build());
+	}
+
 	@Inject
 	private DDMFormDeserializerTracker _ddmFormDeserializerTracker;
+
+	@Inject(type = DDMFormEvaluator.class)
+	private DDMFormEvaluator _ddmFormEvaluator;
 
 	@Inject
 	private DDMFormValuesDeserializerTracker _ddmFormValuesDeserializerTracker;

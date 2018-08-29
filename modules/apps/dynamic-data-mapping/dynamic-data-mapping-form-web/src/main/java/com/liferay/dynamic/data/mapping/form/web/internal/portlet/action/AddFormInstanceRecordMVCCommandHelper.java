@@ -14,10 +14,10 @@
 
 package com.liferay.dynamic.data.mapping.form.web.internal.portlet.action;
 
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluator;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorContext;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldEvaluationResult;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateRequest;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateResponse;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldContextKey;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -30,6 +30,7 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 
@@ -38,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,16 +68,16 @@ public class AddFormInstanceRecordMVCCommandHelper {
 			return;
 		}
 
-		DDMFormEvaluationResult ddmFormEvaluationResult = evaluate(
-			actionRequest, ddmForm, ddmFormValues, locale);
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse =
+			evaluate(actionRequest, ddmForm, ddmFormValues, locale);
 
 		Set<String> invisibleFields = getInvisibleFields(
-			ddmFormEvaluationResult);
+			ddmFormEvaluatorEvaluateResponse);
 
 		DDMFormLayout ddmFormLayout = getDDMFormLayout(actionRequest);
 
 		Set<String> fieldsFromDisabledPages = getFieldNamesFromDisabledPages(
-			ddmFormEvaluationResult, ddmFormLayout);
+			ddmFormEvaluatorEvaluateResponse, ddmFormLayout);
 
 		invisibleFields.addAll(fieldsFromDisabledPages);
 
@@ -86,20 +88,24 @@ public class AddFormInstanceRecordMVCCommandHelper {
 		removeRequiredProperty(invisibleFields, requiredFields);
 	}
 
-	protected DDMFormEvaluationResult evaluate(
+	protected DDMFormEvaluatorEvaluateResponse evaluate(
 			ActionRequest actionRequest, DDMForm ddmForm,
 			DDMFormValues ddmFormValues, Locale locale)
 		throws Exception {
 
-		DDMFormEvaluatorContext ddmFormEvaluatorContext =
-			new DDMFormEvaluatorContext(ddmForm, ddmFormValues, locale);
+		DDMFormEvaluatorEvaluateRequest.Builder builder =
+			DDMFormEvaluatorEvaluateRequest.Builder.newBuilder(
+				ddmForm, ddmFormValues, locale);
 
-		ddmFormEvaluatorContext.addProperty(
-			"groupId", ParamUtil.getLong(actionRequest, "groupId"));
-		ddmFormEvaluatorContext.addProperty(
-			"request", _portal.getHttpServletRequest(actionRequest));
+		builder.withCompanyId(
+			_portal.getCompanyId(actionRequest)
+		).withGroupId(
+			ParamUtil.getLong(actionRequest, "groupId")
+		).withUserId(
+			_portal.getUserId(actionRequest)
+		);
 
-		return _ddmFormEvaluator.evaluate(ddmFormEvaluatorContext);
+		return _ddmFormEvaluator.evaluate(builder.build());
 	}
 
 	protected DDMFormLayout getDDMFormLayout(ActionRequest actionRequest)
@@ -118,11 +124,11 @@ public class AddFormInstanceRecordMVCCommandHelper {
 	}
 
 	protected Set<String> getFieldNamesFromDisabledPages(
-		DDMFormEvaluationResult ddmFormEvaluationResult,
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse,
 		DDMFormLayout ddmFormLayout) {
 
 		Set<Integer> disabledPagesIndexes =
-			ddmFormEvaluationResult.getDisabledPagesIndexes();
+			ddmFormEvaluatorEvaluateResponse.getDisabledPagesIndexes();
 
 		Stream<Integer> disablePagesIndexesStream =
 			disabledPagesIndexes.stream();
@@ -159,19 +165,32 @@ public class AddFormInstanceRecordMVCCommandHelper {
 	}
 
 	protected Set<String> getInvisibleFields(
-		DDMFormEvaluationResult ddmFormEvaluationResult) {
+		DDMFormEvaluatorEvaluateResponse ddmFormEvaluatorEvaluateResponse) {
 
-		List<DDMFormFieldEvaluationResult> ddmFormFieldEvaluationResults =
-			ddmFormEvaluationResult.getDDMFormFieldEvaluationResults();
+		Map<DDMFormFieldContextKey, Map<String, Object>>
+			ddmFormFieldsPropertyChanges =
+				ddmFormEvaluatorEvaluateResponse.
+					getDDMFormFieldsPropertyChanges();
 
-		Stream<DDMFormFieldEvaluationResult> stream =
-			ddmFormFieldEvaluationResults.stream();
+		Set<Entry<DDMFormFieldContextKey, Map<String, Object>>> entrySet =
+			ddmFormFieldsPropertyChanges.entrySet();
 
-		stream = stream.filter(result -> !result.isVisible());
+		Stream<Entry<DDMFormFieldContextKey, Map<String, Object>>> stream =
+			entrySet.stream();
 
-		Stream<String> fieldNameStream = stream.map(result -> result.getName());
+		return stream.filter(
+			result -> {
+				return !MapUtil.getBoolean(result.getValue(), "visible", true);
+			}
+		).map(
+			result -> {
+				DDMFormFieldContextKey ddmFormFieldContextKey = result.getKey();
 
-		return fieldNameStream.collect(Collectors.toSet());
+				return ddmFormFieldContextKey.getName();
+			}
+		).collect(
+			Collectors.toSet()
+		);
 	}
 
 	protected List<DDMFormField> getRequiredFields(DDMForm ddmForm) {
