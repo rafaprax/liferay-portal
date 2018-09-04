@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderInvoker;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderRequest;
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderResponse;
@@ -32,6 +33,7 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -48,10 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=call",
-	service = DDMExpressionFunction.class
-)
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
 public class CallFunction
 	implements DDMExpressionFunction.Function3<String, String, String, Boolean>,
 			   DDMExpressionFieldAccessorAware, DDMExpressionObserverAware {
@@ -96,6 +95,11 @@ public class CallFunction
 		}
 
 		return true;
+	}
+
+	@Override
+	public String getName() {
+		return "call";
 	}
 
 	@Override
@@ -188,6 +192,16 @@ public class CallFunction
 			return StringPool.BLANK;
 		}
 
+		Class<?> clazz = value.getClass();
+
+		if (clazz.isArray()) {
+			Object[] valueArray = (Object[])value;
+
+			if (ArrayUtil.isNotEmpty(valueArray)) {
+				value = ((Object[])value)[0];
+			}
+		}
+
 		try {
 			JSONArray jsonArray = jsonFactory.createJSONArray(
 				String.valueOf(value));
@@ -211,6 +225,19 @@ public class CallFunction
 				field, "options", options);
 
 		_ddmExpressionObserver.updateFieldProperty(builder.build());
+
+		if (options.size() == 1) {
+			KeyValuePair keyValuePair = options.get(0);
+
+			JSONArray valueJSONArray = jsonFactory.createJSONArray();
+
+			valueJSONArray.put(keyValuePair.getValue());
+
+			builder = UpdateFieldPropertyRequest.Builder.newBuilder(
+				field, "value", valueJSONArray);
+
+			_ddmExpressionObserver.updateFieldProperty(builder.build());
+		}
 	}
 
 	protected void setDDMFormFieldValue(String field, String value) {

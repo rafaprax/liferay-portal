@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.CreateExpressionRequest;
 import com.liferay.dynamic.data.mapping.expression.DDMExpression;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionException;
@@ -25,15 +26,11 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=all",
-	service = DDMExpressionFunction.class
-)
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
 public class AllFunction
 	implements DDMExpressionFunction.Function2<String, Object, Boolean> {
 
@@ -61,6 +58,11 @@ public class AllFunction
 		).allMatch(
 			value -> accept(expression, value)
 		);
+	}
+
+	@Override
+	public String getName() {
+		return "all";
 	}
 
 	protected boolean accept(String expression, Object value) {
@@ -92,7 +94,6 @@ public class AllFunction
 		return clazz.isArray();
 	}
 
-	@Reference
 	protected DDMExpressionFactory ddmExpressionFactory;
 
 	private static final Log _log = LogFactoryUtil.getLog(AllFunction.class);

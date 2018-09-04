@@ -97,14 +97,7 @@ AUI.add(
 
 							fieldContext = A.merge(
 								field.get('context'),
-								{
-									errorMessage: fieldContext.errorMessage,
-									options: fieldContext.options,
-									readOnly: fieldContext.readOnly,
-									required: fieldContext.required,
-									valid: fieldContext.valid,
-									visible: fieldContext.visible
-								},
+								fieldContext,
 								field.getEvaluationContext(fieldContext)
 							);
 

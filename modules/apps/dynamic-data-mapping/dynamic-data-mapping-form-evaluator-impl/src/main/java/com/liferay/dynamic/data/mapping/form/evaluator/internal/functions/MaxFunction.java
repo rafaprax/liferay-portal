@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 
 import java.math.BigDecimal;
@@ -26,10 +27,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=max",
-	service = DDMExpressionFunction.class
-)
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
 public class MaxFunction
 	implements DDMExpressionFunction.Function1<BigDecimal[], BigDecimal> {
 
@@ -39,7 +37,14 @@ public class MaxFunction
 			values
 		).collect(
 			Collectors.maxBy((num1, num2) -> num1.compareTo(num2))
-		).get();
+		).orElse(
+			BigDecimal.ZERO
+		);
+	}
+
+	@Override
+	public String getName() {
+		return "max";
 	}
 
 }

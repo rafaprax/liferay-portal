@@ -14,21 +14,26 @@
 
 package com.liferay.dynamic.data.mapping.expression.internal;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.ComponentFactory;
+import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Leonardo Barros
@@ -39,38 +44,75 @@ public class DDMExpressionFunctionTrackerImpl
 
 	@Override
 	public DDMExpressionFunction getDDMExpressionFunction(String functionName) {
-		return ddmExpressionFunctionTrackerServiceTrackerMap.getService(
-			functionName);
+		ComponentFactory componentFactory =
+			ddmExpressionFunctionComponentFactoryMap.get(functionName);
+
+		if (componentFactory == null) {
+			return null;
+		}
+
+		return getDDMExpressionFunction(componentFactory);
 	}
 
 	@Override
 	public Map<String, DDMExpressionFunction> getDDMExpressionFunctions() {
-		Set<String> keySet =
-			ddmExpressionFunctionTrackerServiceTrackerMap.keySet();
+		Set<String> keySet = ddmExpressionFunctionComponentFactoryMap.keySet();
 
 		Stream<String> stream = keySet.stream();
 
 		return stream.collect(
 			Collectors.toConcurrentMap(
-				Function.identity(),
-				key -> ddmExpressionFunctionTrackerServiceTrackerMap.getService(
-					key)));
+				Function.identity(), key -> getDDMExpressionFunction(key)));
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
-		ddmExpressionFunctionTrackerServiceTrackerMap =
-			ServiceTrackerMapFactory.openSingleValueMap(
-				bundleContext, DDMExpressionFunction.class,
-				"ddm.form.evaluator.function.name");
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY,
+		target = "(component.factory=" + DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME + ")",
+		unbind = "unsetComponentFactory"
+	)
+	protected void addComponentFactory(ComponentFactory componentFactory) {
+		ComponentInstance componentInstance = componentFactory.newInstance(
+			null);
+
+		DDMExpressionFunction expressionFunction =
+			(DDMExpressionFunction)componentInstance.getInstance();
+
+		ddmExpressionFunctionComponentFactoryMap.put(
+			expressionFunction.getName(), componentFactory);
+
+		componentInstance.dispose();
 	}
 
 	@Deactivate
 	protected void deactivate() {
-		ddmExpressionFunctionTrackerServiceTrackerMap.close();
+		ddmExpressionFunctionComponentFactoryMap.clear();
 	}
 
-	protected ServiceTrackerMap<String, DDMExpressionFunction>
-		ddmExpressionFunctionTrackerServiceTrackerMap;
+	protected DDMExpressionFunction getDDMExpressionFunction(
+		ComponentFactory componentFactory) {
+
+		ComponentInstance componentInstance = componentFactory.newInstance(
+			null);
+
+		return (DDMExpressionFunction)componentInstance.getInstance();
+	}
+
+	protected void unsetComponentFactory(ComponentFactory componentFactory) {
+		Set<Map.Entry<String, ComponentFactory>> entrySet =
+			ddmExpressionFunctionComponentFactoryMap.entrySet();
+
+		for (Map.Entry<String, ComponentFactory> entry : entrySet) {
+			if (Objects.equals(componentFactory, entry.getValue())) {
+				ddmExpressionFunctionComponentFactoryMap.remove(entry.getKey());
+
+				break;
+			}
+		}
+	}
+
+	protected Map<String, ComponentFactory>
+		ddmExpressionFunctionComponentFactoryMap = new ConcurrentHashMap<>();
 
 }
