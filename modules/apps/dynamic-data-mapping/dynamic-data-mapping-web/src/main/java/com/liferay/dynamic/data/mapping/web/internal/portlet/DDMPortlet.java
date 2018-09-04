@@ -43,9 +43,8 @@ import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustNotDuplicateFieldName;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetOptionsForField;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValidationException.MustSetValidCharactersForFieldName;
-import com.liferay.dynamic.data.mapping.web.configuration.DDMWebConfiguration;
+import com.liferay.dynamic.data.mapping.web.configuration.activator.DDMWebConfigurationActivator;
 import com.liferay.dynamic.data.mapping.web.internal.display.context.DDMDisplayContext;
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.LocaleException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.PortletPreferencesException;
@@ -61,8 +60,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
 
-import java.util.Map;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
@@ -70,11 +67,12 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Leonardo Barros
@@ -211,13 +209,6 @@ public class DDMPortlet extends MVCPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		ddmWebConfiguration = ConfigurableUtil.createConfigurable(
-			DDMWebConfiguration.class, properties);
-	}
-
 	protected void setDDMDisplayContextRequestAttribute(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
@@ -225,7 +216,7 @@ public class DDMPortlet extends MVCPortlet {
 			renderRequest, renderResponse, ddmDisplayRegistry,
 			ddmStorageAdapterTracker, ddmStructureLinkLocalService,
 			ddmStructureService, ddmTemplateHelper, ddmTemplateService,
-			ddmWebConfiguration);
+			_ddmWebConfigurationActivator.getDDMWebConfiguration());
 
 		renderRequest.setAttribute(
 			WebKeys.PORTLET_DISPLAY_CONTEXT, ddmDisplayContext);
@@ -266,6 +257,12 @@ public class DDMPortlet extends MVCPortlet {
 		}
 	}
 
+	protected void unsetDDMWebConfigurationActivator(
+		DDMWebConfigurationActivator ddmWebConfigurationActivator) {
+
+		_ddmWebConfigurationActivator = null;
+	}
+
 	@Reference
 	protected DDMDisplayRegistry ddmDisplayRegistry;
 
@@ -291,11 +288,16 @@ public class DDMPortlet extends MVCPortlet {
 	protected DDMTemplateService ddmTemplateService;
 
 	@Reference
-	protected DDMWebConfiguration ddmWebConfiguration;
-
-	@Reference
 	protected Portal portal;
 
 	private static final Log _log = LogFactoryUtil.getLog(DDMPortlet.class);
+
+	@Reference(
+		cardinality = ReferenceCardinality.OPTIONAL,
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY,
+		unbind = "unsetDDMWebConfigurationActivator"
+	)
+	private volatile DDMWebConfigurationActivator _ddmWebConfigurationActivator;
 
 }
