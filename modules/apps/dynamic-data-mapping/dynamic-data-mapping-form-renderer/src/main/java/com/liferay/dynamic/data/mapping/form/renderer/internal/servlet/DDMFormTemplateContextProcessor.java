@@ -109,6 +109,7 @@ public class DDMFormTemplateContextProcessor {
 			jsonObject.getString("ddmDataProviderInstanceOutput"),
 			ddmFormField);
 		setDDMFormFieldDataType(jsonObject.getString("dataType"), ddmFormField);
+		setDDMFormFieldLabel(jsonObject.getString("label"), ddmFormField);
 		setDDMFormFieldLocalizable(
 			jsonObject.getBoolean("localizable", false), ddmFormField);
 		setDDMFormFieldMultiple(
@@ -230,6 +231,12 @@ public class DDMFormTemplateContextProcessor {
 		String dataType, DDMFormField ddmFormField) {
 
 		ddmFormField.setDataType(GetterUtil.getString(dataType));
+	}
+
+	protected void setDDMFormFieldLabel(
+		String label, DDMFormField ddmFormField) {
+
+		ddmFormField.setLabel(getLocalizedValue(GetterUtil.getString(label)));
 	}
 
 	protected void setDDMFormFieldLocalizable(

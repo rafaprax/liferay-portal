@@ -14,18 +14,20 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
-import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=setRequired",
-	service = DDMExpressionFunction.class
-)
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
 public class SetRequiredFunction extends SetPropertyFunction<Boolean> {
+
+	@Override
+	public String getName() {
+		return "setRequired";
+	}
 
 	@Override
 	protected String getPropertyName() {

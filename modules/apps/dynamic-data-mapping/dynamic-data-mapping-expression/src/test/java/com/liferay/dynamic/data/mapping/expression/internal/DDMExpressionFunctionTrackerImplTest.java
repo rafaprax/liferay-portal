@@ -15,51 +15,38 @@
 package com.liferay.dynamic.data.mapping.expression.internal;
 
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.mockito.InOrder;
 import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentFactory;
+import org.osgi.service.component.ComponentInstance;
 
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author Leonardo Barros
  */
-@PrepareForTest(ServiceTrackerMapFactory.class)
 @RunWith(PowerMockRunner.class)
 public class DDMExpressionFunctionTrackerImplTest extends PowerMockito {
-
-	@Before
-	public void setUp() throws Exception {
-		setUpServiceTrackerMapFactory();
-	}
 
 	@Test
 	public void testActivate() {
 		DDMExpressionFunctionTrackerImpl ddmExpressionFunctionTracker =
 			new DDMExpressionFunctionTrackerImpl();
 
-		ddmExpressionFunctionTracker.activate(_bundleContext);
-
 		Assert.assertNotNull(
 			ddmExpressionFunctionTracker.
-				ddmExpressionFunctionTrackerServiceTrackerMap);
+				ddmExpressionFunctionComponentFactoryMap);
 	}
 
 	@Test
@@ -67,15 +54,16 @@ public class DDMExpressionFunctionTrackerImplTest extends PowerMockito {
 		DDMExpressionFunctionTrackerImpl ddmExpressionFunctionTracker =
 			new DDMExpressionFunctionTrackerImpl();
 
-		ddmExpressionFunctionTracker.
-			ddmExpressionFunctionTrackerServiceTrackerMap =
-				_ddmExpressionFunctionTrackerServiceTrackerMap;
+		ddmExpressionFunctionTracker.ddmExpressionFunctionComponentFactoryMap =
+			spy(new HashMap<String, ComponentFactory>());
 
 		ddmExpressionFunctionTracker.deactivate();
 
 		Mockito.verify(
-			_ddmExpressionFunctionTrackerServiceTrackerMap, Mockito.times(1)
-		).close();
+			ddmExpressionFunctionTracker.
+				ddmExpressionFunctionComponentFactoryMap,
+			Mockito.times(1)
+		).clear();
 	}
 
 	@Test
@@ -83,15 +71,16 @@ public class DDMExpressionFunctionTrackerImplTest extends PowerMockito {
 		DDMExpressionFunctionTrackerImpl ddmExpressionFunctionTracker =
 			new DDMExpressionFunctionTrackerImpl();
 
-		ddmExpressionFunctionTracker.
-			ddmExpressionFunctionTrackerServiceTrackerMap =
-				_ddmExpressionFunctionTrackerServiceTrackerMap;
+		ddmExpressionFunctionTracker.ddmExpressionFunctionComponentFactoryMap =
+			spy(new HashMap<String, ComponentFactory>());
 
 		ddmExpressionFunctionTracker.getDDMExpressionFunction("function");
 
 		Mockito.verify(
-			_ddmExpressionFunctionTrackerServiceTrackerMap, Mockito.times(1)
-		).getService(
+			ddmExpressionFunctionTracker.
+				ddmExpressionFunctionComponentFactoryMap,
+			Mockito.times(1)
+		).get(
 			"function"
 		);
 	}
@@ -101,42 +90,21 @@ public class DDMExpressionFunctionTrackerImplTest extends PowerMockito {
 		DDMExpressionFunctionTrackerImpl ddmExpressionFunctionTracker =
 			new DDMExpressionFunctionTrackerImpl();
 
-		ddmExpressionFunctionTracker.
-			ddmExpressionFunctionTrackerServiceTrackerMap =
-				_ddmExpressionFunctionTrackerServiceTrackerMap;
+		Map<String, ComponentFactory> spy = spy(
+			new HashMap<String, ComponentFactory>());
 
-		Set<String> keySet = new HashSet() {
-			{
-				add("function1");
-				add("function2");
-			}
-		};
-
-		when(
-			_ddmExpressionFunctionTrackerServiceTrackerMap.keySet()
-		).thenReturn(
-			keySet
-		);
+		ddmExpressionFunctionTracker.ddmExpressionFunctionComponentFactoryMap =
+			spy;
 
 		DDMExpressionFunction ddmExpressionFunction1 = mock(
 			DDMExpressionFunction.class);
 
-		when(
-			_ddmExpressionFunctionTrackerServiceTrackerMap.getService(
-				"function1")
-		).thenReturn(
-			ddmExpressionFunction1
-		);
+		spy.put("function1", mockComponentFactory(ddmExpressionFunction1));
 
 		DDMExpressionFunction ddmExpressionFunction2 = mock(
 			DDMExpressionFunction.class);
 
-		when(
-			_ddmExpressionFunctionTrackerServiceTrackerMap.getService(
-				"function2")
-		).thenReturn(
-			ddmExpressionFunction2
-		);
+		spy.put("function2", mockComponentFactory(ddmExpressionFunction2));
 
 		Map<String, DDMExpressionFunction> ddmExpressionFunctions =
 			ddmExpressionFunctionTracker.getDDMExpressionFunctions();
@@ -147,37 +115,39 @@ public class DDMExpressionFunctionTrackerImplTest extends PowerMockito {
 		Assert.assertEquals(
 			ddmExpressionFunction2, ddmExpressionFunctions.get("function2"));
 
-		InOrder inOrder = Mockito.inOrder(
-			_ddmExpressionFunctionTrackerServiceTrackerMap);
+		InOrder inOrder = Mockito.inOrder(spy);
 
 		inOrder.verify(
-			_ddmExpressionFunctionTrackerServiceTrackerMap, Mockito.times(1)
+			spy, Mockito.times(1)
 		).keySet();
 
 		inOrder.verify(
-			_ddmExpressionFunctionTrackerServiceTrackerMap, Mockito.times(2)
-		).getService(
+			spy, Mockito.times(2)
+		).get(
 			Matchers.anyString()
 		);
 	}
 
-	protected void setUpServiceTrackerMapFactory() {
-		mockStatic(ServiceTrackerMapFactory.class);
+	protected ComponentFactory mockComponentFactory(
+		DDMExpressionFunction ddmExpressionFunction) {
+
+		ComponentInstance componentInstance = mock(ComponentInstance.class);
 
 		when(
-			ServiceTrackerMapFactory.openSingleValueMap(
-				_bundleContext, DDMExpressionFunction.class,
-				"ddm.form.evaluator.function.name")
+			componentInstance.getInstance()
 		).thenReturn(
-			_ddmExpressionFunctionTrackerServiceTrackerMap
+			ddmExpressionFunction
 		);
+
+		ComponentFactory componentFactory = mock(ComponentFactory.class);
+
+		when(
+			componentFactory.newInstance(Matchers.any())
+		).thenReturn(
+			componentInstance
+		);
+
+		return componentFactory;
 	}
-
-	@Mock
-	private BundleContext _bundleContext;
-
-	@Mock
-	private ServiceTrackerMap<String, DDMExpressionFunction>
-		_ddmExpressionFunctionTrackerServiceTrackerMap;
 
 }

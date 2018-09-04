@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 
 import java.util.Objects;
@@ -23,16 +24,18 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=equals",
-	service = DDMExpressionFunction.class
-)
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
 public class EqualsFunction
 	implements DDMExpressionFunction.Function2<Object, Object, Boolean> {
 
 	@Override
 	public Boolean apply(Object object1, Object object2) {
 		return Objects.equals(object1, object2);
+	}
+
+	@Override
+	public String getName() {
+		return "equals";
 	}
 
 }

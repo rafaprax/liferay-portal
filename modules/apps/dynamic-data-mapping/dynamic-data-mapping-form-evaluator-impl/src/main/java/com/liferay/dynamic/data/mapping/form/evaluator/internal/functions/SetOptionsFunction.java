@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionObserver;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionObserverAware;
@@ -40,10 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=setOptions",
-	service = DDMExpressionFunction.class
-)
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
 public class SetOptionsFunction
 	implements DDMExpressionFunction.Function2<String, String, Boolean>,
 			   DDMExpressionObserverAware, DDMExpressionParameterAccessorAware {
@@ -65,6 +63,11 @@ public class SetOptionsFunction
 		_ddmExpressionObserver.updateFieldProperty(builder.build());
 
 		return true;
+	}
+
+	@Override
+	public String getName() {
+		return "setOptions";
 	}
 
 	@Override
