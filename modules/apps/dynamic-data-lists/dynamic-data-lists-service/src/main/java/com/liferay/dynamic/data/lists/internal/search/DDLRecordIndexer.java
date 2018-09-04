@@ -23,7 +23,10 @@ import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
 import com.liferay.dynamic.data.lists.service.DDLRecordVersionLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -165,7 +168,7 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 
 	protected void addDDMContent(
 			DDLRecordVersion recordVersion, DDMFormValues ddmFormValues,
-			Document document)
+			DDMStructure ddmStructure, Document document)
 		throws Exception {
 
 		Set<Locale> locales = ddmFormValues.getAvailableLocales();
@@ -178,7 +181,8 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 			sb.append(LocaleUtil.toLanguageId(locale));
 
 			document.addText(
-				sb.toString(), extractDDMContent(recordVersion, locale));
+				sb.toString(),
+				extractDDMContent(recordVersion, ddmStructure, locale));
 		}
 	}
 
@@ -225,10 +229,10 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 
 		DDMStructure ddmStructure = recordSet.getDDMStructure();
 
-		DDMFormValues ddmFormValues = storageEngine.getDDMFormValues(
-			recordVersion.getDDMStorageId());
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			recordVersion.getDDMStorageId(), ddmStructure);
 
-		addDDMContent(recordVersion, ddmFormValues, document);
+		addDDMContent(recordVersion, ddmFormValues, ddmStructure, document);
 
 		ddmIndexer.addAttributes(document, ddmStructure, ddmFormValues);
 
@@ -277,11 +281,12 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 	}
 
 	protected String extractDDMContent(
-			DDLRecordVersion recordVersion, Locale locale)
+			DDLRecordVersion recordVersion, DDMStructure ddmStructure,
+			Locale locale)
 		throws Exception {
 
-		DDMFormValues ddmFormValues = storageEngine.getDDMFormValues(
-			recordVersion.getDDMStorageId());
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			recordVersion.getDDMStorageId(), ddmStructure);
 
 		if (ddmFormValues == null) {
 			return StringPool.BLANK;
@@ -291,6 +296,25 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 
 		return ddmIndexer.extractIndexableAttributes(
 			recordSet.getDDMStructure(), ddmFormValues, locale);
+	}
+
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws Exception {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
 	}
 
 	protected String getTitle(long recordSetId, Locale locale) {
@@ -404,13 +428,13 @@ public class DDLRecordIndexer extends BaseIndexer<DDLRecord> {
 	protected DDMIndexer ddmIndexer;
 
 	@Reference
+	protected DDMStorageAdapterTracker ddmStorageAdapterTracker;
+
+	@Reference
 	protected IndexWriterHelper indexWriterHelper;
 
 	@Reference
 	protected SearchPermissionChecker searchPermissionChecker;
-
-	@Reference
-	protected StorageEngine storageEngine;
 
 	private static final int[] _REINDEX_SCOPES = {
 		DDLRecordSetConstants.SCOPE_DYNAMIC_DATA_LISTS,

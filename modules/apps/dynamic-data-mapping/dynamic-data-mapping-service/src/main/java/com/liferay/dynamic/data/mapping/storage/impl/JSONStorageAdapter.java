@@ -47,8 +47,10 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Pablo Carvalho
+ * @deprecated As of Judson (7.1.x), replaced by {@link DDMJSONStorageAdapter}
  */
 @Component(service = StorageAdapter.class)
+@Deprecated
 public class JSONStorageAdapter extends BaseStorageAdapter {
 
 	@Override

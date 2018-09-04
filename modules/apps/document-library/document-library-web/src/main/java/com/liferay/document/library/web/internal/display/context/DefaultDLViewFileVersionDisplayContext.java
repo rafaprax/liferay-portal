@@ -18,6 +18,7 @@ import com.liferay.document.library.display.context.DLMimeTypeDisplayContext;
 import com.liferay.document.library.display.context.DLViewFileVersionDisplayContext;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
+import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.service.DLFileEntryMetadataLocalServiceUtil;
 import com.liferay.document.library.preview.DLPreviewRenderer;
@@ -30,9 +31,17 @@ import com.liferay.document.library.web.internal.display.context.util.DLRequestH
 import com.liferay.document.library.web.internal.display.context.util.JSPRenderer;
 import com.liferay.document.library.web.internal.util.DLTrashUtil;
 import com.liferay.dynamic.data.mapping.exception.StorageException;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStorageLink;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -42,6 +51,7 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.servlet.taglib.ui.Menu;
 import com.liferay.portal.kernel.servlet.taglib.ui.MenuItem;
 import com.liferay.portal.kernel.servlet.taglib.ui.ToolbarItem;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
@@ -67,30 +77,39 @@ public class DefaultDLViewFileVersionDisplayContext
 	public DefaultDLViewFileVersionDisplayContext(
 			HttpServletRequest request, HttpServletResponse response,
 			FileShortcut fileShortcut,
-			DLMimeTypeDisplayContext dlMimeTypeDisplayContext,
-			ResourceBundle resourceBundle, StorageEngine storageEngine,
-			DLTrashUtil dlTrashUtil,
+			DDMStorageAdapterTracker ddmStorageAdapterTracker,
+			DDMStorageLinkLocalService ddmStorageLinkLocalService,
+			DDMStructureLinkLocalService ddmStructureLinkLocalService,
+			DDMStructureLocalService ddmStructureLocalService,
+			DLMimeTypeDisplayContext dlMimeTypeDisplayContext, Portal portal,
+			ResourceBundle resourceBundle, DLTrashUtil dlTrashUtil,
 			DLPreviewRendererProvider dlPreviewRendererProvider)
 		throws PortalException {
 
 		this(
 			request, fileShortcut.getFileVersion(), fileShortcut,
-			dlMimeTypeDisplayContext, resourceBundle, storageEngine,
-			dlTrashUtil, dlPreviewRendererProvider);
+			ddmStorageAdapterTracker, ddmStorageLinkLocalService,
+			ddmStructureLinkLocalService, ddmStructureLocalService,
+			dlMimeTypeDisplayContext, portal, resourceBundle, dlTrashUtil,
+			dlPreviewRendererProvider);
 	}
 
 	public DefaultDLViewFileVersionDisplayContext(
 		HttpServletRequest request, HttpServletResponse response,
 		FileVersion fileVersion,
-		DLMimeTypeDisplayContext dlMimeTypeDisplayContext,
-		ResourceBundle resourceBundle, StorageEngine storageEngine,
-		DLTrashUtil dlTrashUtil,
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DDMStructureLinkLocalService ddmStructureLinkLocalService,
+		DDMStructureLocalService ddmStructureLocalService,
+		DLMimeTypeDisplayContext dlMimeTypeDisplayContext, Portal portal,
+		ResourceBundle resourceBundle, DLTrashUtil dlTrashUtil,
 		DLPreviewRendererProvider dlPreviewRendererProvider) {
 
 		this(
-			request, fileVersion, null, dlMimeTypeDisplayContext,
-			resourceBundle, storageEngine, dlTrashUtil,
-			dlPreviewRendererProvider);
+			request, fileVersion, null, ddmStorageAdapterTracker,
+			ddmStorageLinkLocalService, ddmStructureLinkLocalService,
+			ddmStructureLocalService, dlMimeTypeDisplayContext, portal,
+			resourceBundle, dlTrashUtil, dlPreviewRendererProvider);
 	}
 
 	@Override
@@ -111,15 +130,28 @@ public class DefaultDLViewFileVersionDisplayContext
 			DLFileEntryMetadataLocalServiceUtil.getFileEntryMetadata(
 				ddmStructure.getStructureId(), _fileVersion.getFileVersionId());
 
-		return _storageEngine.getDDMFormValues(
-			dlFileEntryMetadata.getDDMStorageId());
+		return getDDMFormValues(
+			dlFileEntryMetadata.getDDMStorageId(), ddmStructure);
 	}
 
 	@Override
 	public DDMFormValues getDDMFormValues(long classPK)
 		throws StorageException {
 
-		return _storageEngine.getDDMFormValues(classPK);
+		try {
+			DDMStorageLink ddmStorageLink =
+				_ddmStorageLinkLocalService.getClassStorageLink(classPK);
+
+			DDMStructure ddmStructure = ddmStorageLink.getStructure();
+
+			return getDDMFormValues(ddmStorageLink.getClassPK(), ddmStructure);
+		}
+		catch (StorageException se) {
+			throw se;
+		}
+		catch (Exception e) {
+			throw new StorageException(e);
+		}
 	}
 
 	@Override
@@ -132,7 +164,8 @@ public class DefaultDLViewFileVersionDisplayContext
 			DLFileVersion dlFileVersion =
 				(DLFileVersion)_fileVersion.getModel();
 
-			_ddmStructures = dlFileVersion.getDDMStructures();
+			_ddmStructures = getDDMStructures(
+				dlFileVersion.getDLFileEntryType());
 		}
 		else {
 			_ddmStructures = Collections.emptyList();
@@ -292,19 +325,69 @@ public class DefaultDLViewFileVersionDisplayContext
 		jspRenderer.render(request, response);
 	}
 
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws StorageException {
+
+		String storageType = ddmStructure.getStorageType();
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(storageType);
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
+	protected List<DDMStructure> getDDMStructures(
+		DLFileEntryType dlFileEntryType) {
+
+		List<DDMStructureLink> ddmStructureLinks =
+			_ddmStructureLinkLocalService.getStructureLinks(
+				_portal.getClassNameId(DLFileEntryType.class),
+				dlFileEntryType.getFileEntryTypeId());
+
+		List<DDMStructure> ddmStructures = new ArrayList<>();
+
+		for (DDMStructureLink ddmStructureLink : ddmStructureLinks) {
+			DDMStructure ddmStructure =
+				_ddmStructureLocalService.fetchStructure(
+					ddmStructureLink.getStructureId());
+
+			if (ddmStructure != null) {
+				ddmStructures.add(ddmStructure);
+			}
+		}
+
+		return ddmStructures;
+	}
+
 	private DefaultDLViewFileVersionDisplayContext(
 		HttpServletRequest request, FileVersion fileVersion,
 		FileShortcut fileShortcut,
-		DLMimeTypeDisplayContext dlMimeTypeDisplayContext,
-		ResourceBundle resourceBundle, StorageEngine storageEngine,
-		DLTrashUtil dlTrashUtil,
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
+		DDMStorageLinkLocalService ddmStorageLinkLocalService,
+		DDMStructureLinkLocalService ddmStructureLinkLocalService,
+		DDMStructureLocalService ddmStructureLocalService,
+		DLMimeTypeDisplayContext dlMimeTypeDisplayContext, Portal portal,
+		ResourceBundle resourceBundle, DLTrashUtil dlTrashUtil,
 		DLPreviewRendererProvider dlPreviewRendererProvider) {
 
 		try {
 			_fileVersion = fileVersion;
+			_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
+			_ddmStorageLinkLocalService = ddmStorageLinkLocalService;
+			_ddmStructureLinkLocalService = ddmStructureLinkLocalService;
+			_ddmStructureLocalService = ddmStructureLocalService;
 			_dlMimeTypeDisplayContext = dlMimeTypeDisplayContext;
+			_portal = portal;
 			_resourceBundle = resourceBundle;
-			_storageEngine = storageEngine;
 			_dlPreviewRendererProvider = dlPreviewRendererProvider;
 
 			DLRequestHelper dlRequestHelper = new DLRequestHelper(request);
@@ -379,6 +462,10 @@ public class DefaultDLViewFileVersionDisplayContext
 	private static final UUID _UUID = UUID.fromString(
 		"85F6C50E-3893-4E32-9D63-208528A503FA");
 
+	private final DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+	private final DDMStorageLinkLocalService _ddmStorageLinkLocalService;
+	private final DDMStructureLinkLocalService _ddmStructureLinkLocalService;
+	private final DDMStructureLocalService _ddmStructureLocalService;
 	private List<DDMStructure> _ddmStructures;
 	private final DLMimeTypeDisplayContext _dlMimeTypeDisplayContext;
 	private final DLPortletInstanceSettingsHelper
@@ -388,8 +475,8 @@ public class DefaultDLViewFileVersionDisplayContext
 	private final FileVersion _fileVersion;
 	private final FileVersionDisplayContextHelper
 		_fileVersionDisplayContextHelper;
+	private final Portal _portal;
 	private final ResourceBundle _resourceBundle;
-	private final StorageEngine _storageEngine;
 	private final UIItemsBuilder _uiItemsBuilder;
 
 }

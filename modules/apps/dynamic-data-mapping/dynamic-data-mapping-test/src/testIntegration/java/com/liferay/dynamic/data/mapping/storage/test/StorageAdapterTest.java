@@ -23,17 +23,19 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.test.BaseDDMServiceTestCase;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.dynamic.data.mapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistry;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
+import com.liferay.dynamic.data.mapping.test.util.storage.DDMStorageAdapterTestUtil;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.dynamic.data.mapping.validator.DDMFormValuesValidationException;
@@ -49,10 +51,10 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
 
 import java.io.Serializable;
 
@@ -95,8 +97,6 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		setUpDDMFormValuesToFieldsConverter();
-		setUpFieldsToDDMFormValuesConverter();
 		setUpJSONStorageAdapter();
 	}
 
@@ -167,10 +167,12 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 
-		_jsonStorageAdapter.create(
-			TestPropsValues.getCompanyId(), structure.getStructureId(),
-			ddmFormValues,
-			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(group.getGroupId());
+
+		DDMStorageAdapterTestUtil.create(
+			ddmFormValues, _ddmStorageAdapter, _ddmStorageLinkLocalService,
+			structure, _portal, serviceContext);
 	}
 
 	@Test(expected = DDMFormValuesValidationException.RequiredValue.class)
@@ -188,10 +190,12 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 		DDMFormValues ddmFormValues = DDMFormValuesTestUtil.createDDMFormValues(
 			ddmForm);
 
-		_jsonStorageAdapter.create(
-			TestPropsValues.getCompanyId(), structure.getStructureId(),
-			ddmFormValues,
-			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(group.getGroupId());
+
+		DDMStorageAdapterTestUtil.create(
+			ddmFormValues, _ddmStorageAdapter, _ddmStorageLinkLocalService,
+			structure, _portal, serviceContext);
 	}
 
 	@Test
@@ -224,10 +228,12 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 
-		_jsonStorageAdapter.create(
-			TestPropsValues.getCompanyId(), structure.getStructureId(),
-			ddmFormValues,
-			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(group.getGroupId());
+
+		DDMStorageAdapterTestUtil.create(
+			ddmFormValues, _ddmStorageAdapter, _ddmStorageLinkLocalService,
+			structure, _portal, serviceContext);
 	}
 
 	@Test
@@ -605,31 +611,36 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 
-		long classPK = _jsonStorageAdapter.create(
-			TestPropsValues.getCompanyId(), structure.getStructureId(),
-			ddmFormValues,
-			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(group.getGroupId());
+
+		long ddmStorageId = DDMStorageAdapterTestUtil.create(
+			ddmFormValues, _ddmStorageAdapter, _ddmStorageLinkLocalService,
+			structure, _portal, serviceContext);
 
 		ddmFormValues = DDMFormValuesTestUtil.createDDMFormValues(ddmForm);
 
-		_jsonStorageAdapter.update(
-			classPK, ddmFormValues,
-			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+		serviceContext = ServiceContextTestUtil.getServiceContext(
+			group.getGroupId());
+
+		DDMStorageAdapterTestUtil.update(
+			ddmStorageId, ddmFormValues, _ddmStorageAdapter, serviceContext);
 	}
 
-	protected long create(
-			StorageAdapter storageAdapter, long ddmStructureId, Fields fields)
+	protected long create(DDMStructure ddmStructure, Fields fields)
 		throws Exception {
-
-		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
-			ddmStructureId);
 
 		DDMFormValues ddmFormValues = _fieldsToDDMFormValuesConverter.convert(
 			ddmStructure, fields);
 
-		return storageAdapter.create(
-			TestPropsValues.getCompanyId(), ddmStructureId, ddmFormValues,
-			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(group.getGroupId());
+
+		long storageId = DDMStorageAdapterTestUtil.create(
+			ddmFormValues, _ddmStorageAdapter, _ddmStorageLinkLocalService,
+			ddmStructure, _portal, serviceContext);
+
+		return storageId;
 	}
 
 	protected Field createFieldsDisplayField(
@@ -668,27 +679,8 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 		return sb.toString();
 	}
 
-	protected void setUpDDMFormValuesToFieldsConverter() {
-		Registry registry = RegistryUtil.getRegistry();
-
-		_ddmFormValuesToFieldsConverter = registry.getService(
-			DDMFormValuesToFieldsConverter.class);
-	}
-
-	protected void setUpFieldsToDDMFormValuesConverter() {
-		Registry registry = RegistryUtil.getRegistry();
-
-		_fieldsToDDMFormValuesConverter = registry.getService(
-			FieldsToDDMFormValuesConverter.class);
-	}
-
 	protected void setUpJSONStorageAdapter() {
-		Registry registry = RegistryUtil.getRegistry();
-
-		StorageAdapterRegistry storageAdapterRegistry = registry.getService(
-			StorageAdapterRegistry.class);
-
-		_jsonStorageAdapter = storageAdapterRegistry.getStorageAdapter(
+		_ddmStorageAdapter = _ddmStorageAdapterTracker.getDDMStorageAdapter(
 			StorageType.JSON.toString());
 	}
 
@@ -699,13 +691,14 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 
 		String expectedFieldsString = jsonSerializer.serializeDeep(fields);
 
-		long classPK = create(_jsonStorageAdapter, ddmStructureId, fields);
-
 		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
 			ddmStructureId);
 
+		long ddmStorageId = create(ddmStructure, fields);
+
 		DDMFormValues actualDDMFormValues =
-			_jsonStorageAdapter.getDDMFormValues(classPK);
+			DDMStorageAdapterTestUtil.getDDMFormValues(
+				ddmStorageId, _ddmStorageAdapter, _ddmStorageLinkLocalService);
 
 		Fields actualFields = _ddmFormValuesToFieldsConverter.convert(
 			ddmStructure, actualDDMFormValues);
@@ -718,8 +711,21 @@ public class StorageAdapterTest extends BaseDDMServiceTestCase {
 	private static Locale _enLocale;
 	private static Locale _ptLocale;
 
+	@Inject
 	private DDMFormValuesToFieldsConverter _ddmFormValuesToFieldsConverter;
+
+	private DDMStorageAdapter _ddmStorageAdapter;
+
+	@Inject
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+
+	@Inject
+	private DDMStorageLinkLocalService _ddmStorageLinkLocalService;
+
+	@Inject
 	private FieldsToDDMFormValuesConverter _fieldsToDDMFormValuesConverter;
-	private StorageAdapter _jsonStorageAdapter;
+
+	@Inject
+	private Portal _portal;
 
 }

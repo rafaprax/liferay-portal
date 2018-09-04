@@ -30,7 +30,10 @@ import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerTracker;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
@@ -216,8 +219,12 @@ public class DDLRecordStagedModelDataHandler
 
 		recordElement.addAttribute("ddm-form-values-path", ddmFormValuesPath);
 
-		DDMFormValues ddmFormValues = _storageEngine.getDDMFormValues(
-			record.getDDMStorageId());
+		DDLRecordSet ddlRecordSet = record.getRecordSet();
+
+		DDMStructure ddmStructure = ddlRecordSet.getDDMStructure();
+
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			record.getDDMStorageId(), ddmStructure);
 
 		ddmFormValues =
 			_ddmFormValuesExportImportContentProcessor.
@@ -226,6 +233,25 @@ public class DDLRecordStagedModelDataHandler
 
 		portletDataContext.addZipEntry(
 			ddmFormValuesPath, serialize(ddmFormValues));
+	}
+
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws Exception {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
 	}
 
 	protected DDMFormValues getImportDDMFormValues(
@@ -324,8 +350,10 @@ public class DDLRecordStagedModelDataHandler
 	}
 
 	@Reference(unbind = "-")
-	protected void setStorageEngine(StorageEngine storageEngine) {
-		_storageEngine = storageEngine;
+	protected void setDDMStorageAdapterTracker(
+		DDMStorageAdapterTracker ddmStorageAdapterTracker) {
+
+		_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
 	}
 
 	@Override
@@ -363,6 +391,6 @@ public class DDLRecordStagedModelDataHandler
 	private ExportImportContentProcessor<DDMFormValues>
 		_ddmFormValuesExportImportContentProcessor;
 	private DDMFormValuesSerializerTracker _ddmFormValuesSerializerTracker;
-	private StorageEngine _storageEngine;
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
 
 }

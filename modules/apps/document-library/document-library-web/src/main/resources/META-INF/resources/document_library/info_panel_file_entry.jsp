@@ -321,9 +321,10 @@ if (dlViewFileVersionDisplayContext.isVersionInfoVisible()) {
 
 					<%
 					try {
-						List<DDMStructure> ddmStructures = dlViewFileVersionDisplayContext.getDDMStructures();
+						List<com.liferay.dynamic.data.mapping.model.DDMStructure>
+							ddmStructures = dlViewFileVersionDisplayContext.getDDMStructures();
 
-						for (DDMStructure ddmStructure : ddmStructures) {
+						for (com.liferay.dynamic.data.mapping.model.DDMStructure ddmStructure : ddmStructures) {
 							DDMFormValues ddmFormValues = null;
 
 							List<DDMFormFieldValue> ddmFormFieldValues = new ArrayList<DDMFormFieldValue>();
@@ -349,7 +350,7 @@ if (dlViewFileVersionDisplayContext.isVersionInfoVisible()) {
 									title="<%= HtmlUtil.escape(ddmStructure.getName(locale)) %>"
 								>
 									<liferay-ddm:html
-										classNameId="<%= PortalUtil.getClassNameId(com.liferay.dynamic.data.mapping.model.DDMStructure.class) %>"
+										classNameId="<%= PortalUtil.getClassNameId(com.liferay.dynamic.data.mapping.kernel.DDMStructure.class) %>"
 										classPK="<%= ddmStructure.getPrimaryKey() %>"
 										ddmFormValues="<%= ddmFormValues %>"
 										fieldsNamespace="<%= String.valueOf(ddmStructure.getPrimaryKey()) %>"

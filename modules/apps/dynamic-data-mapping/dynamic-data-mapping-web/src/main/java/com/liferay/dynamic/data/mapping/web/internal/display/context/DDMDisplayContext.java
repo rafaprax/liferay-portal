@@ -23,7 +23,7 @@ import com.liferay.dynamic.data.mapping.model.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateService;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapterRegistry;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.dynamic.data.mapping.util.DDMDisplay;
 import com.liferay.dynamic.data.mapping.util.DDMDisplayRegistry;
 import com.liferay.dynamic.data.mapping.util.DDMDisplayTabItem;
@@ -89,22 +89,22 @@ public class DDMDisplayContext {
 	public DDMDisplayContext(
 		RenderRequest renderRequest, RenderResponse renderResponse,
 		DDMDisplayRegistry ddmDisplayRegistry,
+		DDMStorageAdapterTracker ddmStorageAdapterTracker,
 		DDMStructureLinkLocalService ddmStructureLinkLocalService,
 		DDMStructureService ddmStructureService,
 		DDMTemplateHelper ddmTemplateHelper,
 		DDMTemplateService ddmTemplateService,
-		DDMWebConfiguration ddmWebConfiguration,
-		StorageAdapterRegistry storageAdapterRegistry) {
+		DDMWebConfiguration ddmWebConfiguration) {
 
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
 		_ddmDisplayRegistry = ddmDisplayRegistry;
+		_ddmStorageAdapterTracker = ddmStorageAdapterTracker;
 		_ddmStructureLinkLocalService = ddmStructureLinkLocalService;
 		_ddmStructureService = ddmStructureService;
 		_ddmTemplateHelper = ddmTemplateHelper;
 		_ddmTemplateService = ddmTemplateService;
 		_ddmWebConfiguration = ddmWebConfiguration;
-		_storageAdapterRegistry = storageAdapterRegistry;
 
 		HttpServletRequest httpServletRequest =
 			PortalUtil.getHttpServletRequest(renderRequest);
@@ -399,7 +399,7 @@ public class DDMDisplayContext {
 	}
 
 	public Set<String> getStorageTypes() {
-		return _storageAdapterRegistry.getStorageTypes();
+		return _ddmStorageAdapterTracker.getDDMStorageAdapterTypes();
 	}
 
 	public CreationMenu getStructureCreationMenu() throws PortalException {
@@ -1133,6 +1133,7 @@ public class DDMDisplayContext {
 	}
 
 	private final DDMDisplayRegistry _ddmDisplayRegistry;
+	private final DDMStorageAdapterTracker _ddmStorageAdapterTracker;
 	private final DDMStructureLinkLocalService _ddmStructureLinkLocalService;
 	private final DDMStructureService _ddmStructureService;
 	private final DDMTemplateHelper _ddmTemplateHelper;
@@ -1141,6 +1142,5 @@ public class DDMDisplayContext {
 	private final DDMWebRequestHelper _ddmWebRequestHelper;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
-	private final StorageAdapterRegistry _storageAdapterRegistry;
 
 }

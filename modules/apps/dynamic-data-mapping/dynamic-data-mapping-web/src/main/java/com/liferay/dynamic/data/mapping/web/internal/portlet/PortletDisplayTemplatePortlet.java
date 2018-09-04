@@ -14,18 +14,12 @@
 
 package com.liferay.dynamic.data.mapping.web.internal.portlet;
 
-import com.liferay.dynamic.data.mapping.web.configuration.DDMWebConfiguration;
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
-
-import java.util.Map;
 
 import javax.portlet.Portlet;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
 
 /**
  * @author Marcellus Tavares
@@ -61,13 +55,4 @@ import org.osgi.service.component.annotations.Modified;
 	service = Portlet.class
 )
 public class PortletDisplayTemplatePortlet extends DDMPortlet {
-
-	@Activate
-	@Modified
-	@Override
-	protected void activate(Map<String, Object> properties) {
-		ddmWebConfiguration = ConfigurableUtil.createConfigurable(
-			DDMWebConfiguration.class, properties);
-	}
-
 }

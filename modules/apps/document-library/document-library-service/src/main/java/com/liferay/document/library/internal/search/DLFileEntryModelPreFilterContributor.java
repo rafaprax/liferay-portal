@@ -15,8 +15,10 @@
 package com.liferay.document.library.internal.search;
 
 import com.liferay.document.library.kernel.model.DLFolderConstants;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManager;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.util.DDM;
+import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -118,11 +120,11 @@ public class DLFileEntryModelPreFilterContributor
 				Validator.isNotNull(ddmStructureFieldValue)) {
 
 				String[] ddmStructureFieldNameParts = StringUtil.split(
-					ddmStructureFieldName,
-					DDMStructureManager.STRUCTURE_INDEXER_FIELD_SEPARATOR);
+					ddmStructureFieldName, DDMIndexer.DDM_FIELD_SEPARATOR);
 
-				DDMStructure ddmStructure = ddmStructureManager.getStructure(
-					GetterUtil.getLong(ddmStructureFieldNameParts[2]));
+				DDMStructure ddmStructure =
+					ddmStructureLocalService.getStructure(
+						GetterUtil.getLong(ddmStructureFieldNameParts[2]));
 
 				String fieldName = StringUtil.replaceLast(
 					ddmStructureFieldNameParts[3],
@@ -131,10 +133,9 @@ public class DLFileEntryModelPreFilterContributor
 					StringPool.BLANK);
 
 				try {
-					ddmStructureFieldValue =
-						ddmStructureManager.getIndexedFieldValue(
-							ddmStructureFieldValue,
-							ddmStructure.getFieldType(fieldName));
+					ddmStructureFieldValue = ddm.getIndexedFieldValue(
+						ddmStructureFieldValue,
+						ddmStructure.getFieldType(fieldName));
 				}
 				catch (Exception e) {
 					if (_log.isDebugEnabled()) {
@@ -199,7 +200,10 @@ public class DLFileEntryModelPreFilterContributor
 	}
 
 	@Reference
-	protected DDMStructureManager ddmStructureManager;
+	protected DDM ddm;
+
+	@Reference
+	protected DDMStructureLocalService ddmStructureLocalService;
 
 	protected RelatedEntryIndexer relatedEntryIndexer =
 		new BaseRelatedEntryIndexer();

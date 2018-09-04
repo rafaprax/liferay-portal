@@ -31,8 +31,10 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Eduardo Lundgren
+ * @deprecated As of Judson (7.1.x), with no direct replacement
  */
 @Component(immediate = true)
+@Deprecated
 public class StorageEngineImpl implements StorageEngine {
 
 	@Override

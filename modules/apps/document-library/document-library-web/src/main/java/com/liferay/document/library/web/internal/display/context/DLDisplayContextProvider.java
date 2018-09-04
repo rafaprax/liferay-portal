@@ -23,7 +23,10 @@ import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.util.DLValidator;
 import com.liferay.document.library.preview.DLPreviewRendererProvider;
 import com.liferay.document.library.web.internal.util.DLTrashUtil;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
+import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
@@ -34,6 +37,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -64,8 +68,8 @@ public class DLDisplayContextProvider {
 
 		DLEditFileEntryDisplayContext dlEditFileEntryDisplayContext =
 			new DefaultDLEditFileEntryDisplayContext(
-				request, response, dlFileEntryType, _dlValidator,
-				_storageEngine);
+				request, response, _ddmStorageAdapterTracker,
+				_ddmStorageLinkLocalService, dlFileEntryType, _dlValidator);
 
 		for (DLDisplayContextFactory dlDisplayContextFactory :
 				_dlDisplayContextFactories) {
@@ -85,7 +89,8 @@ public class DLDisplayContextProvider {
 
 		DLEditFileEntryDisplayContext dlEditFileEntryDisplayContext =
 			new DefaultDLEditFileEntryDisplayContext(
-				request, response, _dlValidator, fileEntry, _storageEngine);
+				request, response, _ddmStorageAdapterTracker,
+				_ddmStorageLinkLocalService, _dlValidator, fileEntry);
 
 		for (DLDisplayContextFactory dlDisplayContextFactory :
 				_dlDisplayContextFactories) {
@@ -151,8 +156,10 @@ public class DLDisplayContextProvider {
 
 			DLViewFileVersionDisplayContext dlViewFileVersionDisplayContext =
 				new DefaultDLViewFileVersionDisplayContext(
-					request, response, fileShortcut, _dlMimeTypeDisplayContext,
-					resourceBundle, _storageEngine, _dlTrashUtil,
+					request, response, fileShortcut, _ddmStorageAdapterTracker,
+					_ddmStorageLinkLocalService, _ddmStructureLinkLocalService,
+					_ddmStructureLocalService, _dlMimeTypeDisplayContext,
+					_portal, resourceBundle, _dlTrashUtil,
 					dlPreviewRendererProvider);
 
 			if (fileShortcut == null) {
@@ -190,9 +197,10 @@ public class DLDisplayContextProvider {
 
 		DLViewFileVersionDisplayContext dlViewFileVersionDisplayContext =
 			new DefaultDLViewFileVersionDisplayContext(
-				request, response, fileVersion, _dlMimeTypeDisplayContext,
-				resourceBundle, _storageEngine, _dlTrashUtil,
-				dlPreviewRendererProvider);
+				request, response, fileVersion, _ddmStorageAdapterTracker,
+				_ddmStorageLinkLocalService, _ddmStructureLinkLocalService,
+				_ddmStructureLocalService, _dlMimeTypeDisplayContext, _portal,
+				resourceBundle, _dlTrashUtil, dlPreviewRendererProvider);
 
 		if (fileVersion == null) {
 			return dlViewFileVersionDisplayContext;
@@ -208,11 +216,6 @@ public class DLDisplayContextProvider {
 		}
 
 		return dlViewFileVersionDisplayContext;
-	}
-
-	@Reference(unbind = "-")
-	public void setStorageEngine(StorageEngine storageEngine) {
-		_storageEngine = storageEngine;
 	}
 
 	@Activate
@@ -233,6 +236,18 @@ public class DLDisplayContextProvider {
 		_dlPreviewRendererProviders.close();
 	}
 
+	@Reference
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+
+	@Reference
+	private DDMStorageLinkLocalService _ddmStorageLinkLocalService;
+
+	@Reference
+	private DDMStructureLinkLocalService _ddmStructureLinkLocalService;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
+
 	private ServiceTrackerList<DLDisplayContextFactory, DLDisplayContextFactory>
 		_dlDisplayContextFactories;
 
@@ -252,13 +267,14 @@ public class DLDisplayContextProvider {
 	@Reference
 	private DLValidator _dlValidator;
 
+	@Reference
+	private Portal _portal;
+
 	@Reference(
 		policy = ReferencePolicy.DYNAMIC,
 		policyOption = ReferencePolicyOption.GREEDY,
 		target = "(bundle.symbolic.name=com.liferay.document.library.web)"
 	)
 	private volatile ResourceBundleLoader _resourceBundleLoader;
-
-	private StorageEngine _storageEngine;
 
 }

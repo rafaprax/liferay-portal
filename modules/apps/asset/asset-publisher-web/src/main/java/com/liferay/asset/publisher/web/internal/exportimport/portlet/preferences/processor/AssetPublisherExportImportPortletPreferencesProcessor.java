@@ -30,7 +30,6 @@ import com.liferay.asset.publisher.web.internal.util.AssetPublisherWebUtil;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManager;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
@@ -938,8 +937,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 			}
 			else if (name.startsWith("orderByColumn") &&
 					 StringUtil.startsWith(
-						 value,
-						 DDMStructureManager.STRUCTURE_INDEXER_FIELD_PREFIX)) {
+						 value, DDMIndexer.DDM_FIELD_PREFIX)) {
 
 				updateExportOrderByColumnClassPKs(
 					portletDataContext, portlet, portletPreferences, name);
@@ -1136,8 +1134,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 			}
 			else if (name.startsWith("orderByColumn") &&
 					 StringUtil.startsWith(
-						 value,
-						 DDMStructureManager.STRUCTURE_INDEXER_FIELD_PREFIX)) {
+						 value, DDMIndexer.DDM_FIELD_PREFIX)) {
 
 				updateImportOrderByColumnClassPKs(
 					portletDataContext, portletPreferences, name,

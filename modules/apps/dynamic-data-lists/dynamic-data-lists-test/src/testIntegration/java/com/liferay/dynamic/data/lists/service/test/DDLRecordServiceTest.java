@@ -33,7 +33,7 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
@@ -89,8 +89,13 @@ public class DDLRecordServiceTest {
 	public static void setUpClass() {
 		Registry registry = RegistryUtil.getRegistry();
 
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put(
+			"ddm.storage.adapter.type", FailStorageAdapter.STORAGE_TYPE);
+
 		_serviceRegistration = registry.registerService(
-			StorageAdapter.class, new FailStorageAdapter());
+			DDMStorageAdapter.class, new FailStorageAdapter(), properties);
 	}
 
 	@AfterClass
@@ -590,7 +595,7 @@ public class DDLRecordServiceTest {
 			serviceContext);
 	}
 
-	private static ServiceRegistration<StorageAdapter> _serviceRegistration;
+	private static ServiceRegistration<DDMStorageAdapter> _serviceRegistration;
 
 	private Set<Locale> _availableLocales;
 	private DDMStructureTestHelper _ddmStructureTestHelper;

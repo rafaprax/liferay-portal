@@ -15,53 +15,41 @@
 package com.liferay.dynamic.data.mapping.test.util.storage;
 
 import com.liferay.dynamic.data.mapping.exception.StorageException;
-import com.liferay.dynamic.data.mapping.storage.BaseStorageAdapter;
-import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterDeleteRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterDeleteResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterSaveRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterSaveResponse;
 
 /**
  * @author Rafael Praxedes
  */
-public class FailStorageAdapter extends BaseStorageAdapter {
+public class FailStorageAdapter implements DDMStorageAdapter {
 
 	public static final String STORAGE_TYPE = "Fail";
 
 	@Override
-	public String getStorageType() {
-		return STORAGE_TYPE;
-	}
-
-	@Override
-	protected long doCreate(
-			long companyId, long ddmStructureId, DDMFormValues ddmFormValues,
-			ServiceContext serviceContext)
-		throws Exception {
+	public DDMStorageAdapterDeleteResponse delete(
+			DDMStorageAdapterDeleteRequest ddmStorageAdapterDeleteRequest)
+		throws StorageException {
 
 		throw new StorageException();
 	}
 
 	@Override
-	protected void doDeleteByClass(long classPK) throws Exception {
-		throw new StorageException();
-	}
-
-	@Override
-	protected void doDeleteByDDMStructure(long ddmStructureId)
-		throws Exception {
+	public DDMStorageAdapterGetResponse get(
+			DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest)
+		throws StorageException {
 
 		throw new StorageException();
 	}
 
 	@Override
-	protected DDMFormValues doGetDDMFormValues(long classPK) throws Exception {
-		throw new StorageException();
-	}
-
-	@Override
-	protected void doUpdate(
-			long classPK, DDMFormValues ddmFormValues,
-			ServiceContext serviceContext)
-		throws Exception {
+	public DDMStorageAdapterSaveResponse save(
+			DDMStorageAdapterSaveRequest ddmStorageAdapterSaveRequest)
+		throws StorageException {
 
 		throw new StorageException();
 	}

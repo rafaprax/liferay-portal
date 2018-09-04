@@ -40,11 +40,16 @@ import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerSerializeRequest;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerSerializeResponse;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerTracker;
-import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
-import com.liferay.dynamic.data.mapping.storage.StorageEngine;
-import com.liferay.dynamic.data.mapping.util.DDMBeanTranslatorUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapter;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetRequest;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterGetResponse;
+import com.liferay.dynamic.data.mapping.storage.DDMStorageAdapterTracker;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
@@ -226,9 +231,7 @@ public class FileEntryStagedModelDataHandler
 		_serviceTrackerList.close();
 	}
 
-	protected com.liferay.dynamic.data.mapping.storage.DDMFormValues
-		deserialize(String content, DDMForm ddmForm) {
-
+	protected DDMFormValues deserialize(String content, DDMForm ddmForm) {
 		DDMFormValuesDeserializer ddmFormValuesDeserializer =
 			_ddmFormValuesDeserializerTracker.getDDMFormValuesDeserializer(
 				"json");
@@ -725,9 +728,8 @@ public class FileEntryStagedModelDataHandler
 
 		structureFields.addAttribute("structureUuid", ddmStructure.getUuid());
 
-		com.liferay.dynamic.data.mapping.storage.DDMFormValues ddmFormValues =
-			_storageEngine.getDDMFormValues(
-				dlFileEntryMetadata.getDDMStorageId());
+		DDMFormValues ddmFormValues = getDDMFormValues(
+			dlFileEntryMetadata.getDDMStorageId(), ddmStructure);
 
 		ddmFormValues =
 			_ddmFormValuesExportImportContentProcessor.
@@ -760,12 +762,54 @@ public class FileEntryStagedModelDataHandler
 			portletDataContext, fileEntry, dlFileEntryType,
 			PortletDataContext.REFERENCE_TYPE_STRONG);
 
-		List<DDMStructure> ddmStructures = dlFileEntryType.getDDMStructures();
+		List<DDMStructure> ddmStructures = getDDMStructures(dlFileEntryType);
 
 		for (DDMStructure ddmStructure : ddmStructures) {
 			exportDDMFormValues(
 				portletDataContext, ddmStructure, fileEntry, fileEntryElement);
 		}
+	}
+
+	protected DDMFormValues getDDMFormValues(
+			long storageId, DDMStructure ddmStructure)
+		throws Exception {
+
+		DDMStorageAdapter ddmStorageAdapter =
+			_ddmStorageAdapterTracker.getDDMStorageAdapter(
+				ddmStructure.getStorageType());
+
+		DDMStorageAdapterGetRequest ddmStorageAdapterGetRequest =
+			DDMStorageAdapterGetRequest.Builder.newBuilder(
+				storageId, ddmStructure.getDDMForm()
+			).build();
+
+		DDMStorageAdapterGetResponse ddmStorageAdapterGetResponse =
+			ddmStorageAdapter.get(ddmStorageAdapterGetRequest);
+
+		return ddmStorageAdapterGetResponse.getDDMFormValues();
+	}
+
+	protected List<DDMStructure> getDDMStructures(
+		DLFileEntryType dlFileEntryType) {
+
+		List<DDMStructureLink> ddmStructureLinks =
+			_ddmStructureLinkLocalService.getStructureLinks(
+				_portal.getClassNameId(DLFileEntryType.class),
+				dlFileEntryType.getFileEntryTypeId());
+
+		List<DDMStructure> ddmStructures = new ArrayList<>();
+
+		for (DDMStructureLink ddmStructureLink : ddmStructureLinks) {
+			DDMStructure ddmStructure =
+				_ddmStructureLocalService.fetchStructure(
+					ddmStructureLink.getStructureId());
+
+			if (ddmStructure != null) {
+				ddmStructures.add(ddmStructure);
+			}
+		}
+
+		return ddmStructures;
 	}
 
 	protected DDMFormValues getImportDDMFormValues(
@@ -779,17 +823,15 @@ public class FileEntryStagedModelDataHandler
 		String serializedDDMFormValues = portletDataContext.getZipEntryAsString(
 			ddmFormValuesPath);
 
-		com.liferay.dynamic.data.mapping.storage.DDMFormValues ddmFormValues =
-			deserialize(
-				serializedDDMFormValues,
-				DDMBeanTranslatorUtil.translate(ddmStructure.getDDMForm()));
+		DDMFormValues ddmFormValues = deserialize(
+			serializedDDMFormValues, ddmStructure.getDDMForm());
 
 		ddmFormValues =
 			_ddmFormValuesExportImportContentProcessor.
 				replaceImportContentReferences(
 					portletDataContext, ddmStructure, ddmFormValues);
 
-		return DDMBeanTranslatorUtil.translate(ddmFormValues);
+		return ddmFormValues;
 	}
 
 	protected void importMetaData(
@@ -822,8 +864,8 @@ public class FileEntryStagedModelDataHandler
 		serviceContext.setAttribute(
 			"fileEntryTypeId", existingDLFileEntryType.getFileEntryTypeId());
 
-		List<DDMStructure> ddmStructures =
-			existingDLFileEntryType.getDDMStructures();
+		List<DDMStructure> ddmStructures = getDDMStructures(
+			existingDLFileEntryType);
 
 		for (DDMStructure ddmStructure : ddmStructures) {
 			Element structureFieldsElement =
@@ -850,9 +892,7 @@ public class FileEntryStagedModelDataHandler
 		return fileEntry.isInTrash();
 	}
 
-	protected String serialize(
-		com.liferay.dynamic.data.mapping.storage.DDMFormValues ddmFormValues) {
-
+	protected String serialize(DDMFormValues ddmFormValues) {
 		DDMFormValuesSerializer ddmFormValuesSerializer =
 			_ddmFormValuesSerializerTracker.getDDMFormValuesSerializer("json");
 
@@ -1008,11 +1048,19 @@ public class FileEntryStagedModelDataHandler
 		target = "(model.class.name=com.liferay.dynamic.data.mapping.storage.DDMFormValues)"
 	)
 	private ExportImportContentProcessor
-		<com.liferay.dynamic.data.mapping.storage.DDMFormValues>
-			_ddmFormValuesExportImportContentProcessor;
+		<DDMFormValues> _ddmFormValuesExportImportContentProcessor;
 
 	@Reference
 	private DDMFormValuesSerializerTracker _ddmFormValuesSerializerTracker;
+
+	@Reference
+	private DDMStorageAdapterTracker _ddmStorageAdapterTracker;
+
+	@Reference
+	private DDMStructureLinkLocalService _ddmStructureLinkLocalService;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
 
 	@Reference
 	private DLAppLocalService _dlAppLocalService;
@@ -1044,9 +1092,6 @@ public class FileEntryStagedModelDataHandler
 	private ServiceTrackerList
 		<DLPluggableContentDataHandler, DLPluggableContentDataHandler>
 			_serviceTrackerList;
-
-	@Reference
-	private StorageEngine _storageEngine;
 
 	@Reference
 	private TrashHelper _trashHelper;

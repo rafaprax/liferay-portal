@@ -23,13 +23,14 @@ import com.liferay.document.library.kernel.service.DLAppServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLFolderLocalServiceUtil;
 import com.liferay.document.library.kernel.util.DLUtil;
-import com.liferay.dynamic.data.mapping.kernel.DDMStructureManagerUtil;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.test.util.lar.BaseStagedModelDataHandlerTestCase;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedModel;
@@ -107,8 +108,7 @@ public class FolderStagedModelDataHandlerTest
 			companyGroup.getGroupId(), DLFileEntryMetadata.class.getName());
 
 		addDependentStagedModel(
-			dependentStagedModelsMap,
-			DDMStructureManagerUtil.getDDMStructureModelClass(), ddmStructure);
+			dependentStagedModelsMap, DDMStructure.class, ddmStructure);
 
 		DLFileEntryType dlFileEntryType = addDLFileEntryType(
 			companyGroup.getGroupId(), ddmStructure.getStructureId());
@@ -144,8 +144,7 @@ public class FolderStagedModelDataHandlerTest
 			group.getGroupId(), DLFileEntryMetadata.class.getName());
 
 		addDependentStagedModel(
-			dependentStagedModelsMap,
-			DDMStructureManagerUtil.getDDMStructureModelClass(), ddmStructure);
+			dependentStagedModelsMap, DDMStructure.class, ddmStructure);
 
 		DLFileEntryType dlFileEntryType = addDLFileEntryType(
 			group.getGroupId(), ddmStructure.getStructureId());
@@ -182,7 +181,7 @@ public class FolderStagedModelDataHandlerTest
 				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 				new long[] {ddmStructureId}, serviceContext);
 
-		DDMStructureManagerUtil.updateStructureKey(
+		updateStructureKey(
 			ddmStructureId, DLUtil.getDDMStructureKey(dlFileEntryType));
 
 		return dlFileEntryType;
@@ -278,13 +277,21 @@ public class FolderStagedModelDataHandlerTest
 		return DLFolder.class;
 	}
 
-	protected void validateCompanyDependenciesImport(
-			Map<String, List<StagedModel>> dependentStagedModelsMap,
-			Group group)
-		throws Exception {
+	protected void updateStructureKey(long structureId, String structureKey)
+		throws PortalException {
 
-		Class<?> ddmStructureClass =
-			DDMStructureManagerUtil.getDDMStructureModelClass();
+		DDMStructure ddmStructure =
+			DDMStructureLocalServiceUtil.getDDMStructure(structureId);
+
+		ddmStructure.setStructureKey(structureKey);
+
+		DDMStructureLocalServiceUtil.updateDDMStructure(ddmStructure);
+	}
+
+	protected void validateCompanyDependenciesImport(
+		Map<String, List<StagedModel>> dependentStagedModelsMap, Group group) {
+
+		Class<?> ddmStructureClass = DDMStructure.class;
 
 		List<StagedModel> ddmStructureDependentStagedModels =
 			dependentStagedModelsMap.get(ddmStructureClass.getSimpleName());
@@ -298,7 +305,7 @@ public class FolderStagedModelDataHandlerTest
 
 		Assert.assertNull(
 			"Company DDM structure dependency should not be imported",
-			DDMStructureManagerUtil.fetchStructureByUuidAndGroupId(
+			DDMStructureLocalServiceUtil.fetchDDMStructureByUuidAndGroupId(
 				ddmStructure.getUuid(), group.getGroupId()));
 
 		List<StagedModel> dlFileEntryTypesDependentStagedModels =
@@ -324,8 +331,7 @@ public class FolderStagedModelDataHandlerTest
 			Group group)
 		throws Exception {
 
-		Class<?> ddmStructureClass =
-			DDMStructureManagerUtil.getDDMStructureModelClass();
+		Class<?> ddmStructureClass = DDMStructure.class;
 
 		List<StagedModel> ddmStructureDependentStagedModels =
 			dependentStagedModelsMap.get(ddmStructureClass.getSimpleName());
@@ -337,7 +343,7 @@ public class FolderStagedModelDataHandlerTest
 		DDMStructure ddmStructure =
 			(DDMStructure)ddmStructureDependentStagedModels.get(0);
 
-		DDMStructureManagerUtil.getStructureByUuidAndGroupId(
+		DDMStructureLocalServiceUtil.getDDMStructureByUuidAndGroupId(
 			ddmStructure.getUuid(), group.getGroupId());
 
 		List<StagedModel> dlFileEntryTypesDependentStagedModels =
