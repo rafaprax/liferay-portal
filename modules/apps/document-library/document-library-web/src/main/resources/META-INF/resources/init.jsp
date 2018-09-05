@@ -23,7 +23,6 @@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
 taglib uri="http://liferay.com/tld/comment" prefix="liferay-comment" %><%@
 taglib uri="http://liferay.com/tld/ddm" prefix="liferay-ddm" %><%@
-taglib uri="http://liferay.com/tld/dynamic-section" prefix="liferay-dynamic-section" %><%@
 taglib uri="http://liferay.com/tld/expando" prefix="liferay-expando" %><%@
 taglib uri="http://liferay.com/tld/export-import-changeset" prefix="liferay-export-import-changeset" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
@@ -124,14 +123,14 @@ page import="com.liferay.document.library.web.internal.util.DLSubscriptionUtil" 
 page import="com.liferay.document.library.web.internal.util.DLTrashUtil" %><%@
 page import="com.liferay.document.library.web.internal.util.DLWebComponentProvider" %><%@
 page import="com.liferay.document.library.web.internal.util.IGUtil" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.NoSuchStructureException" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.StorageFieldRequiredException" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.StructureDefinitionException" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.StructureDuplicateElementException" %><%@
+page import="com.liferay.dynamic.data.mapping.exception.StructureNameException" %><%@
 page import="com.liferay.dynamic.data.mapping.kernel.DDMStructure" %><%@
 page import="com.liferay.dynamic.data.mapping.kernel.DDMStructureManager" %><%@
 page import="com.liferay.dynamic.data.mapping.kernel.DDMStructureManagerUtil" %><%@
-page import="com.liferay.dynamic.data.mapping.kernel.NoSuchStructureException" %><%@
-page import="com.liferay.dynamic.data.mapping.kernel.StorageFieldRequiredException" %><%@
-page import="com.liferay.dynamic.data.mapping.kernel.StructureDefinitionException" %><%@
-page import="com.liferay.dynamic.data.mapping.kernel.StructureDuplicateElementException" %><%@
-page import="com.liferay.dynamic.data.mapping.kernel.StructureNameException" %><%@
 page import="com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil" %><%@
 page import="com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue" %><%@
 page import="com.liferay.dynamic.data.mapping.storage.DDMFormValues" %><%@
