@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.util.Html;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.HtmlImpl;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -174,7 +173,7 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributorTest
 		stubber.when(
 			spy
 		).getResourceBundle(
-			Matchers.any(Locale.class)
+			Matchers.any(HttpServletRequest.class)
 		);
 
 		stubber = PowerMockito.doReturn("token");

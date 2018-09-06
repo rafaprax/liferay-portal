@@ -27,12 +27,14 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +42,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -85,7 +89,7 @@ public class SelectDDMFormFieldTemplateContextContributor
 		Map<String, String> stringsMap = new HashMap<>();
 
 		ResourceBundle resourceBundle = getResourceBundle(
-			ddmFormFieldRenderingContext.getLocale());
+			ddmFormFieldRenderingContext.getHttpServletRequest());
 
 		stringsMap.put(
 			"chooseAnOption",
@@ -182,17 +186,25 @@ public class SelectDDMFormFieldTemplateContextContributor
 		return predefinedValueString;
 	}
 
-	protected ResourceBundle getResourceBundle(Locale locale) {
+	protected ResourceBundle getResourceBundle(
+		HttpServletRequest httpServletRequest) {
+
 		Class<?> clazz = getClass();
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		Locale displayLocale = themeDisplay.getLocale();
 
 		ResourceBundleLoader portalResourceBundleLoader =
 			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
 
 		ResourceBundle portalResourceBundle =
-			portalResourceBundleLoader.loadResourceBundle(locale);
+			portalResourceBundleLoader.loadResourceBundle(displayLocale);
 
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", locale, clazz.getClassLoader());
+			"content.Language", displayLocale, clazz.getClassLoader());
 
 		return new AggregateResourceBundle(
 			resourceBundle, portalResourceBundle);
