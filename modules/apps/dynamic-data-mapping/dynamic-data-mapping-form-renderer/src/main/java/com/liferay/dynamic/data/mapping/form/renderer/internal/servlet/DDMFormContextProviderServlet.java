@@ -21,6 +21,8 @@ import com.liferay.dynamic.data.mapping.form.renderer.internal.DDMFormPagesTempl
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.portal.events.EventsProcessorUtil;
+import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -33,6 +35,8 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.util.PropsValues;
 
 import java.io.IOException;
 
@@ -40,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +64,21 @@ import org.osgi.service.component.annotations.Reference;
 	service = Servlet.class
 )
 public class DDMFormContextProviderServlet extends HttpServlet {
+
+	protected void createContext(
+		HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			EventsProcessorUtil.process(
+				PropsKeys.SERVLET_SERVICE_EVENTS_PRE,
+				PropsValues.SERVLET_SERVICE_EVENTS_PRE, request, response);
+		}
+		catch (ActionException ae) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(ae, ae);
+			}
+		}
+	}
 
 	protected List<Object> createDDMFormPagesTemplateContext(
 		HttpServletRequest request, HttpServletResponse response,
@@ -148,7 +166,9 @@ public class DDMFormContextProviderServlet extends HttpServlet {
 	@Override
 	protected void doPost(
 			HttpServletRequest request, HttpServletResponse response)
-		throws IOException, ServletException {
+		throws IOException {
+
+		createContext(request, response);
 
 		String portletNamespace = ParamUtil.getString(
 			request, "portletNamespace");
