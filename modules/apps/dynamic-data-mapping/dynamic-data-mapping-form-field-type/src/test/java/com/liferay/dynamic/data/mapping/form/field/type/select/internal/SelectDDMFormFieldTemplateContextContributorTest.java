@@ -36,6 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -320,7 +322,7 @@ public class SelectDDMFormFieldTemplateContextContributorTest
 		stubber.when(
 			spy
 		).getResourceBundle(
-			Matchers.any(Locale.class)
+			Matchers.any(HttpServletRequest.class)
 		);
 
 		return spy;

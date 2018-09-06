@@ -99,7 +99,7 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 		Map<String, String> stringsMap = new HashMap<>();
 
 		ResourceBundle resourceBundle = getResourceBundle(
-			ddmFormFieldRenderingContext.getLocale());
+			ddmFormFieldRenderingContext.getHttpServletRequest());
 
 		stringsMap.put("select", LanguageUtil.get(resourceBundle, "select"));
 
@@ -195,15 +195,23 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 		return sb.toString();
 	}
 
-	protected ResourceBundle getResourceBundle(Locale locale) {
+	protected ResourceBundle getResourceBundle(
+		HttpServletRequest httpServletRequest) {
+
 		ResourceBundleLoader portalResourceBundleLoader =
 			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
 
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		Locale displayLocale = themeDisplay.getLocale();
+
 		ResourceBundle portalResourceBundle =
-			portalResourceBundleLoader.loadResourceBundle(locale);
+			portalResourceBundleLoader.loadResourceBundle(displayLocale);
 
 		ResourceBundle moduleResourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", locale, getClass());
+			"content.Language", displayLocale, getClass());
 
 		return new AggregateResourceBundle(
 			moduleResourceBundle, portalResourceBundle);
