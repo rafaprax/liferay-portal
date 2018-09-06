@@ -29,11 +29,7 @@ public class DDMFormTemplateContextFactoryUtil {
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		if (themeDisplay != null) {
-			return themeDisplay.getPathThemeImages();
-		}
-
-		return ParamUtil.getString(request, "pathThemeImages");
+		return themeDisplay.getPathThemeImages();
 	}
 
 }
