@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -55,7 +56,8 @@ public class DDMExpressionFactoryImplTest extends PowerMockito {
 		};
 
 		when(
-			_ddmExpressionFunctionTracker.getDDMExpressionFunctions()
+			_ddmExpressionFunctionTracker.getDDMExpressionFunctions(
+				Matchers.any())
 		).thenReturn(
 			functions
 		);

@@ -25,6 +25,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class TextDDMFormFieldTemplateContextContributor
 
 		String value = getValue(ddmFormFieldRenderingContext);
 
-		if (value != null) {
+		if (Validator.isNotNull(value)) {
 			parameters.put("value", value);
 		}
 

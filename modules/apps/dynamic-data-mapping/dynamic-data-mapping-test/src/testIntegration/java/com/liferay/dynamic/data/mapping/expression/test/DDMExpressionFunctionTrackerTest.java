@@ -65,6 +65,11 @@ public class DDMExpressionFunctionTrackerTest {
 			Assert.assertNotEquals(
 				entry.getValue(), ddmExpressionFunctions2.get(entry.getKey()));
 		}
+
+		_ddmExpressionFunctionTracker.ungetDDMExpressionFunctions(
+			ddmExpressionFunctions1);
+		_ddmExpressionFunctionTracker.ungetDDMExpressionFunctions(
+			ddmExpressionFunctions2);
 	}
 
 	@Inject(type = DDMExpressionFunctionTracker.class)
