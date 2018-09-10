@@ -22,6 +22,10 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -42,16 +46,25 @@ public class DDMExpressionFunctionTrackerTest {
 			PermissionCheckerTestRule.INSTANCE);
 
 	@Test
-	public void test() {
-		DDMExpressionFunction ddmExpressionFunction1 =
-			_ddmExpressionFunctionTracker.getDDMExpressionFunction(
-				"setRequired");
+	public void testGetDDMExpressionFunctionsShouldReturnNewInstances() {
+		Set<String> functionNames = new HashSet<>();
 
-		DDMExpressionFunction ddmExpressionFunction2 =
-			_ddmExpressionFunctionTracker.getDDMExpressionFunction(
-				"setRequired");
+		functionNames.add("setRequired");
+		functionNames.add("setValue");
 
-		Assert.assertNotEquals(ddmExpressionFunction1, ddmExpressionFunction2);
+		Map<String, DDMExpressionFunction> ddmExpressionFunctions1 =
+			_ddmExpressionFunctionTracker.getDDMExpressionFunctions(
+				functionNames);
+		Map<String, DDMExpressionFunction> ddmExpressionFunctions2 =
+			_ddmExpressionFunctionTracker.getDDMExpressionFunctions(
+				functionNames);
+
+		for (Map.Entry<String, DDMExpressionFunction> entry :
+				ddmExpressionFunctions1.entrySet()) {
+
+			Assert.assertNotEquals(
+				entry.getValue(), ddmExpressionFunctions2.get(entry.getKey()));
+		}
 	}
 
 	@Inject(type = DDMExpressionFunctionTracker.class)

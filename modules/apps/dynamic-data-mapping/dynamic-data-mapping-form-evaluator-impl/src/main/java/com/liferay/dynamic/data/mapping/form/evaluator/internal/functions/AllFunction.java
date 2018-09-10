@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Leonardo Barros
@@ -94,6 +95,7 @@ public class AllFunction
 		return clazz.isArray();
 	}
 
+	@Reference
 	protected DDMExpressionFactory ddmExpressionFactory;
 
 	private static final Log _log = LogFactoryUtil.getLog(AllFunction.class);

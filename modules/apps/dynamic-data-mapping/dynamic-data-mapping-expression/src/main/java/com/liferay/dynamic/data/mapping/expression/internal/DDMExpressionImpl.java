@@ -68,6 +68,8 @@ public class DDMExpressionImpl<T> implements DDMExpression<T> {
 		catch (Exception e) {
 			throw new DDMExpressionException(e);
 		}
+		finally {
+		}
 	}
 
 	@Override
