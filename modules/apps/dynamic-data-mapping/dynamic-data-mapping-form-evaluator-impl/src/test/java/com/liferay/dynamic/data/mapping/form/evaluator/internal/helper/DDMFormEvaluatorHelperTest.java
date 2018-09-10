@@ -1130,7 +1130,8 @@ public class DDMFormEvaluatorHelperTest extends PowerMockito {
 			DDMExpressionFunctionTracker.class);
 
 		when(
-			ddmExpressionFunctionTracker.getDDMExpressionFunctions()
+			ddmExpressionFunctionTracker.getDDMExpressionFunctions(
+				Matchers.any())
 		).thenReturn(
 			ddmExpressionFunctionMap
 		);

@@ -28,4 +28,7 @@ public interface DDMExpressionFunctionTracker {
 	public Map<String, DDMExpressionFunction> getDDMExpressionFunctions(
 		Set<String> functionNames);
 
+	public void ungetDDMExpressionFunctions(
+		Map<String, DDMExpressionFunction> ddmExpressionFunctionsMap);
+
 }

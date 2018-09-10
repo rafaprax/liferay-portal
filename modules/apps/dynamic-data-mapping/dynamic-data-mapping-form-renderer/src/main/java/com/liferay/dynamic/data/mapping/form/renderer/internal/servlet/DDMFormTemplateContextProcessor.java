@@ -118,12 +118,16 @@ public class DDMFormTemplateContextProcessor {
 			jsonObject.getJSONArray("options"), ddmFormField);
 		setDDMFormFieldOptionsProperty(jsonObject, ddmFormField, "columns");
 		setDDMFormFieldOptionsProperty(jsonObject, ddmFormField, "rows");
+		setDDMFormFieldPlaceholder(
+			jsonObject.getString("placeholder"), ddmFormField);
 		setDDMFormFieldReadOnly(
 			jsonObject.getBoolean("readOnly", false), ddmFormField);
 		setDDMFormFieldRepeatable(
 			jsonObject.getBoolean("repeatable", false), ddmFormField);
 		setDDMFormFieldRequired(
 			jsonObject.getBoolean("required", false), ddmFormField);
+		setDDMFormFieldShowAsSwitcher(
+			jsonObject.getBoolean("showAsSwitcher"), ddmFormField);
 		setDDMFormFieldValidation(
 			jsonObject.getJSONObject("validation"), ddmFormField);
 		setDDMFormFieldVisibilityExpression(
@@ -294,6 +298,14 @@ public class DDMFormTemplateContextProcessor {
 		ddmFormField.setProperty(property, ddmFormFieldOptions);
 	}
 
+	protected void setDDMFormFieldPlaceholder(
+		String placeholder, DDMFormField ddmFormField) {
+
+		ddmFormField.setProperty(
+			"placeholder",
+			getLocalizedValue(GetterUtil.getString(placeholder)));
+	}
+
 	protected void setDDMFormFieldReadOnly(
 		boolean readOnly, DDMFormField ddmFormField) {
 
@@ -310,6 +322,12 @@ public class DDMFormTemplateContextProcessor {
 		boolean required, DDMFormField ddmFormField) {
 
 		ddmFormField.setRequired(required);
+	}
+
+	protected void setDDMFormFieldShowAsSwitcher(
+		boolean showAsSwitcher, DDMFormField ddmFormField) {
+
+		ddmFormField.setProperty("showAsSwitcher", showAsSwitcher);
 	}
 
 	protected void setDDMFormFieldValidation(

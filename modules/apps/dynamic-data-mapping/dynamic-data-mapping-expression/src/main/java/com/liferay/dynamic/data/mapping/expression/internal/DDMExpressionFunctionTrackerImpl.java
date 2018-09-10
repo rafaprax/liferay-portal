@@ -17,15 +17,13 @@ package com.liferay.dynamic.data.mapping.expression.internal;
 import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
+import com.liferay.dynamic.data.mapping.expression.internal.helper.DDMExpressionFunctionTrackerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.service.component.ComponentFactory;
-import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
@@ -49,7 +47,8 @@ public class DDMExpressionFunctionTrackerImpl
 
 		for (String functionName : functionNames) {
 			DDMExpressionFunction ddmExpressionFunction =
-				getDDMExpressionFunction(functionName);
+				ddmExpressionFunctionTrackerHelper.getDDMExpressionFunction(
+					functionName);
 
 			if (ddmExpressionFunction != null) {
 				ddmExpressionFunctionsMap.put(
@@ -60,6 +59,18 @@ public class DDMExpressionFunctionTrackerImpl
 		return ddmExpressionFunctionsMap;
 	}
 
+	@Override
+	public void ungetDDMExpressionFunctions(
+		Map<String, DDMExpressionFunction> ddmExpressionFunctionsMap) {
+
+		for (Map.Entry<String, DDMExpressionFunction> entry :
+				ddmExpressionFunctionsMap.entrySet()) {
+
+			ddmExpressionFunctionTrackerHelper.ungetDDMExpressionFunction(
+				entry.getValue());
+		}
+	}
+
 	@Reference(
 		cardinality = ReferenceCardinality.MULTIPLE,
 		policy = ReferencePolicy.DYNAMIC,
@@ -68,64 +79,22 @@ public class DDMExpressionFunctionTrackerImpl
 		unbind = "unsetComponentFactory"
 	)
 	protected void addComponentFactory(ComponentFactory componentFactory) {
-		ComponentInstance componentInstance = componentFactory.newInstance(
-			null);
-
-		DDMExpressionFunction expressionFunction =
-			(DDMExpressionFunction)componentInstance.getInstance();
-
-		ddmExpressionFunctionComponentFactoryMap.put(
-			expressionFunction.getName(), componentFactory);
-
-		componentInstance.dispose();
+		ddmExpressionFunctionTrackerHelper.addComponentFactory(
+			componentFactory);
 	}
 
 	@Deactivate
 	protected void deactivate() {
-		ddmExpressionFunctionComponentFactoryMap.clear();
-	}
-
-	protected DDMExpressionFunction getDDMExpressionFunction(
-		ComponentFactory componentFactory) {
-
-		ComponentInstance componentInstance = componentFactory.newInstance(
-			null);
-
-		DDMExpressionFunction ddmExpressionFunction =
-			(DDMExpressionFunction)componentInstance.getInstance();
-
-		componentInstance.dispose();
-
-		return ddmExpressionFunction;
-	}
-
-	protected DDMExpressionFunction getDDMExpressionFunction(
-		String functionName) {
-
-		ComponentFactory componentFactory =
-			ddmExpressionFunctionComponentFactoryMap.get(functionName);
-
-		if (componentFactory == null) {
-			return null;
-		}
-
-		return getDDMExpressionFunction(componentFactory);
+		ddmExpressionFunctionTrackerHelper.clear();
 	}
 
 	protected void unsetComponentFactory(ComponentFactory componentFactory) {
-		Set<Map.Entry<String, ComponentFactory>> entrySet =
-			ddmExpressionFunctionComponentFactoryMap.entrySet();
-
-		for (Map.Entry<String, ComponentFactory> entry : entrySet) {
-			if (Objects.equals(componentFactory, entry.getValue())) {
-				ddmExpressionFunctionComponentFactoryMap.remove(entry.getKey());
-
-				break;
-			}
-		}
+		ddmExpressionFunctionTrackerHelper.removeComponentFactory(
+			componentFactory);
 	}
 
-	protected Map<String, ComponentFactory>
-		ddmExpressionFunctionComponentFactoryMap = new ConcurrentHashMap<>();
+	protected DDMExpressionFunctionTrackerHelper
+		ddmExpressionFunctionTrackerHelper =
+			new DDMExpressionFunctionTrackerHelper();
 
 }

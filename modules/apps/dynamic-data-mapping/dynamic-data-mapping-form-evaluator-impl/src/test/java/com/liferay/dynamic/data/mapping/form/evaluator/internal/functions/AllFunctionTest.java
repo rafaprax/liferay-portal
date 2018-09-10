@@ -24,21 +24,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import org.powermock.api.mockito.PowerMockito;
 
 /**
  * @author Leonardo Barros
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AllFunctionTest {
+public class AllFunctionTest extends PowerMockito {
 
 	@Before
 	public void setUp() throws Exception {
-		_ddmExpressionFactory.setDDMExpressionFunctionTracker(
-			_ddmExpressionFunctionTracker);
-
 		_allFunction.ddmExpressionFactory = _ddmExpressionFactory;
+
+		field(
+			DDMExpressionFactoryImpl.class, "ddmExpressionFunctionTracker"
+		).set(
+			_ddmExpressionFactory, mock(DDMExpressionFunctionTracker.class)
+		);
 	}
 
 	@Test
@@ -95,8 +99,5 @@ public class AllFunctionTest {
 	private final AllFunction _allFunction = new AllFunction();
 	private final DDMExpressionFactoryImpl _ddmExpressionFactory =
 		new DDMExpressionFactoryImpl();
-
-	@Mock
-	private DDMExpressionFunctionTracker _ddmExpressionFunctionTracker;
 
 }
