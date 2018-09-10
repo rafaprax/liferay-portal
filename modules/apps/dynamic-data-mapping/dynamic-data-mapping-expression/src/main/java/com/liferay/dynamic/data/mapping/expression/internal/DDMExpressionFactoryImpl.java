@@ -23,6 +23,7 @@ import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,7 +46,9 @@ public class DDMExpressionFactoryImpl implements DDMExpressionFactory {
 			createExpressionRequest.getDDMExpressionActionHandler());
 		ddmExpression.setDDMExpressionFieldAccessor(
 			createExpressionRequest.getDDMExpressionFieldAccessor());
-		ddmExpression.setDDMExpressionFunctions(getDDMExpressionFunctions());
+		ddmExpression.setDDMExpressionFunctions(
+			getDDMExpressionFunctions(
+				ddmExpression.getExpressionFunctionNames()));
 		ddmExpression.setDDMExpressionObserver(
 			createExpressionRequest.getDDMExpressionObserver());
 		ddmExpression.setDDMExpressionParameterAccessor(
@@ -60,12 +63,15 @@ public class DDMExpressionFactoryImpl implements DDMExpressionFactory {
 		this.ddmExpressionFunctionTracker = ddmExpressionFunctionTracker;
 	}
 
-	protected Map<String, DDMExpressionFunction> getDDMExpressionFunctions() {
+	protected Map<String, DDMExpressionFunction> getDDMExpressionFunctions(
+		Set<String> expressionFunctionNames) {
+
 		if (ddmExpressionFunctionTracker == null) {
 			return Collections.emptyMap();
 		}
 
-		return ddmExpressionFunctionTracker.getDDMExpressionFunctions();
+		return ddmExpressionFunctionTracker.getDDMExpressionFunctions(
+			expressionFunctionNames);
 	}
 
 	@Reference

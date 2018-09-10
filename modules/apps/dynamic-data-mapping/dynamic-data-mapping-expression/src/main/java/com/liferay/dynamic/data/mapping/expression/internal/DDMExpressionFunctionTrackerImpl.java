@@ -18,13 +18,11 @@ import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
@@ -43,26 +41,23 @@ public class DDMExpressionFunctionTrackerImpl
 	implements DDMExpressionFunctionTracker {
 
 	@Override
-	public DDMExpressionFunction getDDMExpressionFunction(String functionName) {
-		ComponentFactory componentFactory =
-			ddmExpressionFunctionComponentFactoryMap.get(functionName);
+	public Map<String, DDMExpressionFunction> getDDMExpressionFunctions(
+		Set<String> functionNames) {
 
-		if (componentFactory == null) {
-			return null;
+		Map<String, DDMExpressionFunction> ddmExpressionFunctionsMap =
+			new HashMap<>(functionNames.size());
+
+		for (String functionName : functionNames) {
+			DDMExpressionFunction ddmExpressionFunction =
+				getDDMExpressionFunction(functionName);
+
+			if (ddmExpressionFunction != null) {
+				ddmExpressionFunctionsMap.put(
+					functionName, ddmExpressionFunction);
+			}
 		}
 
-		return getDDMExpressionFunction(componentFactory);
-	}
-
-	@Override
-	public Map<String, DDMExpressionFunction> getDDMExpressionFunctions() {
-		Set<String> keySet = ddmExpressionFunctionComponentFactoryMap.keySet();
-
-		Stream<String> stream = keySet.stream();
-
-		return stream.collect(
-			Collectors.toConcurrentMap(
-				Function.identity(), key -> getDDMExpressionFunction(key)));
+		return ddmExpressionFunctionsMap;
 	}
 
 	@Reference(
@@ -96,7 +91,25 @@ public class DDMExpressionFunctionTrackerImpl
 		ComponentInstance componentInstance = componentFactory.newInstance(
 			null);
 
-		return (DDMExpressionFunction)componentInstance.getInstance();
+		DDMExpressionFunction ddmExpressionFunction =
+			(DDMExpressionFunction)componentInstance.getInstance();
+
+		componentInstance.dispose();
+
+		return ddmExpressionFunction;
+	}
+
+	protected DDMExpressionFunction getDDMExpressionFunction(
+		String functionName) {
+
+		ComponentFactory componentFactory =
+			ddmExpressionFunctionComponentFactoryMap.get(functionName);
+
+		if (componentFactory == null) {
+			return null;
+		}
+
+		return getDDMExpressionFunction(componentFactory);
 	}
 
 	protected void unsetComponentFactory(ComponentFactory componentFactory) {
