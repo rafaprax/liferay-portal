@@ -47,6 +47,18 @@ public class DDMExpressionFunctionTrackerHelper {
 	}
 
 	public void clear() {
+		Set<Map.Entry<String, GenericObjectPool<DDMExpressionFunction>>>
+			entrySet = ddmExpressionFunctionComponentFactoryMap.entrySet();
+
+		for (Map.Entry<String, GenericObjectPool<DDMExpressionFunction>> entry :
+				entrySet) {
+
+			GenericObjectPool<DDMExpressionFunction> ddmExpressionFunctionPool =
+				entry.getValue();
+
+			ddmExpressionFunctionPool.close();
+		}
+
 		ddmExpressionFunctionComponentFactoryMap.clear();
 	}
 
@@ -68,13 +80,13 @@ public class DDMExpressionFunctionTrackerHelper {
 		for (Map.Entry<String, GenericObjectPool<DDMExpressionFunction>> entry :
 				entrySet) {
 
-			GenericObjectPool<DDMExpressionFunction> ddmExpressionPool =
+			GenericObjectPool<DDMExpressionFunction> ddmExpressionFunctionPool =
 				entry.getValue();
 
 			DDMExpressionFunctionPooledFactory
 				ddmExpressionFunctionPooledFactory =
 					(DDMExpressionFunctionPooledFactory)
-						ddmExpressionPool.getFactory();
+						ddmExpressionFunctionPool.getFactory();
 
 			if (Objects.equals(
 					componentFactory,
