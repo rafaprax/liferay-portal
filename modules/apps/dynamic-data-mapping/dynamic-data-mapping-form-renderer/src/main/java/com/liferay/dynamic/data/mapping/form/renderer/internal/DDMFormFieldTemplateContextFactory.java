@@ -162,8 +162,11 @@ public class DDMFormFieldTemplateContextFactory {
 			Map<String, Object> changedProperties = getChangedProperties(
 				ddmFormFieldValue);
 
+			DDMFormField ddmFormField = _ddmFormFieldsMap.get(
+				ddmFormFieldValue.getName());
+
 			if (!_ddmFormRenderingContext.isFullContext() &&
-				changedProperties.isEmpty()) {
+				changedProperties.isEmpty() && !ddmFormField.isRequired()) {
 
 				continue;
 			}
@@ -527,7 +530,8 @@ public class DDMFormFieldTemplateContextFactory {
 		}
 
 		ddmFormFieldTemplateContext.put(
-			"required", MapUtil.getBoolean(changedProperties, "required"));
+			"required",
+			MapUtil.getBoolean(changedProperties, "required", defaultValue));
 	}
 
 	protected void setDDMFormFieldTemplateContextShowLabel(
@@ -593,7 +597,7 @@ public class DDMFormFieldTemplateContextFactory {
 			ddmFormFieldTemplateContext.put(
 				"value", changedProperties.get("value"));
 		}
-		else if (_ddmFormRenderingContext.isFullContext() && (value != null)) {
+		else if (value != null) {
 			ddmFormFieldTemplateContext.put("value", value.getString(_locale));
 		}
 	}

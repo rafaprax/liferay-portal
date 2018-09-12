@@ -349,14 +349,14 @@ public class DDMFormEvaluatorHelper {
 		DDMFormFieldValueAccessor<?> ddmFormFieldValueAccessor =
 			getDDMFormFieldValueAccessor(ddmFormField.getType());
 
-		if (!ddmFormFieldValueAccessor.isEmpty(
+		if (ddmFormFieldValueAccessor.isEmpty(
 				ddmFormFieldValue,
 				_ddmFormEvaluatorEvaluateRequest.getLocale())) {
 
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	protected void setRequiredErrorMessage(

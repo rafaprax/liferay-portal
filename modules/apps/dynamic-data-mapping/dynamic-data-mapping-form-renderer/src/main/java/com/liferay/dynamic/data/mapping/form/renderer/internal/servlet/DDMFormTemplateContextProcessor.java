@@ -214,6 +214,7 @@ public class DDMFormTemplateContextProcessor {
 	protected void initModels() {
 		setDDMFormRules();
 
+		setDDMFormDefaultLocale();
 		setDDMFormValuesDefaultLocale();
 		setDDMFormValuesAvailableLocales();
 
@@ -222,6 +223,10 @@ public class DDMFormTemplateContextProcessor {
 
 	protected void process() {
 		traversePages(_jsonObject.getJSONArray("pages"));
+	}
+
+	protected void setDDMFormDefaultLocale() {
+		_ddmForm.setDefaultLocale(_locale);
 	}
 
 	protected void setDDMFormFieldDataProviderSettings(
