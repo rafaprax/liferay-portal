@@ -84,7 +84,7 @@ AUI.add(
 									delete fieldContext.valid;
 								}
 
-								if (fieldContext.valueChanged && !Util.compare(field.get('value'), fieldContext.value)) {
+								if (fieldContext.value && !Util.compare(field.get('value'), fieldContext.value)) {
 									field.setValue(fieldContext.value);
 								}
 							}

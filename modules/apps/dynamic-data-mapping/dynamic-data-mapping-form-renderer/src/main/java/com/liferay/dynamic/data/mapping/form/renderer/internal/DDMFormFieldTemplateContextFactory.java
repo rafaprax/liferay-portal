@@ -101,6 +101,8 @@ public class DDMFormFieldTemplateContextFactory {
 
 		Map<String, Object> ddmFormFieldTemplateContext = new HashMap<>();
 
+		setDDMFormFieldTemplateContextFieldName(
+			ddmFormFieldTemplateContext, ddmFormField.getName());
 		setDDMFormFieldTemplateContextLocalizedValue(
 			ddmFormFieldTemplateContext, "label", ddmFormField.getLabel());
 		setDDMFormFieldTemplateContextName(
@@ -588,11 +590,10 @@ public class DDMFormFieldTemplateContextFactory {
 		Map<String, Object> ddmFormFieldTemplateContext, Value value) {
 
 		if (changedProperties.get("value") != null) {
-			Object evaluationResultValue = changedProperties.get("value");
-
-			ddmFormFieldTemplateContext.put("value", evaluationResultValue);
+			ddmFormFieldTemplateContext.put(
+				"value", changedProperties.get("value"));
 		}
-		else if (value != null) {
+		else if (_ddmFormRenderingContext.isFullContext() && (value != null)) {
 			ddmFormFieldTemplateContext.put("value", value.getString(_locale));
 		}
 	}
@@ -670,8 +671,6 @@ public class DDMFormFieldTemplateContextFactory {
 		setDDMFormFieldTemplateContextDataType(
 			ddmFormFieldTemplateContext, ddmFormField.getDataType());
 		setDDMFormFieldTemplateContextDir(ddmFormFieldTemplateContext);
-		setDDMFormFieldTemplateContextFieldName(
-			ddmFormFieldTemplateContext, ddmFormField.getName());
 		setDDMFormFieldTemplateContextInstanceId(
 			ddmFormFieldTemplateContext, ddmFormFieldValue.getInstanceId());
 		setDDMFormFieldTemplateContextLocale(ddmFormFieldTemplateContext);
