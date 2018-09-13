@@ -14,6 +14,8 @@
 
 package com.liferay.portal.equinox.log.bridge.internal;
 
+import com.liferay.portal.events.StartupHelperUtil;
+
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
 
@@ -27,15 +29,27 @@ public class BundleStartStopLogger implements SynchronousBundleListener {
 
 	@Override
 	public void bundleChanged(BundleEvent bundleEvent) {
-		if (!_log.isDebugEnabled()) {
-			return;
-		}
+		if ((StartupHelperUtil.getStartupHelper() == null) ||
+			!StartupHelperUtil.isStartupFinished()) {
 
-		if (bundleEvent.getType() == BundleEvent.STARTED) {
-			_log.debug("STARTED {}", bundleEvent.getBundle());
+			if (_log.isInfoEnabled()) {
+				if (bundleEvent.getType() == BundleEvent.STARTED) {
+					_log.debug("STARTED {}", bundleEvent.getBundle());
+				}
+				else if (bundleEvent.getType() == BundleEvent.STOPPED) {
+					_log.debug("STOPPED {}", bundleEvent.getBundle());
+				}
+			}
 		}
-		else if (bundleEvent.getType() == BundleEvent.STOPPED) {
-			_log.debug("STOPPED {}", bundleEvent.getBundle());
+		else if ((StartupHelperUtil.getStartupHelper() != null) &&
+				 StartupHelperUtil.isStartupFinished()) {
+
+			if (bundleEvent.getType() == BundleEvent.STARTED) {
+				_log.info("STARTED {}", bundleEvent.getBundle());
+			}
+			else if (bundleEvent.getType() == BundleEvent.STOPPED) {
+				_log.info("STOPPED {}", bundleEvent.getBundle());
+			}
 		}
 	}
 
