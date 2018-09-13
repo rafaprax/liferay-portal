@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.AggregateResourceBundle;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Html;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
@@ -113,10 +114,14 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 		stringsMap.put("select", LanguageUtil.get(resourceBundle, "select"));
 
 		parameters.put("strings", stringsMap);
-		parameters.put(
-			"value",
-			jsonFactory.looseDeserialize(
-				ddmFormFieldRenderingContext.getValue()));
+
+		String value = ddmFormFieldRenderingContext.getValue();
+
+		if (Validator.isNull(value)) {
+			value = "{}";
+		}
+
+		parameters.put("value", jsonFactory.looseDeserialize(value));
 
 		return parameters;
 	}

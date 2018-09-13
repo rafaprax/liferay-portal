@@ -56,14 +56,20 @@ public class TextDDMFormFieldTemplateContextContributor
 
 		Map<String, Object> parameters = new HashMap<>();
 
-		parameters.put(
-			"autocompleteEnabled", isAutocompleteEnabled(ddmFormField));
-		parameters.put("displayStyle", getDisplayStyle(ddmFormField));
+		if (ddmFormFieldRenderingContext.isFullContext()) {
+			parameters.put(
+				"autocompleteEnabled", isAutocompleteEnabled(ddmFormField));
+			parameters.put("displayStyle", getDisplayStyle(ddmFormField));
+			parameters.put(
+				"placeholder",
+				getPlaceholder(ddmFormField, ddmFormFieldRenderingContext));
+			parameters.put(
+				"tooltip",
+				getTooltip(ddmFormField, ddmFormFieldRenderingContext));
+		}
+
 		parameters.put(
 			"options", getOptions(ddmFormField, ddmFormFieldRenderingContext));
-		parameters.put(
-			"placeholder",
-			getPlaceholder(ddmFormField, ddmFormFieldRenderingContext));
 
 		String predefinedValue = getPredefinedValue(
 			ddmFormField, ddmFormFieldRenderingContext);
@@ -77,9 +83,6 @@ public class TextDDMFormFieldTemplateContextContributor
 		if (Validator.isNotNull(value)) {
 			parameters.put("value", value);
 		}
-
-		parameters.put(
-			"tooltip", getTooltip(ddmFormField, ddmFormFieldRenderingContext));
 
 		return parameters;
 	}

@@ -78,6 +78,8 @@ public class DDMFormFieldTemplateContextFactory {
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext =
 			new DDMFormFieldRenderingContext();
 
+		ddmFormFieldRenderingContext.setFullContext(
+			_ddmFormRenderingContext.isFullContext());
 		ddmFormFieldRenderingContext.setHttpServletRequest(
 			_ddmFormRenderingContext.getHttpServletRequest());
 		ddmFormFieldRenderingContext.setHttpServletResponse(
@@ -596,6 +598,8 @@ public class DDMFormFieldTemplateContextFactory {
 		if (changedProperties.get("value") != null) {
 			ddmFormFieldTemplateContext.put(
 				"value", changedProperties.get("value"));
+
+			ddmFormFieldTemplateContext.put("valueChanged", true);
 		}
 		else if (value != null) {
 			ddmFormFieldTemplateContext.put("value", value.getString(_locale));
