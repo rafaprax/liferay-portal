@@ -37,7 +37,7 @@
 	"devDependencies": {
 		"babel-cli": "6.26.0",
 		"babel-loader": "^7.1.4",
-		"babel-preset-env": "^1.6.1",
+		"babel-preset-env": "^1.7.0",
 		"check-source-formatting": "^2.0.4",
 		"jest": "23.2.0",
 		"liferay-jest-junit-reporter": "0.0.4",

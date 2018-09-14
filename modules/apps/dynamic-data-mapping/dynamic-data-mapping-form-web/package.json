@@ -89,6 +89,7 @@
 	},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",
+		"babel-core": "^6.26.3",
 		"babel-eslint": "^8.2.6",
 		"babel-plugin-module-resolver": "^3.1.1",
 		"babel-plugin-transform-class-properties": "^6.24.1",
@@ -123,6 +124,7 @@
 			}
 		},
 		"moduleNameMapper": {
+			"(.*)\\.soy$": "$1.soy.js",
 			"clay-(.*)$": "<rootDir>/node_modules/clay-$1"
 		},
 		"modulePathIgnorePatterns": [

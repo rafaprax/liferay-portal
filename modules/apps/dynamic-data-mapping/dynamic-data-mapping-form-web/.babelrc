@@ -2,7 +2,10 @@
     "env": {
         "test": {
             "presets": [
-                "env",
+                [
+                    "env",
+                    { "modules": false }
+                ],
                 "metal-jsx"
             ],
             "plugins": [
@@ -10,7 +13,8 @@
                 "transform-decorators-legacy",
                 ["module-resolver", {
                     "alias": {
-                        "dynamic-data-mapping-form-field-type/*": "../dynamic-data-mapping-form-field-type/src/main/resources/META-INF/resources"
+                        "dynamic-data-mapping-form-field-type/*": "../dynamic-data-mapping-form-field-type/src/main/resources/META-INF/resources",
+                        "frontend-js-web/*": "../../frontend-js/frontend-js-web/src/main/resources/META-INF/resources"
                     }
                 }]
             ]
