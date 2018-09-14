@@ -83,6 +83,11 @@ public class DDMExpressionEvaluatorVisitor
 		@NotNull DDMExpressionParser.AndExpressionContext context) {
 
 		Boolean boolean1 = visitChild(context, 0);
+
+		if (!boolean1) {
+			return Boolean.FALSE;
+		}
+
 		Boolean boolean2 = visitChild(context, 2);
 
 		return boolean1 && boolean2;
@@ -352,6 +357,11 @@ public class DDMExpressionEvaluatorVisitor
 		@NotNull DDMExpressionParser.OrExpressionContext context) {
 
 		boolean boolean1 = visitChild(context, 0);
+
+		if (boolean1) {
+			return Boolean.TRUE;
+		}
+
 		boolean boolean2 = visitChild(context, 2);
 
 		return boolean1 || boolean2;

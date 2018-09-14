@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.expression.CreateExpressionRequest;
 import com.liferay.dynamic.data.mapping.expression.DDMExpression;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionException;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFactory;
+import com.liferay.dynamic.data.mapping.expression.UpdateFieldPropertyRequest;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateRequest;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateResponse;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormFieldContextKey;
@@ -405,11 +406,16 @@ public class DDMFormEvaluatorHelper {
 			}
 		}
 
-		if (!valid) {
-			Set<DDMFormFieldContextKey> ddmFormFieldContextKeySet =
-				_ddmFormEvaluatorFormValuesHelper.getDDMFormFieldContextKeySet(
-					fieldName);
+		UpdateFieldPropertyRequest updateFieldPropertyRequest = null;
 
+		if (valid) {
+			UpdateFieldPropertyRequest.Builder builder =
+				UpdateFieldPropertyRequest.Builder.newBuilder(
+					fieldName, "valid", true);
+
+			updateFieldPropertyRequest = builder.build();
+		}
+		else {
 			String errorMessage = ddmFormFieldValidation.getErrorMessage();
 
 			if (errorMessage == null) {
@@ -417,18 +423,17 @@ public class DDMFormEvaluatorHelper {
 					_resourceBundle, "this-field-is-invalid");
 			}
 
-			for (DDMFormFieldContextKey ddmFormFieldContextKey :
-					ddmFormFieldContextKeySet) {
+			UpdateFieldPropertyRequest.Builder builder =
+				UpdateFieldPropertyRequest.Builder.newBuilder(
+					fieldName, "valid", false);
 
-				Map<String, Object> properties = new HashMap<>();
-
-				properties.put("errorMessage", errorMessage);
-				properties.put("valid", false);
-
-				ddmFormEvaluatorExpressionObserver.updateFieldProperty(
-					ddmFormFieldContextKey, properties);
-			}
+			updateFieldPropertyRequest = builder.withParameter(
+				"errorMessage", errorMessage
+			).build();
 		}
+
+		ddmFormEvaluatorExpressionObserver.updateFieldProperty(
+			updateFieldPropertyRequest);
 	}
 
 	protected void validateFields() {
