@@ -620,13 +620,16 @@ public class DDMFormFieldTemplateContextFactory {
 			return;
 		}
 
+		DDMFormField ddmFormField = _ddmFormFieldsMap.get(
+			ddmFormFieldValue.getName());
+
+		DDMFormFieldValueAccessor<?> ddmFormFieldValueAccessor =
+			_ddmFormFieldTypeServicesTracker.getDDMFormFieldValueAccessor(
+				ddmFormField.getType());
+
 		Map<String, Object> localizedValue = new HashMap<>();
 
 		for (Locale availableLocale : value.getAvailableLocales()) {
-			DDMFormFieldValueAccessor<?> ddmFormFieldValueAccessor =
-				_ddmFormFieldTypeServicesTracker.getDDMFormFieldValueAccessor(
-					MapUtil.getString(ddmFormFieldTemplateContext, "type"));
-
 			String languageId = LanguageUtil.getLanguageId(availableLocale);
 
 			if (ddmFormFieldValueAccessor == null) {

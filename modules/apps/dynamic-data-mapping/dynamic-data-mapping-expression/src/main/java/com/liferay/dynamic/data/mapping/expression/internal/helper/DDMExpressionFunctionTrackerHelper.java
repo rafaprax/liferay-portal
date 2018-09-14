@@ -92,6 +92,8 @@ public class DDMExpressionFunctionTrackerHelper {
 					componentFactory,
 					ddmExpressionFunctionPooledFactory.getComponentFactory())) {
 
+				ddmExpressionFunctionPool.close();
+
 				ddmExpressionFunctionComponentFactoryMap.remove(entry.getKey());
 
 				break;

@@ -131,6 +131,8 @@ public class DDMFormTemplateContextProcessor {
 		setDDMFormFieldShowAsSwitcher(
 			jsonObject.getBoolean("showAsSwitcher"), ddmFormField);
 		setDDMFormFieldTooltip(jsonObject.getString("tooltip"), ddmFormField);
+		setDDMFormFieldValid(
+			jsonObject.getBoolean("valid", true), ddmFormField);
 		setDDMFormFieldValidation(
 			jsonObject.getJSONObject("validation"), ddmFormField);
 		setDDMFormFieldVisibilityExpression(
@@ -349,6 +351,12 @@ public class DDMFormTemplateContextProcessor {
 
 		ddmFormField.setProperty(
 			"tooltip", getLocalizedValue(GetterUtil.getString(tooltip)));
+	}
+
+	protected void setDDMFormFieldValid(
+		boolean valid, DDMFormField ddmFormField) {
+
+		ddmFormField.setProperty("valid", valid);
 	}
 
 	protected void setDDMFormFieldValidation(
