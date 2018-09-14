@@ -790,10 +790,10 @@ AUI.add(
 					},
 
 					_isSameState: function(state1, state2) {
-						object1 = this._removePropertyDeep(object1, "instanceId");
-						object2 = this._removePropertyDeep(object2, "instanceId");
+						state1 = this._removePropertyDeep(state1, 'instanceId');
+						state2 = this._removePropertyDeep(state2, 'instanceId');
 
-						return JSON.stringify(object1)===JSON.stringify(object2);
+						return JSON.stringify(state1) === JSON.stringify(state2);
 					},
 
 					_onBack: function(event) {
@@ -980,20 +980,20 @@ AUI.add(
 						instance.submitForm();
 					},
 
-					_removePropertyDeep:function (object, property) {
+					_removePropertyDeep: function(object, property) {
 						var newObject = {};
 
 						for (var key in object) {
 							if (!object.hasOwnProperty(key)) continue;
 
 							if (key === property) {
-							   continue;
+								continue;
 							}
-							else if(typeof(object[key]) === 'object' && !Array.isArray(object[key])) {
-							  newObject[key] = removePropertyDeep(object[key], property);
+							else if (typeof(object[key]) === 'object' && !Array.isArray(object[key])) {
+								newObject[key] = removePropertyDeep(object[key], property);
 							}
 							else {
-							  newObject[key] = object[key];
+								newObject[key] = object[key];
 							}
 						}
 						return newObject;
