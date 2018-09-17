@@ -14,71 +14,38 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal;
 
-import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderInvoker;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFactory;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationException;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluationResult;
 import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluator;
-import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorContext;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateRequest;
+import com.liferay.dynamic.data.mapping.form.evaluator.DDMFormEvaluatorEvaluateResponse;
+import com.liferay.dynamic.data.mapping.form.evaluator.internal.helper.DDMFormEvaluatorHelper;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.service.RoleLocalService;
-import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
-import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.util.Portal;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Pablo Carvalho
+ * @author Leonardo Barros
  */
 @Component(immediate = true, service = DDMFormEvaluator.class)
 public class DDMFormEvaluatorImpl implements DDMFormEvaluator {
 
 	@Override
-	public DDMFormEvaluationResult evaluate(
-			DDMFormEvaluatorContext ddmFormEvaluatorContext)
-		throws DDMFormEvaluationException {
+	public DDMFormEvaluatorEvaluateResponse evaluate(
+		DDMFormEvaluatorEvaluateRequest ddmFormEvaluatorEvaluateRequest) {
 
-		try {
-			DDMFormEvaluatorHelper ddmFormRuleEvaluatorHelper =
-				new DDMFormEvaluatorHelper(
-					_ddmDataProviderInvoker, _ddmExpressionFactory,
-					ddmFormEvaluatorContext, _ddmFormFieldTypeServicesTracker,
-					_jsonFactory, _portal, _roleLocalService,
-					_userGroupRoleLocalService, _userLocalService);
+		DDMFormEvaluatorHelper formEvaluatorHelper = new DDMFormEvaluatorHelper(
+			ddmFormEvaluatorEvaluateRequest, ddmExpressionFactory,
+			ddmFormFieldTypeServicesTracker);
 
-			return ddmFormRuleEvaluatorHelper.evaluate();
-		}
-		catch (PortalException pe) {
-			throw new DDMFormEvaluationException(pe);
-		}
+		return formEvaluatorHelper.evaluate();
 	}
 
 	@Reference
-	private DDMDataProviderInvoker _ddmDataProviderInvoker;
+	protected DDMExpressionFactory ddmExpressionFactory;
 
 	@Reference
-	private DDMExpressionFactory _ddmExpressionFactory;
-
-	@Reference
-	private DDMFormFieldTypeServicesTracker _ddmFormFieldTypeServicesTracker;
-
-	@Reference
-	private JSONFactory _jsonFactory;
-
-	@Reference
-	private Portal _portal;
-
-	@Reference
-	private RoleLocalService _roleLocalService;
-
-	@Reference
-	private UserGroupRoleLocalService _userGroupRoleLocalService;
-
-	@Reference
-	private UserLocalService _userLocalService;
+	protected DDMFormFieldTypeServicesTracker ddmFormFieldTypeServicesTracker;
 
 }

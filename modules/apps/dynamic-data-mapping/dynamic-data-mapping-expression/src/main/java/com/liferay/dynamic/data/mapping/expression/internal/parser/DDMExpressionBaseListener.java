@@ -169,9 +169,20 @@ public class DDMExpressionBaseListener implements DDMExpressionListener {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArray(@NotNull DDMExpressionParser.ArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArray(@NotNull DDMExpressionParser.ArrayContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterToLogicalAndExpression(@NotNull DDMExpressionParser.ToLogicalAndExpressionContext ctx) { }
 	/**
@@ -407,9 +418,20 @@ public class DDMExpressionBaseListener implements DDMExpressionListener {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterToStringArray(@NotNull DDMExpressionParser.ToStringArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitToStringArray(@NotNull DDMExpressionParser.ToStringArrayContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterToFunctionCallExpression(@NotNull DDMExpressionParser.ToFunctionCallExpressionContext ctx) { }
 	/**
@@ -441,9 +463,20 @@ public class DDMExpressionBaseListener implements DDMExpressionListener {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterToFloatingPointArray(@NotNull DDMExpressionParser.ToFloatingPointArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitToFloatingPointArray(@NotNull DDMExpressionParser.ToFloatingPointArrayContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterSubtractionExpression(@NotNull DDMExpressionParser.SubtractionExpressionContext ctx) { }
 	/**
@@ -628,9 +661,20 @@ public class DDMExpressionBaseListener implements DDMExpressionListener {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunctionParameter(@NotNull DDMExpressionParser.FunctionParameterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunctionParameter(@NotNull DDMExpressionParser.FunctionParameterContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterMultiplicationExpression(@NotNull DDMExpressionParser.MultiplicationExpressionContext ctx) { }
 	/**
@@ -645,9 +689,20 @@ public class DDMExpressionBaseListener implements DDMExpressionListener {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * <p>
-	 * The default implementation does nothing.
-	 * </p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterToIntegerArray(@NotNull DDMExpressionParser.ToIntegerArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitToIntegerArray(@NotNull DDMExpressionParser.ToIntegerArrayContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterEqualsExpression(@NotNull DDMExpressionParser.EqualsExpressionContext ctx) { }
 	/**

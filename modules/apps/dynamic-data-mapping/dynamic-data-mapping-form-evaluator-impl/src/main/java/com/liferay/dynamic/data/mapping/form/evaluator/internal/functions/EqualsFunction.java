@@ -14,44 +14,28 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
-import com.liferay.portal.kernel.util.GetterUtil;
 
-import org.apache.commons.lang.math.NumberUtils;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=equals",
-	service = DDMExpressionFunction.class
-)
-public class EqualsFunction implements DDMExpressionFunction {
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
+public class EqualsFunction
+	implements DDMExpressionFunction.Function2<Object, Object, Boolean> {
 
 	@Override
-	public Object evaluate(Object... parameters) {
-		if (parameters.length != 2) {
-			throw new IllegalArgumentException("Two parameters are expected");
-		}
+	public Boolean apply(Object object1, Object object2) {
+		return Objects.equals(object1, object2);
+	}
 
-		Object parameter1 = parameters[0];
-		Object parameter2 = parameters[1];
-
-		if ((parameter1 == null) || (parameter2 == null)) {
-			return false;
-		}
-
-		if (NumberUtils.isNumber(parameter1.toString())) {
-			parameter1 = GetterUtil.getDouble(parameter1);
-		}
-
-		if (NumberUtils.isNumber(parameter2.toString())) {
-			parameter2 = GetterUtil.getDouble(parameter2);
-		}
-
-		return parameter1.equals(parameter2);
+	@Override
+	public String getName() {
+		return "equals";
 	}
 
 }
