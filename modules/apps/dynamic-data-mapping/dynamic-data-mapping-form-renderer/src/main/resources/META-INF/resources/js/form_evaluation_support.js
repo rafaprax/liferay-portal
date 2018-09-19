@@ -89,6 +89,8 @@ AUI.add(
 								}
 							}
 
+							delete fieldContext.value;
+
 							fieldContext = field.processEvaluationContext(fieldContext, result);
 
 							var currentContext = field.get('context');
