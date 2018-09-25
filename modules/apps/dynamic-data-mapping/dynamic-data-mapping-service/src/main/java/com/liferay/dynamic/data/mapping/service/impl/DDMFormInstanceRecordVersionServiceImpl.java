@@ -43,10 +43,12 @@ public class DDMFormInstanceRecordVersionServiceImpl
 				fetchLatestFormInstanceRecordVersion(
 					userId, formInstanceId, formInstanceVersion, status);
 
-		_ddmFormInstanceRecordModelResourcePermission.check(
-			getPermissionChecker(),
-			latestFormInstanceRecordVersion.getFormInstanceRecordId(),
-			ActionKeys.VIEW);
+		if (latestFormInstanceRecordVersion != null) {
+			_ddmFormInstanceRecordModelResourcePermission.check(
+				getPermissionChecker(),
+				latestFormInstanceRecordVersion.getFormInstanceRecordId(),
+				ActionKeys.VIEW);
+		}
 
 		return latestFormInstanceRecordVersion;
 	}
