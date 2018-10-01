@@ -38,6 +38,7 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.DDMFormRule;
+import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.FieldConstants;
@@ -59,6 +60,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -68,6 +70,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -117,6 +120,8 @@ public class DDMFormEvaluatorHelper {
 			evaluateDDMFormRule(ddmFormRule);
 		}
 
+		verifyFieldsMarkedAsRequired();
+
 		List<DDMFormFieldEvaluationResult> ddmFormFieldEvaluationResults =
 			getDDMFormFieldEvaluationResults();
 
@@ -162,9 +167,6 @@ public class DDMFormEvaluatorHelper {
 			ddmFormFieldEvaluationResult, ddmFormField);
 
 		setDDMFormFieldEvaluationResultVisibility(
-			ddmFormFieldEvaluationResult, ddmFormField, ddmFormFieldValue);
-
-		setDDMFormFieldEvaluationResultValidation(
 			ddmFormFieldEvaluationResult, ddmFormField, ddmFormFieldValue);
 
 		Object value = getValue(ddmFormField, ddmFormFieldValue);
@@ -373,7 +375,21 @@ public class DDMFormEvaluatorHelper {
 	}
 
 	protected boolean isDDMFormFieldValueEmpty(
-		DDMFormField ddmFormField, DDMFormFieldValue ddmFormFieldValue) {
+		DDMFormFieldValue ddmFormFieldValue,
+		DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult) {
+
+		if (ddmFormFieldValue == null) {
+			return true;
+		}
+
+		Object value = ddmFormFieldEvaluationResult.getValue();
+
+		if (value != null) {
+			updateDDMFormFieldValue(ddmFormFieldValue, value);
+		}
+
+		DDMFormField ddmFormField = _ddmFormFieldsMap.get(
+			ddmFormFieldEvaluationResult.getName());
 
 		DDMFormFieldValueAccessor<?> ddmFormFieldValueAccessor =
 			getDDMFormFieldValueAccessor(ddmFormField.getType());
@@ -560,7 +576,7 @@ public class DDMFormEvaluatorHelper {
 
 		boolean required = ddmFormFieldEvaluationResult.isRequired();
 		boolean emptyValue = isDDMFormFieldValueEmpty(
-			ddmFormField, ddmFormFieldValue);
+			ddmFormFieldValue, ddmFormFieldEvaluationResult);
 
 		if (!required && emptyValue) {
 			return;
@@ -655,6 +671,34 @@ public class DDMFormEvaluatorHelper {
 					ddmee);
 			}
 		}
+	}
+
+	protected void updateDDMFormFieldValue(
+		DDMFormFieldValue ddmFormFieldValue, Object newValue) {
+
+		Value value = ddmFormFieldValue.getValue();
+
+		if (value == null) {
+			return;
+		}
+
+		Locale locale = value.getDefaultLocale();
+
+		if (value.isLocalized()) {
+			locale = _locale;
+		}
+
+		value.addString(locale, String.valueOf(newValue));
+	}
+
+	protected void verifyFieldsMarkedAsRequired() {
+		Collection<List<DDMFormFieldEvaluationResult>> values =
+			_ddmFormFieldEvaluationResultsMap.values();
+
+		Stream<List<DDMFormFieldEvaluationResult>> stream =
+			values.parallelStream();
+
+		stream.forEach(this::setDDMFormFieldEvaluationResultsValidation);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
