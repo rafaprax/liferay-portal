@@ -79,11 +79,6 @@ AUI.add(
 							}
 
 							if (field !== trigger) {
-								if (instance !== trigger) {
-									delete fieldContext.errorMessage;
-									delete fieldContext.valid;
-								}
-
 								if (fieldContext.valueChanged && !Util.compare(field.get('value'), fieldContext.value)) {
 									field.setValue(fieldContext.value);
 								}
