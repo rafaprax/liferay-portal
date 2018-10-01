@@ -14,34 +14,35 @@
 
 package com.liferay.dynamic.data.mapping.form.evaluator.internal.functions;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Leonardo Barros
  */
-@Component(
-	immediate = true, property = "ddm.form.evaluator.function.name=contains",
-	service = DDMExpressionFunction.class
-)
-public class ContainsFunction implements DDMExpressionFunction {
+@Component(factory = DDMConstants.EXPRESSION_FUNCTION_FACTORY_NAME)
+public class ContainsFunction
+	implements DDMExpressionFunction.Function2<String, String, Boolean> {
 
 	@Override
-	public Object evaluate(Object... parameters) {
-		if (parameters.length != 2) {
-			throw new IllegalArgumentException("Two parameters are expected");
-		}
-
-		if ((parameters[0] == null) || (parameters[1] == null)) {
+	public Boolean apply(String string1, String string2) {
+		if (Validator.isNull(string1) || Validator.isNull(string2)) {
 			return false;
 		}
 
-		String string1 = StringUtil.toLowerCase(parameters[0].toString());
-		String string2 = StringUtil.toLowerCase(parameters[1].toString());
+		string1 = StringUtil.toLowerCase(string1);
+		string2 = StringUtil.toLowerCase(string2);
 
 		return string1.contains(string2);
+	}
+
+	@Override
+	public String getName() {
+		return "contains";
 	}
 
 }
