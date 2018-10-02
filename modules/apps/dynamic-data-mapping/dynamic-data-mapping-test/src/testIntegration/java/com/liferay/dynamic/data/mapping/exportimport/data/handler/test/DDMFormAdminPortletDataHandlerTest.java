@@ -18,12 +18,15 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceRecordTestHelper;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceTestHelper;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerTracker;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.exportimport.kernel.lar.DataLevel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.lar.test.BasePortletDataHandlerTestCase;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.ClassRule;
@@ -48,8 +51,12 @@ public class DDMFormAdminPortletDataHandlerTest
 		DDMStructure ddmStructure = DDMStructureTestUtil.addStructure(
 			stagingGroup.getGroupId(), DDMFormInstance.class.getName());
 
+		DDMFormValuesSerializer ddmFormValuesSerializer =
+			_ddmFormValuesSerializerTracker.getDDMFormValuesSerializer("json");
+
 		DDMFormInstanceTestHelper ddmFormInstanceTestHelper =
-			new DDMFormInstanceTestHelper(stagingGroup);
+			new DDMFormInstanceTestHelper(
+				ddmFormValuesSerializer, stagingGroup);
 
 		DDMFormInstance recordSet =
 			ddmFormInstanceTestHelper.addDDMFormInstance(ddmStructure);
@@ -69,5 +76,8 @@ public class DDMFormAdminPortletDataHandlerTest
 	protected String getPortletId() {
 		return DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM_ADMIN;
 	}
+
+	@Inject
+	private DDMFormValuesSerializerTracker _ddmFormValuesSerializerTracker;
 
 }

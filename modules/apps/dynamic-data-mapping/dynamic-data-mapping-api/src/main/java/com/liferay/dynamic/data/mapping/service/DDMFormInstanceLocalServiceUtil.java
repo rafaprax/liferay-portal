@@ -54,6 +54,10 @@ public class DDMFormInstanceLocalServiceUtil {
 		return getService().addDDMFormInstance(ddmFormInstance);
 	}
 
+	/**
+	* @deprecated As of Judson (7.1.x), with no direct replacement
+	*/
+	@Deprecated
 	public static com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
 		long userId, long groupId, long ddmStructureId,
 		java.util.Map<java.util.Locale, String> nameMap,

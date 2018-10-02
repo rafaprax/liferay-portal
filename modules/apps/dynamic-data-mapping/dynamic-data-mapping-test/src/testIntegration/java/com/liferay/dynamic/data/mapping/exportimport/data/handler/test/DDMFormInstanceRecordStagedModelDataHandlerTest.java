@@ -17,6 +17,8 @@ package com.liferay.dynamic.data.mapping.exportimport.data.handler.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceRecordTestHelper;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceTestHelper;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerTracker;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -37,6 +39,7 @@ import com.liferay.exportimport.test.util.lar.BaseStagedModelDataHandlerTestCase
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.LinkedHashMap;
@@ -126,8 +129,11 @@ public class DDMFormInstanceRecordStagedModelDataHandlerTest
 		DDMStructure ddmStructure = DDMStructureTestUtil.addStructure(
 			group.getGroupId(), DDMFormInstance.class.getName());
 
+		DDMFormValuesSerializer ddmFormValuesSerializer =
+			_ddmFormValuesSerializerTracker.getDDMFormValuesSerializer("json");
+
 		DDMFormInstanceTestHelper ddmFormInstanceTestHelper =
-			new DDMFormInstanceTestHelper(group);
+			new DDMFormInstanceTestHelper(ddmFormValuesSerializer, group);
 
 		DDMFormInstance ddmFormInstance =
 			ddmFormInstanceTestHelper.addDDMFormInstance(ddmStructure);
@@ -155,8 +161,12 @@ public class DDMFormInstanceRecordStagedModelDataHandlerTest
 			stagingGroup.getGroupId(), DDMFormInstance.class.getName(),
 			ddmForm);
 
+		DDMFormValuesSerializer ddmFormValuesSerializer =
+			_ddmFormValuesSerializerTracker.getDDMFormValuesSerializer("json");
+
 		DDMFormInstanceTestHelper ddmFormInstanceTestHelper =
-			new DDMFormInstanceTestHelper(stagingGroup);
+			new DDMFormInstanceTestHelper(
+				ddmFormValuesSerializer, stagingGroup);
 
 		return ddmFormInstanceTestHelper.addDDMFormInstance(ddmStructure);
 	}
@@ -259,5 +269,8 @@ public class DDMFormInstanceRecordStagedModelDataHandlerTest
 			ddmFormInstanceRecord.getDDMFormValues(),
 			importedDDMFormInstanceRecord.getDDMFormValues());
 	}
+
+	@Inject
+	private DDMFormValuesSerializerTracker _ddmFormValuesSerializerTracker;
 
 }

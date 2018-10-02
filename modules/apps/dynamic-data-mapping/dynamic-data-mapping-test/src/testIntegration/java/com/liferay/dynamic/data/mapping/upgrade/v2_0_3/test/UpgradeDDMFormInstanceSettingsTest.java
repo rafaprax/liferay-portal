@@ -15,11 +15,14 @@
 package com.liferay.dynamic.data.mapping.upgrade.v2_0_3.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceTestHelper;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -28,15 +31,23 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.upgrade.UpgradeStep;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,8 +72,6 @@ public class UpgradeDDMFormInstanceSettingsTest {
 		_group = GroupTestUtil.addGroup();
 
 		_jsonFactory = new JSONFactoryImpl();
-
-		_ddmFormInstanceTestHelper = new DDMFormInstanceTestHelper(_group);
 
 		setUpUpgradeDDMFormInstanceSettings();
 	}
@@ -144,19 +153,40 @@ public class UpgradeDDMFormInstanceSettingsTest {
 	protected DDMFormInstance createFormInstance(String settings)
 		throws Exception {
 
-		DDMForm form = DDMFormTestUtil.createDDMForm("field");
+		Map<Locale, String> nameMap = new HashMap<>();
 
-		DDMFormInstance formInstance =
-			_ddmFormInstanceTestHelper.addDDMFormInstance(form);
+		nameMap.put(LocaleUtil.US, RandomTestUtil.randomString());
 
-		formInstance.setSettings(settings);
+		Map<Locale, String> descriptionMap = new HashMap<>();
 
-		DDMFormInstanceLocalServiceUtil.updateDDMFormInstance(formInstance);
+		descriptionMap.put(LocaleUtil.US, RandomTestUtil.randomString());
 
-		formInstance = DDMFormInstanceLocalServiceUtil.getFormInstance(
-			formInstance.getFormInstanceId());
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
-		return formInstance;
+		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
+
+		DDMFormValues settingsDDMFormValues =
+			DDMFormValuesTestUtil.createDDMFormValues(settingsDDMForm);
+
+		DDMForm ddmForm = DDMFormTestUtil.createDDMForm("field");
+
+		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
+
+		DDMFormInstance ddmFormInstance =
+			DDMFormInstanceLocalServiceUtil.addFormInstance(
+				TestPropsValues.getUserId(), _group.getGroupId(), nameMap,
+				descriptionMap, ddmForm, ddmFormLayout, settingsDDMFormValues,
+				serviceContext);
+
+		ddmFormInstance.setSettings(settings);
+
+		DDMFormInstanceLocalServiceUtil.updateDDMFormInstance(ddmFormInstance);
+
+		ddmFormInstance = DDMFormInstanceLocalServiceUtil.getFormInstance(
+			ddmFormInstance.getFormInstanceId());
+
+		return ddmFormInstance;
 	}
 
 	protected String createSettings(boolean hasSetting) {
@@ -253,8 +283,6 @@ public class UpgradeDDMFormInstanceSettingsTest {
 		filter = "(&(objectClass=com.liferay.dynamic.data.mapping.internal.upgrade.DDMServiceUpgrade))"
 	)
 	private static UpgradeStepRegistrator _upgradeStepRegistrator;
-
-	private DDMFormInstanceTestHelper _ddmFormInstanceTestHelper;
 
 	@DeleteAfterTestRun
 	private Group _group;

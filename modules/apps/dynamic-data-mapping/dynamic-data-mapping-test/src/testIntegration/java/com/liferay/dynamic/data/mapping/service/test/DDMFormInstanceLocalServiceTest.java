@@ -18,21 +18,22 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.service.DDMFormInstanceVersionLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
+import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
+import com.liferay.dynamic.data.mapping.util.DDMUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,18 +50,9 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 	public static final AggregateTestRule aggregateTestRule =
 		new LiferayIntegrationTestRule();
 
-	@BeforeClass
-	public static void setUpClass() {
-		Class<?> formInstanceClass = DDMFormInstance.class;
-
-		_classNameId = PortalUtil.getClassNameId(formInstanceClass.getName());
-	}
-
 	@Test
 	public void testAddFormInstanceShouldCreateApprovedFormInstanceVersion()
 		throws Exception {
-
-		DDMStructure structure = addStructure(_classNameId, "Test Structure");
 
 		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
 
@@ -71,11 +63,8 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 			ServiceContextTestUtil.getServiceContext(
 				group, TestPropsValues.getUserId());
 
-		DDMFormInstance formInstance =
-			DDMFormInstanceLocalServiceUtil.addFormInstance(
-				structure.getUserId(), structure.getGroupId(),
-				structure.getStructureId(), structure.getNameMap(),
-				structure.getNameMap(), settingsDDMFormValues, serviceContext);
+		DDMFormInstance formInstance = addDDMFormInstance(
+			settingsDDMFormValues, serviceContext);
 
 		DDMFormInstanceVersion latestFormInstanceVersion =
 			formInstance.getFormInstanceVersion(formInstance.getVersion());
@@ -89,8 +78,6 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 	public void testAddFormInstanceShouldCreateDraftFormInstanceVersion()
 		throws Exception {
 
-		DDMStructure structure = addStructure(_classNameId, "Test Structure");
-
 		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
 
 		DDMFormValues settingsDDMFormValues =
@@ -102,11 +89,8 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 
 		serviceContext.setAttribute("status", WorkflowConstants.STATUS_DRAFT);
 
-		DDMFormInstance formInstance =
-			DDMFormInstanceLocalServiceUtil.addFormInstance(
-				structure.getUserId(), structure.getGroupId(),
-				structure.getStructureId(), structure.getNameMap(),
-				structure.getNameMap(), settingsDDMFormValues, serviceContext);
+		DDMFormInstance formInstance = addDDMFormInstance(
+			settingsDDMFormValues, serviceContext);
 
 		DDMFormInstanceVersion latestFormInstanceVersion =
 			formInstance.getFormInstanceVersion(formInstance.getVersion());
@@ -120,8 +104,6 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 	public void testUpdateFormInstanceShouldCreateNewFormInstanceVersion1()
 		throws Exception {
 
-		DDMStructure structure = addStructure(_classNameId, "Test Structure");
-
 		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
 
 		DDMFormValues settingsDDMFormValues =
@@ -133,11 +115,8 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 
 		serviceContext.setAttribute("status", WorkflowConstants.STATUS_DRAFT);
 
-		DDMFormInstance formInstance =
-			DDMFormInstanceLocalServiceUtil.addFormInstance(
-				structure.getUserId(), structure.getGroupId(),
-				structure.getStructureId(), structure.getNameMap(),
-				structure.getNameMap(), settingsDDMFormValues, serviceContext);
+		DDMFormInstance formInstance = addDDMFormInstance(
+			settingsDDMFormValues, serviceContext);
 
 		DDMFormInstanceVersion firstFormInstanceVersion =
 			formInstance.getFormInstanceVersion(formInstance.getVersion());
@@ -155,16 +134,22 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 
 		Assert.assertNotEquals(
 			firstFormInstanceVersion, secondFormInstanceVersion);
+
+		Assert.assertEquals(
+			WorkflowConstants.STATUS_DRAFT,
+			firstFormInstanceVersion.getStatus());
+
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED,
 			secondFormInstanceVersion.getStatus());
+
+		Assert.assertEquals(
+			secondFormInstanceVersion.getVersion(), formInstance.getVersion());
 	}
 
 	@Test
 	public void testUpdateFormInstanceShouldCreateNewFormInstanceVersion2()
 		throws Exception {
-
-		DDMStructure structure = addStructure(_classNameId, "Test Structure");
 
 		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
 
@@ -175,11 +160,8 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 			ServiceContextTestUtil.getServiceContext(
 				group, TestPropsValues.getUserId());
 
-		DDMFormInstance formInstance =
-			DDMFormInstanceLocalServiceUtil.addFormInstance(
-				structure.getUserId(), structure.getGroupId(),
-				structure.getStructureId(), structure.getNameMap(),
-				structure.getNameMap(), settingsDDMFormValues, serviceContext);
+		DDMFormInstance formInstance = addDDMFormInstance(
+			settingsDDMFormValues, serviceContext);
 
 		DDMFormInstanceVersion firstFormInstanceVersion =
 			formInstance.getFormInstanceVersion(formInstance.getVersion());
@@ -202,13 +184,59 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED,
 			secondFormInstanceVersion.getStatus());
+
+		Assert.assertEquals(
+			secondFormInstanceVersion.getVersion(), formInstance.getVersion());
+	}
+
+	@Test
+	public void testUpdateFormInstanceShouldCreateNewFormInstanceVersion3()
+		throws Exception {
+
+		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
+
+		DDMFormValues settingsDDMFormValues =
+			DDMFormValuesTestUtil.createDDMFormValues(settingsDDMForm);
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				group, TestPropsValues.getUserId());
+
+		DDMFormInstance formInstance = addDDMFormInstance(
+			settingsDDMFormValues, serviceContext);
+
+		DDMFormInstanceVersion firstFormInstanceVersion =
+			formInstance.getFormInstanceVersion(formInstance.getVersion());
+
+		serviceContext.setAttribute("status", WorkflowConstants.STATUS_DRAFT);
+
+		formInstance = DDMFormInstanceLocalServiceUtil.updateFormInstance(
+			formInstance.getFormInstanceId(), formInstance.getStructureId(),
+			formInstance.getNameMap(), formInstance.getDescriptionMap(),
+			settingsDDMFormValues, serviceContext);
+
+		DDMFormInstanceVersion secondFormInstanceVersion =
+			DDMFormInstanceVersionLocalServiceUtil.getLatestFormInstanceVersion(
+				formInstance.getFormInstanceId());
+
+		Assert.assertNotEquals(
+			firstFormInstanceVersion, secondFormInstanceVersion);
+
+		Assert.assertEquals(
+			WorkflowConstants.STATUS_APPROVED,
+			firstFormInstanceVersion.getStatus());
+
+		Assert.assertEquals(
+			WorkflowConstants.STATUS_DRAFT,
+			secondFormInstanceVersion.getStatus());
+
+		Assert.assertEquals(
+			firstFormInstanceVersion.getVersion(), formInstance.getVersion());
 	}
 
 	@Test
 	public void testUpdateFormInstanceShouldKeepFormInstanceVersion()
 		throws Exception {
-
-		DDMStructure structure = addStructure(_classNameId, "Test Structure");
 
 		DDMForm settingsDDMForm = DDMFormTestUtil.createDDMForm();
 
@@ -221,11 +249,8 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 
 		serviceContext.setAttribute("status", WorkflowConstants.STATUS_DRAFT);
 
-		DDMFormInstance formInstance =
-			DDMFormInstanceLocalServiceUtil.addFormInstance(
-				structure.getUserId(), structure.getGroupId(),
-				structure.getStructureId(), structure.getNameMap(),
-				structure.getNameMap(), settingsDDMFormValues, serviceContext);
+		DDMFormInstance formInstance = addDDMFormInstance(
+			settingsDDMFormValues, serviceContext);
 
 		DDMFormInstanceVersion firstFormInstanceVersion =
 			formInstance.getFormInstanceVersion(formInstance.getVersion());
@@ -248,8 +273,26 @@ public class DDMFormInstanceLocalServiceTest extends BaseDDMServiceTestCase {
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_DRAFT,
 			secondFormInstanceVersion.getStatus());
+
+		Assert.assertEquals(
+			firstFormInstanceVersion.getVersion(), formInstance.getVersion());
 	}
 
-	private static long _classNameId;
+	protected DDMFormInstance addDDMFormInstance(
+			DDMFormValues settingsDDMFormValues, ServiceContext serviceContext)
+		throws Exception {
+
+		String definition = read("test-structure.xsd");
+
+		DDMForm ddmForm = toDDMForm(definition);
+
+		DDMFormLayout ddmFormLayout = DDMUtil.getDefaultDDMFormLayout(ddmForm);
+
+		return DDMFormInstanceLocalServiceUtil.addFormInstance(
+			TestPropsValues.getUserId(), group.getGroupId(),
+			DDMStructureTestHelper.getDefaultLocaleMap("Test Structure"),
+			DDMStructureTestHelper.getDefaultLocaleMap(null), ddmForm,
+			ddmFormLayout, settingsDDMFormValues, serviceContext);
+	}
 
 }

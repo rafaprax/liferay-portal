@@ -33,6 +33,10 @@ public class DDMFormInstanceServiceWrapper implements DDMFormInstanceService,
 		_ddmFormInstanceService = ddmFormInstanceService;
 	}
 
+	/**
+	* @deprecated As of Judson (7.1.x), with no direct replacement
+	*/
+	@Deprecated
 	@Override
 	public com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
 		long groupId, long ddmStructureId,

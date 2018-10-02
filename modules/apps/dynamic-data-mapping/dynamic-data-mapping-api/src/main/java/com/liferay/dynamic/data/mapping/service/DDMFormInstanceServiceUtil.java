@@ -42,6 +42,11 @@ public class DDMFormInstanceServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to {@link com.liferay.dynamic.data.mapping.service.impl.DDMFormInstanceServiceImpl} and rerun ServiceBuilder to regenerate this class.
 	 */
+
+	/**
+	* @deprecated As of Judson (7.1.x), with no direct replacement
+	*/
+	@Deprecated
 	public static com.liferay.dynamic.data.mapping.model.DDMFormInstance addFormInstance(
 		long groupId, long ddmStructureId,
 		java.util.Map<java.util.Locale, String> nameMap,

@@ -38,10 +38,8 @@ public class UpgradeDDMFormInstanceSettings extends UpgradeProcess {
 	}
 
 	protected String addNewSetting(
-		JSONObject settingsJSONObject, String propertyName, String value) {
-
-		JSONArray fieldValuesJSONArray = settingsJSONObject.getJSONArray(
-			"fieldValues");
+		JSONObject settingsJSONObject, JSONArray fieldValuesJSONArray,
+		String propertyName, String value) {
 
 		JSONObject settingJSONObject = createSettingJSONObject(
 			propertyName, value);
@@ -96,12 +94,21 @@ public class UpgradeDDMFormInstanceSettings extends UpgradeProcess {
 					JSONObject settingsJSONObject =
 						_jsonFactory.createJSONObject(settings);
 
-					addNewSetting(
-						settingsJSONObject, "autosaveEnabled", "true");
-					addNewSetting(
-						settingsJSONObject, "requireAuthentication", "false");
+					JSONArray fieldValues = settingsJSONObject.getJSONArray(
+						"fieldValues");
 
-					updateSettings(settingsJSONObject);
+					addNewSetting(
+						settingsJSONObject, fieldValues, "autosaveEnabled",
+						"true");
+					addNewSetting(
+						settingsJSONObject, fieldValues,
+						"requireAuthentication", "false");
+
+					updateSetting(
+						settingsJSONObject, fieldValues, "storageType", "json");
+					updateSetting(
+						settingsJSONObject, fieldValues, "workflowDefinition",
+						"no-workflow");
 
 					ps2.setString(1, settingsJSONObject.toJSONString());
 
@@ -129,13 +136,20 @@ public class UpgradeDDMFormInstanceSettings extends UpgradeProcess {
 		return null;
 	}
 
-	protected void updateSettings(JSONObject settingsJSONObject) {
-		JSONArray fieldValues = settingsJSONObject.getJSONArray("fieldValues");
+	protected void updateSetting(
+		JSONObject settingsJSONObject, JSONArray fieldValuesJSONArray,
+		String propertyName, String value) {
 
-		convertToJSONArrayValue(
-			getFieldValue("storageType", fieldValues), "json");
-		convertToJSONArrayValue(
-			getFieldValue("workflowDefinition", fieldValues), "no-workflow");
+		JSONObject storageTypeJSONObject = getFieldValue(
+			propertyName, fieldValuesJSONArray);
+
+		if (storageTypeJSONObject == null) {
+			addNewSetting(
+				settingsJSONObject, fieldValuesJSONArray, propertyName, value);
+		}
+		else {
+			convertToJSONArrayValue(storageTypeJSONObject, value);
+		}
 	}
 
 	private final JSONFactory _jsonFactory;

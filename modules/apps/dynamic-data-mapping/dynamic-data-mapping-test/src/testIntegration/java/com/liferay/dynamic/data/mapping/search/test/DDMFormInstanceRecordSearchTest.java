@@ -17,6 +17,8 @@ package com.liferay.dynamic.data.mapping.search.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceRecordTestHelper;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceTestHelper;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerTracker;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -49,6 +51,7 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
 
@@ -158,8 +161,11 @@ public class DDMFormInstanceRecordSearchTest {
 	}
 
 	protected DDMFormInstance addDDMFormInstance() throws Exception {
+		DDMFormValuesSerializer ddmFormValuesSerializer =
+			_ddmFormValuesSerializerTracker.getDDMFormValuesSerializer("json");
+
 		DDMFormInstanceTestHelper ddmFormInstanceTestHelper =
-			new DDMFormInstanceTestHelper(_group);
+			new DDMFormInstanceTestHelper(ddmFormValuesSerializer, _group);
 
 		DDMStructureTestHelper ddmStructureTestHelper =
 			new DDMStructureTestHelper(
@@ -268,6 +274,9 @@ public class DDMFormInstanceRecordSearchTest {
 	}
 
 	private DDMFormInstanceRecordTestHelper _ddmFormInstanceRecordTestHelper;
+
+	@Inject
+	private DDMFormValuesSerializerTracker _ddmFormValuesSerializerTracker;
 
 	@DeleteAfterTestRun
 	private Group _group;

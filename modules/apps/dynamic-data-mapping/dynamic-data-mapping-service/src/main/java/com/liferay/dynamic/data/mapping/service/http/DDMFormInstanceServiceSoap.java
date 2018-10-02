@@ -69,6 +69,10 @@ import java.util.Map;
  */
 @ProviderType
 public class DDMFormInstanceServiceSoap {
+	/**
+	* @deprecated As of Judson (7.1.x), with no direct replacement
+	*/
+	@Deprecated
 	public static com.liferay.dynamic.data.mapping.model.DDMFormInstanceSoap addFormInstance(
 		long groupId, long ddmStructureId, String[] nameMapLanguageIds,
 		String[] nameMapValues, String[] descriptionMapLanguageIds,

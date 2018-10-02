@@ -16,6 +16,8 @@ package com.liferay.dynamic.data.mapping.staging.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.dynamic.data.mapping.helper.DDMFormInstanceTestHelper;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerTracker;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
@@ -34,6 +36,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Map;
@@ -138,8 +141,11 @@ public class DDMFormInstanceStagingTest {
 		_ddmStructure = DDMStructureTestUtil.addStructure(
 			group.getGroupId(), DDMFormInstance.class.getName());
 
+		DDMFormValuesSerializer ddmFormValuesSerializer =
+			_ddmFormValuesSerializerTracker.getDDMFormValuesSerializer("json");
+
 		DDMFormInstanceTestHelper ddmFormInstanceTestHelper =
-			new DDMFormInstanceTestHelper(group);
+			new DDMFormInstanceTestHelper(ddmFormValuesSerializer, group);
 
 		DDMFormInstance ddmFormInstance =
 			ddmFormInstanceTestHelper.addDDMFormInstance(_ddmStructure);
@@ -154,6 +160,9 @@ public class DDMFormInstanceStagingTest {
 		PermissionThreadLocal.setPermissionChecker(
 			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser()));
 	}
+
+	@Inject
+	private DDMFormValuesSerializerTracker _ddmFormValuesSerializerTracker;
 
 	@DeleteAfterTestRun
 	private DDMStructure _ddmStructure;

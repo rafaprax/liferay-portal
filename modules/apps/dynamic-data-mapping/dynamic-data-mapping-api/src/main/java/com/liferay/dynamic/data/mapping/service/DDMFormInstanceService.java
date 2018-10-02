@@ -61,6 +61,11 @@ public interface DDMFormInstanceService extends BaseService {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link DDMFormInstanceServiceUtil} to access the ddm form instance remote service. Add custom service methods to {@link com.liferay.dynamic.data.mapping.service.impl.DDMFormInstanceServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+
+	/**
+	* @deprecated As of Judson (7.1.x), with no direct replacement
+	*/
+	@Deprecated
 	public DDMFormInstance addFormInstance(long groupId, long ddmStructureId,
 		Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 		DDMFormValues settingsDDMFormValues, ServiceContext serviceContext)

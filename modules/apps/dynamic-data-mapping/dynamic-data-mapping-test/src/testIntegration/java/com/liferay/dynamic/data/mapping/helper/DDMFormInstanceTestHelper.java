@@ -14,16 +14,17 @@
 
 package com.liferay.dynamic.data.mapping.helper;
 
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializer;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerSerializeRequest;
+import com.liferay.dynamic.data.mapping.io.DDMFormValuesSerializerSerializeResponse;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
-import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
 import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
@@ -32,7 +33,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -91,33 +91,19 @@ public class DDMFormInstanceTestHelper {
 		return formInstanceSettingsDDMFormValues;
 	}
 
-	public DDMFormInstanceTestHelper(Group group) {
+	public DDMFormInstanceTestHelper(
+		DDMFormValuesSerializer ddmFormValuesSerializer, Group group) {
+
+		_ddmFormValuesSerializer = ddmFormValuesSerializer;
 		_group = group;
-	}
-
-	public DDMFormInstance addDDMFormInstance(DDMForm ddmForm)
-		throws Exception {
-
-		DDMStructureTestHelper ddmStructureTestHelper =
-			new DDMStructureTestHelper(
-				PortalUtil.getClassNameId(DDMFormInstance.class), _group);
-
-		DDMStructure ddmStructure = ddmStructureTestHelper.addStructure(
-			ddmForm, StorageType.JSON.toString());
-
-		return addDDMFormInstance(ddmStructure);
 	}
 
 	public DDMFormInstance addDDMFormInstance(DDMStructure ddmStructure)
 		throws Exception {
 
-		Map<Locale, String> nameMap = new HashMap<>();
+		Map<Locale, String> nameMap = getRandomStringMap();
 
-		nameMap.put(LocaleUtil.US, RandomTestUtil.randomString());
-
-		Map<Locale, String> descriptionMap = new HashMap<>();
-
-		descriptionMap.put(LocaleUtil.US, RandomTestUtil.randomString());
+		Map<Locale, String> descriptionMap = getRandomStringMap();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -127,10 +113,21 @@ public class DDMFormInstanceTestHelper {
 		DDMFormValues settingsDDMFormValues =
 			DDMFormValuesTestUtil.createDDMFormValues(settingsDDMForm);
 
+		DDMFormValuesSerializerSerializeRequest.Builder builder =
+			DDMFormValuesSerializerSerializeRequest.Builder.newBuilder(
+				settingsDDMFormValues);
+
+		DDMFormValuesSerializerSerializeResponse
+			ddmFormValuesSerializerSerializeResponse =
+				_ddmFormValuesSerializer.serialize(builder.build());
+
+		String serializedSettingsDDMFormValues =
+			ddmFormValuesSerializerSerializeResponse.getContent();
+
 		return DDMFormInstanceLocalServiceUtil.addFormInstance(
 			TestPropsValues.getUserId(), _group.getGroupId(),
 			ddmStructure.getStructureId(), nameMap, descriptionMap,
-			settingsDDMFormValues, serviceContext);
+			serializedSettingsDDMFormValues, serviceContext);
 	}
 
 	public DDMFormInstance updateFormInstance(
@@ -141,25 +138,15 @@ public class DDMFormInstanceTestHelper {
 			formInstanceId, settingsDDMFormValues);
 	}
 
-	public DDMFormInstance updateFormInstance(
-			long formInstanceId, DDMStructure ddmStructure)
-		throws Exception {
+	protected Map<Locale, String> getRandomStringMap() {
+		Map<Locale, String> map = new HashMap<>();
 
-		Map<Locale, String> nameMap = new HashMap<>();
+		map.put(LocaleUtil.US, RandomTestUtil.randomString());
 
-		nameMap.put(LocaleUtil.US, RandomTestUtil.randomString());
-
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
-
-		DDMFormInstance formInstance =
-			DDMFormInstanceLocalServiceUtil.getFormInstance(formInstanceId);
-
-		return DDMFormInstanceLocalServiceUtil.updateFormInstance(
-			formInstanceId, ddmStructure.getStructureId(), nameMap, null,
-			formInstance.getSettingsDDMFormValues(), serviceContext);
+		return map;
 	}
 
+	private final DDMFormValuesSerializer _ddmFormValuesSerializer;
 	private final Group _group;
 
 }
