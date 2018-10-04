@@ -94,7 +94,6 @@ public class DDMFormDisplayContext {
 				ddmFormInstanceVersionLocalService,
 			DDMFormRenderer ddmFormRenderer,
 			DDMFormValuesFactory ddmFormValuesFactory,
-			DDMFormValuesMerger ddmFormValuesMerger,
 			GroupLocalService groupLocalService,
 			WorkflowDefinitionLinkLocalService
 				workflowDefinitionLinkLocalService,
@@ -111,7 +110,6 @@ public class DDMFormDisplayContext {
 			ddmFormInstanceVersionLocalService;
 		_ddmFormRenderer = ddmFormRenderer;
 		_ddmFormValuesFactory = ddmFormValuesFactory;
-		_ddmFormValuesMerger = ddmFormValuesMerger;
 		_groupLocalService = groupLocalService;
 		_workflowDefinitionLinkLocalService =
 			workflowDefinitionLinkLocalService;
@@ -728,7 +726,6 @@ public class DDMFormDisplayContext {
 		_ddmFormInstanceVersionLocalService;
 	private final DDMFormRenderer _ddmFormRenderer;
 	private final DDMFormValuesFactory _ddmFormValuesFactory;
-	private final DDMFormValuesMerger _ddmFormValuesMerger;
 	private final GroupLocalService _groupLocalService;
 	private Boolean _hasAddFormInstanceRecordPermission;
 	private Boolean _hasViewPermission;

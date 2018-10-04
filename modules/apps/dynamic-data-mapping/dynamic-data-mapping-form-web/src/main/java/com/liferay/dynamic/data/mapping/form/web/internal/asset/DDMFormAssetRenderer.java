@@ -57,8 +57,6 @@ public class DDMFormAssetRenderer
 		DDMFormInstanceRecordLocalService ddmFormInstanceRecordLocalService,
 		DDMFormInstanceVersionLocalService formInstanceVersionLocalService,
 		DDMFormRenderer ddmFormRenderer,
-		DDMFormValuesFactory ddmFormValuesFactory,
-		DDMFormValuesMerger ddmFormValuesMerger,
 		ModelResourcePermission<DDMFormInstance>
 			ddmFormInstanceModelResourcePermission) {
 
@@ -67,8 +65,6 @@ public class DDMFormAssetRenderer
 		_ddmFormInstanceRecordLocalService = ddmFormInstanceRecordLocalService;
 		_ddmFormInstanceVersionLocalService = formInstanceVersionLocalService;
 		_ddmFormRenderer = ddmFormRenderer;
-		_ddmFormValuesFactory = ddmFormValuesFactory;
-		_ddmFormValuesMerger = ddmFormValuesMerger;
 		_ddmFormInstanceModelResourcePermission =
 			ddmFormInstanceModelResourcePermission;
 
@@ -198,8 +194,7 @@ public class DDMFormAssetRenderer
 			ddmFormViewFormInstanceRecordDisplayContext =
 				new DDMFormViewFormInstanceRecordDisplayContext(
 					request, response, _ddmFormInstanceRecordLocalService,
-					_ddmFormInstanceVersionLocalService, _ddmFormRenderer,
-					_ddmFormValuesFactory, _ddmFormValuesMerger);
+					_ddmFormInstanceVersionLocalService, _ddmFormRenderer);
 
 		request.setAttribute(
 			WebKeys.PORTLET_DISPLAY_CONTEXT,
@@ -218,8 +213,6 @@ public class DDMFormAssetRenderer
 	private final DDMFormInstanceVersionLocalService
 		_ddmFormInstanceVersionLocalService;
 	private final DDMFormRenderer _ddmFormRenderer;
-	private final DDMFormValuesFactory _ddmFormValuesFactory;
-	private final DDMFormValuesMerger _ddmFormValuesMerger;
 	private final DDMFormInstance _formInstance;
 	private final DDMFormInstanceRecord _formInstanceRecord;
 	private final DDMFormInstanceRecordVersion _formInstanceRecordVersion;

@@ -214,8 +214,7 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 					_ddmFormInstanceVersionLocalService,
 					_ddmFormFieldTypeServicesTracker,
 					_ddmFormFieldTypesSerializerTracker, _ddmFormRenderer,
-					_ddmFormTemplateContextFactory, _ddmFormValuesFactory,
-					_ddmFormValuesMerger, _ddmStructureLocalService,
+					_ddmFormTemplateContextFactory, _ddmStructureLocalService,
 					_ddmStructureService, _jsonFactory, _npmResolver));
 		}
 		else {
@@ -260,8 +259,7 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 					_ddmFormInstanceVersionLocalService,
 					_ddmFormFieldTypeServicesTracker,
 					_ddmFormFieldTypesSerializerTracker, _ddmFormRenderer,
-					_ddmFormTemplateContextFactory, _ddmFormValuesFactory,
-					_ddmFormValuesMerger, _ddmStructureLocalService,
+					_ddmFormTemplateContextFactory, _ddmStructureLocalService,
 					_ddmStructureService, _jsonFactory, _npmResolver));
 		}
 	}
@@ -315,12 +313,6 @@ public class DDMFormAdminPortlet extends MVCPortlet {
 
 	@Reference
 	private DDMFormTemplateContextFactory _ddmFormTemplateContextFactory;
-
-	@Reference
-	private DDMFormValuesFactory _ddmFormValuesFactory;
-
-	@Reference
-	private DDMFormValuesMerger _ddmFormValuesMerger;
 
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,

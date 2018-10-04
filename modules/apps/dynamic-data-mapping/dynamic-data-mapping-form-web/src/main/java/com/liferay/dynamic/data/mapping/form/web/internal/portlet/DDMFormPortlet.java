@@ -222,7 +222,7 @@ public class DDMFormPortlet extends MVCPortlet {
 			renderRequest, renderResponse, _ddmFormInstanceLocalService,
 			_ddmFormInstanceRecordVersionLocalService, _ddmFormInstanceService,
 			_ddmFormInstanceVersionLocalService, _ddmFormRenderer,
-			_ddmFormValuesFactory, _ddmFormValuesMerger, _groupLocalService,
+			_ddmFormValuesFactory, _groupLocalService,
 			_workflowDefinitionLinkLocalService, _portal);
 
 		renderRequest.setAttribute(
@@ -254,9 +254,6 @@ public class DDMFormPortlet extends MVCPortlet {
 
 	@Reference
 	private DDMFormValuesFactory _ddmFormValuesFactory;
-
-	@Reference
-	private DDMFormValuesMerger _ddmFormValuesMerger;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

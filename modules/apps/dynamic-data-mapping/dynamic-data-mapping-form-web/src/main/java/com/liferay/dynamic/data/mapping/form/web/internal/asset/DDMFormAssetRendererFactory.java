@@ -141,7 +141,6 @@ public class DDMFormAssetRendererFactory
 			formInstanceRecord, formInstanceRecordVersion,
 			_ddmFormInstanceRecordLocalService,
 			_ddmFormInstanceVersionLocalService, _ddmFormRenderer,
-			_ddmFormValuesFactory, _ddmFormValuesMerger,
 			_ddmFormInstanceModelResourcePermission);
 
 		ddmFormAssetRenderer.setAssetRendererType(type);
@@ -170,12 +169,6 @@ public class DDMFormAssetRendererFactory
 
 	@Reference
 	private DDMFormRenderer _ddmFormRenderer;
-
-	@Reference
-	private DDMFormValuesFactory _ddmFormValuesFactory;
-
-	@Reference
-	private DDMFormValuesMerger _ddmFormValuesMerger;
 
 	private ServletContext _servletContext;
 

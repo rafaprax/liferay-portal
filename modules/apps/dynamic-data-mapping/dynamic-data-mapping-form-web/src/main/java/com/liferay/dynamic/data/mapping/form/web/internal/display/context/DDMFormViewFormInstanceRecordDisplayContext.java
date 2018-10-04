@@ -60,15 +60,12 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 		HttpServletResponse httpServletResponse,
 		DDMFormInstanceRecordLocalService formInstanceRecordLocalService,
 		DDMFormInstanceVersionLocalService formInstanceVersionLocalService,
-		DDMFormRenderer formRenderer, DDMFormValuesFactory formValuesFactory,
-		DDMFormValuesMerger formValuesMerger) {
+		DDMFormRenderer formRenderer) {
 
 		_httpServletResponse = httpServletResponse;
 		_ddmFormInstanceRecordLocalService = formInstanceRecordLocalService;
 		_ddmFormInstanceVersionLocalService = formInstanceVersionLocalService;
 		_ddmFormRenderer = formRenderer;
-		_ddmFormValuesFactory = formValuesFactory;
-		_ddmFormValuesMerger = formValuesMerger;
 
 		_ddmFormAdminRequestHelper = new DDMFormAdminRequestHelper(
 			httpServletRequest);
@@ -164,25 +161,6 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 		return formInstanceRecord;
 	}
 
-	protected DDMFormValues getDDMFormValues(
-			RenderRequest renderRequest,
-			DDMFormInstanceRecord formInstanceRecord,
-			DDMStructureVersion structureVersion)
-		throws PortalException {
-
-		DDMFormValues formValues = formInstanceRecord.getDDMFormValues();
-
-		DDMFormValues mergedFormValues = _ddmFormValuesMerger.merge(
-			formValues,
-			_ddmFormValuesFactory.create(
-				renderRequest, structureVersion.getDDMForm()));
-
-		mergedFormValues.setAvailableLocales(formValues.getAvailableLocales());
-		mergedFormValues.setDefaultLocale(formValues.getDefaultLocale());
-
-		return mergedFormValues;
-	}
-
 	protected boolean isDDMFormFieldRemoved(
 		Map<String, DDMFormField> latestFormFieldMap, String fieldName) {
 
@@ -251,8 +229,6 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 	private final DDMFormInstanceVersionLocalService
 		_ddmFormInstanceVersionLocalService;
 	private final DDMFormRenderer _ddmFormRenderer;
-	private final DDMFormValuesFactory _ddmFormValuesFactory;
-	private final DDMFormValuesMerger _ddmFormValuesMerger;
 	private final HttpServletResponse _httpServletResponse;
 
 }

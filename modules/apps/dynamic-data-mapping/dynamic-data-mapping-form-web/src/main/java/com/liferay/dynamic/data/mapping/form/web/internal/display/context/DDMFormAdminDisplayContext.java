@@ -127,8 +127,6 @@ public class DDMFormAdminDisplayContext {
 		DDMFormFieldTypesSerializerTracker formFieldTypesSerializerTracker,
 		DDMFormRenderer formRenderer,
 		DDMFormTemplateContextFactory formTemplateContextFactory,
-		DDMFormValuesFactory formValuesFactory,
-		DDMFormValuesMerger formValuesMerger,
 		DDMStructureLocalService structureLocalService,
 		DDMStructureService structureService, JSONFactory jsonFactory,
 		NPMResolver npmResolver) {
@@ -149,8 +147,6 @@ public class DDMFormAdminDisplayContext {
 		_ddmFormFieldTypesSerializerTracker = formFieldTypesSerializerTracker;
 		_ddmFormRenderer = formRenderer;
 		_ddmFormTemplateContextFactory = formTemplateContextFactory;
-		_ddmFormValuesFactory = formValuesFactory;
-		_ddmFormValuesMerger = formValuesMerger;
 		_ddmStructureLocalService = structureLocalService;
 		_ddmStructureService = structureService;
 		_jsonFactory = jsonFactory;
@@ -575,8 +571,7 @@ public class DDMFormAdminDisplayContext {
 			formAdminRequestHelper.getRequest(),
 			PortalUtil.getHttpServletResponse(_renderResponse),
 			_ddmFormInstanceRecordLocalService,
-			_ddmFormInstanceVersionLocalService, _ddmFormRenderer,
-			_ddmFormValuesFactory, _ddmFormValuesMerger);
+			_ddmFormInstanceVersionLocalService, _ddmFormRenderer);
 	}
 
 	public DDMFormViewFormInstanceRecordsDisplayContext
@@ -1287,8 +1282,6 @@ public class DDMFormAdminDisplayContext {
 		_ddmFormInstanceVersionLocalService;
 	private final DDMFormRenderer _ddmFormRenderer;
 	private final DDMFormTemplateContextFactory _ddmFormTemplateContextFactory;
-	private final DDMFormValuesFactory _ddmFormValuesFactory;
-	private final DDMFormValuesMerger _ddmFormValuesMerger;
 	private final DDMFormWebConfiguration _ddmFormWebConfiguration;
 	private DDMStructure _ddmStructure;
 	private final DDMStructureLocalService _ddmStructureLocalService;

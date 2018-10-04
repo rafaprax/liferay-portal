@@ -305,7 +305,6 @@ public class DDMFormAdminDisplayContextTest extends PowerMockito {
 			mock(DDMFormFieldTypesSerializerTracker.class),
 			mock(DDMFormRenderer.class),
 			mock(DDMFormTemplateContextFactory.class),
-			mock(DDMFormValuesFactory.class), mock(DDMFormValuesMerger.class),
 			mock(DDMStructureLocalService.class),
 			mock(DDMStructureService.class), mock(JSONFactory.class),
 			mock(NPMResolver.class));

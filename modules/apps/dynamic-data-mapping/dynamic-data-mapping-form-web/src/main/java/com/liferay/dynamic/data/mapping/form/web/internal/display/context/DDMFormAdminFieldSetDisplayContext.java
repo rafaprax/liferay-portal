@@ -92,8 +92,6 @@ public class DDMFormAdminFieldSetDisplayContext
 		DDMFormFieldTypesSerializerTracker formFieldTypesSerializerTracker,
 		DDMFormRenderer formRenderer,
 		DDMFormTemplateContextFactory formTemplateContextFactory,
-		DDMFormValuesFactory formValuesFactory,
-		DDMFormValuesMerger formValuesMerger,
 		DDMStructureLocalService structureLocalService,
 		DDMStructureService structureService, JSONFactory jsonFactory,
 		NPMResolver npmResolver) {
@@ -106,8 +104,8 @@ public class DDMFormAdminFieldSetDisplayContext
 			ddmFormInstanceRecordWriterTracker, formInstanceService,
 			formInstanceVersionLocalService, formFieldTypeServicesTracker,
 			formFieldTypesSerializerTracker, formRenderer,
-			formTemplateContextFactory, formValuesFactory, formValuesMerger,
-			structureLocalService, structureService, jsonFactory, npmResolver);
+			formTemplateContextFactory, structureLocalService, structureService,
+			jsonFactory, npmResolver);
 
 		_fieldSetPermissionCheckerHelper = new FieldSetPermissionCheckerHelper(
 			formAdminRequestHelper);
