@@ -184,11 +184,8 @@ public class DDMFormDisplayContext {
 					WorkflowConstants.STATUS_DRAFT);
 
 		if (ddmFormInstanceRecordVersion != null) {
-			DDMFormValues mergedDDMFormValues = _ddmFormValuesMerger.merge(
-				ddmFormInstanceRecordVersion.getDDMFormValues(),
-				ddmFormRenderingContext.getDDMFormValues());
-
-			ddmFormRenderingContext.setDDMFormValues(mergedDDMFormValues);
+			ddmFormRenderingContext.setDDMFormValues(
+				ddmFormInstanceRecordVersion.getDDMFormValues());
 		}
 
 		boolean showSubmitButton = isShowSubmitButton();

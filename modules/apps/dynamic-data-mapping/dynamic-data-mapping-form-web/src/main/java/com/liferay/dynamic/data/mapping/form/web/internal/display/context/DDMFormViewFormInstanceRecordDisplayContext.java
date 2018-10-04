@@ -91,8 +91,7 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 		DDMFormRenderingContext formRenderingContext =
 			createDDMFormRenderingContext(structureVersion.getDDMForm());
 
-		DDMFormValues formValues = getDDMFormValues(
-			renderRequest, formInstanceRecord, structureVersion);
+		DDMFormValues formValues = formInstanceRecord.getDDMFormValues();
 
 		formRenderingContext.setDDMFormValues(formValues);
 		formRenderingContext.setLocale(formValues.getDefaultLocale());
