@@ -2970,6 +2970,11 @@ AUI.add(
 
 					requestedLocale: {
 						validator: Lang.isString
+					},
+
+					synchronousFormSubmission: {
+						validator: Lang.isBoolean,
+						value: false
 					}
 				},
 
@@ -3262,7 +3267,7 @@ AUI.add(
 
 						var formNode = instance.get('formNode');
 
-						if (event.form.attr('name') === formNode.attr('name')) {
+						if ((event.form.attr('name') === formNode.attr('name')) && instance.get('synchronousFormSubmission')) {
 							instance.updateDDMFormInputValue();
 						}
 					},
@@ -3270,7 +3275,9 @@ AUI.add(
 					_onSubmitForm: function(event) {
 						var instance = this;
 
-						instance.updateDDMFormInputValue();
+						if (instance.get('synchronousFormSubmission')) {
+							instance.updateDDMFormInputValue();
+						}
 					},
 
 					_valueFormNode: function() {

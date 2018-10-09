@@ -77,6 +77,10 @@ public abstract class BaseHTMLTag extends com.liferay.taglib.util.IncludeTag {
 		return _showEmptyFieldLabel;
 	}
 
+	public boolean getsynchronousFormSubmission() {
+		return _synchronousFormSubmission;
+	}
+
 	public void setCheckRequired(boolean checkRequired) {
 		_checkRequired = checkRequired;
 	}
@@ -121,6 +125,10 @@ public abstract class BaseHTMLTag extends com.liferay.taglib.util.IncludeTag {
 		_showEmptyFieldLabel = showEmptyFieldLabel;
 	}
 
+	public void setsynchronousFormSubmission(boolean synchronousFormSubmission) {
+		_synchronousFormSubmission = synchronousFormSubmission;
+	}
+
 	@Override
 	public void setPageContext(PageContext pageContext) {
 		super.setPageContext(pageContext);
@@ -143,6 +151,7 @@ public abstract class BaseHTMLTag extends com.liferay.taglib.util.IncludeTag {
 		_repeatable = true;
 		_requestedLocale = null;
 		_showEmptyFieldLabel = true;
+		_synchronousFormSubmission = true;
 	}
 
 	@Override
@@ -168,6 +177,7 @@ public abstract class BaseHTMLTag extends com.liferay.taglib.util.IncludeTag {
 		request.setAttribute("liferay-ddm:html:repeatable", String.valueOf(_repeatable));
 		request.setAttribute("liferay-ddm:html:requestedLocale", _requestedLocale);
 		request.setAttribute("liferay-ddm:html:showEmptyFieldLabel", String.valueOf(_showEmptyFieldLabel));
+		request.setAttribute("liferay-ddm:html:synchronousFormSubmission", String.valueOf(_synchronousFormSubmission));
 	}
 
 	protected static final String _ATTRIBUTE_NAMESPACE = "liferay-ddm:html:";
@@ -189,5 +199,6 @@ public abstract class BaseHTMLTag extends com.liferay.taglib.util.IncludeTag {
 	private boolean _repeatable = true;
 	private java.util.Locale _requestedLocale = null;
 	private boolean _showEmptyFieldLabel = true;
+	private boolean _synchronousFormSubmission = true;
 
 }

@@ -28,6 +28,7 @@ boolean repeatable = GetterUtil.getBoolean(String.valueOf(request.getAttribute("
 java.util.Locale requestedLocale = (java.util.Locale)request.getAttribute("liferay-ddm:html-field:requestedLocale");
 boolean showEmptyFieldLabel = GetterUtil.getBoolean(String.valueOf(request.getAttribute("liferay-ddm:html-field:showEmptyFieldLabel")), true);
 Map<String, Object> dynamicAttributes = (Map<String, Object>)request.getAttribute("liferay-ddm:html-field:dynamicAttributes");
+boolean synchronousFormSubmission = GetterUtil.getBoolean(String.valueOf(request.getAttribute("liferay-ddm:html:synchronousFormSubmission")), true);
 %>
 
 <%@ include file="/html_field/init-ext.jspf" %>
