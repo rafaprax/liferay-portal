@@ -2992,6 +2992,11 @@ AUI.add(
 
 					requestedLocale: {
 						validator: Lang.isString
+					},
+
+					synchronousFormSubmission: {
+						validator: Lang.isBoolean,
+						value: false
 					}
 				},
 
@@ -3031,9 +3036,14 @@ AUI.add(
 									instance._afterUpdateRepeatableFields,
 									instance
 								),
-								formNode.on('submit', instance._onSubmitForm, instance),
 								Liferay.after('form:registered', instance._afterFormRegistered, instance),
 								Liferay.on('submitForm', instance._onLiferaySubmitForm, instance)
+							);
+						}
+
+						if (instance.get('synchronousFormSubmission')) {
+							instance.eventHandlers.push(
+								formNode.on('submit', instance._onSubmitForm, instance)
 							);
 						}
 					},
@@ -3284,7 +3294,7 @@ AUI.add(
 
 						var formNode = instance.get('formNode');
 
-						if (event.form.attr('name') === formNode.attr('name')) {
+						if ((event.form.attr('name') === formNode.attr('name')) && instance.get('synchronousFormSubmission')) {
 							instance.updateDDMFormInputValue();
 						}
 					},
