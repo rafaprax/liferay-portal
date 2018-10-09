@@ -57,7 +57,8 @@
 							mode: '<%= HtmlUtil.escapeJS(mode) %>',
 							p_l_id: <%= themeDisplay.getPlid() %>,
 							portletNamespace: '<portlet:namespace />',
-							repeatable: <%= repeatable %>
+							repeatable: <%= repeatable %>,
+							synchronousFormSubmission: <%= synchronousFormSubmission %>
 						}
 					);
 				}

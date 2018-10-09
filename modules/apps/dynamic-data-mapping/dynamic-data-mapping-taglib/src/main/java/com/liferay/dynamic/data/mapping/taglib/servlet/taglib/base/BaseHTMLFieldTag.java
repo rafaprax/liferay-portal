@@ -65,6 +65,10 @@ public abstract class BaseHTMLFieldTag extends com.liferay.taglib.util.IncludeTa
 		return _showEmptyFieldLabel;
 	}
 
+	public boolean getSynchronousFormSubmission() {
+		return _synchronousFormSubmission;
+	}
+
 	public void setClassNameId(long classNameId) {
 		_classNameId = classNameId;
 	}
@@ -97,6 +101,10 @@ public abstract class BaseHTMLFieldTag extends com.liferay.taglib.util.IncludeTa
 		_showEmptyFieldLabel = showEmptyFieldLabel;
 	}
 
+	public void setSynchronousFormSubmission(boolean synchronousFormSubmission) {
+		_synchronousFormSubmission = synchronousFormSubmission;
+	}
+
 	@Override
 	public void setPageContext(PageContext pageContext) {
 		super.setPageContext(pageContext);
@@ -116,11 +124,7 @@ public abstract class BaseHTMLFieldTag extends com.liferay.taglib.util.IncludeTa
 		_repeatable = true;
 		_requestedLocale = null;
 		_showEmptyFieldLabel = true;
-	}
-
-	@Override
-	protected String getEndPage() {
-		return _END_PAGE;
+		_synchronousFormSubmission = true;
 	}
 
 	@Override
@@ -138,12 +142,10 @@ public abstract class BaseHTMLFieldTag extends com.liferay.taglib.util.IncludeTa
 		setNamespacedAttribute(request, "repeatable", _repeatable);
 		setNamespacedAttribute(request, "requestedLocale", _requestedLocale);
 		setNamespacedAttribute(request, "showEmptyFieldLabel", _showEmptyFieldLabel);
+		setNamespacedAttribute(request, "synchronousFormSubmission", _synchronousFormSubmission);
 	}
 
 	protected static final String _ATTRIBUTE_NAMESPACE = "liferay-ddm:html-field:";
-
-	private static final String _END_PAGE =
-		"/html_field/end.jsp";
 
 	private static final String _START_PAGE =
 		"/html_field/start.jsp";
@@ -156,5 +158,6 @@ public abstract class BaseHTMLFieldTag extends com.liferay.taglib.util.IncludeTa
 	private boolean _repeatable = true;
 	private java.util.Locale _requestedLocale = null;
 	private boolean _showEmptyFieldLabel = true;
+	private boolean _synchronousFormSubmission = true;
 
 }

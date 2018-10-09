@@ -27,6 +27,7 @@ boolean readOnly = GetterUtil.getBoolean(String.valueOf(request.getAttribute("li
 boolean repeatable = GetterUtil.getBoolean(String.valueOf(request.getAttribute("liferay-ddm:html-field:repeatable")), true);
 java.util.Locale requestedLocale = (java.util.Locale)request.getAttribute("liferay-ddm:html-field:requestedLocale");
 boolean showEmptyFieldLabel = GetterUtil.getBoolean(String.valueOf(request.getAttribute("liferay-ddm:html-field:showEmptyFieldLabel")), true);
+boolean synchronousFormSubmission = GetterUtil.getBoolean(String.valueOf(request.getAttribute("liferay-ddm:html-field:synchronousFormSubmission")), true);
 Map<String, Object> dynamicAttributes = (Map<String, Object>)request.getAttribute("liferay-ddm:html-field:dynamicAttributes");
 %>
 
