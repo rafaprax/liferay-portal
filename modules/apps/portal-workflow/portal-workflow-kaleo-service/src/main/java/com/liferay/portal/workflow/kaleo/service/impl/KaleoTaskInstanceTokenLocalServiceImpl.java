@@ -19,11 +19,21 @@ import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Document;
+import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -40,6 +50,7 @@ import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskInstanceTo
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -534,6 +545,36 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		OrderByComparator<KaleoTaskInstanceToken> orderByComparator,
 		ServiceContext serviceContext) {
 
+		List<KaleoTaskInstanceToken> kaleoTaskInstanceTokens =
+			new ArrayList<>();
+
+		try {
+			Indexer<KaleoTaskInstanceToken> indexer =
+				IndexerRegistryUtil.getIndexer(
+					KaleoTaskInstanceToken.class.getName());
+
+			SearchContext searchContext = buildSearchContext(
+				assetTitle, taskName, assetTypes, assetPrimaryKeys, dueDateGT,
+				dueDateLT, completed, searchByUserRoles, andOperator, start,
+				end, orderByComparator, serviceContext);
+
+			Hits hits = indexer.search(searchContext);
+
+			for (Document document : hits.getDocs()) {
+				long kaleoTaskInstanceTokenId = GetterUtil.getLong(
+					document.get(Field.ENTRY_CLASS_PK));
+
+				kaleoTaskInstanceTokens.add(
+					kaleoTaskInstanceTokenPersistence.fetchByPrimaryKey(
+						kaleoTaskInstanceTokenId));
+			}
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+		}
+
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery =
 			new KaleoTaskInstanceTokenQuery(serviceContext);
 
@@ -596,6 +637,24 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		Long[] assetPrimaryKeys, Date dueDateGT, Date dueDateLT,
 		Boolean completed, Boolean searchByUserRoles, boolean andOperator,
 		ServiceContext serviceContext) {
+
+		Indexer<KaleoTaskInstanceToken> indexer =
+			IndexerRegistryUtil.getIndexer(
+				KaleoTaskInstanceToken.class.getName());
+
+		try {
+			SearchContext searchContext = buildSearchContext(
+				assetTitle, taskName, assetTypes, assetPrimaryKeys, dueDateGT,
+				dueDateLT, completed, searchByUserRoles, andOperator,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null, serviceContext);
+
+			return (int)indexer.searchCount(searchContext);
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+		}
 
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery =
 			new KaleoTaskInstanceTokenQuery(serviceContext);
@@ -698,6 +757,39 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		return dynamicQuery;
 	}
 
+	protected SearchContext buildSearchContext(
+		String assetTitle, String taskName, String[] assetTypes,
+		Long[] assetPrimaryKeys, Date dueDateGT, Date dueDateLT,
+		Boolean completed, Boolean searchByUserRoles, boolean andOperator,
+		int start, int end,
+		OrderByComparator<KaleoTaskInstanceToken> orderByComparator,
+		ServiceContext serviceContext) {
+
+		SearchContext searchContext = new SearchContext();
+
+		searchContext.setCompanyId(serviceContext.getCompanyId());
+		searchContext.setUserId(serviceContext.getUserId());
+
+		searchContext.setAttribute("andOperator", andOperator);
+		searchContext.setAttribute("assetPrimaryKeys", assetPrimaryKeys);
+		searchContext.setAttribute("assetTitle", assetTitle);
+		searchContext.setAttribute("assetTypes", assetTypes);
+		searchContext.setAttribute("completed", completed);
+		searchContext.setAttribute("dueDateGT", dueDateGT);
+		searchContext.setAttribute("dueDateLT", dueDateLT);
+		searchContext.setAttribute("searchByUserRoles", searchByUserRoles);
+		searchContext.setAttribute("taskName", taskName);
+
+		searchContext.setEnd(end);
+		searchContext.setStart(start);
+
+		if (orderByComparator != null) {
+			searchContext.setSorts(getSortFromComparator(orderByComparator));
+		}
+
+		return searchContext;
+	}
+
 	protected String[] getAssetTypes(String assetType) {
 		if (Validator.isNull(assetType)) {
 			return null;
@@ -705,5 +797,23 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 
 		return new String[] {assetType};
 	}
+
+	protected Sort getSortFromComparator(
+		OrderByComparator<KaleoTaskInstanceToken> orderByComparator) {
+
+		String[] fields = orderByComparator.getOrderByFields();
+
+		boolean reverse = !orderByComparator.isAscending();
+		String field = fields[0];
+
+		if (field.equals(Field.CREATE_DATE)) {
+			return new Sort(field, Sort.LONG_TYPE, reverse);
+		}
+
+		return new Sort(field, reverse);
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		KaleoTaskInstanceTokenLocalServiceImpl.class);
 
 }
