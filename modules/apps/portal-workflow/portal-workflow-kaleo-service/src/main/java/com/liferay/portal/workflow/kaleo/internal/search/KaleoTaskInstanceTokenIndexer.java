@@ -14,7 +14,10 @@
 
 package com.liferay.portal.workflow.kaleo.internal.search;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
 import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetRenderer;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
@@ -34,12 +37,16 @@ import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignmentInstance;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskInstanceTokenLocalService;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -68,6 +75,12 @@ public class KaleoTaskInstanceTokenIndexer
 	@Override
 	public String getClassName() {
 		return CLASS_NAME;
+	}
+
+	@Override
+	public void postProcessContextBooleanFilter(
+			BooleanFilter contextBooleanFilter, SearchContext searchContext)
+		throws Exception {
 	}
 
 	@Override
@@ -101,23 +114,30 @@ public class KaleoTaskInstanceTokenIndexer
 		List<KaleoTaskAssignmentInstance> kaleoTaskAssignmentInstances =
 			kaleoTaskInstanceToken.getKaleoTaskAssignmentInstances();
 
-		long[] assigneeClassPKs = new long[kaleoTaskAssignmentInstances.size()];
-		String[] assigneeClassNames =
-			new String[kaleoTaskAssignmentInstances.size()];
+		Stream<KaleoTaskAssignmentInstance> stream =
+			kaleoTaskAssignmentInstances.stream();
 
-		int index = kaleoTaskAssignmentInstances.size();
+		Map<String, List<KaleoTaskAssignmentInstance>> map = stream.collect(
+			Collectors.groupingBy(
+				KaleoTaskAssignmentInstance::getAssigneeClassName));
 
-		for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance :
-				kaleoTaskAssignmentInstances) {
+		for (Map.Entry<String, List<KaleoTaskAssignmentInstance>> entry :
+				map.entrySet()) {
 
-			assigneeClassPKs[index] =
-				kaleoTaskAssignmentInstance.getAssigneeClassPK();
-			assigneeClassNames[index] =
-				kaleoTaskAssignmentInstance.getAssigneeClassName();
+			List<KaleoTaskAssignmentInstance> value = entry.getValue();
+
+			Stream<KaleoTaskAssignmentInstance> valueStream = value.stream();
+
+			document.addKeyword(
+				StringUtil.replace(entry.getKey(), '.', '_'),
+				valueStream.map(
+					KaleoTaskAssignmentInstance::getAssigneeClassPK
+				).toArray(
+					Long[]::new
+				)
+			);
 		}
 
-		document.addKeyword("assigneeClassNames", assigneeClassNames);
-		document.addKeyword("assigneeClassPKs", assigneeClassPKs);
 		document.addKeyword("completed", kaleoTaskInstanceToken.isCompleted());
 		document.addDate("dueDate", kaleoTaskInstanceToken.getDueDate());
 		document.addKeyword(
@@ -125,10 +145,14 @@ public class KaleoTaskInstanceTokenIndexer
 		document.addText(
 			"kaleoTaskName", kaleoTaskInstanceToken.getKaleoTaskName());
 
-		AssetEntry assetEntry = assetEntryLocalService.fetchEntry(
-			classNameLocalService.getClassNameId(
-				kaleoTaskInstanceToken.getClassName()),
+		AssetRendererFactory<?> assetRendererFactory = getAssetRendererFactory(
+			kaleoTaskInstanceToken.getClassName());
+
+		AssetRenderer<?> assetRenderer = assetRendererFactory.getAssetRenderer(
 			kaleoTaskInstanceToken.getClassPK());
+
+		AssetEntry assetEntry = assetEntryLocalService.getEntry(
+			assetRenderer.getClassName(), assetRenderer.getClassPK());
 
 		document.addKeyword("assetClassName", assetEntry.getClassName());
 		document.addKeyword("assetClassNameId", assetEntry.getClassNameId());
@@ -181,6 +205,13 @@ public class KaleoTaskInstanceTokenIndexer
 		long companyId = GetterUtil.getLong(ids[0]);
 
 		reindexKaleoTaskInstanceTokens(companyId);
+	}
+
+	protected AssetRendererFactory<?> getAssetRendererFactory(
+		String className) {
+
+		return AssetRendererFactoryRegistryUtil.
+			getAssetRendererFactoryByClassName(className);
 	}
 
 	protected void reindexKaleoTaskInstanceTokens(long companyId)
