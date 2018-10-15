@@ -22,6 +22,8 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -51,6 +53,7 @@ import java.util.Map;
 public class KaleoTaskInstanceTokenLocalServiceImpl
 	extends KaleoTaskInstanceTokenLocalServiceBaseImpl {
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public KaleoTaskInstanceToken addKaleoTaskInstanceToken(
 			long kaleoInstanceTokenId, long kaleoTaskId, String kaleoTaskName,
@@ -119,6 +122,7 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		return kaleoTaskInstanceToken;
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public KaleoTaskInstanceToken assignKaleoTaskInstanceToken(
 			long kaleoTaskInstanceTokenId, String assigneeClassName,
@@ -144,6 +148,7 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		return kaleoTaskInstanceToken;
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public KaleoTaskInstanceToken completeKaleoTaskInstanceToken(
 			long kaleoTaskInstanceTokenId, ServiceContext serviceContext)
@@ -179,7 +184,12 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 
 		// Kaleo task instance tokens
 
-		kaleoTaskInstanceTokenPersistence.removeByCompanyId(companyId);
+		for (KaleoTaskInstanceToken kaleoTaskInstanceToken :
+				kaleoTaskInstanceTokenPersistence.findByCompanyId(companyId)) {
+
+			kaleoTaskInstanceTokenLocalService.deleteKaleoTaskInstanceToken(
+				kaleoTaskInstanceToken);
+		}
 
 		// Kaleo task assignment instances
 
@@ -198,8 +208,13 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 
 		// Kaleo task instance tokens
 
-		kaleoTaskInstanceTokenPersistence.removeByKaleoDefinitionVersionId(
-			kaleoDefinitionVersionId);
+		for (KaleoTaskInstanceToken kaleoTaskInstanceToken :
+				kaleoTaskInstanceTokenPersistence.
+					findByKaleoDefinitionVersionId(kaleoDefinitionVersionId)) {
+
+			kaleoTaskInstanceTokenLocalService.deleteKaleoTaskInstanceToken(
+				kaleoTaskInstanceToken);
+		}
 
 		// Kaleo task assignment instances
 
@@ -222,6 +237,14 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 
 		kaleoTaskInstanceTokenPersistence.removeByKaleoInstanceId(
 			kaleoInstanceId);
+
+		for (KaleoTaskInstanceToken kaleoTaskInstanceToken :
+				kaleoTaskInstanceTokenPersistence.findByKaleoInstanceId(
+					kaleoInstanceId)) {
+
+			kaleoTaskInstanceTokenLocalService.deleteKaleoTaskInstanceToken(
+				kaleoTaskInstanceToken);
+		}
 
 		// Kaleo task assignment instances
 
