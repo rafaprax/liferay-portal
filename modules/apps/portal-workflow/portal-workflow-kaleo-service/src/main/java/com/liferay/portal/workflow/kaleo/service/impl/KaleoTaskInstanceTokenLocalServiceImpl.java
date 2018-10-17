@@ -545,36 +545,6 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		OrderByComparator<KaleoTaskInstanceToken> orderByComparator,
 		ServiceContext serviceContext) {
 
-		List<KaleoTaskInstanceToken> kaleoTaskInstanceTokens =
-			new ArrayList<>();
-
-		try {
-			Indexer<KaleoTaskInstanceToken> indexer =
-				IndexerRegistryUtil.getIndexer(
-					KaleoTaskInstanceToken.class.getName());
-
-			SearchContext searchContext = buildSearchContext(
-				assetTitle, taskName, assetTypes, assetPrimaryKeys, dueDateGT,
-				dueDateLT, completed, searchByUserRoles, andOperator, start,
-				end, orderByComparator, serviceContext);
-
-			Hits hits = indexer.search(searchContext);
-
-			for (Document document : hits.getDocs()) {
-				long kaleoTaskInstanceTokenId = GetterUtil.getLong(
-					document.get(Field.ENTRY_CLASS_PK));
-
-				kaleoTaskInstanceTokens.add(
-					kaleoTaskInstanceTokenPersistence.fetchByPrimaryKey(
-						kaleoTaskInstanceTokenId));
-			}
-		}
-		catch (PortalException pe) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(pe, pe);
-			}
-		}
-
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery =
 			new KaleoTaskInstanceTokenQuery(serviceContext);
 
@@ -590,6 +560,34 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		kaleoTaskInstanceTokenQuery.setStart(start);
 		kaleoTaskInstanceTokenQuery.setTaskName(taskName);
 		kaleoTaskInstanceTokenQuery.setAndOperator(andOperator);
+
+		try {
+			Indexer<KaleoTaskInstanceToken> indexer =
+				IndexerRegistryUtil.getIndexer(
+					KaleoTaskInstanceToken.class.getName());
+
+			SearchContext searchContext = buildSearchContext(
+				kaleoTaskInstanceTokenQuery, start, end, orderByComparator);
+
+			Hits hits = indexer.search(searchContext);
+
+			List<KaleoTaskInstanceToken> kaleoTaskInstanceTokens =
+				new ArrayList<>();
+
+			for (Document document : hits.getDocs()) {
+				long kaleoTaskInstanceTokenId = GetterUtil.getLong(
+					document.get(Field.ENTRY_CLASS_PK));
+
+				kaleoTaskInstanceTokens.add(
+					kaleoTaskInstanceTokenPersistence.fetchByPrimaryKey(
+						kaleoTaskInstanceTokenId));
+			}
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+		}
 
 		return kaleoTaskInstanceTokenFinder.findKaleoTaskInstanceTokens(
 			kaleoTaskInstanceTokenQuery);
@@ -638,24 +636,6 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		Boolean completed, Boolean searchByUserRoles, boolean andOperator,
 		ServiceContext serviceContext) {
 
-		Indexer<KaleoTaskInstanceToken> indexer =
-			IndexerRegistryUtil.getIndexer(
-				KaleoTaskInstanceToken.class.getName());
-
-		try {
-			SearchContext searchContext = buildSearchContext(
-				assetTitle, taskName, assetTypes, assetPrimaryKeys, dueDateGT,
-				dueDateLT, completed, searchByUserRoles, andOperator,
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null, serviceContext);
-
-			return (int)indexer.searchCount(searchContext);
-		}
-		catch (PortalException pe) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(pe, pe);
-			}
-		}
-
 		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery =
 			new KaleoTaskInstanceTokenQuery(serviceContext);
 
@@ -668,6 +648,23 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		kaleoTaskInstanceTokenQuery.setSearchByUserRoles(searchByUserRoles);
 		kaleoTaskInstanceTokenQuery.setTaskName(taskName);
 		kaleoTaskInstanceTokenQuery.setAndOperator(andOperator);
+
+		try {
+			Indexer<KaleoTaskInstanceToken> indexer =
+				IndexerRegistryUtil.getIndexer(
+					KaleoTaskInstanceToken.class.getName());
+
+			SearchContext searchContext = buildSearchContext(
+				kaleoTaskInstanceTokenQuery, QueryUtil.ALL_POS,
+				QueryUtil.ALL_POS, null);
+
+			return (int)indexer.searchCount(searchContext);
+		}
+		catch (PortalException pe) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+		}
 
 		return kaleoTaskInstanceTokenFinder.countKaleoTaskInstanceTokens(
 			kaleoTaskInstanceTokenQuery);
@@ -758,27 +755,16 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 	}
 
 	protected SearchContext buildSearchContext(
-		String assetTitle, String taskName, String[] assetTypes,
-		Long[] assetPrimaryKeys, Date dueDateGT, Date dueDateLT,
-		Boolean completed, Boolean searchByUserRoles, boolean andOperator,
-		int start, int end,
-		OrderByComparator<KaleoTaskInstanceToken> orderByComparator,
-		ServiceContext serviceContext) {
+		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery, int start,
+		int end, OrderByComparator<KaleoTaskInstanceToken> orderByComparator) {
 
 		SearchContext searchContext = new SearchContext();
 
-		searchContext.setCompanyId(serviceContext.getCompanyId());
-		searchContext.setUserId(serviceContext.getUserId());
+		searchContext.setCompanyId(kaleoTaskInstanceTokenQuery.getCompanyId());
+		searchContext.setUserId(kaleoTaskInstanceTokenQuery.getUserId());
 
-		searchContext.setAttribute("andOperator", andOperator);
-		searchContext.setAttribute("assetPrimaryKeys", assetPrimaryKeys);
-		searchContext.setAttribute("assetTitle", assetTitle);
-		searchContext.setAttribute("assetTypes", assetTypes);
-		searchContext.setAttribute("completed", completed);
-		searchContext.setAttribute("dueDateGT", dueDateGT);
-		searchContext.setAttribute("dueDateLT", dueDateLT);
-		searchContext.setAttribute("searchByUserRoles", searchByUserRoles);
-		searchContext.setAttribute("taskName", taskName);
+		searchContext.setAttribute(
+			"kaleoTaskInstanceTokenQuery", kaleoTaskInstanceTokenQuery);
 
 		searchContext.setEnd(end);
 		searchContext.setStart(start);

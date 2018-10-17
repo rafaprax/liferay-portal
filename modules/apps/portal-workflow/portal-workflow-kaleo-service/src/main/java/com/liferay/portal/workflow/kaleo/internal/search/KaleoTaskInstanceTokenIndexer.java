@@ -37,16 +37,14 @@ import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignmentInstance;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskInstanceTokenLocalService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -69,7 +67,7 @@ public class KaleoTaskInstanceTokenIndexer
 			Field.COMPANY_ID, Field.ENTRY_CLASS_NAME, Field.ENTRY_CLASS_PK,
 			Field.UID);
 		setDefaultSelectedLocalizedFieldNames(Field.DESCRIPTION, Field.TITLE);
-		setPermissionAware(true);
+		setPermissionAware(false);
 	}
 
 	@Override
@@ -81,6 +79,9 @@ public class KaleoTaskInstanceTokenIndexer
 	public void postProcessContextBooleanFilter(
 			BooleanFilter contextBooleanFilter, SearchContext searchContext)
 		throws Exception {
+
+		kaleoTaskInstanceTokenIndexerHelper.appendTerms(
+			contextBooleanFilter, searchContext);
 	}
 
 	@Override
@@ -114,31 +115,33 @@ public class KaleoTaskInstanceTokenIndexer
 		List<KaleoTaskAssignmentInstance> kaleoTaskAssignmentInstances =
 			kaleoTaskInstanceToken.getKaleoTaskAssignmentInstances();
 
-		Stream<KaleoTaskAssignmentInstance> stream =
-			kaleoTaskAssignmentInstances.stream();
+		Set<String> assigneeClassNameSet = new HashSet<>();
+		Set<Long> assigneeClassPKSet = new HashSet<>();
+		Set<Long> assigneeGroupIdSet = new HashSet<>();
 
-		Map<String, List<KaleoTaskAssignmentInstance>> map = stream.collect(
-			Collectors.groupingBy(
-				KaleoTaskAssignmentInstance::getAssigneeClassName));
+		for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance :
+				kaleoTaskAssignmentInstances) {
 
-		for (Map.Entry<String, List<KaleoTaskAssignmentInstance>> entry :
-				map.entrySet()) {
-
-			List<KaleoTaskAssignmentInstance> value = entry.getValue();
-
-			Stream<KaleoTaskAssignmentInstance> valueStream = value.stream();
-
-			document.addKeyword(
-				StringUtil.replace(entry.getKey(), '.', '_'),
-				valueStream.map(
-					KaleoTaskAssignmentInstance::getAssigneeClassPK
-				).toArray(
-					Long[]::new
-				)
-			);
+			assigneeClassNameSet.add(
+				kaleoTaskAssignmentInstance.getAssigneeClassName());
+			assigneeClassPKSet.add(
+				kaleoTaskAssignmentInstance.getAssigneeClassPK());
+			assigneeGroupIdSet.add(kaleoTaskAssignmentInstance.getGroupId());
 		}
 
+		document.addKeyword(
+			"assigneeClassNames",
+			assigneeClassNameSet.toArray(
+				new String[assigneeClassNameSet.size()]));
+		document.addKeyword(
+			"assigneeClassPKs",
+			assigneeClassPKSet.toArray(new Long[assigneeClassPKSet.size()]));
+		document.addKeyword(
+			"assigneeGroupIds",
+			assigneeGroupIdSet.toArray(new Long[assigneeGroupIdSet.size()]));
 		document.addKeyword("completed", kaleoTaskInstanceToken.isCompleted());
+		document.addKeyword("className", kaleoTaskInstanceToken.getClassName());
+		document.addKeyword("classPK", kaleoTaskInstanceToken.getClassPK());
 		document.addDate("dueDate", kaleoTaskInstanceToken.getDueDate());
 		document.addKeyword(
 			"kaleoInstanceId", kaleoTaskInstanceToken.getKaleoInstanceId());
@@ -260,6 +263,10 @@ public class KaleoTaskInstanceTokenIndexer
 
 	@Reference
 	protected IndexWriterHelper indexWriterHelper;
+
+	@Reference
+	protected KaleoTaskInstanceTokenIndexerHelper
+		kaleoTaskInstanceTokenIndexerHelper;
 
 	@Reference
 	protected KaleoTaskInstanceTokenLocalService
