@@ -562,6 +562,9 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		kaleoTaskInstanceTokenQuery.setAndOperator(andOperator);
 
 		try {
+			List<KaleoTaskInstanceToken> kaleoTaskInstanceTokens =
+				new ArrayList<>();
+
 			Indexer<KaleoTaskInstanceToken> indexer =
 				IndexerRegistryUtil.getIndexer(
 					KaleoTaskInstanceToken.class.getName());
@@ -571,9 +574,6 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 
 			Hits hits = indexer.search(searchContext);
 
-			List<KaleoTaskInstanceToken> kaleoTaskInstanceTokens =
-				new ArrayList<>();
-
 			for (Document document : hits.getDocs()) {
 				long kaleoTaskInstanceTokenId = GetterUtil.getLong(
 					document.get(Field.ENTRY_CLASS_PK));
@@ -582,6 +582,8 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 					kaleoTaskInstanceTokenPersistence.fetchByPrimaryKey(
 						kaleoTaskInstanceTokenId));
 			}
+
+			return kaleoTaskInstanceTokens;
 		}
 		catch (PortalException pe) {
 			if (_log.isDebugEnabled()) {

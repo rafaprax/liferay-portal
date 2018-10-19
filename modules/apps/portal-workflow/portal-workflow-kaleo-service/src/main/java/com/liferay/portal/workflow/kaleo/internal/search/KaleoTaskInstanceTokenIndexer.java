@@ -29,7 +29,6 @@ import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.IndexWriterHelper;
-import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchPermissionChecker;
 import com.liferay.portal.kernel.search.Summary;
@@ -55,7 +54,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Rafael Praxedes
  */
-@Component(immediate = true, service = Indexer.class)
+@Component(service = {})
 public class KaleoTaskInstanceTokenIndexer
 	extends BaseIndexer<KaleoTaskInstanceToken> {
 
@@ -73,15 +72,6 @@ public class KaleoTaskInstanceTokenIndexer
 	@Override
 	public String getClassName() {
 		return CLASS_NAME;
-	}
-
-	@Override
-	public void postProcessContextBooleanFilter(
-			BooleanFilter contextBooleanFilter, SearchContext searchContext)
-		throws Exception {
-
-		kaleoTaskInstanceTokenIndexerHelper.appendTerms(
-			contextBooleanFilter, searchContext);
 	}
 
 	@Override
@@ -263,10 +253,6 @@ public class KaleoTaskInstanceTokenIndexer
 
 	@Reference
 	protected IndexWriterHelper indexWriterHelper;
-
-	@Reference
-	protected KaleoTaskInstanceTokenIndexerHelper
-		kaleoTaskInstanceTokenIndexerHelper;
 
 	@Reference
 	protected KaleoTaskInstanceTokenLocalService
