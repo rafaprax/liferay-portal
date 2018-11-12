@@ -4,4 +4,5 @@ Bundle-Version: 4.0.0
 Export-Package:\
 	com.liferay.dynamic.data.mapping.test.util,\
 	com.liferay.dynamic.data.mapping.test.util.search,\
-	com.liferay.dynamic.data.mapping.test.util.storage
+	com.liferay.dynamic.data.mapping.test.util.storage,\
+	com.liferay.dynamic.data.mapping.test.util.web
