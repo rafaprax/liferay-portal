@@ -205,7 +205,7 @@ public class DDMFormDisplayContextTest extends PowerMockito {
 			mock(DDMFormInstanceVersionLocalService.class),
 			mock(DDMFormRenderer.class), mock(DDMFormValuesFactory.class),
 			mock(DDMFormValuesMerger.class), mock(GroupLocalService.class),
-			mock(WorkflowDefinitionLinkLocalService.class));
+			mock(WorkflowDefinitionLinkLocalService.class), mock(Portal.class));
 	}
 
 	protected MockRenderRequest mockRenderRequest() {
@@ -270,6 +270,6 @@ public class DDMFormDisplayContextTest extends PowerMockito {
 	private Language _language;
 
 	@Mock
-	private MockHttpServletRequest _request;
+	private MockHttpServletRequest _request;	
 
 }
