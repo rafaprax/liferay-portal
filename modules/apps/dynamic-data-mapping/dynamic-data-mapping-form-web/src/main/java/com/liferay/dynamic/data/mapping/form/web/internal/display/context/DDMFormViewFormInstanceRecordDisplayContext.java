@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Locale;
@@ -67,6 +68,12 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 
 		_ddmFormAdminRequestHelper = new DDMFormAdminRequestHelper(
 			httpServletRequest);
+
+		_containerId = StringUtil.randomId();
+	}
+
+	public String getContainerId() {
+		return _containerId;
 	}
 
 	public String getDDMFormHTML(RenderRequest renderRequest)
@@ -88,6 +95,7 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 
 		DDMFormValues formValues = formInstanceRecord.getDDMFormValues();
 
+		formRenderingContext.setContainerId(_containerId);
 		formRenderingContext.setDDMFormValues(formValues);
 		formRenderingContext.setLocale(formValues.getDefaultLocale());
 
@@ -221,6 +229,7 @@ public class DDMFormViewFormInstanceRecordDisplayContext {
 		}
 	}
 
+	private final String _containerId;
 	private final DDMFormAdminRequestHelper _ddmFormAdminRequestHelper;
 	private final DDMFormInstanceRecordLocalService
 		_ddmFormInstanceRecordLocalService;
