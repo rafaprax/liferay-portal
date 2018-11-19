@@ -17,7 +17,9 @@ package com.liferay.dynamic.data.mapping.test.util;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.util.LocaleUtil;
 
 import java.util.LinkedHashSet;
@@ -181,11 +183,62 @@ public class DDMFormTestUtil {
 
 		ddmFormField.setDDMFormFieldOptions(ddmFormFieldOptions);
 
-		LocalizedValue localizedValue = ddmFormField.getLabel();
+		return ddmFormField;
+	}
 
-		localizedValue.addString(LocaleUtil.US, label);
+	public static DDMFormField createDDMFormField(
+		String name, String label, String type, String dataType,
+		boolean localizable, boolean repeatable, boolean required, String tip,
+		String predefinedValue, String placeHolder, String toolTip,
+		String option, String ddmFormFieldValidationErrorMessage,
+		String ddmFormFieldValidationExpression, String fieldNamespace,
+		String indexType, boolean autocomplete, String dataSourceType,
+		JSONArray ddmDataProviderInstanceId,
+		JSONArray ddmDataProviderInstanceOutput, String displayStyle,
+		boolean readOnly, boolean showLabel, String visibilityExpression) {
+
+		DDMFormField ddmFormField = createDDMFormField(
+			name, label, type, dataType, localizable, repeatable, required, tip,
+			predefinedValue, placeHolder, toolTip, option);
+
+		DDMFormFieldValidation ddmFormFieldValidation =
+			createDDMFormFieldValidation(
+				ddmFormFieldValidationErrorMessage,
+				ddmFormFieldValidationExpression);
+
+		ddmFormField.setDDMFormFieldValidation(ddmFormFieldValidation);
+
+		ddmFormField.setFieldNamespace(fieldNamespace);
+		ddmFormField.setIndexType(indexType);
+		ddmFormField.setProperty("autocomplete", autocomplete);
+		ddmFormField.setProperty("dataSourceType", dataSourceType);
+		ddmFormField.setProperty(
+			"ddmDataProviderInstanceId", ddmDataProviderInstanceId);
+
+		ddmFormField.setProperty(
+			"ddmDataProviderInstanceOutput", ddmDataProviderInstanceOutput);
+
+		ddmFormField.setProperty("displayStyle", displayStyle);
+		ddmFormField.setReadOnly(readOnly);
+		ddmFormField.setShowLabel(showLabel);
+		ddmFormField.setVisibilityExpression(visibilityExpression);
 
 		return ddmFormField;
+	}
+
+	public static DDMFormFieldValidation createDDMFormFieldValidation(
+		String ddmFormFieldValidationErrorMessage,
+		String ddmFormFieldValidationExpression) {
+
+		DDMFormFieldValidation ddmFormFieldValidation =
+			new DDMFormFieldValidation();
+
+		ddmFormFieldValidation.setErrorMessage(
+			ddmFormFieldValidationErrorMessage);
+
+		ddmFormFieldValidation.setExpression(ddmFormFieldValidationExpression);
+
+		return ddmFormFieldValidation;
 	}
 
 	public static DDMFormField createGridDDMFormField(
