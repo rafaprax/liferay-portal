@@ -3,5 +3,6 @@ Bundle-SymbolicName: com.liferay.dynamic.data.mapping.test
 Bundle-Version: 1.0.0
 -includeresource:\
 	test-classes/integration,\
+	@lib/com.liferay.dynamic.data.mapping.form.web.jar,\
 	@lib/json.jar,\
 	@lib/jsonassert.jar
