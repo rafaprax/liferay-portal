@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.filter.FilterTranslator;
 import com.liferay.portal.kernel.search.query.QueryTranslator;
+import com.liferay.portal.search.aggregation.Aggregation;
+import com.liferay.portal.search.aggregation.AggregationTranslator;
 import com.liferay.portal.search.elasticsearch6.internal.facet.FacetTranslator;
 import com.liferay.portal.search.engine.adapter.search.BaseSearchRequest;
 
@@ -26,6 +28,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.rescore.QueryRescorerBuilder;
 
 import org.osgi.service.component.annotations.Component;
@@ -78,6 +81,11 @@ public class CommonSearchRequestBuilderAssemblerImpl
 
 		setRescorer(searchRequestBuilder, baseSearchRequest);
 
+		for (Aggregation aggregation : baseSearchRequest.getAggregations()) {
+			searchRequestBuilder.addAggregation(
+				aggregationTranslator.translate(aggregation));
+		}
+
 		facetTranslator.translate(
 			searchRequestBuilder, baseSearchRequest.getQuery(),
 			baseSearchRequest.getFacets(),
@@ -125,6 +133,9 @@ public class CommonSearchRequestBuilderAssemblerImpl
 		searchRequestBuilder.setRescorer(
 			new QueryRescorerBuilder(queryTranslator.translate(query, null)));
 	}
+
+	@Reference(target = "(search.engine.impl=Elasticsearch)")
+	protected AggregationTranslator<AggregationBuilder> aggregationTranslator;
 
 	@Reference
 	protected FacetTranslator facetTranslator;
