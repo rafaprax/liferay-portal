@@ -12,36 +12,26 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.search.aggregation.AggregationResults;
+import java.util.Collection;
 
 /**
  * @author Michael C. Han
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public interface Aggregation {
 
-	public AggregationResults getAggregationResults() {
-		return _aggregationResults;
-	}
+	public <T> T accept(AggregationVisitor<T> aggregationVisitor);
 
-	public Hits getHits() {
-		return _hits;
-	}
+	public void addAggregation(Aggregation aggregation);
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
-	}
+	public void addAggregations(Aggregation... aggregation);
 
-	public void setHits(Hits hits) {
-		_hits = hits;
-	}
+	public String getAggregationName();
 
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	public Collection<Aggregation> getAggregations();
 
 }

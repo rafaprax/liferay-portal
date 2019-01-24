@@ -12,36 +12,35 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation.metrics;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.search.aggregation.AggregationResults;
+import com.liferay.portal.search.aggregation.AggregationVisitor;
 
 /**
  * @author Michael C. Han
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public class CardinalityAggregation extends BaseMetricsAggregation {
 
-	public AggregationResults getAggregationResults() {
-		return _aggregationResults;
+	public CardinalityAggregation(String aggregationName, String field) {
+		super(aggregationName, field);
 	}
 
-	public Hits getHits() {
-		return _hits;
+	@Override
+	public <T> T accept(AggregationVisitor<T> aggregationVisitor) {
+		return aggregationVisitor.visit(this);
 	}
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
+	public Integer getPrecisionThreshold() {
+		return _precisionThreshold;
 	}
 
-	public void setHits(Hits hits) {
-		_hits = hits;
+	public void setPrecisionThreshold(Integer precisionThreshold) {
+		_precisionThreshold = precisionThreshold;
 	}
 
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	private Integer _precisionThreshold;
 
 }

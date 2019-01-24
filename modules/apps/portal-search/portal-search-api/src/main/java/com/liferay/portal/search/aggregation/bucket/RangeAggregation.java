@@ -12,36 +12,38 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation.bucket;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.search.aggregation.AggregationResults;
+import com.liferay.portal.search.aggregation.AggregationVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author Michael C. Han
+ * @author Inácio Nery
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public class RangeAggregation extends BaseBucketAggregation {
 
-	public AggregationResults getAggregationResults() {
-		return _aggregationResults;
+	public RangeAggregation(String aggregationName) {
+		super(aggregationName);
 	}
 
-	public Hits getHits() {
-		return _hits;
+	@Override
+	public <T> T accept(AggregationVisitor<T> aggregationVisitor) {
+		return aggregationVisitor.visit(this);
 	}
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
+	public void addRange(Range range) {
+		_ranges.add(range);
 	}
 
-	public void setHits(Hits hits) {
-		_hits = hits;
+	public List<Range> getRanges() {
+		return _ranges;
 	}
 
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	private List<Range> _ranges = new ArrayList<>();
 
 }

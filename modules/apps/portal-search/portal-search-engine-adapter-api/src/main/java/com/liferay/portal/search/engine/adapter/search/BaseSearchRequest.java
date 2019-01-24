@@ -19,8 +19,12 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.search.filter.Filter;
+import com.liferay.portal.search.aggregation.Aggregation;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +33,19 @@ import java.util.Map;
 @ProviderType
 public abstract class BaseSearchRequest {
 
+	public void addAggregation(Aggregation aggregation) {
+		_aggregations.add(aggregation);
+	}
+
+	public List<Aggregation> getAggregations() {
+		return Collections.unmodifiableList(_aggregations);
+	}
+
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public Map<String, Facet> getFacets() {
 		return _facets;
 	}
@@ -77,10 +94,20 @@ public abstract class BaseSearchRequest {
 		return _trackTotalHits;
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void putAllFacets(Map<String, Facet> faects) {
 		_facets.putAll(faects);
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void putFacet(String fieldName, Facet facet) {
 		_facets.put(fieldName, facet);
 	}
@@ -129,6 +156,7 @@ public abstract class BaseSearchRequest {
 		_trackTotalHits = trackTotalHits;
 	}
 
+	private final List<Aggregation> _aggregations = new ArrayList<>();
 	private boolean _basicFacetSelection;
 	private boolean _explain;
 	private final Map<String, Facet> _facets = new HashMap<>();

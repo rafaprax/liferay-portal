@@ -1,0 +1,90 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.portal.search.aggregation.metrics;
+
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.search.aggregation.AggregationVisitor;
+import com.liferay.portal.search.aggregation.BaseAggregation;
+import com.liferay.portal.search.script.Script;
+
+/**
+ * @author Michael C. Han
+ */
+@ProviderType
+public class WeightedAvgAggregation extends BaseAggregation {
+
+	public WeightedAvgAggregation(
+		String aggregationName, String valueField, String weightField) {
+
+		super(aggregationName);
+
+		_valueField = valueField;
+		_weightField = weightField;
+	}
+
+	@Override
+	public <T> T accept(AggregationVisitor<T> aggregationVisitor) {
+		return aggregationVisitor.visit(this);
+	}
+
+	public String getValueField() {
+		return _valueField;
+	}
+
+	public Object getValueMissing() {
+		return _valueMissing;
+	}
+
+	public Script getValueScript() {
+		return _valueScript;
+	}
+
+	public String getWeightField() {
+		return _weightField;
+	}
+
+	public Object getWeightMissing() {
+		return _weightMissing;
+	}
+
+	public Script getWeightScript() {
+		return _weightScript;
+	}
+
+	public void setValueMissing(Object valueMissing) {
+		_valueMissing = valueMissing;
+	}
+
+	public void setValueScript(Script valueScript) {
+		_valueScript = valueScript;
+	}
+
+	public void setWeightMissing(Object weightMissing) {
+		_weightMissing = weightMissing;
+	}
+
+	public void setWeightScript(Script weightScript) {
+		_weightScript = weightScript;
+	}
+
+	private final String _valueField;
+	private Object _valueMissing;
+	private Script _valueScript;
+	private final String _weightField;
+	private Object _weightMissing;
+	private Script _weightScript;
+
+}

@@ -43,6 +43,11 @@ public class SearchSearchRequest
 		return _alternateUidFieldName;
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public GroupBy getGroupBy() {
 		return _groupBy;
 	}
@@ -92,6 +97,11 @@ public class SearchSearchRequest
 		return _start;
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public Map<String, Stats> getStats() {
 		return _stats;
 	}
@@ -112,6 +122,11 @@ public class SearchSearchRequest
 		return _scoreEnabled;
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void putAllStats(Map<String, Stats> stats) {
 		if (_stats == null) {
 			_stats = new HashMap<>();
@@ -124,6 +139,11 @@ public class SearchSearchRequest
 		_alternateUidFieldName = alternateUidFieldName;
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void setGroupBy(GroupBy groupBy) {
 		_groupBy = groupBy;
 	}
@@ -182,6 +202,11 @@ public class SearchSearchRequest
 		_start = start;
 	}
 
+	/**
+	 * @return
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void setStats(Map<String, Stats> stats) {
 		_stats = stats;
 	}

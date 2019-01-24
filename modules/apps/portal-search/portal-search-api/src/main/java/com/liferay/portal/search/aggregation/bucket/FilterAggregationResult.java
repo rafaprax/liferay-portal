@@ -12,36 +12,34 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation.bucket;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.search.aggregation.AggregationResults;
 
 /**
- * @author Michael C. Han
+ * @author Inácio Nery
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public class FilterAggregationResult {
+
+	public FilterAggregationResult(
+		AggregationResults aggregationResults, long count) {
+
+		_aggregationResults = aggregationResults;
+		_count = count;
+	}
 
 	public AggregationResults getAggregationResults() {
 		return _aggregationResults;
 	}
 
-	public Hits getHits() {
-		return _hits;
+	public long getCount() {
+		return _count;
 	}
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
-	}
-
-	public void setHits(Hits hits) {
-		_hits = hits;
-	}
-
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	private final AggregationResults _aggregationResults;
+	private final long _count;
 
 }

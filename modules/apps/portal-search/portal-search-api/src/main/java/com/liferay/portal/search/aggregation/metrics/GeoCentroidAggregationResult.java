@@ -12,36 +12,30 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation.metrics;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.search.aggregation.AggregationResults;
-
 /**
- * @author Michael C. Han
+ * @author Inácio Nery
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public class GeoCentroidAggregationResult {
 
-	public AggregationResults getAggregationResults() {
-		return _aggregationResults;
+	public GeoCentroidAggregationResult(GeoLocationPoint centroid, long count) {
+		_centroid = centroid;
+		_count = count;
 	}
 
-	public Hits getHits() {
-		return _hits;
+	public GeoLocationPoint getCentroid() {
+		return _centroid;
 	}
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
+	public long getCount() {
+		return _count;
 	}
 
-	public void setHits(Hits hits) {
-		_hits = hits;
-	}
-
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	private final GeoLocationPoint _centroid;
+	private final long _count;
 
 }

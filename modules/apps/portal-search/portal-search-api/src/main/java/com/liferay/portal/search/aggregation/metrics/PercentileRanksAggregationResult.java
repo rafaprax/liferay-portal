@@ -12,36 +12,26 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation.metrics;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.search.aggregation.AggregationResults;
+import java.util.List;
 
 /**
- * @author Michael C. Han
+ * @author Inácio Nery
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public class PercentileRanksAggregationResult {
 
-	public AggregationResults getAggregationResults() {
-		return _aggregationResults;
+	public PercentileRanksAggregationResult(List<Percentile> percentiles) {
+		_percentiles = percentiles;
 	}
 
-	public Hits getHits() {
-		return _hits;
+	public List<Percentile> getPercentiles() {
+		return _percentiles;
 	}
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
-	}
-
-	public void setHits(Hits hits) {
-		_hits = hits;
-	}
-
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	private final List<Percentile> _percentiles;
 
 }

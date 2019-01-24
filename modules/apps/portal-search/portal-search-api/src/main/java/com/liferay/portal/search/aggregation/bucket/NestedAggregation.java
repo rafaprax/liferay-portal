@@ -12,36 +12,35 @@
  * details.
  */
 
-package com.liferay.portal.search.engine.adapter.search;
+package com.liferay.portal.search.aggregation.bucket;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.search.aggregation.AggregationResults;
+import com.liferay.portal.search.aggregation.AggregationVisitor;
 
 /**
- * @author Michael C. Han
+ * @author Inácio Nery
  */
 @ProviderType
-public class SearchSearchResponse extends BaseSearchResponse {
+public class NestedAggregation extends BaseBucketAggregation {
 
-	public AggregationResults getAggregationResults() {
-		return _aggregationResults;
+	public NestedAggregation(String aggregationName) {
+		super(aggregationName);
 	}
 
-	public Hits getHits() {
-		return _hits;
+	@Override
+	public <T> T accept(AggregationVisitor<T> aggregationVisitor) {
+		return aggregationVisitor.visit(this);
 	}
 
-	public void setAggregationResults(AggregationResults aggregationResults) {
-		_aggregationResults = aggregationResults;
+	public String getPath() {
+		return _path;
 	}
 
-	public void setHits(Hits hits) {
-		_hits = hits;
+	public void setPath(String path) {
+		_path = path;
 	}
 
-	private AggregationResults _aggregationResults;
-	private Hits _hits;
+	private String _path;
 
 }

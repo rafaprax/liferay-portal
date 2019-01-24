@@ -15,6 +15,8 @@
 package com.liferay.portal.search.elasticsearch6.internal.search.engine.adapter.search;
 
 import com.liferay.portal.kernel.search.Hits;
+import com.liferay.portal.search.aggregation.AggregationResults;
+import com.liferay.portal.search.elasticsearch6.internal.aggregation.ElasticsearchAggregationResult;
 import com.liferay.portal.search.elasticsearch6.internal.search.response.SearchResponseTranslator;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
@@ -38,6 +40,12 @@ public class SearchSearchResponseAssemblerImpl
 		SearchRequestBuilder searchRequestBuilder,
 		SearchResponse searchResponse, SearchSearchRequest searchSearchRequest,
 		SearchSearchResponse searchSearchResponse) {
+
+		AggregationResults aggregationResults =
+			new ElasticsearchAggregationResult(
+				searchResponse.getAggregations());
+
+		searchSearchResponse.setAggregationResults(aggregationResults);
 
 		commonSearchResponseAssembler.assemble(
 			searchRequestBuilder, searchResponse, searchSearchRequest,
