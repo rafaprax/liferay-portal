@@ -65,7 +65,7 @@ public class StructuredContentSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (structuredContent.getAggregateRating() != null) {
 			if (sb.length() > 1) {
@@ -476,7 +476,7 @@ public class StructuredContentSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (structuredContent.getAggregateRating() == null) {
 			map.put("aggregateRating", null);

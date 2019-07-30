@@ -57,7 +57,7 @@ public class SegmentSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (segment.getActive() != null) {
 			if (sb.length() > 1) {
@@ -179,7 +179,7 @@ public class SegmentSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (segment.getActive() == null) {
 			map.put("active", null);

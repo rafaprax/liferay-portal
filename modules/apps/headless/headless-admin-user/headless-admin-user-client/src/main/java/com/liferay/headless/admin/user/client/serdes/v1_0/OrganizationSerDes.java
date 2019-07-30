@@ -62,7 +62,7 @@ public class OrganizationSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (organization.getComment() != null) {
 			if (sb.length() > 1) {
@@ -270,7 +270,7 @@ public class OrganizationSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (organization.getComment() == null) {
 			map.put("comment", null);

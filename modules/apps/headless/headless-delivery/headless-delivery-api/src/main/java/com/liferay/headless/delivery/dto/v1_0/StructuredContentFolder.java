@@ -445,7 +445,7 @@ public class StructuredContentFolder {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (creator != null) {
 			if (sb.length() > 1) {

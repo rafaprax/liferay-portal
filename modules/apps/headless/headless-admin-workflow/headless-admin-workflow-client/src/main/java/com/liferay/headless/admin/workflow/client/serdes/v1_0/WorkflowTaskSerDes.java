@@ -59,7 +59,7 @@ public class WorkflowTaskSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (workflowTask.getCompleted() != null) {
 			if (sb.length() > 1) {
@@ -223,7 +223,7 @@ public class WorkflowTaskSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (workflowTask.getCompleted() == null) {
 			map.put("completed", null);

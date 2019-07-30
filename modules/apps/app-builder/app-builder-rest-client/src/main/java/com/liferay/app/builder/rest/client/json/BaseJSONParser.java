@@ -284,7 +284,7 @@ public abstract class BaseJSONParser<T> {
 
 	private void _init(String json) {
 		_captureStartStack = new Stack<>();
-		_dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		_dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		_index = 0;
 		_json = json.trim();
 		_lastChar = 0;

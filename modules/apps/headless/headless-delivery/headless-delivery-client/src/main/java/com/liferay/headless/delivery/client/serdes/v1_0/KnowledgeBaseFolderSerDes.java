@@ -61,7 +61,7 @@ public class KnowledgeBaseFolderSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (knowledgeBaseFolder.getCreator() != null) {
 			if (sb.length() > 1) {
@@ -254,7 +254,7 @@ public class KnowledgeBaseFolderSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (knowledgeBaseFolder.getCreator() == null) {
 			map.put("creator", null);

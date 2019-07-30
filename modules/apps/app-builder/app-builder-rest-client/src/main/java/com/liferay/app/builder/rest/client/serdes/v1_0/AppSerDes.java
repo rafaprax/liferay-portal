@@ -57,7 +57,7 @@ public class AppSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (app.getDataDefinitionId() != null) {
 			if (sb.length() > 1) {
@@ -186,7 +186,7 @@ public class AppSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (app.getDataDefinitionId() == null) {
 			map.put("dataDefinitionId", null);

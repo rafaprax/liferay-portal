@@ -85,7 +85,7 @@ public abstract class BaseDataRecordCollectionResourceTestCase {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		_dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	}
 
 	@Before

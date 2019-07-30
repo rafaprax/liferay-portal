@@ -64,7 +64,7 @@ public class UserAccountSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (userAccount.getAdditionalName() != null) {
 			if (sb.length() > 1) {
@@ -426,7 +426,7 @@ public class UserAccountSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (userAccount.getAdditionalName() == null) {
 			map.put("additionalName", null);

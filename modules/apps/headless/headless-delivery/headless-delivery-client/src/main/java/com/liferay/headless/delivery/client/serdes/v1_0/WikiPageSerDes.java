@@ -61,7 +61,7 @@ public class WikiPageSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (wikiPage.getAggregateRating() != null) {
 			if (sb.length() > 1) {
@@ -346,7 +346,7 @@ public class WikiPageSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (wikiPage.getAggregateRating() == null) {
 			map.put("aggregateRating", null);

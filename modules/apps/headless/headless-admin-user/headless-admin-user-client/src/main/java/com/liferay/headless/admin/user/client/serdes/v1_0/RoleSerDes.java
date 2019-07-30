@@ -57,7 +57,7 @@ public class RoleSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (role.getAvailableLanguages() != null) {
 			if (sb.length() > 1) {
@@ -192,7 +192,7 @@ public class RoleSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (role.getAvailableLanguages() == null) {
 			map.put("availableLanguages", null);

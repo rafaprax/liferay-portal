@@ -61,7 +61,7 @@ public class ContentStructureSerDes {
 		sb.append("{");
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (contentStructure.getAvailableLanguages() != null) {
 			if (sb.length() > 1) {
@@ -225,7 +225,7 @@ public class ContentStructureSerDes {
 		Map<String, String> map = new HashMap<>();
 
 		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+			"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 		if (contentStructure.getAvailableLanguages() == null) {
 			map.put("availableLanguages", null);
