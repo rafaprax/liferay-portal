@@ -101,9 +101,13 @@ public class DefaultWorkflowEngineImpl
 			}
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -117,9 +121,13 @@ public class DefaultWorkflowEngineImpl
 			kaleoInstanceLocalService.deleteKaleoInstance(workflowInstanceId);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -238,9 +246,13 @@ public class DefaultWorkflowEngineImpl
 			return executionContext;
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -264,9 +276,13 @@ public class DefaultWorkflowEngineImpl
 			return transitionNames;
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -285,9 +301,13 @@ public class DefaultWorkflowEngineImpl
 				kaleoInstance.getRootKaleoInstanceToken(serviceContext));
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -359,9 +379,13 @@ public class DefaultWorkflowEngineImpl
 			return toWorkflowInstances(kaleoInstances, serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -385,9 +409,13 @@ public class DefaultWorkflowEngineImpl
 			return toWorkflowInstances(kaleoInstances, serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -413,9 +441,13 @@ public class DefaultWorkflowEngineImpl
 			return toWorkflowInstances(kaleoInstances, serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -436,9 +468,13 @@ public class DefaultWorkflowEngineImpl
 				title, definitionName, definition, serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -484,9 +520,13 @@ public class DefaultWorkflowEngineImpl
 			return toWorkflowInstances(kaleoInstances, serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -580,9 +620,13 @@ public class DefaultWorkflowEngineImpl
 				kaleoInstance, kaleoInstanceToken, workflowContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -679,9 +723,13 @@ public class DefaultWorkflowEngineImpl
 				kaleoInstance, rootKaleoInstanceToken, workflowContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}

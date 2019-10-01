@@ -19,6 +19,8 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -194,9 +196,13 @@ public class WorkflowDefinitionManagerImpl
 				orderByComparator);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -232,9 +238,13 @@ public class WorkflowDefinitionManagerImpl
 				kaleoDefinition);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -282,9 +292,13 @@ public class WorkflowDefinitionManagerImpl
 				kaleoDefinitionVersion);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -341,9 +355,13 @@ public class WorkflowDefinitionManagerImpl
 				orderByComparator);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -367,9 +385,13 @@ public class WorkflowDefinitionManagerImpl
 				orderByComparator);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -418,9 +440,13 @@ public class WorkflowDefinitionManagerImpl
 				name, version, serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 		finally {
@@ -461,9 +487,13 @@ public class WorkflowDefinitionManagerImpl
 			return getWorkflowDefinition(companyId, name, version);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -490,9 +520,13 @@ public class WorkflowDefinitionManagerImpl
 				serviceContext);
 		}
 		catch (WorkflowException we) {
+			_log.error(we, we);
+
 			throw we;
 		}
 		catch (Exception e) {
+			_log.error(e, e);
+
 			throw new WorkflowException(e);
 		}
 	}
@@ -564,6 +598,9 @@ public class WorkflowDefinitionManagerImpl
 
 	@Reference
 	protected PortalUUID portalUUID;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		WorkflowDefinitionManagerImpl.class);
 
 	@Reference
 	private KaleoDefinitionLocalService _kaleoDefinitionLocalService;
