@@ -68,6 +68,9 @@ public abstract class BaseAssigneeUserResourceImpl
 	@Parameters(
 		value = {
 			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.QUERY, name = "completed"),
+			@Parameter(in = ParameterIn.QUERY, name = "dateEnd"),
+			@Parameter(in = ParameterIn.QUERY, name = "dateStart"),
 			@Parameter(in = ParameterIn.QUERY, name = "keywords"),
 			@Parameter(in = ParameterIn.QUERY, name = "roleIds"),
 			@Parameter(in = ParameterIn.QUERY, name = "taskKeys"),
@@ -82,6 +85,12 @@ public abstract class BaseAssigneeUserResourceImpl
 	public Page<AssigneeUser> getProcessAssigneeUsersPage(
 			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
 				processId,
+			@Parameter(hidden = true) @QueryParam("completed") Boolean
+				completed,
+			@Parameter(hidden = true) @QueryParam("dateEnd") java.util.Date
+				dateEnd,
+			@Parameter(hidden = true) @QueryParam("dateStart") java.util.Date
+				dateStart,
 			@Parameter(hidden = true) @QueryParam("keywords") String keywords,
 			@Parameter(hidden = true) @QueryParam("roleIds") Long[] roleIds,
 			@Parameter(hidden = true) @QueryParam("taskKeys") String[] taskKeys,

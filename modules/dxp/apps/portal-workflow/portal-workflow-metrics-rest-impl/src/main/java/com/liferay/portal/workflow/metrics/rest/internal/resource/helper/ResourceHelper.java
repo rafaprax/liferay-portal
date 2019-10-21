@@ -15,7 +15,10 @@
 package com.liferay.portal.workflow.metrics.rest.internal.resource.helper;
 
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.AggregateResourceBundle;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
@@ -38,10 +41,11 @@ import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.script.Scripts;
 import com.liferay.portal.search.sort.FieldSort;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.workflow.metrics.rest.internal.resource.v1_0.TaskResourceImpl;
 import com.liferay.portal.workflow.metrics.sla.processor.WorkfowMetricsSLAStatus;
 
 import java.io.IOException;
-
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -328,6 +332,22 @@ public class ResourceHelper {
 		return new AggregateResourceBundle(
 			moduleResourceBundle, portalResourceBundle);
 	}
+	
+	public String formatDate(Date date) {
+		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+			"yyyyMMddHHmmss");
+
+		try {
+			return dateFormat.format(date);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(e, e);
+			}
+
+			return null;
+		}
+	}
 
 	@Activate
 	protected void activate() throws IOException {
@@ -382,6 +402,9 @@ public class ResourceHelper {
 
 	@Reference
 	private SearchRequestExecutor _searchRequestExecutor;
+	
+
+	private static final Log _log = LogFactoryUtil.getLog(ResourceHelper.class);
 
 	private Script _workflowMetricsInstanceCountCombineScript;
 	private Script _workflowMetricsInstanceCountInitScript;

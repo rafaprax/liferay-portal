@@ -20,6 +20,9 @@ import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.AssigneeUserSerDes;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,13 +42,15 @@ public interface AssigneeUserResource {
 	}
 
 	public Page<AssigneeUser> getProcessAssigneeUsersPage(
-			Long processId, String keywords, Long[] roleIds, String[] taskKeys,
-			Pagination pagination, String sortString)
+			Long processId, Boolean completed, java.util.Date dateEnd,
+			java.util.Date dateStart, String keywords, Long[] roleIds,
+			String[] taskKeys, Pagination pagination, String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getProcessAssigneeUsersPageHttpResponse(
-			Long processId, String keywords, Long[] roleIds, String[] taskKeys,
-			Pagination pagination, String sortString)
+			Long processId, Boolean completed, java.util.Date dateEnd,
+			java.util.Date dateStart, String keywords, Long[] roleIds,
+			String[] taskKeys, Pagination pagination, String sortString)
 		throws Exception;
 
 	public static class Builder {
@@ -105,14 +110,15 @@ public interface AssigneeUserResource {
 		implements AssigneeUserResource {
 
 		public Page<AssigneeUser> getProcessAssigneeUsersPage(
-				Long processId, String keywords, Long[] roleIds,
+				Long processId, Boolean completed, java.util.Date dateEnd,
+				java.util.Date dateStart, String keywords, Long[] roleIds,
 				String[] taskKeys, Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getProcessAssigneeUsersPageHttpResponse(
-					processId, keywords, roleIds, taskKeys, pagination,
-					sortString);
+					processId, completed, dateEnd, dateStart, keywords, roleIds,
+					taskKeys, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -126,7 +132,8 @@ public interface AssigneeUserResource {
 		}
 
 		public HttpInvoker.HttpResponse getProcessAssigneeUsersPageHttpResponse(
-				Long processId, String keywords, Long[] roleIds,
+				Long processId, Boolean completed, java.util.Date dateEnd,
+				java.util.Date dateStart, String keywords, Long[] roleIds,
 				String[] taskKeys, Pagination pagination, String sortString)
 			throws Exception {
 
@@ -150,6 +157,23 @@ public interface AssigneeUserResource {
 			}
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
+
+			DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+			if (completed != null) {
+				httpInvoker.parameter("completed", String.valueOf(completed));
+			}
+
+			if (dateEnd != null) {
+				httpInvoker.parameter(
+					"dateEnd", liferayToJSONDateFormat.format(dateEnd));
+			}
+
+			if (dateStart != null) {
+				httpInvoker.parameter(
+					"dateStart", liferayToJSONDateFormat.format(dateStart));
+			}
 
 			if (keywords != null) {
 				httpInvoker.parameter("keywords", String.valueOf(keywords));

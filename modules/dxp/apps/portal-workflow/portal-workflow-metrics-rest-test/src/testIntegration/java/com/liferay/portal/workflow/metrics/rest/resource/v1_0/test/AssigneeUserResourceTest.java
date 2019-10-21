@@ -190,8 +190,8 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 		Page<AssigneeUser> page =
 			assigneeUserResource.getProcessAssigneeUsersPage(
-				_process.getId(), null, null, new String[] {"update"},
-				Pagination.of(1, 10), "taskCount:asc");
+				_process.getId(), false, null, null, null, null,
+				new String[] {"update"}, Pagination.of(1, 10), "taskCount:asc");
 
 		Assert.assertEquals(1, page.getTotalCount());
 
@@ -209,8 +209,9 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), null, null, new String[] {"review"},
-			Pagination.of(1, 10), "overdueTaskCount:desc");
+			_process.getId(), false, null, null, null, null,
+			new String[] {"review"}, Pagination.of(1, 10),
+			"overdueTaskCount:desc");
 
 		Assert.assertEquals(2, page.getTotalCount());
 
@@ -237,7 +238,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), null,
+			_process.getId(), false, null, null, null,
 			new Long[] {siteAdministrationRole.getRoleId()},
 			new String[] {"review"}, Pagination.of(1, 10),
 			"overdueTaskCount:desc");
@@ -258,7 +259,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), assigneeUser2.getName(),
+			_process.getId(), false, null, null, assigneeUser2.getName(),
 			new Long[] {siteAdministrationRole.getRoleId()},
 			new String[] {"review"}, Pagination.of(1, 10),
 			"overdueTaskCount:desc");
@@ -279,7 +280,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), assigneeUser1.getName(),
+			_process.getId(), false, null, null, assigneeUser1.getName(),
 			new Long[] {siteAdministrationRole.getRoleId()},
 			new String[] {"review"}, Pagination.of(1, 10),
 			"overdueTaskCount:desc");
@@ -306,8 +307,8 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			});
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), null, null, null, Pagination.of(1, 10),
-			"overdueTaskCount:desc");
+			_process.getId(), false, null, null, null, null, null,
+			Pagination.of(1, 10), "overdueTaskCount:desc");
 
 		Assert.assertEquals(3, page.getTotalCount());
 

@@ -22,6 +22,8 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.AssigneeUser;
 
+import java.util.Date;
+
 import javax.annotation.Generated;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +46,8 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface AssigneeUserResource {
 
 	public Page<AssigneeUser> getProcessAssigneeUsersPage(
-			Long processId, String keywords, Long[] roleIds, String[] taskKeys,
+			Long processId, Boolean completed, Date dateEnd, Date dateStart,
+			String keywords, Long[] roleIds, String[] taskKeys,
 			Pagination pagination, Sort[] sorts)
 		throws Exception;
 

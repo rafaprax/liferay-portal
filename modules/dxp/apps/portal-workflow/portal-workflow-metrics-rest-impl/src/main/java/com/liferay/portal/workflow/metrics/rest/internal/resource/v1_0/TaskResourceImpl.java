@@ -208,8 +208,9 @@ public class TaskResourceImpl
 			if ((dateEnd != null) && (dateStart != null)) {
 				booleanQuery.addMustQueryClauses(
 					_queries.rangeTerm(
-						"completionDate", true, true, _format(dateStart),
-						_format(dateEnd)));
+						"completionDate", true, true,
+						_resourceHelper.formatDate(dateStart),
+						_resourceHelper.formatDate(dateEnd)));
 			}
 
 			booleanQuery.addMustNotQueryClauses(
@@ -259,22 +260,6 @@ public class TaskResourceImpl
 		return booleanQuery.addMustQueryClauses(
 			_queries.term("companyId", contextCompany.getCompanyId()),
 			_queries.term("deleted", Boolean.FALSE));
-	}
-
-	private String _format(Date date) {
-		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
-			"yyyyMMddHHmmss");
-
-		try {
-			return dateFormat.format(date);
-		}
-		catch (Exception e) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(e, e);
-			}
-
-			return null;
-		}
 	}
 
 	private TermsAggregationResult _getSLATermsAggregationResult(
@@ -351,8 +336,9 @@ public class TaskResourceImpl
 		if (completed && (dateEnd != null) && (dateStart != null)) {
 			booleanQuery.addMustQueryClauses(
 				_queries.rangeTerm(
-					"completionDate", true, true, _format(dateStart),
-					_format(dateEnd)));
+					"completionDate", true, true,
+					_resourceHelper.formatDate(dateStart),
+					_resourceHelper.formatDate(dateEnd)));
 		}
 
 		FilterAggregation filterAggregation = _aggregations.filter(
@@ -642,9 +628,6 @@ public class TaskResourceImpl
 
 		return fieldSort;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		TaskResourceImpl.class);
 
 	private static final EntityModel _entityModel = new TaskEntityModel();
 

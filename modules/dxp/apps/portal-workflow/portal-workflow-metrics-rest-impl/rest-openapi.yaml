@@ -396,6 +396,20 @@ paths:
                       format: int64
                       type: integer
                 - in: query
+                  name: completed
+                  schema:
+                      type: boolean
+                - in: query
+                  name: dateEnd
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
+                  name: dateStart
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
                   name: keywords
                   schema:
                       type: string
