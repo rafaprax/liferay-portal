@@ -72,6 +72,14 @@ exports[`Should render component with completed tab activated 1`] = `
       }
     >
       <ProcessMetrics
+        history={
+          Object {
+            "location": Object {
+              "pathname": "/",
+            },
+            "replace": [MockFunction],
+          }
+        }
         processId={35315}
       >
         <div
@@ -376,7 +384,6 @@ exports[`Should render component with completed tab activated 1`] = `
                     "sort": "overdueInstanceCount%3Aasc",
                   },
                   "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                  "query": undefined,
                 },
                 Object {
                   "key": "performance",
@@ -385,7 +392,6 @@ exports[`Should render component with completed tab activated 1`] = `
                     "processId": 35315,
                   },
                   "path": "/metrics/:processId/performance",
-                  "query": undefined,
                 },
               ]
             }
@@ -464,7 +470,6 @@ exports[`Should render component with completed tab activated 1`] = `
                       "sort": "overdueInstanceCount%3Aasc",
                     },
                     "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                    "query": undefined,
                   },
                   Object {
                     "key": "performance",
@@ -473,7 +478,6 @@ exports[`Should render component with completed tab activated 1`] = `
                       "processId": 35315,
                     },
                     "path": "/metrics/:processId/performance",
-                    "query": undefined,
                   },
                 ]
               }
@@ -533,31 +537,149 @@ exports[`Should render component with completed tab activated 1`] = `
                               }
                             }
                             path="/metrics/:processId/dashboard/:pageSize/:page/:sort"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                                 >
-                                  dashboard
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc",
+                                        "search": "?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        dashboard
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                         <li
@@ -575,31 +697,149 @@ exports[`Should render component with completed tab activated 1`] = `
                               }
                             }
                             path="/metrics/:processId/performance"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/35315/performance",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/35315/performance"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/35315/performance?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/35315/performance"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/35315/performance"
                                 >
-                                  performance
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/35315/performance",
+                                        "search": "?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/35315/performance?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        performance
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                       </ul>
@@ -714,6 +954,14 @@ exports[`Should render component with default tab activated 1`] = `
       }
     >
       <ProcessMetrics
+        history={
+          Object {
+            "location": Object {
+              "pathname": "/",
+            },
+            "replace": [MockFunction],
+          }
+        }
         processId={35315}
       >
         <div
@@ -1018,7 +1266,6 @@ exports[`Should render component with default tab activated 1`] = `
                     "sort": "overdueInstanceCount%3Aasc",
                   },
                   "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                  "query": undefined,
                 },
                 Object {
                   "key": "performance",
@@ -1027,7 +1274,6 @@ exports[`Should render component with default tab activated 1`] = `
                     "processId": 35315,
                   },
                   "path": "/metrics/:processId/performance",
-                  "query": undefined,
                 },
               ]
             }
@@ -1106,7 +1352,6 @@ exports[`Should render component with default tab activated 1`] = `
                       "sort": "overdueInstanceCount%3Aasc",
                     },
                     "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                    "query": undefined,
                   },
                   Object {
                     "key": "performance",
@@ -1115,7 +1360,6 @@ exports[`Should render component with default tab activated 1`] = `
                       "processId": 35315,
                     },
                     "path": "/metrics/:processId/performance",
-                    "query": undefined,
                   },
                 ]
               }
@@ -1175,31 +1419,149 @@ exports[`Should render component with default tab activated 1`] = `
                               }
                             }
                             path="/metrics/:processId/dashboard/:pageSize/:page/:sort"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                                 >
-                                  dashboard
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc",
+                                        "search": "?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        dashboard
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                         <li
@@ -1217,31 +1579,149 @@ exports[`Should render component with default tab activated 1`] = `
                               }
                             }
                             path="/metrics/:processId/performance"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/35315/performance",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/35315/performance"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/35315/performance?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/35315/performance"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/35315/performance"
                                 >
-                                  performance
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/35315/performance",
+                                        "search": "?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/35315/performance?backPath=%2Fmetrics%2F35315%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        performance
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                       </ul>
@@ -1356,6 +1836,14 @@ exports[`Should render component with failure state 1`] = `
       }
     >
       <ProcessMetrics
+        history={
+          Object {
+            "location": Object {
+              "pathname": "/",
+            },
+            "replace": [MockFunction],
+          }
+        }
         processId={35315}
       >
         <div
@@ -1660,7 +2148,6 @@ exports[`Should render component with failure state 1`] = `
                     "sort": "overdueInstanceCount%3Aasc",
                   },
                   "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                  "query": undefined,
                 },
                 Object {
                   "key": "performance",
@@ -1669,7 +2156,6 @@ exports[`Should render component with failure state 1`] = `
                     "processId": 35315,
                   },
                   "path": "/metrics/:processId/performance",
-                  "query": undefined,
                 },
               ]
             }
@@ -1748,7 +2234,6 @@ exports[`Should render component with failure state 1`] = `
                       "sort": "overdueInstanceCount%3Aasc",
                     },
                     "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                    "query": undefined,
                   },
                   Object {
                     "key": "performance",
@@ -1757,7 +2242,6 @@ exports[`Should render component with failure state 1`] = `
                       "processId": 35315,
                     },
                     "path": "/metrics/:processId/performance",
-                    "query": undefined,
                   },
                 ]
               }
@@ -1817,31 +2301,149 @@ exports[`Should render component with failure state 1`] = `
                               }
                             }
                             path="/metrics/:processId/dashboard/:pageSize/:page/:sort"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315/completed",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315/completed",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315/completed?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315/completed",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc"
                                 >
-                                  dashboard
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc",
+                                        "search": "?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/35315/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        dashboard
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                         <li
@@ -1859,31 +2461,149 @@ exports[`Should render component with failure state 1`] = `
                               }
                             }
                             path="/metrics/:processId/performance"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/35315/performance",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/35315/performance"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/35315/performance?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315/completed",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315/completed",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/35315/performance"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315/completed?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315/completed",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/35315/performance"
                                 >
-                                  performance
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/35315/performance",
+                                        "search": "?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/35315/performance?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        performance
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                       </ul>
@@ -2302,6 +3022,14 @@ exports[`Should render with blocked SLA 1`] = `
       }
     >
       <ProcessMetrics
+        history={
+          Object {
+            "location": Object {
+              "pathname": "/",
+            },
+            "replace": [MockFunction],
+          }
+        }
         processId="123"
       >
         <div
@@ -2606,7 +3334,6 @@ exports[`Should render with blocked SLA 1`] = `
                     "sort": "overdueInstanceCount%3Aasc",
                   },
                   "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                  "query": undefined,
                 },
                 Object {
                   "key": "performance",
@@ -2615,7 +3342,6 @@ exports[`Should render with blocked SLA 1`] = `
                     "processId": "123",
                   },
                   "path": "/metrics/:processId/performance",
-                  "query": undefined,
                 },
               ]
             }
@@ -2694,7 +3420,6 @@ exports[`Should render with blocked SLA 1`] = `
                       "sort": "overdueInstanceCount%3Aasc",
                     },
                     "path": "/metrics/:processId/dashboard/:pageSize/:page/:sort",
-                    "query": undefined,
                   },
                   Object {
                     "key": "performance",
@@ -2703,7 +3428,6 @@ exports[`Should render with blocked SLA 1`] = `
                       "processId": "123",
                     },
                     "path": "/metrics/:processId/performance",
-                    "query": undefined,
                   },
                 ]
               }
@@ -2763,31 +3487,149 @@ exports[`Should render with blocked SLA 1`] = `
                               }
                             }
                             path="/metrics/:processId/dashboard/:pageSize/:page/:sort"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315/completed",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315/completed",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315/completed?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315/completed",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc"
                                 >
-                                  dashboard
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc",
+                                        "search": "?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/123/dashboard/20/1/overdueInstanceCount%253Aasc?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        dashboard
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                         <li
@@ -2805,31 +3647,149 @@ exports[`Should render with blocked SLA 1`] = `
                               }
                             }
                             path="/metrics/:processId/performance"
-                            query="?backPath=%2F"
                           >
-                            <Link
+                            <withRouter()
                               aria-label=""
                               className=" nav-link"
-                              to={
-                                Object {
-                                  "pathname": "/metrics/123/performance",
-                                  "search": "?backPath=%2F",
-                                }
-                              }
+                              to="/metrics/123/performance"
                             >
-                              <a
+                              <Component
                                 aria-label=""
                                 className=" nav-link"
-                                href="/metrics/123/performance?backPath=%2F"
-                                onClick={[Function]}
+                                history={
+                                  Object {
+                                    "action": "POP",
+                                    "block": [Function],
+                                    "canGo": [Function],
+                                    "createHref": [Function],
+                                    "entries": Array [
+                                      Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                    ],
+                                    "go": [Function],
+                                    "goBack": [Function],
+                                    "goForward": [Function],
+                                    "index": 0,
+                                    "length": 1,
+                                    "listen": [Function],
+                                    "location": Object {
+                                      "hash": "",
+                                      "match": Object {
+                                        "params": Object {
+                                          "page": 1,
+                                          "sort": undefined,
+                                        },
+                                      },
+                                      "pathname": "/metrics/35315/completed",
+                                      "search": "?backPath=%2F",
+                                    },
+                                    "push": [Function],
+                                    "replace": [Function],
+                                  }
+                                }
+                                location={
+                                  Object {
+                                    "hash": "",
+                                    "match": Object {
+                                      "params": Object {
+                                        "page": 1,
+                                        "sort": undefined,
+                                      },
+                                    },
+                                    "pathname": "/metrics/35315/completed",
+                                    "search": "?backPath=%2F",
+                                  }
+                                }
+                                match={
+                                  Object {
+                                    "isExact": false,
+                                    "params": Object {},
+                                    "path": "/",
+                                    "url": "/",
+                                  }
+                                }
+                                to="/metrics/123/performance"
                               >
-                                <span
-                                  className="navbar-text-truncate"
+                                <ChildLinkWrapper
+                                  aria-label=""
+                                  backPath="/"
+                                  className=" nav-link"
+                                  currentPath="/metrics/35315/completed?backPath=%2F"
+                                  history={
+                                    Object {
+                                      "action": "POP",
+                                      "block": [Function],
+                                      "canGo": [Function],
+                                      "createHref": [Function],
+                                      "entries": Array [
+                                        Object {
+                                          "hash": "",
+                                          "match": Object {
+                                            "params": Object {
+                                              "page": 1,
+                                              "sort": undefined,
+                                            },
+                                          },
+                                          "pathname": "/metrics/35315/completed",
+                                          "search": "?backPath=%2F",
+                                        },
+                                      ],
+                                      "go": [Function],
+                                      "goBack": [Function],
+                                      "goForward": [Function],
+                                      "index": 0,
+                                      "length": 1,
+                                      "listen": [Function],
+                                      "location": Object {
+                                        "hash": "",
+                                        "match": Object {
+                                          "params": Object {
+                                            "page": 1,
+                                            "sort": undefined,
+                                          },
+                                        },
+                                        "pathname": "/metrics/35315/completed",
+                                        "search": "?backPath=%2F",
+                                      },
+                                      "push": [Function],
+                                      "replace": [Function],
+                                    }
+                                  }
+                                  to="/metrics/123/performance"
                                 >
-                                  performance
-                                </span>
-                              </a>
-                            </Link>
+                                  <Link
+                                    className=" nav-link"
+                                    to={
+                                      Object {
+                                        "pathname": "/metrics/123/performance",
+                                        "search": "?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F",
+                                      }
+                                    }
+                                  >
+                                    <a
+                                      className=" nav-link"
+                                      href="/metrics/123/performance?backPath=%2Fmetrics%2F35315%2Fcompleted%3FbackPath%3D%252F"
+                                      onClick={[Function]}
+                                    >
+                                      <span
+                                        className="navbar-text-truncate"
+                                      >
+                                        performance
+                                      </span>
+                                    </a>
+                                  </Link>
+                                </ChildLinkWrapper>
+                              </Component>
+                            </withRouter()>
                           </TabItem>
                         </li>
                       </ul>
