@@ -32,11 +32,17 @@ describe('The process list page component having data should', () => {
 			title: 'Single Approver 3'
 		}
 	];
-
 	const data = {items, totalCount: items.length};
 
 	const clientMock = {
 		get: jest.fn().mockResolvedValue({data})
+	};
+
+	const mockHistory = {
+		location: {
+			pathname: '/'
+		},
+		replace: jest.fn()
 	};
 
 	const routeParams = {
@@ -54,7 +60,7 @@ describe('The process list page component having data should', () => {
 
 	beforeEach(() => {
 		const renderResult = render(
-			<ProcessListPage routeParams={routeParams} />,
+			<ProcessListPage history={mockHistory} routeParams={routeParams} />,
 			{wrapper}
 		);
 

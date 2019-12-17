@@ -19,6 +19,13 @@ import {MockRouter as Router} from '../../mock/MockRouter.es';
 import fetch from '../../mock/fetch.es';
 import fetchFailure from '../../mock/fetchFailure.es';
 
+const mockHistory = {
+	location: {
+		pathname: '/'
+	},
+	replace: jest.fn()
+};
+
 beforeAll(() => {
 	const vbody = document.createElement('div');
 
@@ -35,7 +42,7 @@ beforeAll(() => {
 test('Should render component with completed tab activated', () => {
 	const component = mount(
 		<Router client={fetchFailure()} initialPath="/metrics/35315">
-			<ProcessMetrics processId={35315} />
+			<ProcessMetrics history={mockHistory} processId={35315} />
 		</Router>
 	);
 
@@ -53,7 +60,7 @@ test('Should render component with default tab activated', () => {
 
 	const component = mount(
 		<Router client={fetch({data})} initialPath="/metrics/35315">
-			<ProcessMetrics processId={35315} />
+			<ProcessMetrics history={mockHistory} processId={35315} />
 		</Router>
 	);
 
@@ -63,7 +70,7 @@ test('Should render component with default tab activated', () => {
 test('Should render component with failure state', () => {
 	const component = mount(
 		<Router client={fetchFailure()} initialPath="/metrics/35315/completed">
-			<ProcessMetrics processId={35315} />
+			<ProcessMetrics history={mockHistory} processId={35315} />
 		</Router>
 	);
 
@@ -92,7 +99,7 @@ test('Should render dashboard route children', () => {
 test('Should render with blocked SLA', () => {
 	const component = mount(
 		<Router client={fetchFailure()} initialPath="/metrics/35315/completed">
-			<ProcessMetrics processId="123" />
+			<ProcessMetrics history={mockHistory} processId="123" />
 		</Router>
 	);
 
