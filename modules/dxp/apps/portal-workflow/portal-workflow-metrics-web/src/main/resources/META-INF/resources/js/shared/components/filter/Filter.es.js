@@ -21,7 +21,11 @@ import {
 	removeClickOutsideListener,
 	handleClickOutside
 } from './util/filterEvents.es';
-import {getSelectedItemsQuery, pushToHistory} from './util/filterUtil.es';
+import {
+	getSelectedItemsQuery,
+	pushToHistory,
+	replaceHistory
+} from './util/filterUtil.es';
 
 class Filter extends React.Component {
 	constructor(props) {
@@ -162,7 +166,7 @@ class Filter extends React.Component {
 				defaultItem.active = items[index].active = true;
 
 				this.setState({items}, () => {
-					pushToHistory(this.filterQuery, this.props);
+					replaceHistory(this.filterQuery, this.props);
 				});
 			}
 		}

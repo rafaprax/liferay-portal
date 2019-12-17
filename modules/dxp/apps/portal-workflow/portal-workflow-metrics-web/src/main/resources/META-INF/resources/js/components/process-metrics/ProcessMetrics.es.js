@@ -10,11 +10,14 @@
  */
 
 import React from 'react';
-import {Redirect, Route, HashRouter as Router, Switch} from 'react-router-dom';
+import {Route, HashRouter as Router, Switch} from 'react-router-dom';
 
-import {withParams} from '../../shared/components/router/routerUtil.es';
+import {parse, stringify} from '../../shared/components/router/queryString.es';
+import {
+	getPathname,
+	withParams
+} from '../../shared/components/router/routerUtil.es';
 import {ChildLink} from '../../shared/components/router/routerWrapper.es';
-import {getPathname} from '../../shared/components/tabs/TabItem.es';
 import Tabs from '../../shared/components/tabs/Tabs.es';
 import {sub} from '../../shared/util/lang.es';
 import {openErrorToast} from '../../shared/util/toast.es';
@@ -69,7 +72,7 @@ class ProcessMetrics extends React.Component {
 
 	render() {
 		const {blockedSLACount = 0, slaCount} = this.state;
-		const {processId, query} = this.props;
+		const {history, processId, query} = this.props;
 		const {defaultDelta} = this.context;
 
 		let blockedSLAText = Liferay.Language.get('x-sla-is-blocked');
@@ -87,8 +90,7 @@ class ProcessMetrics extends React.Component {
 				processId,
 				sort: encodeURIComponent('overdueInstanceCount:asc')
 			},
-			path: '/metrics/:processId/dashboard/:pageSize/:page/:sort',
-			query
+			path: '/metrics/:processId/dashboard/:pageSize/:page/:sort'
 		};
 		const performanceTab = {
 			key: 'performance',
@@ -96,14 +98,22 @@ class ProcessMetrics extends React.Component {
 			params: {
 				processId
 			},
-			path: '/metrics/:processId/performance',
-			query
+			path: '/metrics/:processId/performance'
 		};
 
-		const defaultPathname = getPathname(
-			dashboardTab.params,
-			dashboardTab.path
-		);
+		if (history.location.pathname === `/metrics/${processId}`) {
+			const pathname = getPathname(
+				dashboardTab.params,
+				dashboardTab.path
+			);
+
+			const search = stringify({
+				...parse(query),
+				filters: {taskKeys: ['allSteps']}
+			});
+
+			history.replace({pathname, search});
+		}
 
 		return (
 			<div className="workflow-process-dashboard">
@@ -162,15 +172,6 @@ class ProcessMetrics extends React.Component {
 
 				<Router>
 					<Switch>
-						<Redirect
-							exact
-							from="/metrics/:processId"
-							to={{
-								pathname: defaultPathname,
-								search: query
-							}}
-						/>
-
 						<Route
 							exact
 							path={dashboardTab.path}

@@ -143,6 +143,23 @@ const removeItem = (filterKey, itemToRemove, queryString) => {
 	return stringify(queryParams);
 };
 
+const replaceHistory = (filterQuery, routerProps) => {
+	const {
+		history,
+		location: {search},
+		match: {params, path}
+	} = routerProps;
+
+	const pathname = pathToRegexp.compile(path)({...params, page: 1});
+
+	if (filterQuery !== search) {
+		history.replace({
+			pathname,
+			search: filterQuery
+		});
+	}
+};
+
 export {
 	asFilterObject,
 	getFiltersParam,
@@ -155,5 +172,6 @@ export {
 	pushToHistory,
 	reduceFilters,
 	removeFilters,
-	removeItem
+	removeItem,
+	replaceHistory
 };

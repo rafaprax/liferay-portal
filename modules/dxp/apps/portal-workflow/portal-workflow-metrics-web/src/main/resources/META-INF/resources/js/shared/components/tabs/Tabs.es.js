@@ -39,7 +39,7 @@ class Tabs extends React.Component {
 	render() {
 		const {expanded} = this.state;
 		const {
-			location: {pathname, search},
+			location: {pathname},
 			tabs
 		} = this.props;
 
@@ -83,7 +83,6 @@ class Tabs extends React.Component {
 										<TabItem
 											{...tab}
 											active={isActive(tab)}
-											query={search}
 										/>
 									</li>
 								))}

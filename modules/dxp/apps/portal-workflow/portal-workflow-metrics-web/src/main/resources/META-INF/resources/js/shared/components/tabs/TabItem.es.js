@@ -9,32 +9,25 @@
  * distribution rights of the Software.
  */
 
-import pathToRegexp from 'path-to-regexp';
 import React from 'react';
-import {Link} from 'react-router-dom';
+
+import {getPathname} from '../router/routerUtil.es';
+import {ChildLink} from '../router/routerWrapper.es';
 
 export default class TabItem extends React.Component {
 	render() {
-		const {active, name, params, path, query} = this.props;
-
+		const {active, name, params, path} = this.props;
 		const activeClassName = active ? 'active' : '';
 		const activeLabel = active ? Liferay.Language.get('current-page') : '';
 
 		return (
-			<Link
+			<ChildLink
 				aria-label={activeLabel}
 				className={`${activeClassName} nav-link`}
-				to={{
-					pathname: getPathname(params, path),
-					search: query
-				}}
+				to={getPathname(params, path)}
 			>
 				<span className="navbar-text-truncate">{name}</span>
-			</Link>
+			</ChildLink>
 		);
 	}
-}
-
-export function getPathname(params, path) {
-	return pathToRegexp.compile(path)(params);
 }

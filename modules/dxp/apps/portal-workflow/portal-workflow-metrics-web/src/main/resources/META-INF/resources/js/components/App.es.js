@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import {Redirect, Route, HashRouter as Router, Switch} from 'react-router-dom';
+import {Route, HashRouter as Router, Switch} from 'react-router-dom';
 
 import HeaderController from '../shared/components/header-controller/HeaderController.es';
 import {withParams} from '../shared/components/router/routerUtil.es';
@@ -57,7 +57,7 @@ export default class AppComponent extends React.Component {
 	}
 
 	render() {
-		const {defaultDelta, namespace, title} = this.state;
+		const {namespace, title} = this.state;
 
 		return (
 			<Router>
@@ -70,12 +70,10 @@ export default class AppComponent extends React.Component {
 
 					<div className="portal-workflow-metrics-app">
 						<Switch>
-							<Redirect
+							<Route
 								exact
-								from="/"
-								to={`/processes/${defaultDelta}/1/${encodeURIComponent(
-									'overdueInstanceCount:desc'
-								)}`}
+								path="/"
+								render={withParams(ProcessListPage)}
 							/>
 
 							<Route

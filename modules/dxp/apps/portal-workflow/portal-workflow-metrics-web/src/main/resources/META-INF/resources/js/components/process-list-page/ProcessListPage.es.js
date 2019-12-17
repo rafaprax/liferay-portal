@@ -47,7 +47,13 @@ const Header = ({page, pageSize, search, sort, totalCount}) => {
 	);
 };
 
-const ProcessListPage = ({query, routeParams}) => {
+const ProcessListPage = ({history, query, routeParams}) => {
+	if (history.location.pathname === '/') {
+		history.replace(
+			`/processes/20/1/${encodeURIComponent('overdueInstanceCount:desc')}`
+		);
+	}
+
 	usePageTitle(Liferay.Language.get('metrics'));
 
 	const {search = null} = parse(query);

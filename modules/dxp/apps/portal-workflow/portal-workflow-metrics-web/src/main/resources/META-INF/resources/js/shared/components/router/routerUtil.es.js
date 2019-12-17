@@ -9,21 +9,29 @@
  * distribution rights of the Software.
  */
 
+import pathToRegexp from 'path-to-regexp';
 import React from 'react';
 
-export const withParams = (...args) => ({
+export const withParams = (...components) => ({
+	history,
 	location: {search},
 	match: {params}
-}) =>
-	args.map((Component, index) => {
+}) => {
+	return components.map((Component, index) => {
 		if (params.sort) params.sort = decodeURIComponent(params.sort);
 
 		return (
 			<Component
 				{...params}
+				history={history}
 				key={index}
 				query={search}
 				routeParams={params}
 			/>
 		);
 	});
+};
+
+export function getPathname(params, path) {
+	return pathToRegexp.compile(path)(params);
+}
