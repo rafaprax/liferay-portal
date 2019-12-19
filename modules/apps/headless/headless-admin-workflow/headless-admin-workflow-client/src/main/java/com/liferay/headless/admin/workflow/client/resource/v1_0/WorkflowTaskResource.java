@@ -76,16 +76,20 @@ public interface WorkflowTaskResource {
 
 	public Page<WorkflowTask> getWorkflowTasksPage(
 			Boolean andOperator, Long[] assetPrimaryKeys, String assetTitle,
-			String[] assetTypes, Boolean completed, java.util.Date dateDueEnd,
-			java.util.Date dateDueStart, Boolean searchByUserRoles,
-			String taskName, Pagination pagination, String sortString)
+			String[] assetTypes, Long[] assigneeUserIds, Boolean completed,
+			java.util.Date dateDueEnd, java.util.Date dateDueStart,
+			Boolean searchByUserRoles, String[] taskNames,
+			Long[] workflowInstanceIds, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getWorkflowTasksPageHttpResponse(
 			Boolean andOperator, Long[] assetPrimaryKeys, String assetTitle,
-			String[] assetTypes, Boolean completed, java.util.Date dateDueEnd,
-			java.util.Date dateDueStart, Boolean searchByUserRoles,
-			String taskName, Pagination pagination, String sortString)
+			String[] assetTypes, Long[] assigneeUserIds, Boolean completed,
+			java.util.Date dateDueEnd, java.util.Date dateDueStart,
+			Boolean searchByUserRoles, String[] taskNames,
+			Long[] workflowInstanceIds, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public Page<WorkflowTask> getWorkflowTasksAssignedToMePage(
@@ -490,17 +494,19 @@ public interface WorkflowTaskResource {
 
 		public Page<WorkflowTask> getWorkflowTasksPage(
 				Boolean andOperator, Long[] assetPrimaryKeys, String assetTitle,
-				String[] assetTypes, Boolean completed,
+				String[] assetTypes, Long[] assigneeUserIds, Boolean completed,
 				java.util.Date dateDueEnd, java.util.Date dateDueStart,
-				Boolean searchByUserRoles, String taskName,
-				Pagination pagination, String sortString)
+				Boolean searchByUserRoles, String[] taskNames,
+				Long[] workflowInstanceIds, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getWorkflowTasksPageHttpResponse(
 					andOperator, assetPrimaryKeys, assetTitle, assetTypes,
-					completed, dateDueEnd, dateDueStart, searchByUserRoles,
-					taskName, pagination, sortString);
+					assigneeUserIds, completed, dateDueEnd, dateDueStart,
+					searchByUserRoles, taskNames, workflowInstanceIds,
+					pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -515,10 +521,11 @@ public interface WorkflowTaskResource {
 
 		public HttpInvoker.HttpResponse getWorkflowTasksPageHttpResponse(
 				Boolean andOperator, Long[] assetPrimaryKeys, String assetTitle,
-				String[] assetTypes, Boolean completed,
+				String[] assetTypes, Long[] assigneeUserIds, Boolean completed,
 				java.util.Date dateDueEnd, java.util.Date dateDueStart,
-				Boolean searchByUserRoles, String taskName,
-				Pagination pagination, String sortString)
+				Boolean searchByUserRoles, String[] taskNames,
+				Long[] workflowInstanceIds, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -569,6 +576,13 @@ public interface WorkflowTaskResource {
 				}
 			}
 
+			if (assigneeUserIds != null) {
+				for (int i = 0; i < assigneeUserIds.length; i++) {
+					httpInvoker.parameter(
+						"assigneeUserIds", String.valueOf(assigneeUserIds[i]));
+				}
+			}
+
 			if (completed != null) {
 				httpInvoker.parameter("completed", String.valueOf(completed));
 			}
@@ -589,8 +603,19 @@ public interface WorkflowTaskResource {
 					"searchByUserRoles", String.valueOf(searchByUserRoles));
 			}
 
-			if (taskName != null) {
-				httpInvoker.parameter("taskName", String.valueOf(taskName));
+			if (taskNames != null) {
+				for (int i = 0; i < taskNames.length; i++) {
+					httpInvoker.parameter(
+						"taskNames", String.valueOf(taskNames[i]));
+				}
+			}
+
+			if (workflowInstanceIds != null) {
+				for (int i = 0; i < workflowInstanceIds.length; i++) {
+					httpInvoker.parameter(
+						"workflowInstanceIds",
+						String.valueOf(workflowInstanceIds[i]));
+				}
 			}
 
 			if (pagination != null) {

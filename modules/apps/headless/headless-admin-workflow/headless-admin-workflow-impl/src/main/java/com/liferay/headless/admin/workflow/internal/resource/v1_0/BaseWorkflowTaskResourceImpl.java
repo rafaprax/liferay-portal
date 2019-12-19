@@ -173,11 +173,13 @@ public abstract class BaseWorkflowTaskResourceImpl
 			@Parameter(in = ParameterIn.QUERY, name = "assetPrimaryKeys"),
 			@Parameter(in = ParameterIn.QUERY, name = "assetTitle"),
 			@Parameter(in = ParameterIn.QUERY, name = "assetTypes"),
+			@Parameter(in = ParameterIn.QUERY, name = "assigneeUserIds"),
 			@Parameter(in = ParameterIn.QUERY, name = "completed"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateDueEnd"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateDueStart"),
 			@Parameter(in = ParameterIn.QUERY, name = "searchByUserRoles"),
-			@Parameter(in = ParameterIn.QUERY, name = "taskName"),
+			@Parameter(in = ParameterIn.QUERY, name = "taskNames"),
+			@Parameter(in = ParameterIn.QUERY, name = "workflowInstanceIds"),
 			@Parameter(in = ParameterIn.QUERY, name = "page"),
 			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
 			@Parameter(in = ParameterIn.QUERY, name = "sort")
@@ -195,6 +197,8 @@ public abstract class BaseWorkflowTaskResourceImpl
 				assetTitle,
 			@Parameter(hidden = true) @QueryParam("assetTypes") String[]
 				assetTypes,
+			@Parameter(hidden = true) @QueryParam("assigneeUserIds") Long[]
+				assigneeUserIds,
 			@Parameter(hidden = true) @QueryParam("completed") Boolean
 				completed,
 			@Parameter(hidden = true) @QueryParam("dateDueEnd") java.util.Date
@@ -203,7 +207,10 @@ public abstract class BaseWorkflowTaskResourceImpl
 				dateDueStart,
 			@Parameter(hidden = true) @QueryParam("searchByUserRoles") Boolean
 				searchByUserRoles,
-			@Parameter(hidden = true) @QueryParam("taskName") String taskName,
+			@Parameter(hidden = true) @QueryParam("taskNames") String[]
+				taskNames,
+			@Parameter(hidden = true) @QueryParam("workflowInstanceIds") Long[]
+				workflowInstanceIds,
 			@Context Pagination pagination, @Context Sort[] sorts)
 		throws Exception {
 

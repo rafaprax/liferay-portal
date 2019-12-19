@@ -170,10 +170,11 @@ public interface WorkflowTaskManager {
 		throws WorkflowException;
 
 	public default List<WorkflowTask> search(
-			long companyId, long userId, String assetTitle, String taskName,
-			String[] assetTypes, Long[] assetPrimaryKeys, Date dueDateGT,
-			Date dueDateLT, Boolean completed, Boolean searchByUserRoles,
-			Boolean andOperator, int start, int end,
+			long companyId, long userId, String assetTitle,
+			String[] taskNames, String[] assetTypes, Long[] assetPrimaryKeys,
+			Long[] assigneeUserIds,Date dueDateGT, Date dueDateLT,
+			Boolean completed, Boolean searchByUserRoles,
+			Long[] workflowInstanceIds, Boolean andOperator, int start, int end,
 			OrderByComparator<WorkflowTask> orderByComparator)
 		throws WorkflowException {
 
@@ -216,10 +217,11 @@ public interface WorkflowTaskManager {
 		throws WorkflowException;
 
 	public default int searchCount(
-			long companyId, long userId, String assetTitle, String taskName,
-			String[] assetTypes, Long[] assetPrimaryKeys, Date dueDateGT,
-			Date dueDateLT, Boolean completed, Boolean searchByUserRoles,
-			Boolean andOperator)
+			long companyId, long userId, String assetTitle,
+			String[] taskNames, String[] assetTypes, Long[] assetPrimaryKeys, 
+			Long[] assigneeUserIds, Date dueDateGT, Date dueDateLT,
+			Boolean completed, Boolean searchByUserRoles,
+			Long[] workflowInstanceIds, Boolean andOperator)
 		throws WorkflowException {
 
 		throw new UnsupportedOperationException();

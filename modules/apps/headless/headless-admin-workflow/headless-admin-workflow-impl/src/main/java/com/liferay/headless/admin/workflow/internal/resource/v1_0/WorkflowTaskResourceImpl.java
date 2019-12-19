@@ -22,8 +22,8 @@ import com.liferay.headless.admin.workflow.dto.v1_0.WorkflowTaskAssignToRole;
 import com.liferay.headless.admin.workflow.dto.v1_0.WorkflowTaskAssignToUser;
 import com.liferay.headless.admin.workflow.internal.dto.v1_0.util.CreatorUtil;
 import com.liferay.headless.admin.workflow.internal.dto.v1_0.util.ObjectReviewedUtil;
+import com.liferay.headless.admin.workflow.internal.resource.v1_0.util.ResourceUtil;
 import com.liferay.headless.admin.workflow.resource.v1_0.WorkflowTaskResource;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.service.RoleLocalService;
@@ -63,8 +63,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 				_workflowTaskManager.getWorkflowTasksByWorkflowInstance(
 					contextCompany.getCompanyId(), contextUser.getUserId(),
 					workflowInstanceId, completed,
-					_getStartPosition(pagination), _getEndPosition(pagination),
-					null),
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByWorkflowInstance(
@@ -84,8 +84,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 				_workflowTaskManager.getWorkflowTasksByWorkflowInstance(
 					contextCompany.getCompanyId(), assigneeId,
 					workflowInstanceId, completed,
-					_getStartPosition(pagination), _getEndPosition(pagination),
-					null),
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByWorkflowInstance(
@@ -102,8 +102,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksByWorkflowInstance(
 					contextCompany.getCompanyId(), null, workflowInstanceId,
-					completed, _getStartPosition(pagination),
-					_getEndPosition(pagination), null),
+					completed, ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByWorkflowInstance(
@@ -136,8 +136,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksByUser(
 					contextCompany.getCompanyId(), contextUser.getUserId(),
-					null, _getStartPosition(pagination),
-					_getEndPosition(pagination), null),
+					null, ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByUser(
@@ -153,8 +153,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksByUserRoles(
 					contextCompany.getCompanyId(), contextUser.getUserId(),
-					null, _getStartPosition(pagination),
-					_getEndPosition(pagination), null),
+					null, ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByUserRoles(
@@ -170,8 +170,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksByRole(
 					contextCompany.getCompanyId(), roleId, null,
-					_getStartPosition(pagination), _getEndPosition(pagination),
-					null),
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByRole(
@@ -187,8 +187,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksByUser(
 					contextCompany.getCompanyId(), assigneeId, null,
-					_getStartPosition(pagination), _getEndPosition(pagination),
-					null),
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByUser(
@@ -204,8 +204,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksByUserRoles(
 					contextCompany.getCompanyId(), assigneeId, null,
-					_getStartPosition(pagination), _getEndPosition(pagination),
-					null),
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountByUserRoles(
@@ -215,8 +215,9 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 	@Override
 	public Page<WorkflowTask> getWorkflowTasksPage(
 			Boolean andOperator, Long[] assetPrimaryKeys, String assetTitle,
-			String[] assetTypes, Boolean completed, Date dateDueEnd,
-			Date dateDueStart, Boolean searchByUserRoles, String taskName,
+			String[] assetTypes, Long[] assigneeUserIds, Boolean completed,
+			Date dateDueEnd, Date dateDueStart, Boolean searchByUserRoles,
+			String[] taskNames, Long[] workflowInstanceIds,
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
@@ -224,17 +225,18 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.search(
 					contextCompany.getCompanyId(), contextUser.getUserId(),
-					assetTitle, taskName, assetTypes, assetPrimaryKeys,
-					dateDueStart, dateDueEnd, completed, searchByUserRoles,
-					andOperator, _getStartPosition(pagination),
-					_getEndPosition(pagination), null),
+					assetTitle, taskNames, assetTypes, assetPrimaryKeys,
+					assigneeUserIds, dateDueStart, dateDueEnd, completed,
+					searchByUserRoles, workflowInstanceIds, andOperator,
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.searchCount(
 				contextCompany.getCompanyId(), contextUser.getUserId(),
-				assetTitle, taskName, assetTypes, assetPrimaryKeys,
-				dateDueStart, dateDueEnd, completed, searchByUserRoles,
-				andOperator));
+				assetTitle, taskNames, assetTypes, assetPrimaryKeys,
+				assigneeUserIds, dateDueStart, dateDueEnd, completed,
+				searchByUserRoles, workflowInstanceIds, andOperator));
 	}
 
 	@Override
@@ -246,8 +248,8 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 			transform(
 				_workflowTaskManager.getWorkflowTasksBySubmittingUser(
 					contextCompany.getCompanyId(), creatorId, null,
-					_getStartPosition(pagination), _getEndPosition(pagination),
-					null),
+					ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination), null),
 				this::_toWorkflowTask),
 			pagination,
 			_workflowTaskManager.getWorkflowTaskCountBySubmittingUser(
@@ -319,14 +321,6 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 				workflowTaskAssignToMe.getDueDate()));
 	}
 
-	private int _getEndPosition(Pagination pagination) {
-		if (pagination == null) {
-			return QueryUtil.ALL_POS;
-		}
-
-		return pagination.getEndPosition();
-	}
-
 	private Role[] _getRoles(List<WorkflowTaskAssignee> workflowTaskAssignees)
 		throws PortalException {
 
@@ -351,14 +345,6 @@ public class WorkflowTaskResourceImpl extends BaseWorkflowTaskResourceImpl {
 		}
 
 		return roles.toArray(new Role[0]);
-	}
-
-	private int _getStartPosition(Pagination pagination) {
-		if (pagination == null) {
-			return QueryUtil.ALL_POS;
-		}
-
-		return pagination.getStartPosition();
 	}
 
 	private Role _toRole(com.liferay.portal.kernel.model.Role role)

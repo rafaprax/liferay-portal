@@ -271,17 +271,19 @@ public class WorkflowTaskManagerUtil {
 	}
 
 	public static List<WorkflowTask> search(
-			long companyId, long userId, String assetTitle, String taskName,
-			String[] assetTypes, Long[] assetPrimaryKeys, Date dueDateGT,
-			Date dueDateLT, Boolean completed, Boolean searchByUserRoles,
-			Boolean andOperator, int start, int end,
-			OrderByComparator<WorkflowTask> orderByComparator)
+		long companyId, long userId, String assetTitle,
+		String[] taskNames, String[] assetTypes, Long[] assetPrimaryKeys,
+		Long[] assigneeUserIds,Date dueDateGT, Date dueDateLT,
+		Boolean completed, Boolean searchByUserRoles,
+		Long[] workflowInstanceIds, Boolean andOperator, int start, int end,
+		OrderByComparator<WorkflowTask> orderByComparator)
 		throws WorkflowException {
 
 		return getWorkflowTaskManager().search(
-			companyId, userId, assetTitle, taskName, assetTypes,
-			assetPrimaryKeys, dueDateGT, dueDateLT, completed,
-			searchByUserRoles, andOperator, start, end, orderByComparator);
+			companyId, userId, assetTitle, taskNames, assetTypes,
+			assetPrimaryKeys, assigneeUserIds, dueDateGT, dueDateLT, completed,
+			searchByUserRoles, workflowInstanceIds, andOperator, start, end,
+			orderByComparator);
 	}
 
 	/**
@@ -334,16 +336,17 @@ public class WorkflowTaskManagerUtil {
 	}
 
 	public static int searchCount(
-			long companyId, long userId, String assetTitle, String taskName,
-			String[] assetTypes, Long[] assetPrimaryKeys, Date dueDateGT,
-			Date dueDateLT, Boolean completed, Boolean searchByUserRoles,
-			Boolean andOperator)
+		long companyId, long userId, String assetTitle,
+		String[] taskNames, String[] assetTypes, Long[] assetPrimaryKeys, 
+		Long[] assigneeUserIds, Date dueDateGT, Date dueDateLT,
+		Boolean completed, Boolean searchByUserRoles,
+		Long[] workflowInstanceIds, Boolean andOperator)
 		throws WorkflowException {
 
 		return getWorkflowTaskManager().searchCount(
-			companyId, userId, assetTitle, taskName, assetTypes,
-			assetPrimaryKeys, dueDateGT, dueDateLT, completed,
-			searchByUserRoles, andOperator);
+			companyId, userId, assetTitle, taskNames, assetTypes,
+			assetPrimaryKeys, assigneeUserIds, dueDateGT, dueDateLT, completed,
+			searchByUserRoles, workflowInstanceIds, andOperator);
 	}
 
 	/**

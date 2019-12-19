@@ -15,7 +15,9 @@
 package com.liferay.headless.admin.workflow.internal.resource.v1_0;
 
 import com.liferay.headless.admin.workflow.dto.v1_0.Creator;
+import com.liferay.headless.admin.workflow.dto.v1_0.WorkflowTaskCreators;
 import com.liferay.headless.admin.workflow.internal.dto.v1_0.util.CreatorUtil;
+import com.liferay.headless.admin.workflow.internal.resource.v1_0.util.ResourceUtil;
 import com.liferay.headless.admin.workflow.resource.v1_0.CreatorResource;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -24,7 +26,11 @@ import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,10 +56,55 @@ public class CreatorResourceImpl extends BaseCreatorResourceImpl {
 		return Page.of(
 			transform(
 				ListUtil.subList(
-					users, pagination.getStartPosition(),
-					pagination.getEndPosition()),
+					users, ResourceUtil.getStartPosition(pagination),
+					ResourceUtil.getEndPosition(pagination)),
 				user -> CreatorUtil.toCreator(_portal, user)),
 			pagination, users.size());
+	}
+
+	@Override
+	public Page<WorkflowTaskCreators> getWorkflowTaskAssignableUsersPage(
+			Long[] workflowTaskIds)
+		throws Exception {
+
+		List<WorkflowTaskCreators> workflowTaskCreators = new ArrayList<>();
+
+		Set<User> commonPooledActors = null;
+
+		for (Long workflowTaskId : workflowTaskIds) {
+			List<User> pooledActors = _workflowTaskManager.getPooledActors(
+				contextUser.getCompanyId(), workflowTaskId);
+
+			if (commonPooledActors == null) {
+				commonPooledActors = new HashSet<>(pooledActors);
+			}
+			else {
+				commonPooledActors.retainAll(pooledActors);
+			}
+
+			workflowTaskCreators.add(
+				_createWorkflowTaskCreators(pooledActors, workflowTaskId));
+		}
+
+		if (workflowTaskCreators.size() > 1) {
+			workflowTaskCreators.add(
+				_createWorkflowTaskCreators(commonPooledActors, 0L));
+		}
+
+		return Page.of(workflowTaskCreators);
+	}
+
+	private WorkflowTaskCreators _createWorkflowTaskCreators(
+		Collection<User> users, Long workflowTaskId) {
+
+		return new WorkflowTaskCreators() {
+			{
+				creators = transformToArray(
+					users, user -> CreatorUtil.toCreator(_portal, user),
+					Creator.class);
+				taskId = workflowTaskId;
+			}
+		};
 	}
 
 	@Reference

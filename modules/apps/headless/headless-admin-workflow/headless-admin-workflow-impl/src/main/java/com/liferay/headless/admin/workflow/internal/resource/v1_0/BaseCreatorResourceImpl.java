@@ -15,6 +15,7 @@
 package com.liferay.headless.admin.workflow.internal.resource.v1_0;
 
 import com.liferay.headless.admin.workflow.dto.v1_0.Creator;
+import com.liferay.headless.admin.workflow.dto.v1_0.WorkflowTaskCreators;
 import com.liferay.headless.admin.workflow.resource.v1_0.CreatorResource;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.model.Company;
@@ -44,6 +45,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
@@ -76,6 +78,27 @@ public abstract class BaseCreatorResourceImpl implements CreatorResource {
 			@NotNull @Parameter(hidden = true) @PathParam("workflowTaskId") Long
 				workflowTaskId,
 			@Context Pagination pagination)
+		throws Exception {
+
+		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-workflow/v1.0/workflow-tasks/assignable-users'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@GET
+	@Parameters(
+		value = {@Parameter(in = ParameterIn.QUERY, name = "workflowTaskIds")}
+	)
+	@Path("/workflow-tasks/assignable-users")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Creator")})
+	public Page<WorkflowTaskCreators> getWorkflowTaskAssignableUsersPage(
+			@NotNull @Parameter(hidden = true) @QueryParam("workflowTaskIds")
+				Long[] workflowTaskIds)
 		throws Exception {
 
 		return Page.of(Collections.emptyList());

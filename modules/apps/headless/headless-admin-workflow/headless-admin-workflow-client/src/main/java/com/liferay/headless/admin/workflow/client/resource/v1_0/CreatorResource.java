@@ -47,6 +47,17 @@ public interface CreatorResource {
 				Long workflowTaskId, Pagination pagination)
 		throws Exception;
 
+	public Page
+		<com.liferay.headless.admin.workflow.client.dto.v1_0.
+			WorkflowTaskCreators> getWorkflowTaskAssignableUsersPage(
+					Long[] workflowTaskIds)
+				throws Exception;
+
+	public HttpInvoker.HttpResponse
+			getWorkflowTaskAssignableUsersPageHttpResponse(
+				Long[] workflowTaskIds)
+		throws Exception;
+
 	public static class Builder {
 
 		public Builder authentication(String login, String password) {
@@ -159,6 +170,70 @@ public interface CreatorResource {
 					_builder._port +
 						"/o/headless-admin-workflow/v1.0/workflow-tasks/{workflowTaskId}/assignable-users",
 				workflowTaskId);
+
+			httpInvoker.userNameAndPassword(
+				_builder._login + ":" + _builder._password);
+
+			return httpInvoker.invoke();
+		}
+
+		public Page
+			<com.liferay.headless.admin.workflow.client.dto.v1_0.
+				WorkflowTaskCreators> getWorkflowTaskAssignableUsersPage(
+						Long[] workflowTaskIds)
+					throws Exception {
+
+			HttpInvoker.HttpResponse httpResponse =
+				getWorkflowTaskAssignableUsersPageHttpResponse(workflowTaskIds);
+
+			String content = httpResponse.getContent();
+
+			_logger.fine("HTTP response content: " + content);
+
+			_logger.fine("HTTP response message: " + httpResponse.getMessage());
+			_logger.fine(
+				"HTTP response status code: " + httpResponse.getStatusCode());
+
+			return Page.of(content, CreatorSerDes::toDTO);
+		}
+
+		public HttpInvoker.HttpResponse
+				getWorkflowTaskAssignableUsersPageHttpResponse(
+					Long[] workflowTaskIds)
+			throws Exception {
+
+			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
+
+			if (_builder._locale != null) {
+				httpInvoker.header(
+					"Accept-Language", _builder._locale.toLanguageTag());
+			}
+
+			for (Map.Entry<String, String> entry :
+					_builder._headers.entrySet()) {
+
+				httpInvoker.header(entry.getKey(), entry.getValue());
+			}
+
+			for (Map.Entry<String, String> entry :
+					_builder._parameters.entrySet()) {
+
+				httpInvoker.parameter(entry.getKey(), entry.getValue());
+			}
+
+			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
+
+			if (workflowTaskIds != null) {
+				for (int i = 0; i < workflowTaskIds.length; i++) {
+					httpInvoker.parameter(
+						"workflowTaskIds", String.valueOf(workflowTaskIds[i]));
+				}
+			}
+
+			httpInvoker.path(
+				_builder._scheme + "://" + _builder._host + ":" +
+					_builder._port +
+						"/o/headless-admin-workflow/v1.0/workflow-tasks/assignable-users");
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

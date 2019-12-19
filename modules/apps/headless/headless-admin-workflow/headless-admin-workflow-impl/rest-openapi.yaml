@@ -367,7 +367,6 @@ components:
                     description:
                         The object/asset that the task's workflow is managing.
                     readOnly: true
-            type: object
         WorkflowTaskAssignToMe:
             description:
                 Represents a write-only schema to assign a workflow task to the currently logged-in user.
@@ -427,6 +426,16 @@ components:
                     format: date-time
                     type: string
                     writeOnly: true
+            type: object
+        WorkflowTaskCreators:
+            properties:
+                creators:
+                    items:
+                        $ref: "#/components/schemas/Creator"
+                    type: array
+                taskId:
+                    format: int64
+                    type: integer
             type: object
 info:
     description:
@@ -994,6 +1003,13 @@ paths:
                           type: string
                       type: array
                 - in: query
+                  name: assigneeUserIds
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
+                - in: query
                   name: completed
                   schema:
                       type: boolean
@@ -1012,9 +1028,18 @@ paths:
                   schema:
                       type: boolean
                 - in: query
-                  name: taskName
+                  name: taskNames
                   schema:
-                      type: string
+                      items:
+                          type: string
+                      type: array
+                - in: query
+                  name: workflowInstanceIds
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
                 - in: query
                   name: page
                   schema:
@@ -1043,6 +1068,34 @@ paths:
                     description:
                         ""
             tags: ["WorkflowTask"]
+    "/workflow-tasks/assignable-users":
+        get:
+            operationId: getWorkflowTaskAssignableUsersPage
+            parameters:
+                - in: query
+                  name: workflowTaskIds
+                  required: true
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/WorkflowTaskCreators"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/WorkflowTaskCreators"
+                                type: array
+                    description:
+                        ""
+            tags: ["Creator"]
     "/workflow-tasks/assigned-to-me":
         get:
             operationId: getWorkflowTasksAssignedToMePage

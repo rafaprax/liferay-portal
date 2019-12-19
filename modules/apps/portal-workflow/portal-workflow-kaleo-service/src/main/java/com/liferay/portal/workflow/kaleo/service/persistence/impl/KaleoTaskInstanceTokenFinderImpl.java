@@ -170,7 +170,7 @@ public class KaleoTaskInstanceTokenFinderImpl
 			return true;
 		}
 
-		if (Validator.isNotNull(kaleoTaskInstanceTokenQuery.getTaskName())) {
+		if (ArrayUtil.isNotEmpty(kaleoTaskInstanceTokenQuery.getTaskNames())) {
 			return true;
 		}
 

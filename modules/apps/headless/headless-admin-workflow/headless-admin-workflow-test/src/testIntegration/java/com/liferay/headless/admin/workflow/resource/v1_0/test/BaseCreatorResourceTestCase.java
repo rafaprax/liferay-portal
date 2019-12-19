@@ -308,6 +308,36 @@ public abstract class BaseCreatorResourceTestCase {
 		return null;
 	}
 
+	@Test
+	public void testGetWorkflowTaskAssignableUsersPage() throws Exception {
+		Page<Creator> page = creatorResource.getWorkflowTaskAssignableUsersPage(
+			null);
+
+		Assert.assertEquals(0, page.getTotalCount());
+
+		Creator creator1 = testGetWorkflowTaskAssignableUsersPage_addCreator(
+			randomCreator());
+
+		Creator creator2 = testGetWorkflowTaskAssignableUsersPage_addCreator(
+			randomCreator());
+
+		page = creatorResource.getWorkflowTaskAssignableUsersPage(null);
+
+		Assert.assertEquals(2, page.getTotalCount());
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(creator1, creator2), (List<Creator>)page.getItems());
+		assertValid(page);
+	}
+
+	protected Creator testGetWorkflowTaskAssignableUsersPage_addCreator(
+			Creator creator)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
 	protected Creator testGraphQLCreator_addCreator() throws Exception {
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
