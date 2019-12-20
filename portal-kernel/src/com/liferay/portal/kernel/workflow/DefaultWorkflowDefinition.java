@@ -83,6 +83,16 @@ public class DefaultWorkflowDefinition
 	public long getUserId() {
 		return _userId;
 	}
+	
+	@Override
+	public long getCompanyId() {
+		return _companyId;
+	}
+	
+	@Override
+	public long getWorkflowDefinitionId() {
+		return _workflowDefinitionId;
+	}
 
 	@Override
 	public int getVersion() {
@@ -129,6 +139,14 @@ public class DefaultWorkflowDefinition
 	public void setUserId(long userId) {
 		_userId = userId;
 	}
+	
+	public void setCompanyId(long companyId) {
+		_companyId = companyId;
+	}
+	
+	public void setWorkflowDefinitionId(long workflowDefinitionId) {
+		_workflowDefinitionId = workflowDefinitionId;
+	}
 
 	public void setVersion(int version) {
 		_version = version;
@@ -143,6 +161,8 @@ public class DefaultWorkflowDefinition
 	private Map<String, Object> _optionalAttributes;
 	private String _title;
 	private long _userId;
+	private long _companyId;
+	private long _workflowDefinitionId;
 	private int _version;
 
 }
