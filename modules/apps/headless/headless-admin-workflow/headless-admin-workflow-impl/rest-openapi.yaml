@@ -1,5 +1,18 @@
 components:
     schemas:
+        Assignee:
+            properties:
+                id:
+                    description:
+                        The user's ID.
+                    format: int64
+                    readOnly: true
+                    type: integer
+                name:
+                    description:
+                        The user's full name.
+                    readOnly: true
+                    type: string
         ChangeTransition:
             description:
                 Represents a write-only schema to update a workflow's transition.
@@ -427,6 +440,24 @@ components:
                     format: date-time
                     type: string
                     writeOnly: true
+                taskId:
+                    format: int64
+                    type: integer
+            type: object
+        WorkflowTaskAssignableUsers:
+            properties:
+                workflowTaskAssignableUsers:
+                    items:
+                        properties:
+                            assignableUsers:
+                                items:
+                                    $ref: "#/components/schemas/Assignee"
+                                type: array
+                            taskId:
+                                format: int64
+                                type: integer
+                        type: object
+                    type: array
             type: object
 info:
     description:
@@ -996,6 +1027,13 @@ paths:
                           type: string
                       type: array
                 - in: query
+                  name: assigneeUserIds
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
+                - in: query
                   name: completed
                   schema:
                       type: boolean
@@ -1014,9 +1052,18 @@ paths:
                   schema:
                       type: boolean
                 - in: query
-                  name: taskName
+                  name: taskNames
                   schema:
-                      type: string
+                      items:
+                          type: string
+                      type: array
+                - in: query
+                  name: workflowInstanceIds
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
                 - in: query
                   name: page
                   schema:
@@ -1045,6 +1092,53 @@ paths:
                     description:
                         ""
             tags: ["WorkflowTask"]
+    "/workflow-tasks/assign-to-user":
+        patch:
+            operationId: patchWorkflowTaskAssignToUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            items:
+                                $ref: "#/components/schemas/WorkflowTaskAssignToUser"
+                            type: array
+                    application/xml:
+                        schema:
+                            items:
+                                $ref: "#/components/schemas/WorkflowTaskAssignToUser"
+                            type: array
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["WorkflowTask"]
+    "/workflow-tasks/assignable-users":
+        get:
+            operationId: getWorkflowTaskAssignableUser
+            parameters:
+                - in: query
+                  name: workflowTaskIds
+                  required: true
+                  schema:
+                      items:
+                          format: int64
+                          type: integer
+                      type: array
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/WorkflowTaskAssignableUsers"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/WorkflowTaskAssignableUsers"
+                    description:
+                        ""
+            tags: ["WorkflowTaskAssignableUsers"]
     "/workflow-tasks/assigned-to-me":
         get:
             operationId: getWorkflowTasksAssignedToMePage
@@ -1370,16 +1464,16 @@ paths:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Creator"
+                                    $ref: "#/components/schemas/Assignee"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Creator"
+                                    $ref: "#/components/schemas/Assignee"
                                 type: array
                     description:
                         ""
-            tags: ["Creator"]
+            tags: ["Assignee"]
     "/workflow-tasks/{workflowTaskId}/change-transition":
         post:
             operationId: postWorkflowTaskChangeTransition

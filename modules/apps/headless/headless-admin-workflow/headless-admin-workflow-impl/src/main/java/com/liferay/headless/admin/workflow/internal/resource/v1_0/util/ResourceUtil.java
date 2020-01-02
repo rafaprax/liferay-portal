@@ -12,17 +12,30 @@
  * details.
  */
 
-package com.liferay.headless.admin.workflow.resource.v1_0.test;
+package com.liferay.headless.admin.workflow.internal.resource.v1_0.util;
 
-import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 /**
- * @author Javier Gamarra
+ * @author Rafael Praxedes
  */
-@Ignore
-@RunWith(Arquillian.class)
-public class CreatorResourceTest extends BaseCreatorResourceTestCase {
+public class ResourceUtil {
+
+	public static int getEndPosition(Pagination pagination) {
+		if (pagination == null) {
+			return QueryUtil.ALL_POS;
+		}
+
+		return pagination.getEndPosition();
+	}
+
+	public static int getStartPosition(Pagination pagination) {
+		if (pagination == null) {
+			return QueryUtil.ALL_POS;
+		}
+
+		return pagination.getStartPosition();
+	}
+
 }
