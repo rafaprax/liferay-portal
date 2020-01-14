@@ -194,6 +194,19 @@ public class AssigneeUserResourceImpl
 		return bucketSelectorPipelineAggregation;
 	}
 
+	private BooleanQuery _createCompletionDateBooleanQuery(
+		Date dateEnd, Date dateStart) {
+
+		BooleanQuery booleanQuery = _queries.booleanQuery();
+
+		return booleanQuery.addShouldQueryClauses(
+			_queries.rangeTerm(
+				"completionDate", true, true,
+				_resourceHelper.formatDate(dateStart),
+				_resourceHelper.formatDate(dateEnd)),
+			_queries.term("slaDefinitionId", 0));
+	}
+
 	private BooleanQuery _createCountFilterBooleanQuery() {
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
@@ -212,24 +225,15 @@ public class AssigneeUserResourceImpl
 		booleanQuery.addMustNotQueryClauses(_queries.term("instanceId", 0));
 
 		if (completed) {
-			booleanQuery.addMustNotQueryClauses(
-				_queries.term(
-					"status", WorkflowMetricsSLAStatus.RUNNING.name()));
-
 			if ((dateEnd != null) && (dateStart != null)) {
 				booleanQuery.addMustQueryClauses(
-					_queries.rangeTerm(
-						"completionDate", true, true,
-						_resourceHelper.formatDate(dateStart),
-						_resourceHelper.formatDate(dateEnd)));
+					_createCompletionDateBooleanQuery(dateEnd, dateStart));
 			}
 		}
 		else {
 			booleanQuery.addMustNotQueryClauses(
 				_queries.term(
-					"status", WorkflowMetricsSLAStatus.COMPLETED.name()),
-				_queries.term(
-					"status", WorkflowMetricsSLAStatus.EXPIRED.name()));
+					"status", WorkflowMetricsSLAStatus.COMPLETED.name()));
 		}
 
 		if (taskKeys.length > 0) {

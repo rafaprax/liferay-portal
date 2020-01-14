@@ -120,9 +120,9 @@ public class TaskResourceImpl
 		boolean completed, Date dateEnd, Date dateStart, long processId,
 		Set<String> taskNames) {
 
-		BooleanQuery booleanQuery = _queries.booleanQuery();
+		BooleanQuery filterBooleanQuery = _queries.booleanQuery();
 
-		booleanQuery.setMinimumShouldMatch(1);
+		BooleanQuery booleanQuery = _queries.booleanQuery();
 
 		BooleanQuery slaTaskResultsBooleanQuery = _queries.booleanQuery();
 
@@ -140,8 +140,9 @@ public class TaskResourceImpl
 			_createTokensBooleanQuery(
 				completed, dateEnd, dateStart, processId, taskNames));
 
-		return booleanQuery.addShouldQueryClauses(
-			slaTaskResultsBooleanQuery, tokensBooleanQuery);
+		return filterBooleanQuery.addFilterQueryClauses(
+			booleanQuery.addShouldQueryClauses(
+				slaTaskResultsBooleanQuery, tokensBooleanQuery));
 	}
 
 	private BooleanQuery _createBooleanQuery(
@@ -169,13 +170,17 @@ public class TaskResourceImpl
 	private BooleanQuery _createCompletionDateBooleanQuery(
 		Date dateEnd, Date dateStart) {
 
-		BooleanQuery booleanQuery = _queries.booleanQuery();
+		BooleanQuery shouldBooleanQuery = _queries.booleanQuery();
 
-		return booleanQuery.addShouldQueryClauses(
-			_queries.rangeTerm(
-				"completionDate", true, true,
-				_resourceHelper.formatDate(dateStart),
-				_resourceHelper.formatDate(dateEnd)),
+		BooleanQuery mustBooleanQuery = _queries.booleanQuery();
+
+		return shouldBooleanQuery.addShouldQueryClauses(
+			mustBooleanQuery.addMustQueryClauses(
+				_queries.rangeTerm(
+					"completionDate", true, true,
+					_resourceHelper.formatDate(dateStart),
+					_resourceHelper.formatDate(dateEnd)),
+				_queries.term("instanceCompleted", true)),
 			_queries.term("slaDefinitionId", 0));
 	}
 
@@ -238,10 +243,6 @@ public class TaskResourceImpl
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
 		if (completed) {
-			booleanQuery.addMustNotQueryClauses(
-				_queries.term(
-					"status", WorkflowMetricsSLAStatus.RUNNING.name()));
-
 			if ((dateEnd != null) && (dateStart != null)) {
 				booleanQuery.addMustQueryClauses(
 					_createCompletionDateBooleanQuery(dateEnd, dateStart));
@@ -249,10 +250,11 @@ public class TaskResourceImpl
 		}
 		else {
 			booleanQuery.addMustNotQueryClauses(
+				_queries.exists("completionDate"),
 				_queries.term(
-					"status", WorkflowMetricsSLAStatus.COMPLETED.name()),
-				_queries.term(
-					"status", WorkflowMetricsSLAStatus.EXPIRED.name()));
+					"status", WorkflowMetricsSLAStatus.COMPLETED.name()));
+			booleanQuery.addMustQueryClauses(
+				_queries.term("instanceCompleted", Boolean.FALSE));
 		}
 
 		TermsQuery termsQuery = _queries.terms("taskName");
@@ -305,6 +307,7 @@ public class TaskResourceImpl
 			_queries.term("companyId", contextCompany.getCompanyId()),
 			_queries.term("completed", completed),
 			_queries.term("deleted", Boolean.FALSE),
+			_queries.term("instanceCompleted", completed),
 			_queries.term("processId", processId));
 	}
 
@@ -456,20 +459,18 @@ public class TaskResourceImpl
 		searchSearchRequest.setQuery(
 			_createNodesBooleanQuery(key, processId, taskNames, version));
 
-		SearchSearchResponse searchSearchResponse =
-			_searchRequestExecutor.executeSearchRequest(searchSearchRequest);
-
-		Map<String, AggregationResult> aggregationResultsMap =
-			searchSearchResponse.getAggregationResultsMap();
-
-		TermsAggregationResult termsAggregationResult =
-			(TermsAggregationResult)aggregationResultsMap.get("name");
-
-		Collection<Bucket> buckets = termsAggregationResult.getBuckets();
-
-		Stream<Bucket> stream = buckets.stream();
-
-		return stream.map(
+		return Stream.of(
+			_searchRequestExecutor.executeSearchRequest(searchSearchRequest)
+		).map(
+			SearchSearchResponse::getAggregationResultsMap
+		).map(
+			aggregationResultsMap ->
+				(TermsAggregationResult)aggregationResultsMap.get("name")
+		).map(
+			TermsAggregationResult::getBuckets
+		).flatMap(
+			Collection::stream
+		).map(
 			Bucket::getKey
 		).map(
 			this::_createTask

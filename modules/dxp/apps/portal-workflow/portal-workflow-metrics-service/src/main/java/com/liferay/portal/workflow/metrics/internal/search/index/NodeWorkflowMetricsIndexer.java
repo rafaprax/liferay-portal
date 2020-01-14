@@ -29,8 +29,6 @@ import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 import com.liferay.portal.workflow.kaleo.model.KaleoTask;
-import com.liferay.portal.workflow.kaleo.service.KaleoNodeLocalService;
-import com.liferay.portal.workflow.kaleo.service.KaleoTaskLocalService;
 
 import java.util.Date;
 import java.util.Objects;
@@ -186,6 +184,7 @@ public class NodeWorkflowMetricsIndexer extends BaseWorkflowMetricsIndexer {
 		document.addKeyword("completed", false);
 		document.addKeyword("deleted", false);
 		document.addKeyword("instanceId", 0);
+		document.addKeyword("instanceCompleted", false);
 		document.addKeyword("processId", processId);
 		document.addKeyword("taskId", taskId);
 		document.addKeyword("taskName", taskName);
@@ -219,7 +218,7 @@ public class NodeWorkflowMetricsIndexer extends BaseWorkflowMetricsIndexer {
 		throws PortalException {
 
 		ActionableDynamicQuery actionableDynamicQuery =
-			_kaleoNodeLocalService.getActionableDynamicQuery();
+			kaleoNodeLocalService.getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
 			dynamicQuery -> {
@@ -243,7 +242,7 @@ public class NodeWorkflowMetricsIndexer extends BaseWorkflowMetricsIndexer {
 		throws PortalException {
 
 		ActionableDynamicQuery actionableDynamicQuery =
-			_kaleoTaskLocalService.getActionableDynamicQuery();
+			kaleoTaskLocalService.getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
 			dynamicQuery -> {
@@ -258,12 +257,6 @@ public class NodeWorkflowMetricsIndexer extends BaseWorkflowMetricsIndexer {
 
 		actionableDynamicQuery.performActions();
 	}
-
-	@Reference
-	private KaleoNodeLocalService _kaleoNodeLocalService;
-
-	@Reference
-	private KaleoTaskLocalService _kaleoTaskLocalService;
 
 	@Reference
 	private SLATaskResultWorkflowMetricsIndexer

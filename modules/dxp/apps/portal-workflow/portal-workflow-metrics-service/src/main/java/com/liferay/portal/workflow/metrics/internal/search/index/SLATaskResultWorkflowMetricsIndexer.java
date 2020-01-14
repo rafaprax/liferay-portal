@@ -16,20 +16,12 @@ package com.liferay.portal.workflow.metrics.internal.search.index;
 
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentImpl;
-import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.PortalRunMode;
-import com.liferay.portal.search.engine.adapter.document.BulkDocumentRequest;
-import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
-import com.liferay.portal.workflow.kaleo.service.KaleoInstanceLocalService;
 import com.liferay.portal.workflow.metrics.internal.sla.processor.WorkflowMetricsSLATaskResult;
 import com.liferay.portal.workflow.metrics.sla.processor.WorkflowMetricsSLAStatus;
 
 import java.sql.Timestamp;
 
-import java.util.List;
-
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Inácio Nery
@@ -39,41 +31,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class SLATaskResultWorkflowMetricsIndexer
 	extends BaseSLAWorkflowMetricsIndexer {
-
-	public void addDocuments(
-		List<WorkflowMetricsSLATaskResult> workflowMetricsSLATaskResults) {
-
-		if (searchEngineAdapter == null) {
-			return;
-		}
-
-		BulkDocumentRequest bulkDocumentRequest = new BulkDocumentRequest();
-
-		workflowMetricsSLATaskResults.forEach(
-			workflowMetricsSLATaskResult -> {
-				Document document = createDocument(
-					workflowMetricsSLATaskResult);
-
-				bulkDocumentRequest.addBulkableDocumentRequest(
-					new IndexDocumentRequest(
-						getIndexName(), document.getUID(), document) {
-
-						{
-							setType(getIndexType());
-						}
-					});
-			});
-
-		if (ListUtil.isNotEmpty(
-				bulkDocumentRequest.getBulkableDocumentRequests())) {
-
-			if (PortalRunMode.isTestMode()) {
-				bulkDocumentRequest.setRefresh(true);
-			}
-
-			searchEngineAdapter.execute(bulkDocumentRequest);
-		}
-	}
 
 	public Document createDocument(
 		WorkflowMetricsSLATaskResult workflowMetricsSLATaskResult) {
@@ -116,7 +73,7 @@ public class SLATaskResultWorkflowMetricsIndexer
 		document.addKeyword("deleted", false);
 		document.addKeyword(
 			"instanceCompleted",
-			workflowMetricsSLATaskResult.getCompletionLocalDateTime() != null);
+			workflowMetricsSLATaskResult.isInstanceCompleted());
 		document.addKeyword(
 			"instanceId", workflowMetricsSLATaskResult.getInstanceId());
 		document.addDateSortable(
@@ -157,8 +114,5 @@ public class SLATaskResultWorkflowMetricsIndexer
 	protected String getIndexType() {
 		return "WorkflowMetricsSLATaskResultType";
 	}
-
-	@Reference
-	private KaleoInstanceLocalService _kaleoInstanceLocalService;
 
 }
