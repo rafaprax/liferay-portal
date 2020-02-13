@@ -21,7 +21,7 @@ const Item = ({
 	breachedInstanceCount,
 	breachedInstancePercentage,
 	durationAvg,
-	name
+	task: {label}
 }) => {
 	const formattedDuration = formatDuration(durationAvg);
 	const formattedPercentage = getFormattedPercentage(
@@ -31,7 +31,7 @@ const Item = ({
 
 	return (
 		<tr>
-			<td data-testid="stepName">{name}</td>
+			<td data-testid="stepName">{label}</td>
 
 			<td className="text-right" data-testid="slaBreached">
 				{isValidNumber(breachedInstanceCount)

@@ -1009,7 +1009,15 @@ public abstract class Base${schemaName}ResourceTestCase {
 						Map<String, File> multipartFiles = getMultipartFiles();
 					</#if>
 
-					${schemaName} put${schemaName} = ${schemaVarName}Resource.put${schemaName}(post${schemaName}.getId(), random${schemaName}
+					${schemaName} put${schemaName} = ${schemaVarName}Resource.${javaMethodSignature.methodName}(
+
+					<#list javaMethodSignature.javaMethodParameters as javaMethodParameter>
+						<#if freeMarkerTool.isPathParameter(javaMethodParameter, javaMethodSignature.operation) && properties?keys?seq_contains(javaMethodParameter.parameterName)>
+							post${schemaName}.get${javaMethodParameter.parameterName?cap_first}(),
+						</#if>
+					</#list>
+
+					post${schemaName}.getId(), random${schemaName}
 
 					<#if freeMarkerTool.hasRequestBodyMediaType(javaMethodSignature, "multipart/form-data")>
 						, multipartFiles
@@ -1020,7 +1028,16 @@ public abstract class Base${schemaName}ResourceTestCase {
 					assertEquals(random${schemaName}, put${schemaName});
 					assertValid(put${schemaName});
 
-					${schemaName} get${schemaName} = ${schemaVarName}Resource.get${schemaName}(put${schemaName}.getId());
+					${schemaName} get${schemaName} = ${schemaVarName}Resource.${javaMethodSignature.methodName?replace("put", "get")}(
+
+						<#list javaMethodSignature.javaMethodParameters as javaMethodParameter>
+							<#if freeMarkerTool.isPathParameter(javaMethodParameter, javaMethodSignature.operation) && properties?keys?seq_contains(javaMethodParameter.parameterName)>
+								put${schemaName}.get${javaMethodParameter.parameterName?cap_first}(),
+							</#if>
+						</#list>
+
+						put${schemaName}.getId()
+					);
 
 					assertEquals(random${schemaName}, get${schemaName});
 					assertValid(get${schemaName});

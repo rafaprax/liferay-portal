@@ -1,0 +1,10 @@
+Bundle-Name: Liferay Portal Workflow Metrics REST API
+Bundle-SymbolicName: com.liferay.portal.workflow.metrics.rest.api
+<<<<<<< HEAD
+Bundle-Version: 4.1.0
+=======
+Bundle-Version: 5.0.0
+>>>>>>> WIP
+Export-Package:\
+	com.liferay.portal.workflow.metrics.rest.dto.v1_0,\
+	com.liferay.portal.workflow.metrics.rest.resource.v1_0

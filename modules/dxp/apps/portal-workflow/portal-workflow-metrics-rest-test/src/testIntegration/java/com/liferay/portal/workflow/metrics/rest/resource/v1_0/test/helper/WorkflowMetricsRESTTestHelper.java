@@ -34,11 +34,13 @@ import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.test.util.IdempotentRetryAssert;
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.CreatorUser;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Creator;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Instance;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Node;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Process;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.ProcessMetric;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Task;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.TaskMetric;
 
 import java.io.Serializable;
 
@@ -82,7 +84,7 @@ public class WorkflowMetricsRESTTestHelper {
 
 		Instance instance = new Instance();
 
-		instance.setCreatorUser(new CreatorUser());
+		instance.setCreator(new Creator());
 
 		if (completed) {
 			instance.setDateCompletion(RandomTestUtil.nextDate());
@@ -100,7 +102,7 @@ public class WorkflowMetricsRESTTestHelper {
 
 		Instance instance = new Instance();
 
-		instance.setCreatorUser(new CreatorUser());
+		instance.setCreator(new Creator());
 		instance.setDateCompletion(dateCompletion);
 		instance.setId(RandomTestUtil.randomLong());
 		instance.setProcessId(processId);
@@ -111,7 +113,7 @@ public class WorkflowMetricsRESTTestHelper {
 	public Instance addInstance(long companyId, Instance instance)
 		throws Exception {
 
-		CreatorUser creatorUser = instance.getCreatorUser();
+		Creator creator = instance.getCreator();
 
 		_invokeAddDocument(
 			_getIndexer(_CLASS_NAME_INSTANCE_INDEXER),
@@ -119,8 +121,8 @@ public class WorkflowMetricsRESTTestHelper {
 				instance.getAssetTitle(), instance.getAssetType(), companyId,
 				instance.getDateCompletion() != null,
 				instance.getDateCompletion(), instance.getDateCreated(),
-				instance.getId(), instance.getProcessId(), creatorUser.getId(),
-				creatorUser.getName()));
+				instance.getId(), instance.getProcessId(), creator.getId(),
+				creator.getName()));
 
 		_retryAssertCount(
 			"workflow-metrics-instances", "companyId", companyId, "deleted",
@@ -159,7 +161,14 @@ public class WorkflowMetricsRESTTestHelper {
 	}
 
 	public Process addProcess(long companyId) throws Exception {
-		return addProcess(companyId, "1.0");
+		Process process = new Process() {
+			{
+				id = RandomTestUtil.randomLong();
+				setTitle(RandomTestUtil.randomString());
+			}
+		};
+
+		return addProcess(companyId, process, "1.0");
 	}
 
 	public Process addProcess(long companyId, Process process)
@@ -176,10 +185,35 @@ public class WorkflowMetricsRESTTestHelper {
 			_createWorkflowMetricsProcessDocument(
 				companyId, process.getId(), process.getTitle(), version));
 
-		Long onTimeInstanceCount = process.getOnTimeInstanceCount();
-		Long overdueInstanceCount = process.getOverdueInstanceCount();
+		_retryAssertCount(
+			"workflow-metrics-processes", "companyId", companyId, "deleted",
+			false, "processId", process.getId());
 
-		for (int i = 0; i < process.getInstanceCount(); i++) {
+		return process;
+	}
+
+	public ProcessMetric addProcessMetric(long companyId) throws Exception {
+		return addProcessMetric(companyId, "1.0");
+	}
+
+	public ProcessMetric addProcessMetric(
+			long companyId, ProcessMetric processMetric)
+		throws Exception {
+
+		return addProcessMetric(companyId, processMetric, "1.0");
+	}
+
+	public ProcessMetric addProcessMetric(
+			long companyId, ProcessMetric processMetric, String version)
+		throws Exception {
+
+		Process process = addProcess(
+			companyId, processMetric.getProcess(), version);
+
+		Long onTimeInstanceCount = processMetric.getOnTimeInstanceCount();
+		Long overdueInstanceCount = processMetric.getOverdueInstanceCount();
+
+		for (int i = 0; i < processMetric.getInstanceCount(); i++) {
 			Instance instance = addInstance(companyId, false, process.getId());
 
 			if (onTimeInstanceCount > 0) {
@@ -194,26 +228,30 @@ public class WorkflowMetricsRESTTestHelper {
 			}
 		}
 
-		_retryAssertCount(
-			"workflow-metrics-processes", "companyId", companyId, "deleted",
-			false, "processId", process.getId());
-
-		return process;
+		return processMetric;
 	}
 
-	public Process addProcess(long companyId, String version) throws Exception {
-		Process process = new Process() {
+	public ProcessMetric addProcessMetric(long companyId, String version)
+		throws Exception {
+
+		ProcessMetric processMetric = new ProcessMetric() {
 			{
-				id = RandomTestUtil.randomLong();
 				instanceCount = 0L;
 				onTimeInstanceCount = 0L;
 				overdueInstanceCount = 0L;
-				title = RandomTestUtil.randomString();
+
+				process = new Process() {
+					{
+						id = RandomTestUtil.randomLong();
+						setTitle(RandomTestUtil.randomString());
+					}
+				};
+
 				untrackedInstanceCount = 0L;
 			}
 		};
 
-		return addProcess(companyId, process, version);
+		return addProcessMetric(companyId, processMetric, version);
 	}
 
 	public void addSLAInstanceResult(
@@ -263,38 +301,43 @@ public class WorkflowMetricsRESTTestHelper {
 			"taskId", taskId, "taskName", taskName);
 	}
 
-	public Task addTask(long assigneeId, long companyId, long processId)
+	public TaskMetric addTaskMetric(
+			long assigneeId, long companyId, long processId)
 		throws Exception {
 
 		String randomString = RandomTestUtil.randomString();
 
-		Task task = new Task() {
+		TaskMetric taskMetric = new TaskMetric() {
 			{
 				durationAvg = 0L;
 				instanceCount = 1L;
-				key = randomString;
-				name = randomString;
 				onTimeInstanceCount = 0L;
 				overdueInstanceCount = 0L;
+				task = new Task() {
+					{
+						label = randomString;
+						name = randomString;
+					}
+				};
 			}
 		};
 
-		return addTask(
-			assigneeId, companyId, processId, "RUNNING", task, "1.0");
+		return addTaskMetric(
+			assigneeId, companyId, processId, "RUNNING", taskMetric, "1.0");
 	}
 
-	public Task addTask(
+	public TaskMetric addTaskMetric(
 			long assigneeId, long companyId, long processId, String status,
-			Task task, String version)
+			TaskMetric task, String version)
 		throws Exception {
 
-		return addTask(
+		return addTaskMetric(
 			assigneeId, companyId,
 			() -> addInstance(companyId, false, processId), processId, status,
 			task, version);
 	}
 
-	public Task addTask(
+	public TaskMetric addTaskMetric(
 			long assigneeId, long companyId,
 			UnsafeSupplier<Instance, Exception> instanceSuplier, long processId,
 			String status)
@@ -302,66 +345,72 @@ public class WorkflowMetricsRESTTestHelper {
 
 		String randomString = RandomTestUtil.randomString();
 
-		Task task = new Task() {
+		TaskMetric task = new TaskMetric() {
 			{
 				durationAvg = Objects.equals(status, "COMPLETED") ? 1000L : 0L;
 				instanceCount = 1L;
-				key = randomString;
-				name = randomString;
 				onTimeInstanceCount = 0L;
 				overdueInstanceCount = 0L;
+				task = new Task() {
+					{
+						label = randomString;
+						name = randomString;
+					}
+				};
 			}
 		};
 
-		return addTask(
+		return addTaskMetric(
 			assigneeId, companyId, instanceSuplier, processId, status, task,
 			"1.0");
 	}
 
-	public Task addTask(
+	public TaskMetric addTaskMetric(
 			long assigneeId, long companyId,
 			UnsafeSupplier<Instance, Exception> instanceSuplier, long processId,
-			String status, Task task, String version)
+			String status, TaskMetric taskMetric, String version)
 		throws Exception {
 
 		long taskId = RandomTestUtil.randomLong();
 
+		Task task = taskMetric.getTask();
+
 		_invokeAddDocument(
 			_getIndexer(_CLASS_NAME_NODE_INDEXER),
 			_createWorkflowMetricsNodeDocument(
-				companyId, task.getKey(), taskId, processId, "TASK", version));
+				companyId, task.getName(), taskId, processId, "TASK", version));
 
-		Long onTimeInstanceCount = task.getOnTimeInstanceCount();
-		Long overdueInstanceCount = task.getOverdueInstanceCount();
+		Long onTimeInstanceCount = taskMetric.getOnTimeInstanceCount();
+		Long overdueInstanceCount = taskMetric.getOverdueInstanceCount();
 
-		for (int i = 0; i < task.getInstanceCount(); i++) {
+		for (int i = 0; i < taskMetric.getInstanceCount(); i++) {
 			Instance instance = instanceSuplier.get();
 
 			if (onTimeInstanceCount > 0) {
 				addSLATaskResult(
 					assigneeId, false, companyId, instance, true, status,
-					taskId, task.getKey());
+					taskId, task.getName());
 
 				onTimeInstanceCount--;
 			}
 			else if (overdueInstanceCount > 0) {
 				addSLATaskResult(
 					assigneeId, true, companyId, instance, false, status,
-					taskId, task.getKey());
+					taskId, task.getName());
 
 				overdueInstanceCount--;
 			}
 
 			addToken(
-				assigneeId, companyId, task.getDurationAvg(), instance, taskId,
-				task.getKey());
+				assigneeId, companyId, taskMetric.getDurationAvg(), instance,
+				taskId, task.getName());
 		}
 
 		_retryAssertCount(
 			"workflow-metrics-nodes", "companyId", companyId, "deleted", false,
-			"name", task.getKey(), "processId", processId);
+			"name", task.getName(), "processId", processId);
 
-		return task;
+		return taskMetric;
 	}
 
 	public void addToken(long assigneeId, long companyId, Instance instance)
@@ -407,7 +456,7 @@ public class WorkflowMetricsRESTTestHelper {
 	public void deleteInstance(long companyId, Instance instance)
 		throws Exception {
 
-		CreatorUser creatorUser = instance.getCreatorUser();
+		Creator creator = instance.getCreator();
 
 		_invokeDeleteDocument(
 			_getIndexer(_CLASS_NAME_INSTANCE_INDEXER),
@@ -415,8 +464,8 @@ public class WorkflowMetricsRESTTestHelper {
 				instance.getAssetTitle(), instance.getAssetType(), companyId,
 				instance.getDateCompletion() != null,
 				instance.getDateCompletion(), instance.getDateCreated(),
-				instance.getId(), instance.getProcessId(), creatorUser.getId(),
-				creatorUser.getName()));
+				instance.getId(), instance.getProcessId(), creator.getId(),
+				creator.getName()));
 
 		_retryAssertCount(
 			"workflow-metrics-instances", "companyId", companyId, "deleted",
@@ -471,11 +520,11 @@ public class WorkflowMetricsRESTTestHelper {
 		_invokeDeleteDocument(
 			_getIndexer(_CLASS_NAME_NODE_INDEXER),
 			_createWorkflowMetricsNodeDocument(
-				companyId, task.getKey(), 0, processId, "TASK", "1.0"));
+				companyId, task.getName(), 0, processId, "TASK", "1.0"));
 
 		_retryAssertCount(
 			"workflow-metrics-nodes", "companyId", companyId, "deleted", true,
-			"name", task.getKey(), "processId", processId);
+			"name", task.getName(), "processId", processId);
 	}
 
 	public void deleteTokens(long companyId, long processId) throws Exception {

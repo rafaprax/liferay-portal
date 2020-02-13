@@ -20,8 +20,6 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Task;
 
-import java.util.Date;
-
 import javax.annotation.Generated;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +42,16 @@ import org.osgi.annotation.versioning.ProviderType;
 public interface TaskResource {
 
 	public Page<Task> getProcessTasksPage(
-			Long processId, Boolean completed, Date dateEnd, Date dateStart,
-			String key, Pagination pagination, Sort[] sorts)
+			Long processId, Pagination pagination, Sort[] sorts)
+		throws Exception;
+
+	public Task postProcessTask(Long processId, Task task) throws Exception;
+
+	public void deleteProcessTask(Long processId, Long taskId) throws Exception;
+
+	public Task getProcessTask(Long processId, Long taskId) throws Exception;
+
+	public Task putProcessTask(Long processId, Long taskId, Task task)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

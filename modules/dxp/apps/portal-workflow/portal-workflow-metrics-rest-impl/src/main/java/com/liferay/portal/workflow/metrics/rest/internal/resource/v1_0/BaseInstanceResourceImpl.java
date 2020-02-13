@@ -45,7 +45,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import javax.validation.constraints.NotNull;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -71,7 +75,7 @@ public abstract class BaseInstanceResourceImpl implements InstanceResource {
 	@Parameters(
 		value = {
 			@Parameter(in = ParameterIn.PATH, name = "processId"),
-			@Parameter(in = ParameterIn.QUERY, name = "assigneeUserIds"),
+			@Parameter(in = ParameterIn.QUERY, name = "assigneeIds"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateEnd"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateStart"),
 			@Parameter(in = ParameterIn.QUERY, name = "slaStatuses"),
@@ -87,8 +91,8 @@ public abstract class BaseInstanceResourceImpl implements InstanceResource {
 	public Page<Instance> getProcessInstancesPage(
 			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
 				processId,
-			@Parameter(hidden = true) @QueryParam("assigneeUserIds") Long[]
-				assigneeUserIds,
+			@Parameter(hidden = true) @QueryParam("assigneeIds") Long[]
+				assigneeIds,
 			@Parameter(hidden = true) @QueryParam("dateEnd") java.util.Date
 				dateEnd,
 			@Parameter(hidden = true) @QueryParam("dateStart") java.util.Date
@@ -101,6 +105,51 @@ public abstract class BaseInstanceResourceImpl implements InstanceResource {
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/instances' -d $'{"assetTitle": ___, "assetType": ___, "className": ___, "classPK": ___, "completed": ___, "creator": ___, "dateCompletion": ___, "dateCreated": ___, "dateModified": ___, "description": ___, "duration": ___, "id": ___, "instance": ___, "processId": ___, "processVersion": ___, "transitions": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@POST
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "processId")})
+	@Path("/processes/{processId}/instances")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Instance")})
+	public Instance postProcessInstance(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			Instance instance)
+		throws Exception {
+
+		return new Instance();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/instances/{instanceId}'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@DELETE
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.PATH, name = "instanceId")
+		}
+	)
+	@Path("/processes/{processId}/instances/{instanceId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Instance")})
+	public void deleteProcessInstance(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			@NotNull @Parameter(hidden = true) @PathParam("instanceId") Long
+				instanceId)
+		throws Exception {
 	}
 
 	/**
@@ -124,6 +173,34 @@ public abstract class BaseInstanceResourceImpl implements InstanceResource {
 				processId,
 			@NotNull @Parameter(hidden = true) @PathParam("instanceId") Long
 				instanceId)
+		throws Exception {
+
+		return new Instance();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/instances/{instanceId}' -d $'{"assetTitle": ___, "assetType": ___, "className": ___, "classPK": ___, "completed": ___, "creator": ___, "dateCompletion": ___, "dateCreated": ___, "dateModified": ___, "description": ___, "duration": ___, "id": ___, "instance": ___, "processId": ___, "processVersion": ___, "transitions": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@PUT
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.PATH, name = "instanceId")
+		}
+	)
+	@Path("/processes/{processId}/instances/{instanceId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Instance")})
+	public Instance putProcessInstance(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			@NotNull @Parameter(hidden = true) @PathParam("instanceId") Long
+				instanceId,
+			Instance instance)
 		throws Exception {
 
 		return new Instance();

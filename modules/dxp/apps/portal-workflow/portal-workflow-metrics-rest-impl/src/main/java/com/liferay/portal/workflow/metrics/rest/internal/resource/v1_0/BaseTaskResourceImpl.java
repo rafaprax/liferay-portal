@@ -46,11 +46,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import javax.validation.constraints.NotNull;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
@@ -72,10 +75,6 @@ public abstract class BaseTaskResourceImpl implements TaskResource {
 	@Parameters(
 		value = {
 			@Parameter(in = ParameterIn.PATH, name = "processId"),
-			@Parameter(in = ParameterIn.QUERY, name = "completed"),
-			@Parameter(in = ParameterIn.QUERY, name = "dateEnd"),
-			@Parameter(in = ParameterIn.QUERY, name = "dateStart"),
-			@Parameter(in = ParameterIn.QUERY, name = "key"),
 			@Parameter(in = ParameterIn.QUERY, name = "page"),
 			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
 			@Parameter(in = ParameterIn.QUERY, name = "sort")
@@ -87,17 +86,106 @@ public abstract class BaseTaskResourceImpl implements TaskResource {
 	public Page<Task> getProcessTasksPage(
 			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
 				processId,
-			@Parameter(hidden = true) @QueryParam("completed") Boolean
-				completed,
-			@Parameter(hidden = true) @QueryParam("dateEnd") java.util.Date
-				dateEnd,
-			@Parameter(hidden = true) @QueryParam("dateStart") java.util.Date
-				dateStart,
-			@Parameter(hidden = true) @QueryParam("key") String key,
 			@Context Pagination pagination, @Context Sort[] sorts)
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/tasks' -d $'{"assigneeId": ___, "className": ___, "classPK": ___, "completed": ___, "completionUserId": ___, "dateCompletion": ___, "dateCreated": ___, "dateModified": ___, "description": ___, "duration": ___, "id": ___, "instanceId": ___, "name": ___, "processId": ___, "processVersion": ___, "tokenId": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@POST
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "processId")})
+	@Path("/processes/{processId}/tasks")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Task")})
+	public Task postProcessTask(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			Task task)
+		throws Exception {
+
+		return new Task();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/tasks/{taskId}'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@DELETE
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.PATH, name = "taskId")
+		}
+	)
+	@Path("/processes/{processId}/tasks/{taskId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Task")})
+	public void deleteProcessTask(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			@NotNull @Parameter(hidden = true) @PathParam("taskId") Long taskId)
+		throws Exception {
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/tasks/{taskId}'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@GET
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.PATH, name = "taskId")
+		}
+	)
+	@Path("/processes/{processId}/tasks/{taskId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Task")})
+	public Task getProcessTask(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			@NotNull @Parameter(hidden = true) @PathParam("taskId") Long taskId)
+		throws Exception {
+
+		return new Task();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/tasks/{taskId}' -d $'{"assigneeId": ___, "className": ___, "classPK": ___, "completed": ___, "completionUserId": ___, "dateCompletion": ___, "dateCreated": ___, "dateModified": ___, "description": ___, "duration": ___, "id": ___, "instanceId": ___, "name": ___, "processId": ___, "processVersion": ___, "tokenId": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@PUT
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.PATH, name = "taskId")
+		}
+	)
+	@Path("/processes/{processId}/tasks/{taskId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Task")})
+	public Task putProcessTask(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			@NotNull @Parameter(hidden = true) @PathParam("taskId") Long taskId,
+			Task task)
+		throws Exception {
+
+		return new Task();
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {

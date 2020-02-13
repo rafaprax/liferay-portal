@@ -20,8 +20,8 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.Summary;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.workflow.metrics.internal.search.index.InstanceWorkflowMetricsIndexer;
-import com.liferay.portal.workflow.metrics.internal.search.index.NodeWorkflowMetricsIndexer;
-import com.liferay.portal.workflow.metrics.internal.search.index.ProcessWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.internal.search.index.NodeWorkflowMetricsIndexerImpl;
+import com.liferay.portal.workflow.metrics.internal.search.index.ProcessWorkflowMetricsIndexerImpl;
 import com.liferay.portal.workflow.metrics.internal.search.index.TokenWorkflowMetricsIndexer;
 
 import java.util.Locale;
@@ -100,10 +100,10 @@ public class WorkflowMetricsIndexer extends BaseIndexer<Object> {
 	private InstanceWorkflowMetricsIndexer _instanceWorkflowMetricsIndexer;
 
 	@Reference
-	private NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
+	private NodeWorkflowMetricsIndexerImpl _nodeWorkflowMetricsIndexer;
 
 	@Reference
-	private ProcessWorkflowMetricsIndexer _processWorkflowMetricsIndexer;
+	private ProcessWorkflowMetricsIndexerImpl _processWorkflowMetricsIndexer;
 
 	@Reference
 	private TokenWorkflowMetricsIndexer _tokenWorkflowMetricsIndexer;

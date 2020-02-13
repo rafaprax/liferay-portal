@@ -41,6 +41,12 @@ public interface NodeResource {
 
 	public Page<Node> getProcessNodesPage(Long processId) throws Exception;
 
+	public Node postProcessNode(Long processId, Node node) throws Exception;
+
+	public void deleteProcessNode(
+			Long processId, String processVersion, Long nodeId)
+		throws Exception;
+
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {
 	}

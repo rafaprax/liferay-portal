@@ -64,7 +64,7 @@ const ProcessListPage = ({history, query, routeParams}) => {
 			title: search,
 			...routeParams
 		},
-		url: '/processes'
+		url: '/processes/metrics'
 	});
 
 	const promises = useMemo(() => {

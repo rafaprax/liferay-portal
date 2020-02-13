@@ -45,8 +45,8 @@ const InstanceDetailsModal = () => {
 	const {
 		assetTitle,
 		assetType,
-		assigneeUsers,
-		creatorUser,
+		assignees,
+		creator,
 		dateCompletion,
 		dateCreated,
 		slaResults = [],
@@ -168,7 +168,7 @@ const InstanceDetailsModal = () => {
 
 						<InstanceDetailsModal.SectionAttribute
 							description={Liferay.Language.get('created-by')}
-							detail={creatorUser ? creatorUser.name : ''}
+							detail={creator ? creator.name : ''}
 						/>
 
 						{!!dateCreated && (
@@ -220,8 +220,8 @@ const InstanceDetailsModal = () => {
 									'current-assignee'
 								)}
 								detail={
-									assigneeUsers && assigneeUsers.length
-										? assigneeUsers
+									assignees && assignees.length
+										? assignees
 												.map(user => user.name)
 												.join(', ')
 										: Liferay.Language.get('unassigned')

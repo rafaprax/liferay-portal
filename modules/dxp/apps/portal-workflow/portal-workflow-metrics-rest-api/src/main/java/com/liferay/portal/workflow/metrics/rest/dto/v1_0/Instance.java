@@ -178,20 +178,48 @@ public class Instance {
 
 	@Schema
 	@Valid
-	public AssigneeUser[] getAssigneeUsers() {
-		return assigneeUsers;
+	public Assignee[] getAssignees() {
+		return assignees;
 	}
 
-	public void setAssigneeUsers(AssigneeUser[] assigneeUsers) {
-		this.assigneeUsers = assigneeUsers;
+	public void setAssignees(Assignee[] assignees) {
+		this.assignees = assignees;
 	}
 
 	@JsonIgnore
-	public void setAssigneeUsers(
-		UnsafeSupplier<AssigneeUser[], Exception> assigneeUsersUnsafeSupplier) {
+	public void setAssignees(
+		UnsafeSupplier<Assignee[], Exception> assigneesUnsafeSupplier) {
 
 		try {
-			assigneeUsers = assigneeUsersUnsafeSupplier.get();
+			assignees = assigneesUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Assignee[] assignees;
+
+	@Schema
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	@JsonIgnore
+	public void setClassName(
+		UnsafeSupplier<String, Exception> classNameUnsafeSupplier) {
+
+		try {
+			className = classNameUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -203,24 +231,80 @@ public class Instance {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected AssigneeUser[] assigneeUsers;
+	protected String className;
+
+	@Schema
+	public Long getClassPK() {
+		return classPK;
+	}
+
+	public void setClassPK(Long classPK) {
+		this.classPK = classPK;
+	}
+
+	@JsonIgnore
+	public void setClassPK(
+		UnsafeSupplier<Long, Exception> classPKUnsafeSupplier) {
+
+		try {
+			classPK = classPKUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long classPK;
+
+	@Schema
+	public Boolean getCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(Boolean completed) {
+		this.completed = completed;
+	}
+
+	@JsonIgnore
+	public void setCompleted(
+		UnsafeSupplier<Boolean, Exception> completedUnsafeSupplier) {
+
+		try {
+			completed = completedUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Boolean completed;
 
 	@Schema
 	@Valid
-	public CreatorUser getCreatorUser() {
-		return creatorUser;
+	public Creator getCreator() {
+		return creator;
 	}
 
-	public void setCreatorUser(CreatorUser creatorUser) {
-		this.creatorUser = creatorUser;
+	public void setCreator(Creator creator) {
+		this.creator = creator;
 	}
 
 	@JsonIgnore
-	public void setCreatorUser(
-		UnsafeSupplier<CreatorUser, Exception> creatorUserUnsafeSupplier) {
+	public void setCreator(
+		UnsafeSupplier<Creator, Exception> creatorUnsafeSupplier) {
 
 		try {
-			creatorUser = creatorUserUnsafeSupplier.get();
+			creator = creatorUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -232,7 +316,7 @@ public class Instance {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected CreatorUser creatorUser;
+	protected Creator creator;
 
 	@Schema
 	public Date getDateCompletion() {
@@ -291,6 +375,90 @@ public class Instance {
 	protected Date dateCreated;
 
 	@Schema
+	public Date getDateModified() {
+		return dateModified;
+	}
+
+	public void setDateModified(Date dateModified) {
+		this.dateModified = dateModified;
+	}
+
+	@JsonIgnore
+	public void setDateModified(
+		UnsafeSupplier<Date, Exception> dateModifiedUnsafeSupplier) {
+
+		try {
+			dateModified = dateModifiedUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Date dateModified;
+
+	@Schema
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@JsonIgnore
+	public void setDescription(
+		UnsafeSupplier<String, Exception> descriptionUnsafeSupplier) {
+
+		try {
+			description = descriptionUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String description;
+
+	@Schema
+	public Long getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Long duration) {
+		this.duration = duration;
+	}
+
+	@JsonIgnore
+	public void setDuration(
+		UnsafeSupplier<Long, Exception> durationUnsafeSupplier) {
+
+		try {
+			duration = durationUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long duration;
+
+	@Schema
 	public Long getId() {
 		return id;
 	}
@@ -315,6 +483,35 @@ public class Instance {
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Long id;
+
+	@Schema
+	@Valid
+	public Instance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Instance instance) {
+		this.instance = instance;
+	}
+
+	@JsonIgnore
+	public void setInstance(
+		UnsafeSupplier<Instance, Exception> instanceUnsafeSupplier) {
+
+		try {
+			instance = instanceUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Instance instance;
 
 	@Schema
 	public Long getProcessId() {
@@ -345,6 +542,34 @@ public class Instance {
 	protected Long processId;
 
 	@Schema
+	public String getProcessVersion() {
+		return processVersion;
+	}
+
+	public void setProcessVersion(String processVersion) {
+		this.processVersion = processVersion;
+	}
+
+	@JsonIgnore
+	public void setProcessVersion(
+		UnsafeSupplier<String, Exception> processVersionUnsafeSupplier) {
+
+		try {
+			processVersion = processVersionUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String processVersion;
+
+	@Schema
 	@Valid
 	public SLAResult[] getSlaResults() {
 		return slaResults;
@@ -370,7 +595,7 @@ public class Instance {
 	}
 
 	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected SLAResult[] slaResults;
 
 	@Schema
@@ -408,7 +633,7 @@ public class Instance {
 	}
 
 	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected SLAStatus slaStatus;
 
 	@Schema
@@ -446,7 +671,7 @@ public class Instance {
 	}
 
 	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected Status status;
 
 	@Schema
@@ -474,7 +699,7 @@ public class Instance {
 	}
 
 	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected String[] taskNames;
 
 	@Schema
@@ -564,19 +789,19 @@ public class Instance {
 			sb.append("\"");
 		}
 
-		if (assigneeUsers != null) {
+		if (assignees != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"assigneeUsers\": ");
+			sb.append("\"assignees\": ");
 
 			sb.append("[");
 
-			for (int i = 0; i < assigneeUsers.length; i++) {
-				sb.append(String.valueOf(assigneeUsers[i]));
+			for (int i = 0; i < assignees.length; i++) {
+				sb.append(String.valueOf(assignees[i]));
 
-				if ((i + 1) < assigneeUsers.length) {
+				if ((i + 1) < assignees.length) {
 					sb.append(", ");
 				}
 			}
@@ -584,14 +809,48 @@ public class Instance {
 			sb.append("]");
 		}
 
-		if (creatorUser != null) {
+		if (className != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"creatorUser\": ");
+			sb.append("\"className\": ");
 
-			sb.append(String.valueOf(creatorUser));
+			sb.append("\"");
+
+			sb.append(_escape(className));
+
+			sb.append("\"");
+		}
+
+		if (classPK != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"classPK\": ");
+
+			sb.append(classPK);
+		}
+
+		if (completed != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"completed\": ");
+
+			sb.append(completed);
+		}
+
+		if (creator != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"creator\": ");
+
+			sb.append(String.valueOf(creator));
 		}
 
 		if (dateCompletion != null) {
@@ -622,6 +881,44 @@ public class Instance {
 			sb.append("\"");
 		}
 
+		if (dateModified != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"dateModified\": ");
+
+			sb.append("\"");
+
+			sb.append(liferayToJSONDateFormat.format(dateModified));
+
+			sb.append("\"");
+		}
+
+		if (description != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"description\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(description));
+
+			sb.append("\"");
+		}
+
+		if (duration != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"duration\": ");
+
+			sb.append(duration);
+		}
+
 		if (id != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -632,6 +929,16 @@ public class Instance {
 			sb.append(id);
 		}
 
+		if (instance != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"instance\": ");
+
+			sb.append(String.valueOf(instance));
+		}
+
 		if (processId != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -640,6 +947,20 @@ public class Instance {
 			sb.append("\"processId\": ");
 
 			sb.append(processId);
+		}
+
+		if (processVersion != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"processVersion\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(processVersion));
+
+			sb.append("\"");
 		}
 
 		if (slaResults != null) {

@@ -64,23 +64,29 @@ public class OpenAPIResourceImpl {
 
 	private final Set<Class<?>> _resourceClasses = new HashSet<Class<?>>() {
 		{
-			add(AssigneeUserResourceImpl.class);
+			add(AssigneeResourceImpl.class);
+
+			add(AssigneeMetricResourceImpl.class);
 
 			add(CalendarResourceImpl.class);
 
-			add(InstanceResourceImpl.class);
+			add(HistogramMetricResourceImpl.class);
 
-			add(MetricResourceImpl.class);
+			add(InstanceResourceImpl.class);
 
 			add(NodeResourceImpl.class);
 
 			add(ProcessResourceImpl.class);
+
+			add(ProcessMetricResourceImpl.class);
 
 			add(RoleResourceImpl.class);
 
 			add(SLAResourceImpl.class);
 
 			add(TaskResourceImpl.class);
+
+			add(TaskMetricResourceImpl.class);
 
 			add(TimeRangeResourceImpl.class);
 

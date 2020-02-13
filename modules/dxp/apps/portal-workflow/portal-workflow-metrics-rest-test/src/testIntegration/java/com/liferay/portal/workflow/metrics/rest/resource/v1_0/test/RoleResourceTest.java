@@ -124,7 +124,7 @@ public class RoleResourceTest extends BaseRoleResourceTestCase {
 
 		_userLocalService.addRoleUser(role.getId(), user);
 
-		_workflowMetricsRESTTestHelper.addTask(
+		_workflowMetricsRESTTestHelper.addTaskMetric(
 			user.getUserId(), testGroup.getCompanyId(),
 			() -> _workflowMetricsRESTTestHelper.addInstance(
 				testGroup.getCompanyId(), Objects.equals(status, "COMPLETED"),

@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.engine.adapter.search.SearchRequestExecutor;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.workflow.metrics.index.NodeWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Node;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.util.NodeUtil;
 import com.liferay.portal.workflow.metrics.rest.internal.resource.helper.ResourceHelper;
@@ -45,6 +46,28 @@ public class NodeResourceImpl extends BaseNodeResourceImpl {
 		return spiNodeResource.getProcessNodesPage(processId);
 	}
 
+	@Override
+	public Node postProcessNode(Long processId, Node node) throws Exception {
+		return NodeUtil.toNode(
+			_nodeWorkflowMetricsIndexer.add(
+				contextCompany.getCompanyId(), node.getDateCreated(),
+				node.getInitial(), node.getDateModified(), node.getName(),
+				node.getId(), processId, node.getProcessVersion(),
+				node.getTerminal(), node.getType()),
+			_language,
+			_resourceHelper.getResourceBundle(
+				contextAcceptLanguage.getPreferredLocale()));
+	}
+
+	@Override
+	public void deleteProcessNode(
+			Long processId, String processVersion, Long nodeId)
+		throws Exception {
+
+		_nodeWorkflowMetricsIndexer.delete(
+			contextCompany.getCompanyId(), nodeId, processId, processVersion);
+	}
+
 	private SPINodeResource<Node> _getSPINodeResource() {
 		return new SPINodeResource<>(
 			contextCompany.getCompanyId(), _queries, _searchRequestExecutor,
@@ -68,5 +91,8 @@ public class NodeResourceImpl extends BaseNodeResourceImpl {
 
 	@Reference
 	private SearchRequestExecutor _searchRequestExecutor;
+	
+	@Reference
+	private NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
 
 }

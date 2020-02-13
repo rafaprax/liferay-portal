@@ -100,8 +100,8 @@ public class WorkflowMetricsDemo extends BasePortalInstanceLifecycleListener {
 
 		_workflowMetricsSLADefinitionDemoDataCreator.create(
 			company.getCompanyId(), omniAdminUser.getUserId(),
-			workflowDefinition.getWorkflowDefinitionId(),
-			_toDate(startLocalDateTime));
+			_toDate(startLocalDateTime),
+			workflowDefinition.getWorkflowDefinitionId());
 
 		for (int i = 1; i <= 200; i++) {
 			LocalDateTime createLocalDateTime = startLocalDateTime.plusDays(

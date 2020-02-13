@@ -120,5 +120,4 @@ public class SPINodeResource<T> {
 	private final SearchRequestExecutor _searchRequestExecutor;
 	private final UnsafeFunction<Document, T, SystemException>
 		_transformUnsafeFunction;
-
 }

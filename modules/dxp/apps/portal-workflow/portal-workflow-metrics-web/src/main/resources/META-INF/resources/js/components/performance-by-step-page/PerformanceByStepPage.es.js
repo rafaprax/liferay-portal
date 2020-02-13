@@ -54,7 +54,7 @@ const PerformanceByStepPage = ({query, routeParams}) => {
 			...routeParams,
 			...timeRangeParams
 		},
-		url: `/processes/${processId}/tasks`
+		url: `/processes/${processId}/tasks/metrics`
 	});
 
 	const promises = useMemo(() => {

@@ -60,7 +60,7 @@ const WorkloadByStepCard = ({page, pageSize, processId, sort}) => {
 			processId,
 			sort
 		},
-		url: `/processes/${processId}/tasks`
+		url: `/processes/${processId}/tasks/metrics`
 	});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);

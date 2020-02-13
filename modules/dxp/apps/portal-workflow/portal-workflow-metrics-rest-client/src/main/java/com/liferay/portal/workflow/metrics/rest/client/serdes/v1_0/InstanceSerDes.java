@@ -14,7 +14,7 @@
 
 package com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0;
 
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeUser;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Assignee;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Instance;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.SLAResult;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Transition;
@@ -91,19 +91,19 @@ public class InstanceSerDes {
 			sb.append("\"");
 		}
 
-		if (instance.getAssigneeUsers() != null) {
+		if (instance.getAssignees() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"assigneeUsers\": ");
+			sb.append("\"assignees\": ");
 
 			sb.append("[");
 
-			for (int i = 0; i < instance.getAssigneeUsers().length; i++) {
-				sb.append(String.valueOf(instance.getAssigneeUsers()[i]));
+			for (int i = 0; i < instance.getAssignees().length; i++) {
+				sb.append(String.valueOf(instance.getAssignees()[i]));
 
-				if ((i + 1) < instance.getAssigneeUsers().length) {
+				if ((i + 1) < instance.getAssignees().length) {
 					sb.append(", ");
 				}
 			}
@@ -111,14 +111,48 @@ public class InstanceSerDes {
 			sb.append("]");
 		}
 
-		if (instance.getCreatorUser() != null) {
+		if (instance.getClassName() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"creatorUser\": ");
+			sb.append("\"className\": ");
 
-			sb.append(String.valueOf(instance.getCreatorUser()));
+			sb.append("\"");
+
+			sb.append(_escape(instance.getClassName()));
+
+			sb.append("\"");
+		}
+
+		if (instance.getClassPK() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"classPK\": ");
+
+			sb.append(instance.getClassPK());
+		}
+
+		if (instance.getCompleted() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"completed\": ");
+
+			sb.append(instance.getCompleted());
+		}
+
+		if (instance.getCreator() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"creator\": ");
+
+			sb.append(String.valueOf(instance.getCreator()));
 		}
 
 		if (instance.getDateCompletion() != null) {
@@ -151,6 +185,45 @@ public class InstanceSerDes {
 			sb.append("\"");
 		}
 
+		if (instance.getDateModified() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"dateModified\": ");
+
+			sb.append("\"");
+
+			sb.append(
+				liferayToJSONDateFormat.format(instance.getDateModified()));
+
+			sb.append("\"");
+		}
+
+		if (instance.getDescription() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"description\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(instance.getDescription()));
+
+			sb.append("\"");
+		}
+
+		if (instance.getDuration() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"duration\": ");
+
+			sb.append(instance.getDuration());
+		}
+
 		if (instance.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -161,6 +234,16 @@ public class InstanceSerDes {
 			sb.append(instance.getId());
 		}
 
+		if (instance.getInstance() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"instance\": ");
+
+			sb.append(String.valueOf(instance.getInstance()));
+		}
+
 		if (instance.getProcessId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -169,6 +252,20 @@ public class InstanceSerDes {
 			sb.append("\"processId\": ");
 
 			sb.append(instance.getProcessId());
+		}
+
+		if (instance.getProcessVersion() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"processVersion\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(instance.getProcessVersion()));
+
+			sb.append("\"");
 		}
 
 		if (instance.getSlaResults() != null) {
@@ -298,19 +395,39 @@ public class InstanceSerDes {
 			map.put("assetType", String.valueOf(instance.getAssetType()));
 		}
 
-		if (instance.getAssigneeUsers() == null) {
-			map.put("assigneeUsers", null);
+		if (instance.getAssignees() == null) {
+			map.put("assignees", null);
 		}
 		else {
-			map.put(
-				"assigneeUsers", String.valueOf(instance.getAssigneeUsers()));
+			map.put("assignees", String.valueOf(instance.getAssignees()));
 		}
 
-		if (instance.getCreatorUser() == null) {
-			map.put("creatorUser", null);
+		if (instance.getClassName() == null) {
+			map.put("className", null);
 		}
 		else {
-			map.put("creatorUser", String.valueOf(instance.getCreatorUser()));
+			map.put("className", String.valueOf(instance.getClassName()));
+		}
+
+		if (instance.getClassPK() == null) {
+			map.put("classPK", null);
+		}
+		else {
+			map.put("classPK", String.valueOf(instance.getClassPK()));
+		}
+
+		if (instance.getCompleted() == null) {
+			map.put("completed", null);
+		}
+		else {
+			map.put("completed", String.valueOf(instance.getCompleted()));
+		}
+
+		if (instance.getCreator() == null) {
+			map.put("creator", null);
+		}
+		else {
+			map.put("creator", String.valueOf(instance.getCreator()));
 		}
 
 		map.put(
@@ -321,6 +438,24 @@ public class InstanceSerDes {
 			"dateCreated",
 			liferayToJSONDateFormat.format(instance.getDateCreated()));
 
+		map.put(
+			"dateModified",
+			liferayToJSONDateFormat.format(instance.getDateModified()));
+
+		if (instance.getDescription() == null) {
+			map.put("description", null);
+		}
+		else {
+			map.put("description", String.valueOf(instance.getDescription()));
+		}
+
+		if (instance.getDuration() == null) {
+			map.put("duration", null);
+		}
+		else {
+			map.put("duration", String.valueOf(instance.getDuration()));
+		}
+
 		if (instance.getId() == null) {
 			map.put("id", null);
 		}
@@ -328,11 +463,26 @@ public class InstanceSerDes {
 			map.put("id", String.valueOf(instance.getId()));
 		}
 
+		if (instance.getInstance() == null) {
+			map.put("instance", null);
+		}
+		else {
+			map.put("instance", String.valueOf(instance.getInstance()));
+		}
+
 		if (instance.getProcessId() == null) {
 			map.put("processId", null);
 		}
 		else {
 			map.put("processId", String.valueOf(instance.getProcessId()));
+		}
+
+		if (instance.getProcessVersion() == null) {
+			map.put("processVersion", null);
+		}
+		else {
+			map.put(
+				"processVersion", String.valueOf(instance.getProcessVersion()));
 		}
 
 		if (instance.getSlaResults() == null) {
@@ -400,22 +550,38 @@ public class InstanceSerDes {
 					instance.setAssetType((String)jsonParserFieldValue);
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "assigneeUsers")) {
+			else if (Objects.equals(jsonParserFieldName, "assignees")) {
 				if (jsonParserFieldValue != null) {
-					instance.setAssigneeUsers(
+					instance.setAssignees(
 						Stream.of(
 							toStrings((Object[])jsonParserFieldValue)
 						).map(
-							object -> AssigneeUserSerDes.toDTO((String)object)
+							object -> AssigneeSerDes.toDTO((String)object)
 						).toArray(
-							size -> new AssigneeUser[size]
+							size -> new Assignee[size]
 						));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "creatorUser")) {
+			else if (Objects.equals(jsonParserFieldName, "className")) {
 				if (jsonParserFieldValue != null) {
-					instance.setCreatorUser(
-						CreatorUserSerDes.toDTO((String)jsonParserFieldValue));
+					instance.setClassName((String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "classPK")) {
+				if (jsonParserFieldValue != null) {
+					instance.setClassPK(
+						Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "completed")) {
+				if (jsonParserFieldValue != null) {
+					instance.setCompleted((Boolean)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "creator")) {
+				if (jsonParserFieldValue != null) {
+					instance.setCreator(
+						CreatorSerDes.toDTO((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "dateCompletion")) {
@@ -430,15 +596,43 @@ public class InstanceSerDes {
 						toDate((String)jsonParserFieldValue));
 				}
 			}
+			else if (Objects.equals(jsonParserFieldName, "dateModified")) {
+				if (jsonParserFieldValue != null) {
+					instance.setDateModified(
+						toDate((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "description")) {
+				if (jsonParserFieldValue != null) {
+					instance.setDescription((String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "duration")) {
+				if (jsonParserFieldValue != null) {
+					instance.setDuration(
+						Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
 			else if (Objects.equals(jsonParserFieldName, "id")) {
 				if (jsonParserFieldValue != null) {
 					instance.setId(Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "instance")) {
+				if (jsonParserFieldValue != null) {
+					instance.setInstance(
+						InstanceSerDes.toDTO((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "processId")) {
 				if (jsonParserFieldValue != null) {
 					instance.setProcessId(
 						Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "processVersion")) {
+				if (jsonParserFieldValue != null) {
+					instance.setProcessVersion((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "slaResults")) {

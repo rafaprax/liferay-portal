@@ -24,8 +24,8 @@ import com.liferay.portal.search.document.DocumentBuilderFactory;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.test.rule.Inject;
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeUser;
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.CreatorUser;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Assignee;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Creator;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Instance;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Process;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
@@ -124,12 +124,12 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 	protected Instance randomInstance() throws Exception {
 		Instance instance = super.randomInstance();
 
-		instance.setAssigneeUsers(new AssigneeUser[0]);
+		instance.setAssignees(new Assignee[0]);
 
 		User adminUser = UserTestUtil.getAdminUser(testGroup.getCompanyId());
 
-		instance.setCreatorUser(
-			new CreatorUser() {
+		instance.setCreator(
+			new Creator() {
 				{
 					id = adminUser.getUserId();
 					name = adminUser.getFullName();
@@ -157,9 +157,9 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 		instance = _workflowMetricsRESTTestHelper.addInstance(
 			testGroup.getCompanyId(), instance);
 
-		for (AssigneeUser assigneeUser : instance.getAssigneeUsers()) {
+		for (Assignee assignee : instance.getAssignees()) {
 			_workflowMetricsRESTTestHelper.addToken(
-				assigneeUser.getId(), testGroup.getCompanyId(), instance);
+				assignee.getId(), testGroup.getCompanyId(), instance);
 		}
 
 		_instances.add(instance);
@@ -200,9 +200,9 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 
 		Instance instance2 = randomInstance();
 
-		instance2.setAssigneeUsers(
-			new AssigneeUser[] {
-				new AssigneeUser() {
+		instance2.setAssignees(
+			new Assignee[] {
+				new Assignee() {
 					{
 						id = _user.getUserId();
 					}

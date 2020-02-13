@@ -44,7 +44,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import javax.validation.constraints.NotNull;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -75,6 +78,53 @@ public abstract class BaseNodeResourceImpl implements NodeResource {
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/nodes' -d $'{"dateCreated": ___, "dateModified": ___, "id": ___, "initial": ___, "name": ___, "processId": ___, "processVersion": ___, "terminal": ___, "type": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@POST
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "processId")})
+	@Path("/processes/{processId}/nodes")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Node")})
+	public Node postProcessNode(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			Node node)
+		throws Exception {
+
+		return new Node();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/{processVersion}/nodes/{nodeId}'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@DELETE
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "processId"),
+			@Parameter(in = ParameterIn.PATH, name = "processVersion"),
+			@Parameter(in = ParameterIn.PATH, name = "nodeId")
+		}
+	)
+	@Path("/processes/{processId}/{processVersion}/nodes/{nodeId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Node")})
+	public void deleteProcessNode(
+			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
+				processId,
+			@NotNull @Parameter(hidden = true) @PathParam("processVersion")
+				String processVersion,
+			@NotNull @Parameter(hidden = true) @PathParam("nodeId") Long nodeId)
+		throws Exception {
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {

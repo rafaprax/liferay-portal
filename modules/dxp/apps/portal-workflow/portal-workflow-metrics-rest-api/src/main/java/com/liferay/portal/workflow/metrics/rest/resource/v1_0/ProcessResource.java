@@ -14,13 +14,8 @@
 
 package com.liferay.portal.workflow.metrics.rest.resource.v1_0;
 
-import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
-import com.liferay.portal.vulcan.pagination.Page;
-import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Process;
-
-import java.util.Date;
 
 import javax.annotation.Generated;
 
@@ -43,13 +38,13 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface ProcessResource {
 
-	public Page<Process> getProcessesPage(
-			String title, Pagination pagination, Sort[] sorts)
-		throws Exception;
+	public Process postProcess(Process process) throws Exception;
 
-	public Process getProcess(
-			Long processId, Boolean completed, Date dateEnd, Date dateStart)
-		throws Exception;
+	public void deleteProcess(Long processId) throws Exception;
+
+	public Process getProcess(Long processId) throws Exception;
+
+	public Process putProcess(Long processId, Process process) throws Exception;
 
 	public String getProcessTitle(Long processId) throws Exception;
 

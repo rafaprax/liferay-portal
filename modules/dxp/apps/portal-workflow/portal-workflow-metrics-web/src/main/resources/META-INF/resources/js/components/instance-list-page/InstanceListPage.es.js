@@ -77,7 +77,7 @@ const InstanceListPage = ({routeParams}) => {
 	const {
 		dispatch,
 		filterState: {timeRange},
-		filterValues: {assigneeUserIds, slaStatuses, statuses = [], taskKeys},
+		filterValues: {assigneeIds, slaStatuses, statuses = [], taskKeys},
 		selectedFilters
 	} = useFilter(filterKeys);
 
@@ -98,7 +98,7 @@ const InstanceListPage = ({routeParams}) => {
 	}
 	const {data, fetchData} = useFetch({
 		params: {
-			assigneeUserIds,
+			assigneeIds,
 			page,
 			pageSize,
 			slaStatuses,

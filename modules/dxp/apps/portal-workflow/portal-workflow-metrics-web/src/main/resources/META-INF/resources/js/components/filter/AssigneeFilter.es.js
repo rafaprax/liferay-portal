@@ -49,7 +49,7 @@ const AssigneeFilter = ({
 		dispatch,
 		filterKey,
 		prefixKey,
-		requestUrl: `/processes/${processId}/assignee-users?page=0&pageSize=0`,
+		requestUrl: `/processes/${processId}/assignees?page=0&pageSize=0`,
 		staticItems
 	});
 

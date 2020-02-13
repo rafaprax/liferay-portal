@@ -31,12 +31,15 @@ import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.search.generic.MatchAllQuery;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalRunMode;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.search.document.DocumentBuilder;
+import com.liferay.portal.search.document.DocumentBuilderFactory;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.document.BulkDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.DeleteByQueryDocumentRequest;
@@ -63,7 +66,8 @@ import com.liferay.portal.workflow.kaleo.service.KaleoTaskLocalService;
 import com.liferay.portal.workflow.metrics.internal.petra.executor.WorkflowMetricsPortalExecutor;
 
 import java.io.Serializable;
-
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -80,8 +84,21 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  * @author Inácio Nery
  */
 public abstract class BaseWorkflowMetricsIndexer {
+	
+	public String formatDate(Date date) {
+		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+			"yyyyMMddHHmmss");
 
-	public void addDocument(Document document) {
+		try {
+			return dateFormat.format(date);
+		}
+		catch (Exception exception) {
+
+			return null;
+		}
+	}
+
+	protected void addDocument(Document document) {
 		if (searchEngineAdapter == null) {
 			return;
 		}
@@ -97,6 +114,26 @@ public abstract class BaseWorkflowMetricsIndexer {
 
 		searchEngineAdapter.execute(indexDocumentRequest);
 	}
+
+	protected void addDocument(
+		com.liferay.portal.search.document.Document document) {
+		
+		if (searchEngineAdapter == null) {
+			return;
+		}
+		
+		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
+			getIndexName(), document);
+		
+		if (PortalRunMode.isTestMode()) {
+			indexDocumentRequest.setRefresh(true);
+		}
+		
+		indexDocumentRequest.setType(getIndexType());
+		
+		searchEngineAdapter.execute(indexDocumentRequest);
+	}
+
 
 	public void addDocuments(List<Document> documents) {
 		if (searchEngineAdapter == null) {
@@ -161,6 +198,16 @@ public abstract class BaseWorkflowMetricsIndexer {
 		_updateDocument(document);
 	}
 
+	public void deleteDocument(DocumentBuilder documentBuilder) {
+		documentBuilder.setBoolean("deleted", true);
+		
+		_updateDocument(documentBuilder.build());
+	}
+
+	public void deleteDocument(com.liferay.portal.search.document.Document document) {
+		_updateDocument(document);
+	}
+
 	public void deleteIndex(long companyId) throws PortalException {
 		if (searchEngineAdapter == null) {
 			return;
@@ -199,6 +246,12 @@ public abstract class BaseWorkflowMetricsIndexer {
 	public abstract void reindex(long companyId) throws PortalException;
 
 	public void updateDocument(Document document) {
+		_updateDocument(document);
+	}
+
+	public void updateDocument(
+		com.liferay.portal.search.document.Document document) {
+
 		_updateDocument(document);
 	}
 
@@ -254,8 +307,10 @@ public abstract class BaseWorkflowMetricsIndexer {
 	}
 
 	protected void updateDocuments(
-		Function<com.liferay.portal.search.document.Document, Document>
-			transformDocumentFunction,
+		Function<
+			com.liferay.portal.search.document.Document,
+			com.liferay.portal.search.document.Document>
+				updateDocumentFunction,
 		Query query) {
 
 		if (searchEngineAdapter == null) {
@@ -289,7 +344,7 @@ public abstract class BaseWorkflowMetricsIndexer {
 		).map(
 			document -> new UpdateDocumentRequest(
 				getIndexName(), document.getString(Field.UID),
-				transformDocumentFunction.apply(document)) {
+				updateDocumentFunction.apply(document)) {
 
 				{
 					setType(getIndexType());
@@ -343,6 +398,9 @@ public abstract class BaseWorkflowMetricsIndexer {
 	@Reference
 	protected Queries queries;
 
+	@Reference
+	protected DocumentBuilderFactory documentBuilderFactory;
+
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,
 		policy = ReferencePolicy.DYNAMIC,
@@ -378,6 +436,24 @@ public abstract class BaseWorkflowMetricsIndexer {
 
 		updateDocumentRequest.setType(getIndexType());
 
+		searchEngineAdapter.execute(updateDocumentRequest);
+	}
+
+	private void _updateDocument(
+		com.liferay.portal.search.document.Document document) {
+		if (searchEngineAdapter == null) {
+			return;
+		}
+		
+		UpdateDocumentRequest updateDocumentRequest = new UpdateDocumentRequest(
+			getIndexName(), document.getString(Field.UID), document);
+		
+		if (PortalRunMode.isTestMode()) {
+			updateDocumentRequest.setRefresh(true);
+		}
+		
+		updateDocumentRequest.setType(getIndexType());
+		
 		searchEngineAdapter.execute(updateDocumentRequest);
 	}
 

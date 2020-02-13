@@ -18,17 +18,16 @@ import {processStatusConstants} from '../../filter/ProcessStatusFilter.es';
 
 const Item = ({
 	instanceCount,
-	name,
 	onTimeInstanceCount,
 	overdueInstanceCount,
 	processId,
-	taskKey
+	task: {label, name}
 }) => {
 	const {defaultDelta} = useContext(AppContext);
 	const getFiltersQuery = slaStatusFilter => {
 		return {
 			[filterKeys.processStatus]: [processStatusConstants.pending],
-			[filterKeys.processStep]: [taskKey],
+			[filterKeys.processStep]: [name],
 			[filterKeys.slaStatus]: [slaStatusFilter]
 		};
 	};
@@ -37,7 +36,7 @@ const Item = ({
 	return (
 		<tr>
 			<td className="lfr-title-column table-cell-expand table-cell-minw-200 table-title">
-				{name}
+				{label}
 			</td>
 
 			<td className="text-right">

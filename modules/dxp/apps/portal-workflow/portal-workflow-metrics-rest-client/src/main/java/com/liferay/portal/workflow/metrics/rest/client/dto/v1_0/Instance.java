@@ -133,47 +133,110 @@ public class Instance {
 
 	protected String assetType;
 
-	public AssigneeUser[] getAssigneeUsers() {
-		return assigneeUsers;
+	public Assignee[] getAssignees() {
+		return assignees;
 	}
 
-	public void setAssigneeUsers(AssigneeUser[] assigneeUsers) {
-		this.assigneeUsers = assigneeUsers;
+	public void setAssignees(Assignee[] assignees) {
+		this.assignees = assignees;
 	}
 
-	public void setAssigneeUsers(
-		UnsafeSupplier<AssigneeUser[], Exception> assigneeUsersUnsafeSupplier) {
+	public void setAssignees(
+		UnsafeSupplier<Assignee[], Exception> assigneesUnsafeSupplier) {
 
 		try {
-			assigneeUsers = assigneeUsersUnsafeSupplier.get();
+			assignees = assigneesUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected AssigneeUser[] assigneeUsers;
+	protected Assignee[] assignees;
 
-	public CreatorUser getCreatorUser() {
-		return creatorUser;
+	public String getClassName() {
+		return className;
 	}
 
-	public void setCreatorUser(CreatorUser creatorUser) {
-		this.creatorUser = creatorUser;
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
-	public void setCreatorUser(
-		UnsafeSupplier<CreatorUser, Exception> creatorUserUnsafeSupplier) {
+	public void setClassName(
+		UnsafeSupplier<String, Exception> classNameUnsafeSupplier) {
 
 		try {
-			creatorUser = creatorUserUnsafeSupplier.get();
+			className = classNameUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected CreatorUser creatorUser;
+	protected String className;
+
+	public Long getClassPK() {
+		return classPK;
+	}
+
+	public void setClassPK(Long classPK) {
+		this.classPK = classPK;
+	}
+
+	public void setClassPK(
+		UnsafeSupplier<Long, Exception> classPKUnsafeSupplier) {
+
+		try {
+			classPK = classPKUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Long classPK;
+
+	public Boolean getCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(Boolean completed) {
+		this.completed = completed;
+	}
+
+	public void setCompleted(
+		UnsafeSupplier<Boolean, Exception> completedUnsafeSupplier) {
+
+		try {
+			completed = completedUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Boolean completed;
+
+	public Creator getCreator() {
+		return creator;
+	}
+
+	public void setCreator(Creator creator) {
+		this.creator = creator;
+	}
+
+	public void setCreator(
+		UnsafeSupplier<Creator, Exception> creatorUnsafeSupplier) {
+
+		try {
+			creator = creatorUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Creator creator;
 
 	public Date getDateCompletion() {
 		return dateCompletion;
@@ -217,6 +280,69 @@ public class Instance {
 
 	protected Date dateCreated;
 
+	public Date getDateModified() {
+		return dateModified;
+	}
+
+	public void setDateModified(Date dateModified) {
+		this.dateModified = dateModified;
+	}
+
+	public void setDateModified(
+		UnsafeSupplier<Date, Exception> dateModifiedUnsafeSupplier) {
+
+		try {
+			dateModified = dateModifiedUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Date dateModified;
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setDescription(
+		UnsafeSupplier<String, Exception> descriptionUnsafeSupplier) {
+
+		try {
+			description = descriptionUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String description;
+
+	public Long getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Long duration) {
+		this.duration = duration;
+	}
+
+	public void setDuration(
+		UnsafeSupplier<Long, Exception> durationUnsafeSupplier) {
+
+		try {
+			duration = durationUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Long duration;
+
 	public Long getId() {
 		return id;
 	}
@@ -235,6 +361,27 @@ public class Instance {
 	}
 
 	protected Long id;
+
+	public Instance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Instance instance) {
+		this.instance = instance;
+	}
+
+	public void setInstance(
+		UnsafeSupplier<Instance, Exception> instanceUnsafeSupplier) {
+
+		try {
+			instance = instanceUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Instance instance;
 
 	public Long getProcessId() {
 		return processId;
@@ -256,6 +403,27 @@ public class Instance {
 	}
 
 	protected Long processId;
+
+	public String getProcessVersion() {
+		return processVersion;
+	}
+
+	public void setProcessVersion(String processVersion) {
+		this.processVersion = processVersion;
+	}
+
+	public void setProcessVersion(
+		UnsafeSupplier<String, Exception> processVersionUnsafeSupplier) {
+
+		try {
+			processVersion = processVersionUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String processVersion;
 
 	public SLAResult[] getSlaResults() {
 		return slaResults;

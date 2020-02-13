@@ -40,6 +40,12 @@ const ProcessStepFilter = ({
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	options = useMemo(() => ({...defaultOptions, ...options}), [options]);
 
+	const parseItems = items =>
+		items.map(item => ({
+			key: item.name,
+			name: item.label
+		}));
+
 	const staticItems = useMemo(
 		() => (options.withAllSteps ? [allStepsItem] : []),
 		[options.withAllSteps]
@@ -48,6 +54,7 @@ const ProcessStepFilter = ({
 	const {items, selectedItems} = useFilterFetch({
 		dispatch,
 		filterKey,
+		parseItems,
 		prefixKey,
 		requestUrl: `/processes/${processId}/tasks?page=0&pageSize=0`,
 		staticItems

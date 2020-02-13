@@ -50,7 +50,7 @@ function ProcessItemsCard({
 			completed,
 			...timeRangeParams
 		},
-		url: `/processes/${processId}`
+		url: `/processes/${processId}/metrics`
 	});
 
 	useEffect(() => {

@@ -28,19 +28,19 @@ public class LocalizedMapUtil {
 
 	public static Map<String, String> getLocalizedMap(
 		boolean acceptAllLanguages, Map<Locale, String> localizedMap) {
-
+		
 		if (!acceptAllLanguages) {
 			return null;
 		}
-
+		
 		Map<String, String> map = new HashMap<>();
-
+		
 		for (Map.Entry<Locale, String> entry : localizedMap.entrySet()) {
 			Locale locale = entry.getKey();
-
+			
 			map.put(locale.toLanguageTag(), entry.getValue());
 		}
-
+		
 		return map;
 	}
 
