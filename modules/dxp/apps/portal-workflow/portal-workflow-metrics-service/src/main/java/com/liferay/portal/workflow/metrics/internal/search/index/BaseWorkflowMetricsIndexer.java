@@ -89,7 +89,8 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 /**
  * @author Inácio Nery
  */
-public abstract class BaseWorkflowMetricsIndexer {
+public abstract class BaseWorkflowMetricsIndexer
+	implements WorkflowMetricsIndex {
 
 	public void addDocuments(List<Document> documents) {
 		if (searchEngineAdapter == null) {
@@ -119,6 +120,7 @@ public abstract class BaseWorkflowMetricsIndexer {
 		}
 	}
 
+	@Override
 	public void createIndex() throws PortalException {
 		if (searchEngineAdapter == null) {
 			return;
@@ -158,6 +160,7 @@ public abstract class BaseWorkflowMetricsIndexer {
 		_updateDocument(documentBuilder.build());
 	}
 
+	@Override
 	public void deleteIndex(long companyId) throws PortalException {
 		if (searchEngineAdapter == null) {
 			return;
@@ -188,12 +191,6 @@ public abstract class BaseWorkflowMetricsIndexer {
 
 		searchEngineAdapter.execute(deleteByQueryDocumentRequest);
 	}
-
-	public abstract String getIndexName();
-
-	public abstract String getIndexType();
-
-	public abstract void reindex(long companyId) throws PortalException;
 
 	public void updateDocument(Document document) {
 		_updateDocument(document);
