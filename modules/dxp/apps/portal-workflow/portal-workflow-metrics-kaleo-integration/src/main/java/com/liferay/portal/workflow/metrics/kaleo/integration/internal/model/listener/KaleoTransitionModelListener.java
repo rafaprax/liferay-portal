@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.workflow.metrics.internal.model.listener;
+package com.liferay.portal.workflow.metrics.kaleo.integration.internal.model.listener;
 
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;

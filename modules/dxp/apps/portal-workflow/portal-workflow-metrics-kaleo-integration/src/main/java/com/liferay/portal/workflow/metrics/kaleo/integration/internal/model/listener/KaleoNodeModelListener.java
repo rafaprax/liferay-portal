@@ -12,13 +12,16 @@
  *
  */
 
-package com.liferay.portal.workflow.metrics.internal.model.listener;
+package com.liferay.portal.workflow.metrics.kaleo.integration.internal.model.listener;
 
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
-import com.liferay.portal.workflow.kaleo.model.KaleoTask;
+import com.liferay.portal.workflow.kaleo.definition.NodeType;
+import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 import com.liferay.portal.workflow.metrics.internal.petra.executor.WorkflowMetricsPortalExecutor;
 import com.liferay.portal.workflow.metrics.internal.search.index.NodeWorkflowMetricsIndexer;
+
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -27,20 +30,28 @@ import org.osgi.service.component.annotations.Reference;
  * @author Inácio Nery
  */
 @Component(immediate = true, service = ModelListener.class)
-public class KaleoTaskModelListener extends BaseModelListener<KaleoTask> {
+public class KaleoNodeModelListener extends BaseModelListener<KaleoNode> {
 
 	@Override
-	public void onAfterCreate(KaleoTask kaleoTask) {
+	public void onAfterCreate(KaleoNode kaleoNode) {
+		if (!Objects.equals(kaleoNode.getType(), NodeType.STATE.name())) {
+			return;
+		}
+
 		_workflowMetricsPortalExecutor.execute(
 			() -> _nodeWorkflowMetricsIndexer.addDocument(
-				_nodeWorkflowMetricsIndexer.createDocument(kaleoTask)));
+				_nodeWorkflowMetricsIndexer.createDocument(kaleoNode)));
 	}
 
 	@Override
-	public void onAfterRemove(KaleoTask kaleoTask) {
+	public void onAfterRemove(KaleoNode kaleoNode) {
+		if (!Objects.equals(kaleoNode.getType(), NodeType.STATE.name())) {
+			return;
+		}
+
 		_workflowMetricsPortalExecutor.execute(
 			() -> _nodeWorkflowMetricsIndexer.deleteDocument(
-				_nodeWorkflowMetricsIndexer.createDocument(kaleoTask)));
+				_nodeWorkflowMetricsIndexer.createDocument(kaleoNode)));
 	}
 
 	@Reference
