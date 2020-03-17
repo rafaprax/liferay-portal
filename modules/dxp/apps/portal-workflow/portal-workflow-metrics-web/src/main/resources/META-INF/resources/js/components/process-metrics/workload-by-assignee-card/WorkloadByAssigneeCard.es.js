@@ -59,7 +59,7 @@ const WorkloadByAssigneeCard = ({routeParams}) => {
 
 	const {data, fetchData} = useFetch({
 		params,
-		url: `/processes/${processId}/assignee-users`,
+		url: `/processes/${processId}/assignees/metrics`,
 	});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);

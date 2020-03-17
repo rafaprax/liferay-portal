@@ -48,7 +48,8 @@ const AssigneeFilter = ({
 	const {items, selectedItems} = useFilterFetch({
 		filterKey,
 		prefixKey,
-		requestUrl: `/processes/${processId}/assignee-users?page=0&pageSize=0`,
+		propertyKey: 'id',
+		requestUrl: `/processes/${processId}/assignees?page=0&pageSize=0`,
 		staticItems,
 		withoutRouteParams: options.withoutRouteParams,
 	});
