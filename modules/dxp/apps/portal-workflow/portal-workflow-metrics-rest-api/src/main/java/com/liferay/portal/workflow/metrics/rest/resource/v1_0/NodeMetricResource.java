@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
-import com.liferay.portal.workflow.metrics.rest.dto.v1_0.AssigneeUser;
+import com.liferay.portal.workflow.metrics.rest.dto.v1_0.NodeMetric;
 
 import java.util.Date;
 
@@ -41,16 +41,15 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @Generated("")
 @ProviderType
-public interface AssigneeUserResource {
+public interface NodeMetricResource {
 
 	public static Builder builder() {
 		return FactoryHolder.factory.create();
 	}
 
-	public Page<AssigneeUser> getProcessAssigneeUsersPage(
+	public Page<NodeMetric> getProcessNodeMetricsPage(
 			Long processId, Boolean completed, Date dateEnd, Date dateStart,
-			String keywords, Long[] roleIds, String[] taskKeys,
-			Pagination pagination, Sort[] sorts)
+			String key, Pagination pagination, Sort[] sorts)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -83,7 +82,7 @@ public interface AssigneeUserResource {
 	@ProviderType
 	public interface Builder {
 
-		public AssigneeUserResource build();
+		public NodeMetricResource build();
 
 		public Builder checkPermissions(boolean checkPermissions);
 

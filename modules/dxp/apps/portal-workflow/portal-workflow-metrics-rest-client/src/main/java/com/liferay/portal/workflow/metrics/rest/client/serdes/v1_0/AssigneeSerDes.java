@@ -14,8 +14,7 @@
 
 package com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0;
 
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Histogram;
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Metric;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Assignee;
 import com.liferay.portal.workflow.metrics.rest.client.json.BaseJSONParser;
 
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
 import javax.annotation.Generated;
 
@@ -32,22 +30,22 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class MetricSerDes {
+public class AssigneeSerDes {
 
-	public static Metric toDTO(String json) {
-		MetricJSONParser metricJSONParser = new MetricJSONParser();
+	public static Assignee toDTO(String json) {
+		AssigneeJSONParser assigneeJSONParser = new AssigneeJSONParser();
 
-		return metricJSONParser.parseToDTO(json);
+		return assigneeJSONParser.parseToDTO(json);
 	}
 
-	public static Metric[] toDTOs(String json) {
-		MetricJSONParser metricJSONParser = new MetricJSONParser();
+	public static Assignee[] toDTOs(String json) {
+		AssigneeJSONParser assigneeJSONParser = new AssigneeJSONParser();
 
-		return metricJSONParser.parseToDTOs(json);
+		return assigneeJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(Metric metric) {
-		if (metric == null) {
+	public static String toJSON(Assignee assignee) {
+		if (assignee == null) {
 			return "null";
 		}
 
@@ -55,48 +53,42 @@ public class MetricSerDes {
 
 		sb.append("{");
 
-		if (metric.getHistograms() != null) {
+		if (assignee.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"histograms\": ");
+			sb.append("\"id\": ");
 
-			sb.append("[");
-
-			for (int i = 0; i < metric.getHistograms().length; i++) {
-				sb.append(String.valueOf(metric.getHistograms()[i]));
-
-				if ((i + 1) < metric.getHistograms().length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
+			sb.append(assignee.getId());
 		}
 
-		if (metric.getUnit() != null) {
+		if (assignee.getImage() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"unit\": ");
+			sb.append("\"image\": ");
 
 			sb.append("\"");
 
-			sb.append(metric.getUnit());
+			sb.append(_escape(assignee.getImage()));
 
 			sb.append("\"");
 		}
 
-		if (metric.getValue() != null) {
+		if (assignee.getName() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"value\": ");
+			sb.append("\"name\": ");
 
-			sb.append(metric.getValue());
+			sb.append("\"");
+
+			sb.append(_escape(assignee.getName()));
+
+			sb.append("\"");
 		}
 
 		sb.append("}");
@@ -105,81 +97,72 @@ public class MetricSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		MetricJSONParser metricJSONParser = new MetricJSONParser();
+		AssigneeJSONParser assigneeJSONParser = new AssigneeJSONParser();
 
-		return metricJSONParser.parseToMap(json);
+		return assigneeJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(Metric metric) {
-		if (metric == null) {
+	public static Map<String, String> toMap(Assignee assignee) {
+		if (assignee == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (metric.getHistograms() == null) {
-			map.put("histograms", null);
+		if (assignee.getId() == null) {
+			map.put("id", null);
 		}
 		else {
-			map.put("histograms", String.valueOf(metric.getHistograms()));
+			map.put("id", String.valueOf(assignee.getId()));
 		}
 
-		if (metric.getUnit() == null) {
-			map.put("unit", null);
+		if (assignee.getImage() == null) {
+			map.put("image", null);
 		}
 		else {
-			map.put("unit", String.valueOf(metric.getUnit()));
+			map.put("image", String.valueOf(assignee.getImage()));
 		}
 
-		if (metric.getValue() == null) {
-			map.put("value", null);
+		if (assignee.getName() == null) {
+			map.put("name", null);
 		}
 		else {
-			map.put("value", String.valueOf(metric.getValue()));
+			map.put("name", String.valueOf(assignee.getName()));
 		}
 
 		return map;
 	}
 
-	public static class MetricJSONParser extends BaseJSONParser<Metric> {
+	public static class AssigneeJSONParser extends BaseJSONParser<Assignee> {
 
 		@Override
-		protected Metric createDTO() {
-			return new Metric();
+		protected Assignee createDTO() {
+			return new Assignee();
 		}
 
 		@Override
-		protected Metric[] createDTOArray(int size) {
-			return new Metric[size];
+		protected Assignee[] createDTOArray(int size) {
+			return new Assignee[size];
 		}
 
 		@Override
 		protected void setField(
-			Metric metric, String jsonParserFieldName,
+			Assignee assignee, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "histograms")) {
+			if (Objects.equals(jsonParserFieldName, "id")) {
 				if (jsonParserFieldValue != null) {
-					metric.setHistograms(
-						Stream.of(
-							toStrings((Object[])jsonParserFieldValue)
-						).map(
-							object -> HistogramSerDes.toDTO((String)object)
-						).toArray(
-							size -> new Histogram[size]
-						));
+					assignee.setId(Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "unit")) {
+			else if (Objects.equals(jsonParserFieldName, "image")) {
 				if (jsonParserFieldValue != null) {
-					metric.setUnit(
-						Metric.Unit.create((String)jsonParserFieldValue));
+					assignee.setImage((String)jsonParserFieldValue);
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "value")) {
+			else if (Objects.equals(jsonParserFieldName, "name")) {
 				if (jsonParserFieldValue != null) {
-					metric.setValue(
-						Double.valueOf((String)jsonParserFieldValue));
+					assignee.setName((String)jsonParserFieldValue);
 				}
 			}
 			else {

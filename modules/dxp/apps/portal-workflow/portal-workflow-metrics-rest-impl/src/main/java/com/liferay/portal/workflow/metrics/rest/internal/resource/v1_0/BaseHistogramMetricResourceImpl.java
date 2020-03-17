@@ -32,8 +32,8 @@ import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.ActionUtil;
 import com.liferay.portal.vulcan.util.TransformUtil;
-import com.liferay.portal.workflow.metrics.rest.dto.v1_0.AssigneeUser;
-import com.liferay.portal.workflow.metrics.rest.resource.v1_0.AssigneeUserResource;
+import com.liferay.portal.workflow.metrics.rest.dto.v1_0.HistogramMetric;
+import com.liferay.portal.workflow.metrics.rest.resource.v1_0.HistogramMetricResource;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -43,7 +43,6 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 
 import java.io.Serializable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +59,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
@@ -71,63 +69,52 @@ import javax.ws.rs.core.UriInfo;
  */
 @Generated("")
 @Path("/v1.0")
-public abstract class BaseAssigneeUserResourceImpl
-	implements AssigneeUserResource, EntityModelResource,
-			   VulcanBatchEngineTaskItemDelegate<AssigneeUser> {
+public abstract class BaseHistogramMetricResourceImpl
+	implements HistogramMetricResource, EntityModelResource,
+			   VulcanBatchEngineTaskItemDelegate<HistogramMetric> {
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/assignee-users'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/portal-workflow-metrics/v1.0/processes/{processId}/histograms/metrics'  -u 'test@liferay.com:test'
 	 */
 	@Override
 	@GET
 	@Parameters(
 		value = {
 			@Parameter(in = ParameterIn.PATH, name = "processId"),
-			@Parameter(in = ParameterIn.QUERY, name = "completed"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateEnd"),
 			@Parameter(in = ParameterIn.QUERY, name = "dateStart"),
-			@Parameter(in = ParameterIn.QUERY, name = "keywords"),
-			@Parameter(in = ParameterIn.QUERY, name = "roleIds"),
-			@Parameter(in = ParameterIn.QUERY, name = "taskKeys"),
-			@Parameter(in = ParameterIn.QUERY, name = "page"),
-			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
-			@Parameter(in = ParameterIn.QUERY, name = "sort")
+			@Parameter(in = ParameterIn.QUERY, name = "unit")
 		}
 	)
-	@Path("/processes/{processId}/assignee-users")
+	@Path("/processes/{processId}/histograms/metrics")
 	@Produces({"application/json", "application/xml"})
-	@Tags(value = {@Tag(name = "AssigneeUser")})
-	public Page<AssigneeUser> getProcessAssigneeUsersPage(
+	@Tags(value = {@Tag(name = "HistogramMetric")})
+	public HistogramMetric getProcessHistogramMetric(
 			@NotNull @Parameter(hidden = true) @PathParam("processId") Long
 				processId,
-			@Parameter(hidden = true) @QueryParam("completed") Boolean
-				completed,
 			@Parameter(hidden = true) @QueryParam("dateEnd") java.util.Date
 				dateEnd,
 			@Parameter(hidden = true) @QueryParam("dateStart") java.util.Date
 				dateStart,
-			@Parameter(hidden = true) @QueryParam("keywords") String keywords,
-			@Parameter(hidden = true) @QueryParam("roleIds") Long[] roleIds,
-			@Parameter(hidden = true) @QueryParam("taskKeys") String[] taskKeys,
-			@Context Pagination pagination, @Context Sort[] sorts)
+			@NotNull @Parameter(hidden = true) @QueryParam("unit") String unit)
 		throws Exception {
 
-		return Page.of(Collections.emptyList());
+		return new HistogramMetric();
 	}
 
 	@Override
 	@SuppressWarnings("PMD.UnusedLocalVariable")
 	public void create(
-			java.util.Collection<AssigneeUser> assigneeUsers,
+			java.util.Collection<HistogramMetric> histogramMetrics,
 			Map<String, Serializable> parameters)
 		throws Exception {
 	}
 
 	@Override
 	public void delete(
-			java.util.Collection<AssigneeUser> assigneeUsers,
+			java.util.Collection<HistogramMetric> histogramMetrics,
 			Map<String, Serializable> parameters)
 		throws Exception {
 	}
@@ -148,19 +135,12 @@ public abstract class BaseAssigneeUserResourceImpl
 	}
 
 	@Override
-	public Page<AssigneeUser> read(
+	public Page<HistogramMetric> read(
 			Filter filter, Pagination pagination, Sort[] sorts,
 			Map<String, Serializable> parameters, String search)
 		throws Exception {
 
-		return getProcessAssigneeUsersPage(
-			(Long)parameters.get("processId"),
-			(Boolean)parameters.get("completed"),
-			(java.util.Date)parameters.get("dateEnd"),
-			(java.util.Date)parameters.get("dateStart"),
-			(String)parameters.get("keywords"),
-			(Long[])parameters.get("roleIds"),
-			(String[])parameters.get("taskKeys"), pagination, sorts);
+		return null;
 	}
 
 	@Override
@@ -187,7 +167,7 @@ public abstract class BaseAssigneeUserResourceImpl
 
 	@Override
 	public void update(
-			java.util.Collection<AssigneeUser> assigneeUsers,
+			java.util.Collection<HistogramMetric> histogramMetrics,
 			Map<String, Serializable> parameters)
 		throws Exception {
 	}
@@ -250,7 +230,8 @@ public abstract class BaseAssigneeUserResourceImpl
 	}
 
 	protected void preparePatch(
-		AssigneeUser assigneeUser, AssigneeUser existingAssigneeUser) {
+		HistogramMetric histogramMetric,
+		HistogramMetric existingHistogramMetric) {
 	}
 
 	protected <T, R> List<R> transform(

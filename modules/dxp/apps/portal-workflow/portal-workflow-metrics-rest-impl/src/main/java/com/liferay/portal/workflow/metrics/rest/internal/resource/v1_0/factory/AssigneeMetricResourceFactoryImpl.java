@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.workflow.metrics.rest.resource.v1_0.MetricResource;
+import com.liferay.portal.workflow.metrics.rest.resource.v1_0.AssigneeMetricResource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,28 +38,29 @@ import org.osgi.service.component.annotations.ReferenceScope;
 /**
  * @author Rafael Praxedes
  */
-@Component(immediate = true, service = MetricResource.Factory.class)
-public class MetricResourceFactoryImpl implements MetricResource.Factory {
+@Component(immediate = true, service = AssigneeMetricResource.Factory.class)
+public class AssigneeMetricResourceFactoryImpl
+	implements AssigneeMetricResource.Factory {
 
 	@Override
-	public MetricResource.Builder create() {
-		return new MetricResource.Builder() {
+	public AssigneeMetricResource.Builder create() {
+		return new AssigneeMetricResource.Builder() {
 
 			@Override
-			public MetricResource build() {
+			public AssigneeMetricResource build() {
 				if (_user == null) {
 					throw new IllegalArgumentException("User is not set");
 				}
 
-				return (MetricResource)ProxyUtil.newProxyInstance(
-					MetricResource.class.getClassLoader(),
-					new Class<?>[] {MetricResource.class},
+				return (AssigneeMetricResource)ProxyUtil.newProxyInstance(
+					AssigneeMetricResource.class.getClassLoader(),
+					new Class<?>[] {AssigneeMetricResource.class},
 					(proxy, method, arguments) -> _invoke(
 						method, arguments, _checkPermissions, _user));
 			}
 
 			@Override
-			public MetricResource.Builder checkPermissions(
+			public AssigneeMetricResource.Builder checkPermissions(
 				boolean checkPermissions) {
 
 				_checkPermissions = checkPermissions;
@@ -68,7 +69,7 @@ public class MetricResourceFactoryImpl implements MetricResource.Factory {
 			}
 
 			@Override
-			public MetricResource.Builder user(User user) {
+			public AssigneeMetricResource.Builder user(User user) {
 				_user = user;
 
 				return this;
@@ -82,12 +83,12 @@ public class MetricResourceFactoryImpl implements MetricResource.Factory {
 
 	@Activate
 	protected void activate() {
-		MetricResource.FactoryHolder.factory = this;
+		AssigneeMetricResource.FactoryHolder.factory = this;
 	}
 
 	@Deactivate
 	protected void deactivate() {
-		MetricResource.FactoryHolder.factory = null;
+		AssigneeMetricResource.FactoryHolder.factory = null;
 	}
 
 	private Object _invoke(
@@ -111,22 +112,23 @@ public class MetricResourceFactoryImpl implements MetricResource.Factory {
 				_liberalPermissionCheckerFactory.create(user));
 		}
 
-		MetricResource metricResource = _componentServiceObjects.getService();
+		AssigneeMetricResource assigneeMetricResource =
+			_componentServiceObjects.getService();
 
 		Company company = _companyLocalService.getCompany(user.getCompanyId());
 
-		metricResource.setContextCompany(company);
+		assigneeMetricResource.setContextCompany(company);
 
-		metricResource.setContextUser(user);
+		assigneeMetricResource.setContextUser(user);
 
 		try {
-			return method.invoke(metricResource, arguments);
+			return method.invoke(assigneeMetricResource, arguments);
 		}
 		catch (InvocationTargetException invocationTargetException) {
 			throw invocationTargetException.getTargetException();
 		}
 		finally {
-			_componentServiceObjects.ungetService(metricResource);
+			_componentServiceObjects.ungetService(assigneeMetricResource);
 
 			PrincipalThreadLocal.setName(name);
 
@@ -138,7 +140,8 @@ public class MetricResourceFactoryImpl implements MetricResource.Factory {
 	private CompanyLocalService _companyLocalService;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-	private ComponentServiceObjects<MetricResource> _componentServiceObjects;
+	private ComponentServiceObjects<AssigneeMetricResource>
+		_componentServiceObjects;
 
 	@Reference
 	private PermissionCheckerFactory _defaultPermissionCheckerFactory;
