@@ -1,0 +1,54 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ */
+
+import React, {useMemo} from 'react';
+
+import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
+import {useFetch} from '../../../shared/hooks/useFetch.es';
+import {Body} from './ReindexPageBody.es';
+
+const ReindexPage = props => {
+	// const {data, fetchData} = useFetch({});
+	// const promises = useMemo(() => [fetchData()], [fetchData]);
+	const promises = [];
+	const data = {
+		items: [
+			{
+				actions: [
+					{id: 1, label: 'Workflow Metrics indexes', main: true},
+					{
+						id: 2,
+						label: 'Reindex Workflow Metrics Instances',
+						status: 30,
+					},
+					{id: 3, label: 'Reindex Workflow Metrics Nodes'},
+				],
+				title: 'metrics',
+			},
+		],
+	};
+
+	return (
+		<div className="container-fluid-1280">
+			<h1 className="mb-4 mt-4">
+				{Liferay.Language.get('workflow-index-actions')}
+			</h1>
+
+			<PromisesResolver promises={promises}>
+				<ReindexPage.Body {...data} />
+			</PromisesResolver>
+		</div>
+	);
+};
+
+ReindexPage.Body = Body;
+
+export default ReindexPage;
