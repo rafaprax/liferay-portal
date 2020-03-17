@@ -178,7 +178,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()));
 	}
 
@@ -202,7 +202,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()));
 	}
 
@@ -222,7 +222,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()));
 	}
 
@@ -245,7 +245,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()),
 			_createDocument(
 				HashMapBuilder.<String, Object>put(
@@ -254,7 +254,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 2
 				).put(
-					"tokenId", 2
+					"taskId", 2
 				).build()));
 	}
 
@@ -284,7 +284,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()));
 	}
 
@@ -330,7 +330,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()),
 			_createDocument(
 				HashMapBuilder.<String, Object>put(
@@ -339,7 +339,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 2
 				).put(
-					"tokenId", 2
+					"taskId", 2
 				).build()));
 	}
 
@@ -391,7 +391,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()),
 			_createDocument(
 				HashMapBuilder.<String, Object>put(
@@ -402,7 +402,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 2
 				).put(
-					"tokenId", 2
+					"taskId", 2
 				).build()));
 	}
 
@@ -448,7 +448,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()));
 	}
 
@@ -468,7 +468,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()));
 	}
 
@@ -491,7 +491,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 1
 				).put(
-					"tokenId", 1
+					"taskId", 1
 				).build()),
 			_createDocument(
 				HashMapBuilder.<String, Object>put(
@@ -499,7 +499,7 @@ public class WorkflowMetricsSLAProcessorTest extends PowerMockito {
 				).put(
 					"taskId", 2
 				).put(
-					"tokenId", 2
+					"taskId", 2
 				).build()));
 	}
 

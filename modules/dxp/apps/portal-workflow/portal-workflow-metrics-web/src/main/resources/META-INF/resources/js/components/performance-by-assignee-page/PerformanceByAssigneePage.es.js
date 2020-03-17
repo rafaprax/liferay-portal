@@ -50,7 +50,7 @@ const PerformanceByAssigneePage = ({query, routeParams}) => {
 			...routeParams,
 			...timeRange,
 		},
-		url: `/processes/${processId}/assignee-users`,
+		url: `/processes/${processId}/assignees/metrics`,
 	});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);

@@ -42,7 +42,7 @@ const WorkloadByAssigneePage = ({query, routeParams}) => {
 			taskKeys,
 			...routeParams,
 		},
-		url: `/processes/${processId}/assignee-users`,
+		url: `/processes/${processId}/assignees/metrics`,
 	});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);
