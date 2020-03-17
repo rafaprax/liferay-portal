@@ -15,7 +15,7 @@
 package com.liferay.portal.workflow.metrics.rest.client.dto.v1_0;
 
 import com.liferay.portal.workflow.metrics.rest.client.function.UnsafeSupplier;
-import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.CreatorUserSerDes;
+import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.AssigneeSerDes;
 
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class CreatorUser implements Cloneable {
+public class Assignee implements Cloneable {
 
 	public Long getId() {
 		return id;
@@ -46,6 +46,27 @@ public class CreatorUser implements Cloneable {
 	}
 
 	protected Long id;
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public void setImage(
+		UnsafeSupplier<String, Exception> imageUnsafeSupplier) {
+
+		try {
+			image = imageUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String image;
 
 	public String getName() {
 		return name;
@@ -67,8 +88,8 @@ public class CreatorUser implements Cloneable {
 	protected String name;
 
 	@Override
-	public CreatorUser clone() throws CloneNotSupportedException {
-		return (CreatorUser)super.clone();
+	public Assignee clone() throws CloneNotSupportedException {
+		return (Assignee)super.clone();
 	}
 
 	@Override
@@ -77,13 +98,13 @@ public class CreatorUser implements Cloneable {
 			return true;
 		}
 
-		if (!(object instanceof CreatorUser)) {
+		if (!(object instanceof Assignee)) {
 			return false;
 		}
 
-		CreatorUser creatorUser = (CreatorUser)object;
+		Assignee assignee = (Assignee)object;
 
-		return Objects.equals(toString(), creatorUser.toString());
+		return Objects.equals(toString(), assignee.toString());
 	}
 
 	@Override
@@ -94,7 +115,7 @@ public class CreatorUser implements Cloneable {
 	}
 
 	public String toString() {
-		return CreatorUserSerDes.toJSON(this);
+		return AssigneeSerDes.toJSON(this);
 	}
 
 }

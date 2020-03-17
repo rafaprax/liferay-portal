@@ -15,9 +15,8 @@
 package com.liferay.portal.workflow.metrics.rest.resource.v1_0;
 
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
-import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Metric;
-
-import java.util.Date;
+import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Assignee;
 
 import javax.annotation.Generated;
 
@@ -38,14 +37,13 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @Generated("")
 @ProviderType
-public interface MetricResource {
+public interface AssigneeResource {
 
 	public static Builder builder() {
 		return FactoryHolder.factory.create();
 	}
 
-	public Metric getProcessMetric(
-			Long processId, Date dateEnd, Date dateStart, String unit)
+	public Page<Assignee> getProcessAssigneesPage(Long processId)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -78,7 +76,7 @@ public interface MetricResource {
 	@ProviderType
 	public interface Builder {
 
-		public MetricResource build();
+		public AssigneeResource build();
 
 		public Builder checkPermissions(boolean checkPermissions);
 

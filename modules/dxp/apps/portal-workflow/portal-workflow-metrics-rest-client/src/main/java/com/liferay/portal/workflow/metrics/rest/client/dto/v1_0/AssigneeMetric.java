@@ -15,7 +15,7 @@
 package com.liferay.portal.workflow.metrics.rest.client.dto.v1_0;
 
 import com.liferay.portal.workflow.metrics.rest.client.function.UnsafeSupplier;
-import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.AssigneeUserSerDes;
+import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.AssigneeMetricSerDes;
 
 import java.util.Objects;
 
@@ -26,7 +26,28 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class AssigneeUser implements Cloneable {
+public class AssigneeMetric implements Cloneable {
+
+	public Assignee getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(Assignee assignee) {
+		this.assignee = assignee;
+	}
+
+	public void setAssignee(
+		UnsafeSupplier<Assignee, Exception> assigneeUnsafeSupplier) {
+
+		try {
+			assignee = assigneeUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Assignee assignee;
 
 	public Long getDurationTaskAvg() {
 		return durationTaskAvg;
@@ -48,65 +69,6 @@ public class AssigneeUser implements Cloneable {
 	}
 
 	protected Long durationTaskAvg;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setId(UnsafeSupplier<Long, Exception> idUnsafeSupplier) {
-		try {
-			id = idUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected Long id;
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public void setImage(
-		UnsafeSupplier<String, Exception> imageUnsafeSupplier) {
-
-		try {
-			image = imageUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String image;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setName(UnsafeSupplier<String, Exception> nameUnsafeSupplier) {
-		try {
-			name = nameUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected String name;
 
 	public Long getOnTimeTaskCount() {
 		return onTimeTaskCount;
@@ -172,8 +134,8 @@ public class AssigneeUser implements Cloneable {
 	protected Long taskCount;
 
 	@Override
-	public AssigneeUser clone() throws CloneNotSupportedException {
-		return (AssigneeUser)super.clone();
+	public AssigneeMetric clone() throws CloneNotSupportedException {
+		return (AssigneeMetric)super.clone();
 	}
 
 	@Override
@@ -182,13 +144,13 @@ public class AssigneeUser implements Cloneable {
 			return true;
 		}
 
-		if (!(object instanceof AssigneeUser)) {
+		if (!(object instanceof AssigneeMetric)) {
 			return false;
 		}
 
-		AssigneeUser assigneeUser = (AssigneeUser)object;
+		AssigneeMetric assigneeMetric = (AssigneeMetric)object;
 
-		return Objects.equals(toString(), assigneeUser.toString());
+		return Objects.equals(toString(), assigneeMetric.toString());
 	}
 
 	@Override
@@ -199,7 +161,7 @@ public class AssigneeUser implements Cloneable {
 	}
 
 	public String toString() {
-		return AssigneeUserSerDes.toJSON(this);
+		return AssigneeMetricSerDes.toJSON(this);
 	}
 
 }

@@ -14,12 +14,12 @@
 
 package com.liferay.portal.workflow.metrics.rest.client.resource.v1_0;
 
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeUser;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeMetric;
 import com.liferay.portal.workflow.metrics.rest.client.http.HttpInvoker;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.client.problem.Problem;
-import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.AssigneeUserSerDes;
+import com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0.AssigneeMetricSerDes;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,19 +37,19 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public interface AssigneeUserResource {
+public interface AssigneeMetricResource {
 
 	public static Builder builder() {
 		return new Builder();
 	}
 
-	public Page<AssigneeUser> getProcessAssigneeUsersPage(
+	public Page<AssigneeMetric> getProcessAssigneeMetricsPage(
 			Long processId, Boolean completed, java.util.Date dateEnd,
 			java.util.Date dateStart, String keywords, Long[] roleIds,
 			String[] taskKeys, Pagination pagination, String sortString)
 		throws Exception;
 
-	public HttpInvoker.HttpResponse getProcessAssigneeUsersPageHttpResponse(
+	public HttpInvoker.HttpResponse getProcessAssigneeMetricsPageHttpResponse(
 			Long processId, Boolean completed, java.util.Date dateEnd,
 			java.util.Date dateStart, String keywords, Long[] roleIds,
 			String[] taskKeys, Pagination pagination, String sortString)
@@ -64,8 +64,8 @@ public interface AssigneeUserResource {
 			return this;
 		}
 
-		public AssigneeUserResource build() {
-			return new AssigneeUserResourceImpl(this);
+		public AssigneeMetricResource build() {
+			return new AssigneeMetricResourceImpl(this);
 		}
 
 		public Builder endpoint(String host, int port, String scheme) {
@@ -108,17 +108,17 @@ public interface AssigneeUserResource {
 
 	}
 
-	public static class AssigneeUserResourceImpl
-		implements AssigneeUserResource {
+	public static class AssigneeMetricResourceImpl
+		implements AssigneeMetricResource {
 
-		public Page<AssigneeUser> getProcessAssigneeUsersPage(
+		public Page<AssigneeMetric> getProcessAssigneeMetricsPage(
 				Long processId, Boolean completed, java.util.Date dateEnd,
 				java.util.Date dateStart, String keywords, Long[] roleIds,
 				String[] taskKeys, Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getProcessAssigneeUsersPageHttpResponse(
+				getProcessAssigneeMetricsPageHttpResponse(
 					processId, completed, dateEnd, dateStart, keywords, roleIds,
 					taskKeys, pagination, sortString);
 
@@ -131,7 +131,7 @@ public interface AssigneeUserResource {
 				"HTTP response status code: " + httpResponse.getStatusCode());
 
 			try {
-				return Page.of(content, AssigneeUserSerDes::toDTO);
+				return Page.of(content, AssigneeMetricSerDes::toDTO);
 			}
 			catch (Exception e) {
 				_logger.log(
@@ -142,10 +142,11 @@ public interface AssigneeUserResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getProcessAssigneeUsersPageHttpResponse(
-				Long processId, Boolean completed, java.util.Date dateEnd,
-				java.util.Date dateStart, String keywords, Long[] roleIds,
-				String[] taskKeys, Pagination pagination, String sortString)
+		public HttpInvoker.HttpResponse
+				getProcessAssigneeMetricsPageHttpResponse(
+					Long processId, Boolean completed, java.util.Date dateEnd,
+					java.util.Date dateStart, String keywords, Long[] roleIds,
+					String[] taskKeys, Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -218,7 +219,7 @@ public interface AssigneeUserResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port +
-						"/o/portal-workflow-metrics/v1.0/processes/{processId}/assignee-users",
+						"/o/portal-workflow-metrics/v1.0/processes/{processId}/assignees/metrics",
 				processId);
 
 			httpInvoker.userNameAndPassword(
@@ -227,12 +228,12 @@ public interface AssigneeUserResource {
 			return httpInvoker.invoke();
 		}
 
-		private AssigneeUserResourceImpl(Builder builder) {
+		private AssigneeMetricResourceImpl(Builder builder) {
 			_builder = builder;
 		}
 
 		private static final Logger _logger = Logger.getLogger(
-			AssigneeUserResource.class.getName());
+			AssigneeMetricResource.class.getName());
 
 		private Builder _builder;
 

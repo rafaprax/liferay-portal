@@ -14,11 +14,9 @@
 
 package com.liferay.portal.workflow.metrics.rest.dto.v1_0;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
@@ -34,8 +32,6 @@ import java.util.Set;
 
 import javax.annotation.Generated;
 
-import javax.validation.Valid;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -43,62 +39,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @generated
  */
 @Generated("")
-@GraphQLName("Metric")
+@GraphQLName("Creator")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "Metric")
-public class Metric {
+@XmlRootElement(name = "Creator")
+public class Creator {
 
-	@GraphQLName("Unit")
-	public static enum Unit {
-
-		DAYS("Days"), HOURS("Hours"), MONTHS("Months"), WEEKS("Weeks"),
-		YEARS("Years");
-
-		@JsonCreator
-		public static Unit create(String value) {
-			for (Unit unit : values()) {
-				if (Objects.equals(unit.getValue(), value)) {
-					return unit;
-				}
-			}
-
-			return null;
-		}
-
-		@JsonValue
-		public String getValue() {
-			return _value;
-		}
-
-		@Override
-		public String toString() {
-			return _value;
-		}
-
-		private Unit(String value) {
-			_value = value;
-		}
-
-		private final String _value;
-
+	@Schema(description = "The user's ID.")
+	public Long getId() {
+		return id;
 	}
 
-	@Schema
-	@Valid
-	public Histogram[] getHistograms() {
-		return histograms;
-	}
-
-	public void setHistograms(Histogram[] histograms) {
-		this.histograms = histograms;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@JsonIgnore
-	public void setHistograms(
-		UnsafeSupplier<Histogram[], Exception> histogramsUnsafeSupplier) {
-
+	public void setId(UnsafeSupplier<Long, Exception> idUnsafeSupplier) {
 		try {
-			histograms = histogramsUnsafeSupplier.get();
+			id = idUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -108,33 +66,23 @@ public class Metric {
 		}
 	}
 
-	@GraphQLField
+	@GraphQLField(description = "The user's ID.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Histogram[] histograms;
+	protected Long id;
 
-	@Schema
-	@Valid
-	public Unit getUnit() {
-		return unit;
+	@Schema(description = "The user's full name.")
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@JsonIgnore
-	public String getUnitAsString() {
-		if (unit == null) {
-			return null;
-		}
-
-		return unit.toString();
-	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
-	}
-
-	@JsonIgnore
-	public void setUnit(UnsafeSupplier<Unit, Exception> unitUnsafeSupplier) {
+	public void setName(UnsafeSupplier<String, Exception> nameUnsafeSupplier) {
 		try {
-			unit = unitUnsafeSupplier.get();
+			name = nameUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -144,37 +92,9 @@ public class Metric {
 		}
 	}
 
-	@GraphQLField
+	@GraphQLField(description = "The user's full name.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Unit unit;
-
-	@Schema
-	public Double getValue() {
-		return value;
-	}
-
-	public void setValue(Double value) {
-		this.value = value;
-	}
-
-	@JsonIgnore
-	public void setValue(
-		UnsafeSupplier<Double, Exception> valueUnsafeSupplier) {
-
-		try {
-			value = valueUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Double value;
+	protected String name;
 
 	@Override
 	public boolean equals(Object object) {
@@ -182,13 +102,13 @@ public class Metric {
 			return true;
 		}
 
-		if (!(object instanceof Metric)) {
+		if (!(object instanceof Creator)) {
 			return false;
 		}
 
-		Metric metric = (Metric)object;
+		Creator creator = (Creator)object;
 
-		return Objects.equals(toString(), metric.toString());
+		return Objects.equals(toString(), creator.toString());
 	}
 
 	@Override
@@ -203,48 +123,28 @@ public class Metric {
 
 		sb.append("{");
 
-		if (histograms != null) {
+		if (id != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"histograms\": ");
+			sb.append("\"id\": ");
 
-			sb.append("[");
-
-			for (int i = 0; i < histograms.length; i++) {
-				sb.append(String.valueOf(histograms[i]));
-
-				if ((i + 1) < histograms.length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
+			sb.append(id);
 		}
 
-		if (unit != null) {
+		if (name != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"unit\": ");
+			sb.append("\"name\": ");
 
 			sb.append("\"");
 
-			sb.append(unit);
+			sb.append(_escape(name));
 
 			sb.append("\"");
-		}
-
-		if (value != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"value\": ");
-
-			sb.append(value);
 		}
 
 		sb.append("}");
@@ -253,7 +153,7 @@ public class Metric {
 	}
 
 	@Schema(
-		defaultValue = "com.liferay.portal.workflow.metrics.rest.dto.v1_0.Metric",
+		defaultValue = "com.liferay.portal.workflow.metrics.rest.dto.v1_0.Creator",
 		name = "x-class-name"
 	)
 	public String xClassName;

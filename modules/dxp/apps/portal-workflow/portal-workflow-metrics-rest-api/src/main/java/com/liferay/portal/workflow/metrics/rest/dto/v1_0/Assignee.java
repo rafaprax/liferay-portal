@@ -39,10 +39,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @generated
  */
 @Generated("")
-@GraphQLName("CreatorUser")
+@GraphQLName("Assignee")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "CreatorUser")
-public class CreatorUser {
+@XmlRootElement(name = "Assignee")
+public class Assignee {
 
 	@Schema(description = "The user's ID.")
 	public Long getId() {
@@ -69,6 +69,34 @@ public class CreatorUser {
 	@GraphQLField(description = "The user's ID.")
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	protected Long id;
+
+	@Schema(description = "A relative URL to the user's profile image.")
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	@JsonIgnore
+	public void setImage(
+		UnsafeSupplier<String, Exception> imageUnsafeSupplier) {
+
+		try {
+			image = imageUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(description = "A relative URL to the user's profile image.")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected String image;
 
 	@Schema(description = "The user's full name.")
 	public String getName() {
@@ -102,13 +130,13 @@ public class CreatorUser {
 			return true;
 		}
 
-		if (!(object instanceof CreatorUser)) {
+		if (!(object instanceof Assignee)) {
 			return false;
 		}
 
-		CreatorUser creatorUser = (CreatorUser)object;
+		Assignee assignee = (Assignee)object;
 
-		return Objects.equals(toString(), creatorUser.toString());
+		return Objects.equals(toString(), assignee.toString());
 	}
 
 	@Override
@@ -133,6 +161,20 @@ public class CreatorUser {
 			sb.append(id);
 		}
 
+		if (image != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"image\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(image));
+
+			sb.append("\"");
+		}
+
 		if (name != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -153,7 +195,7 @@ public class CreatorUser {
 	}
 
 	@Schema(
-		defaultValue = "com.liferay.portal.workflow.metrics.rest.dto.v1_0.CreatorUser",
+		defaultValue = "com.liferay.portal.workflow.metrics.rest.dto.v1_0.Assignee",
 		name = "x-class-name"
 	)
 	public String xClassName;

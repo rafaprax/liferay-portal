@@ -32,6 +32,8 @@ import java.util.Set;
 
 import javax.annotation.Generated;
 
+import javax.validation.Valid;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -39,26 +41,26 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @generated
  */
 @Generated("")
-@GraphQLName("AssigneeUser")
+@GraphQLName("NodeMetric")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "AssigneeUser")
-public class AssigneeUser {
+@XmlRootElement(name = "NodeMetric")
+public class NodeMetric {
 
 	@Schema
-	public Long getDurationTaskAvg() {
-		return durationTaskAvg;
+	public Long getBreachedInstanceCount() {
+		return breachedInstanceCount;
 	}
 
-	public void setDurationTaskAvg(Long durationTaskAvg) {
-		this.durationTaskAvg = durationTaskAvg;
+	public void setBreachedInstanceCount(Long breachedInstanceCount) {
+		this.breachedInstanceCount = breachedInstanceCount;
 	}
 
 	@JsonIgnore
-	public void setDurationTaskAvg(
-		UnsafeSupplier<Long, Exception> durationTaskAvgUnsafeSupplier) {
+	public void setBreachedInstanceCount(
+		UnsafeSupplier<Long, Exception> breachedInstanceCountUnsafeSupplier) {
 
 		try {
-			durationTaskAvg = durationTaskAvgUnsafeSupplier.get();
+			breachedInstanceCount = breachedInstanceCountUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -70,103 +72,27 @@ public class AssigneeUser {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long durationTaskAvg;
-
-	@Schema(description = "The user's ID.")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@JsonIgnore
-	public void setId(UnsafeSupplier<Long, Exception> idUnsafeSupplier) {
-		try {
-			id = idUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField(description = "The user's ID.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected Long id;
-
-	@Schema(description = "A relative URL to the user's profile image.")
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	@JsonIgnore
-	public void setImage(
-		UnsafeSupplier<String, Exception> imageUnsafeSupplier) {
-
-		try {
-			image = imageUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField(description = "A relative URL to the user's profile image.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected String image;
-
-	@Schema(description = "The user's full name.")
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@JsonIgnore
-	public void setName(UnsafeSupplier<String, Exception> nameUnsafeSupplier) {
-		try {
-			name = nameUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField(description = "The user's full name.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected String name;
+	protected Long breachedInstanceCount;
 
 	@Schema
-	public Long getOnTimeTaskCount() {
-		return onTimeTaskCount;
+	public Double getBreachedInstancePercentage() {
+		return breachedInstancePercentage;
 	}
 
-	public void setOnTimeTaskCount(Long onTimeTaskCount) {
-		this.onTimeTaskCount = onTimeTaskCount;
+	public void setBreachedInstancePercentage(
+		Double breachedInstancePercentage) {
+
+		this.breachedInstancePercentage = breachedInstancePercentage;
 	}
 
 	@JsonIgnore
-	public void setOnTimeTaskCount(
-		UnsafeSupplier<Long, Exception> onTimeTaskCountUnsafeSupplier) {
+	public void setBreachedInstancePercentage(
+		UnsafeSupplier<Double, Exception>
+			breachedInstancePercentageUnsafeSupplier) {
 
 		try {
-			onTimeTaskCount = onTimeTaskCountUnsafeSupplier.get();
+			breachedInstancePercentage =
+				breachedInstancePercentageUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -178,23 +104,23 @@ public class AssigneeUser {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long onTimeTaskCount;
+	protected Double breachedInstancePercentage;
 
 	@Schema
-	public Long getOverdueTaskCount() {
-		return overdueTaskCount;
+	public Long getDurationAvg() {
+		return durationAvg;
 	}
 
-	public void setOverdueTaskCount(Long overdueTaskCount) {
-		this.overdueTaskCount = overdueTaskCount;
+	public void setDurationAvg(Long durationAvg) {
+		this.durationAvg = durationAvg;
 	}
 
 	@JsonIgnore
-	public void setOverdueTaskCount(
-		UnsafeSupplier<Long, Exception> overdueTaskCountUnsafeSupplier) {
+	public void setDurationAvg(
+		UnsafeSupplier<Long, Exception> durationAvgUnsafeSupplier) {
 
 		try {
-			overdueTaskCount = overdueTaskCountUnsafeSupplier.get();
+			durationAvg = durationAvgUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -206,23 +132,23 @@ public class AssigneeUser {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long overdueTaskCount;
+	protected Long durationAvg;
 
 	@Schema
-	public Long getTaskCount() {
-		return taskCount;
+	public Long getInstanceCount() {
+		return instanceCount;
 	}
 
-	public void setTaskCount(Long taskCount) {
-		this.taskCount = taskCount;
+	public void setInstanceCount(Long instanceCount) {
+		this.instanceCount = instanceCount;
 	}
 
 	@JsonIgnore
-	public void setTaskCount(
-		UnsafeSupplier<Long, Exception> taskCountUnsafeSupplier) {
+	public void setInstanceCount(
+		UnsafeSupplier<Long, Exception> instanceCountUnsafeSupplier) {
 
 		try {
-			taskCount = taskCountUnsafeSupplier.get();
+			instanceCount = instanceCountUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -234,7 +160,90 @@ public class AssigneeUser {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long taskCount;
+	protected Long instanceCount;
+
+	@Schema
+	@Valid
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
+	@JsonIgnore
+	public void setNode(UnsafeSupplier<Node, Exception> nodeUnsafeSupplier) {
+		try {
+			node = nodeUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Node node;
+
+	@Schema
+	public Long getOnTimeInstanceCount() {
+		return onTimeInstanceCount;
+	}
+
+	public void setOnTimeInstanceCount(Long onTimeInstanceCount) {
+		this.onTimeInstanceCount = onTimeInstanceCount;
+	}
+
+	@JsonIgnore
+	public void setOnTimeInstanceCount(
+		UnsafeSupplier<Long, Exception> onTimeInstanceCountUnsafeSupplier) {
+
+		try {
+			onTimeInstanceCount = onTimeInstanceCountUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long onTimeInstanceCount;
+
+	@Schema
+	public Long getOverdueInstanceCount() {
+		return overdueInstanceCount;
+	}
+
+	public void setOverdueInstanceCount(Long overdueInstanceCount) {
+		this.overdueInstanceCount = overdueInstanceCount;
+	}
+
+	@JsonIgnore
+	public void setOverdueInstanceCount(
+		UnsafeSupplier<Long, Exception> overdueInstanceCountUnsafeSupplier) {
+
+		try {
+			overdueInstanceCount = overdueInstanceCountUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long overdueInstanceCount;
 
 	@Override
 	public boolean equals(Object object) {
@@ -242,13 +251,13 @@ public class AssigneeUser {
 			return true;
 		}
 
-		if (!(object instanceof AssigneeUser)) {
+		if (!(object instanceof NodeMetric)) {
 			return false;
 		}
 
-		AssigneeUser assigneeUser = (AssigneeUser)object;
+		NodeMetric nodeMetric = (NodeMetric)object;
 
-		return Objects.equals(toString(), assigneeUser.toString());
+		return Objects.equals(toString(), nodeMetric.toString());
 	}
 
 	@Override
@@ -263,82 +272,74 @@ public class AssigneeUser {
 
 		sb.append("{");
 
-		if (durationTaskAvg != null) {
+		if (breachedInstanceCount != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"durationTaskAvg\": ");
+			sb.append("\"breachedInstanceCount\": ");
 
-			sb.append(durationTaskAvg);
+			sb.append(breachedInstanceCount);
 		}
 
-		if (id != null) {
+		if (breachedInstancePercentage != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"id\": ");
+			sb.append("\"breachedInstancePercentage\": ");
 
-			sb.append(id);
+			sb.append(breachedInstancePercentage);
 		}
 
-		if (image != null) {
+		if (durationAvg != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"image\": ");
+			sb.append("\"durationAvg\": ");
 
-			sb.append("\"");
-
-			sb.append(_escape(image));
-
-			sb.append("\"");
+			sb.append(durationAvg);
 		}
 
-		if (name != null) {
+		if (instanceCount != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"name\": ");
+			sb.append("\"instanceCount\": ");
 
-			sb.append("\"");
-
-			sb.append(_escape(name));
-
-			sb.append("\"");
+			sb.append(instanceCount);
 		}
 
-		if (onTimeTaskCount != null) {
+		if (node != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"onTimeTaskCount\": ");
+			sb.append("\"node\": ");
 
-			sb.append(onTimeTaskCount);
+			sb.append(String.valueOf(node));
 		}
 
-		if (overdueTaskCount != null) {
+		if (onTimeInstanceCount != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"overdueTaskCount\": ");
+			sb.append("\"onTimeInstanceCount\": ");
 
-			sb.append(overdueTaskCount);
+			sb.append(onTimeInstanceCount);
 		}
 
-		if (taskCount != null) {
+		if (overdueInstanceCount != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"taskCount\": ");
+			sb.append("\"overdueInstanceCount\": ");
 
-			sb.append(taskCount);
+			sb.append(overdueInstanceCount);
 		}
 
 		sb.append("}");
@@ -347,7 +348,7 @@ public class AssigneeUser {
 	}
 
 	@Schema(
-		defaultValue = "com.liferay.portal.workflow.metrics.rest.dto.v1_0.AssigneeUser",
+		defaultValue = "com.liferay.portal.workflow.metrics.rest.dto.v1_0.NodeMetric",
 		name = "x-class-name"
 	)
 	public String xClassName;

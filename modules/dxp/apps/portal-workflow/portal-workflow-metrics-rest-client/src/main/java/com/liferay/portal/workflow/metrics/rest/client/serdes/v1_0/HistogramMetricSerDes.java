@@ -14,7 +14,8 @@
 
 package com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0;
 
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.CreatorUser;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Histogram;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.HistogramMetric;
 import com.liferay.portal.workflow.metrics.rest.client.json.BaseJSONParser;
 
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import javax.annotation.Generated;
 
@@ -30,24 +32,24 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class CreatorUserSerDes {
+public class HistogramMetricSerDes {
 
-	public static CreatorUser toDTO(String json) {
-		CreatorUserJSONParser creatorUserJSONParser =
-			new CreatorUserJSONParser();
+	public static HistogramMetric toDTO(String json) {
+		HistogramMetricJSONParser histogramMetricJSONParser =
+			new HistogramMetricJSONParser();
 
-		return creatorUserJSONParser.parseToDTO(json);
+		return histogramMetricJSONParser.parseToDTO(json);
 	}
 
-	public static CreatorUser[] toDTOs(String json) {
-		CreatorUserJSONParser creatorUserJSONParser =
-			new CreatorUserJSONParser();
+	public static HistogramMetric[] toDTOs(String json) {
+		HistogramMetricJSONParser histogramMetricJSONParser =
+			new HistogramMetricJSONParser();
 
-		return creatorUserJSONParser.parseToDTOs(json);
+		return histogramMetricJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(CreatorUser creatorUser) {
-		if (creatorUser == null) {
+	public static String toJSON(HistogramMetric histogramMetric) {
+		if (histogramMetric == null) {
 			return "null";
 		}
 
@@ -55,28 +57,48 @@ public class CreatorUserSerDes {
 
 		sb.append("{");
 
-		if (creatorUser.getId() != null) {
+		if (histogramMetric.getHistograms() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"id\": ");
+			sb.append("\"histograms\": ");
 
-			sb.append(creatorUser.getId());
+			sb.append("[");
+
+			for (int i = 0; i < histogramMetric.getHistograms().length; i++) {
+				sb.append(String.valueOf(histogramMetric.getHistograms()[i]));
+
+				if ((i + 1) < histogramMetric.getHistograms().length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
-		if (creatorUser.getName() != null) {
+		if (histogramMetric.getUnit() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"name\": ");
+			sb.append("\"unit\": ");
 
 			sb.append("\"");
 
-			sb.append(_escape(creatorUser.getName()));
+			sb.append(histogramMetric.getUnit());
 
 			sb.append("\"");
+		}
+
+		if (histogramMetric.getValue() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"value\": ");
+
+			sb.append(histogramMetric.getValue());
 		}
 
 		sb.append("}");
@@ -85,63 +107,85 @@ public class CreatorUserSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		CreatorUserJSONParser creatorUserJSONParser =
-			new CreatorUserJSONParser();
+		HistogramMetricJSONParser histogramMetricJSONParser =
+			new HistogramMetricJSONParser();
 
-		return creatorUserJSONParser.parseToMap(json);
+		return histogramMetricJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(CreatorUser creatorUser) {
-		if (creatorUser == null) {
+	public static Map<String, String> toMap(HistogramMetric histogramMetric) {
+		if (histogramMetric == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (creatorUser.getId() == null) {
-			map.put("id", null);
+		if (histogramMetric.getHistograms() == null) {
+			map.put("histograms", null);
 		}
 		else {
-			map.put("id", String.valueOf(creatorUser.getId()));
+			map.put(
+				"histograms", String.valueOf(histogramMetric.getHistograms()));
 		}
 
-		if (creatorUser.getName() == null) {
-			map.put("name", null);
+		if (histogramMetric.getUnit() == null) {
+			map.put("unit", null);
 		}
 		else {
-			map.put("name", String.valueOf(creatorUser.getName()));
+			map.put("unit", String.valueOf(histogramMetric.getUnit()));
+		}
+
+		if (histogramMetric.getValue() == null) {
+			map.put("value", null);
+		}
+		else {
+			map.put("value", String.valueOf(histogramMetric.getValue()));
 		}
 
 		return map;
 	}
 
-	public static class CreatorUserJSONParser
-		extends BaseJSONParser<CreatorUser> {
+	public static class HistogramMetricJSONParser
+		extends BaseJSONParser<HistogramMetric> {
 
 		@Override
-		protected CreatorUser createDTO() {
-			return new CreatorUser();
+		protected HistogramMetric createDTO() {
+			return new HistogramMetric();
 		}
 
 		@Override
-		protected CreatorUser[] createDTOArray(int size) {
-			return new CreatorUser[size];
+		protected HistogramMetric[] createDTOArray(int size) {
+			return new HistogramMetric[size];
 		}
 
 		@Override
 		protected void setField(
-			CreatorUser creatorUser, String jsonParserFieldName,
+			HistogramMetric histogramMetric, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "id")) {
+			if (Objects.equals(jsonParserFieldName, "histograms")) {
 				if (jsonParserFieldValue != null) {
-					creatorUser.setId(
-						Long.valueOf((String)jsonParserFieldValue));
+					histogramMetric.setHistograms(
+						Stream.of(
+							toStrings((Object[])jsonParserFieldValue)
+						).map(
+							object -> HistogramSerDes.toDTO((String)object)
+						).toArray(
+							size -> new Histogram[size]
+						));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "name")) {
+			else if (Objects.equals(jsonParserFieldName, "unit")) {
 				if (jsonParserFieldValue != null) {
-					creatorUser.setName((String)jsonParserFieldValue);
+					histogramMetric.setUnit(
+						HistogramMetric.Unit.create(
+							(String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "value")) {
+				if (jsonParserFieldValue != null) {
+					histogramMetric.setValue(
+						Double.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else {

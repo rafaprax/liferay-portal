@@ -14,7 +14,7 @@
 
 package com.liferay.portal.workflow.metrics.rest.client.serdes.v1_0;
 
-import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeUser;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeMetric;
 import com.liferay.portal.workflow.metrics.rest.client.json.BaseJSONParser;
 
 import java.util.Iterator;
@@ -30,24 +30,24 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class AssigneeUserSerDes {
+public class AssigneeMetricSerDes {
 
-	public static AssigneeUser toDTO(String json) {
-		AssigneeUserJSONParser assigneeUserJSONParser =
-			new AssigneeUserJSONParser();
+	public static AssigneeMetric toDTO(String json) {
+		AssigneeMetricJSONParser assigneeMetricJSONParser =
+			new AssigneeMetricJSONParser();
 
-		return assigneeUserJSONParser.parseToDTO(json);
+		return assigneeMetricJSONParser.parseToDTO(json);
 	}
 
-	public static AssigneeUser[] toDTOs(String json) {
-		AssigneeUserJSONParser assigneeUserJSONParser =
-			new AssigneeUserJSONParser();
+	public static AssigneeMetric[] toDTOs(String json) {
+		AssigneeMetricJSONParser assigneeMetricJSONParser =
+			new AssigneeMetricJSONParser();
 
-		return assigneeUserJSONParser.parseToDTOs(json);
+		return assigneeMetricJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(AssigneeUser assigneeUser) {
-		if (assigneeUser == null) {
+	public static String toJSON(AssigneeMetric assigneeMetric) {
+		if (assigneeMetric == null) {
 			return "null";
 		}
 
@@ -55,82 +55,54 @@ public class AssigneeUserSerDes {
 
 		sb.append("{");
 
-		if (assigneeUser.getDurationTaskAvg() != null) {
+		if (assigneeMetric.getAssignee() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"assignee\": ");
+
+			sb.append(String.valueOf(assigneeMetric.getAssignee()));
+		}
+
+		if (assigneeMetric.getDurationTaskAvg() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"durationTaskAvg\": ");
 
-			sb.append(assigneeUser.getDurationTaskAvg());
+			sb.append(assigneeMetric.getDurationTaskAvg());
 		}
 
-		if (assigneeUser.getId() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"id\": ");
-
-			sb.append(assigneeUser.getId());
-		}
-
-		if (assigneeUser.getImage() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"image\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(assigneeUser.getImage()));
-
-			sb.append("\"");
-		}
-
-		if (assigneeUser.getName() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"name\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(assigneeUser.getName()));
-
-			sb.append("\"");
-		}
-
-		if (assigneeUser.getOnTimeTaskCount() != null) {
+		if (assigneeMetric.getOnTimeTaskCount() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"onTimeTaskCount\": ");
 
-			sb.append(assigneeUser.getOnTimeTaskCount());
+			sb.append(assigneeMetric.getOnTimeTaskCount());
 		}
 
-		if (assigneeUser.getOverdueTaskCount() != null) {
+		if (assigneeMetric.getOverdueTaskCount() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"overdueTaskCount\": ");
 
-			sb.append(assigneeUser.getOverdueTaskCount());
+			sb.append(assigneeMetric.getOverdueTaskCount());
 		}
 
-		if (assigneeUser.getTaskCount() != null) {
+		if (assigneeMetric.getTaskCount() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"taskCount\": ");
 
-			sb.append(assigneeUser.getTaskCount());
+			sb.append(assigneeMetric.getTaskCount());
 		}
 
 		sb.append("}");
@@ -139,132 +111,108 @@ public class AssigneeUserSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		AssigneeUserJSONParser assigneeUserJSONParser =
-			new AssigneeUserJSONParser();
+		AssigneeMetricJSONParser assigneeMetricJSONParser =
+			new AssigneeMetricJSONParser();
 
-		return assigneeUserJSONParser.parseToMap(json);
+		return assigneeMetricJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(AssigneeUser assigneeUser) {
-		if (assigneeUser == null) {
+	public static Map<String, String> toMap(AssigneeMetric assigneeMetric) {
+		if (assigneeMetric == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (assigneeUser.getDurationTaskAvg() == null) {
+		if (assigneeMetric.getAssignee() == null) {
+			map.put("assignee", null);
+		}
+		else {
+			map.put("assignee", String.valueOf(assigneeMetric.getAssignee()));
+		}
+
+		if (assigneeMetric.getDurationTaskAvg() == null) {
 			map.put("durationTaskAvg", null);
 		}
 		else {
 			map.put(
 				"durationTaskAvg",
-				String.valueOf(assigneeUser.getDurationTaskAvg()));
+				String.valueOf(assigneeMetric.getDurationTaskAvg()));
 		}
 
-		if (assigneeUser.getId() == null) {
-			map.put("id", null);
-		}
-		else {
-			map.put("id", String.valueOf(assigneeUser.getId()));
-		}
-
-		if (assigneeUser.getImage() == null) {
-			map.put("image", null);
-		}
-		else {
-			map.put("image", String.valueOf(assigneeUser.getImage()));
-		}
-
-		if (assigneeUser.getName() == null) {
-			map.put("name", null);
-		}
-		else {
-			map.put("name", String.valueOf(assigneeUser.getName()));
-		}
-
-		if (assigneeUser.getOnTimeTaskCount() == null) {
+		if (assigneeMetric.getOnTimeTaskCount() == null) {
 			map.put("onTimeTaskCount", null);
 		}
 		else {
 			map.put(
 				"onTimeTaskCount",
-				String.valueOf(assigneeUser.getOnTimeTaskCount()));
+				String.valueOf(assigneeMetric.getOnTimeTaskCount()));
 		}
 
-		if (assigneeUser.getOverdueTaskCount() == null) {
+		if (assigneeMetric.getOverdueTaskCount() == null) {
 			map.put("overdueTaskCount", null);
 		}
 		else {
 			map.put(
 				"overdueTaskCount",
-				String.valueOf(assigneeUser.getOverdueTaskCount()));
+				String.valueOf(assigneeMetric.getOverdueTaskCount()));
 		}
 
-		if (assigneeUser.getTaskCount() == null) {
+		if (assigneeMetric.getTaskCount() == null) {
 			map.put("taskCount", null);
 		}
 		else {
-			map.put("taskCount", String.valueOf(assigneeUser.getTaskCount()));
+			map.put("taskCount", String.valueOf(assigneeMetric.getTaskCount()));
 		}
 
 		return map;
 	}
 
-	public static class AssigneeUserJSONParser
-		extends BaseJSONParser<AssigneeUser> {
+	public static class AssigneeMetricJSONParser
+		extends BaseJSONParser<AssigneeMetric> {
 
 		@Override
-		protected AssigneeUser createDTO() {
-			return new AssigneeUser();
+		protected AssigneeMetric createDTO() {
+			return new AssigneeMetric();
 		}
 
 		@Override
-		protected AssigneeUser[] createDTOArray(int size) {
-			return new AssigneeUser[size];
+		protected AssigneeMetric[] createDTOArray(int size) {
+			return new AssigneeMetric[size];
 		}
 
 		@Override
 		protected void setField(
-			AssigneeUser assigneeUser, String jsonParserFieldName,
+			AssigneeMetric assigneeMetric, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "durationTaskAvg")) {
+			if (Objects.equals(jsonParserFieldName, "assignee")) {
 				if (jsonParserFieldValue != null) {
-					assigneeUser.setDurationTaskAvg(
+					assigneeMetric.setAssignee(
+						AssigneeSerDes.toDTO((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "durationTaskAvg")) {
+				if (jsonParserFieldValue != null) {
+					assigneeMetric.setDurationTaskAvg(
 						Long.valueOf((String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "id")) {
-				if (jsonParserFieldValue != null) {
-					assigneeUser.setId(
-						Long.valueOf((String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "image")) {
-				if (jsonParserFieldValue != null) {
-					assigneeUser.setImage((String)jsonParserFieldValue);
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "name")) {
-				if (jsonParserFieldValue != null) {
-					assigneeUser.setName((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "onTimeTaskCount")) {
 				if (jsonParserFieldValue != null) {
-					assigneeUser.setOnTimeTaskCount(
+					assigneeMetric.setOnTimeTaskCount(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "overdueTaskCount")) {
 				if (jsonParserFieldValue != null) {
-					assigneeUser.setOverdueTaskCount(
+					assigneeMetric.setOverdueTaskCount(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "taskCount")) {
 				if (jsonParserFieldValue != null) {
-					assigneeUser.setTaskCount(
+					assigneeMetric.setTaskCount(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
