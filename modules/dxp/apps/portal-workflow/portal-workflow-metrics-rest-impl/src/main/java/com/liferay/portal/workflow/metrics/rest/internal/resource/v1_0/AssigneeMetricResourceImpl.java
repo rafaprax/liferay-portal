@@ -157,16 +157,16 @@ public class AssigneeMetricResourceImpl
 			_createSLATaskResultsBooleanQuery(
 				completed, dateEnd, dateStart, processId, taskKeys, userIds));
 
-		BooleanQuery tokensBooleanQuery = _queries.booleanQuery();
+		BooleanQuery tasksBooleanQuery = _queries.booleanQuery();
 
-		tokensBooleanQuery.addFilterQueryClauses(
+		tasksBooleanQuery.addFilterQueryClauses(
 			_queries.term("_index", "workflow-metrics-tasks"));
-		tokensBooleanQuery.addMustQueryClauses(
+		tasksBooleanQuery.addMustQueryClauses(
 			_createTasksBooleanQuery(
 				completed, dateEnd, dateStart, processId, taskKeys, userIds));
 
 		return booleanQuery.addShouldQueryClauses(
-			slaTaskResultsBooleanQuery, tokensBooleanQuery);
+			slaTaskResultsBooleanQuery, tasksBooleanQuery);
 	}
 
 	private BucketSelectorPipelineAggregation
