@@ -90,7 +90,7 @@ const PerformanceByAssigneeCard = ({routeParams}) => {
 			taskKeys,
 			...timeRange,
 		},
-		url: `/processes/${processId}/assignee-users`,
+		url: `/processes/${processId}/assignees/metrics`,
 	});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);
