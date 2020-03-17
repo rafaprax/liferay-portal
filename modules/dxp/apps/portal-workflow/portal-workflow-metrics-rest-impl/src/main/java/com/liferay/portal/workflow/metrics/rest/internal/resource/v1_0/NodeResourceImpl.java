@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.metrics.rest.internal.resource.v1_0;
 
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.search.engine.adapter.search.SearchRequestExecutor;
 import com.liferay.portal.search.query.Queries;
@@ -23,7 +24,7 @@ import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Node;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.util.NodeUtil;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.NodeResource;
 import com.liferay.portal.workflow.metrics.rest.spi.resource.SPINodeResource;
-import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
+import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,17 +40,37 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class NodeResourceImpl extends BaseNodeResourceImpl {
 
 	@Override
+	public void deleteProcessNode(Long processId, Long nodeId)
+		throws Exception {
+
+		_nodeWorkflowMetricsIndexer.deleteNode(
+			contextCompany.getCompanyId(), nodeId);
+	}
+
+	@Override
 	public Page<Node> getProcessNodesPage(Long processId) throws Exception {
 		SPINodeResource<Node> spiNodeResource = _getSPINodeResource();
 
 		return spiNodeResource.getProcessNodesPage(processId);
 	}
 
+	@Override
+	public Node postProcessNode(Long processId, Node node) throws Exception {
+		return NodeUtil.toNode(
+			_nodeWorkflowMetricsIndexer.addNode(
+				contextCompany.getCompanyId(), node.getDateCreated(),
+				node.getInitial(), node.getDateModified(), node.getName(),
+				node.getId(), processId, node.getProcessVersion(),
+				node.getTerminal(), node.getType()),
+			_language,
+			ResourceBundleUtil.getModuleAndPortalResourceBundle(
+				contextAcceptLanguage.getPreferredLocale(),
+				NodeResourceImpl.class));
+	}
+
 	private SPINodeResource<Node> _getSPINodeResource() {
 		return new SPINodeResource<>(
-			contextCompany.getCompanyId(), _nodeWorkflowMetricsIndexNameBuilder,
-			_processWorkflowMetricsIndexNameBuilder, _queries,
-			_searchRequestExecutor,
+			contextCompany.getCompanyId(), _queries, _searchRequestExecutor,
 			document -> NodeUtil.toNode(
 				document, _language,
 				ResourceBundleUtil.getModuleAndPortalResourceBundle(
@@ -60,13 +81,11 @@ public class NodeResourceImpl extends BaseNodeResourceImpl {
 	@Reference
 	private Language _language;
 
-	@Reference(target = "(workflow.metrics.index.entity.name=node)")
-	private WorkflowMetricsIndexNameBuilder
-		_nodeWorkflowMetricsIndexNameBuilder;
+	@Reference
+	private NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
 
-	@Reference(target = "(workflow.metrics.index.entity.name=process)")
-	private WorkflowMetricsIndexNameBuilder
-		_processWorkflowMetricsIndexNameBuilder;
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private Queries _queries;
