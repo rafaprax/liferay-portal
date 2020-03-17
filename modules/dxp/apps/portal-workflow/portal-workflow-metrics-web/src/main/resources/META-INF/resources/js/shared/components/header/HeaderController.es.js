@@ -13,6 +13,7 @@ import React, {useContext, useMemo} from 'react';
 
 import {AppContext} from '../../../components/AppContext.es';
 import HeaderBackButton from './HeaderBackButton.es';
+import HeaderLoadingStatus from './HeaderLoadingStatus.es';
 import HeaderTitle from './HeaderTitle.es';
 
 const HeaderController = ({basePath}) => {
@@ -31,6 +32,9 @@ const HeaderController = ({basePath}) => {
 			button: header.querySelector(
 				'.sites-control-group .control-menu-nav'
 			),
+			loading: header.querySelector(
+				'.user-control-group li.control-menu-nav-item'
+			),
 			title: header.querySelector(
 				'.tools-control-group .control-menu-level-1-heading'
 			),
@@ -45,6 +49,8 @@ const HeaderController = ({basePath}) => {
 			/>
 
 			<HeaderTitle container={container.title} title={title} />
+
+			<HeaderLoadingStatus container={container.loading} />
 		</>
 	);
 };
