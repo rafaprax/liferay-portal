@@ -21,7 +21,7 @@ const instance = {
 	assetTitle: 'New Post',
 	assetType: 'Blog',
 	assigneeUsers: [{id: 20124, name: 'Test Test'}],
-	creatorUser: {
+	creator: {
 		name: 'User 1',
 	},
 	dateCreated: new Date('2019-01-01'),
