@@ -60,9 +60,9 @@ describe('PermissionsModal', () => {
 	});
 
 	afterEach(() => {
+		cleanup();
 		jest.clearAllTimers();
 		jest.restoreAllMocks();
-		cleanup();
 	});
 
 	it('renders', async () => {

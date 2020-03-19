@@ -101,7 +101,7 @@ definition {
 
 	@description = "This is a test for LPS-97179. User can change colorPalette fragment configuration."
 	@priority = "5"
-	test AddColorPlatteConfigurationFragmentToContentPage {
+	test AddColorPaletteConfigurationFragmentToContentPage {
 
 		task ("Add a section fragment to the fragment collection via JSON") {
 			var htmlSnippet = FragmentsAPI.getFragmentFileContent(fileName = "colorPalette_configuration.html");
@@ -311,6 +311,7 @@ definition {
 			fragmentName = "itemSelector Fragment Example");
 
 		PageEditor.editContentDisplay(
+			fragmentName = "itemSelector Fragment Example",
 			webcontent = "true",
 			webContentContent = "WC WebContent Content 2",
 			webContentTitle = "WebContent Title 2");

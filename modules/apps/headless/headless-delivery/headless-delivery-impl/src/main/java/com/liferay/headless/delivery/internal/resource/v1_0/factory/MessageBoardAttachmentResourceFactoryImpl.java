@@ -23,10 +23,21 @@ import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
+import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Generated;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.ComponentServiceObjects;
 import org.osgi.service.component.annotations.Activate;
@@ -37,10 +48,12 @@ import org.osgi.service.component.annotations.ReferenceScope;
 
 /**
  * @author Javier Gamarra
+ * @generated
  */
 @Component(
 	immediate = true, service = MessageBoardAttachmentResource.Factory.class
 )
+@Generated("")
 public class MessageBoardAttachmentResourceFactoryImpl
 	implements MessageBoardAttachmentResource.Factory {
 
@@ -59,7 +72,8 @@ public class MessageBoardAttachmentResourceFactoryImpl
 						MessageBoardAttachmentResource.class.getClassLoader(),
 						new Class<?>[] {MessageBoardAttachmentResource.class},
 						(proxy, method, arguments) -> _invoke(
-							method, arguments, _checkPermissions, _user));
+							method, arguments, _checkPermissions,
+							_httpServletRequest, _user));
 			}
 
 			@Override
@@ -72,6 +86,15 @@ public class MessageBoardAttachmentResourceFactoryImpl
 			}
 
 			@Override
+			public MessageBoardAttachmentResource.Builder httpServletRequest(
+				HttpServletRequest httpServletRequest) {
+
+				_httpServletRequest = httpServletRequest;
+
+				return this;
+			}
+
+			@Override
 			public MessageBoardAttachmentResource.Builder user(User user) {
 				_user = user;
 
@@ -79,6 +102,7 @@ public class MessageBoardAttachmentResourceFactoryImpl
 			}
 
 			private boolean _checkPermissions = true;
+			private HttpServletRequest _httpServletRequest;
 			private User _user;
 
 		};
@@ -96,7 +120,7 @@ public class MessageBoardAttachmentResourceFactoryImpl
 
 	private Object _invoke(
 			Method method, Object[] arguments, boolean checkPermissions,
-			User user)
+			HttpServletRequest httpServletRequest, User user)
 		throws Throwable {
 
 		String name = PrincipalThreadLocal.getName();
@@ -118,10 +142,15 @@ public class MessageBoardAttachmentResourceFactoryImpl
 		MessageBoardAttachmentResource messageBoardAttachmentResource =
 			_componentServiceObjects.getService();
 
+		messageBoardAttachmentResource.setContextAcceptLanguage(
+			new AcceptLanguageImpl(user));
+
 		Company company = _companyLocalService.getCompany(user.getCompanyId());
 
 		messageBoardAttachmentResource.setContextCompany(company);
 
+		messageBoardAttachmentResource.setContextHttpServletRequest(
+			httpServletRequest);
 		messageBoardAttachmentResource.setContextUser(user);
 
 		try {
@@ -155,5 +184,41 @@ public class MessageBoardAttachmentResourceFactoryImpl
 
 	@Reference
 	private UserLocalService _userLocalService;
+
+	private class AcceptLanguageImpl implements AcceptLanguage {
+
+		public AcceptLanguageImpl(User user) {
+			_user = user;
+		}
+
+		@Override
+		public List<Locale> getLocales() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public String getPreferredLanguageId() {
+			return LocaleUtil.toLanguageId(getPreferredLocale());
+		}
+
+		@Override
+		public Locale getPreferredLocale() {
+			List<Locale> locales = getLocales();
+
+			if (ListUtil.isNotEmpty(locales)) {
+				return locales.get(0);
+			}
+
+			return _user.getLocale();
+		}
+
+		@Override
+		public boolean isAcceptAllLanguages() {
+			return false;
+		}
+
+		private final User _user;
+
+	}
 
 }

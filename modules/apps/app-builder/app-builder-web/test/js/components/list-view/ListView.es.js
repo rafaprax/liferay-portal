@@ -31,6 +31,7 @@ import {
 describe('ListView', () => {
 	afterEach(() => {
 		cleanup();
+		jest.restoreAllMocks();
 	});
 
 	it('renders with empty state', async () => {

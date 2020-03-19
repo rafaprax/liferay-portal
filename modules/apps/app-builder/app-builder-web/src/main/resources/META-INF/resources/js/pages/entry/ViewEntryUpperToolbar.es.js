@@ -24,13 +24,13 @@ import Lang from '../../utils/lang.es';
 import {ACTIONS, PermissionsContext} from './PermissionsContext.es';
 
 export default withRouter(({onDelete, onEdit, onNext, onPrev, page, total}) => {
-	const {showFormView} = useContext(AppContext);
+	const {appDeploymentType, showFormView} = useContext(AppContext);
 	const actionIds = useContext(PermissionsContext);
 	const hasDeletePermission = actionIds.includes(ACTIONS.DELETE_DATA_RECORD);
 	const hasEditPermission = actionIds.includes(ACTIONS.UPDATE_DATA_RECORD);
 
 	return (
-		<UpperToolbar>
+		<UpperToolbar className={appDeploymentType}>
 			<UpperToolbar.Item className="text-left" expand={true}>
 				<label>
 					{Lang.sub(Liferay.Language.get('x-of-x-entries'), [

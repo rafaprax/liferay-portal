@@ -18,6 +18,15 @@ import handleFieldEdited from './fieldEditedHandler.es';
 
 const handleFocusedFieldEvaluationEnded = (props, state, settingsContext) => {
 	const visitor = new PagesVisitor(settingsContext.pages);
+	const {focusedField} = state;
+
+	state = {
+		...state,
+		focusedField: {
+			...focusedField,
+			settingsContext,
+		},
+	};
 
 	visitor.mapFields(({fieldName, value}) => {
 		state = handleFieldEdited(

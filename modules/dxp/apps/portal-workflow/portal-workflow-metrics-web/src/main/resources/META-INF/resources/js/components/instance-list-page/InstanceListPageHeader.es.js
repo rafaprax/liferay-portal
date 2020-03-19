@@ -17,6 +17,7 @@ import filterConstants from '../../shared/components/filter/util/filterConstants
 import QuickActionKebab from '../../shared/components/quick-action-kebab/QuickActionKebab.es';
 import ResultsBar from '../../shared/components/results-bar/ResultsBar.es';
 import ToolbarWithSelection from '../../shared/components/toolbar-with-selection/ToolbarWithSelection.es';
+import {capitalize} from '../../shared/util/util.es';
 import {AppContext} from '../AppContext.es';
 import AssigneeFilter from '../filter/AssigneeFilter.es';
 import ProcessStatusFilter, {
@@ -25,8 +26,8 @@ import ProcessStatusFilter, {
 import ProcessStepFilter from '../filter/ProcessStepFilter.es';
 import SLAStatusFilter from '../filter/SLAStatusFilter.es';
 import TimeRangeFilter from '../filter/TimeRangeFilter.es';
-import {ModalContext} from './modal/ModalContext.es';
-import {InstanceListContext} from './store/InstanceListPageStore.es';
+import {InstanceListContext} from './InstanceListPageProvider.es';
+import {ModalContext} from './modal/ModalProvider.es';
 
 const Header = ({
 	filterKeys,
@@ -43,27 +44,29 @@ const Header = ({
 		setSelectedItems,
 	} = useContext(InstanceListContext);
 	const previousCount = usePrevious(totalCount);
-	const {bulkModal, setBulkModal, setSingleModal} = useContext(ModalContext);
+	const {setVisibleModal} = useContext(ModalContext);
 
 	const compareId = itemId => ({id}) => id === itemId;
 
 	const kebabItems = [
 		{
+			icon: 'arrow-start',
+			label: capitalize(Liferay.Language.get('transition')),
+			onClick: () => {
+				setVisibleModal('bulkTransition');
+			},
+		},
+		{
 			icon: 'change',
 			label: Liferay.Language.get('reassign-task'),
 			onClick: () => {
-				if (
+				const bulkOperation =
 					selectedItems.length > 1 ||
-					selectedItems[0].taskNames.length > 1
-				) {
-					setBulkModal({...bulkModal, visible: true});
-				}
-				else {
-					setSingleModal({
-						selectedItem: selectedItems[0],
-						visible: true,
-					});
-				}
+					selectedItems[0].taskNames.length > 1;
+
+				setVisibleModal(
+					bulkOperation ? 'bulkReassign' : 'singleReassign'
+				);
 			},
 		},
 	];
@@ -83,11 +86,11 @@ const Header = ({
 	};
 
 	const isRemainingItem = useCallback(
-		clear => ({assigneeUsers = [], id, status}) => {
-			const assignedToUser = !!assigneeUsers.find(({id}) => id == userId);
+		clear => ({assignees = [], id, status}) => {
+			const assignedToUser = !!assignees.find(({id}) => id == userId);
 			const completed = status === processStatusConstants.completed;
 			const selected = clear && selectedItems.find(compareId(id));
-			const unassigned = assigneeUsers.length === 0;
+			const unassigned = assignees.length === 0;
 
 			return (unassigned || assignedToUser) && !completed && !selected;
 		},

@@ -18,8 +18,10 @@ import com.liferay.expando.kernel.model.ExpandoColumn;
 import com.liferay.expando.kernel.model.ExpandoTable;
 import com.liferay.petra.encryptor.Encryptor;
 import com.liferay.petra.encryptor.EncryptorException;
+import com.liferay.petra.lang.SafeClosable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.db.partition.DBPartitionUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.Property;
@@ -179,6 +181,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		Company company = companyPersistence.create(
 			counterLocalService.increment());
 
+		if (webId.equals(PropsValues.COMPANY_DEFAULT_WEB_ID)) {
+			DBPartitionUtil.setDefaultCompanyId(company.getCompanyId());
+		}
+
 		company.setWebId(webId);
 		company.setMx(mx);
 		company.setSystem(system);
@@ -191,41 +197,51 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 		updateVirtualHostname(company.getCompanyId(), virtualHostname);
 
-		// Account
+		try (SafeClosable safeClosable =
+				CompanyThreadLocal.setInitializingCompanyId(
+					company.getCompanyId())) {
 
-		String name = webId;
+			if (DBPartitionUtil.addDBPartition(company.getCompanyId())) {
+				dlFileEntryTypeLocalService.
+					createBasicDocumentDLFileEntryType();
+			}
 
-		if (webId.equals(PropsValues.COMPANY_DEFAULT_WEB_ID)) {
-			name = PropsValues.COMPANY_DEFAULT_NAME;
+			// Account
+
+			String name = webId;
+
+			if (webId.equals(PropsValues.COMPANY_DEFAULT_WEB_ID)) {
+				name = PropsValues.COMPANY_DEFAULT_NAME;
+			}
+
+			updateAccount(
+				company, name, null, null, null, null, null, null, null, null);
+
+			// Company info
+
+			try {
+				company.setKey(Encryptor.serializeKey(Encryptor.generateKey()));
+			}
+			catch (EncryptorException encryptorException) {
+				throw new SystemException(encryptorException);
+			}
+
+			companyInfoPersistence.update(company.getCompanyInfo());
+
+			// Demo settings
+
+			if (webId.equals("liferay.net")) {
+				_addDemoSettings(company);
+			}
+
+			_addDefaultUser(company);
+
+			if (webId.equals(PropsValues.COMPANY_DEFAULT_WEB_ID)) {
+				return company;
+			}
+
+			return checkCompany(webId, mx);
 		}
-
-		updateAccount(
-			company, name, null, null, null, null, null, null, null, null);
-
-		// Company info
-
-		try {
-			company.setKey(Encryptor.serializeKey(Encryptor.generateKey()));
-		}
-		catch (EncryptorException encryptorException) {
-			throw new SystemException(encryptorException);
-		}
-
-		companyInfoPersistence.update(company.getCompanyInfo());
-
-		// Demo settings
-
-		if (webId.equals("liferay.net")) {
-			_addDemoSettings(company);
-		}
-
-		_addDefaultUser(company);
-
-		if (webId.equals(PropsValues.COMPANY_DEFAULT_WEB_ID)) {
-			return company;
-		}
-
-		return checkCompany(webId, mx);
 	}
 
 	/**
@@ -1189,6 +1205,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 		final Company company = companyPersistence.findByPrimaryKey(companyId);
 
+		if (DBPartitionUtil.removeDBPartition(companyId)) {
+			return company;
+		}
+
 		preunregisterCompany(company);
 
 		companyPersistence.remove(company);
@@ -1805,7 +1825,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		defaultUser.setAgreedToTermsOfUse(true);
 		defaultUser.setStatus(WorkflowConstants.STATUS_APPROVED);
 
-		defaultUser = userPersistence.update(defaultUser);
+		// Invoke updateImpl so that we do not trigger model listeners. See
+		// LPS-108239.
+
+		defaultUser = userPersistence.updateImpl(defaultUser);
 
 		// Contact
 

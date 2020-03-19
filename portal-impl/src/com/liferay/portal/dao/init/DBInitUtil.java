@@ -16,6 +16,7 @@ package com.liferay.portal.dao.init;
 
 import com.liferay.petra.io.StreamUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.db.partition.DBPartitionUtil;
 import com.liferay.portal.events.StartupHelperUtil;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManager;
@@ -51,8 +52,9 @@ public class DBInitUtil {
 	}
 
 	public static void init() throws Exception {
-		_dataSource = DataSourceFactoryUtil.initDataSource(
-			PropsUtil.getProperties("jdbc.default.", true));
+		_dataSource = DBPartitionUtil.wrapDataSource(
+			DataSourceFactoryUtil.initDataSource(
+				PropsUtil.getProperties("jdbc.default.", true)));
 
 		DB db = DBManagerUtil.getDB(
 			DBManagerUtil.getDBType(DialectDetector.getDialect(_dataSource)),

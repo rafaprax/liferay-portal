@@ -79,7 +79,7 @@ public class AcceptLanguageImpl implements AcceptLanguage {
 
 			if (ListUtil.isEmpty(locales)) {
 				throw new ClientErrorException(
-					"No available locale matches the accepted languages: " +
+					"No locales match the accepted languages: " +
 						acceptLanguage,
 					422);
 			}
@@ -88,8 +88,7 @@ public class AcceptLanguageImpl implements AcceptLanguage {
 		}
 		catch (PortalException portalException) {
 			throw new InternalServerErrorException(
-				"Unable to get preferred locale: " +
-					portalException.getMessage(),
+				"Unable to get locales: " + portalException.getMessage(),
 				portalException);
 		}
 	}

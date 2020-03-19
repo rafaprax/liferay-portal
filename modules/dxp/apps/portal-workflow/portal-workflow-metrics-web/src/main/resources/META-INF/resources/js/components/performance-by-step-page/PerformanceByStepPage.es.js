@@ -24,7 +24,7 @@ import {Header} from './PerformanceByStepPageHeader.es';
 const PerformanceByStepPage = ({query, routeParams}) => {
 	useTimeRangeFetch();
 
-	const {processId} = routeParams;
+	const {processId, ...paginationParams} = routeParams;
 	const {search = null} = parse(query);
 
 	useProcessTitle(processId, Liferay.Language.get('performance-by-step'));
@@ -43,10 +43,10 @@ const PerformanceByStepPage = ({query, routeParams}) => {
 		params: {
 			completed: true,
 			key: search,
-			...routeParams,
+			...paginationParams,
 			...timeRange,
 		},
-		url: `/processes/${processId}/tasks`,
+		url: `/processes/${processId}/nodes/metrics`,
 	});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);

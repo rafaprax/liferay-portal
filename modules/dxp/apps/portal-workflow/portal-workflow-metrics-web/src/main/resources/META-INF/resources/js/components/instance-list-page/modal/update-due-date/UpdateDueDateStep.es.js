@@ -24,7 +24,7 @@ import {
 } from '../../../../shared/util/date.es';
 import {toUppercase} from '../../../../shared/util/util.es';
 import {AppContext} from '../../../AppContext.es';
-import {ModalContext} from '../ModalContext.es';
+import {ModalContext} from '../ModalProvider.es';
 
 const UpdateDueDateStep = ({dueDate = new Date()}) => {
 	const {isAmPm} = useContext(AppContext);
@@ -204,4 +204,4 @@ const TimePickerInputWithOptions = ({format, isAmPm, setValue, value}) => {
 
 UpdateDueDateStep.TimePickerInput = TimePickerInputWithOptions;
 
-export {UpdateDueDateStep};
+export default UpdateDueDateStep;

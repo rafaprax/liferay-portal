@@ -12,22 +12,43 @@
 import {fireEvent, render} from '@testing-library/react';
 import React, {useState} from 'react';
 
-import {ModalContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/ModalContext.es';
+import {InstanceListContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/InstanceListPageProvider.es';
+import {ModalContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/ModalProvider.es';
 import {SingleUpdateDueDateModal} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/update-due-date/SingleUpdateDueDateModal.es';
-import {InstanceListContext} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/store/InstanceListPageStore.es';
 import ToasterProvider from '../../../../../src/main/resources/META-INF/resources/js/shared/components/toaster/ToasterProvider.es';
 import {MockRouter} from '../../../../mock/MockRouter.es';
 
 import '@testing-library/jest-dom/extend-expect';
 
 const ContainerMock = ({children}) => {
+	const selectedInstance = {
+		assetTitle: 'Blog1',
+		assetType: 'Blogs Entry',
+		assigneeUsers: [{id: 2, name: 'Test Test'}],
+		id: 1,
+		status: 'In Progress',
+		taskNames: ['Review'],
+	};
+	const [visibleModal, setVisibleModal] = useState('updateDueDate');
 	const [updateDueDate, setUpdateDueDate] = useState({
-		visible: true,
+		comment: undefined,
+		dueDate: undefined,
 	});
 
 	return (
-		<InstanceListContext.Provider value={{setSelectedItems: jest.fn()}}>
-			<ModalContext.Provider value={{setUpdateDueDate, updateDueDate}}>
+		<InstanceListContext.Provider
+			value={{
+				selectedInstance,
+			}}
+		>
+			<ModalContext.Provider
+				value={{
+					setUpdateDueDate,
+					setVisibleModal,
+					updateDueDate,
+					visibleModal,
+				}}
+			>
 				<ToasterProvider>{children}</ToasterProvider>
 			</ModalContext.Provider>
 		</InstanceListContext.Provider>

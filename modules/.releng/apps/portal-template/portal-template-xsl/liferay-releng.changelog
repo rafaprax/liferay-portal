@@ -17,3 +17,8 @@
 # Bundle Version 5.0.3
 #
 a439058f38cba9f0719922656e5c820281afa85e^..5aef369c8980c97346d6ef66d3d1c5de650dbaf4=LPS-107697
+
+#
+# Bundle Version 5.0.5
+#
+5aef369c8980c97346d6ef66d3d1c5de650dbaf4^..b6dd59dd53200f467b2c9dc1723b3bf4b6981aed=LRQA-51488

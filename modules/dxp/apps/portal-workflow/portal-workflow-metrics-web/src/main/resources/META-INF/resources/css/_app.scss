@@ -130,3 +130,56 @@
 		}
 	}
 }
+
+.transition-panel-body {
+	display: flex;
+	justify-content: space-between;
+
+	select {
+		min-width: 280px;
+	}
+
+	.show-all-button {
+		color: rgb(0, 83, 240);
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 150%;
+	}
+
+	.table-container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		width: 100%;
+
+		.table-visualization {
+			border-bottom: 1px solid #e7e7ed;
+			max-height: 704px;
+			overflow-y: hidden;
+			width: 100%;
+
+			.list-group {
+				margin-bottom: 0;
+
+				.list-group-text {
+					line-height: 2.1;
+				}
+			}
+
+			.list-item-no-border:not(:nth-child(2)) {
+				border-bottom: 0;
+				border-top: 0;
+			}
+		}
+
+		.table-visualization-show-all {
+			max-height: none;
+			overflow-y: auto;
+		}
+	}
+
+	.table-hover tbody tr:hover {
+		background-color: #fff;
+	}
+}

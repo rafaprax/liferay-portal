@@ -12,9 +12,17 @@
  * details.
  */
 
+import {COLLECTION_LIST_FORMATS} from './collectionListFormats';
+import {CONTAINER_TYPES} from './containerTypes';
 import {LAYOUT_DATA_ITEM_TYPES} from './layoutDataItemTypes';
 
 export const LAYOUT_DATA_ITEM_DEFAULT_CONFIGURATIONS = {
+	[LAYOUT_DATA_ITEM_TYPES.collection]: {
+		collection: {},
+		listFormat: COLLECTION_LIST_FORMATS.stacked,
+		numberOfItems: 3,
+	},
+
 	[LAYOUT_DATA_ITEM_TYPES.column]: {
 		size: 0,
 	},
@@ -25,7 +33,7 @@ export const LAYOUT_DATA_ITEM_DEFAULT_CONFIGURATIONS = {
 		paddingBottom: 3,
 		paddingHorizontal: 3,
 		paddingTop: 3,
-		type: 'fixed',
+		type: CONTAINER_TYPES.fixed,
 	},
 
 	[LAYOUT_DATA_ITEM_TYPES.fragment]: {

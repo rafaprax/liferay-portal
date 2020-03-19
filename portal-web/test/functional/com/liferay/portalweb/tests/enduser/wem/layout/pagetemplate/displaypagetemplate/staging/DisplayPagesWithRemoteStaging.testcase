@@ -71,7 +71,6 @@ definition {
 		PageEditor.addWidget(portletName = "Asset Publisher");
 
 		AssetPublisherPortlet.configureDisplaySettings(
-			displayPage = "true",
 			displaySettings = "Set as the Default Asset Publisher for This Page",
 			portletName = "Asset Publisher");
 

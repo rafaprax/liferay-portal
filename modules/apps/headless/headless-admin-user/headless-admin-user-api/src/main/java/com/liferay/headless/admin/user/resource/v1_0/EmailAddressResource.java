@@ -87,6 +87,9 @@ public interface EmailAddressResource {
 
 		public Builder checkPermissions(boolean checkPermissions);
 
+		public Builder httpServletRequest(
+			HttpServletRequest httpServletRequest);
+
 		public Builder user(com.liferay.portal.kernel.model.User user);
 
 	}

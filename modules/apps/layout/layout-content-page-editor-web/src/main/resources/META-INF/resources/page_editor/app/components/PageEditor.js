@@ -44,6 +44,8 @@ import DragPreview from './DragPreview';
 import {EditableDecorationProvider} from './fragment-content/EditableDecorationContext';
 import {EditableProcessorContextProvider} from './fragment-content/EditableProcessorContext';
 import {
+	CollectionItem,
+	CollectionWithControls,
 	ColumnWithControls,
 	ContainerWithControls,
 	DropZoneWithControls,
@@ -54,6 +56,8 @@ import {
 import {DragDropManager} from './useDragAndDrop';
 
 const LAYOUT_DATA_ITEMS = {
+	[LAYOUT_DATA_ITEM_TYPES.collection]: CollectionWithControls,
+	[LAYOUT_DATA_ITEM_TYPES.collectionItem]: CollectionItem,
 	[LAYOUT_DATA_ITEM_TYPES.column]: ColumnWithControls,
 	[LAYOUT_DATA_ITEM_TYPES.container]: ContainerWithControls,
 	[LAYOUT_DATA_ITEM_TYPES.dropZone]: DropZoneWithControls,

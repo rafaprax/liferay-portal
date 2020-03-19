@@ -16,8 +16,8 @@ import React, {useContext, useMemo, useState} from 'react';
 
 import PromisesResolver from '../../../../shared/components/promises-resolver/PromisesResolver.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
-import {InstanceListContext} from '../../store/InstanceListPageStore.es';
-import {ModalContext} from '../ModalContext.es';
+import {InstanceListContext} from '../../InstanceListPageProvider.es';
+import {ModalContext} from '../ModalProvider.es';
 import {Body} from './InstanceDetailsModalBody.es';
 
 const Header = ({id = '', slaResults = [], slaStatus, status}) => {
@@ -57,10 +57,7 @@ const Header = ({id = '', slaResults = [], slaStatus, status}) => {
 const InstanceDetailsModal = () => {
 	const [retry, setRetry] = useState(0);
 	const {instanceId, setInstanceId} = useContext(InstanceListContext);
-	const {
-		instanceDetailsModal: {processId, visible},
-		setInstanceDetailsModal,
-	} = useContext(ModalContext);
+	const {processId, setVisibleModal, visibleModal} = useContext(ModalContext);
 
 	const url = useMemo(
 		() => `/processes/${processId}/instances/${instanceId}`,
@@ -82,15 +79,11 @@ const InstanceDetailsModal = () => {
 	const {observer} = useModal({
 		onClose: () => {
 			setInstanceId();
-
-			setInstanceDetailsModal({
-				processId,
-				visible: false,
-			});
+			setVisibleModal('');
 		},
 	});
 
-	return visible ? (
+	return visibleModal === 'instanceDetails' ? (
 		<ClayModal
 			className="instance-details-modal"
 			observer={observer}
@@ -110,4 +103,4 @@ const InstanceDetailsModal = () => {
 InstanceDetailsModal.Body = Body;
 InstanceDetailsModal.Header = Header;
 
-export {InstanceDetailsModal};
+export default InstanceDetailsModal;

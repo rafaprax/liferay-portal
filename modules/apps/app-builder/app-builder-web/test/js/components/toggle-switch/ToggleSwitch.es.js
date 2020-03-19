@@ -18,7 +18,10 @@ import React from 'react';
 import ToggleSwitch from '../../../../src/main/resources/META-INF/resources/js/components/toggle-switch/ToggleSwitch.es';
 
 describe('ToggleSwitch', () => {
-	afterEach(cleanup);
+	afterEach(() => {
+		cleanup();
+		jest.restoreAllMocks();
+	});
 
 	it('onChange is called when clicked', async () => {
 		const onChangeCallback = jest.fn();

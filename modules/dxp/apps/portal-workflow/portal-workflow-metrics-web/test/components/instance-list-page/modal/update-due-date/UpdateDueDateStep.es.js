@@ -12,7 +12,7 @@
 import {cleanup, fireEvent, render} from '@testing-library/react';
 import React, {cloneElement, useState} from 'react';
 
-import {UpdateDueDateStep} from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/update-due-date/UpdateDueDateStep.es';
+import UpdateDueDateStep from '../../../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/update-due-date/UpdateDueDateStep.es';
 
 import '@testing-library/jest-dom/extend-expect';
 

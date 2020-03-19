@@ -12,7 +12,7 @@
 import ClayButton from '@clayui/button';
 import {ClayDropDownWithItems} from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
-import React, {useState} from 'react';
+import React from 'react';
 
 import {IconItem} from './IconItem';
 
@@ -43,13 +43,9 @@ const QuickActionKebab = ({
 };
 
 const KebabDropDown = ({disabled, items}) => {
-	const [active, setActive] = useState(false);
-
 	return (
 		<ClayDropDownWithItems
-			active={active}
 			items={items}
-			onActiveChange={setActive}
 			trigger={
 				<ClayButton
 					className="component-action"

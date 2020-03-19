@@ -145,17 +145,16 @@ if (portletTitleBasedNavigation) {
 			<aui:fieldset-group markupView="lexicon">
 				<aui:fieldset>
 					<h1 class="kb-title">
-						<liferay-ui:input-editor
-							contents="<%= HtmlUtil.escape(title) %>"
-							editorName="alloyeditor"
-							name="titleEditor"
-							onChangeMethod='<%= (kbArticle == null) ? "onChangeEditor" : StringPool.BLANK %>'
-							placeholder="title"
-							showSource="<%= false %>"
+						<aui:input
+							autocomplete="off"
+							label=""
+							name="title"
+							onChange='<%= (kbArticle == null) ? renderResponse.getNamespace() + "onChangeEditor" : StringPool.BLANK %>'
+							placeholder='<%= LanguageUtil.get(request, "title") %>'
+							type="text"
+							value="<%= HtmlUtil.escape(title) %>"
 						/>
 					</h1>
-
-					<aui:input name="title" type="hidden" />
 
 					<div class="kb-entity-body">
 
@@ -362,9 +361,6 @@ if (portletTitleBasedNavigation) {
 		document.getElementById(
 			'<portlet:namespace />content'
 		).value = window.<portlet:namespace />contentEditor.getHTML();
-		document.getElementById(
-			'<portlet:namespace />title'
-		).value = window.<portlet:namespace />titleEditor.getText();
 		updateMultipleKBArticleAttachments();
 	});
 </aui:script>

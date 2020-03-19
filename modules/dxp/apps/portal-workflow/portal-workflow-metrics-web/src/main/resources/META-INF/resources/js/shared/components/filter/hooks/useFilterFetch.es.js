@@ -23,7 +23,11 @@ import {useFilterState} from './useFilterState.es';
 const useFilterFetch = ({
 	filterKey,
 	prefixKey,
-	requestUrl,
+	requestBody: data = {},
+	propertyKey = 'key',
+	requestMethod: method = 'get',
+	requestParams: params = {},
+	requestUrl: url,
 	staticItems,
 	withoutRouteParams,
 }) => {
@@ -37,7 +41,11 @@ const useFilterFetch = ({
 	const fetchCallback = useCallback(
 		({data = {}}) => {
 			const mergedItems = mergeItemsArray(staticItems, data.items);
-			const mappedItems = buildFilterItems(mergedItems, selectedKeys);
+			const mappedItems = buildFilterItems({
+				items: mergedItems,
+				propertyKey,
+				selectedKeys,
+			});
 
 			setItems(mappedItems);
 		},
@@ -50,7 +58,7 @@ const useFilterFetch = ({
 			dispatchFilterError(filterKey, true);
 
 			client
-				.get(requestUrl)
+				.request({data, method, params, url})
 				.then(fetchCallback)
 				.catch(() => {
 					dispatchFilterError(filterKey);

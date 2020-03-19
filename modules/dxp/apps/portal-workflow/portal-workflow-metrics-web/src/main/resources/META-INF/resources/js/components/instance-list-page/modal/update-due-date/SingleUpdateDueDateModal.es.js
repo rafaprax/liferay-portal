@@ -21,9 +21,9 @@ import PromisesResolver from '../../../../shared/components/promises-resolver/Pr
 import {useToaster} from '../../../../shared/components/toaster/hooks/useToaster.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
 import {usePost} from '../../../../shared/hooks/usePost.es';
-import {InstanceListContext} from '../../store/InstanceListPageStore.es';
-import {ModalContext} from '../ModalContext.es';
-import {UpdateDueDateStep} from './UpdateDueDateStep.es';
+import {InstanceListContext} from '../../InstanceListPageProvider.es';
+import {ModalContext} from '../ModalProvider.es';
+import UpdateDueDateStep from './UpdateDueDateStep.es';
 
 const ErrorView = ({onClick}) => {
 	return (
@@ -51,18 +51,26 @@ const SingleUpdateDueDateModal = () => {
 
 	const toaster = useToaster();
 
-	const {setUpdateDueDate, updateDueDate} = useContext(ModalContext);
-	const {setSelectedItems} = useContext(InstanceListContext);
+	const {
+		setUpdateDueDate,
+		setVisibleModal,
+		updateDueDate,
+		visibleModal,
+	} = useContext(ModalContext);
+	const {selectedInstance, setSelectedItem, setSelectedItems} = useContext(
+		InstanceListContext
+	);
 
-	const {selectedItem = {}, comment, dueDate} = updateDueDate;
+	const {comment, dueDate} = updateDueDate;
 
 	const {observer, onClose} = useModal({
 		onClose: () => {
+			setSelectedItem({});
+			setSelectedItems([]);
+			setVisibleModal('');
 			setUpdateDueDate({
 				comment: undefined,
 				dueDate: undefined,
-				selectedItem: undefined,
-				visible: false,
 			});
 		},
 	});
@@ -70,7 +78,7 @@ const SingleUpdateDueDateModal = () => {
 	const {data, fetchData} = useFetch({
 		admin: true,
 		params: {completed: false, page: 1, pageSize: 1},
-		url: `/workflow-instances/${selectedItem.id}/workflow-tasks`,
+		url: `/workflow-instances/${selectedInstance.id}/workflow-tasks`,
 	});
 
 	const {dateDue, id: taskId} = useMemo(
@@ -99,7 +107,6 @@ const SingleUpdateDueDateModal = () => {
 					);
 					setSendingPost(false);
 					setErrorToast(false);
-					setSelectedItems([]);
 				})
 				.catch(() => {
 					setErrorToast(
@@ -116,7 +123,7 @@ const SingleUpdateDueDateModal = () => {
 	const promises = useMemo(() => {
 		setErrorToast(false);
 
-		if (updateDueDate.visible) {
+		if (selectedInstance.id && visibleModal === 'updateDueDate') {
 			return [
 				fetchData().catch(err => {
 					setErrorToast(
@@ -128,12 +135,12 @@ const SingleUpdateDueDateModal = () => {
 			];
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetchData, retry]);
+	}, [fetchData, retry, visibleModal]);
 
 	return (
 		<>
 			<PromisesResolver promises={promises}>
-				{updateDueDate.visible && (
+				{visibleModal === 'updateDueDate' && (
 					<ClayModal
 						data-testid="updateDueDateModal"
 						observer={observer}

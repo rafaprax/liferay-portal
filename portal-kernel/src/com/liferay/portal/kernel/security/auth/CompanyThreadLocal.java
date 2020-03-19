@@ -15,6 +15,7 @@
 package com.liferay.portal.kernel.security.auth;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
+import com.liferay.petra.lang.SafeClosable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -81,10 +82,18 @@ public class CompanyThreadLocal {
 		_deleteInProcess.set(deleteInProcess);
 	}
 
+	public static SafeClosable setInitializingCompanyId(long companyId) {
+		if (companyId > 0) {
+			return _companyId.setWithSafeClosable(companyId);
+		}
+
+		return _companyId.setWithSafeClosable(CompanyConstants.SYSTEM);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CompanyThreadLocal.class);
 
-	private static final ThreadLocal<Long> _companyId =
+	private static final CentralizedThreadLocal<Long> _companyId =
 		new CentralizedThreadLocal<>(
 			CompanyThreadLocal.class + "._companyId",
 			() -> CompanyConstants.SYSTEM);

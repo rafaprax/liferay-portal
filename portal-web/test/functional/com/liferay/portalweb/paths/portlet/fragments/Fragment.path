@@ -19,11 +19,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>FRAGMENT_IMAGE</td>
-	<td>//div[contains(@class,'layout-content')]//section[${key_position}]//*[contains(@class,'fragment-${key_fragmentClass}')]//img[contains(@src,'${key_image}')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>FRAGMENT_LAYOUT_BACKGROUND_IMAGE</td>
 	<td>//section[contains(@id,'content')]//div[contains(@style,'${key_imageName}')]</td>
 	<td></td>
@@ -40,7 +35,7 @@
 </tr>
 <tr>
 	<td>PAGE_EDITOR_FRAGMENT_IMAGE</td>
-	<td>//section[contains(@class,'fragment-entry-link')][${key_position}]//*[contains(@class,'fragment-${key_fragmentClass}')]//img[contains(@src,'${key_image}')]</td>
+	<td>//*[contains(@class,'fragment-${key_fragmentClass}')]//img[contains(@src,'${key_image}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -90,7 +85,7 @@
 </tr>
 <tr>
 	<td>FRAGMENT_CHECKBOX</td>
-	<td>//div[contains(@class,'fragments-editor__floating-toolbar')]//label[contains(.,'${checkboxName}')]//input[@type='checkbox']</td>
+	<td>//div[contains(@class,'floating-toolbar')]//label[contains(.,'${checkboxName}')]//input[@type='checkbox']</td>
 	<td></td>
 </tr>
 <tr>

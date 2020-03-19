@@ -95,7 +95,6 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
-import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.permission.ModelPermissionsUtil;
@@ -114,8 +113,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletRequest;
 
 import javax.validation.ValidationException;
 
@@ -203,8 +200,7 @@ public class DataDefinitionResourceImpl
 
 		stream.map(
 			ddmFormFieldTypeName -> _getFieldTypeMetadataJSONObject(
-				contextAcceptLanguage, ddmFormFieldTypeName,
-				contextHttpServletRequest,
+				ddmFormFieldTypeName,
 				_getResourceBundle(
 					ddmFormFieldTypeName,
 					contextAcceptLanguage.getPreferredLocale()))
@@ -543,8 +539,7 @@ public class DataDefinitionResourceImpl
 	}
 
 	private JSONObject _createFieldContextJSONObject(
-		DDMFormFieldType ddmFormFieldType,
-		HttpServletRequest httpServletRequest, Locale locale, String type) {
+		DDMFormFieldType ddmFormFieldType, Locale locale, String type) {
 
 		Locale originalThemeDisplayLocale =
 			LocaleThreadLocal.getThemeDisplayLocale();
@@ -561,16 +556,18 @@ public class DataDefinitionResourceImpl
 			ddmFormRenderingContext.setContainerId("settings");
 
 			DDMFormValues ddmFormValues = _ddmFormValuesFactory.create(
-				httpServletRequest, ddmFormFieldTypeSettingsDDMForm);
+				contextHttpServletRequest, ddmFormFieldTypeSettingsDDMForm);
 
 			_setTypeDDMFormFieldValue(ddmFormValues, type);
 
 			ddmFormRenderingContext.setDDMFormValues(ddmFormValues);
 
-			ddmFormRenderingContext.setHttpServletRequest(httpServletRequest);
+			ddmFormRenderingContext.setHttpServletRequest(
+				contextHttpServletRequest);
 			ddmFormRenderingContext.setLocale(locale);
 			ddmFormRenderingContext.setPortletNamespace(
-				ParamUtil.getString(httpServletRequest, "portletNamespace"));
+				ParamUtil.getString(
+					contextHttpServletRequest, "portletNamespace"));
 			ddmFormRenderingContext.setReturnFullContext(true);
 
 			return JSONFactoryUtil.createJSONObject(
@@ -616,8 +613,7 @@ public class DataDefinitionResourceImpl
 	}
 
 	private JSONObject _getFieldTypeMetadataJSONObject(
-		AcceptLanguage acceptLanguage, String ddmFormFieldName,
-		HttpServletRequest httpServletRequest, ResourceBundle resourceBundle) {
+		String ddmFormFieldName, ResourceBundle resourceBundle) {
 
 		Map<String, Object> ddmFormFieldTypeProperties =
 			_ddmFormFieldTypeServicesTracker.getDDMFormFieldTypeProperties(
@@ -664,8 +660,8 @@ public class DataDefinitionResourceImpl
 		).put(
 			"settingsContext",
 			_createFieldContextJSONObject(
-				ddmFormFieldType, httpServletRequest,
-				acceptLanguage.getPreferredLocale(), ddmFormFieldName)
+				ddmFormFieldType, contextAcceptLanguage.getPreferredLocale(),
+				ddmFormFieldName)
 		).put(
 			"system",
 			MapUtil.getBoolean(

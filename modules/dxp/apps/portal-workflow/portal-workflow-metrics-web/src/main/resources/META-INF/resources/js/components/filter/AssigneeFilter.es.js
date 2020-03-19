@@ -17,6 +17,7 @@ import {useFilterName} from '../../shared/components/filter/hooks/useFilterName.
 import filterConstants from '../../shared/components/filter/util/filterConstants.es';
 
 const AssigneeFilter = ({
+	instanceIds,
 	className,
 	filterKey = filterConstants.assignee.key,
 	options = {},
@@ -48,7 +49,10 @@ const AssigneeFilter = ({
 	const {items, selectedItems} = useFilterFetch({
 		filterKey,
 		prefixKey,
-		requestUrl: `/processes/${processId}/assignee-users?page=0&pageSize=0`,
+		propertyKey: 'id',
+		requestBody: {instanceIds},
+		requestMethod: 'post',
+		requestUrl: `/processes/${processId}/assignees`,
 		staticItems,
 		withoutRouteParams: options.withoutRouteParams,
 	});

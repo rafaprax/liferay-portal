@@ -1452,8 +1452,17 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		if (layout.isTypeContent()) {
-			return GetterUtil.getBoolean(
-				layout.getTypeSettingsProperty("published"));
+			Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
+				PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+
+			boolean published = false;
+
+			if (draftLayout != null) {
+				published = GetterUtil.getBoolean(
+					draftLayout.getTypeSettingsProperty("published"));
+			}
+
+			return published;
 		}
 
 		return true;
@@ -1747,8 +1756,12 @@ public class LayoutsAdminDisplayContext {
 			jsonObject.put("previewLayoutURL", getViewLayoutURL(layout));
 		}
 		else {
-			boolean published = GetterUtil.getBoolean(
-				layout.getTypeSettingsProperty("published"));
+			boolean published = true;
+
+			if (draftLayout != null) {
+				published = GetterUtil.getBoolean(
+					draftLayout.getTypeSettingsProperty("published"));
+			}
 
 			if (!layout.isTypeContent() || published) {
 				jsonObject.put("viewLayoutURL", getViewLayoutURL(layout));

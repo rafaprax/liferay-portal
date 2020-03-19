@@ -10,11 +10,11 @@
  */
 
 import {cleanup, fireEvent, render} from '@testing-library/react';
-import React from 'react';
+import React, {useState} from 'react';
 
+import {InstanceListContext} from '../../../src/main/resources/META-INF/resources/js/components/instance-list-page/InstanceListPageProvider.es';
 import {Table} from '../../../src/main/resources/META-INF/resources/js/components/instance-list-page/InstanceListPageTable.es';
-import {ModalContext} from '../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/ModalContext.es';
-import {InstanceListContext} from '../../../src/main/resources/META-INF/resources/js/components/instance-list-page/store/InstanceListPageStore.es';
+import {ModalContext} from '../../../src/main/resources/META-INF/resources/js/components/instance-list-page/modal/ModalProvider.es';
 import {MockRouter} from '../../mock/MockRouter.es';
 
 const instance = {
@@ -29,38 +29,66 @@ const instance = {
 	taskNames: ['Review', 'Update'],
 };
 
-let selectedItems = [];
+const setInstanceId = jest.fn();
+const setVisibleModal = jest.fn();
 
-const setSelectedItems = jest.fn(value => {
-	selectedItems = value;
-});
+const ContainerMock = ({children}) => {
+	const [, setSelectAll] = useState(false);
+	const [selectedItem, setSelectedItem] = useState({
+		assetTitle: 'Blog1',
+		assetType: 'Blogs Entry',
+		assigneeUsers: [{id: 2, name: 'Test Test'}],
+		id: 1,
+		status: 'In Progress',
+		taskNames: ['Review', 'Update'],
+	});
+	const [selectedItems, setSelectedItems] = useState([
+		{
+			assetTitle: 'Blog1',
+			assetType: 'Blogs Entry',
+			assigneeUsers: [{id: 2, name: 'Test Test'}],
+			id: 1,
+			status: 'In Progress',
+			taskNames: ['Review'],
+		},
+	]);
+	const [singleTransition, setSingleTransition] = useState({});
+	const [visibleModal] = useState('');
 
-const instanceContextValue = {
-	selectedItems,
-	setInstanceId: jest.fn(),
-	setSelectAll: jest.fn(),
-	setSelectedItems,
-};
-
-const modalContextValue = {
-	setInstanceDetailsModal: jest.fn(),
-	setSingleModal: jest.fn(),
-	singleModal: false,
+	return (
+		<MockRouter>
+			<InstanceListContext.Provider
+				value={{
+					selectedItem,
+					selectedItems,
+					setInstanceId,
+					setSelectAll,
+					setSelectedItem,
+					setSelectedItems,
+				}}
+			>
+				<ModalContext.Provider
+					value={{
+						setSingleTransition,
+						setVisibleModal,
+						singleTransition,
+						visibleModal,
+					}}
+				>
+					{children}
+				</ModalContext.Provider>
+			</InstanceListContext.Provider>
+		</MockRouter>
+	);
 };
 
 describe('The instance list item should', () => {
 	afterEach(cleanup);
 
 	test('Be rendered with "User 1", "Jan 01, 2019, 12:00 AM", and "Review, Update" columns', () => {
-		const {getByTestId} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={instanceContextValue}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
-		);
+		const {getByTestId} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
 
 		const creatorUserCell = getByTestId('creatorUserCell');
 		const dateCreatedCell = getByTestId('dateCreatedCell');
@@ -73,13 +101,10 @@ describe('The instance list item should', () => {
 
 	test('Be rendered with check icon when the slaStatus is "OnTime"', () => {
 		const {getByTestId} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={instanceContextValue}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} slaStatus="OnTime" />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
+			<Table.Item {...instance} slaStatus="OnTime" />,
+			{
+				wrapper: ContainerMock,
+			}
 		);
 
 		const instanceStatusIcon = getByTestId('statusIcon');
@@ -91,13 +116,10 @@ describe('The instance list item should', () => {
 
 	test('Be rendered with exclamation icon when the slaStatus is "Overdue"', () => {
 		const {getByTestId} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={instanceContextValue}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} slaStatus="Overdue" />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
+			<Table.Item {...instance} slaStatus="Overdue" />,
+			{
+				wrapper: ContainerMock,
+			}
 		);
 
 		const instanceStatusIcon = getByTestId('statusIcon');
@@ -109,13 +131,10 @@ describe('The instance list item should', () => {
 
 	test('Be rendered with hr icon when the slaStatus is "Untracked"', () => {
 		const {getByTestId} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={instanceContextValue}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} slaStatus="Untracked" />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
+			<Table.Item {...instance} slaStatus="Untracked" />,
+			{
+				wrapper: ContainerMock,
+			}
 		);
 
 		const instanceStatusIcon = getByTestId('statusIcon');
@@ -124,24 +143,41 @@ describe('The instance list item should', () => {
 	});
 
 	test('Call setInstanceId with "1" as instance id param', () => {
-		const contextMock = instanceContextValue;
 		instance.status = 'Completed';
 
-		const {getByTestId} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={contextMock}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
-		);
+		const {getByTestId} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
 
 		const instanceIdLink = getByTestId('instanceIdLink');
 
 		fireEvent.click(instanceIdLink);
 
-		expect(contextMock.setInstanceId).toBeCalledWith(1);
+		expect(setInstanceId).toBeCalledWith(1);
+	});
+
+	test('set BulkReassign modal visualization by clicking the reassign task button', () => {
+		const {getByText} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
+
+		const reassignTaskButton = getByText('reassign-task');
+
+		fireEvent.click(reassignTaskButton);
+
+		expect(setVisibleModal).toHaveBeenCalled();
+	});
+
+	test('set BulkTransition modal visualization by clicking the reassign task button', () => {
+		const {getByText} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
+
+		const reassignTaskButton = getByText('Transition');
+
+		fireEvent.click(reassignTaskButton);
+
+		expect(setVisibleModal).toHaveBeenCalled();
 	});
 });
 
@@ -154,23 +190,64 @@ describe('The InstanceListPageItem quick action menu should', () => {
 		dateCreated: new Date('2019-01-01'),
 		id: 1,
 		taskNames: ['Review'],
+		transitions: [
+			{
+				label: 'Approve',
+				name: 'approve',
+			},
+			{
+				label: 'Reject',
+				name: 'reject',
+			},
+		],
 	};
 
-	test('set modal visualization by clicking the reassign task button', () => {
-		const {getByText} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={instanceContextValue}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
-		);
+	test('set SingleReassign modal visualization by clicking the reassign task button', () => {
+		const {getByText} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
 
 		const reassignTaskButton = getByText('reassign-task');
 
 		fireEvent.click(reassignTaskButton);
-		expect(modalContextValue.setSingleModal).toHaveBeenCalledTimes(1);
+
+		expect(setVisibleModal).toHaveBeenCalled();
+	});
+
+	test('set SingleUpdateDueDate modal visualization by clicking the reassign task button', () => {
+		const {getByText} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
+
+		const reassignTaskButton = getByText('update-due-date');
+
+		fireEvent.click(reassignTaskButton);
+
+		expect(setVisibleModal).toHaveBeenCalled();
+	});
+
+	test('set SingleUpdateDueDate modal visualization by clicking the reassign task button', () => {
+		const {getByText} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
+
+		const reassignTaskButton = getByText('update-due-date');
+
+		fireEvent.click(reassignTaskButton);
+
+		expect(setVisibleModal).toHaveBeenCalled();
+	});
+
+	test('set SingleUpdateDueDate modal visualization by clicking the reassign task button', () => {
+		const {getByText} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
+
+		const reassignTaskButton = getByText('Approve');
+
+		fireEvent.click(reassignTaskButton);
+
+		expect(setVisibleModal).toHaveBeenCalled();
 	});
 });
 
@@ -186,24 +263,18 @@ describe('The InstanceListPageItem instance checkbox component should', () => {
 	};
 
 	test('Set checkbox value by clicking it', () => {
-		const {getByTestId} = render(
-			<MockRouter>
-				<InstanceListContext.Provider value={instanceContextValue}>
-					<ModalContext.Provider value={modalContextValue}>
-						<Table.Item {...instance} />
-					</ModalContext.Provider>
-				</InstanceListContext.Provider>
-			</MockRouter>
-		);
+		const {getByTestId} = render(<Table.Item {...instance} />, {
+			wrapper: ContainerMock,
+		});
 
 		const instanceCheckbox = getByTestId('instanceCheckbox');
 
-		expect(instanceCheckbox.checked).toEqual(false);
-
-		fireEvent.click(instanceCheckbox);
 		expect(instanceCheckbox.checked).toEqual(true);
 
 		fireEvent.click(instanceCheckbox);
 		expect(instanceCheckbox.checked).toEqual(false);
+
+		fireEvent.click(instanceCheckbox);
+		expect(instanceCheckbox.checked).toEqual(true);
 	});
 });

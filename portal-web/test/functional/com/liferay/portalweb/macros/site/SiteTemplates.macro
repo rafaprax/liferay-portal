@@ -196,19 +196,20 @@ definition {
 		Button.clickSave();
 	}
 
-	macro getSiteTemplateURL {
-		SiteTemplatesNavigator.openSiteTemplatesAdmin();
-
+	macro getSiteTemplateID {
 		LexiconEntry.gotoEntryMenuItem(
 			menuItem = "Manage",
 			rowEntry = "${siteTemplateName}");
 
+		Pause(locator1 = "1000");
+
 		var currentURL = Navigator.getCurrentURL();
 		var siteTemplateURL = StringUtil.extractFirst("${currentURL}", "/~/");
+		var siteTemplateID = StringUtil.extractLast("${siteTemplateURL}", "/");
 
-		echo("siteTemplateURL: ${siteTemplateURL}");
+		echo("siteTemplateID: ${siteTemplateID}");
 
-		return "${siteTemplateURL}";
+		return "${siteTemplateID}";
 	}
 
 	macro gotoSettingsCP {

@@ -29,8 +29,6 @@ if (result instanceof AssetEntry) {
 
 	if (assetEntry.getClassName().equals(DLFileEntryConstants.getClassName())) {
 		fileEntry = DLAppLocalServiceUtil.getFileEntry(assetEntry.getClassPK());
-
-		fileEntry = fileEntry.toEscapedModel();
 	}
 	else {
 		fileShortcut = DLAppLocalServiceUtil.getFileShortcut(assetEntry.getClassPK());
@@ -62,6 +60,15 @@ latestFileVersion = latestFileVersion.toEscapedModel();
 Date modifiedDate = latestFileVersion.getModifiedDate();
 
 String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modifiedDate.getTime(), true);
+
+DLViewFileVersionDisplayContext dlViewFileVersionDisplayContext = null;
+
+if (fileShortcut == null) {
+	dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, latestFileVersion);
+}
+else {
+	dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, fileShortcut);
+}
 
 PortletURL rowURL = liferayPortletResponse.createRenderURL();
 
@@ -101,14 +108,20 @@ rowURL.setParameter("fileEntryId", String.valueOf(fileEntry.getFileEntryId()));
 
 	<c:choose>
 		<c:when test="<%= fileShortcut != null %>">
-			<span>
+			<span class="file-icon-color-0 inline-item inline-item-after">
 				<aui:icon image="shortcut" markupView="lexicon" message="shortcut" />
 			</span>
 		</c:when>
 		<c:when test="<%= fileEntry.hasLock() || fileEntry.isCheckedOut() %>">
-			<span>
+			<span class="file-icon-color-0 inline-item inline-item-after">
 				<aui:icon image="lock" markupView="lexicon" message="locked" />
 			</span>
 		</c:when>
 	</c:choose>
+
+	<c:if test="<%= dlViewFileVersionDisplayContext.isShared() %>">
+		<span class="file-icon-color-0 inline-item inline-item-after lfr-portal-tooltip" title="<%= LanguageUtil.get(request, "shared") %>">
+			<aui:icon image="users" markupView="lexicon" message="shared" />
+		</span>
+	</c:if>
 </span>

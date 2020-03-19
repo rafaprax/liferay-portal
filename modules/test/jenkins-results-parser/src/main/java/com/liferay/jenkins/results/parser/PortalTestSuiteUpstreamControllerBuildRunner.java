@@ -75,6 +75,34 @@ public class PortalTestSuiteUpstreamControllerBuildRunner
 			buildData.getPortalUpstreamBranchName(), ")");
 	}
 
+	protected String getTestPortalBuildProfile(String testSuite) {
+		try {
+			Properties buildProperties =
+				JenkinsResultsParserUtil.getBuildProperties();
+
+			S buildData = getBuildData();
+
+			String buildProfile = buildProperties.getProperty(
+				JenkinsResultsParserUtil.combine(
+					"portal.testsuite.upstream.test.portal.build.profile[",
+					buildData.getPortalUpstreamBranchName(), "][", testSuite,
+					"]"));
+
+			if (buildProfile == null) {
+				buildProfile = buildProperties.getProperty(
+					"portal.testsuite.upstream.test.portal.build.profile");
+			}
+
+			return buildProfile;
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(
+				"Unable to get portal build profile for test suite " +
+					testSuite,
+				ioException);
+		}
+	}
+
 	@Override
 	protected void initWorkspace() {
 		setWorkspace(WorkspaceFactory.newSimpleWorkspace());
@@ -113,6 +141,8 @@ public class PortalTestSuiteUpstreamControllerBuildRunner
 			sb.append("/buildWithParameters?");
 			sb.append("token=");
 			sb.append(jenkinsAuthenticationToken);
+			sb.append("&CI_TEST_SUITE=");
+			sb.append(testSuiteName);
 			sb.append("&JENKINS_GITHUB_BRANCH_NAME=");
 			sb.append(buildData.getJenkinsGitHubBranchName());
 			sb.append("&JENKINS_GITHUB_BRANCH_USERNAME=");
@@ -121,8 +151,14 @@ public class PortalTestSuiteUpstreamControllerBuildRunner
 			sb.append(buildData.getPortalBranchSHA());
 			sb.append("&PORTAL_GITHUB_URL=");
 			sb.append(buildData.getPortalGitHubURL());
-			sb.append("&CI_TEST_SUITE=");
-			sb.append(testSuiteName);
+
+			String testPortalBuildProfile = getTestPortalBuildProfile(
+				testSuiteName);
+
+			if (testPortalBuildProfile != null) {
+				sb.append("&TEST_PORTAL_BUILD_PROFILE=");
+				sb.append(testPortalBuildProfile);
+			}
 
 			String testrayProjectName = _getTestrayProjectName(testSuiteName);
 

@@ -25,6 +25,7 @@ import com.liferay.headless.delivery.dto.v1_0.PageDefinition;
 import com.liferay.headless.delivery.dto.v1_0.PageElement;
 import com.liferay.headless.delivery.dto.v1_0.PageTemplate;
 import com.liferay.headless.delivery.dto.v1_0.PageTemplateCollection;
+import com.liferay.headless.delivery.dto.v1_0.Settings;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateExportImportConstants;
@@ -50,6 +51,7 @@ import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -62,7 +64,9 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -74,7 +78,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -107,7 +113,7 @@ public class LayoutPageTemplatesImporterImpl
 		try (ZipFile zipFile = new ZipFile(file)) {
 			Map<String, PageTemplateCollectionEntry>
 				pageTemplateCollectionEntryMap =
-					_getPageTemplateCollectionEntryMap(zipFile);
+					_getPageTemplateCollectionEntryMap(groupId, zipFile);
 
 			for (Map.Entry<String, PageTemplateCollectionEntry> entry :
 					pageTemplateCollectionEntryMap.entrySet()) {
@@ -162,6 +168,28 @@ public class LayoutPageTemplatesImporterImpl
 		_updateLayoutPageTemplateStructure(layout, layoutStructure);
 
 		return fragmentEntryLinks;
+	}
+
+	private String _getErrorMessage(
+			long groupId, String languageKey, String resourceName)
+		throws PortalException {
+
+		Locale locale = null;
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		if (serviceContext != null) {
+			locale = serviceContext.getLocale();
+		}
+		else {
+			locale = _portal.getSiteDefaultLocale(groupId);
+		}
+
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			locale, getClass());
+
+		return _language.format(resourceBundle, languageKey, resourceName);
 	}
 
 	private List<FragmentEntryLink> _getFragmentEntryLinks(
@@ -267,8 +295,8 @@ public class LayoutPageTemplatesImporterImpl
 	}
 
 	private Map<String, PageTemplateCollectionEntry>
-			_getPageTemplateCollectionEntryMap(ZipFile zipFile)
-		throws IOException {
+			_getPageTemplateCollectionEntryMap(long groupId, ZipFile zipFile)
+		throws IOException, PortalException {
 
 		Map<String, PageTemplateCollectionEntry> pageTemplateCollectionMap =
 			new HashMap<>();
@@ -345,7 +373,8 @@ public class LayoutPageTemplatesImporterImpl
 				pageTemplateCollectionEntry.addPageTemplateEntry(
 					pageTemplateEntryKey,
 					new PageTemplateEntry(
-						pageTemplate, pageDefinition, thumbnailZipEntry));
+						pageTemplate, pageDefinition, thumbnailZipEntry,
+						zipEntry.getName()));
 			}
 			catch (PageDefinitionValidatorException
 						pageDefinitionValidatorException) {
@@ -359,7 +388,12 @@ public class LayoutPageTemplatesImporterImpl
 				_layoutPageTemplatesImporterResultEntries.add(
 					new LayoutPageTemplatesImporterResultEntry(
 						pageTemplate.getName(),
-						LayoutPageTemplatesImporterResultEntry.Status.INVALID));
+						LayoutPageTemplatesImporterResultEntry.Status.INVALID,
+						_getErrorMessage(
+							groupId,
+							"x-could-not-be-imported-because-its-page-" +
+								"definition-is-invalid",
+							zipEntry.getName())));
 			}
 		}
 
@@ -387,11 +421,13 @@ public class LayoutPageTemplatesImporterImpl
 
 		int pos = path.lastIndexOf(CharPool.SLASH);
 
-		if (pos == -1) {
-			return _DEFAULT_PAGE_TEMPLATE_COLLECTION_KEY;
+		String layoutPageTemplateCollectionKey = path.substring(pos + 1);
+
+		if (Validator.isNotNull(layoutPageTemplateCollectionKey)) {
+			return layoutPageTemplateCollectionKey;
 		}
 
-		return path.substring(pos + 1);
+		return _DEFAULT_PAGE_TEMPLATE_COLLECTION_KEY;
 	}
 
 	private String _getPageTemplateEntryKey(
@@ -520,6 +556,12 @@ public class LayoutPageTemplatesImporterImpl
 					position++;
 				}
 			}
+
+			Settings settings = pageDefinition.getSettings();
+
+			if (settings != null) {
+				_updateLayoutSettings(layout, settings);
+			}
 		}
 
 		_updateLayoutPageTemplateStructure(layout, layoutStructure);
@@ -622,25 +664,29 @@ public class LayoutPageTemplatesImporterImpl
 						layoutPageTemplateEntry.getLayoutPageTemplateEntryId(),
 						pageTemplateEntry.getThumbnailZipEntry(), zipFile);
 
-					layoutPageTemplateEntry =
-						_layoutPageTemplateEntryService.
-							updateLayoutPageTemplateEntry(
-								layoutPageTemplateEntry.
-									getLayoutPageTemplateEntryId(),
-								previewFileEntryId);
+					_layoutPageTemplateEntryService.
+						updateLayoutPageTemplateEntry(
+							layoutPageTemplateEntry.
+								getLayoutPageTemplateEntryId(),
+							previewFileEntryId);
 
 					_layoutPageTemplatesImporterResultEntries.add(
 						new LayoutPageTemplatesImporterResultEntry(
-							layoutPageTemplateEntry.getName(),
+							pageTemplate.getName(),
 							LayoutPageTemplatesImporterResultEntry.Status.
 								IMPORTED));
 				}
 				else {
 					_layoutPageTemplatesImporterResultEntries.add(
 						new LayoutPageTemplatesImporterResultEntry(
-							layoutPageTemplateEntry.getName(),
+							pageTemplate.getName(),
 							LayoutPageTemplatesImporterResultEntry.Status.
-								IGNORED));
+								IGNORED,
+							_getErrorMessage(
+								groupId,
+								"x-was-ignored-because-a-page-template-with-" +
+									"the-same-key-already-exists",
+								pageTemplateEntry.getZipPath())));
 				}
 			}
 			catch (PortalException portalException) {
@@ -651,7 +697,12 @@ public class LayoutPageTemplatesImporterImpl
 				_layoutPageTemplatesImporterResultEntries.add(
 					new LayoutPageTemplatesImporterResultEntry(
 						pageTemplate.getName(),
-						LayoutPageTemplatesImporterResultEntry.Status.INVALID));
+						LayoutPageTemplatesImporterResultEntry.Status.INVALID,
+						_getErrorMessage(
+							groupId,
+							"x-could-not-be-imported-because-a-page-template-" +
+								"with-the-same-name-already-exists",
+							pageTemplateEntry.getZipPath())));
 			}
 		}
 	}
@@ -694,6 +745,36 @@ public class LayoutPageTemplatesImporterImpl
 		_layoutCopyHelper.copyLayout(layout, draftLayout);
 	}
 
+	private void _updateLayoutSettings(Layout layout, Settings settings) {
+		if (Validator.isNotNull(settings.getCss())) {
+			layout.setCss(settings.getCss());
+		}
+
+		if (Validator.isNotNull(settings.getColorSchemeName())) {
+			layout.setColorSchemeId(settings.getColorSchemeName());
+		}
+
+		if (Validator.isNotNull(settings.getThemeName())) {
+			layout.setThemeId(settings.getThemeName());
+		}
+
+		UnicodeProperties unicodeProperties =
+			layout.getTypeSettingsProperties();
+
+		Map<String, String> themeSettings =
+			(Map<String, String>)settings.getThemeSettings();
+
+		if (themeSettings != null) {
+			for (Map.Entry<String, String> entry : themeSettings.entrySet()) {
+				unicodeProperties.put(entry.getKey(), entry.getValue());
+			}
+
+			layout.setTypeSettingsProperties(unicodeProperties);
+		}
+
+		_layoutLocalService.updateLayout(layout);
+	}
+
 	private static final String _DEFAULT_PAGE_TEMPLATE_COLLECTION_KEY =
 		"imported";
 
@@ -718,6 +799,9 @@ public class LayoutPageTemplatesImporterImpl
 
 	@Reference
 	private FragmentEntryValidator _fragmentEntryValidator;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private LayoutCopyHelper _layoutCopyHelper;
@@ -792,11 +876,12 @@ public class LayoutPageTemplatesImporterImpl
 
 		public PageTemplateEntry(
 			PageTemplate pageTemplate, PageDefinition pageDefinition,
-			ZipEntry thumbnailZipEntry) {
+			ZipEntry thumbnailZipEntry, String zipPath) {
 
 			_pageTemplate = pageTemplate;
 			_pageDefinition = pageDefinition;
 			_thumbnailZipEntry = thumbnailZipEntry;
+			_zipPath = zipPath;
 		}
 
 		public PageDefinition getPageDefinition() {
@@ -811,9 +896,14 @@ public class LayoutPageTemplatesImporterImpl
 			return _thumbnailZipEntry;
 		}
 
+		public String getZipPath() {
+			return _zipPath;
+		}
+
 		private final PageDefinition _pageDefinition;
 		private final PageTemplate _pageTemplate;
 		private final ZipEntry _thumbnailZipEntry;
+		private final String _zipPath;
 
 	}
 

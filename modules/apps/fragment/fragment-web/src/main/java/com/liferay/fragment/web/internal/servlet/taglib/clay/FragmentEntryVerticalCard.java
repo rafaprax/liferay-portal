@@ -68,6 +68,16 @@ public abstract class FragmentEntryVerticalCard
 	}
 
 	@Override
+	public String getStickerCssClass() {
+		return "fragment-entry-sticker";
+	}
+
+	@Override
+	public String getStickerIcon() {
+		return getIcon();
+	}
+
+	@Override
 	public String getTitle() {
 		return HtmlUtil.escape(fragmentEntry.getName());
 	}

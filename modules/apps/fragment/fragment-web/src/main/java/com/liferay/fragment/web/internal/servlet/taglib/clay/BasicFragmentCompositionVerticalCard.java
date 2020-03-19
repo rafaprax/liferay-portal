@@ -77,7 +77,7 @@ public class BasicFragmentCompositionVerticalCard
 
 	@Override
 	public String getIcon() {
-		return "code";
+		return "edit-layout";
 	}
 
 	@Override
@@ -101,6 +101,16 @@ public class BasicFragmentCompositionVerticalCard
 		return LabelItemListBuilder.add(
 			labelItem -> labelItem.setStatus(_fragmentComposition.getStatus())
 		).build();
+	}
+
+	@Override
+	public String getStickerCssClass() {
+		return "fragment-composition-sticker";
+	}
+
+	@Override
+	public String getStickerIcon() {
+		return getIcon();
 	}
 
 	@Override

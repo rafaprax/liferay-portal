@@ -18,7 +18,10 @@ import React from 'react';
 import DropDown from '../../../../src/main/resources/META-INF/resources/js/components/table/DropDown.es';
 
 describe('DropDown', () => {
-	afterEach(cleanup);
+	afterEach(() => {
+		cleanup();
+		jest.restoreAllMocks();
+	});
 
 	it('shows dropdown when trigger is clicked and action is called', async () => {
 		const actionCallback = jest.fn();

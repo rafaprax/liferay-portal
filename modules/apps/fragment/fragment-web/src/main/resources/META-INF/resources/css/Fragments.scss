@@ -1,0 +1,15 @@
+@import 'atlas-variables';
+
+.fragment-composition-sticker {
+	background-color: $indigo;
+	color: $white;
+}
+
+.fragment-entry-sticker {
+	background-color: $teal;
+	color: $white;
+
+	.lexicon-icon {
+		font-size: 22px;
+	}
+}

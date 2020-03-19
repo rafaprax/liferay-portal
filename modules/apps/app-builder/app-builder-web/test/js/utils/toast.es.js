@@ -29,7 +29,7 @@ jest.mock('frontend-js-web', () => {
 describe('toast', () => {
 	afterEach(() => {
 		cleanup();
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	it('executes success toast with default values', () => {
