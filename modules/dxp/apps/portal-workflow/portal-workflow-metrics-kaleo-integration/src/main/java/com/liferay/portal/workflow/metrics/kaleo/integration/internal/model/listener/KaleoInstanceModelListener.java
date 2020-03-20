@@ -65,7 +65,7 @@ public class KaleoInstanceModelListener
 			_createAssetTitleLocalizationMap(kaleoInstance),
 			_createAssetTypeLocalizationMap(kaleoInstance),
 			kaleoInstance.getClassName(), kaleoInstance.getClassPK(),
-			kaleoInstance.getCompanyId(), kaleoInstance.getCreateDate(),
+			kaleoInstance.getCompanyId(), null, kaleoInstance.getCreateDate(),
 			kaleoInstance.getKaleoInstanceId(), kaleoInstance.getModifiedDate(),
 			kaleoInstance.getKaleoDefinitionId(),
 			kaleoDefinitionVersion.getVersion(), kaleoInstance.getUserId(),

@@ -40,6 +40,8 @@ import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstance;
 import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
 
+import java.time.Duration;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -64,8 +66,8 @@ public class InstanceWorkflowMetricsIndexerImpl
 	public Document addInstance(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
 		String className, long classPK, long companyId, Date completionDate,
-		Date createDate, long duration, long instanceId, Date modifiedDate,
-		long processId, String processVersion, long userId, String userName) {
+		Date createDate, long instanceId, Date modifiedDate, long processId,
+		String processVersion, long userId, String userName) {
 
 		DocumentBuilder documentBuilder = documentBuilderFactory.builder();
 
@@ -103,71 +105,20 @@ public class InstanceWorkflowMetricsIndexerImpl
 			createDate.getTime()
 		).setValue(
 			"deleted", Boolean.FALSE
-		).setLong(
-			"instanceId", instanceId
-		).setDate(
-			"modifiedDate", formatDate(modifiedDate)
 		);
 
 		if (completionDate != null) {
-			documentBuilder.setLong("duration", duration);
+			documentBuilder.setLong(
+				"duration", _getDuration(completionDate, createDate));
 		}
 
 		documentBuilder.setLong(
-			"processId", processId
-		).setString(
-			"version", processVersion
-		).setLong(
-			"userId", userId
-		).setString(
-			"userName", userName
-		);
-
-		setLocalizedField(documentBuilder, "assetTitle", assetTitleMap);
-		setLocalizedField(documentBuilder, "assetType", assetTypeMap);
-
-		Document document = documentBuilder.build();
-
-		workflowMetricsPortalExecutor.execute(() -> addDocument(document));
-
-		return document;
-	}
-
-	@Override
-	public Document addInstance(
-		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
-		String className, long classPK, long companyId, Date createDate,
-		long instanceId, Date modifiedDate, long processId,
-		String processVersion, long userId, String userName) {
-
-		DocumentBuilder documentBuilder = documentBuilderFactory.builder();
-
-		documentBuilder.setString(
-			Field.UID, digest(companyId, instanceId)
-		).setLong(
-			"companyId", companyId
-		).setString(
-			"className", className
-		).setLong(
-			"classPK", classPK
-		).setString(
-			"className", className
-		).setDate(
-			"createDate", formatDate(createDate)
-		).setValue(
-			Field.getSortableFieldName(
-				StringBundler.concat(
-					"createDate", StringPool.UNDERLINE, "Number")),
-			createDate.getTime()
-		).setValue(
-			"completed", Boolean.FALSE
-		).setValue(
-			"deleted", Boolean.FALSE
-		).setLong(
 			"instanceId", instanceId
 		).setDate(
 			"modifiedDate", formatDate(modifiedDate)
-		).setLong(
+		);
+
+		documentBuilder.setLong(
 			"processId", processId
 		).setString(
 			"version", processVersion
@@ -307,14 +258,12 @@ public class InstanceWorkflowMetricsIndexerImpl
 					return;
 				}
 
-				long duration = 0;
-
 				addInstance(
 					_createAssetTitleLocalizationMap(kaleoInstance),
 					_createAssetTypeLocalizationMap(kaleoInstance),
 					kaleoInstance.getClassName(), kaleoInstance.getClassPK(),
 					companyId, kaleoInstance.getCompletionDate(),
-					kaleoInstance.getCreateDate(), duration,
+					kaleoInstance.getCreateDate(),
 					kaleoInstance.getKaleoInstanceId(),
 					kaleoInstance.getModifiedDate(),
 					kaleoInstance.getKaleoDefinitionId(),
@@ -423,6 +372,13 @@ public class InstanceWorkflowMetricsIndexerImpl
 	private AssetRendererFactory<?> _getAssetRendererFactory(String className) {
 		return AssetRendererFactoryRegistryUtil.
 			getAssetRendererFactoryByClassName(className);
+	}
+
+	private long _getDuration(Date completionDate, Date createDate) {
+		Duration duration = Duration.between(
+			createDate.toInstant(), completionDate.toInstant());
+
+		return duration.toMillis();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

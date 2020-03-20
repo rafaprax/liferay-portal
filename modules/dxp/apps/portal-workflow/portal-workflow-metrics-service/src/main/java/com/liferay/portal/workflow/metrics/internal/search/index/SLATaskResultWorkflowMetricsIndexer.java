@@ -143,14 +143,14 @@ public class SLATaskResultWorkflowMetricsIndexer
 	}
 
 	protected Document creatDefaultDocument(
-		long companyId, long processId, long nodeId, String taskName) {
+		long companyId, long nodeId, long processId, String taskName) {
 
 		WorkflowMetricsSLATaskResult workflowMetricsSLATaskResult =
 			new WorkflowMetricsSLATaskResult();
 
 		workflowMetricsSLATaskResult.setCompanyId(companyId);
-		workflowMetricsSLATaskResult.setProcessId(processId);
 		workflowMetricsSLATaskResult.setNodeId(nodeId);
+		workflowMetricsSLATaskResult.setProcessId(processId);
 		workflowMetricsSLATaskResult.setTaskName(taskName);
 
 		return createDocument(workflowMetricsSLATaskResult);
@@ -196,8 +196,8 @@ public class SLATaskResultWorkflowMetricsIndexer
 			SearchHit::getDocument
 		).map(
 			document -> creatDefaultDocument(
-				companyId, document.getLong("processId"),
-				document.getLong("nodeId"), document.getString("name"))
+				companyId, document.getLong("nodeId"),
+				document.getLong("processId"), document.getString("name"))
 		).map(
 			document -> new IndexDocumentRequest(getIndexName(), document) {
 				{

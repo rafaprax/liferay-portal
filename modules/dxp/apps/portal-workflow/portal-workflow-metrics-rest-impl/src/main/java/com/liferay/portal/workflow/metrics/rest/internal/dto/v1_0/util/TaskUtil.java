@@ -15,6 +15,8 @@
 package com.liferay.portal.workflow.metrics.rest.internal.dto.v1_0.util;
 
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Task;
@@ -74,8 +76,14 @@ public class TaskUtil {
 			return dateFormat.parse(formattedDate);
 		}
 		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(exception, exception);
+			}
+
 			return null;
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(TaskUtil.class);
 
 }

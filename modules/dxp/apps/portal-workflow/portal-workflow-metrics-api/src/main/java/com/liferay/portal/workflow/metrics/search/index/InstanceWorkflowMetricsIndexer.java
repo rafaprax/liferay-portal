@@ -28,13 +28,7 @@ public interface InstanceWorkflowMetricsIndexer {
 	public Document addInstance(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
 		String className, long classPK, long companyId, Date completionDate,
-		Date createDate, long duration, long instanceId, Date modifiedDate,
-		long processId, String processVersion, long userId, String userName);
-
-	public Document addInstance(
-		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
-		String className, long classPK, long companyId, Date createDate,
-		long instanceId, Date modifiedDate, long processId,
+		Date createDate, long instanceId, Date modifiedDate, long processId,
 		String processVersion, long userId, String userName);
 
 	public Document completeInstance(

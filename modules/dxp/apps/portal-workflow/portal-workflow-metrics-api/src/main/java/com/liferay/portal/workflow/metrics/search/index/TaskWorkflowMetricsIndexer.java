@@ -17,7 +17,6 @@ package com.liferay.portal.workflow.metrics.search.index;
 import com.liferay.portal.search.document.Document;
 
 import java.util.Date;
-import java.util.Optional;
 
 /**
  * @author Rafael Praxedes
@@ -25,16 +24,11 @@ import java.util.Optional;
 public interface TaskWorkflowMetricsIndexer {
 
 	public Document addTask(
-		long assigneeId, String className, long classPK, long companyId,
-		boolean completed, Date completionDate, long completionUserId,
-		Date createDate, Date modifiedDate, long instanceId,
-		boolean instanceCompleted, long nodeId, String name, long processId,
+		Long assigneeId, String className, long classPK, long companyId,
+		boolean completed, Date completionDate, Long completionUserId,
+		Date createDate, boolean instanceCompleted, long instanceId,
+		Date modifiedDate, String name, long nodeId, long processId,
 		String processVersion, long taskId, long userId);
-
-	public Document addTask(
-		String className, long classPK, Date createDate, long companyId,
-		long instanceId, String name, long nodeId, Date modifiedDate,
-		long processId, String processVersion, long taskId, long userId);
 
 	public Document completeTask(
 		long companyId, Date completionDate, long completionUserId,
@@ -43,7 +37,7 @@ public interface TaskWorkflowMetricsIndexer {
 	public void deleteTask(long companyId, long taskId);
 
 	public Document updateTask(
-		Optional<Long> assigneeId, long companyId, Date modifiedDate,
-		long taskId, long userId);
+		Long assigneeId, long companyId, Date modifiedDate, long taskId,
+		long userId);
 
 }

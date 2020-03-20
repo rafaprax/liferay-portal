@@ -19,6 +19,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
@@ -243,6 +245,10 @@ public abstract class BaseWorkflowMetricsIndexer
 			return dateFormat.format(date);
 		}
 		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(exception, exception);
+			}
+
 			return null;
 		}
 	}
@@ -435,6 +441,9 @@ public abstract class BaseWorkflowMetricsIndexer
 
 	private static final boolean _INDEX_ON_STARTUP = GetterUtil.getBoolean(
 		PropsUtil.get(PropsKeys.INDEX_ON_STARTUP));
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		BaseWorkflowMetricsIndexer.class);
 
 	private final DateTimeFormatter _dateTimeFormatter =
 		DateTimeFormatter.ofPattern(

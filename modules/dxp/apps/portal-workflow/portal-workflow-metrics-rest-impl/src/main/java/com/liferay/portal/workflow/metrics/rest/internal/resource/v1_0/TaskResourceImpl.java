@@ -39,7 +39,6 @@ import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndex
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -112,7 +111,7 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 		getProcessTask(processId, taskId);
 
 		_taskWorkflowMetricsIndexer.updateTask(
-			Optional.of(task.getAssigneeId()), contextCompany.getCompanyId(),
+			task.getAssigneeId(), contextCompany.getCompanyId(),
 			task.getDateModified(), task.getId(), contextUser.getUserId());
 	}
 
@@ -132,9 +131,10 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 	public Task postProcessTask(Long processId, Task task) throws Exception {
 		return TaskUtil.toTask(
 			_taskWorkflowMetricsIndexer.addTask(
-				task.getClassName(), task.getClassPK(), task.getDateCreated(),
-				contextCompany.getCompanyId(), task.getInstanceId(),
-				task.getName(), task.getNodeId(), task.getDateModified(),
+				task.getAssigneeId(), task.getClassName(), task.getClassPK(),
+				contextCompany.getCompanyId(), false, null, null,
+				task.getDateCreated(), false, task.getInstanceId(),
+				task.getDateModified(), task.getName(), task.getNodeId(),
 				processId, task.getProcessVersion(), task.getId(),
 				contextUser.getUserId()),
 			_language,

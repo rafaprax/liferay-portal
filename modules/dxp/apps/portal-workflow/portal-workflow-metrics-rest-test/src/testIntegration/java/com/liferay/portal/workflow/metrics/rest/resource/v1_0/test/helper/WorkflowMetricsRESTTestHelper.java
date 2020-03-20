@@ -131,7 +131,7 @@ public class WorkflowMetricsRESTTestHelper {
 		_instanceWorkflowMetricsIndexer.addInstance(
 			_createLocalizationMap(instance.getAssetTitle()),
 			_createLocalizationMap(instance.getAssetType()), StringPool.BLANK,
-			0, companyId,
+			0, companyId, null,
 			Optional.ofNullable(
 				instance.getDateCreated()
 			).orElseGet(
@@ -482,10 +482,11 @@ public class WorkflowMetricsRESTTestHelper {
 		throws Exception {
 
 		_taskWorkflowMetricsIndexer.addTask(
-			task.getClassName(), task.getClassPK(), task.getDateCreated(),
-			companyId, instance.getId(), task.getName(), task.getNodeId(),
-			task.getDateModified(), task.getProcessId(),
-			task.getProcessVersion(), task.getId(), 0);
+			task.getAssigneeId(), task.getClassName(), task.getClassPK(),
+			companyId, false, null, null, task.getDateCreated(), false,
+			instance.getId(), task.getDateModified(), task.getName(),
+			task.getNodeId(), task.getProcessId(), task.getProcessVersion(),
+			task.getId(), 0);
 
 		_retryAssertCount(
 			"workflow-metrics-tasks", "companyId", companyId, "deleted", false,
@@ -495,8 +496,7 @@ public class WorkflowMetricsRESTTestHelper {
 
 		if (task.getAssigneeId() != 0) {
 			_taskWorkflowMetricsIndexer.updateTask(
-				Optional.of(task.getAssigneeId()), companyId, new Date(),
-				task.getId(), 0);
+				task.getAssigneeId(), companyId, new Date(), task.getId(), 0);
 
 			_retryAssertCount(
 				"workflow-metrics-tasks", "assigneeId", task.getAssigneeId(),

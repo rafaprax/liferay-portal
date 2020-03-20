@@ -272,7 +272,7 @@ public class InstanceResourceImpl extends BaseInstanceResourceImpl {
 				LocalizedMapUtil.getLocalizedMap(instance.getAssetTitle_i18n()),
 				LocalizedMapUtil.getLocalizedMap(instance.getAssetType_i18n()),
 				instance.getClassName(), instance.getClassPK(),
-				contextCompany.getCompanyId(), instance.getDateCreated(),
+				contextCompany.getCompanyId(), null, instance.getDateCreated(),
 				instance.getId(), instance.getDateModified(), processId,
 				instance.getProcessVersion(), creator.getId(),
 				creator.getName()));

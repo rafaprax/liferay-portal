@@ -14,6 +14,8 @@
 
 package com.liferay.portal.workflow.metrics.rest.internal.dto.v1_0.util;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -83,6 +85,10 @@ public class ProcessUtil {
 			return dateFormat.parse(formattedDate);
 		}
 		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(exception, exception);
+			}
+
 			return null;
 		}
 	}
@@ -92,5 +98,7 @@ public class ProcessUtil {
 
 		return locale.toLanguageTag();
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(ProcessUtil.class);
 
 }

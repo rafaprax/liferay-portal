@@ -29,7 +29,6 @@ import java.time.Duration;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -52,14 +51,14 @@ public class KaleoTaskInstanceTokenModelListener
 		}
 
 		_taskWorkflowMetricsIndexer.addTask(
-			kaleoTaskInstanceToken.getClassName(),
+			null, kaleoTaskInstanceToken.getClassName(),
 			kaleoTaskInstanceToken.getClassPK(),
-			kaleoTaskInstanceToken.getCreateDate(),
-			kaleoTaskInstanceToken.getCompanyId(),
+			kaleoTaskInstanceToken.getCompanyId(), false, null, null,
+			kaleoTaskInstanceToken.getCreateDate(), false,
 			kaleoTaskInstanceToken.getKaleoInstanceId(),
+			kaleoTaskInstanceToken.getModifiedDate(),
 			kaleoTaskInstanceToken.getKaleoTaskName(),
 			kaleoTaskInstanceToken.getKaleoTaskId(),
-			kaleoTaskInstanceToken.getModifiedDate(),
 			kaleoTaskInstanceToken.getKaleoDefinitionId(),
 			kaleoDefinitionVersion.getVersion(),
 			kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
@@ -84,8 +83,7 @@ public class KaleoTaskInstanceTokenModelListener
 				}
 
 				_taskWorkflowMetricsIndexer.updateTask(
-					Optional.of(
-						kaleoTaskAssignmentInstance.getAssigneeClassPK()),
+					kaleoTaskAssignmentInstance.getAssigneeClassPK(),
 					kaleoTaskInstanceToken.getCompanyId(),
 					kaleoTaskInstanceToken.getModifiedDate(),
 					kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
