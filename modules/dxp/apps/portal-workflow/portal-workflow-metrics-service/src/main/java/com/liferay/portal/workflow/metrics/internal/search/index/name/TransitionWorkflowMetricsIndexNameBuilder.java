@@ -22,10 +22,11 @@ import org.osgi.service.component.annotations.Component;
  * @author Rafael Praxedes
  */
 @Component(
-	immediate = true, property = "workflow.metrics.index.entity.name=node",
+	immediate = true,
+	property = "workflow.metrics.index.entity.name=transition",
 	service = WorkflowMetricsIndexNameBuilder.class
 )
-public class NodeWorkflowMetricsIndexNameBuilder
+public class TransitionWorkflowMetricsIndexNameBuilder
 	extends BaseWorkfllowMetricsIndexNameBuilder {
 
 	@Override
@@ -33,6 +34,7 @@ public class NodeWorkflowMetricsIndexNameBuilder
 		return _INDEX_NAME_PREFIX;
 	}
 
-	private static final String _INDEX_NAME_PREFIX = "workflow-metrics-nodes-";
+	private static final String _INDEX_NAME_PREFIX =
+		"workflow-metrics-transitions-";
 
 }

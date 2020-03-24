@@ -31,6 +31,7 @@ import com.liferay.portal.workflow.kaleo.model.KaleoInstance;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignmentInstance;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.time.Duration;
 
@@ -167,6 +168,7 @@ public class TaskWorkflowMetricsIndexerImpl
 					queries.term("taskId", document.getLong("taskId")));
 
 				_slaTaskResultWorkflowMetricsIndexer.updateDocuments(
+					companyId,
 					HashMapBuilder.<String, Object>put(
 						"completionDate", document.getDate("completionDate")
 					).put(
@@ -189,8 +191,8 @@ public class TaskWorkflowMetricsIndexerImpl
 	}
 
 	@Override
-	public String getIndexName() {
-		return "workflow-metrics-tasks";
+	public String getIndexName(long companyId) {
+		return _taskWorkflowMetricsIndexNameBuilder.getIndexName(companyId);
 	}
 
 	@Override
@@ -310,6 +312,7 @@ public class TaskWorkflowMetricsIndexerImpl
 					queries.term("taskId", document.getLong("taskId")));
 
 				_slaTaskResultWorkflowMetricsIndexer.updateDocuments(
+					companyId,
 					HashMapBuilder.<String, Object>put(
 						"assigneeId", assigneeId
 					).build(),
@@ -329,5 +332,9 @@ public class TaskWorkflowMetricsIndexerImpl
 	@Reference
 	private SLATaskResultWorkflowMetricsIndexer
 		_slaTaskResultWorkflowMetricsIndexer;
+
+	@Reference(target = "(workflow.metrics.index.entity.name=task)")
+	private WorkflowMetricsIndexNameBuilder
+		_taskWorkflowMetricsIndexNameBuilder;
 
 }

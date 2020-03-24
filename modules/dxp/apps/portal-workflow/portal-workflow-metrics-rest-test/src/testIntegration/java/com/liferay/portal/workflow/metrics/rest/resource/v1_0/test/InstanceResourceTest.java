@@ -37,6 +37,7 @@ import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsI
 import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +64,14 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 
 		_workflowMetricsRESTTestHelper = new WorkflowMetricsRESTTestHelper(
 			_documentBuilderFactory, _instanceWorkflowMetricsIndexer,
-			_nodeWorkflowMetricsIndexer, _processWorkflowMetricsIndexer,
-			_queries, _searchEngineAdapter, _taskWorkflowMetricsIndexer);
+			_instanceWorkflowMetricsIndexNameBuilder,
+			_nodeWorkflowMetricsIndexer, _nodeWorkflowMetricsIndexNameBuilder,
+			_processWorkflowMetricsIndexer,
+			_processWorkflowMetricsIndexNameBuilder, _queries,
+			_searchEngineAdapter,
+			_slaInstanceResultWorkflowMetricsIndexNameBuilder,
+			_slaTaskResultWorkflowMetricsIndexNameBuilder,
+			_taskWorkflowMetricsIndexer, _taskWorkflowMetricsIndexNameBuilder);
 	}
 
 	@Before
@@ -277,11 +284,23 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 	private static InstanceWorkflowMetricsIndexer
 		_instanceWorkflowMetricsIndexer;
 
+	@Inject(filter = "workflow.metrics.index.entity.name=instance")
+	private static WorkflowMetricsIndexNameBuilder
+		_instanceWorkflowMetricsIndexNameBuilder;
+
 	@Inject
 	private static NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
 
+	@Inject(filter = "workflow.metrics.index.entity.name=node")
+	private static WorkflowMetricsIndexNameBuilder
+		_nodeWorkflowMetricsIndexNameBuilder;
+
 	@Inject
 	private static ProcessWorkflowMetricsIndexer _processWorkflowMetricsIndexer;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=process")
+	private static WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
 
 	@Inject
 	private static Queries _queries;
@@ -289,8 +308,20 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 	@Inject(blocking = false, filter = "search.engine.impl=Elasticsearch")
 	private static SearchEngineAdapter _searchEngineAdapter;
 
+	@Inject(filter = "workflow.metrics.index.entity.name=sla-instance-result")
+	private static WorkflowMetricsIndexNameBuilder
+		_slaInstanceResultWorkflowMetricsIndexNameBuilder;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=sla-task-result")
+	private static WorkflowMetricsIndexNameBuilder
+		_slaTaskResultWorkflowMetricsIndexNameBuilder;
+
 	@Inject
 	private static TaskWorkflowMetricsIndexer _taskWorkflowMetricsIndexer;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=task")
+	private static WorkflowMetricsIndexNameBuilder
+		_taskWorkflowMetricsIndexNameBuilder;
 
 	private static WorkflowMetricsRESTTestHelper _workflowMetricsRESTTestHelper;
 

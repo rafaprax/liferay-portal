@@ -104,7 +104,8 @@ public abstract class BaseWorkflowMetricsIndexer
 		documents.forEach(
 			document -> bulkDocumentRequest.addBulkableDocumentRequest(
 				new IndexDocumentRequest(
-					getIndexName(), document.getString(Field.UID), document) {
+					getIndexName(document.getLong("companyId")),
+					document.getString(Field.UID), document) {
 
 					{
 						setType(getIndexType());
@@ -123,17 +124,17 @@ public abstract class BaseWorkflowMetricsIndexer
 	}
 
 	@Override
-	public void createIndex() throws PortalException {
+	public void createIndex(long companyId) throws PortalException {
 		if (searchEngineAdapter == null) {
 			return;
 		}
 
-		if (hasIndex(getIndexName())) {
+		if (hasIndex(getIndexName(companyId))) {
 			return;
 		}
 
 		CreateIndexRequest createIndexRequest = new CreateIndexRequest(
-			getIndexName());
+			getIndexName(companyId));
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
 			StringUtil.read(getClass(), "/META-INF/search/mappings.json"));
@@ -168,7 +169,7 @@ public abstract class BaseWorkflowMetricsIndexer
 			return;
 		}
 
-		if (!hasIndex(getIndexName())) {
+		if (!hasIndex(getIndexName(companyId))) {
 			return;
 		}
 
@@ -185,7 +186,8 @@ public abstract class BaseWorkflowMetricsIndexer
 		booleanQuery.setPreBooleanFilter(booleanFilter);
 
 		DeleteByQueryDocumentRequest deleteByQueryDocumentRequest =
-			new DeleteByQueryDocumentRequest(booleanQuery, getIndexName());
+			new DeleteByQueryDocumentRequest(
+				booleanQuery, getIndexName(companyId));
 
 		if (PortalRunMode.isTestMode()) {
 			deleteByQueryDocumentRequest.setRefresh(true);
@@ -200,7 +202,9 @@ public abstract class BaseWorkflowMetricsIndexer
 
 	@Activate
 	protected void activate() throws Exception {
-		createIndex();
+		for (Company company : companyLocalService.getCompanies()) {
+			createIndex(company.getCompanyId());
+		}
 
 		if (!_INDEX_ON_STARTUP) {
 			for (Company company : companyLocalService.getCompanies()) {
@@ -215,7 +219,7 @@ public abstract class BaseWorkflowMetricsIndexer
 		}
 
 		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
-			getIndexName(), document);
+			getIndexName(document.getLong("companyId")), document);
 
 		if (PortalRunMode.isTestMode()) {
 			indexDocumentRequest.setRefresh(true);
@@ -305,14 +309,16 @@ public abstract class BaseWorkflowMetricsIndexer
 		ModuleServiceLifecycle moduleServiceLifecycle) {
 	}
 
-	protected void updateDocuments(Map<String, Object> fieldsMap, Query query) {
+	protected void updateDocuments(
+		long companyId, Map<String, Object> fieldsMap, Query query) {
+
 		if (searchEngineAdapter == null) {
 			return;
 		}
 
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames(getIndexName());
+		searchSearchRequest.setIndexNames(getIndexName(companyId));
 		searchSearchRequest.setQuery(query);
 		searchSearchRequest.setTypes(getIndexType());
 		searchSearchRequest.setSelectedFieldNames(Field.UID);
@@ -347,7 +353,7 @@ public abstract class BaseWorkflowMetricsIndexer
 					(name, value) -> documentBuilder.setValue(name, value));
 
 				return new UpdateDocumentRequest(
-					getIndexName(), document.getString(Field.UID),
+					getIndexName(companyId), document.getString(Field.UID),
 					documentBuilder.build()) {
 
 					{
@@ -427,7 +433,8 @@ public abstract class BaseWorkflowMetricsIndexer
 		}
 
 		UpdateDocumentRequest updateDocumentRequest = new UpdateDocumentRequest(
-			getIndexName(), document.getString(Field.UID), document);
+			getIndexName(document.getLong("companyId")),
+			document.getString(Field.UID), document);
 
 		if (PortalRunMode.isTestMode()) {
 			updateDocumentRequest.setRefresh(true);

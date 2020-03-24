@@ -29,6 +29,7 @@ import com.liferay.portal.search.engine.adapter.document.BulkDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.Date;
 import java.util.Locale;
@@ -59,7 +60,8 @@ public class ProcessWorkflowMetricsIndexerImpl
 
 		bulkDocumentRequest.addBulkableDocumentRequest(
 			new IndexDocumentRequest(
-				_instanceWorkflowMetricsIndex.getIndexName(),
+				_instanceWorkflowMetricsIndex.getIndexName(
+					document.getLong("companyId")),
 				_createWorkflowMetricsInstanceDocument(
 					document.getLong("companyId"),
 					document.getLong("processId"))) {
@@ -70,7 +72,8 @@ public class ProcessWorkflowMetricsIndexerImpl
 			});
 		bulkDocumentRequest.addBulkableDocumentRequest(
 			new IndexDocumentRequest(
-				_slaInstanceResultWorkflowMetricsIndexer.getIndexName(),
+				_slaInstanceResultWorkflowMetricsIndexer.getIndexName(
+					document.getLong("companyId")),
 				_slaInstanceResultWorkflowMetricsIndexer.creatDefaultDocument(
 					document.getLong("companyId"),
 					document.getLong("processId"))) {
@@ -82,7 +85,9 @@ public class ProcessWorkflowMetricsIndexerImpl
 				}
 			});
 		bulkDocumentRequest.addBulkableDocumentRequest(
-			new IndexDocumentRequest(getIndexName(), document) {
+			new IndexDocumentRequest(
+				getIndexName(document.getLong("companyId")), document) {
+
 				{
 					setType(getIndexType());
 				}
@@ -147,8 +152,8 @@ public class ProcessWorkflowMetricsIndexerImpl
 	}
 
 	@Override
-	public String getIndexName() {
-		return "workflow-metrics-processes";
+	public String getIndexName(long companyId) {
+		return _processWorkflowMetricsIndexNameBuilder.getIndexName(companyId);
 	}
 
 	@Override
@@ -254,6 +259,10 @@ public class ProcessWorkflowMetricsIndexerImpl
 
 	@Reference(target = "(workflow.metrics.index.entity.name=instance)")
 	private WorkflowMetricsIndex _instanceWorkflowMetricsIndex;
+
+	@Reference(target = "(workflow.metrics.index.entity.name=process)")
+	private WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
 
 	@Reference
 	private SLAInstanceResultWorkflowMetricsIndexer

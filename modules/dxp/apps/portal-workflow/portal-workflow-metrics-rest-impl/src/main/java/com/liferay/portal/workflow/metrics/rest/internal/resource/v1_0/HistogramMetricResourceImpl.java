@@ -33,6 +33,7 @@ import com.liferay.portal.workflow.metrics.rest.dto.v1_0.Histogram;
 import com.liferay.portal.workflow.metrics.rest.dto.v1_0.HistogramMetric;
 import com.liferay.portal.workflow.metrics.rest.internal.resource.helper.ResourceHelper;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.HistogramMetricResource;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -93,7 +94,9 @@ public class HistogramMetricResourceImpl
 
 		searchSearchRequest.addAggregation(dateRangeAggregation);
 
-		searchSearchRequest.setIndexNames("workflow-metrics-instances");
+		searchSearchRequest.setIndexNames(
+			_instanceWorkflowMetricsIndexNameBuilder.getIndexName(
+				contextCompany.getCompanyId()));
 
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
@@ -293,6 +296,10 @@ public class HistogramMetricResourceImpl
 	private final DateTimeFormatter _dateTimeFormatter =
 		DateTimeFormatter.ofPattern(
 			PropsUtil.get(PropsKeys.INDEX_DATE_FORMAT_PATTERN));
+
+	@Reference(target = "(workflow.metrics.index.entity.name=instance)")
+	private WorkflowMetricsIndexNameBuilder
+		_instanceWorkflowMetricsIndexNameBuilder;
 
 	@Reference
 	private Queries _queries;

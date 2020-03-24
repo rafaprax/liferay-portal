@@ -30,10 +30,9 @@ public class TaskWorkflowMetricsIndexNameBuilder
 
 	@Override
 	public String getIndexNamePrefix() {
-		return INDEX_NAME_PREFIX;
+		return _INDEX_NAME_PREFIX;
 	}
 
-	protected static final String INDEX_NAME_PREFIX =
-		"liferay-workflow-metrics-tasks-";
+	private static final String _INDEX_NAME_PREFIX = "workflow-metrics-tasks-";
 
 }

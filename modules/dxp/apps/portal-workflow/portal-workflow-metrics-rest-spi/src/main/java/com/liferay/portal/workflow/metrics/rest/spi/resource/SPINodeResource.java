@@ -26,6 +26,7 @@ import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,11 +38,17 @@ import java.util.stream.Stream;
 public class SPINodeResource<T> {
 
 	public SPINodeResource(
-		long companyId, Queries queries,
-		SearchRequestExecutor searchRequestExecutor,
+		long companyId,
+		WorkflowMetricsIndexNameBuilder nodeWorkflowMetricsIndexNameBuilder,
+		WorkflowMetricsIndexNameBuilder processWorkflowMetricsIndexNameBuilder,
+		Queries queries, SearchRequestExecutor searchRequestExecutor,
 		UnsafeFunction<Document, T, SystemException> transformUnsafeFunction) {
 
 		_companyId = companyId;
+		_nodeWorkflowMetricsIndexNameBuilder =
+			nodeWorkflowMetricsIndexNameBuilder;
+		_processWorkflowMetricsIndexNameBuilder =
+			processWorkflowMetricsIndexNameBuilder;
 		_queries = queries;
 		_searchRequestExecutor = searchRequestExecutor;
 		_transformUnsafeFunction = transformUnsafeFunction;
@@ -50,7 +57,8 @@ public class SPINodeResource<T> {
 	public Page<T> getProcessNodesPage(Long processId) throws Exception {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames("workflow-metrics-nodes");
+		searchSearchRequest.setIndexNames(
+			_nodeWorkflowMetricsIndexNameBuilder.getIndexName(_companyId));
 
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
@@ -86,7 +94,8 @@ public class SPINodeResource<T> {
 	private String _getLatestProcessVersion(long companyId, long processId) {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames("workflow-metrics-processes");
+		searchSearchRequest.setIndexNames(
+			_processWorkflowMetricsIndexNameBuilder.getIndexName(companyId));
 
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
@@ -116,6 +125,10 @@ public class SPINodeResource<T> {
 	}
 
 	private final long _companyId;
+	private final WorkflowMetricsIndexNameBuilder
+		_nodeWorkflowMetricsIndexNameBuilder;
+	private final WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
 	private final Queries _queries;
 	private final SearchRequestExecutor _searchRequestExecutor;
 	private final UnsafeFunction<Document, T, SystemException>

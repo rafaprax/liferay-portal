@@ -30,10 +30,10 @@ public class InstanceWorkflowMetricsIndexNameBuilder
 
 	@Override
 	public String getIndexNamePrefix() {
-		return INDEX_NAME_PREFIX;
+		return _INDEX_NAME_PREFIX;
 	}
 
-	private static final String INDEX_NAME_PREFIX =
+	private static final String _INDEX_NAME_PREFIX =
 		"workflow-metrics-instances-";
 
 }

@@ -35,6 +35,7 @@ import com.liferay.portal.workflow.metrics.rest.internal.dto.v1_0.util.TaskUtil;
 import com.liferay.portal.workflow.metrics.rest.internal.resource.helper.ResourceHelper;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.TaskResource;
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.Collection;
 import java.util.List;
@@ -67,7 +68,9 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 	public Task getProcessTask(Long processId, Long taskId) throws Exception {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames("workflow-metrics-tasks");
+		searchSearchRequest.setIndexNames(
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				contextCompany.getCompanyId()));
 		searchSearchRequest.setQuery(
 			_createTasksBooleanQuery(
 				processId, taskId,
@@ -208,7 +211,9 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 
 		searchSearchRequest.addAggregation(termsAggregation);
 
-		searchSearchRequest.setIndexNames("workflow-metrics-tasks");
+		searchSearchRequest.setIndexNames(
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				contextCompany.getCompanyId()));
 		searchSearchRequest.setQuery(
 			_createTasksBooleanQuery(
 				processId,
@@ -256,5 +261,9 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 
 	@Reference
 	private TaskWorkflowMetricsIndexer _taskWorkflowMetricsIndexer;
+
+	@Reference(target = "(workflow.metrics.index.entity.name=task)")
+	private WorkflowMetricsIndexNameBuilder
+		_taskWorkflowMetricsIndexNameBuilder;
 
 }

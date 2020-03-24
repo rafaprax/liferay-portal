@@ -29,6 +29,7 @@ import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 import com.liferay.portal.workflow.kaleo.model.KaleoTask;
 import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.Date;
 import java.util.Objects;
@@ -102,8 +103,8 @@ public class NodeWorkflowMetricsIndexerImpl
 	}
 
 	@Override
-	public String getIndexName() {
-		return "workflow-metrics-nodes";
+	public String getIndexName(long companyId) {
+		return _nodeWorkflowMetricsIndexNameBuilder.getIndexName(companyId);
 	}
 
 	@Override
@@ -126,7 +127,8 @@ public class NodeWorkflowMetricsIndexerImpl
 		if (Objects.equals(document.getString("type"), "TASK")) {
 			bulkDocumentRequest.addBulkableDocumentRequest(
 				new IndexDocumentRequest(
-					_slaTaskResultWorkflowMetricsIndexer.getIndexName(),
+					_slaTaskResultWorkflowMetricsIndexer.getIndexName(
+						document.getLong("companyId")),
 					_slaTaskResultWorkflowMetricsIndexer.creatDefaultDocument(
 						document.getLong("companyId"),
 						document.getLong("nodeId"),
@@ -142,7 +144,8 @@ public class NodeWorkflowMetricsIndexerImpl
 
 			bulkDocumentRequest.addBulkableDocumentRequest(
 				new IndexDocumentRequest(
-					_taskWorkflowMetricsIndex.getIndexName(),
+					_taskWorkflowMetricsIndex.getIndexName(
+						document.getLong("companyId")),
 					_createWorkflowMetricsTaskDocument(
 						document.getLong("companyId"),
 						document.getLong("processId"),
@@ -156,7 +159,9 @@ public class NodeWorkflowMetricsIndexerImpl
 		}
 
 		bulkDocumentRequest.addBulkableDocumentRequest(
-			new IndexDocumentRequest(getIndexName(), document) {
+			new IndexDocumentRequest(
+				getIndexName(document.getLong("companyId")), document) {
+
 				{
 					setType(getIndexType());
 				}
@@ -277,6 +282,10 @@ public class NodeWorkflowMetricsIndexerImpl
 
 		actionableDynamicQuery.performActions();
 	}
+
+	@Reference(target = "(workflow.metrics.index.entity.name=node)")
+	private WorkflowMetricsIndexNameBuilder
+		_nodeWorkflowMetricsIndexNameBuilder;
 
 	@Reference
 	private SLATaskResultWorkflowMetricsIndexer

@@ -20,6 +20,9 @@ import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsInde
 
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * @author Rafael Praxedes
+ */
 public abstract class BaseWorkfllowMetricsIndexNameBuilder
 	implements WorkflowMetricsIndexNameBuilder {
 

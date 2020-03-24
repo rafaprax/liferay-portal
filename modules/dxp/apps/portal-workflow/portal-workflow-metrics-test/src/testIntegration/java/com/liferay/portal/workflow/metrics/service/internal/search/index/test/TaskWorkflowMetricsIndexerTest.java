@@ -17,9 +17,11 @@ package com.liferay.portal.workflow.metrics.service.internal.search.index.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 import com.liferay.portal.workflow.metrics.service.util.BaseWorkflowMetricsIndexerTestCase;
 
 import java.time.Duration;
@@ -51,7 +53,9 @@ public class TaskWorkflowMetricsIndexerTest
 		KaleoDefinition kaleoDefinition = getKaleoDefinition();
 
 		retryAssertCount(
-			"workflow-metrics-tasks", "WorkflowMetricsTaskType", "companyId",
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				kaleoDefinition.getCompanyId()),
+			"WorkflowMetricsTaskType", "companyId",
 			kaleoDefinition.getCompanyId(), "completed", false, "deleted",
 			false, "processId", kaleoDefinition.getKaleoDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
@@ -67,7 +71,9 @@ public class TaskWorkflowMetricsIndexerTest
 		KaleoDefinition kaleoDefinition = getKaleoDefinition();
 
 		retryAssertCount(
-			"workflow-metrics-tasks", "WorkflowMetricsTaskType", "companyId",
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				kaleoDefinition.getCompanyId()),
+			"WorkflowMetricsTaskType", "companyId",
 			kaleoDefinition.getCompanyId(), "completed", false, "deleted",
 			false, "processId", kaleoDefinition.getKaleoDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
@@ -78,7 +84,9 @@ public class TaskWorkflowMetricsIndexerTest
 			kaleoTaskInstanceToken);
 
 		retryAssertCount(
-			"workflow-metrics-tasks", "WorkflowMetricsTaskType", "assigneeId",
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				kaleoDefinition.getCompanyId()),
+			"WorkflowMetricsTaskType", "assigneeId",
 			TestPropsValues.getUserId(), "companyId",
 			kaleoDefinition.getCompanyId(), "processId",
 			kaleoDefinition.getKaleoDefinitionId(), "nodeId",
@@ -94,7 +102,9 @@ public class TaskWorkflowMetricsIndexerTest
 		KaleoDefinition kaleoDefinition = getKaleoDefinition();
 
 		retryAssertCount(
-			"workflow-metrics-tasks", "WorkflowMetricsTaskType", "companyId",
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				kaleoDefinition.getCompanyId()),
+			"WorkflowMetricsTaskType", "companyId",
 			kaleoDefinition.getCompanyId(), "completed", false, "deleted",
 			false, "processId", kaleoDefinition.getKaleoDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
@@ -112,7 +122,9 @@ public class TaskWorkflowMetricsIndexerTest
 			createDate.toInstant(), completionDate.toInstant());
 
 		retryAssertCount(
-			"workflow-metrics-tasks", "WorkflowMetricsTaskType", "assigneeId",
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				kaleoDefinition.getCompanyId()),
+			"WorkflowMetricsTaskType", "assigneeId",
 			TestPropsValues.getUserId(), "companyId",
 			kaleoDefinition.getCompanyId(), "duration", duration.toMillis(),
 			"processId", kaleoDefinition.getKaleoDefinitionId(), "nodeId",
@@ -130,7 +142,9 @@ public class TaskWorkflowMetricsIndexerTest
 		KaleoDefinition kaleoDefinition = getKaleoDefinition();
 
 		retryAssertCount(
-			"workflow-metrics-tasks", "WorkflowMetricsTaskType", "companyId",
+			_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+				kaleoDefinition.getCompanyId()),
+			"WorkflowMetricsTaskType", "companyId",
 			kaleoDefinition.getCompanyId(), "completed", false, "deleted", true,
 			"processId", kaleoDefinition.getKaleoDefinitionId(), "nodeId",
 			kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review", "taskId",
@@ -146,7 +160,10 @@ public class TaskWorkflowMetricsIndexerTest
 		KaleoDefinition kaleoDefinition = getKaleoDefinition();
 
 		assertReindex(
-			new String[] {"workflow-metrics-tasks"},
+			new String[] {
+				_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+					kaleoDefinition.getCompanyId())
+			},
 			new String[] {"WorkflowMetricsTaskType"}, "companyId",
 			kaleoDefinition.getCompanyId(), "completed", false, "processId",
 			kaleoDefinition.getKaleoDefinitionId(), "nodeId",
@@ -154,5 +171,9 @@ public class TaskWorkflowMetricsIndexerTest
 			kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(), "version",
 			"1.0");
 	}
+
+	@Inject(filter = "workflow.metrics.index.entity.name=task")
+	private WorkflowMetricsIndexNameBuilder
+		_taskWorkflowMetricsIndexNameBuilder;
 
 }

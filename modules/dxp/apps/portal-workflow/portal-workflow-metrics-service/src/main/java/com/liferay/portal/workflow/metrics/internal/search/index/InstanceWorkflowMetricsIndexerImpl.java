@@ -39,6 +39,7 @@ import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstance;
 import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.time.Duration;
 
@@ -175,10 +176,11 @@ public class InstanceWorkflowMetricsIndexerImpl
 				BooleanQuery booleanQuery = queries.booleanQuery();
 
 				booleanQuery.addMustQueryClauses(
-					queries.term("companyId", document.getLong("companyId")),
-					queries.term("instanceId", document.getLong("instanceId")));
+					queries.term("companyId", companyId),
+					queries.term("instanceId", instanceId));
 
 				_slaInstanceResultWorkflowMetricsIndexer.updateDocuments(
+					companyId,
 					HashMapBuilder.<String, Object>put(
 						"completionDate", document.getDate("completionDate")
 					).put(
@@ -187,6 +189,7 @@ public class InstanceWorkflowMetricsIndexerImpl
 					booleanQuery);
 
 				_slaTaskResultWorkflowMetricsIndexer.updateDocuments(
+					companyId,
 					HashMapBuilder.<String, Object>put(
 						"instanceCompleted", Boolean.TRUE
 					).build(),
@@ -196,6 +199,7 @@ public class InstanceWorkflowMetricsIndexerImpl
 					(BaseWorkflowMetricsIndexer)_taskWorkflowMetricsIndex;
 
 				baseWorkflowMetricsIndexer.updateDocuments(
+					companyId,
 					HashMapBuilder.<String, Object>put(
 						"instanceCompleted", Boolean.TRUE
 					).build(),
@@ -227,8 +231,8 @@ public class InstanceWorkflowMetricsIndexerImpl
 	}
 
 	@Override
-	public String getIndexName() {
-		return "workflow-metrics-instances";
+	public String getIndexName(long companyId) {
+		return _instanceWorkflowMetricsIndexNameBuilder.getIndexName(companyId);
 	}
 
 	@Override
@@ -383,6 +387,10 @@ public class InstanceWorkflowMetricsIndexerImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		InstanceWorkflowMetricsIndexerImpl.class);
+
+	@Reference(target = "(workflow.metrics.index.entity.name=instance)")
+	private WorkflowMetricsIndexNameBuilder
+		_instanceWorkflowMetricsIndexNameBuilder;
 
 	@Reference
 	private SLAInstanceResultWorkflowMetricsIndexer

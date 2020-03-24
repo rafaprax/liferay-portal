@@ -44,6 +44,7 @@ import com.liferay.portal.search.sort.FieldSort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 import com.liferay.portal.workflow.metrics.sla.processor.WorkflowMetricsSLAStatus;
 
 import java.io.IOException;
@@ -202,11 +203,15 @@ public class ResourceHelper {
 				clazz.getResourceAsStream("dependencies/" + resourceName)));
 	}
 
-	public BooleanQuery createTasksBooleanQuery(boolean instanceCompleted) {
+	public BooleanQuery createTasksBooleanQuery(
+		long companyId, boolean instanceCompleted) {
+
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
 		booleanQuery.addFilterQueryClauses(
-			_queries.term("_index", "workflow-metrics-tasks"));
+			_queries.term(
+				"_index",
+				_taskWorkflowMetricsIndexNameBuilder.getIndexName(companyId)));
 
 		booleanQuery.addMustQueryClauses(
 			_queries.term("instanceCompleted", instanceCompleted));
@@ -342,7 +347,8 @@ public class ResourceHelper {
 	public String getLatestProcessVersion(long companyId, long processId) {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames("workflow-metrics-processes");
+		searchSearchRequest.setIndexNames(
+			_processWorkflowMetricsIndexNameBuilder.getIndexName(companyId));
 
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
@@ -478,6 +484,10 @@ public class ResourceHelper {
 	@Reference
 	private Portal _portal;
 
+	@Reference(target = "(workflow.metrics.index.entity.name=process)")
+	private WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
+
 	@Reference
 	private Queries _queries;
 
@@ -489,6 +499,10 @@ public class ResourceHelper {
 
 	@Reference
 	private Sorts _sorts;
+
+	@Reference(target = "(workflow.metrics.index.entity.name=task)")
+	private WorkflowMetricsIndexNameBuilder
+		_taskWorkflowMetricsIndexNameBuilder;
 
 	private Script _workflowMetricsInstanceCountCombineScript;
 	private Script _workflowMetricsInstanceCountInitScript;
