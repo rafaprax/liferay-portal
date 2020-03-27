@@ -16,9 +16,9 @@ package com.liferay.portal.workflow.metrics.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.function.UnsafeBiConsumer;
-import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.odata.entity.EntityField;
+import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilderFactory;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.query.Queries;
@@ -27,6 +27,10 @@ import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Process;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.test.helper.WorkflowMetricsRESTTestHelper;
+import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.ArrayList;
@@ -52,13 +56,15 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 		BaseProcessResourceTestCase.setUpClass();
 
 		_workflowMetricsRESTTestHelper = new WorkflowMetricsRESTTestHelper(
-			_documentBuilderFactory, _instanceWorkflowMetricsIndexNameBuilder,
-			_nodeWorkflowMetricsIndexNameBuilder,
+			_documentBuilderFactory, _instanceWorkflowMetricsIndexer,
+			_instanceWorkflowMetricsIndexNameBuilder,
+			_nodeWorkflowMetricsIndexer, _nodeWorkflowMetricsIndexNameBuilder,
+			_processWorkflowMetricsIndexer,
 			_processWorkflowMetricsIndexNameBuilder, _queries,
 			_searchEngineAdapter,
 			_slaInstanceResultWorkflowMetricsIndexNameBuilder,
 			_slaTaskResultWorkflowMetricsIndexNameBuilder,
-			_tokenWorkflowMetricsIndexNameBuilder);
+			_taskWorkflowMetricsIndexer, _taskWorkflowMetricsIndexNameBuilder);
 	}
 
 	@Before
@@ -253,13 +259,23 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 
 	private static Document[] _documents;
 
+	@Inject
+	private static InstanceWorkflowMetricsIndexer
+		_instanceWorkflowMetricsIndexer;
+
 	@Inject(filter = "workflow.metrics.index.entity.name=instance")
 	private static WorkflowMetricsIndexNameBuilder
 		_instanceWorkflowMetricsIndexNameBuilder;
 
+	@Inject
+	private static NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
+
 	@Inject(filter = "workflow.metrics.index.entity.name=node")
 	private static WorkflowMetricsIndexNameBuilder
 		_nodeWorkflowMetricsIndexNameBuilder;
+
+	@Inject
+	private static ProcessWorkflowMetricsIndexer _processWorkflowMetricsIndexer;
 
 	@Inject(filter = "workflow.metrics.index.entity.name=process")
 	private static WorkflowMetricsIndexNameBuilder
@@ -279,9 +295,12 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 	private static WorkflowMetricsIndexNameBuilder
 		_slaTaskResultWorkflowMetricsIndexNameBuilder;
 
-	@Inject(filter = "workflow.metrics.index.entity.name=token")
+	@Inject
+	private static TaskWorkflowMetricsIndexer _taskWorkflowMetricsIndexer;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=task")
 	private static WorkflowMetricsIndexNameBuilder
-		_tokenWorkflowMetricsIndexNameBuilder;
+		_taskWorkflowMetricsIndexNameBuilder;
 
 	private static WorkflowMetricsRESTTestHelper _workflowMetricsRESTTestHelper;
 

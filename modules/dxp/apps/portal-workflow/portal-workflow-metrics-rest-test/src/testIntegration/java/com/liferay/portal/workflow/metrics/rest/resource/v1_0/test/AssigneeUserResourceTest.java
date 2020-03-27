@@ -39,9 +39,12 @@ import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Task;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.test.helper.WorkflowMetricsRESTTestHelper;
+import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,13 +68,15 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 		BaseAssigneeUserResourceTestCase.setUpClass();
 
 		_workflowMetricsRESTTestHelper = new WorkflowMetricsRESTTestHelper(
-			_documentBuilderFactory, _instanceWorkflowMetricsIndexNameBuilder,
-			_nodeWorkflowMetricsIndexNameBuilder,
+			_documentBuilderFactory, _instanceWorkflowMetricsIndexer,
+			_instanceWorkflowMetricsIndexNameBuilder,
+			_nodeWorkflowMetricsIndexer, _nodeWorkflowMetricsIndexNameBuilder,
+			_processWorkflowMetricsIndexer,
 			_processWorkflowMetricsIndexNameBuilder, _queries,
 			_searchEngineAdapter,
 			_slaInstanceResultWorkflowMetricsIndexNameBuilder,
 			_slaTaskResultWorkflowMetricsIndexNameBuilder,
-			_tokenWorkflowMetricsIndexNameBuilder);
+			_taskWorkflowMetricsIndexer, _taskWorkflowMetricsIndexNameBuilder);
 	}
 
 	@Before
@@ -95,7 +100,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 		_deleteSLATaskResults();
 		_deleteTasks();
-		_deleteTokens();
+		_deleteTasks();
 	}
 
 	@Override
@@ -487,10 +492,9 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 		throws Exception {
 
 		for (Task task : tasks) {
-			_tasks.add(
-				_workflowMetricsRESTTestHelper.addTask(
-					assigneeId, testGroup.getCompanyId(), instanceSupplier,
-					processId, status, task, "1.0"));
+			_workflowMetricsRESTTestHelper.addTask(
+				assigneeId, testGroup.getCompanyId(), instanceSupplier,
+				processId, status, task, "1.0");
 		}
 	}
 
@@ -509,16 +513,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 	}
 
 	private void _deleteTasks() throws Exception {
-		for (Task task : _tasks) {
-			_workflowMetricsRESTTestHelper.deleteTask(
-				testGroup.getCompanyId(), _process.getId(), task);
-		}
-
-		_tasks.clear();
-	}
-
-	private void _deleteTokens() throws Exception {
-		_workflowMetricsRESTTestHelper.deleteTokens(
+		_workflowMetricsRESTTestHelper.deleteTasks(
 			testGroup.getCompanyId(), _process.getId());
 	}
 
@@ -533,13 +528,23 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 	@Inject
 	private static DocumentBuilderFactory _documentBuilderFactory;
 
+	@Inject
+	private static InstanceWorkflowMetricsIndexer
+		_instanceWorkflowMetricsIndexer;
+
 	@Inject(filter = "workflow.metrics.index.entity.name=instance")
 	private static WorkflowMetricsIndexNameBuilder
 		_instanceWorkflowMetricsIndexNameBuilder;
 
+	@Inject
+	private static NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
+
 	@Inject(filter = "workflow.metrics.index.entity.name=node")
 	private static WorkflowMetricsIndexNameBuilder
 		_nodeWorkflowMetricsIndexNameBuilder;
+
+	@Inject
+	private static ProcessWorkflowMetricsIndexer _processWorkflowMetricsIndexer;
 
 	@Inject(filter = "workflow.metrics.index.entity.name=process")
 	private static WorkflowMetricsIndexNameBuilder
@@ -559,9 +564,12 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 	private static WorkflowMetricsIndexNameBuilder
 		_slaTaskResultWorkflowMetricsIndexNameBuilder;
 
-	@Inject(filter = "workflow.metrics.index.entity.name=token")
+	@Inject
+	private static TaskWorkflowMetricsIndexer _taskWorkflowMetricsIndexer;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=task")
 	private static WorkflowMetricsIndexNameBuilder
-		_tokenWorkflowMetricsIndexNameBuilder;
+		_taskWorkflowMetricsIndexNameBuilder;
 
 	private static WorkflowMetricsRESTTestHelper _workflowMetricsRESTTestHelper;
 
@@ -572,8 +580,6 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 	@Inject
 	private RoleLocalService _roleLocalService;
-
-	private final List<Task> _tasks = new ArrayList<>();
 
 	@Inject
 	private UserGroupRoleLocalService _userGroupRoleLocalService;

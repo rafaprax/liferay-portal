@@ -28,9 +28,12 @@ import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Task;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
 import com.liferay.portal.workflow.metrics.rest.client.pagination.Pagination;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.test.helper.WorkflowMetricsRESTTestHelper;
+import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -55,13 +58,15 @@ public class TaskResourceTest extends BaseTaskResourceTestCase {
 		BaseTaskResourceTestCase.setUpClass();
 
 		_workflowMetricsRESTTestHelper = new WorkflowMetricsRESTTestHelper(
-			_documentBuilderFactory, _instanceWorkflowMetricsIndexNameBuilder,
-			_nodeWorkflowMetricsIndexNameBuilder,
+			_documentBuilderFactory, _instanceWorkflowMetricsIndexer,
+			_instanceWorkflowMetricsIndexNameBuilder,
+			_nodeWorkflowMetricsIndexer, _nodeWorkflowMetricsIndexNameBuilder,
+			_processWorkflowMetricsIndexer,
 			_processWorkflowMetricsIndexNameBuilder, _queries,
 			_searchEngineAdapter,
 			_slaInstanceResultWorkflowMetricsIndexNameBuilder,
 			_slaTaskResultWorkflowMetricsIndexNameBuilder,
-			_tokenWorkflowMetricsIndexNameBuilder);
+			_taskWorkflowMetricsIndexer, _taskWorkflowMetricsIndexNameBuilder);
 	}
 
 	@Before
@@ -401,16 +406,12 @@ public class TaskResourceTest extends BaseTaskResourceTestCase {
 
 		User adminUser = UserTestUtil.getAdminUser(testGroup.getCompanyId());
 
-		task = _workflowMetricsRESTTestHelper.addTask(
+		return _workflowMetricsRESTTestHelper.addTask(
 			adminUser.getUserId(), testGroup.getCompanyId(),
 			() -> _workflowMetricsRESTTestHelper.addInstance(
 				testGroup.getCompanyId(), Objects.equals(status, "COMPLETED"),
 				processId),
 			processId, status, task, version);
-
-		_tasks.add(task);
-
-		return task;
 	}
 
 	@Override
@@ -434,22 +435,30 @@ public class TaskResourceTest extends BaseTaskResourceTestCase {
 	}
 
 	private void _deleteTasks() throws Exception {
-		for (Task task : _tasks) {
-			_workflowMetricsRESTTestHelper.deleteTask(
-				testGroup.getCompanyId(), _process.getId(), task);
-		}
+		_workflowMetricsRESTTestHelper.deleteTasks(
+			testGroup.getCompanyId(), _process.getId());
 	}
 
 	@Inject
 	private static DocumentBuilderFactory _documentBuilderFactory;
 
+	@Inject
+	private static InstanceWorkflowMetricsIndexer
+		_instanceWorkflowMetricsIndexer;
+
 	@Inject(filter = "workflow.metrics.index.entity.name=instance")
 	private static WorkflowMetricsIndexNameBuilder
 		_instanceWorkflowMetricsIndexNameBuilder;
 
+	@Inject
+	private static NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
+
 	@Inject(filter = "workflow.metrics.index.entity.name=node")
 	private static WorkflowMetricsIndexNameBuilder
 		_nodeWorkflowMetricsIndexNameBuilder;
+
+	@Inject
+	private static ProcessWorkflowMetricsIndexer _processWorkflowMetricsIndexer;
 
 	@Inject(filter = "workflow.metrics.index.entity.name=process")
 	private static WorkflowMetricsIndexNameBuilder
@@ -469,13 +478,15 @@ public class TaskResourceTest extends BaseTaskResourceTestCase {
 	private static WorkflowMetricsIndexNameBuilder
 		_slaTaskResultWorkflowMetricsIndexNameBuilder;
 
-	@Inject(filter = "workflow.metrics.index.entity.name=token")
+	@Inject
+	private static TaskWorkflowMetricsIndexer _taskWorkflowMetricsIndexer;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=task")
 	private static WorkflowMetricsIndexNameBuilder
-		_tokenWorkflowMetricsIndexNameBuilder;
+		_taskWorkflowMetricsIndexNameBuilder;
 
 	private static WorkflowMetricsRESTTestHelper _workflowMetricsRESTTestHelper;
 
 	private Process _process;
-	private final List<Task> _tasks = new ArrayList<>();
 
 }
