@@ -22,16 +22,16 @@ import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.NodeResource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,7 +69,7 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 					new Class<?>[] {NodeResource.class},
 					(proxy, method, arguments) -> _invoke(
 						method, arguments, _checkPermissions,
-						_httpServletRequest, _preferredLocale, _user));
+						_httpServletRequest, _user));
 			}
 
 			@Override
@@ -91,15 +91,6 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 			}
 
 			@Override
-			public NodeResource.Builder preferredLocale(
-				Locale preferredLocale) {
-
-				_preferredLocale = preferredLocale;
-
-				return this;
-			}
-
-			@Override
 			public NodeResource.Builder user(User user) {
 				_user = user;
 
@@ -108,7 +99,6 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 
 			private boolean _checkPermissions = true;
 			private HttpServletRequest _httpServletRequest;
-			private Locale _preferredLocale;
 			private User _user;
 
 		};
@@ -126,8 +116,7 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 
 	private Object _invoke(
 			Method method, Object[] arguments, boolean checkPermissions,
-			HttpServletRequest httpServletRequest, Locale preferredLocale,
-			User user)
+			HttpServletRequest httpServletRequest, User user)
 		throws Throwable {
 
 		String name = PrincipalThreadLocal.getName();
@@ -148,8 +137,7 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 
 		NodeResource nodeResource = _componentServiceObjects.getService();
 
-		nodeResource.setContextAcceptLanguage(
-			new AcceptLanguageImpl(httpServletRequest, preferredLocale, user));
+		nodeResource.setContextAcceptLanguage(new AcceptLanguageImpl(user));
 
 		Company company = _companyLocalService.getCompany(user.getCompanyId());
 
@@ -190,18 +178,13 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 
 	private class AcceptLanguageImpl implements AcceptLanguage {
 
-		public AcceptLanguageImpl(
-			HttpServletRequest httpServletRequest, Locale preferredLocale,
-			User user) {
-
-			_httpServletRequest = httpServletRequest;
-			_preferredLocale = preferredLocale;
+		public AcceptLanguageImpl(User user) {
 			_user = user;
 		}
 
 		@Override
 		public List<Locale> getLocales() {
-			return Arrays.asList(getPreferredLocale());
+			return Collections.emptyList();
 		}
 
 		@Override
@@ -211,17 +194,10 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 
 		@Override
 		public Locale getPreferredLocale() {
-			if (_preferredLocale != null) {
-				return _preferredLocale;
-			}
+			List<Locale> locales = getLocales();
 
-			if (_httpServletRequest != null) {
-				Locale locale = (Locale)_httpServletRequest.getAttribute(
-					WebKeys.LOCALE);
-
-				if (locale != null) {
-					return locale;
-				}
+			if (ListUtil.isNotEmpty(locales)) {
+				return locales.get(0);
 			}
 
 			return _user.getLocale();
@@ -232,8 +208,6 @@ public class NodeResourceFactoryImpl implements NodeResource.Factory {
 			return false;
 		}
 
-		private final HttpServletRequest _httpServletRequest;
-		private final Locale _preferredLocale;
 		private final User _user;
 
 	}
