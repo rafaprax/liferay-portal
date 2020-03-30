@@ -604,9 +604,10 @@ public class InstanceResourceImpl extends BaseInstanceResourceImpl {
 			GetterUtil::getLong
 		).map(
 			userId -> AssigneeUtil.toAssignee(
-				_portal, userId, _userLocalService::fetchUser)gnee.sorted(
+				_portal, userId, _userLocalService::fetchUser)
+		).sorted(
 			Comparator.comparing(
-				AssigneeUser::getName,
+				Assignee::getName,
 				Comparator.comparing(
 					(String name) -> Objects.equals(
 						name,

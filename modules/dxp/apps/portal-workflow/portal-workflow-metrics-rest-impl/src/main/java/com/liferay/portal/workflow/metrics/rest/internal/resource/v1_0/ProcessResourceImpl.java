@@ -132,14 +132,11 @@ public class ProcessResourceImpl extends BaseProcessResourceImpl {
 			process.getTitle_i18n());
 
 		_processWorkflowMetricsIndexer.updateProcess(
-			Optional.ofNullable(process.getActive()),
-			contextCompany.getCompanyId(),
-			Optional.ofNullable(process.getDescription()),
-			process.getDateModified(), getProcess.getId(),
-			Optional.ofNullable(
-				titleMap.get(contextAcceptLanguage.getPreferredLocale())),
-			Optional.ofNullable(titleMap),
-			Optional.ofNullable(process.getVersion()));
+			process.getActive(), contextCompany.getCompanyId(),
+			process.getDescription(), process.getDateModified(),
+			getProcess.getId(),
+			titleMap.get(contextAcceptLanguage.getPreferredLocale()),
+			titleMap, process.getVersion());
 	}
 
 	private BooleanQuery _createBooleanQuery(Long processId) {

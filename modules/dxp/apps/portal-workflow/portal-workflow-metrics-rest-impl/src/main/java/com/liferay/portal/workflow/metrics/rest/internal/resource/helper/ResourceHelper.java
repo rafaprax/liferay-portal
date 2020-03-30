@@ -241,7 +241,7 @@ public class ResourceHelper {
 			HashMapBuilder.<String, Object>put(
 				"assignees",
 				() -> Optional.ofNullable(
-					assignees
+					assigneeIds
 				).filter(
 					ListUtil::isNotEmpty
 				).map(

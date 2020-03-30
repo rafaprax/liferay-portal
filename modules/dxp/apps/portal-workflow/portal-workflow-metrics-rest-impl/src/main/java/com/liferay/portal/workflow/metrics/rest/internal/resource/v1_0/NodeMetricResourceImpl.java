@@ -436,7 +436,8 @@ public class NodeMetricResourceImpl
 			_resourceHelper.createBreachedScriptedMetricAggregation());
 
 		FilterAggregation countFilterAggregation = _aggregations.filter(
-			"countFilter", _resourceHelper.createTasksBooleanQuery(completed));
+			"countFilter", _resourceHelper.createTasksBooleanQuery(
+				contextCompany.getCompanyId(), completed));
 
 		countFilterAggregation.addChildrenAggregations(
 			_aggregations.avg("durationAvg", "duration"),
