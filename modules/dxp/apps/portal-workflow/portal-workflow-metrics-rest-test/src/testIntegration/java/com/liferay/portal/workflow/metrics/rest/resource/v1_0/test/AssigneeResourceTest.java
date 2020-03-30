@@ -15,15 +15,19 @@
 package com.liferay.portal.workflow.metrics.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.search.document.Document;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.document.DocumentBuilderFactory;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Assignee;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.AssigneeBulkSelection;
+import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Instance;
 import com.liferay.portal.workflow.metrics.rest.client.dto.v1_0.Process;
+import com.liferay.portal.workflow.metrics.rest.client.pagination.Page;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.test.helper.WorkflowMetricsRESTTestHelper;
 import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.NodeWorkflowMetricsIndexer;
@@ -31,26 +35,24 @@ import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIn
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * @author Rafael Praxedes
  */
 @RunWith(Arquillian.class)
-public class ProcessResourceTest extends BaseProcessResourceTestCase {
+public class AssigneeResourceTest extends BaseAssigneeResourceTestCase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		BaseProcessResourceTestCase.setUpClass();
+		BaseNodeResourceTestCase.setUpClass();
 
 		_workflowMetricsRESTTestHelper = new WorkflowMetricsRESTTestHelper(
 			_documentBuilderFactory, _instanceWorkflowMetricsIndexer,
@@ -69,13 +71,11 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		_documents = _workflowMetricsRESTTestHelper.getDocuments(
+		_process = _workflowMetricsRESTTestHelper.addProcess(
 			testGroup.getCompanyId());
 
-		for (Document document : _documents) {
-			_workflowMetricsRESTTestHelper.deleteProcess(
-				document.getLong("companyId"), document.getLong("processId"));
-		}
+		_instance = _workflowMetricsRESTTestHelper.addInstance(
+			testGroup.getCompanyId(), false, _process.getId());
 	}
 
 	@After
@@ -83,107 +83,85 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 	public void tearDown() throws Exception {
 		super.tearDown();
 
-		for (Document document : _documents) {
-			_workflowMetricsRESTTestHelper.restoreProcess(document);
-		}
-
-		_deleteProcesses();
-	}
-
-	@Override
-	public void testGetProcess() throws Exception {
-		super.testGetProcess();
-	}
-
-	@Override
-	@Test
-	public void testGetProcessTitle() throws Exception {
-		Process process = randomProcess();
-
-		testGetProcessesPage_addProcess(process);
-
-		String title = processResource.getProcessTitle(process.getId());
-
-		Assert.assertEquals(process.getTitle(), title);
-	}
-
-	@Ignore
-	@Override
-	public void testGraphQLDeleteProcess() throws Exception {
-	}
-
-	@Ignore
-	@Override
-	public void testGraphQLGetProcess() throws Exception {
-	}
-
-	@Override
-	protected String[] getAdditionalAssertFieldNames() {
-		return new String[] {"title"};
-	}
-
-	@Override
-	protected Process randomProcess() throws Exception {
-		Process process = super.randomProcess();
-
-		process.setTitle(RandomTestUtil.randomString());
-		process.setTitle_i18n(
-			HashMapBuilder.put(
-				LocaleUtil.US.toLanguageTag(), process.getTitle()
-			).build());
-
-		return process;
-	}
-
-	@Override
-	protected Process testDeleteProcess_addProcess() throws Exception {
-		return testGetProcess_addProcess();
-	}
-
-	@Override
-	protected Process testGetProcess_addProcess() throws Exception {
-		return testGetProcessesPage_addProcess(randomProcess());
-	}
-
-	protected Process testGetProcessesPage_addProcess(Process process)
-		throws Exception {
-
-		process = _workflowMetricsRESTTestHelper.addProcess(
-			testGroup.getCompanyId(), process);
-
-		_processes.add(process);
-
-		return process;
-	}
-
-	@Override
-	protected Process testGraphQLProcess_addProcess() throws Exception {
-		return testGetProcess_addProcess();
-	}
-
-	@Override
-	protected Process testPostProcess_addProcess(Process process)
-		throws Exception {
-
-		return testGetProcessesPage_addProcess(process);
-	}
-
-	@Override
-	protected Process testPutProcess_addProcess() throws Exception {
-		return testGetProcess_addProcess();
-	}
-
-	private void _deleteProcesses() throws Exception {
-		for (Process process : _processes) {
+		if (_process != null) {
 			_workflowMetricsRESTTestHelper.deleteProcess(
-				testGroup.getCompanyId(), process);
+				testGroup.getCompanyId(), _process);
 		}
+
+		if (_instance != null) {
+			_workflowMetricsRESTTestHelper.deleteInstance(
+				testGroup.getCompanyId(), _instance);
+		}
+	}
+
+	@Override
+	public void testPostProcessAssigneesPage() throws Exception {
+		Assignee assignee1 = randomAssignee();
+
+		_workflowMetricsRESTTestHelper.addTask(
+			assignee1.getId(), testGroup.getCompanyId(), _instance);
+
+		Assignee assignee2 = randomAssignee();
+
+		_workflowMetricsRESTTestHelper.addTask(
+			assignee2.getId(), testGroup.getCompanyId(), _instance);
+
+		Page<Assignee> page = assigneeResource.postProcessAssigneesPage(
+			_process.getId(), new AssigneeBulkSelection());
+
+		Assert.assertEquals(2, page.getTotalCount());
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(assignee1, assignee2),
+			(List<Assignee>)page.getItems());
+		assertValid(page);
+
+		page = assigneeResource.postProcessAssigneesPage(
+			_process.getId(),
+			new AssigneeBulkSelection() {
+				{
+					instanceIds = new Long[] {_instance.getId()};
+				}
+			});
+
+		Assert.assertEquals(2, page.getTotalCount());
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(assignee1, assignee2),
+			(List<Assignee>)page.getItems());
+		assertValid(page);
+
+		page = assigneeResource.postProcessAssigneesPage(
+			_process.getId(),
+			new AssigneeBulkSelection() {
+				{
+					instanceIds = new Long[] {0L};
+				}
+			});
+
+		Assert.assertEquals(0, page.getTotalCount());
+	}
+
+	@Override
+	protected Assignee randomAssignee() throws Exception {
+		User user = UserTestUtil.addUser();
+
+		return new Assignee() {
+			{
+				id = user.getUserId();
+				image = user.getPortraitURL(
+					new ThemeDisplay() {
+						{
+							setPathImage(_portal.getPathImage());
+						}
+					});
+				name = user.getFullName();
+			}
+		};
 	}
 
 	@Inject
 	private static DocumentBuilderFactory _documentBuilderFactory;
-
-	private static Document[] _documents;
 
 	@Inject
 	private static InstanceWorkflowMetricsIndexer
@@ -230,6 +208,11 @@ public class ProcessResourceTest extends BaseProcessResourceTestCase {
 
 	private static WorkflowMetricsRESTTestHelper _workflowMetricsRESTTestHelper;
 
-	private final List<Process> _processes = new ArrayList<>();
+	private Instance _instance;
+
+	@Inject
+	private Portal _portal;
+
+	private Process _process;
 
 }

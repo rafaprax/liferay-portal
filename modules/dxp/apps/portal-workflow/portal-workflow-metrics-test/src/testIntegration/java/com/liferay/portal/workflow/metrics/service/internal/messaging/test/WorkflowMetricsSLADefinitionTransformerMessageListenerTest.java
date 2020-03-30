@@ -237,6 +237,14 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 	@Inject
 	private KaleoDefinitionLocalService _kaleoDefinitionLocalService;
 
+	@Inject(filter = "workflow.metrics.index.entity.name=node")
+	private WorkflowMetricsIndexNameBuilder
+		_nodeWorkflowMetricsIndexNameBuilder;
+
+	@Inject(filter = "workflow.metrics.index.entity.name=process")
+	private WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
+
 	private WorkflowDefinition _workflowDefinition;
 
 	@Inject
