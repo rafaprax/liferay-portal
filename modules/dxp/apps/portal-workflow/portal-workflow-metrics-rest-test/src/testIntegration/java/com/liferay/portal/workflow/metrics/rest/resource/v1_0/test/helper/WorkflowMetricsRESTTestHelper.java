@@ -50,8 +50,11 @@ import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndex
 import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.io.Serializable;
+
 import java.lang.reflect.Method;
+
 import java.text.DateFormat;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +65,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
+
 import org.junit.Assert;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -387,8 +392,8 @@ public class WorkflowMetricsRESTTestHelper {
 			_processWorkflowMetricsIndexNameBuilder.getIndexName(companyId),
 			"companyId", companyId, "deleted", false, "processId",
 			process.getId());
-		return process;
 
+		return process;
 	}
 
 	public ProcessMetric addProcessMetric(long companyId) throws Exception {

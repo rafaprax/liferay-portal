@@ -74,7 +74,7 @@ const Item = ({totalCount, ...instance}) => {
 	}, [selectedItems]);
 
 	const assignedToUser = !!assignees.find(({id}) => id == userId);
-	const assigneeUserNames = assignees.map(user => user.name).join(', ');
+	const assigneeNames = assignees.map(user => user.name).join(', ');
 	const completed = status === processStatusConstants.completed;
 	const unassigned = !!assignees.find(({id}) => id === -1);
 

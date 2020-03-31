@@ -239,7 +239,7 @@ public class ResourceHelper {
 			_workflowMetricsInstanceCountMapScript);
 		scriptedMetricAggregation.setParameters(
 			HashMapBuilder.<String, Object>put(
-				"assignees",
+				"assigneeIds",
 				() -> Optional.ofNullable(
 					assigneeIds
 				).filter(
