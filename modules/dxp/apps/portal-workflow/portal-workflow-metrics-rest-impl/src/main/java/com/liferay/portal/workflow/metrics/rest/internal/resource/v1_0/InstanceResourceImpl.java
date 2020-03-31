@@ -116,7 +116,11 @@ public class InstanceResourceImpl extends BaseInstanceResourceImpl {
 			"instanceId", "instanceId");
 
 		FilterAggregation indexFilterAggregation = _aggregations.filter(
-			"tokensIndex", _queries.term("_index", "workflow-metrics-tokens"));
+			"tasksIndex",
+			_queries.term(
+				"_index",
+				_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+					contextCompany.getCompanyId())));
 
 		TermsAggregation assigneeIdTermsAggregation = _aggregations.terms(
 			"assigneeId", "assigneeId");
@@ -588,7 +592,7 @@ public class InstanceResourceImpl extends BaseInstanceResourceImpl {
 	private List<Assignee> _getAssignees(Bucket bucket) {
 		FilterAggregationResult filterAggregationResult =
 			(FilterAggregationResult)bucket.getChildAggregationResult(
-				"tokensIndex");
+				"tasksIndex");
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)
@@ -676,8 +680,12 @@ public class InstanceResourceImpl extends BaseInstanceResourceImpl {
 
 		taskNameTermsAggregation.setSize(10000);
 
-		FilterAggregation tokensIndexFilterAggregation = _aggregations.filter(
-			"tokensIndex", _queries.term("_index", "workflow-metrics-tokens"));
+		FilterAggregation tasksIndexFilterAggregation = _aggregations.filter(
+			"tasksIndex",
+			_queries.term(
+				"_index",
+				_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+					contextCompany.getCompanyId())));
 
 		TermsAggregation assigneeIdTermsAggregation = _aggregations.terms(
 			"assigneeId", "assigneeId");
@@ -685,13 +693,13 @@ public class InstanceResourceImpl extends BaseInstanceResourceImpl {
 		assigneeIdTermsAggregation.setMissing(-1L);
 		assigneeIdTermsAggregation.setSize(10000);
 
-		tokensIndexFilterAggregation.addChildAggregation(
+		tasksIndexFilterAggregation.addChildAggregation(
 			assigneeIdTermsAggregation);
 
 		termsAggregation.addChildrenAggregations(
 			instancesIndexFilterAggregation, onTimeFilterAggregation,
 			overdueFilterAggregation, taskNameTermsAggregation,
-			tokensIndexFilterAggregation, _aggregations.topHits("topHits"),
+			tasksIndexFilterAggregation, _aggregations.topHits("topHits"),
 			_resourceHelper.creatInstanceCountScriptedMetricAggregation(
 				ListUtil.fromArray(assigneeIds), dateEnd, dateStart,
 				ListUtil.fromArray(slaStatuses), ListUtil.fromArray(statuses),

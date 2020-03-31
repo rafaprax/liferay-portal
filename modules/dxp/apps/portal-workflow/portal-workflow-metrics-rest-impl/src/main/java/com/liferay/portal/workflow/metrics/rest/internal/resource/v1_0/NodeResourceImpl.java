@@ -81,22 +81,22 @@ public class NodeResourceImpl extends BaseNodeResourceImpl {
 					NodeResourceImpl.class)));
 	}
 
-	@Reference(target = "(workflow.metrics.index.entity.name=node)")
-	private WorkflowMetricsIndexNameBuilder
-		_nodeWorkflowMetricsIndexNameBuilder;
-
-	@Reference(target = "(workflow.metrics.index.entity.name=process)")
-	private WorkflowMetricsIndexNameBuilder
-		_processWorkflowMetricsIndexNameBuilder;
-
 	@Reference
 	private Language _language;
 
 	@Reference
 	private NodeWorkflowMetricsIndexer _nodeWorkflowMetricsIndexer;
 
+	@Reference(target = "(workflow.metrics.index.entity.name=node)")
+	private WorkflowMetricsIndexNameBuilder
+		_nodeWorkflowMetricsIndexNameBuilder;
+
 	@Reference
 	private Portal _portal;
+
+	@Reference(target = "(workflow.metrics.index.entity.name=process)")
+	private WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
 
 	@Reference
 	private Queries _queries;

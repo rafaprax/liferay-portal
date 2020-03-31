@@ -226,14 +226,6 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 			workflowMetricsSLADefinitionVersion.getStatus());
 	}
 
-	@Inject(filter = "workflow.metrics.index.entity.name=node")
-	private static WorkflowMetricsIndexNameBuilder
-		_nodeWorkflowMetricsIndexNameBuilder;
-
-	@Inject(filter = "workflow.metrics.index.entity.name=process")
-	private static WorkflowMetricsIndexNameBuilder
-		_processWorkflowMetricsIndexNameBuilder;
-
 	@Inject
 	private KaleoDefinitionLocalService _kaleoDefinitionLocalService;
 

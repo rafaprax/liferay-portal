@@ -29,11 +29,11 @@ import com.liferay.portal.workflow.metrics.rest.exception.v1_0.NoSuchProcessExce
 import com.liferay.portal.workflow.metrics.rest.internal.dto.v1_0.util.ProcessUtil;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.ProcessResource;
 import com.liferay.portal.workflow.metrics.search.index.ProcessWorkflowMetricsIndexer;
+import com.liferay.portal.workflow.metrics.search.index.name.WorkflowMetricsIndexNameBuilder;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
@@ -61,7 +61,9 @@ public class ProcessResourceImpl extends BaseProcessResourceImpl {
 	public Process getProcess(Long processId) throws Exception {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames("workflow-metrics-processes");
+		searchSearchRequest.setIndexNames(
+			_processWorkflowMetricsIndexNameBuilder.getIndexName(
+				contextCompany.getCompanyId()));
 		searchSearchRequest.setQuery(_createBooleanQuery(processId));
 
 		return Stream.of(
@@ -88,7 +90,9 @@ public class ProcessResourceImpl extends BaseProcessResourceImpl {
 	public String getProcessTitle(Long processId) throws Exception {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.setIndexNames("workflow-metrics-processes");
+		searchSearchRequest.setIndexNames(
+			_processWorkflowMetricsIndexNameBuilder.getIndexName(
+				contextCompany.getCompanyId()));
 		searchSearchRequest.setQuery(_createBooleanQuery(processId));
 		searchSearchRequest.setSelectedFieldNames(
 			"processId", _getTitleFieldName());
@@ -135,8 +139,8 @@ public class ProcessResourceImpl extends BaseProcessResourceImpl {
 			process.getActive(), contextCompany.getCompanyId(),
 			process.getDescription(), process.getDateModified(),
 			getProcess.getId(),
-			titleMap.get(contextAcceptLanguage.getPreferredLocale()),
-			titleMap, process.getVersion());
+			titleMap.get(contextAcceptLanguage.getPreferredLocale()), titleMap,
+			process.getVersion());
 	}
 
 	private BooleanQuery _createBooleanQuery(Long processId) {
@@ -156,6 +160,10 @@ public class ProcessResourceImpl extends BaseProcessResourceImpl {
 
 	@Reference
 	private ProcessWorkflowMetricsIndexer _processWorkflowMetricsIndexer;
+
+	@Reference(target = "(workflow.metrics.index.entity.name=process)")
+	private WorkflowMetricsIndexNameBuilder
+		_processWorkflowMetricsIndexNameBuilder;
 
 	@Reference
 	private Queries _queries;
