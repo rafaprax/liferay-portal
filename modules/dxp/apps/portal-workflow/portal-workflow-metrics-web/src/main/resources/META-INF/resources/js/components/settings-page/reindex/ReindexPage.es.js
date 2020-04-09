@@ -15,32 +15,67 @@ import PromisesResolver from '../../../shared/components/promises-resolver/Promi
 import {useFetch} from '../../../shared/hooks/useFetch.es';
 import {Body} from './ReindexPageBody.es';
 
-const ReindexPage = props => {
-	// const {data, fetchData} = useFetch({});
+const ReindexPage = () => {
+	// const {data, fetchData} = useFetch({url: '/reindex-action-groups'});
 	// const promises = useMemo(() => [fetchData()], [fetchData]);
+
 	const promises = [];
 	const data = {
 		items: [
 			{
-				actions: [
-					{id: 1, label: 'Workflow Metrics indexes', main: true},
+				label: 'Metrics',
+				reindexActions: [
 					{
-						id: 2,
-						label: 'Reindex Workflow Metrics Instances',
-						status: 30,
+						key: 'AllMetrics',
+						label: 'Workflow Metrics Indexes',
 					},
-					{id: 3, label: 'Reindex Workflow Metrics Nodes'},
+					{
+						key: 'Instances',
+						label: 'Workflow Metrics Instances',
+					},
+					{
+						key: 'Nodes',
+						label: 'Workflow Metrics Nodes',
+					},
+					{
+						key: 'Processes',
+						label: 'Workflow Metrics Processes',
+					},
+					{
+						key: 'Tasks',
+						label: 'Workflow Metrics Tasks',
+					},
+					{
+						key: 'Transitions',
+						label: 'Workflow Metrics Transitions',
+					},
 				],
-				title: 'metrics',
+			},
+			{
+				label: 'SLAs',
+				reindexActions: [
+					{
+						key: 'AllSlas',
+						label: 'Workflow Metrics Indexes',
+					},
+					{
+						key: 'SlaInstances',
+						label: 'SLA Instance Results',
+					},
+					{
+						key: 'SlaTasks',
+						label: 'SLA Process Results',
+					},
+				],
 			},
 		],
 	};
 
 	return (
 		<div className="container-fluid-1280">
-			<h1 className="mb-4 mt-4">
+			<h3 className="my-4">
 				{Liferay.Language.get('workflow-index-actions')}
-			</h1>
+			</h3>
 
 			<PromisesResolver promises={promises}>
 				<ReindexPage.Body {...data} />

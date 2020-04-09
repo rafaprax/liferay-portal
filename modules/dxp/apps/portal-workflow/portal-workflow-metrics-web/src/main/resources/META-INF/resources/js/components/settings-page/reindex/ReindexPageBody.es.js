@@ -13,43 +13,49 @@ import ClayButton from '@clayui/button';
 import React from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
-import {Actions} from './ReindexActions.es';
+import {GroupActions} from './ReindexPageBodyActions.es';
+import {useReindexActions} from './hooks/useReindexActions.es';
+
+const REINDEX_ALL_KEY = 'All';
 
 const Body = ({items}) => {
+	const {handleReindex, reindexStatuses} = useReindexActions();
+
 	return (
 		<>
-			<Body.ReindexAll />
+			<div className="mb-4 p-3 sheet">
+				<div className="autofit-row autofit-row-center">
+					<div className="autofit-col autofit-col-expand">
+						<span className="font-weight-semi-bold">
+							{Liferay.Language.get('workflow-indexes')}
+						</span>
+					</div>
+
+					<div className="autofit-col">
+						<ClayButton
+							onClick={() => handleReindex(REINDEX_ALL_KEY)}
+							small
+						>
+							{Liferay.Language.get('reindex-all')}
+						</ClayButton>
+					</div>
+				</div>
+			</div>
 
 			<PromisesResolver.Resolved>
 				{items.map((item, index) => (
-					<Body.Actions key={index} {...item} />
+					<Body.GroupActions
+						handleAction={handleReindex}
+						key={index}
+						statuses={reindexStatuses}
+						{...item}
+					/>
 				))}
 			</PromisesResolver.Resolved>
 		</>
 	);
 };
 
-const ReindexAll = () => {
-	return (
-		<div className="mb-4 pb-4 sheet">
-			<div className="autofit-row autofit-row-center">
-				<div className="autofit-col autofit-col-expand">
-					<span className="font-weight-bold">
-						{Liferay.Language.get('workflow-indexes')}
-					</span>
-				</div>
-
-				<div className="autofit-col">
-					<ClayButton>
-						{Liferay.Language.get('reindex-all')}
-					</ClayButton>
-				</div>
-			</div>
-		</div>
-	);
-};
-
-Body.Actions = Actions;
-Body.ReindexAll = ReindexAll;
+Body.GroupActions = GroupActions;
 
 export {Body};

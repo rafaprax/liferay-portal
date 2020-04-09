@@ -22,12 +22,14 @@ const usePost = ({admin = false, body = {}, params = {}, url}) => {
 	const queryParamsStr = JSON.stringify(params);
 
 	const postData = useCallback(
-		() =>
-			client.post(url, body, {params}).then(({data}) => {
-				setData(data);
+		(postBody, postParams) =>
+			client
+				.post(url, postBody || body, {params: postParams || params})
+				.then(({data}) => {
+					setData(data);
 
-				return data;
-			}),
+					return data;
+				}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[admin, queryBodyStr, queryParamsStr, url]
 	);
