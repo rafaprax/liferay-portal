@@ -10,11 +10,18 @@
  */
 
 import {ClayTooltipProvider} from '@clayui/tooltip';
-import React from 'react';
+import React, {useEffect} from 'react';
 
+import {useReindexActions} from '../../../components/settings-page/reindex/hooks/useReindexActions.es';
 import Portal from '../portal/Portal.es';
 
 const HeaderLoadingStatus = ({container}) => {
+	const {getStatuses} = useReindexActions();
+
+	useEffect(() => {
+		getStatuses();
+	}, [getStatuses]);
+
 	return (
 		<Portal
 			className="control-menu-nav-item"
@@ -28,9 +35,9 @@ const HeaderLoadingStatus = ({container}) => {
 						aria-hidden="true"
 						className="loading-animation loading-animation-light loading-animation-sm m-0"
 						data-tooltip-align="bottom"
-						title={
-							'The Workflow Metrics index is currently reindexing.'
-						}
+						title={Liferay.Language.get(
+							'the-workflow-metrics-index-is-currently-reindexing'
+						)}
 					></span>
 				</ClayTooltipProvider>
 			</div>
