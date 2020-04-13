@@ -13,7 +13,7 @@ import {useCallback, useContext, useState} from 'react';
 
 import {AppContext} from '../../components/AppContext.es';
 
-const usePost = ({admin = false, body = {}, params = {}, url}) => {
+const usePost = ({admin = false, config = {}, body = {}, params = {}, url}) => {
 	const {getClient} = useContext(AppContext);
 	const [data, setData] = useState({});
 
@@ -24,7 +24,10 @@ const usePost = ({admin = false, body = {}, params = {}, url}) => {
 	const postData = useCallback(
 		(postBody, postParams) =>
 			client
-				.post(url, postBody || body, {params: postParams || params})
+				.post(url, postBody || body, {
+					...config,
+					params: postParams || params,
+				})
 				.then(({data}) => {
 					setData(data);
 
