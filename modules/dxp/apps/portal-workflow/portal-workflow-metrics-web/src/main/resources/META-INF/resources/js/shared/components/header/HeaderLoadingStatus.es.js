@@ -16,32 +16,37 @@ import {useReindexActions} from '../../../components/settings-page/reindex/hooks
 import Portal from '../portal/Portal.es';
 
 const HeaderLoadingStatus = ({container}) => {
-	const {getStatuses} = useReindexActions();
+	const {getStatuses, reindexStatuses} = useReindexActions();
 
 	useEffect(() => {
 		getStatuses();
-	}, [getStatuses]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
-		<Portal
-			className="control-menu-nav-item"
-			container={container}
-			elementId="headerLoading"
-			position="after"
-		>
-			<div className="control-menu-icon">
-				<ClayTooltipProvider>
-					<span
-						aria-hidden="true"
-						className="loading-animation loading-animation-light loading-animation-sm m-0"
-						data-tooltip-align="bottom"
-						title={Liferay.Language.get(
-							'the-workflow-metrics-index-is-currently-reindexing'
-						)}
-					></span>
-				</ClayTooltipProvider>
-			</div>
-		</Portal>
+		<>
+			{reindexStatuses.length > 0 && (
+				<Portal
+					className="control-menu-nav-item"
+					container={container}
+					elementId="headerLoading"
+					position="after"
+				>
+					<div className="control-menu-icon">
+						<ClayTooltipProvider>
+							<span
+								aria-hidden="true"
+								className="loading-animation loading-animation-light loading-animation-sm m-0"
+								data-tooltip-align="bottom"
+								title={Liferay.Language.get(
+									'the-workflow-metrics-index-is-currently-reindexing'
+								)}
+							></span>
+						</ClayTooltipProvider>
+					</div>
+				</Portal>
+			)}
+		</>
 	);
 };
 

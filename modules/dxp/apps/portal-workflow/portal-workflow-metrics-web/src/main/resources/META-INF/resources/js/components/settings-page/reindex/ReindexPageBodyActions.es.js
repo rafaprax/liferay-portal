@@ -14,7 +14,7 @@ import ClayList from '@clayui/list';
 import ClayProgressBar from '@clayui/progress-bar';
 import React, {useMemo} from 'react';
 
-const Action = ({handleAction, index, key, label, status}) => {
+const Action = ({action: {key, label, status}, handleAction, index}) => {
 	const buttonTxt =
 		index === 0
 			? Liferay.Language.get('reindex-all')
@@ -62,10 +62,10 @@ const GroupActions = ({handleAction, label, reindexActions = [], statuses}) => {
 
 			{actions.map((action, index) => (
 				<Action
+					action={action}
 					handleAction={handleAction}
 					index={index}
 					key={index}
-					{...action}
 				/>
 			))}
 		</ClayList>

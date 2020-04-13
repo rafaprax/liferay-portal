@@ -9,38 +9,46 @@
  * distribution rights of the Software.
  */
 
-import {useInterval, usePrevious} from 'frontend-js-react-web';
-import {useContext, useEffect, useState} from 'react';
+import {useContext} from 'react';
 
 import {useToaster} from '../../../../shared/components/toaster/hooks/useToaster.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
 import {usePost} from '../../../../shared/hooks/usePost.es';
 import {AppContext} from '../../../AppContext.es';
 
-const INTERVAL = 2000;
-
 const useReindexActions = () => {
-	const [cancel, setCancel] = useState();
 	const {reindexStatuses, setReindexStatuses} = useContext(AppContext);
-
-	const previousStatuses = usePrevious(reindexStatuses);
-	const schedule = useInterval();
 	const toaster = useToaster();
 
-	const {postData} = usePost({url: '/reindex-action'});
 	const {fetchData} = useFetch({url: '/reindex-statuses'});
+	const {postData} = usePost({
+		config: {headers: {'Content-Type': 'application/json'}},
+		url: '/reindex-action',
+	});
 
 	const getStatuses = () => {
-		const callback = () =>
+		const interval = setInterval(() => {
 			fetchData()
-				.then(setReindexStatuses)
-				.catch(sendError);
+				.then(({items, totalCount}) => {
+					setReindexStatuses(items);
 
-		setCancel(schedule(callback, INTERVAL));
+					if (!totalCount) {
+						if (reindexStatuses.length > 0) {
+							toaster.success();
+						}
+						clearInterval(interval);
+					}
+				})
+				.catch(() => {
+					clearInterval(interval);
+					setReindexStatuses([]);
+					sendError();
+				});
+		}, 2000);
 	};
 
 	const handleReindex = reindexKey => {
-		return postData({reindexKey})
+		postData(JSON.stringify(reindexKey))
 			.then(getStatuses)
 			.catch(sendError);
 	};
@@ -48,22 +56,6 @@ const useReindexActions = () => {
 	const sendError = () => {
 		toaster.danger(Liferay.Language.get('please-check-the-server-log'));
 	};
-
-	useEffect(() => {
-		if (
-			cancel &&
-			!reindexStatuses.length &&
-			previousStatuses &&
-			!previousStatuses.length
-		) {
-			toaster.success(
-				Liferay.Language.get('please-check-the-server-log')
-			);
-
-			cancel();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [cancel, previousStatuses, reindexStatuses]);
 
 	return {getStatuses, handleReindex, reindexStatuses};
 };
