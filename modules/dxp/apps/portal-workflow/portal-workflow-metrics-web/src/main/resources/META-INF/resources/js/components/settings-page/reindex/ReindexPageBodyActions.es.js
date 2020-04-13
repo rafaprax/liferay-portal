@@ -14,7 +14,12 @@ import ClayList from '@clayui/list';
 import ClayProgressBar from '@clayui/progress-bar';
 import React, {useMemo} from 'react';
 
-const Action = ({action: {key, label, status}, handleAction, index}) => {
+const Action = ({
+	action: {key, label, status},
+	disabled,
+	handleAction,
+	index,
+}) => {
 	const buttonTxt =
 		index === 0
 			? Liferay.Language.get('reindex-all')
@@ -33,6 +38,7 @@ const Action = ({action: {key, label, status}, handleAction, index}) => {
 					<ClayProgressBar value={status.completionPercentage} />
 				) : (
 					<ClayButton
+						disabled={disabled}
 						displayType="secondary"
 						onClick={() => handleAction(key)}
 						small
@@ -45,7 +51,13 @@ const Action = ({action: {key, label, status}, handleAction, index}) => {
 	);
 };
 
-const GroupActions = ({handleAction, label, reindexActions = [], statuses}) => {
+const GroupActions = ({
+	disabled,
+	handleAction,
+	label,
+	reindexActions = [],
+	statuses,
+}) => {
 	const actions = useMemo(
 		() =>
 			reindexActions.map(item => {
@@ -63,6 +75,7 @@ const GroupActions = ({handleAction, label, reindexActions = [], statuses}) => {
 			{actions.map((action, index) => (
 				<Action
 					action={action}
+					disabled={disabled}
 					handleAction={handleAction}
 					index={index}
 					key={index}

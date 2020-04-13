@@ -9,7 +9,8 @@
  * distribution rights of the Software.
  */
 
-import {useContext} from 'react';
+import {usePrevious} from 'frontend-js-react-web';
+import {useContext, useState} from 'react';
 
 import {useToaster} from '../../../../shared/components/toaster/hooks/useToaster.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
@@ -18,6 +19,8 @@ import {AppContext} from '../../../AppContext.es';
 
 const useReindexActions = () => {
 	const {reindexStatuses, setReindexStatuses} = useContext(AppContext);
+	const previousStatuses = usePrevious(reindexStatuses);
+	const [reindexingAll, setReindexingAll] = useState(false);
 	const toaster = useToaster();
 
 	const {fetchData} = useFetch({url: '/reindex-statuses'});
@@ -30,21 +33,24 @@ const useReindexActions = () => {
 		const interval = setInterval(() => {
 			fetchData()
 				.then(({items, totalCount}) => {
-					setReindexStatuses(items);
-
 					if (!totalCount) {
-						if (reindexStatuses.length > 0) {
+						if (previousStatuses) {
 							toaster.success();
 						}
+
 						clearInterval(interval);
+						setReindexingAll(false);
 					}
+
+					setReindexStatuses(items);
 				})
 				.catch(() => {
 					clearInterval(interval);
-					setReindexStatuses([]);
 					sendError();
+					setReindexStatuses([]);
+					setReindexingAll(false);
 				});
-		}, 2000);
+		}, 1500);
 	};
 
 	const handleReindex = reindexKey => {
@@ -57,7 +63,13 @@ const useReindexActions = () => {
 		toaster.danger(Liferay.Language.get('please-check-the-server-log'));
 	};
 
-	return {getStatuses, handleReindex, reindexStatuses};
+	return {
+		getStatuses,
+		handleReindex,
+		reindexStatuses,
+		reindexingAll,
+		setReindexingAll,
+	};
 };
 
 export {useReindexActions};
