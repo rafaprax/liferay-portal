@@ -16,60 +16,9 @@ import {useFetch} from '../../../shared/hooks/useFetch.es';
 import {Body} from './ReindexPageBody.es';
 
 const ReindexPage = () => {
-	// const {data, fetchData} = useFetch({url: '/reindex-action-groups'});
-	// const promises = useMemo(() => [fetchData()], [fetchData]);
+	const {data, fetchData} = useFetch({url: '/reindex-action-groups'});
 
-	const promises = [];
-	const data = {
-		items: [
-			{
-				label: 'Metrics',
-				reindexActions: [
-					{
-						key: 'AllMetrics',
-						label: 'Workflow Metrics Indexes',
-					},
-					{
-						key: 'Instances',
-						label: 'Workflow Metrics Instances',
-					},
-					{
-						key: 'Nodes',
-						label: 'Workflow Metrics Nodes',
-					},
-					{
-						key: 'Processes',
-						label: 'Workflow Metrics Processes',
-					},
-					{
-						key: 'Tasks',
-						label: 'Workflow Metrics Tasks',
-					},
-					{
-						key: 'Transitions',
-						label: 'Workflow Metrics Transitions',
-					},
-				],
-			},
-			{
-				label: 'SLAs',
-				reindexActions: [
-					{
-						key: 'AllSlas',
-						label: 'Workflow Metrics Indexes',
-					},
-					{
-						key: 'SlaInstances',
-						label: 'SLA Instance Results',
-					},
-					{
-						key: 'SlaTasks',
-						label: 'SLA Process Results',
-					},
-				],
-			},
-		],
-	};
+	const promises = useMemo(() => [fetchData()], [fetchData]);
 
 	return (
 		<div className="container-fluid-1280">

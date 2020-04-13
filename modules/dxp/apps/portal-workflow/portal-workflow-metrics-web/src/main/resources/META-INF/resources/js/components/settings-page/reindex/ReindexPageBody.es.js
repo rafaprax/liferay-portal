@@ -10,16 +10,28 @@
  */
 
 import ClayButton from '@clayui/button';
+import ClayProgressBar from '@clayui/progress-bar';
 import React from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
 import {GroupActions} from './ReindexPageBodyActions.es';
 import {useReindexActions} from './hooks/useReindexActions.es';
 
-const REINDEX_ALL_KEY = 'All';
+const Body = ({items = []}) => {
+	const {
+		handleReindex,
+		reindexStatuses,
+		reindexingAll,
+		setReindexingAll,
+	} = useReindexActions();
 
-const Body = ({items}) => {
-	const {handleReindex, reindexStatuses} = useReindexActions();
+	const handleReindexAll = () => {
+		setReindexingAll(true);
+		handleReindex('All');
+	};
+
+	const reindexStatusAll = reindexStatuses.find(({key}) => key === 'All');
+	const {completionPercentage = 0} = reindexStatusAll || {};
 
 	return (
 		<>
@@ -32,12 +44,13 @@ const Body = ({items}) => {
 					</div>
 
 					<div className="autofit-col">
-						<ClayButton
-							onClick={() => handleReindex(REINDEX_ALL_KEY)}
-							small
-						>
-							{Liferay.Language.get('reindex-all')}
-						</ClayButton>
+						{completionPercentage || reindexingAll ? (
+							<ClayProgressBar value={completionPercentage} />
+						) : (
+							<ClayButton onClick={handleReindexAll} small>
+								{Liferay.Language.get('reindex-all')}
+							</ClayButton>
+						)}
 					</div>
 				</div>
 			</div>
@@ -45,6 +58,7 @@ const Body = ({items}) => {
 			<PromisesResolver.Resolved>
 				{items.map((item, index) => (
 					<Body.GroupActions
+						disabled={reindexingAll}
 						handleAction={handleReindex}
 						key={index}
 						statuses={reindexStatuses}
