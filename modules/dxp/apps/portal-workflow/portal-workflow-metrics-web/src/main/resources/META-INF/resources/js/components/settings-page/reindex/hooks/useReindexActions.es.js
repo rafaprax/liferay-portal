@@ -15,7 +15,13 @@ import {useContext, useState} from 'react';
 import {useToaster} from '../../../../shared/components/toaster/hooks/useToaster.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
 import {usePost} from '../../../../shared/hooks/usePost.es';
+import {sub} from '../../../../shared/util/lang.es';
 import {AppContext} from '../../../AppContext.es';
+
+const SUCCESS_MESSAGES = {
+	ALL: Liferay.Language.get('all-x-have-reindexed-successfully'),
+	SINGLE: Liferay.Language.get('x-has-reindexed-successfully'),
+};
 
 const useReindexActions = () => {
 	const {reindexStatuses, setReindexStatuses} = useContext(AppContext);
@@ -24,18 +30,18 @@ const useReindexActions = () => {
 	const toaster = useToaster();
 
 	const {fetchData} = useFetch({url: '/reindex-statuses'});
-	const {postData} = usePost({
-		config: {headers: {'Content-Type': 'application/json'}},
-		url: '/reindex-action',
-	});
+	const {postData} = usePost({url: '/reindex-action'});
 
-	const getStatuses = () => {
+	const getStatuses = (
+		indexKey,
+		label = Liferay.Language.get('workflow-indexes')
+	) => {
 		const interval = setInterval(() => {
 			fetchData()
 				.then(({items, totalCount}) => {
 					if (!totalCount) {
 						if (previousStatuses) {
-							toaster.success();
+							toaster.success(getSuccessMessage(indexKey, label));
 						}
 
 						clearInterval(interval);
@@ -53,9 +59,17 @@ const useReindexActions = () => {
 		}, 1500);
 	};
 
-	const handleReindex = reindexKey => {
-		postData(JSON.stringify(reindexKey))
-			.then(getStatuses)
+	const getSuccessMessage = (indexKey, label) => {
+		const message = indexKey.includes('All')
+			? SUCCESS_MESSAGES.ALL
+			: SUCCESS_MESSAGES.SINGLE;
+
+		return sub(message, [label]);
+	};
+
+	const handleReindex = (indexKey, label) => {
+		postData({indexKey})
+			.then(() => getStatuses(indexKey, label))
 			.catch(sendError);
 	};
 
