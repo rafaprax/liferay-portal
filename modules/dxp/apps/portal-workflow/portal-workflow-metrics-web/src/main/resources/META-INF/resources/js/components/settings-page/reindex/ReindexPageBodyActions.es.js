@@ -15,7 +15,7 @@ import ClayProgressBar from '@clayui/progress-bar';
 import React, {useMemo} from 'react';
 
 const Action = ({
-	action: {key, label, status},
+	action: {indexKey, label, status},
 	disabled,
 	handleAction,
 	index,
@@ -29,7 +29,7 @@ const Action = ({
 		<ClayList.Item
 			className="autofit-row-center reindex-action"
 			flex
-			key={key}
+			key={indexKey}
 		>
 			<ClayList.ItemField expand>{label}</ClayList.ItemField>
 
@@ -40,7 +40,7 @@ const Action = ({
 					<ClayButton
 						disabled={disabled}
 						displayType="secondary"
-						onClick={() => handleAction(key)}
+						onClick={() => handleAction(indexKey, label)}
 						small
 					>
 						{buttonTxt}
@@ -61,7 +61,9 @@ const GroupActions = ({
 	const actions = useMemo(
 		() =>
 			reindexActions.map(item => {
-				const status = statuses.find(({key}) => key === item.key);
+				const status = statuses.find(
+					({indexKey}) => indexKey === item.indexKey
+				);
 
 				return {...item, status};
 			}),

@@ -19,7 +19,7 @@ const HeaderLoadingStatus = ({container}) => {
 	const {getStatuses, reindexStatuses} = useReindexActions();
 
 	useEffect(() => {
-		getStatuses();
+		getStatuses('All');
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
