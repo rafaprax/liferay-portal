@@ -11,9 +11,10 @@
 
 import ClayButton from '@clayui/button';
 import ClayProgressBar from '@clayui/progress-bar';
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
+import {REINDEX_ALL_KEY, REINDEX_GROUPS} from './ReindexConstants.es';
 import {GroupActions} from './ReindexPageBodyActions.es';
 import {useReindexActions} from './hooks/useReindexActions.es';
 
@@ -30,7 +31,22 @@ const Body = ({items = []}) => {
 		handleReindex('All');
 	};
 
-	const reindexStatusAll = reindexStatuses.find(({key}) => key === 'All');
+	const groups = useMemo(() => {
+		const groups = [...REINDEX_GROUPS];
+
+		items.forEach(({group, ...action}) => {
+			const groupIndex = groups.findIndex(({key}) => key === group);
+
+			groups[groupIndex].actions.push(action);
+		});
+
+		return groups;
+	}, [items]);
+
+	const reindexStatusAll = reindexStatuses.find(
+		({key}) => key === REINDEX_ALL_KEY
+	);
+
 	const {completionPercentage = 0} = reindexStatusAll || {};
 
 	return (
@@ -38,9 +54,9 @@ const Body = ({items = []}) => {
 			<div className="mb-4 p-3 sheet">
 				<div className="autofit-row autofit-row-center">
 					<div className="autofit-col autofit-col-expand">
-						<span className="font-weight-semi-bold">
+						<h5 className="font-weight-semi-bold m-0 py-2">
 							{Liferay.Language.get('workflow-indexes')}
-						</span>
+						</h5>
 					</div>
 
 					<div className="autofit-col">
@@ -56,13 +72,13 @@ const Body = ({items = []}) => {
 			</div>
 
 			<PromisesResolver.Resolved>
-				{items.map((item, index) => (
+				{groups.map((group, index) => (
 					<Body.GroupActions
 						disabled={reindexingAll}
 						handleAction={handleReindex}
 						key={index}
 						statuses={reindexStatuses}
-						{...item}
+						{...group}
 					/>
 				))}
 			</PromisesResolver.Resolved>

@@ -16,13 +16,16 @@ import {useFetch} from '../../../shared/hooks/useFetch.es';
 import {Body} from './ReindexPageBody.es';
 
 const ReindexPage = () => {
-	const {data, fetchData} = useFetch({url: '/reindex-action-groups'});
+	// const {data, fetchData} = useFetch({url: '/reindex-action-groups'});
 
-	const promises = useMemo(() => [fetchData()], [fetchData]);
+	// const promises = useMemo(() => [fetchData()], [fetchData]);
+
+	const promises = [];
+	const data = {};
 
 	return (
 		<div className="container-fluid-1280">
-			<h3 className="my-4">
+			<h3 className="font-weight-semi-bold my-4">
 				{Liferay.Language.get('workflow-index-actions')}
 			</h3>
 
