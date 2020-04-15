@@ -27,7 +27,7 @@ const REINDEX_GROUPS = [
 	{
 		actions: [
 			{
-				key: REINDEX_METRICS_KEY,
+				key: REINDEX_SLA_KEY,
 				label: Liferay.Language.get('workflow-sla-indexes'),
 			},
 		],

@@ -60,7 +60,9 @@ const GroupActions = ({
 }) => {
 	const groupActions = useMemo(() => {
 		return actions.map(item => {
-			const status = statuses.find(({key}) => key === item.key);
+			const status = statuses.find(
+				({index: [{key}]}) => key === item.key
+			);
 
 			return {...item, status};
 		});

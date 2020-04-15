@@ -10,18 +10,13 @@
  */
 
 import {ClayTooltipProvider} from '@clayui/tooltip';
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import {useReindexActions} from '../../../components/settings-page/reindex/hooks/useReindexActions.es';
 import Portal from '../portal/Portal.es';
 
 const HeaderLoadingStatus = ({container}) => {
-	const {getStatuses, reindexStatuses} = useReindexActions();
-
-	useEffect(() => {
-		getStatuses('All');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	const {reindexStatuses} = useReindexActions();
 
 	return (
 		<>
