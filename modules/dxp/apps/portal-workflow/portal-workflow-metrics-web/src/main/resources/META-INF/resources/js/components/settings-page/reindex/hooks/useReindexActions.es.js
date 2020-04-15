@@ -52,7 +52,7 @@ const useReindexActions = () => {
 					setReindexStatuses([]);
 					setReindexingAll(false);
 				});
-		}, 1500);
+		}, 500);
 	};
 
 	const getSuccessMessage = (key, label) => {

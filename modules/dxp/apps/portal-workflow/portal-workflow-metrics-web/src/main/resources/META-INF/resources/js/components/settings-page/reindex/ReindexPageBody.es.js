@@ -44,7 +44,7 @@ const Body = ({items = []}) => {
 	}, [items]);
 
 	const reindexStatusAll = reindexStatuses.find(
-		({key}) => key === REINDEX_ALL_KEY
+		({index: [{key}]}) => key === REINDEX_ALL_KEY
 	);
 
 	const {completionPercentage = 0} = reindexStatusAll || {};
