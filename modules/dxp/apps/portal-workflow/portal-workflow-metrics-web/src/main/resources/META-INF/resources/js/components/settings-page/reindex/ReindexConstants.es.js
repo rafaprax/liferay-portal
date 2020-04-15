@@ -10,8 +10,8 @@
  */
 
 const REINDEX_ALL_KEY = 'All';
-const REINDEX_METRICS_KEY = 'Metrics';
-const REINDEX_SLA_KEY = 'Sla';
+const REINDEX_METRICS_KEY = 'Metric';
+const REINDEX_SLA_KEY = 'SLA';
 
 const REINDEX_GROUPS = [
 	{

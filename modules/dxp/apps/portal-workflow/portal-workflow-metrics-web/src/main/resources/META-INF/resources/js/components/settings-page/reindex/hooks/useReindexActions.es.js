@@ -14,7 +14,7 @@ import {useContext, useState} from 'react';
 
 import {useToaster} from '../../../../shared/components/toaster/hooks/useToaster.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
-import {usePost} from '../../../../shared/hooks/usePost.es';
+import {usePatch} from '../../../../shared/hooks/usePatch.es';
 import {sub} from '../../../../shared/util/lang.es';
 import {AppContext} from '../../../AppContext.es';
 import {REINDEX_GROUP_KEYS, SUCCESS_MESSAGES} from '../ReindexConstants.es';
@@ -25,8 +25,8 @@ const useReindexActions = () => {
 	const [reindexingAll, setReindexingAll] = useState(false);
 	const toaster = useToaster();
 
-	const {fetchData} = useFetch({url: '/reindex-status'});
-	const {postData} = usePost({url: '/reindex-action'});
+	const {fetchData} = useFetch({url: '/indexes/reindex/status'});
+	const {patchData} = usePatch({url: '/indexes/reindex'});
 
 	const getStatuses = (
 		key,
@@ -64,7 +64,7 @@ const useReindexActions = () => {
 	};
 
 	const handleReindex = (key, label) => {
-		postData({key})
+		patchData([{key}])
 			.then(() => getStatuses(key, label))
 			.catch(() => {
 				sendError();

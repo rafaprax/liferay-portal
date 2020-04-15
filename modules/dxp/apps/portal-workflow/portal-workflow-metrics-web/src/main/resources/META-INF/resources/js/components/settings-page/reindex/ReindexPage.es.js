@@ -16,12 +16,9 @@ import {useFetch} from '../../../shared/hooks/useFetch.es';
 import {Body} from './ReindexPageBody.es';
 
 const ReindexPage = () => {
-	// const {data, fetchData} = useFetch({url: '/reindex-action-groups'});
+	const {data, fetchData} = useFetch({url: '/indexes'});
 
-	// const promises = useMemo(() => [fetchData()], [fetchData]);
-
-	const promises = [];
-	const data = {};
+	const promises = useMemo(() => [fetchData()], [fetchData]);
 
 	return (
 		<div className="container-fluid-1280">
