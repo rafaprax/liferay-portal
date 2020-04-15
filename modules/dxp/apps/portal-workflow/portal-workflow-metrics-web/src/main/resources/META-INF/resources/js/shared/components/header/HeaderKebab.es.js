@@ -22,9 +22,12 @@ const HeaderKebab = ({kebabItems = []}) => {
 
 	const container = useMemo(
 		() =>
-			document.querySelector('.user-control-group div.control-menu-icon'),
-		[]
-	);
+			document.querySelector(
+			'.user-control-group ul.control-menu-nav'
+		);
+
+		return nav ? nav.lastElementChild : null;
+	}, []);
 
 	if (!kebabItems.length) {
 		return null;
