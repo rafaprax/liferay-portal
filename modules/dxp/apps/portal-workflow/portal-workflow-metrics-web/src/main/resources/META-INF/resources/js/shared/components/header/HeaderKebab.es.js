@@ -25,7 +25,7 @@ const HeaderKebab = ({kebabItems = []}) => {
 			'.user-control-group ul.control-menu-nav'
 		);
 
-		return nav.lastElementChild;
+		return nav ? nav.lastElementChild : null;
 	}, []);
 
 	if (!kebabItems.length) {
