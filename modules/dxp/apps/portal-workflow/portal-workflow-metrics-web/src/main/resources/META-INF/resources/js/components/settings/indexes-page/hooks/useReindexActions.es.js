@@ -10,10 +10,11 @@
  */
 
 import {usePrevious} from 'frontend-js-react-web';
-import {useContext, useState} from 'react';
+import {useCallback, useContext} from 'react';
 
 import {useToaster} from '../../../../shared/components/toaster/hooks/useToaster.es';
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
+import {useInterval} from '../../../../shared/hooks/useInterval.es';
 import {usePatch} from '../../../../shared/hooks/usePatch.es';
 import {sub} from '../../../../shared/util/lang.es';
 import {AppContext} from '../../../AppContext.es';
@@ -22,66 +23,81 @@ import {INDEXES_GROUPS_KEYS, SUCCESS_MESSAGES} from '../IndexesConstants.es';
 const useReindexActions = () => {
 	const {reindexStatuses, setReindexStatuses} = useContext(AppContext);
 	const previousStatuses = usePrevious(reindexStatuses);
-	const [reindexingAll, setReindexingAll] = useState(false);
+	const schedule = useInterval();
 	const toaster = useToaster();
 
 	const {fetchData} = useFetch({url: '/indexes/reindex/status'});
 	const {patchData} = usePatch({url: '/indexes/reindex'});
 
-	const getStatuses = (
-		key,
-		label = Liferay.Language.get('workflow-indexes')
-	) => {
-		const interval = setInterval(() => {
-			fetchData()
-				.then(({items, totalCount}) => {
-					if (!totalCount) {
-						if (previousStatuses) {
-							toaster.success(getSuccessMessage(key, label));
+	const getReindexStatus = useCallback(
+		key => reindexStatuses.find(item => key === item.key) || {},
+		[reindexStatuses]
+	);
+
+	const getStatuses = useCallback(
+		(key, label = Liferay.Language.get('workflow-indexes')) => {
+			setReindexStatuses([
+				...reindexStatuses,
+				{completionPercentage: 0, key},
+			]);
+
+			const cancelInterval = schedule(() => {
+				fetchData()
+					.then(({items, totalCount}) => {
+						if (!totalCount) {
+							if (previousStatuses) {
+								sendSuccess(key, label);
+							}
+
+							cancelInterval();
 						}
 
-						clearInterval(interval);
-						setReindexingAll(false);
-					}
+						setReindexStatuses(items);
+					})
+					.catch(() => {
+						cancelInterval();
+						sendError();
+						setReindexStatuses([]);
+					});
+			}, 1000);
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[fetchData, previousStatuses, setReindexStatuses, reindexStatuses]
+	);
 
-					setReindexStatuses(items);
-				})
-				.catch(() => {
-					clearInterval(interval);
-					sendError();
-					setReindexStatuses([]);
-					setReindexingAll(false);
-				});
-		}, 500);
+	const handleReindex = useCallback(
+		(key, label) => {
+			patchData({key})
+				.then(() => getStatuses(key, label))
+				.catch(sendError);
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[getStatuses, patchData]
+	);
+
+	const isReindexing = useCallback(
+		key => reindexStatuses.findIndex(item => key === item.key) > -1,
+		[reindexStatuses]
+	);
+
+	const sendError = () => {
+		toaster.danger(Liferay.Language.get('your-request-has-failed'));
 	};
 
-	const getSuccessMessage = (key, label) => {
+	const sendSuccess = (key, label) => {
 		const message = INDEXES_GROUPS_KEYS.includes(key)
 			? SUCCESS_MESSAGES.ALL
 			: SUCCESS_MESSAGES.SINGLE;
 
-		return sub(message, [label]);
-	};
-
-	const handleReindex = (key, label) => {
-		patchData({key})
-			.then(() => getStatuses(key, label))
-			.catch(() => {
-				sendError();
-				setReindexingAll(false);
-			});
-	};
-
-	const sendError = () => {
-		toaster.danger(Liferay.Language.get('please-check-the-server-log'));
+		toaster.success(sub(message, [label]));
 	};
 
 	return {
+		getReindexStatus,
 		getStatuses,
 		handleReindex,
+		isReindexing,
 		reindexStatuses,
-		reindexingAll,
-		setReindexingAll,
 	};
 };
 

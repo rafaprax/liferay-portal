@@ -9,11 +9,11 @@
  * distribution rights of the Software.
  */
 
-import React, {useContext, useMemo} from 'react';
+import React, {useContext, useEffect, useMemo} from 'react';
 
 import {AppContext} from '../../../components/AppContext.es';
 import HeaderBackButton from './HeaderBackButton.es';
-import HeaderLoadingStatus from './HeaderLoadingStatus.es';
+import HeaderReindexStatus from './HeaderReindexStatus.es';
 import HeaderTitle from './HeaderTitle.es';
 
 const HeaderController = ({basePath}) => {
@@ -32,7 +32,7 @@ const HeaderController = ({basePath}) => {
 			button: header.querySelector(
 				'.sites-control-group .control-menu-nav'
 			),
-			loading: header.querySelector(
+			status: header.querySelector(
 				'.user-control-group li.control-menu-nav-item'
 			),
 			title: header.querySelector(
@@ -41,6 +41,14 @@ const HeaderController = ({basePath}) => {
 		};
 	}, [portletNamespace]);
 
+	useEffect(() => {
+		const legacyElm = document.querySelector(
+			'[data-qa-id="headerOptions"]'
+		);
+
+		legacyElm.innerHTML = '';
+	}, []);
+
 	return (
 		<>
 			<HeaderBackButton
@@ -48,9 +56,9 @@ const HeaderController = ({basePath}) => {
 				container={container.button}
 			/>
 
-			<HeaderTitle container={container.title} title={title} />
+			<HeaderReindexStatus container={container.status} />
 
-			<HeaderLoadingStatus container={container.loading} />
+			<HeaderTitle container={container.title} title={title} />
 		</>
 	);
 };

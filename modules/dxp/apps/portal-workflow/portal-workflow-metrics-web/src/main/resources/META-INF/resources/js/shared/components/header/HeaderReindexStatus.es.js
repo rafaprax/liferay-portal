@@ -15,7 +15,7 @@ import React from 'react';
 import {useReindexActions} from '../../../components/settings/indexes-page/hooks/useReindexActions.es';
 import Portal from '../portal/Portal.es';
 
-const HeaderLoadingStatus = ({container}) => {
+const HeaderReindexStatus = ({container}) => {
 	const {reindexStatuses} = useReindexActions();
 
 	return (
@@ -27,14 +27,14 @@ const HeaderLoadingStatus = ({container}) => {
 					elementId="headerLoading"
 					position="after"
 				>
-					<div className="control-menu-icon">
+					<div className="control-menu-icon px-2">
 						<ClayTooltipProvider>
 							<span
 								aria-hidden="true"
 								className="loading-animation loading-animation-light loading-animation-sm m-0"
 								data-tooltip-align="bottom"
 								title={Liferay.Language.get(
-									'the-workflow-metrics-index-is-currently-reindexing'
+									'the-workflow-metrics-data-is-currently-reindexing'
 								)}
 							></span>
 						</ClayTooltipProvider>
@@ -45,4 +45,4 @@ const HeaderLoadingStatus = ({container}) => {
 	);
 };
 
-export default HeaderLoadingStatus;
+export default HeaderReindexStatus;
