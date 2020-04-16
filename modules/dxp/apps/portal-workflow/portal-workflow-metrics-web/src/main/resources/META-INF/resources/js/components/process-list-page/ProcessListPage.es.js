@@ -80,7 +80,7 @@ const ProcessListPage = ({history, query, routeParams}) => {
 				kebabItems={[
 					{
 						label: Liferay.Language.get('settings'),
-						link: `/settings`,
+						link: `/settings/indexes`,
 					},
 				]}
 			/>

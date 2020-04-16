@@ -9,37 +9,37 @@
  * distribution rights of the Software.
  */
 
-const REINDEX_ALL_KEY = 'All';
-const REINDEX_METRICS_KEY = 'Metric';
-const REINDEX_SLA_KEY = 'SLA';
+const ALL_INDEXES_KEY = 'All';
+const METRIC_INDEXES_KEY = 'Metric';
+const SLA_INDEXES_KEY = 'SLA';
 
-const REINDEX_GROUPS = [
+const INDEXES_GROUPS = [
 	{
 		actions: [
 			{
-				key: REINDEX_METRICS_KEY,
+				key: METRIC_INDEXES_KEY,
 				label: Liferay.Language.get('workflow-metrics-indexes'),
 			},
 		],
-		key: REINDEX_METRICS_KEY,
+		key: METRIC_INDEXES_KEY,
 		label: Liferay.Language.get('metrics'),
 	},
 	{
 		actions: [
 			{
-				key: REINDEX_SLA_KEY,
+				key: SLA_INDEXES_KEY,
 				label: Liferay.Language.get('workflow-sla-indexes'),
 			},
 		],
-		key: REINDEX_SLA_KEY,
+		key: SLA_INDEXES_KEY,
 		label: Liferay.Language.get('slas'),
 	},
 ];
 
-const REINDEX_GROUP_KEYS = [
-	REINDEX_ALL_KEY,
-	REINDEX_METRICS_KEY,
-	REINDEX_SLA_KEY,
+const INDEXES_GROUPS_KEYS = [
+	ALL_INDEXES_KEY,
+	METRIC_INDEXES_KEY,
+	SLA_INDEXES_KEY,
 ];
 
 const SUCCESS_MESSAGES = {
@@ -48,10 +48,10 @@ const SUCCESS_MESSAGES = {
 };
 
 export {
-	REINDEX_ALL_KEY,
-	REINDEX_METRICS_KEY,
-	REINDEX_SLA_KEY,
-	REINDEX_GROUPS,
-	REINDEX_GROUP_KEYS,
+	ALL_INDEXES_KEY,
+	METRIC_INDEXES_KEY,
+	SLA_INDEXES_KEY,
+	INDEXES_GROUPS,
+	INDEXES_GROUPS_KEYS,
 	SUCCESS_MESSAGES,
 };

@@ -10,14 +10,19 @@
  */
 
 import React from 'react';
+import {Route, Switch} from 'react-router-dom';
 
 import {usePageTitle} from '../../shared/hooks/usePageTitle.es';
-import ReindexPage from './reindex/ReindexPage.es';
+import IndexesPage from './indexes-page/IndexesPage.es';
 
-const SettingsPage = routerProps => {
+const SettingsContainer = () => {
 	usePageTitle(Liferay.Language.get('settings'));
 
-	return <ReindexPage {...routerProps} />;
+	return (
+		<Switch>
+			<Route component={IndexesPage} exact path="/settings/indexes" />
+		</Switch>
+	);
 };
 
-export default SettingsPage;
+export default SettingsContainer;
