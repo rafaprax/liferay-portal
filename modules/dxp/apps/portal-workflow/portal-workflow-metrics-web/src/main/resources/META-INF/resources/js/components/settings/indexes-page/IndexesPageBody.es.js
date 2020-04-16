@@ -14,8 +14,8 @@ import ClayProgressBar from '@clayui/progress-bar';
 import React, {useMemo} from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
-import {REINDEX_ALL_KEY, REINDEX_GROUPS} from './ReindexConstants.es';
-import {GroupActions} from './ReindexPageBodyActions.es';
+import {ALL_INDEXES_KEY, INDEXES_GROUPS} from './IndexesConstants.es';
+import {GroupActions} from './IndexesPageBodyActions.es';
 import {useReindexActions} from './hooks/useReindexActions.es';
 
 const Body = ({items = []}) => {
@@ -32,7 +32,7 @@ const Body = ({items = []}) => {
 	};
 
 	const groups = useMemo(() => {
-		const groups = [...REINDEX_GROUPS];
+		const groups = [...INDEXES_GROUPS];
 
 		items.forEach(({group, ...action}) => {
 			const groupIndex = groups.findIndex(({key}) => key === group);
@@ -44,7 +44,7 @@ const Body = ({items = []}) => {
 	}, [items]);
 
 	const reindexStatusAll = reindexStatuses.find(
-		({index: [{key}]}) => key === REINDEX_ALL_KEY
+		({key}) => key === ALL_INDEXES_KEY
 	);
 
 	const {completionPercentage = 0} = reindexStatusAll || {};

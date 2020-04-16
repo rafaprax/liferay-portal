@@ -12,7 +12,7 @@
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import React from 'react';
 
-import {useReindexActions} from '../../../components/settings-page/reindex/hooks/useReindexActions.es';
+import {useReindexActions} from '../../../components/settings/indexes-page/hooks/useReindexActions.es';
 import Portal from '../portal/Portal.es';
 
 const HeaderLoadingStatus = ({container}) => {

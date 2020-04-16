@@ -13,9 +13,9 @@ import React, {useMemo} from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
 import {useFetch} from '../../../shared/hooks/useFetch.es';
-import {Body} from './ReindexPageBody.es';
+import {Body} from './IndexesPageBody.es';
 
-const ReindexPage = () => {
+const IndexesPage = () => {
 	const {data, fetchData} = useFetch({url: '/indexes'});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);
@@ -27,12 +27,12 @@ const ReindexPage = () => {
 			</h3>
 
 			<PromisesResolver promises={promises}>
-				<ReindexPage.Body {...data} />
+				<IndexesPage.Body {...data} />
 			</PromisesResolver>
 		</div>
 	);
 };
 
-ReindexPage.Body = Body;
+IndexesPage.Body = Body;
 
-export default ReindexPage;
+export default IndexesPage;

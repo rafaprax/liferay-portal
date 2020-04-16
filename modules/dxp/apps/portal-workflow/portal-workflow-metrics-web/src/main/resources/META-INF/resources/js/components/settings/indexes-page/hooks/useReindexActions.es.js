@@ -17,7 +17,7 @@ import {useFetch} from '../../../../shared/hooks/useFetch.es';
 import {usePatch} from '../../../../shared/hooks/usePatch.es';
 import {sub} from '../../../../shared/util/lang.es';
 import {AppContext} from '../../../AppContext.es';
-import {REINDEX_GROUP_KEYS, SUCCESS_MESSAGES} from '../ReindexConstants.es';
+import {INDEXES_GROUPS_KEYS, SUCCESS_MESSAGES} from '../IndexesConstants.es';
 
 const useReindexActions = () => {
 	const {reindexStatuses, setReindexStatuses} = useContext(AppContext);
@@ -56,7 +56,7 @@ const useReindexActions = () => {
 	};
 
 	const getSuccessMessage = (key, label) => {
-		const message = REINDEX_GROUP_KEYS.includes(key)
+		const message = INDEXES_GROUPS_KEYS.includes(key)
 			? SUCCESS_MESSAGES.ALL
 			: SUCCESS_MESSAGES.SINGLE;
 
@@ -64,7 +64,7 @@ const useReindexActions = () => {
 	};
 
 	const handleReindex = (key, label) => {
-		patchData([{key}])
+		patchData({key})
 			.then(() => getStatuses(key, label))
 			.catch(() => {
 				sendError();
