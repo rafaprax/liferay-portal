@@ -13,29 +13,6 @@ const ALL_INDEXES_KEY = 'All';
 const METRIC_INDEXES_KEY = 'Metric';
 const SLA_INDEXES_KEY = 'SLA';
 
-const INDEXES_GROUPS = [
-	{
-		actions: [
-			{
-				key: METRIC_INDEXES_KEY,
-				label: Liferay.Language.get('workflow-metrics-indexes'),
-			},
-		],
-		key: METRIC_INDEXES_KEY,
-		label: Liferay.Language.get('metrics'),
-	},
-	{
-		actions: [
-			{
-				key: SLA_INDEXES_KEY,
-				label: Liferay.Language.get('workflow-sla-indexes'),
-			},
-		],
-		key: SLA_INDEXES_KEY,
-		label: Liferay.Language.get('slas'),
-	},
-];
-
 const INDEXES_GROUPS_KEYS = [
 	ALL_INDEXES_KEY,
 	METRIC_INDEXES_KEY,
@@ -47,11 +24,34 @@ const SUCCESS_MESSAGES = {
 	SINGLE: Liferay.Language.get('x-has-reindexed-successfully'),
 };
 
+const getIndexesGroups = () => ({
+	[METRIC_INDEXES_KEY]: {
+		indexes: [
+			{
+				key: METRIC_INDEXES_KEY,
+				label: Liferay.Language.get('workflow-metrics-indexes'),
+			},
+		],
+		key: METRIC_INDEXES_KEY,
+		label: Liferay.Language.get('metrics'),
+	},
+	[SLA_INDEXES_KEY]: {
+		indexes: [
+			{
+				key: SLA_INDEXES_KEY,
+				label: Liferay.Language.get('workflow-sla-indexes'),
+			},
+		],
+		key: SLA_INDEXES_KEY,
+		label: Liferay.Language.get('slas'),
+	},
+});
+
 export {
 	ALL_INDEXES_KEY,
 	METRIC_INDEXES_KEY,
 	SLA_INDEXES_KEY,
-	INDEXES_GROUPS,
 	INDEXES_GROUPS_KEYS,
 	SUCCESS_MESSAGES,
+	getIndexesGroups,
 };

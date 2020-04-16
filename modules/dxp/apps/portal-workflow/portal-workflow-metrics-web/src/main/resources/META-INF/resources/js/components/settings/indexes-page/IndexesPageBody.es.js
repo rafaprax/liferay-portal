@@ -14,40 +14,29 @@ import ClayProgressBar from '@clayui/progress-bar';
 import React, {useMemo} from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
-import {ALL_INDEXES_KEY, INDEXES_GROUPS} from './IndexesConstants.es';
-import {GroupActions} from './IndexesPageBodyActions.es';
+import {ALL_INDEXES_KEY, getIndexesGroups} from './IndexesConstants.es';
+import {List} from './IndexesPageBodyList.es';
 import {useReindexActions} from './hooks/useReindexActions.es';
 
 const Body = ({items = []}) => {
-	const {
-		handleReindex,
-		reindexStatuses,
-		reindexingAll,
-		setReindexingAll,
-	} = useReindexActions();
+	const {getReindexStatus, handleReindex, isReindexing} = useReindexActions();
 
-	const handleReindexAll = () => {
-		setReindexingAll(true);
-		handleReindex('All');
-	};
-
-	const groups = useMemo(() => {
-		const groups = [...INDEXES_GROUPS];
-
-		items.forEach(({group, ...action}) => {
-			const groupIndex = groups.findIndex(({key}) => key === group);
-
-			groups[groupIndex].actions.push(action);
-		});
-
-		return groups;
-	}, [items]);
-
-	const reindexStatusAll = reindexStatuses.find(
-		({key}) => key === ALL_INDEXES_KEY
+	const {completionPercentage = 0} = useMemo(
+		() => getReindexStatus(ALL_INDEXES_KEY),
+		[getReindexStatus]
 	);
 
-	const {completionPercentage = 0} = reindexStatusAll || {};
+	const groups = useMemo(() => {
+		const groups = getIndexesGroups();
+
+		items.forEach(({group, ...index}) => {
+			if (groups[group]) {
+				groups[group].indexes.push(index);
+			}
+		});
+
+		return Object.values(groups);
+	}, [items]);
 
 	return (
 		<>
@@ -60,10 +49,13 @@ const Body = ({items = []}) => {
 					</div>
 
 					<div className="autofit-col">
-						{completionPercentage || reindexingAll ? (
+						{isReindexing(ALL_INDEXES_KEY) ? (
 							<ClayProgressBar value={completionPercentage} />
 						) : (
-							<ClayButton onClick={handleReindexAll} small>
+							<ClayButton
+								onClick={() => handleReindex(ALL_INDEXES_KEY)}
+								small
+							>
 								{Liferay.Language.get('reindex-all')}
 							</ClayButton>
 						)}
@@ -73,11 +65,15 @@ const Body = ({items = []}) => {
 
 			<PromisesResolver.Resolved>
 				{groups.map((group, index) => (
-					<Body.GroupActions
-						disabled={reindexingAll}
-						handleAction={handleReindex}
+					<Body.List
+						disabled={
+							isReindexing(ALL_INDEXES_KEY) ||
+							isReindexing(group.key)
+						}
+						getReindexStatus={getReindexStatus}
+						handleReindex={handleReindex}
+						isReindexing={isReindexing}
 						key={index}
-						statuses={reindexStatuses}
 						{...group}
 					/>
 				))}
@@ -86,6 +82,6 @@ const Body = ({items = []}) => {
 	);
 };
 
-Body.GroupActions = GroupActions;
+Body.List = List;
 
 export {Body};
