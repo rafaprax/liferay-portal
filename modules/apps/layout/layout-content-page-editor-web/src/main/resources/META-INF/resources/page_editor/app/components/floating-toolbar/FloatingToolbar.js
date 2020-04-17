@@ -38,12 +38,15 @@ export default function FloatingToolbar({
 	const isMounted = useIsMounted();
 	const [panelId, setPanelId] = useState(null);
 	const panelRef = useRef(null);
-	const show = useIsActive()(item.itemId);
 	const hoverItem = useHoverItem();
 	const toolbarRef = useRef(null);
 	const [hidden, setHidden] = useState(false);
 	const [windowScrollPosition, setWindowScrollPosition] = useState(0);
 	const [windowWidth, setWindowWidth] = useState(0);
+
+	const itemElement = itemRef.current;
+
+	const show = useIsActive()(item.itemId) && itemElement;
 
 	const PanelComponent = useMemo(
 		() => FLOATING_TOOLBAR_CONFIGURATIONS[panelId] || null,
@@ -135,6 +138,7 @@ export default function FloatingToolbar({
 	}, [
 		alignElement,
 		item.config,
+		itemElement,
 		itemRef,
 		panelId,
 		show,
@@ -392,9 +396,12 @@ const getElementAlign = (element, anchor) => {
 	let horizontal = 'left';
 	let vertical = 'bottom';
 
-	const productMenuOpen = Liferay.SideNavigation.instance(
-		document.querySelector('.product-menu-toggle')
-	).visible();
+	const productMenu = document.querySelector('.product-menu-toggle');
+
+	const productMenuOpen = productMenu
+		? Liferay.SideNavigation.instance(productMenu).visible()
+		: false;
+
 	const wrapperWidth = document
 		.getElementById('wrapper')
 		.getBoundingClientRect().width;

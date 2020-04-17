@@ -15,7 +15,7 @@
 package com.liferay.oauth2.provider.scope.internal.jaxrs.feature;
 
 import com.liferay.oauth2.provider.scope.internal.constants.OAuth2ProviderScopeConstants;
-import com.liferay.oauth2.provider.scope.internal.jaxrs.filter.BaseContextContainerRequestFilter;
+import com.liferay.oauth2.provider.scope.internal.jaxrs.container.request.filter.BaseContextContainerRequestFilter;
 import com.liferay.oauth2.provider.scope.liferay.OAuth2ProviderScopeLiferayAccessControlContext;
 import com.liferay.oauth2.provider.scope.liferay.ScopeContext;
 import com.liferay.oauth2.provider.scope.spi.application.descriptor.ApplicationDescriptor;

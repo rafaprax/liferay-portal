@@ -152,7 +152,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 	}
@@ -1027,7 +1027,6 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-54392 and LPS-88014."
-	@ignore = "true"
 	@priority = "3"
 	test ExportImportSiteWithReferencedWebContent {
 		property test.name.skip.portal.instance = "ExportImport#ExportImportSiteWithReferencedWebContent";
@@ -1123,23 +1122,29 @@ definition {
 		AssertConsoleTextNotPresent(value1 = "java.lang.StringIndexOutOfBoundsException");
 	}
 
-	// Ignored because of the ticket LRQA-57518
-
-	@ignore = "true"
 	@priority = "4"
 	test ExportImportThemeSettings {
-		property osgi.app.includes = "frontend-theme-porygon";
-		property portal.upstream = "quarantine";
-
 		JSONGroup.addGroup(groupName = "Site Name");
 
 		SitePages.openPagesAdmin(siteURLKey = "Site Name");
 
 		SitePages.addPublicPage(pageName = "Test Page");
 
-		Page.changeCurrentTheme(
-			pageName = "Test Page",
-			themeName = "Porygon");
+		SitePages.openPagesAdmin(siteURLKey = "Site Name");
+
+		SitePages.gotoPageMenuItem(
+			menuItem = "Configure",
+			pageName = "Test Page");
+
+		Navigator.gotoNavTab(navTab = "Look and Feel");
+
+		Theme.configureLookAndFeelSpecificLook();
+
+		Theme.configureLookAndFeelShowHeaderSearch(showHeaderSearch = "false");
+
+		Theme.configureLookAndFeelShowMaxMinAppLinks(showMaxMinAppLinks = "true");
+
+		PortletEntry.save();
 
 		LAR.configureExportSiteCP(
 			siteScopeName = "Site Name",
@@ -1169,10 +1174,10 @@ definition {
 			pageName = "Test Page",
 			siteName = "Site Name 2");
 
-		Page.viewCurrentTheme(
-			page = "Public Pages",
+		Page.viewCurrentThemeSettings(
+			checkThemeSettingList = "Show Maximize/Minimize Application Links",
 			pageName = "Test Page",
-			themeName = "Porygon");
+			uncheckThemeSettingList = "Show Header Search");
 	}
 
 	@priority = "5"
@@ -1226,7 +1231,6 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-84204."
-	@ignore = "true"
 	@priority = "4"
 	test ExportImportWCDReferenceWhenNotStagedWebContent {
 		property test.name.skip.portal.instance = "ExportImport#ExportImportWCDReferenceWhenNotStagedWebContent";

@@ -181,6 +181,16 @@ definition {
 		Navigator.gotoBack();
 	}
 
+	macro expandGlobalPanel {
+		var key_panel = "${globalPanel}";
+
+		if (IsElementPresent(locator1 = "OAuth2#ADMIN_GLOBAL_PANEL_COLLAPSED") && (IsVisible(locator1 = "OAuth2#ADMIN_GLOBAL_PANEL_COLLAPSED"))) {
+			Click(locator1 = "OAuth2#ADMIN_GLOBAL_PANEL_COLLAPSED");
+		}
+
+		AssertElementPresent(locator1 = "OAuth2#ADMIN_GLOBAL_PANEL_EXPANDED");
+	}
+
 	macro expandResourcePanel {
 		var key_panel = "${resourcePanel}";
 

@@ -74,7 +74,7 @@ const WorkloadByAssigneeCard = ({routeParams}) => {
 			pageSize: 10,
 			sort,
 		},
-		url: `/processes/${processId}/assignee-users`,
+		url: `/processes/${processId}/assignees/metrics`,
 	});
 
 	const promises = useMemo(() => [postData()], [postData]);
@@ -101,7 +101,7 @@ const WorkloadByAssigneeCard = ({routeParams}) => {
 				<WorkloadByAssigneeCard.Body
 					currentTab={currentTab}
 					{...data}
-					processStepKey={taskKey}
+					processStepKey={taskKeys && taskKey}
 					{...routeParams}
 				/>
 			</Panel>

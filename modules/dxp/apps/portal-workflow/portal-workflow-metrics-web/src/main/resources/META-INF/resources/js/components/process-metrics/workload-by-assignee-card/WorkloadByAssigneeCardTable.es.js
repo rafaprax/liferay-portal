@@ -12,16 +12,15 @@
 import React, {useContext, useMemo} from 'react';
 
 import filterConstants from '../../../shared/components/filter/util/filterConstants.es';
-import {ChildLink} from '../../../shared/components/router/routerWrapper.es';
+import ChildLink from '../../../shared/components/router/ChildLink.es';
 import {getFormattedPercentage} from '../../../shared/util/util.es';
 import {AppContext} from '../../AppContext.es';
 import {processStatusConstants} from '../../filter/ProcessStatusFilter.es';
 import {slaStatusConstants} from '../../filter/SLAStatusFilter.es';
 
 const Item = ({
+	assignee: {id, name},
 	currentTab,
-	id,
-	name,
 	onTimeTaskCount,
 	overdueTaskCount,
 	processId,

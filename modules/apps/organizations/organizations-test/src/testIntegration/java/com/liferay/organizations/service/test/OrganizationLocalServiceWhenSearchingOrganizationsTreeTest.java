@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.comparator.OrganizationIdComparator;
 import com.liferay.portal.search.test.util.AssertUtils;
 import com.liferay.portal.search.test.util.SearchStreamUtil;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.users.admin.kernel.util.UsersAdmin;
@@ -145,6 +146,9 @@ public class OrganizationLocalServiceWhenSearchingOrganizationsTreeTest {
 
 		_assertSearch(false);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected BaseModelSearchResult<Organization> searchOrganizations(
 			LinkedHashMap<String, Object> organizationParams)

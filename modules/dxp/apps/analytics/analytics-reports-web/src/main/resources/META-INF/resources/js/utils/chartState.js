@@ -9,7 +9,9 @@
  * distribution rights of the Software.
  */
 
-import {useReducer} from 'react';
+import {useContext, useReducer} from 'react';
+
+import ConnectionContext from '../state/context';
 
 const ADD_DATA_SET_ITEM = 'add-data-key';
 const NEXT_TIME_SPAN = 'next-time-span';
@@ -18,6 +20,8 @@ const CHANGE_TIME_SPAN_OPTION = 'change-time-span-option';
 const SET_LOADING = 'set-loading';
 
 export const useChartState = ({defaultTimeSpanOption, publishDate}) => {
+	const {validAnalyticsConnection} = useContext(ConnectionContext);
+
 	const [state, dispatch] = useReducer(reducer, {
 		dataSet: {histogram: [], keyList: [], totals: []},
 		loading: true,
@@ -27,7 +31,12 @@ export const useChartState = ({defaultTimeSpanOption, publishDate}) => {
 	});
 
 	const actions = {
-		addDataSetItem: payload => dispatch({payload, type: ADD_DATA_SET_ITEM}),
+		addDataSetItem: payload =>
+			dispatch({
+				payload,
+				type: ADD_DATA_SET_ITEM,
+				validAnalyticsConnection,
+			}),
 		changeTimeSpanOption: payload =>
 			dispatch({payload, type: CHANGE_TIME_SPAN_OPTION}),
 		nextTimeSpan: () => dispatch({type: NEXT_TIME_SPAN}),
@@ -69,7 +78,11 @@ function reducer(state, action) {
 
 	switch (action.type) {
 		case ADD_DATA_SET_ITEM:
-			nextState = addDataSetItem(state, action.payload);
+			nextState = addDataSetItem(
+				state,
+				action.payload,
+				action.validAnalyticsConnection
+			);
 			break;
 		case NEXT_TIME_SPAN:
 			nextState = {
@@ -160,6 +173,7 @@ function mergeDataSets({
 	previousDataSet = {histogram: [], keyList: [], totals: []},
 	publishDate,
 	timeSpanComparator,
+	validAnalyticsConnection,
 }) {
 	const resultDataSet = {};
 
@@ -176,8 +190,9 @@ function mergeDataSets({
 		const valueDataObject = new Date(h.key);
 
 		if (
-			valueDataObject < publishDateObject &&
-			publishDateObject - valueDataObject > timeSpanComparator
+			(valueDataObject < publishDateObject &&
+				publishDateObject - valueDataObject > timeSpanComparator) ||
+			!validAnalyticsConnection
 		) {
 			return {
 				[key]: null,
@@ -233,7 +248,7 @@ function mergeDataSets({
  *  timeSpanComparator: number,
  * }
  */
-function addDataSetItem(state, payload) {
+function addDataSetItem(state, payload, validAnalyticsConnection) {
 	/**
 	 * The dataSetItem is recognized as substitutive when the
 	 * previous state was in loading state.
@@ -248,6 +263,7 @@ function addDataSetItem(state, payload) {
 			previousDataSet,
 			publishDate: state.publishDate,
 			timeSpanComparator: payload.timeSpanComparator,
+			validAnalyticsConnection,
 		}),
 		loading: false,
 	};

@@ -24,8 +24,6 @@ definition {
 
 		BlogsEntry.tearDownCP();
 
-		WorkflowMetrics.executeWorkflowScript(scriptName = "DeleteUsersAndRoles.groovy");
-
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Site Administration",
@@ -35,17 +33,17 @@ definition {
 			workflowDefinition = "No Workflow",
 			workflowResourceValue = "Blogs Entry");
 
+		ProductMenu.gotoPortlet(
+			category = "Workflow",
+			panel = "Control Panel",
+			portlet = "Metrics");
+
+		WorkflowMetrics.tearDown();
+
+		WorkflowMetrics.executeWorkflowScript(scriptName = "DeleteUsersAndRoles.groovy");
+
 		if ("${testPortalInstance}" == "true") {
 			PortalInstances.tearDownCP();
-		}
-		else {
-			ProductMenu.gotoPortlet(
-				category = "Workflow",
-				panel = "Control Panel",
-				portlet = "Metrics");
-
-			WorkflowMetrics.tearDown();
-
 		}
 	}
 
@@ -55,7 +53,7 @@ definition {
 		property portal.acceptance = "true";
 
 		var key_testSLADefinitionDays = "1";
-		var key_testSLADefinitionHours = "0000";
+		var key_testSLADefinitionHours = "00:00";
 		var key_testSLADefinitionDescription = "SLA Description";
 		var key_testSLADefinitionEnd = "Process Ends: Approved";
 		var key_testSLADefinitionName = "SLA Name";
@@ -714,7 +712,7 @@ definition {
 		property test.name.skip.portal.instance = "WorkflowMetrics#SeeListOfReports";
 
 		var key_testSLADefinitionDays = "0";
-		var key_testSLADefinitionHours = "0002";
+		var key_testSLADefinitionHours = "00:02";
 		var key_testSLADefinitionDescription = "SLA Description";
 		var key_testSLADefinitionEnd = "Process Ends: Approved";
 		var key_testSLADefinitionName = "SLA Name";
@@ -945,8 +943,7 @@ definition {
 	test VerifyFilterTopStepPerformance {
 
 		var key_testSLADefinitionDays = "0";
-		var key_testSLADefinitionHours = "0001";
-		var key_testSLADefinitionHoursCheck = "00:01";
+		var key_testSLADefinitionHours = "00:01";
 		var key_testSLADefinitionDescription = "SLA Description";
 		var key_testSLADefinitionEnd = "Process Ends: Approved";
 		var key_testSLADefinitionName = "SLA Name";
@@ -1034,11 +1031,11 @@ definition {
 
 	@description = "LRQA-53654 Automate LPS-88968: [Reports] View the summary of all pending items and what's their SLA status"
 	test ViewPendingItems {
-		property portal.acceptance = "true";
+		property portal.acceptance = "quarantine";
 		property test.name.skip.portal.instance = "WorkflowMetrics#ViewPendingItems";
 
 		var key_testSLADefinitionDays = "0";
-		var key_testSLADefinitionHours = "0002";
+		var key_testSLADefinitionHours = "00:02";
 		var key_testSLADefinitionDescription = "SLA Description";
 		var key_testSLADefinitionEnd = "Process Ends: Approved";
 		var key_testSLADefinitionName = "SLA Name";
@@ -1290,8 +1287,7 @@ definition {
 		property test.name.skip.portal.instance = "WorkflowMetrics#ViewSLABreachesOfTopSteps";
 
 		var key_testSLADefinitionDays = "0";
-		var key_testSLADefinitionHours = "0001";
-		var key_testSLADefinitionHoursCheck = "00:01";
+		var key_testSLADefinitionHours = "00:01";
 		var key_testSLADefinitionDescription = "SLA Description";
 		var key_testSLADefinitionEnd = "Process Ends: Approved";
 		var key_testSLADefinitionName = "SLA Name";
@@ -1485,6 +1481,20 @@ definition {
 			entryTitle = "Blogs Entry Title 4");
 
 		WorkflowMetrics.executeWorkflowScript(scriptName = "assignOpenTasksToUsers.groovy");
+
+		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
+
+		WorkflowMetrics.viewWorkloadByAssigneeCard(
+			assigneeName = "1user user1",
+			tabName = "Total",
+			taskCount = "2");
+
+		WorkflowMetrics.viewUserWorkloadByStepOnAllItems(
+			assigneeName = "1user user1",
+			callingFrom = "CARD",
+			isNotPresent = "2user user2,3user user3",
+			isPresent = "Blogs Entry Title 1,Blogs Entry Title 4",
+			taskName = "Review");
 
 		WorkflowMetrics.goToWorkflowProcessMetrics(workflowProcessName = "Single Approver");
 

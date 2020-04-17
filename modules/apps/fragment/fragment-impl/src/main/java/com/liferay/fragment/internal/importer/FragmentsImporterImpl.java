@@ -589,7 +589,7 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 			String description = jsonObject.getString("description");
 			String definitionData = _getFragmentEntryContent(
 				zipFile, entry.getValue(),
-				jsonObject.getString("definitionDataPath"));
+				jsonObject.getString("fragmentCompositionDefinitionPath"));
 
 			FragmentComposition fragmentComposition =
 				_fragmentCompositionService.fetchFragmentComposition(
@@ -810,7 +810,7 @@ public class FragmentsImporterImpl implements FragmentsImporter {
 	private boolean _isFragmentComposition(String fileName) {
 		if (Objects.equals(
 				_getFileName(fileName),
-				FragmentExportImportConstants.FILE_NAME_COMPOSITION)) {
+				FragmentExportImportConstants.FILE_NAME_FRAGMENT_COMPOSITION)) {
 
 			return true;
 		}

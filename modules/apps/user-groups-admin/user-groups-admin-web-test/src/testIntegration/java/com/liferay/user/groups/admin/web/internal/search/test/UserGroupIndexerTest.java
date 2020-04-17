@@ -37,6 +37,7 @@ import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.test.util.DocumentsAssert;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.users.admin.kernel.util.UsersAdmin;
@@ -132,6 +133,9 @@ public class UserGroupIndexerTest {
 
 		Assert.assertEquals(count + i, searchResponse2.getCount());
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected Role addRole() throws Exception {
 		Role role = roleLocalService.addRole(

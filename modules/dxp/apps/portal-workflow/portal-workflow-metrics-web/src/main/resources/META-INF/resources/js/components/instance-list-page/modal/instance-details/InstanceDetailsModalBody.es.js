@@ -22,8 +22,8 @@ import {Item} from './InstanceDetailsModalItem.es';
 const Body = ({
 	assetTitle,
 	assetType,
-	assigneeUsers = [{name: Liferay.Language.get('unassigned')}],
-	creatorUser,
+	assignees = [{name: Liferay.Language.get('unassigned')}],
+	creator,
 	dateCompletion,
 	dateCreated,
 	setRetry,
@@ -107,7 +107,7 @@ const Body = ({
 
 				<Body.SectionAttribute
 					description={Liferay.Language.get('created-by')}
-					detail={creatorUser ? creatorUser.name : ''}
+					detail={creator ? creator.name : ''}
 				/>
 
 				{dateCreated && (
@@ -148,7 +148,7 @@ const Body = ({
 				{!completed && (
 					<Body.SectionAttribute
 						description={Liferay.Language.get('current-assignee')}
-						detail={assigneeUsers.map(user => user.name).join(', ')}
+						detail={assignees.map(user => user.name).join(', ')}
 					/>
 				)}
 
@@ -190,7 +190,7 @@ const SectionAttribute = ({description, detail}) => {
 	return (
 		<p className="row">
 			<span className="col-2 font-weight-medium small text-secondary">
-				{`${description} `}
+				{`${description}`}
 			</span>
 
 			<span className="col small" data-testid="instanceDetailSpan">

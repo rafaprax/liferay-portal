@@ -220,13 +220,6 @@ components:
                     type: string
                     writeOnly: true
             type: object
-        ColumnDefinition:
-            properties:
-                size:
-                    maximum: 12
-                    minimum: 1
-                    type: integer
-            type: object
         Comment:
             description:
                 Represents a comment. See [Comment](https://www.schema.org/Comment) for more details.
@@ -329,8 +322,14 @@ components:
         ContentField:
             description:
                 Represents the value of each field in structured content. Fields can contain different information types
-                (e.g., geolocation, documents, etc.).
+                (e.g., documents, geolocation, etc.).
             properties:
+                contentFieldValue:
+                    $ref: "#/components/schemas/ContentFieldValue"
+                contentFieldValue_i18n:
+                    additionalProperties:
+                        $ref: "#/components/schemas/ContentFieldValue"
+                    type: object
                 dataType:
                     description:
                         The field type (e.g., image, text, etc.).
@@ -366,63 +365,62 @@ components:
                         A flag that indicates whether this field can be rendered multiple times.
                     readOnly: true
                     type: boolean
-                value:
+        ContentFieldValue:
+            description:
+                # @review
+                Represents the value of a content field. Can contain different information types
+                (e.g., geolocation, documents, etc.).
+            properties:
+                data:
+                    description:
+                        The field's content for simple types.
+                    type: string
+                document:
+                    allOf:
+                        - $ref: "#/components/schemas/ContentDocument"
+                    description:
+                        A content document element.
+                geo:
+                    description:
+                        A point determined by latitude and longitude.
                     properties:
-                        data:
+                        latitude:
                             description:
-                                The field's content for simple types.
-                            type: string
-                        document:
-                            allOf:
-                                - $ref: "#/components/schemas/ContentDocument"
+                                The latitude of a point in space.
+                            format: double
+                            type: number
+                        longitude:
                             description:
-                                A content document element.
-                        geo:
-                            description:
-                                A point determined by latitude and longitude.
-                            properties:
-                                latitude:
-                                    description:
-                                        The latitude of a point in space.
-                                    format: double
-                                    type: number
-                                longitude:
-                                    description:
-                                        The longitude of a point in space.
-                                    format: double
-                                    type: number
-                            type: object
-                        image:
-                            allOf:
-                                - $ref: "#/components/schemas/ContentDocument"
-                            description:
-                                A content document element that stores an image file.
-                        link:
-                            description:
-                                A link to a page on the server.
-                            format: uri
-                            type: string
-                        structuredContentLink:
-                            description:
-                                A link to structured content on the server.
-                            properties:
-                                contentType:
-                                    readOnly: true
-                                    type: string
-                                id:
-                                    description:
-                                        The resource's ID.
-                                    format: int64
-                                    type: integer
-                                title:
-                                    description:
-                                        The resource's title.
-                                    type: string
-                            type: object
+                                The longitude of a point in space.
+                            format: double
+                            type: number
                     type: object
-                value_i18n:
-                    additionalProperties:
-                        type: object
+                image:
+                    allOf:
+                        - $ref: "#/components/schemas/ContentDocument"
+                    description:
+                        A content document element that stores an image file.
+                link:
+                    description:
+                        A link to a page on the server.
+                    format: uri
+                    type: string
+                structuredContentLink:
+                    description:
+                        A link to structured content on the server.
+                    properties:
+                        contentType:
+                            readOnly: true
+                            type: string
+                        id:
+                            description:
+                                The resource's ID.
+                            format: int64
+                            type: integer
+                        title:
+                            description:
+                                The resource's title.
+                            type: string
                     type: object
         ContentSetElement:
             description:
@@ -735,6 +733,19 @@ components:
                     description:
                         The field's internal name. This is valid for comparisons and unique in the structured content.
                     type: string
+        DisplayPageTemplate:
+            description:
+                ""
+            properties:
+                contentSubtypeName:
+                    type: string
+                contentTypeClassName:
+                    type: string
+                key:
+                    type: string
+                name:
+                    type: string
+            type: object
         Document:
             description:
                 Represents a Document Library file, storing binary and metadata information. Properties follow the
@@ -963,13 +974,6 @@ components:
             required:
                 - name
             type: object
-        DropZoneDefinition:
-            properties:
-                fragmentSettings:
-                    oneOf:
-                        - $ref: "#/components/schemas/FragmentSettingsAllowed"
-                        - $ref: "#/components/schemas/FragmentSettingsUnallowed"
-            type: object
         Fragment:
             properties:
                 collectionName:
@@ -1039,19 +1043,6 @@ components:
                     additionalProperties:
                         type: string
                     type: object
-            type: object
-        FragmentInstanceDefinition:
-            properties:
-                fragment:
-                    $ref: "#/components/schemas/Fragment"
-                fragmentConfig:
-                    additionalProperties:
-                        type: object
-                    type: object
-                fragmentFields:
-                    items:
-                        $ref: "#/components/schemas/FragmentField"
-                    type: array
             type: object
         FragmentLink:
             properties:
@@ -1810,6 +1801,31 @@ components:
                 url:
                     readOnly: true
                     type: string
+        PageCollectionDefinition:
+            description:
+                ""
+            properties:
+                collectionConfig:
+                    type: object
+                numberOfColumns:
+                    type: integer
+                numberOfItems:
+                    type: integer
+            type: object
+        PageCollectionItemDefinition:
+            description:
+                ""
+            properties:
+                collectionItemConfig:
+                    type: object
+            type: object
+        PageColumnDefinition:
+            properties:
+                size:
+                    maximum: 12
+                    minimum: 1
+                    type: integer
+            type: object
         PageDefinition:
             description:
                 ""
@@ -1832,23 +1848,74 @@ components:
                             type: object
                     type: object
             type: object
+        PageDropZoneDefinition:
+            properties:
+                fragmentSettings:
+                    oneOf:
+                        - $ref: "#/components/schemas/FragmentSettingsAllowed"
+                        - $ref: "#/components/schemas/FragmentSettingsUnallowed"
+            type: object
         PageElement:
             properties:
                 definition:
                     oneOf:
-                        - $ref: "#/components/schemas/ColumnDefinition"
-                        - $ref: "#/components/schemas/DropZoneDefinition"
-                        - $ref: "#/components/schemas/FragmentInstanceDefinition"
-                        - $ref: "#/components/schemas/RootDefinition"
-                        - $ref: "#/components/schemas/RowDefinition"
-                        - $ref: "#/components/schemas/SectionDefinition"
+                        - $ref: "#/components/schemas/PageCollectionDefinition"
+                        - $ref: "#/components/schemas/PageCollectionItemDefinition"
+                        - $ref: "#/components/schemas/PageColumnDefinition"
+                        - $ref: "#/components/schemas/PageDropZoneDefinition"
+                        - $ref: "#/components/schemas/PageFragmentInstanceDefinition"
+                        - $ref: "#/components/schemas/PageRootDefinition"
+                        - $ref: "#/components/schemas/PageRowDefinition"
+                        - $ref: "#/components/schemas/PageSectionDefinition"
+                        - $ref: "#/components/schemas/PageWidgetInstanceDefinition"
                 pageElements:
                     items:
                         $ref: "#/components/schemas/PageElement"
                     type: array
                 type:
-                    enum: [Column, DropZone, Fragment, Root, Row, Section]
+                    enum: [Collection, CollectionItem, Column, DropZone, Fragment, Root, Row, Section, Widget]
                     type: string
+        PageFragmentInstanceDefinition:
+            properties:
+                fragment:
+                    $ref: "#/components/schemas/Fragment"
+                fragmentConfig:
+                    additionalProperties:
+                        type: object
+                    type: object
+                fragmentFields:
+                    items:
+                        $ref: "#/components/schemas/FragmentField"
+                    type: array
+            type: object
+        PageRootDefinition:
+            type: object
+        PageRowDefinition:
+            properties:
+                gutters:
+                    type: boolean
+                numberOfColumns:
+                    type: integer
+            type: object
+        PageSectionDefinition:
+            properties:
+                backgroundColor:
+                    type: string
+                backgroundImage:
+                    $ref: "#/components/schemas/FragmentImage"
+                layout:
+                    properties:
+                        containerType:
+                            enum: [Fixed, Fluid]
+                            type: string
+                        paddingBottom:
+                            type: integer
+                        paddingHorizontal:
+                            type: integer
+                        paddingTop:
+                            type: integer
+                    type: object
+            type: object
         PageTemplate:
             description:
                 ""
@@ -1930,6 +1997,15 @@ components:
                     readOnly: true
                     type: string
             type: object
+        PageWidgetInstanceDefinition:
+            properties:
+                widget:
+                    $ref: "#/components/schemas/Widget"
+                widgetConfig:
+                    additionalProperties:
+                        type: object
+                    type: object
+            type: object
         Rating:
             description:
                 Represents a rating/score received by any kind of asset. Properties follow the
@@ -2005,34 +2081,6 @@ components:
                         The title of the content.
                     readOnly: true
                     type: string
-        RootDefinition:
-            type: object
-        RowDefinition:
-            properties:
-                gutters:
-                    type: boolean
-                numberOfColumns:
-                    type: integer
-            type: object
-        SectionDefinition:
-            properties:
-                backgroundColor:
-                    type: string
-                backgroundImage:
-                    $ref: "#/components/schemas/FragmentImage"
-                layout:
-                    properties:
-                        containerType:
-                            enum: [Fixed, Fluid]
-                            type: string
-                        paddingBottom:
-                            type: integer
-                        paddingHorizontal:
-                            type: integer
-                        paddingTop:
-                            type: integer
-                    type: object
-            type: object
         StructuredContent:
             description:
                 Represents content that has fields and is rendered by a template backed by a `ContentStructure`. This is
@@ -2306,6 +2354,11 @@ components:
                     readOnly: true
                     type: object
             type: object
+        Widget:
+            properties:
+                name:
+                    type: string
+            type: object
         WikiNode:
             # @review
             description:
@@ -2530,7 +2583,7 @@ components:
             type: object
 info:
     description:
-        ""
+        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.delivery.client', and version '2.0.1'."
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -6663,6 +6716,36 @@ paths:
                     description:
                         ""
             tags: ["NavigationMenu"]
+    "/sites/{siteId}/page-definitions/preview":
+        # @review
+        post:
+            description:
+                Renders and retrieves HTML for the page definition using the theme of specified site.
+            operationId: postSitePageDefinitionPreview
+            parameters:
+                - in: path
+                  name: siteId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/PageDefinition"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/PageDefinition"
+            responses:
+                200:
+                    content:
+                        text/html:
+                            schema:
+                                type: string
+                    description:
+                        ""
+            tags: ["PageDefinition"]
     "/sites/{siteId}/structured-content-folders":
         get:
             description:

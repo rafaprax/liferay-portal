@@ -46,7 +46,20 @@ String keywords = ParamUtil.getString(request, "keywords");
 			<liferay-ui:message key="your-dxp-instance-is-not-connected-to-analytics-cloud" />
 		</c:when>
 		<c:when test="<%= channelSearch == null %>">
-			<liferay-ui:message key="failed-to-fetch-properties" />
+			<div class="mt-4">
+				<liferay-ui:message key="unable-to-retrieve-the-properties-from-analytics-cloud" />
+
+				<div class="mt-4">
+					<liferay-portlet:renderURL varImpl="selectSitesURL">
+						<portlet:param name="mvcRenderCommandName" value="/view_configuration_screen" />
+						<portlet:param name="configurationScreenKey" value="synced-sites" />
+					</liferay-portlet:renderURL>
+
+					<a class="btn btn-primary" href="<%= selectSitesURL.toString() %>">
+						<span class="lfr-btn-label"><liferay-ui:message key="retry" /></span>
+					</a>
+				</div>
+			</div>
 		</c:when>
 		<c:when test="<%= (channelSearch != null) && (channelSearch.getTotal() == 0) && Validator.isBlank(keywords) %>">
 			<div class="mb-5 mt-5">

@@ -522,6 +522,31 @@ public class SegmentsEntryLocalServiceTest {
 				_group.getGroupId(), false));
 	}
 
+	@Test
+	public void testUpdateSegmentsEntryWithAsahFaroBackendSource()
+		throws PortalException {
+
+		SegmentsEntry segmentsEntry = SegmentsTestUtil.addSegmentsEntry(
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+			RandomTestUtil.randomString(),
+			CriteriaSerializer.serialize(new Criteria()),
+			SegmentsEntryConstants.SOURCE_ASAH_FARO_BACKEND,
+			RandomTestUtil.randomString(),
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+
+		SegmentsEntry updatedSegmentsEntry =
+			_segmentsEntryLocalService.updateSegmentsEntry(
+				segmentsEntry.getSegmentsEntryId(),
+				segmentsEntry.getSegmentsEntryKey(), segmentsEntry.getNameMap(),
+				segmentsEntry.getDescriptionMap(), segmentsEntry.isActive(),
+				segmentsEntry.getCriteria(),
+				ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+
+		Assert.assertEquals(
+			SegmentsEntryConstants.SOURCE_ASAH_FARO_BACKEND,
+			updatedSegmentsEntry.getSource());
+	}
+
 	@Test(expected = SegmentsEntryKeyException.class)
 	public void testUpdateSegmentsEntryWithExistingKey()
 		throws PortalException {

@@ -24,7 +24,6 @@ export default withRouter(({tags = [], match: {params: {sectionTitle}}}) => (
 			<li key={tag.taxonomyCategoryId}>
 				<ClayLabel displayType="secondary">
 					<Link
-						className="questions-disabled-link"
 						key={tag.taxonomyCategoryId}
 						to={`/questions/${
 							sectionTitle ? sectionTitle + '/' : ''

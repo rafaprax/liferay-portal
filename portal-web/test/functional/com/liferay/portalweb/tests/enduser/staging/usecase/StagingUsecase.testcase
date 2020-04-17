@@ -990,13 +990,9 @@ definition {
 
 		Portlet.addPG(portletName = "Blogs");
 
-		Portlet.gotoPortletOptions(
+		Portlet.selectScopePG(
 			portletName = "Blogs",
-			portletOption = "Configuration");
-
-		IFrame.selectConfigurationFrame();
-
-		Portlet.selectScope(scope = "Staging Test Page (Create New)");
+			scope = "Staging Test Page");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "Staging Test Page",
@@ -1035,7 +1031,9 @@ definition {
 
 		Portlet.addPG(portletName = "Asset Publisher");
 
-		AssetPublisherPortlet.configureTagsFilterPG(tagNameList = "tag1");
+		AssetPublisherPortlet.configureTagsFilterPG(
+			queryAndOperator = "Any",
+			tagNameList = "tag1");
 
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name-staging");
 
@@ -1103,7 +1101,6 @@ definition {
 			webContentTitle = "Web Content Title 2");
 	}
 
-	@ignore = "true"
 	@priority = "4"
 	test StagingPublishChildSiteWithReference {
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name-staging");

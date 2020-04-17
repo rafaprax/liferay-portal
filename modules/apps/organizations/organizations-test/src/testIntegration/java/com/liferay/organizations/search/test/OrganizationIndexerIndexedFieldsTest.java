@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.Region;
-import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchEngineHelper;
@@ -45,12 +44,12 @@ import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.test.util.ExpandoTableSearchFixture;
 import com.liferay.portal.search.test.util.FieldValuesAssert;
 import com.liferay.portal.search.test.util.IndexedFieldsFixture;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
-import com.liferay.users.admin.test.util.search.UserSearchFixture;
 
 import java.io.Serializable;
 
@@ -89,11 +88,6 @@ public class OrganizationIndexerIndexedFieldsTest {
 
 		Group group = groupSearchFixture.addGroup(new GroupBlueprint());
 
-		UserSearchFixture userSearchFixture = new UserSearchFixture(
-			userLocalService, groupSearchFixture, null, null);
-
-		userSearchFixture.setUp();
-
 		OrganizationFixture organizationFixture = new OrganizationFixture(
 			organizationService, countryService, regionService, language);
 
@@ -113,8 +107,6 @@ public class OrganizationIndexerIndexedFieldsTest {
 
 		_organizationFixture = organizationFixture;
 		_organizations = organizationFixture.getOrganizations();
-
-		_users = userSearchFixture.getUsers();
 	}
 
 	@Test
@@ -151,6 +143,9 @@ public class OrganizationIndexerIndexedFieldsTest {
 		assertFieldValues(
 			_expectedFieldValuesWithExpando(organization), searchTerm);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void assertFieldValues(Map<String, ?> map, String searchTerm) {
 		FieldValuesAssert.assertFieldValues(
@@ -319,8 +314,5 @@ public class OrganizationIndexerIndexedFieldsTest {
 
 	@DeleteAfterTestRun
 	private List<Organization> _organizations;
-
-	@DeleteAfterTestRun
-	private List<User> _users;
 
 }

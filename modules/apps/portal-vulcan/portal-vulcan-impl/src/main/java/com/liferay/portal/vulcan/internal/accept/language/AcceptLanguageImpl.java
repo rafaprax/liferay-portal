@@ -32,8 +32,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.HttpHeaders;
 
@@ -78,10 +78,9 @@ public class AcceptLanguageImpl implements AcceptLanguage {
 				companyAvailableLocales);
 
 			if (ListUtil.isEmpty(locales)) {
-				throw new ClientErrorException(
+				throw new NotAcceptableException(
 					"No locales match the accepted languages: " +
-						acceptLanguage,
-					422);
+						acceptLanguage);
 			}
 
 			return locales;

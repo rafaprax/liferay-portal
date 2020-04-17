@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Calendar;
@@ -95,6 +96,9 @@ public class JournalArticleScheduledTest {
 	public void testScheduleDraftArticleToThePast() throws Exception {
 		testScheduleArticle(false, _WHEN_PAST);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected JournalArticle addArticle(
 			long groupId, Date displayDate, int when, boolean approved)

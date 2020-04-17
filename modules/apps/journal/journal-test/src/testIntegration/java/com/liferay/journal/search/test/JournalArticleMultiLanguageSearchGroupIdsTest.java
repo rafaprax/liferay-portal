@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.test.util.FieldValuesAssert;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.users.admin.test.util.search.GroupBlueprint;
@@ -188,6 +189,9 @@ public class JournalArticleMultiLanguageSearchGroupIdsTest {
 
 		Assert.assertEquals(documents.toString(), 2, documents.size());
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected Group addGroup(Locale locale) throws Exception, PortalException {
 		return _userSearchFixture.addGroup(

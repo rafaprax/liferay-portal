@@ -17,11 +17,12 @@ definition {
 
 	@summary = "Type HTML into the fragment HTML editor using the auto complete feature."
 	macro autocompleteFragmentHTML {
+		FragmentsEditor.typeHtmlEditor(content = "");
 
 		var htmlSnippet = '''<lfr-''';
 
-		Type.typeAceEditorNoError(
-			locator1 = "FragmentEditor#HTML_EDITOR",
+		Type.sendKeysAceEditor(
+			locator1 = "FragmentEditor#HTML_EDITOR_CONTENT",
 			value1 = "${htmlSnippet}");
 
 		Click(
@@ -34,11 +35,11 @@ definition {
 	}
 
 	macro gotoCodeTab {
-		Navigator.gotoNavItem(navItem = "Code");
+		Button.click(button = "Code");
 	}
 
 	macro gotoConfigurationTab {
-		Navigator.gotoNavItem(navItem = "Configuration");
+		Button.click(button = "Configuration");
 	}
 
 	macro publish {
@@ -46,13 +47,13 @@ definition {
 	}
 
 	macro typeConfigurationEditor {
-		Type.typeAceEditorNoError(
+		Type.typeCodeMirrorEditorNoError(
 			locator1 = "FragmentEditor#CONFIGURATION_EDITOR",
 			value1 = "${content}");
 	}
 
 	macro typeCssEditor {
-		Type.typeAceEditorNoError(
+		Type.typeCodeMirrorEditorNoError(
 			locator1 = "FragmentEditor#CSS_EDITOR",
 			value1 = "${content}");
 	}
@@ -66,19 +67,19 @@ definition {
 
 		if ("${browserType}" == "internetexplorer") {
 			if ("${fileExtension}" == "html") {
-				Type.typeAceEditorNoError(
+				Type.typeCodeMirrorEditorNoError(
 					key_editorNumber = "1",
 					locator1 = "FragmentEditor#FRAGMENTS_EDITOR_IE",
 					value1 = "${content}");
 			}
 			else if ("${fileExtension}" == "css") {
-				Type.typeAceEditorNoError(
+				Type.typeCodeMirrorEditorNoError(
 					key_editorNumber = "2",
 					locator1 = "FragmentEditor#FRAGMENTS_EDITOR_IE",
 					value1 = "${content}");
 			}
 			else if ("${fileExtension}" == "js") {
-				Type.typeAceEditorNoError(
+				Type.typeCodeMirrorEditorNoError(
 					key_editorNumber = "3",
 					locator1 = "FragmentEditor#FRAGMENTS_EDITOR_IE",
 					value1 = "${content}");
@@ -107,13 +108,13 @@ definition {
 	}
 
 	macro typeHtmlEditor {
-		Type.typeAceEditorNoError(
+		Type.typeCodeMirrorEditorNoError(
 			locator1 = "FragmentEditor#HTML_EDITOR",
 			value1 = "${content}");
 	}
 
 	macro typeJsEditor {
-		Type.typeAceEditorNoError(
+		Type.typeCodeMirrorEditorNoError(
 			locator1 = "FragmentEditor#JS_EDITOR",
 			value1 = "${content}");
 	}

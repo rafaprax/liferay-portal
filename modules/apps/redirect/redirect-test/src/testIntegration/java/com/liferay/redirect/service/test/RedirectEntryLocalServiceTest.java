@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.redirect.exception.DuplicateRedirectEntrySourceURLException;
@@ -152,6 +153,62 @@ public class RedirectEntryLocalServiceTest {
 			_redirectEntry,
 			_redirectEntryLocalService.fetchRedirectEntry(
 				_group.getGroupId(), "sourceURL"));
+	}
+
+	@Test
+	public void testFetchRedirectEntryDoesNotUpdateTheLastOccurrenceDate()
+		throws Exception {
+
+		_redirectEntry = _redirectEntryLocalService.addRedirectEntry(
+			_group.getGroupId(), "destinationURL", null, false, "sourceURL",
+			ServiceContextTestUtil.getServiceContext());
+
+		Assert.assertNull(_redirectEntry.getLastOccurrenceDate());
+
+		_redirectEntry = _redirectEntryLocalService.fetchRedirectEntry(
+			_group.getGroupId(), "sourceURL");
+
+		Assert.assertNull(_redirectEntry.getLastOccurrenceDate());
+	}
+
+	@Test
+	public void testFetchRedirectEntryUpdatesTheLastOccurrenceDate()
+		throws Exception {
+
+		_redirectEntry = _redirectEntryLocalService.addRedirectEntry(
+			_group.getGroupId(), "destinationURL", null, false, "sourceURL",
+			ServiceContextTestUtil.getServiceContext());
+
+		Assert.assertNull(_redirectEntry.getLastOccurrenceDate());
+
+		_redirectEntry = _redirectEntryLocalService.fetchRedirectEntry(
+			_group.getGroupId(), "sourceURL", true);
+
+		Date lastOccurrenceDate = _redirectEntry.getLastOccurrenceDate();
+
+		Assert.assertTrue(lastOccurrenceDate.before(DateUtil.newDate()));
+	}
+
+	@Test
+	public void testFetchRedirectEntryUpdatesTheLastOccurrenceDateOnceADay()
+		throws Exception {
+
+		_redirectEntry = _redirectEntryLocalService.addRedirectEntry(
+			_group.getGroupId(), "destinationURL", null, false, "sourceURL",
+			ServiceContextTestUtil.getServiceContext());
+
+		Assert.assertNull(_redirectEntry.getLastOccurrenceDate());
+
+		_redirectEntry = _redirectEntryLocalService.fetchRedirectEntry(
+			_group.getGroupId(), "sourceURL", true);
+
+		Date lastOccurrenceDate = _redirectEntry.getLastOccurrenceDate();
+
+		_redirectEntry = _redirectEntryLocalService.fetchRedirectEntry(
+			_group.getGroupId(), "sourceURL", true);
+
+		Assert.assertEquals(
+			lastOccurrenceDate, _redirectEntry.getLastOccurrenceDate());
 	}
 
 	@Test

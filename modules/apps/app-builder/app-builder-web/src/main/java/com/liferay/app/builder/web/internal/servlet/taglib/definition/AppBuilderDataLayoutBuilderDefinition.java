@@ -34,6 +34,11 @@ public class AppBuilderDataLayoutBuilderDefinition
 	}
 
 	@Override
+	public boolean allowRules() {
+		return true;
+	}
+
+	@Override
 	public boolean allowSuccessPage() {
 		return false;
 	}

@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -458,6 +459,9 @@ public class AccountEntryLocalServiceTest {
 		_assertPaginationSort(expectedAccountEntries, keywords, false);
 		_assertPaginationSort(expectedAccountEntries, keywords, true);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	private long[] _addAccountEntries() throws Exception {
 		return _addAccountEntries(WorkflowConstants.STATUS_APPROVED);

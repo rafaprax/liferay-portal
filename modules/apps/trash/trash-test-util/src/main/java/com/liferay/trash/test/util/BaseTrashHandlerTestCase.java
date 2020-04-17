@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.trash.exception.RestoreEntryException;
 import com.liferay.trash.exception.TrashEntryException;
 import com.liferay.trash.model.TrashEntry;
@@ -53,6 +54,7 @@ import java.util.Objects;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -3298,6 +3300,9 @@ public abstract class BaseTrashHandlerTestCase {
 			whenIsAssetableModel.isAssetEntryVisible(
 				baseModel, getAssetClassPK(baseModel)));
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected BaseModel<?> addBaseModel(
 			BaseModel<?> parentBaseModel, ServiceContext serviceContext)

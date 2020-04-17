@@ -30,6 +30,7 @@ import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.test.util.AssertUtils;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -123,6 +124,9 @@ public class OrganizationIndexerTest {
 
 		assertHits("ab EFGH ij mn qr uv YZ", 2);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected Organization addOrganization(String name) throws Exception {
 		long userId = TestPropsValues.getUserId();

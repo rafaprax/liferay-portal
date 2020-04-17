@@ -57,7 +57,7 @@ definition {
 
 			BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry1 Title");
 
-			BlogsEntry.viewEntry(
+			BlogsEntry.viewEntryCP(
 				entryContent = "Blogs Entry1 Content",
 				entryTitle = "Blogs Entry1 Title");
 		}
@@ -67,7 +67,7 @@ definition {
 
 			BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry2 Title");
 
-			BlogsEntry.viewEntry(
+			BlogsEntry.viewEntryCP(
 				entryContent = "Blogs Entry2 Content",
 				entryTitle = "Blogs Entry2 Title");
 		}
@@ -77,7 +77,7 @@ definition {
 
 			BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry3 Title");
 
-			BlogsEntry.viewEntry(
+			BlogsEntry.viewEntryCP(
 				entryContent = "Blogs Entry3 Content",
 				entryTitle = "Blogs Entry3 Title");
 		}
@@ -100,7 +100,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 	}
@@ -130,7 +130,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = '''& < > " Escape Characters Entry''');
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entryTitle = '''& < > " Escape Characters Entry''');
 	}
@@ -208,7 +208,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title");
@@ -221,8 +221,6 @@ definition {
 		BlogsNavigator.openBlogsAdmin(siteURLKey = "guest");
 
 		LexiconEntry.gotoAdd();
-
-		Pause(locator1 = "5000");
 
 		BlogsNavigator.gotoSelectFile();
 
@@ -238,34 +236,6 @@ definition {
 		BlogsEntry.selectFormattingStyle(styleFormat = "Heading 2");
 
 		Button.clickPublish();
-	}
-
-	@priority = "5"
-	test CKEditorSmoke {
-		property custom.properties = "editor.wysiwyg.portal-web.docroot.html.portlet.blogs.edit_entry.jsp=ckeditor";
-		property testray.component.names = "WYSIWYG";
-
-		BlogsNavigator.openBlogsAdmin(siteURLKey = "guest");
-
-		BlogsNavigator.gotoAddEntry();
-
-		AlloyEditor.addTitle(title = "CKEditor Entry Title");
-
-		CKEditor.assertEditorPresent();
-
-		CKEditor.addContent(content = "CKEditor Entry Content");
-
-		PortletEntry.publish();
-
-		BlogsNavigator.openBlogsAdmin(siteURLKey = "guest");
-
-		BlogsNavigator.gotoEntryCP(entryTitle = "CKEditor Entry Title");
-
-		BlogsEntry.viewTitle(entryTitle = "CKEditor Entry Title");
-
-		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
-
-		CKEditor.viewEntryContent(content = "CKEditor Entry Content");
 	}
 
 	@priority = "5"
@@ -291,7 +261,7 @@ definition {
 				entryContent = "Blogs Entry${entryCount} Content",
 				entryTitle = "Blogs Entry${entryCount} Title");
 
-			BlogsEntry.viewEntry(
+			BlogsEntry.viewEntryCP(
 				entryContent = "Blogs Entry${entryCount} Content",
 				entryTitle = "Blogs Entry${entryCount} Title");
 		}
@@ -331,7 +301,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title");
@@ -352,7 +322,7 @@ definition {
 			entryStatus = "Draft",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title");
@@ -373,7 +343,7 @@ definition {
 			entryStatus = "Draft",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title");
@@ -471,7 +441,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -502,7 +472,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -543,7 +513,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -568,7 +538,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",

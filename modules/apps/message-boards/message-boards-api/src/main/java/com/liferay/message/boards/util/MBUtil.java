@@ -19,12 +19,9 @@ import com.liferay.message.boards.model.MBBan;
 import com.liferay.message.boards.model.MBDiscussion;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.ThemeConstants;
 import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Calendar;
@@ -35,6 +32,10 @@ import java.util.Date;
  */
 public class MBUtil {
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
 	public static final String BB_CODE_EDITOR_WYSIWYG_IMPL_KEY =
 		"editor.wysiwyg.portal-web.docroot.html.portlet.message_boards." +
 			"edit_message.bb_code.jsp";
@@ -70,32 +71,7 @@ public class MBUtil {
 	}
 
 	public static boolean isValidMessageFormat(String messageFormat) {
-		String editorName = PropsUtil.get(BB_CODE_EDITOR_WYSIWYG_IMPL_KEY);
-
-		if (editorName.equals("bbcode")) {
-			editorName = "alloyeditor_bbcode";
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Replacing unsupported BBCode editor with AlloyEditor " +
-						"BBCode");
-			}
-		}
-
-		if (messageFormat.equals("bbcode") &&
-			!editorName.equals("alloyeditor_bbcode") &&
-			!editorName.equals("ckeditor_bbcode")) {
-
-			return false;
-		}
-
-		if (!ArrayUtil.contains(MBMessageConstants.FORMATS, messageFormat)) {
-			return false;
-		}
-
-		return true;
+		return ArrayUtil.contains(MBMessageConstants.FORMATS, messageFormat);
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(MBUtil.class);
 
 }

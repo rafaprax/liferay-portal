@@ -26,8 +26,10 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.search.test.util.SearchTestRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 /**
@@ -54,6 +56,9 @@ public class ContentSetElementResourceTest
 			userId, testGroup.getGroupId(), RandomTestUtil.randomString(),
 			AssetListEntryTypeConstants.TYPE_DYNAMIC, _serviceContext);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	@Override
 	protected ContentSetElement

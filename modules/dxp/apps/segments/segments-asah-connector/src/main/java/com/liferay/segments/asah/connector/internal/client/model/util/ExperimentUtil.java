@@ -62,7 +62,7 @@ public class ExperimentUtil {
 		throws PortalException {
 
 		return toExperiment(
-			dataSourceId,
+			_getChannelId(groupLocalService, layout), dataSourceId,
 			SegmentsEntryConstants.getDefaultSegmentsEntryName(locale),
 			SegmentsExperienceConstants.getDefaultSegmentsExperienceName(
 				locale),
@@ -90,7 +90,8 @@ public class ExperimentUtil {
 	}
 
 	protected static Experiment toExperiment(
-			String dataSourceId, String defaultSegmentsEntryName,
+			String channelId, String dataSourceId,
+			String defaultSegmentsEntryName,
 			String defaultSegmentsExperienceName, Layout layout, Locale locale,
 			String pageURL, SegmentsEntryLocalService segmentsEntryLocalService,
 			SegmentsExperienceLocalService segmentsExperienceLocalService,
@@ -99,11 +100,13 @@ public class ExperimentUtil {
 
 		Experiment experiment = new Experiment();
 
+		experiment.setChannelId(channelId);
 		experiment.setConfidenceLevel(
 			segmentsExperiment.getConfidenceLevel() * 100);
 		experiment.setCreateDate(segmentsExperiment.getCreateDate());
 		experiment.setDataSourceId(dataSourceId);
 		experiment.setDescription(segmentsExperiment.getDescription());
+		experiment.setDXPGroupId(layout.getGroupId());
 		experiment.setDXPLayoutId(layout.getUuid());
 
 		List<SegmentsExperimentRel> segmentsExperimentRels =
@@ -159,6 +162,15 @@ public class ExperimentUtil {
 		}
 
 		return experiment;
+	}
+
+	private static String _getChannelId(
+			GroupLocalService groupLocalService, Layout layout)
+		throws PortalException {
+
+		Group group = groupLocalService.getGroup(layout.getGroupId());
+
+		return group.getTypeSettingsProperty("analyticsChannelId");
 	}
 
 	private static String _getLayoutFullURL(

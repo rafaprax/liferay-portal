@@ -49,6 +49,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
@@ -340,6 +341,9 @@ public class DDLRecordSearchTest {
 		assertSearch("\"Of Bloggs\"", 3);
 		assertSearch("\"The Bloggs\"", 3);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected static SearchContext getSearchContext(
 			Group group, User user, DDLRecordSet recordSet)

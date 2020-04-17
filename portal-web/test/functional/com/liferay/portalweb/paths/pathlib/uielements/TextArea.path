@@ -15,12 +15,12 @@
 </tr>
 <tr>
 	<td>ANY</td>
-	<td>//textarea[contains(@name,'${key_text}')]</td>
+	<td>//textarea[contains(@name,'${key_text}') or contains(@title,'${key_text}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ANY_LABELED</td>
-	<td>//*[contains(.,'${key_label}')]/following-sibling::div//textarea</td>
+	<td>//*[normalize-space(text())='${key_label}']/following-sibling::textarea</td>
 	<td></td>
 </tr>
 <tr>

@@ -45,6 +45,7 @@ import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -234,6 +235,9 @@ public class JournalArticleIndexVersionsTest {
 
 		assertSearchCount(1, true);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void assertSearchArticle(
 			long expectedCount, JournalArticle article)

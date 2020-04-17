@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.test.util.FieldValuesAssert;
 import com.liferay.portal.search.test.util.IndexerFixture;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.users.admin.test.util.search.GroupBlueprint;
@@ -63,6 +64,7 @@ public class UserMultiLanguageSearchTest {
 		setUpIndexerFixture();
 
 		setUpUserSearchFixture();
+
 		_defaultLocale = LocaleThreadLocal.getDefaultLocale();
 	}
 
@@ -118,6 +120,9 @@ public class UserMultiLanguageSearchTest {
 
 		assertFieldValues(_PREFIX, locale, map, keywords);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void assertFieldValues(
 		String prefix, Locale locale, Map<String, String> map,

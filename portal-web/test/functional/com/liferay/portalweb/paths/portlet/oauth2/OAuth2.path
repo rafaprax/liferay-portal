@@ -25,6 +25,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>ADMIN_GLOBAL_PANEL_COLLAPSED</td>
+	<td>//div[contains(@data-master,'${key_panel}')]//div//a[contains(@class,'collapsed')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ADMIN_GLOBAL_PANEL_EXPANDED</td>
+	<td>//div[contains(@data-master,'${key_panel}')]//div//a[@aria-expanded='true' and not(contains(@class,'collapsed'))]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>ADMIN_GLOBAL_RESOURCE_SCOPE_CHECKBOX</td>
 	<td>//a[contains(.,'${key_panel}')]/following-sibling::div//input[contains(@data-slave,'${key_scopeName}')]</td>
 	<td></td>

@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Tina Tian
@@ -123,6 +124,12 @@ public abstract class BaseTemplate implements Template {
 	}
 
 	@Override
+	public void prepareTaglib(
+		HttpServletRequest httpServletRequest,
+		HttpServletResponse httpServletResponse) {
+	}
+
+	@Override
 	public void processTemplate(Writer writer) throws TemplateException {
 		try {
 			processTemplate(_templateResource, writer);
@@ -195,6 +202,10 @@ public abstract class BaseTemplate implements Template {
 			}
 		}
 
+		if (value instanceof Class) {
+			return putClass(key, (Class<?>)value);
+		}
+
 		return context.put(key, value);
 	}
 
@@ -253,6 +264,10 @@ public abstract class BaseTemplate implements Template {
 	protected abstract void processTemplate(
 			TemplateResource templateResource, Writer writer)
 		throws Exception;
+
+	protected Object putClass(String key, Class<?> clazz) {
+		return context.put(key, clazz);
+	}
 
 	protected Map<String, Object> context;
 

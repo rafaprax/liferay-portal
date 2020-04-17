@@ -53,6 +53,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -198,6 +199,9 @@ public abstract class BaseSearchTestCase {
 	public void testSearchWithinDDMStructure() throws Exception {
 		searchWithinDDMStructure();
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void addAttachment(ClassedModel classedModel) throws Exception {
 	}

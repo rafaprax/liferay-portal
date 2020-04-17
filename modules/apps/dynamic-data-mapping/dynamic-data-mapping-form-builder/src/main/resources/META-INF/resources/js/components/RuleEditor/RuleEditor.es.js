@@ -212,6 +212,14 @@ class RuleEditor extends Component {
 		return list;
 	}
 
+	handleRuleAdded() {
+		this._handleRuleSaved('ruleAdded');
+	}
+
+	handleRuleEdited() {
+		this._handleRuleSaved('ruleEdited');
+	}
+
 	isValueOperand({type}) {
 		return type !== 'field' && type !== 'user';
 	}
@@ -392,6 +400,7 @@ class RuleEditor extends Component {
 			calculatorResultOptions: this._calculatorResultOptionsValueFn(),
 			conditions,
 			conditionsFieldOptions: this._conditionsFieldOptionsValueFn([
+				'fieldset',
 				'paragraph',
 			]),
 			deletedFields: this._getDeletedFields(visitor),
@@ -554,7 +563,7 @@ class RuleEditor extends Component {
 		const fields = [];
 		const visitor = new PagesVisitor(pages);
 
-		visitor.mapFields(field => {
+		visitor.visitFields(field => {
 			if (omittedFieldsList.indexOf(field.type) < 0) {
 				fields.push({
 					...field,
@@ -898,7 +907,7 @@ class RuleEditor extends Component {
 			const activeActionIndex = this.activeActionIndex;
 			const activeConditionIndex = this.activeConditionIndex;
 
-			const {actions, conditions} = this;
+			const {actions, conditions, pages} = this;
 
 			if (activeConditionIndex > -1) {
 				conditions.splice(activeConditionIndex, 1);
@@ -916,11 +925,14 @@ class RuleEditor extends Component {
 				this.refs.confirmationModalCondition.emit('hide');
 			}
 
+			const maxPage = maxPageIndex(conditions, pages);
+
 			this.setState({
 				actions,
 				activeActionIndex: -1,
 				activeConditionIndex: -1,
 				conditions,
+				pageOptions: pageOptions(pages, maxPage),
 			});
 		}
 	}
@@ -950,12 +962,12 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleRuleAdded() {
+	_handleRuleSaved(event) {
 		const actions = this._removeActionInternalProperties();
 		const conditions = this._removeConditionInternalProperties();
 		const {ruleEditedIndex} = this;
 
-		this.emit('ruleAdded', {
+		this.emit(event, {
 			actions,
 			conditions,
 			['logical-operator']: this.logicalOperator,

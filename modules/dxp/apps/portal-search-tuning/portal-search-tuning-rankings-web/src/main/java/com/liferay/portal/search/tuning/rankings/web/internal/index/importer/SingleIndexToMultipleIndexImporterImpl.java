@@ -53,9 +53,19 @@ public class SingleIndexToMultipleIndexImporterImpl
 
 	@Override
 	public void importRankings() {
-		createRankingIndices();
+		try {
+			createRankingIndices();
 
-		importDocuments();
+			importDocuments();
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to create result ranking indices for existing " +
+						"companies",
+					exception);
+			}
+		}
 	}
 
 	protected static Map<String, List<Document>> groupDocumentByIndex(
@@ -98,20 +108,6 @@ public class SingleIndexToMultipleIndexImporterImpl
 	protected void createRankingIndices() {
 		List<Company> companies = _companyService.getCompanies();
 
-		try {
-			createRankingIndices(companies);
-		}
-		catch (Exception exception) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to create result ranking indices for existing " +
-						"companies",
-					exception);
-			}
-		}
-	}
-
-	protected void createRankingIndices(List<Company> companies) {
 		Stream<Company> stream = companies.stream();
 
 		stream.map(

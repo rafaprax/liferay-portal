@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.test.util.IndexerFixture;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -119,6 +120,9 @@ public class JournalArticleDDMStructureIndexerTest {
 
 		journalArticleIndexer.searchOnlyOne(searchTerm, locale);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void disableJournalArticleIndexer() {
 		Indexer<?> indexer = IndexerRegistryUtil.getIndexer(

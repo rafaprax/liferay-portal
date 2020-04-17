@@ -32,6 +32,9 @@ import com.liferay.redirect.model.RedirectNotFoundEntry;
 import com.liferay.redirect.service.RedirectNotFoundEntryLocalService;
 import com.liferay.redirect.service.base.RedirectEntryLocalServiceBaseImpl;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import java.util.Date;
 import java.util.List;
 
@@ -126,6 +129,14 @@ public class RedirectEntryLocalServiceImpl
 
 	@Override
 	public RedirectEntry fetchRedirectEntry(long groupId, String sourceURL) {
+		return redirectEntryLocalService.fetchRedirectEntry(
+			groupId, sourceURL, false);
+	}
+
+	@Override
+	public RedirectEntry fetchRedirectEntry(
+		long groupId, String sourceURL, boolean updateLastOccurrenceDate) {
+
 		if (!_redirectConfiguration.isEnabled()) {
 			return null;
 		}
@@ -140,6 +151,18 @@ public class RedirectEntryLocalServiceImpl
 				(DateUtil.compareTo(expirationDate, DateUtil.newDate()) <= 0)) {
 
 				return null;
+			}
+
+			if (updateLastOccurrenceDate &&
+				((redirectEntry.getLastOccurrenceDate() == null) ||
+				 !_isInTheSameDay(
+					 redirectEntry.getLastOccurrenceDate(),
+					 DateUtil.newDate()))) {
+
+				redirectEntry.setLastOccurrenceDate(new Date());
+
+				redirectEntry = redirectEntryLocalService.updateRedirectEntry(
+					redirectEntry);
 			}
 		}
 
@@ -186,6 +209,19 @@ public class RedirectEntryLocalServiceImpl
 		redirectEntry.setSourceURL(sourceURL);
 
 		return redirectEntryPersistence.update(redirectEntry);
+	}
+
+	private static Instant _getDayInstant(Date date) {
+		Instant instant = date.toInstant();
+
+		return instant.truncatedTo(ChronoUnit.DAYS);
+	}
+
+	private boolean _isInTheSameDay(Date date1, Date date2) {
+		Instant instant1 = _getDayInstant(date1);
+		Instant instant2 = _getDayInstant(date2);
+
+		return instant1.equals(instant2);
 	}
 
 	private void _validate(String destinationURL, String sourceURL)

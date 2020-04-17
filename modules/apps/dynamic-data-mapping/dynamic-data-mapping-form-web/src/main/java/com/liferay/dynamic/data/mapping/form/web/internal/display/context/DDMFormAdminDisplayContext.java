@@ -504,6 +504,14 @@ public class DDMFormAdminDisplayContext {
 				navigationItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "rules"));
 			}
+		).add(
+			this::isShowSummary,
+			navigationItem -> {
+				navigationItem.putData("action", "showSummary");
+				navigationItem.setHref(StringPool.BLANK);
+				navigationItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "entries"));
+			}
 		).build();
 	}
 
@@ -761,7 +769,7 @@ public class DDMFormAdminDisplayContext {
 	public String getPublishedFormURL(DDMFormInstance formInstance)
 		throws PortalException {
 
-		if (formInstance == null) {
+		if (!isFormPublished(formInstance)) {
 			return StringPool.BLANK;
 		}
 
@@ -869,6 +877,8 @@ public class DDMFormAdminDisplayContext {
 
 		ddmFormBuilderContextRequest.addProperty(
 			"ddmStructureVersion", getLatestDDMStructureVersion());
+		ddmFormBuilderContextRequest.addProperty(
+			"portletNamespace", renderResponse.getNamespace());
 
 		DDMFormBuilderContextResponse ddmFormBuilderContextResponse =
 			_ddmFormBuilderContextFactory.create(ddmFormBuilderContextRequest);
@@ -955,6 +965,19 @@ public class DDMFormAdminDisplayContext {
 
 	public boolean isShowPublishAlert() {
 		return ParamUtil.getBoolean(renderRequest, "showPublishAlert");
+	}
+
+	public boolean isShowSummary() {
+		try {
+			if (getDDMFormInstance() == null) {
+				return false;
+			}
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException, portalException);
+		}
+
+		return ParamUtil.getBoolean(renderRequest, "showSummary");
 	}
 
 	public String serializeSettingsForm(PageContext pageContext)

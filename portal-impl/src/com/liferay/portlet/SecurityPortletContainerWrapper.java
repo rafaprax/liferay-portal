@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.portlet.ActionResult;
 import com.liferay.portal.kernel.portlet.PortletContainer;
 import com.liferay.portal.kernel.portlet.PortletContainerException;
 import com.liferay.portal.kernel.portlet.PortletContainerUtil;
-import com.liferay.portal.kernel.resiliency.spi.SPIUtil;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
 import com.liferay.portal.kernel.security.auth.AuthTokenWhitelistUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
@@ -55,15 +54,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SecurityPortletContainerWrapper implements PortletContainer {
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	public static PortletContainer createSecurityPortletContainerWrapper(
 		PortletContainer portletContainer) {
 
-		if (!SPIUtil.isSPI()) {
-			portletContainer = new SecurityPortletContainerWrapper(
-				portletContainer);
-		}
-
-		return portletContainer;
+		return new SecurityPortletContainerWrapper(portletContainer);
 	}
 
 	public SecurityPortletContainerWrapper(PortletContainer portletContainer) {

@@ -18,7 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetCategoryConstants;
 import com.liferay.asset.kernel.model.AssetVocabulary;
-import com.liferay.asset.kernel.service.AssetCategoryLocalService;
+import com.liferay.asset.kernel.service.AssetCategoryService;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
@@ -27,7 +27,6 @@ import com.liferay.journal.test.util.search.JournalArticleContent;
 import com.liferay.journal.test.util.search.JournalArticleSearchFixture;
 import com.liferay.journal.test.util.search.JournalArticleTitle;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Indexer;
@@ -49,11 +48,12 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
 import com.liferay.portal.search.facet.category.CategoryFacetFactory;
 import com.liferay.portal.search.test.util.DocumentsAssert;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
-import com.liferay.users.admin.test.util.search.UserSearchFixture;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +62,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -81,6 +80,7 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 	public static final AggregateTestRule aggregateTestRule =
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE,
 			SynchronousDestinationTestRule.INSTANCE);
 
 	@Before
@@ -92,30 +92,12 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 
 		GroupSearchFixture groupSearchFixture = new GroupSearchFixture();
 
-		UserSearchFixture userSearchFixture = new UserSearchFixture(
-			userLocalService, groupSearchFixture, null, null);
-
-		userSearchFixture.setUp();
-
-		Group group = groupSearchFixture.addGroup(new GroupBlueprint());
-
-		User user = userSearchFixture.addUser(
-			RandomTestUtil.randomString(), group);
-
 		_assetCategories = new ArrayList<>();
 		_assetVocabularies = new ArrayList<>();
 		_groups = groupSearchFixture.getGroups();
 		_groupSearchFixture = groupSearchFixture;
 		_journalArticles = journalArticleSearchFixture.getJournalArticles();
 		_journalArticleSearchFixture = journalArticleSearchFixture;
-		_user = user;
-		_users = userSearchFixture.getUsers();
-		_userSearchFixture = userSearchFixture;
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		_userSearchFixture.tearDown();
 	}
 
 	@Test
@@ -157,7 +139,6 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 								put(locale, journalArticleTitleString);
 							}
 						});
-					setUserId(_user.getUserId());
 				}
 			});
 
@@ -203,7 +184,6 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 								put(locale, journalArticleTitleString);
 							}
 						});
-					setUserId(_user.getUserId());
 				}
 			});
 
@@ -255,7 +235,6 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 								put(locale, journalArticleTitleString1);
 							}
 						});
-					setUserId(_user.getUserId());
 				}
 			});
 
@@ -283,7 +262,6 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 								put(locale, journalArticleTitleString2);
 							}
 						});
-					setUserId(_user.getUserId());
 				}
 			});
 
@@ -291,14 +269,16 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 		assertSearch(categoryTitleString2, assetCategory2, locale, group);
 	}
 
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
+
 	protected AssetCategory addCategory(
 			Group group, AssetVocabulary assetVocabulary, String title,
 			Locale locale)
 		throws Exception {
 
 		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(
-				group.getGroupId(), _user.getUserId());
+			ServiceContextTestUtil.getServiceContext(group.getGroupId());
 
 		Map<Locale, String> titleMap = HashMapBuilder.put(
 			locale, title
@@ -309,8 +289,8 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 		LocaleThreadLocal.setSiteDefaultLocale(locale);
 
 		try {
-			AssetCategory assetCategory = assetCategoryLocalService.addCategory(
-				_user.getUserId(), group.getGroupId(),
+			AssetCategory assetCategory = assetCategoryService.addCategory(
+				group.getGroupId(),
 				AssetCategoryConstants.DEFAULT_PARENT_CATEGORY_ID, titleMap,
 				new HashMap<>(), assetVocabulary.getVocabularyId(),
 				new String[0], serviceContext);
@@ -399,20 +379,20 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 	}
 
 	protected SearchContext getSearchContext(
-			String keywords, Locale locale, Group group)
-		throws Exception {
+		String keywords, Locale locale, Group group) {
 
-		SearchContext searchContext = _userSearchFixture.getSearchContext(
-			keywords);
+		SearchContext searchContext = new SearchContext();
 
+		searchContext.setCompanyId(group.getCompanyId());
 		searchContext.setGroupIds(new long[] {group.getGroupId()});
+		searchContext.setKeywords(keywords);
 		searchContext.setLocale(locale);
 
 		return searchContext;
 	}
 
 	@Inject
-	protected static AssetCategoryLocalService assetCategoryLocalService;
+	protected static AssetCategoryService assetCategoryService;
 
 	@Inject
 	protected static AssetVocabularyLocalService assetVocabularyLocalService;
@@ -447,11 +427,5 @@ public class AssetCategoryTitlesMultiLanguageSearchTest {
 	private List<JournalArticle> _journalArticles;
 
 	private JournalArticleSearchFixture _journalArticleSearchFixture;
-	private User _user;
-
-	@DeleteAfterTestRun
-	private List<User> _users;
-
-	private UserSearchFixture _userSearchFixture;
 
 }

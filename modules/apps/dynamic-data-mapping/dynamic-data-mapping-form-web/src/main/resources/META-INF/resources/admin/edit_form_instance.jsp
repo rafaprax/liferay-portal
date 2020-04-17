@@ -53,7 +53,7 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 		navigationItems="<%= ddmFormAdminDisplayContext.getFormBuilderNavigationItems() %>"
 	/>
 
-	<nav class="management-bar management-bar-light navbar navbar-expand-md toolbar-group-field">
+	<nav class="management-bar management-bar-light navbar navbar-expand-md toolbar-group-field" id="<portlet:namespace />managementToolbar">
 		<div class="autosave-bar container toolbar">
 			<div class="navbar-form navbar-form-autofit navbar-overlay toolbar-group-content">
 				<span class="autosave-feedback management-bar-text" id="<portlet:namespace />autosaveMessage"></span>
@@ -140,6 +140,12 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 </portlet:actionURL>
 
 <liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="saveFormInstance" var="autoSaveFormInstanceURL" />
+
+<c:if test="<%= ddmFormAdminDisplayContext.isShowSummary() %>">
+	<div class="hide" id="<portlet:namespace />formSummary">
+		<liferay-util:include page="/admin/list_form_instance_records.jsp" servletContext="<%= application %>" />
+	</div>
+</c:if>
 
 <aui:script>
 	Liferay.namespace('DDM').FormSettings = {

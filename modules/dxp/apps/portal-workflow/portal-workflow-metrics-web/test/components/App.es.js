@@ -18,18 +18,22 @@ import '@testing-library/jest-dom/extend-expect';
 
 const processItems = [
 	{
-		id: 1,
 		instancesCount: 5,
-		title: 'Single Approver',
+		process: {
+			id: 1,
+			title: 'Single Approver',
+		},
 	},
 ];
 
 const pending = {
-	id: 1,
 	instanceCount: 0,
 	onTimeInstanceCount: 0,
 	overdueInstanceCount: 0,
-	title: 'Single Approver',
+	process: {
+		id: 1,
+		title: 'Single Approver',
+	},
 	untrackedInstanceCount: 0,
 };
 
@@ -46,6 +50,7 @@ const client = {
 				totalCount: processItems.length,
 			},
 		})
+		.mockResolvedValueOnce({data: {items: [], totalCount: 0}})
 		.mockResolvedValueOnce({data: pending})
 		.mockResolvedValue({data: {items: [], totalCount: 0}}),
 	post: jestEmpty,
@@ -64,13 +69,14 @@ const mockProps = {
 };
 
 describe('The App component should', () => {
-	let container, getAllByTestId;
+	let container, getAllByTestId, getByTestId;
 
 	beforeAll(() => {
 		const renderResult = render(<App {...mockProps} />);
 
 		container = renderResult.container;
 		getAllByTestId = renderResult.getAllByTestId;
+		getByTestId = renderResult.getByTestId;
 	});
 
 	test('Render the process list page', () => {
@@ -96,7 +102,7 @@ describe('The App component should', () => {
 		fireEvent.click(tabs[1]);
 	});
 
-	test('Render the process metrics page on performance tab', () => {
+	test('Render the process metrics page on performance tab and back to dashboard', () => {
 		const tabs = container.querySelectorAll('a.nav-link');
 
 		expect(tabs[0]).toHaveTextContent('dashboard');
@@ -104,5 +110,18 @@ describe('The App component should', () => {
 		expect(tabs[1].className.includes('active')).toBe(true);
 
 		expect(window.location.hash).toContain('#/metrics/1/performance');
+
+		fireEvent.click(tabs[0]);
+
+		expect(tabs[0].className.includes('active')).toBe(true);
+		expect(window.location.hash).toContain('#/metrics/1/dashboard');
+	});
+
+	test('Navigate to new SLA page', () => {
+		const slaInfoLink = getByTestId('slaInfoLink');
+
+		fireEvent.click(slaInfoLink);
+
+		expect(window.location.hash).toContain('#/sla/1/new');
 	});
 });

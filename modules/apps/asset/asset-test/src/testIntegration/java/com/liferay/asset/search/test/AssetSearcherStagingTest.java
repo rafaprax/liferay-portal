@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.search.test.util.DocumentsAssert;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.asset.util.AssetSearcher;
@@ -126,6 +127,9 @@ public class AssetSearcherStagingTest {
 			String.valueOf(stagingGroup.getGroupId()));
 		assertField(document, Field.STAGING_GROUP, StringPool.TRUE);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected JournalArticle addJournalArticle() throws Exception {
 		return _journalArticleFixture.addJournalArticle();

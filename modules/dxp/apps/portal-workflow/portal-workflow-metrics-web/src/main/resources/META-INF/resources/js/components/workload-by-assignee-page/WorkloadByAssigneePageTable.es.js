@@ -13,16 +13,14 @@ import React, {useCallback, useContext, useMemo} from 'react';
 
 import filterConstants from '../../shared/components/filter/util/filterConstants.es';
 import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
-import {ChildLink} from '../../shared/components/router/routerWrapper.es';
+import ChildLink from '../../shared/components/router/ChildLink.es';
 import UserAvatar from '../../shared/components/user-avatar/UserAvatar.es';
 import {AppContext} from '../AppContext.es';
 import {processStatusConstants} from '../filter/ProcessStatusFilter.es';
 import {slaStatusConstants} from '../filter/SLAStatusFilter.es';
 
 const Item = ({
-	id,
-	image,
-	name,
+	assignee: {id, image, name},
 	onTimeTaskCount,
 	overdueTaskCount,
 	processId,

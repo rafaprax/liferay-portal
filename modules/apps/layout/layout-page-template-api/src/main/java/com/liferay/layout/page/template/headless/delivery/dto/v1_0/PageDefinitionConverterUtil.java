@@ -16,21 +16,25 @@ package com.liferay.layout.page.template.headless.delivery.dto.v1_0;
 
 import com.liferay.fragment.contributor.FragmentCollectionContributorTracker;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.renderer.FragmentRenderer;
 import com.liferay.fragment.renderer.FragmentRendererTracker;
+import com.liferay.fragment.service.FragmentEntryLinkLocalServiceUtil;
 import com.liferay.fragment.service.FragmentEntryLocalServiceUtil;
 import com.liferay.fragment.util.configuration.FragmentEntryConfigurationParser;
-import com.liferay.headless.delivery.dto.v1_0.ColumnDefinition;
-import com.liferay.headless.delivery.dto.v1_0.DropZoneDefinition;
 import com.liferay.headless.delivery.dto.v1_0.Fragment;
 import com.liferay.headless.delivery.dto.v1_0.FragmentImage;
 import com.liferay.headless.delivery.dto.v1_0.FragmentInlineValue;
 import com.liferay.headless.delivery.dto.v1_0.Layout;
 import com.liferay.headless.delivery.dto.v1_0.MasterPage;
+import com.liferay.headless.delivery.dto.v1_0.PageCollectionDefinition;
+import com.liferay.headless.delivery.dto.v1_0.PageCollectionItemDefinition;
+import com.liferay.headless.delivery.dto.v1_0.PageColumnDefinition;
 import com.liferay.headless.delivery.dto.v1_0.PageDefinition;
+import com.liferay.headless.delivery.dto.v1_0.PageDropZoneDefinition;
 import com.liferay.headless.delivery.dto.v1_0.PageElement;
-import com.liferay.headless.delivery.dto.v1_0.RowDefinition;
-import com.liferay.headless.delivery.dto.v1_0.SectionDefinition;
+import com.liferay.headless.delivery.dto.v1_0.PageRowDefinition;
+import com.liferay.headless.delivery.dto.v1_0.PageSectionDefinition;
 import com.liferay.headless.delivery.dto.v1_0.Settings;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
@@ -38,6 +42,8 @@ import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServiceUtil;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalServiceUtil;
 import com.liferay.layout.page.template.util.PaddingConverter;
+import com.liferay.layout.util.structure.CollectionItemLayoutStructureItem;
+import com.liferay.layout.util.structure.CollectionLayoutStructureItem;
 import com.liferay.layout.util.structure.ColumnLayoutStructureItem;
 import com.liferay.layout.util.structure.ContainerLayoutStructureItem;
 import com.liferay.layout.util.structure.DropZoneLayoutStructureItem;
@@ -47,11 +53,14 @@ import com.liferay.layout.util.structure.LayoutStructureItem;
 import com.liferay.layout.util.structure.RootLayoutStructureItem;
 import com.liferay.layout.util.structure.RowLayoutStructureItem;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.ColorScheme;
 import com.liferay.portal.kernel.model.Theme;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -60,8 +69,11 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rubén Pulido
@@ -217,6 +229,26 @@ public class PageDefinitionConverterUtil {
 		return pageElement;
 	}
 
+	private static Map<String, Object> _getConfigAsMap(JSONObject jsonObject) {
+		if (jsonObject == null) {
+			return null;
+		}
+
+		return new HashMap<String, Object>() {
+			{
+				Set<String> keys = jsonObject.keySet();
+
+				Iterator<String> iterator = keys.iterator();
+
+				while (iterator.hasNext()) {
+					String key = iterator.next();
+
+					put(key, jsonObject.get(key));
+				}
+			}
+		};
+	}
+
 	private static boolean _isFragmentEntryKey(
 		FragmentCollectionContributorTracker
 			fragmentCollectionContributorTracker,
@@ -363,13 +395,56 @@ public class PageDefinitionConverterUtil {
 		LayoutStructureItem layoutStructureItem, boolean saveInlineContent,
 		boolean saveMappingConfiguration, long segmentsExperienceId) {
 
+		if (layoutStructureItem instanceof CollectionLayoutStructureItem) {
+			CollectionLayoutStructureItem collectionLayoutStructureItem =
+				(CollectionLayoutStructureItem)layoutStructureItem;
+
+			return new PageElement() {
+				{
+					definition = new PageCollectionDefinition() {
+						{
+							collectionConfig = _getConfigAsMap(
+								collectionLayoutStructureItem.
+									getCollectionJSONObject());
+							numberOfColumns =
+								collectionLayoutStructureItem.
+									getNumberOfColumns();
+							numberOfItems =
+								collectionLayoutStructureItem.
+									getNumberOfItems();
+						}
+					};
+					type = PageElement.Type.COLLECTION;
+				}
+			};
+		}
+
+		if (layoutStructureItem instanceof CollectionItemLayoutStructureItem) {
+			CollectionItemLayoutStructureItem
+				collectionItemLayoutStructureItem =
+					(CollectionItemLayoutStructureItem)layoutStructureItem;
+
+			return new PageElement() {
+				{
+					definition = new PageCollectionItemDefinition() {
+						{
+							collectionItemConfig = _getConfigAsMap(
+								collectionItemLayoutStructureItem.
+									getItemConfigJSONObject());
+						}
+					};
+					type = PageElement.Type.COLLECTION_ITEM;
+				}
+			};
+		}
+
 		if (layoutStructureItem instanceof ColumnLayoutStructureItem) {
 			ColumnLayoutStructureItem columnLayoutStructureItem =
 				(ColumnLayoutStructureItem)layoutStructureItem;
 
 			return new PageElement() {
 				{
-					definition = new ColumnDefinition() {
+					definition = new PageColumnDefinition() {
 						{
 							size = columnLayoutStructureItem.getSize();
 						}
@@ -385,7 +460,7 @@ public class PageDefinitionConverterUtil {
 
 			return new PageElement() {
 				{
-					definition = new SectionDefinition() {
+					definition = new PageSectionDefinition() {
 						{
 							backgroundColor = GetterUtil.getString(
 								containerLayoutStructureItem.
@@ -467,7 +542,7 @@ public class PageDefinitionConverterUtil {
 
 			return new PageElement() {
 				{
-					definition = new DropZoneDefinition() {
+					definition = new PageDropZoneDefinition() {
 						{
 							fragmentSettings = _toFragmentSettingsMap(
 								dropZoneLayoutStructureItem,
@@ -484,19 +559,55 @@ public class PageDefinitionConverterUtil {
 			FragmentLayoutStructureItem fragmentLayoutStructureItem =
 				(FragmentLayoutStructureItem)layoutStructureItem;
 
+			FragmentEntryLink fragmentEntryLink =
+				FragmentEntryLinkLocalServiceUtil.fetchFragmentEntryLink(
+					fragmentLayoutStructureItem.getFragmentEntryLinkId());
+
+			if (fragmentEntryLink == null) {
+				return null;
+			}
+
+			JSONObject editableValuesJSONObject = null;
+
+			try {
+				editableValuesJSONObject = JSONFactoryUtil.createJSONObject(
+					fragmentEntryLink.getEditableValues());
+			}
+			catch (JSONException jsonException) {
+				return null;
+			}
+
+			String portletId = editableValuesJSONObject.getString("portletId");
+
+			if (Validator.isNull(portletId)) {
+				return new PageElement() {
+					{
+						definition =
+							PageFragmentInstanceDefinitionConverterUtil.
+								toPageFragmentInstanceDefinition(
+									fragmentCollectionContributorTracker,
+									fragmentEntryConfigurationParser,
+									fragmentLayoutStructureItem,
+									fragmentRendererTracker,
+									infoDisplayContributorTracker,
+									saveInlineContent, saveMappingConfiguration,
+									segmentsExperienceId);
+						type = PageElement.Type.FRAGMENT;
+					}
+				};
+			}
+
+			String instanceId = editableValuesJSONObject.getString(
+				"instanceId");
+
 			return new PageElement() {
 				{
 					definition =
-						FragmentInstanceDefinitionConverterUtil.
-							toFragmentInstanceDefinition(
-								fragmentCollectionContributorTracker,
-								fragmentEntryConfigurationParser,
-								fragmentLayoutStructureItem,
-								fragmentRendererTracker,
-								infoDisplayContributorTracker,
-								saveInlineContent, saveMappingConfiguration,
-								segmentsExperienceId);
-					type = PageElement.Type.FRAGMENT;
+						PageWidgetInstanceDefinitionConverterUtil.
+							toWidgetInstanceDefinition(
+								fragmentEntryLink.getClassPK(),
+								PortletIdCodec.encode(portletId, instanceId));
+					type = PageElement.Type.WIDGET;
 				}
 			};
 		}
@@ -515,7 +626,7 @@ public class PageDefinitionConverterUtil {
 
 			return new PageElement() {
 				{
-					definition = new RowDefinition() {
+					definition = new PageRowDefinition() {
 						{
 							gutters = rowLayoutStructureItem.isGutters();
 							numberOfColumns =

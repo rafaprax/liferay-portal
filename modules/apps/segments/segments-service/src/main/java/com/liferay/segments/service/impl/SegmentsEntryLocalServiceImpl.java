@@ -429,7 +429,7 @@ public class SegmentsEntryLocalServiceImpl
 		segmentsEntry.setDescriptionMap(descriptionMap);
 		segmentsEntry.setActive(active);
 		segmentsEntry.setCriteria(criteria);
-		segmentsEntry.setSource(getSource(criteria, null));
+		segmentsEntry.setSource(getSource(criteria, segmentsEntry.getSource()));
 
 		segmentsEntry = segmentsEntryPersistence.update(segmentsEntry);
 

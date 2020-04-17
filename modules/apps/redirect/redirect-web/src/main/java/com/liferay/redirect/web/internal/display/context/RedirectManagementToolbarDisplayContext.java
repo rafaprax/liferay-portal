@@ -156,6 +156,11 @@ public class RedirectManagementToolbarDisplayContext
 	}
 
 	@Override
+	public String getInfoPanelId() {
+		return "infoPanelId";
+	}
+
+	@Override
 	public String getSearchActionURL() {
 		PortletURL searchActionURL = getPortletURL();
 
@@ -168,7 +173,8 @@ public class RedirectManagementToolbarDisplayContext
 	@Override
 	protected String[] getOrderByKeys() {
 		return new String[] {
-			"create-date", "modified-date", "source-url", "destination-url"
+			"create-date", "modified-date", "latest-occurrence", "source-url",
+			"destination-url"
 		};
 	}
 

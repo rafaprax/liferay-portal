@@ -68,9 +68,10 @@ public class FragmentCompositionImpl extends FragmentCompositionBaseImpl {
 		path = path + StringPool.SLASH + getFragmentCompositionKey();
 
 		JSONObject jsonObject = JSONUtil.put(
-			"definitionDataPath", "definition.json"
-		).put(
 			"description", getDescription()
+		).put(
+			"fragmentCompositionDefinitionPath",
+			"fragment-composition-definition.json"
 		).put(
 			"name", getName()
 		);
@@ -85,10 +86,11 @@ public class FragmentCompositionImpl extends FragmentCompositionBaseImpl {
 
 		zipWriter.addEntry(
 			path + StringPool.SLASH +
-				FragmentExportImportConstants.FILE_NAME_COMPOSITION,
+				FragmentExportImportConstants.FILE_NAME_FRAGMENT_COMPOSITION,
 			jsonObject.toString());
 
-		zipWriter.addEntry(path + "/definition.json", getData());
+		zipWriter.addEntry(
+			path + "/fragment-composition-definition.json", getData());
 
 		if (previewFileEntry != null) {
 			zipWriter.addEntry(

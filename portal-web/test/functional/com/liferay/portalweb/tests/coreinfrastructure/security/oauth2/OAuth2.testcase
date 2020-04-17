@@ -417,6 +417,48 @@ definition {
 		AssertTextNotPresent(value1 = "WC Title");
 	}
 
+	@description = "This is a use case for LPS-110393."
+	@priority = "4"
+	test AssertExpandPanelsOnGlobalScopes {
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "System Settings");
+
+		SystemSettings.gotoConfiguration(
+			configurationCategory = "OAuth 2",
+			configurationName = "Bundle PrefixHandlerFactory",
+			configurationScope = "System Scope");
+
+		SystemSettings.gotoConfigurationEntry(configurationEntry = "Default");
+
+		SystemSettings.deleteConfiguration();
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "OAuth 2 Administration");
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Edit",
+			rowEntry = "Analytics Cloud");
+
+		AssertClick(
+			key_navItem = "Scopes",
+			locator1 = "NavBar#NAV_ITEM_LINK",
+			value1 = "Scopes");
+
+		AssertElementPresent(
+			key_navItem = "Scopes",
+			locator1 = "NavBar#ACTIVE_NAV_ITEM_LINK");
+
+		Navigator.gotoNavUnderline(navUnderline = "Global scopes");
+
+		for (var globalPanel : list "analytics.read,analytics.write,everything.write,everything.read,everything") {
+			OAuth2.expandGlobalPanel(globalPanel = "${globalPanel}");
+		}
+	}
+
 	test AuthorizeExternalApplication {
 		property custom.properties = "virtual.hosts.default.site.name=Guest";
 

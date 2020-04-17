@@ -50,7 +50,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		Navigator.gotoSitePage(
 			pageName = "Staging Blogs Page",
@@ -64,13 +64,13 @@ definition {
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		Pause(locator1 = "5000");
 
@@ -84,7 +84,7 @@ definition {
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 	}
@@ -161,7 +161,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		Pause(locator1 = "5000");
 
@@ -175,7 +175,7 @@ definition {
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 	}
@@ -233,7 +233,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		Navigator.gotoSitePage(
 			pageName = "Staging Blogs Page",
@@ -243,7 +243,7 @@ definition {
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -253,7 +253,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -279,7 +279,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		AssertConsoleTextNotPresent(value1 = "PortletDataException");
 
@@ -291,7 +291,7 @@ definition {
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",

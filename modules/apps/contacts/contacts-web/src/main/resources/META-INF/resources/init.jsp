@@ -68,6 +68,7 @@ page import="com.liferay.portal.kernel.service.permission.UserPermissionUtil" %>
 page import="com.liferay.portal.kernel.servlet.ServletContextPool" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
+page import="com.liferay.portal.kernel.util.LinkedHashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortletKeys" %><%@
@@ -98,8 +99,6 @@ page import="javax.portlet.WindowState" %>
 <portlet:defineObjects />
 
 <%
-WindowState windowState = renderRequest.getWindowState();
-
 String currentURL = PortalUtil.getCurrentURL(request);
 
 String portletResource = ParamUtil.getString(request, "portletResource");

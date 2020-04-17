@@ -84,13 +84,8 @@ public class SpiraTestCaseFolder extends PathSpiraArtifact {
 				urlPath, null, urlPathReplacements, HttpRequestMethod.POST,
 				requestJSONObject.toString());
 
-			SpiraTestCaseFolder spiraTestCaseFolder =
-				spiraProject.getSpiraTestCaseFolderByID(
-					responseJSONObject.getInt(ID_KEY));
-
-			cacheSpiraArtifact(SpiraTestCaseFolder.class, spiraTestCaseFolder);
-
-			return spiraTestCaseFolder;
+			return spiraProject.getSpiraTestCaseFolderByID(
+				responseJSONObject.getInt(ID_KEY));
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
@@ -165,6 +160,30 @@ public class SpiraTestCaseFolder extends PathSpiraArtifact {
 			deleteSpiraTestCaseFolderByID(
 				spiraProject, spiraTestCaseFolder.getID());
 		}
+	}
+
+	public List<SpiraTestCaseObject> getChildSpiraTestCases() {
+		if (_childSpiraTestCases != null) {
+			return _childSpiraTestCases;
+		}
+
+		_childSpiraTestCases = new ArrayList<>(
+			SpiraTestCaseObject.getSpiraTestCases(
+				getSpiraProject(),
+				new SearchQuery.SearchParameter("TestCaseFolderId", getID())));
+
+		final List<SpiraTestCaseFolder> spiraTestCaseFolders =
+			getSpiraTestCaseFolders(
+				getSpiraProject(),
+				new SearchQuery.SearchParameter(
+					"ParentTestCaseFolderId", getID()));
+
+		for (SpiraTestCaseFolder spiraTestCaseFolder : spiraTestCaseFolders) {
+			_childSpiraTestCases.addAll(
+				spiraTestCaseFolder.getChildSpiraTestCases());
+		}
+
+		return _childSpiraTestCases;
 	}
 
 	public SpiraTestCaseFolder getParentSpiraTestCaseFolder() {
@@ -258,8 +277,11 @@ public class SpiraTestCaseFolder extends PathSpiraArtifact {
 
 	private SpiraTestCaseFolder(JSONObject jsonObject) {
 		super(jsonObject);
+
+		cacheSpiraArtifact(SpiraTestCaseFolder.class, this);
 	}
 
+	private List<SpiraTestCaseObject> _childSpiraTestCases;
 	private SpiraTestCaseFolder _parentSpiraTestCaseFolder;
 
 }

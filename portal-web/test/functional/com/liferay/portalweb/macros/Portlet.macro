@@ -313,9 +313,19 @@ definition {
 
 		Select(
 			locator1 = "Select#SCOPE",
-			value1 = "${scope}");
+			value1 = "regexp:.*${scope}.*");
 
 		Portlet.saveAndCloseConfig();
+	}
+
+	macro selectScopePG {
+		Portlet.gotoPortletOptions(
+			portletName = "${portletName}",
+			portletOption = "Configuration");
+
+		IFrame.selectConfigurationFrame();
+
+		Portlet.selectScope(scope = "${scope}");
 	}
 
 	macro selectTreeNode {

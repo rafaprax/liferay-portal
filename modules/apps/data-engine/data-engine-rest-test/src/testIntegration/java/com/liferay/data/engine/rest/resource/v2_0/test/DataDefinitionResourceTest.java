@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,6 +49,7 @@ public class DataDefinitionResourceTest
 	extends BaseDataDefinitionResourceTestCase {
 
 	@Before
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 
@@ -54,6 +57,7 @@ public class DataDefinitionResourceTest
 	}
 
 	@After
+	@Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 
@@ -187,6 +191,9 @@ public class DataDefinitionResourceTest
 	@Test
 	public void testPutDataDefinitionPermission() throws Exception {
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	@Override
 	protected void assertValid(DataDefinition dataDefinition) {

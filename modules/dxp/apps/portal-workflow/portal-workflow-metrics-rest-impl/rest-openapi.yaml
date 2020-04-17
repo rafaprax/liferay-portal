@@ -1,12 +1,9 @@
 components:
     schemas:
-        AssigneeUser:
+        Assignee:
             description:
-                https://schema.org/AssigneeUser
+                https://schema.org/Assignee
             properties:
-                durationTaskAvg:
-                    format: int64
-                    type: integer
                 id:
                     description:
                         The user's ID.
@@ -24,6 +21,29 @@ components:
                         The user's full name.
                     readOnly: true
                     type: string
+                reviewer:
+                    readOnly: true
+                    type: boolean
+            type: object
+        AssigneeBulkSelection:
+            description:
+                https://schema.org/AssigneeBulkSelection
+            properties:
+                instanceIds:
+                    items:
+                        format: int64
+                        type: integer
+                    type: array
+            type: object
+        AssigneeMetric:
+            description:
+                https://schema.org/AssigneeMetric
+            properties:
+                assignee:
+                    $ref: "#/components/schemas/Assignee"
+                durationTaskAvg:
+                    format: int64
+                    type: integer
                 onTimeTaskCount:
                     format: int64
                     type: integer
@@ -34,9 +54,9 @@ components:
                     format: int64
                     type: integer
             type: object
-        AssigneeUserBulkSelection:
+        AssigneeMetricBulkSelection:
             description:
-                https://schema.org/AssigneeUserBulkSelection
+                https://schema.org/AssigneeMetricBulkSelection
             properties:
                 completed:
                     type: boolean
@@ -74,20 +94,18 @@ components:
                 title:
                     type: string
             type: object
-        CreatorUser:
+        Creator:
             description:
-                https://schema.org/CreatorUser
+                https://schema.org/Creator
             properties:
                 id:
                     description:
                         The user's ID.
                     format: int64
-                    readOnly: true
                     type: integer
                 name:
                     description:
                         The user's full name.
-                    readOnly: true
                     type: string
             type: object
         GenericError:
@@ -109,54 +127,9 @@ components:
                     format: double
                     type: number
             type: object
-        Instance:
+        HistogramMetric:
             description:
-                https://www.schema.org/Instance
-            properties:
-                assetTitle:
-                    type: string
-                assetType:
-                    type: string
-                assigneeUsers:
-                    items:
-                        $ref: "#/components/schemas/AssigneeUser"
-                    type: array
-                creatorUser:
-                    $ref: "#/components/schemas/CreatorUser"
-                dateCompletion:
-                    format: date-time
-                    type: string
-                dateCreated:
-                    format: date-time
-                    type: string
-                id:
-                    format: int64
-                    type: integer
-                processId:
-                    format: int64
-                    type: integer
-                slaResults:
-                    items:
-                        $ref: "#/components/schemas/SLAResult"
-                    type: array
-                slaStatus:
-                    enum: [OnTime, Overdue, Untracked]
-                    type: string
-                status:
-                    enum: [Completed, Pending]
-                    type: string
-                taskNames:
-                    items:
-                        type: string
-                    type: array
-                transitions:
-                    items:
-                        $ref: "#/components/schemas/Transition"
-                    type: array
-            type: object
-        Metric:
-            description:
-                https://www.schema.org/Metric
+                https://www.schema.org/HistogramMetric
             properties:
                 histograms:
                     items:
@@ -169,10 +142,103 @@ components:
                     format: double
                     type: number
             type: object
+        Index:
+            properties:
+                group:
+                    enum: [All, Metric, SLA]
+                    readOnly: true
+                    type: string
+                key:
+                    type: string
+                label:
+                    readOnly: true
+                    type: string
+            type: object
+        Instance:
+            description:
+                https://www.schema.org/Instance
+            properties:
+                assetTitle:
+                    readOnly: true
+                    type: string
+                assetTitle_i18n:
+                    additionalProperties:
+                        type: string
+                    type: object
+                assetType:
+                    readOnly: true
+                    type: string
+                assetType_i18n:
+                    additionalProperties:
+                        type: string
+                    type: object
+                assignees:
+                    items:
+                        $ref: "#/components/schemas/Assignee"
+                    readOnly: true
+                    type: array
+                className:
+                    type: string
+                classPK:
+                    format: int64
+                    type: integer
+                completed:
+                    type: boolean
+                creator:
+                    $ref: "#/components/schemas/Creator"
+                dateCompletion:
+                    format: date-time
+                    type: string
+                dateCreated:
+                    format: date-time
+                    type: string
+                dateModified:
+                    format: date-time
+                    type: string
+                duration:
+                    format: int64
+                    type: integer
+                id:
+                    format: int64
+                    type: integer
+                processId:
+                    format: int64
+                    type: integer
+                processVersion:
+                    type: string
+                slaResults:
+                    items:
+                        $ref: "#/components/schemas/SLAResult"
+                    readOnly: true
+                    type: array
+                slaStatus:
+                    enum: [OnTime, Overdue, Untracked]
+                    readOnly: true
+                    type: string
+                status:
+                    enum: [Completed, Pending]
+                    readOnly: true
+                    type: string
+                taskNames:
+                    items:
+                        type: string
+                    readOnly: true
+                    type: array
+                transitions:
+                    items:
+                        $ref: "#/components/schemas/Transition"
+                    type: array
+            type: object
         Node:
             description:
                 https://www.schema.org/Node
             properties:
+                dateCreated:
+                    format: date-time
+                    type: string
+                dateModified:
+                    format: date-time
+                    type: string
                 id:
                     format: int64
                     type: integer
@@ -182,6 +248,11 @@ components:
                     readOnly: true
                     type: string
                 name:
+                    type: string
+                processId:
+                    format: int64
+                    type: integer
+                processVersion:
                     type: string
                 terminal:
                     type: boolean
@@ -197,13 +268,64 @@ components:
                 id:
                     type: string
             type: object
+        NodeMetric:
+            description:
+                https://www.schema.org/NodeMetric
+            properties:
+                breachedInstanceCount:
+                    format: int64
+                    type: integer
+                breachedInstancePercentage:
+                    format: double
+                    type: number
+                durationAvg:
+                    format: int64
+                    type: integer
+                instanceCount:
+                    format: int64
+                    type: integer
+                node:
+                    $ref: "#/components/schemas/Node"
+                onTimeInstanceCount:
+                    format: int64
+                    type: integer
+                overdueInstanceCount:
+                    format: int64
+                    type: integer
+            type: object
         Process:
             description:
                 https://www.schema.org/Process
             properties:
+                active:
+                    type: boolean
+                dateCreated:
+                    format: date-time
+                    type: string
+                dateModified:
+                    format: date-time
+                    type: string
+                description:
+                    type: string
                 id:
                     format: int64
                     type: integer
+                name:
+                    type: string
+                title:
+                    readOnly: true
+                    type: string
+                title_i18n:
+                    additionalProperties:
+                        type: string
+                    type: object
+                version:
+                    type: string
+            type: object
+        ProcessMetric:
+            description:
+                https://www.schema.org/ProcessMetric
+            properties:
                 instanceCount:
                     format: int64
                     type: integer
@@ -213,11 +335,23 @@ components:
                 overdueInstanceCount:
                     format: int64
                     type: integer
-                title:
-                    type: string
+                process:
+                    $ref: "#/components/schemas/Process"
                 untrackedInstanceCount:
                     format: int64
                     type: integer
+            type: object
+        ReindexStatus:
+            description:
+                https://www.schema.org/ReindexStatus
+            properties:
+                completionPercentage:
+                    format: int64
+                    readOnly: true
+                    type: integer
+                key:
+                    readOnly: true
+                    type: string
             type: object
         Role:
             description:
@@ -312,28 +446,50 @@ components:
             description:
                 https://www.schema.org/Task
             properties:
-                breachedInstanceCount:
+                assigneeId:
                     format: int64
                     type: integer
-                breachedInstancePercentage:
-                    format: double
-                    type: number
-                durationAvg:
+                className:
+                    type: string
+                classPK:
                     format: int64
                     type: integer
-                instanceCount:
+                completed:
+                    type: boolean
+                completionUserId:
                     format: int64
                     type: integer
-                key:
+                dateCompletion:
+                    format: date-time
+                    type: string
+                dateCreated:
+                    format: date-time
+                    type: string
+                dateModified:
+                    format: date-time
+                    type: string
+                duration:
+                    format: int64
+                    type: integer
+                id:
+                    format: int64
+                    type: integer
+                instanceId:
+                    format: int64
+                    type: integer
+                label:
+                    readOnly: true
                     type: string
                 name:
                     type: string
-                onTimeInstanceCount:
+                nodeId:
                     format: int64
                     type: integer
-                overdueInstanceCount:
+                processId:
                     format: int64
                     type: integer
+                processVersion:
+                    type: string
             type: object
         TimeRange:
             description:
@@ -365,7 +521,7 @@ components:
             type: object
 info:
     description:
-        ""
+        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.portal.workflow.metrics.rest.client', and version '1.0.1'."
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -392,9 +548,89 @@ paths:
                     description:
                         ""
             tags: ["Calendar"]
-    "/processes":
+    "/indexes":
         get:
-            operationId: getProcessesPage
+            operationId: getIndexesPage
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Index"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Index"
+                                type: array
+                    description:
+                        ""
+            tags: ["Index"]
+    "/indexes/reindex":
+        patch:
+            operationId: patchIndexesReindex
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Index"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Index"
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Index"]
+    "/indexes/reindex/status":
+        get:
+            operationId: getReindexStatusPage
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ReindexStatus"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ReindexStatus"
+                                type: array
+                    description:
+                        ""
+            tags: ["ReindexStatus"]
+    "/processes":
+        post:
+            operationId: postProcess
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Process"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Process"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Process"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Process"
+                    description:
+                        ""
+            tags: ["Process"]
+    "/processes/metrics":
+        get:
+            operationId: getProcessMetricsPage
             parameters:
                 - in: query
                   name: title
@@ -418,17 +654,34 @@ paths:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Process"
+                                    $ref: "#/components/schemas/ProcessMetric"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Process"
+                                    $ref: "#/components/schemas/ProcessMetric"
                                 type: array
                     description:
                         ""
-            tags: ["Process"]
+            tags: ["ProcessMetric"]
     "/processes/{processId}":
+        delete:
+            operationId: deleteProcess
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Process"]
         get:
             operationId: getProcess
             parameters:
@@ -438,20 +691,6 @@ paths:
                   schema:
                       format: int64
                       type: integer
-                - in: query
-                  name: completed
-                  schema:
-                      type: boolean
-                - in: query
-                  name: dateEnd
-                  schema:
-                      format: date-time
-                      type: string
-                - in: query
-                  name: dateStart
-                  schema:
-                      format: date-time
-                      type: string
             responses:
                 200:
                     content:
@@ -464,9 +703,68 @@ paths:
                     description:
                         ""
             tags: ["Process"]
-    "/processes/{processId}/assignee-users":
+        put:
+            operationId: putProcess
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Process"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Process"
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Process"]
+    "/processes/{processId}/assignees":
         post:
-            operationId: postProcessAssigneeUsersPage
+            operationId: postProcessAssigneesPage
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/AssigneeBulkSelection"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/AssigneeBulkSelection"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Assignee"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Assignee"
+                                type: array
+                    description:
+                        ""
+            tags: ["Assignee"]
+    "/processes/{processId}/assignees/metrics":
+        post:
+            operationId: postProcessAssigneeMetricsPage
             parameters:
                 - in: path
                   name: processId
@@ -490,26 +788,64 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/AssigneeUserBulkSelection"
+                            $ref: "#/components/schemas/AssigneeMetricBulkSelection"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/AssigneeUserBulkSelection"
+                            $ref: "#/components/schemas/AssigneeMetricBulkSelection"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/AssigneeUser"
+                                    $ref: "#/components/schemas/AssigneeMetric"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/AssigneeUser"
+                                    $ref: "#/components/schemas/AssigneeMetric"
                                 type: array
                     description:
                         ""
-            tags: ["AssigneeUser"]
+            tags: ["AssigneeMetric"]
+    "/processes/{processId}/histograms/metrics":
+        get:
+            operationId: getProcessHistogramMetric
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: query
+                  name: dateEnd
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
+                  name: dateStart
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
+                  name: unit
+                  required: true
+                  schema:
+                      enum: [Days, Hours, Months, Weeks, Years]
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/HistogramMetric"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/HistogramMetric"
+                    description:
+                        ""
+            tags: ["HistogramMetric"]
     "/processes/{processId}/instances":
         get:
             operationId: getProcessInstancesPage
@@ -521,7 +857,7 @@ paths:
                       format: int64
                       type: integer
                 - in: query
-                  name: assigneeUserIds
+                  name: assigneeIds
                   schema:
                       items:
                           format: int64
@@ -581,7 +917,59 @@ paths:
                     description:
                         ""
             tags: ["Instance"]
+        post:
+            operationId: postProcessInstance
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Instance"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Instance"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Instance"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Instance"
+                    description:
+                        ""
+            tags: ["Instance"]
     "/processes/{processId}/instances/{instanceId}":
+        delete:
+            operationId: deleteProcessInstance
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: instanceId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Instance"]
         get:
             operationId: getProcessInstance
             parameters:
@@ -609,7 +997,70 @@ paths:
                     description:
                         ""
             tags: ["Instance"]
-    "/processes/{processId}/metric":
+        patch:
+            operationId: patchProcessInstance
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: instanceId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Instance"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Instance"
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Instance"]
+    "/processes/{processId}/instances/{instanceId}/complete":
+        patch:
+            operationId: patchProcessInstanceComplete
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: instanceId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Instance"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Instance"
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Instance"]
+    "/processes/{processId}/metrics":
         get:
             operationId: getProcessMetric
             parameters:
@@ -620,6 +1071,10 @@ paths:
                       format: int64
                       type: integer
                 - in: query
+                  name: completed
+                  schema:
+                      type: boolean
+                - in: query
                   name: dateEnd
                   schema:
                       format: date-time
@@ -629,24 +1084,18 @@ paths:
                   schema:
                       format: date-time
                       type: string
-                - in: query
-                  name: unit
-                  required: true
-                  schema:
-                      enum: [Days, Hours, Months, Weeks, Years]
-                      type: string
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Metric"
+                                $ref: "#/components/schemas/ProcessMetric"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Metric"
+                                $ref: "#/components/schemas/ProcessMetric"
                     description:
                         ""
-            tags: ["Metric"]
+            tags: ["ProcessMetric"]
     "/processes/{processId}/nodes":
         get:
             operationId: getProcessNodesPage
@@ -670,6 +1119,115 @@ paths:
                                 items:
                                     $ref: "#/components/schemas/Node"
                                 type: array
+                    description:
+                        ""
+            tags: ["Node"]
+        post:
+            operationId: postProcessNode
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Node"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Node"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Node"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Node"
+                    description:
+                        ""
+            tags: ["Node"]
+    "/processes/{processId}/nodes/metrics":
+        get:
+            operationId: getProcessNodeMetricsPage
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: query
+                  name: completed
+                  schema:
+                      type: boolean
+                - in: query
+                  name: dateEnd
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
+                  name: dateStart
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
+                  name: key
+                  schema:
+                      type: string
+                - in: query
+                  name: page
+                  schema:
+                      type: integer
+                - in: query
+                  name: pageSize
+                  schema:
+                      type: integer
+                - in: query
+                  name: sort
+                  schema:
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/NodeMetric"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/NodeMetric"
+                                type: array
+                    description:
+                        ""
+            tags: ["NodeMetric"]
+    "/processes/{processId}/nodes/{nodeId}":
+        delete:
+            operationId: deleteProcessNode
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: nodeId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
                     description:
                         ""
             tags: ["Node"]
@@ -791,36 +1349,6 @@ paths:
                   schema:
                       format: int64
                       type: integer
-                - in: query
-                  name: completed
-                  schema:
-                      type: boolean
-                - in: query
-                  name: dateEnd
-                  schema:
-                      format: date-time
-                      type: string
-                - in: query
-                  name: dateStart
-                  schema:
-                      format: date-time
-                      type: string
-                - in: query
-                  name: key
-                  schema:
-                      type: string
-                - in: query
-                  name: page
-                  schema:
-                      type: integer
-                - in: query
-                  name: pageSize
-                  schema:
-                      type: integer
-                - in: query
-                  name: sort
-                  schema:
-                      type: string
             responses:
                 200:
                     content:
@@ -834,6 +1362,149 @@ paths:
                                 items:
                                     $ref: "#/components/schemas/Task"
                                 type: array
+                    description:
+                        ""
+            tags: ["Task"]
+        post:
+            operationId: postProcessTask
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Task"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Task"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Task"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Task"
+                    description:
+                        ""
+            tags: ["Task"]
+    "/processes/{processId}/tasks/{taskId}":
+        delete:
+            operationId: deleteProcessTask
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: taskId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Task"]
+        get:
+            operationId: getProcessTask
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: taskId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Task"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Task"
+                    description:
+                        ""
+            tags: ["Task"]
+        patch:
+            operationId: patchProcessTask
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: taskId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Task"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Task"
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+            tags: ["Task"]
+    "/processes/{processId}/tasks/{taskId}/complete":
+        patch:
+            operationId: patchProcessTaskComplete
+            parameters:
+                - in: path
+                  name: processId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: path
+                  name: taskId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Task"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Task"
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
                     description:
                         ""
             tags: ["Task"]

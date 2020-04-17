@@ -118,10 +118,11 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 									</liferay-util:buffer>
 
 									<%
-									Map<String, String> dataInReply = new HashMap<>();
-
-									dataInReply.put("inreply-content", parentDiscussionComment.getBody());
-									dataInReply.put("inreply-title", parentCommentUserBuffer);
+									Map<String, String> dataInReply = HashMapBuilder.put(
+										"inreply-content", parentDiscussionComment.getBody()
+									).put(
+										"inreply-title", parentCommentUserBuffer
+									).build();
 									%>
 
 									<clay:link
@@ -252,7 +253,7 @@ Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZo
 
 					<c:if test="<%= commentTreeDisplayContext.isRatingsVisible() %>">
 						<div class="autofit-col">
-							<liferay-ui:ratings
+							<liferay-ratings:ratings
 								className="<%= CommentConstants.getDiscussionClassName() %>"
 								classPK="<%= discussionComment.getCommentId() %>"
 								inTrash="<%= false %>"

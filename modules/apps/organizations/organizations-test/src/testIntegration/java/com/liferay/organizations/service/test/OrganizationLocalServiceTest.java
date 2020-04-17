@@ -42,6 +42,7 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;
@@ -848,6 +849,9 @@ public class OrganizationLocalServiceTest {
 
 		Assert.assertEquals(hits.toString(), 0, hits.getLength());
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected List<Object> getOrganizationsAndUsers(Organization organization) {
 		return OrganizationLocalServiceUtil.getOrganizationsAndUsers(

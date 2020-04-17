@@ -253,7 +253,7 @@ definition {
 
 		Pagination.changePagination(itemsPerPage = "8");
 
-		//Workaround LPS-98391
+		// Workaround LPS-98391
 
 		/*var currentURL = selenium.getCurrentUrl();
 
@@ -885,9 +885,9 @@ definition {
 
 		Navigator.gotoPage(pageName = "Blogs Page");
 
-		BlogsConfiguration.configureScopePG(
+		Portlet.selectScopePG(
 			portletName = "Blogs",
-			scopeSelection = "Blogs Page (Create New)");
+			scope = "Blogs Page");
 
 		IFrame.closeFrame();
 
@@ -905,9 +905,6 @@ definition {
 
 	@priority = "4"
 	test SearchContentPagesSmoke {
-		property portal.suite.search.engine = "disabled";
-		property portal.upstream = "quarantine";
-
 		JSONGroup.addGroup(groupName = "Site Name");
 
 		SitePages.openPagesAdmin(siteURLKey = "site-name");
@@ -916,6 +913,8 @@ definition {
 
 		for (var portletName : list "Search Bar,Search Results") {
 			PageEditor.addWidget(portletName = "${portletName}");
+
+			Refresh();
 		}
 
 		PageEditor.clickPublish();

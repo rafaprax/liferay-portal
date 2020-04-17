@@ -133,15 +133,7 @@ AUI.add(
 
 				_clearInputsLocalized(node) {
 					node.all('.language-value').attr('placeholder', '');
-					node.all('.lfr-input-localized-state').removeClass(
-						'lfr-input-localized-state-error'
-					);
-					node.all('.palette-item')
-						.removeClass('palette-item-selected')
-						.removeClass('lfr-input-localized');
-					node.all('.lfr-input-localized-default').addClass(
-						'palette-item-selected'
-					);
+					node.all('.form-text').setHTML('');
 				},
 
 				_createClone(node) {
@@ -155,9 +147,28 @@ AUI.add(
 
 					var formValidator = instance._getFormValidator(node);
 
+					var paletteIsCloned =
+						clone.one("[id$='PaletteBoundingBox']") != null;
+
 					var inputsLocalized = node.all('.language-value');
 
 					var clonedRow;
+
+					if (inputsLocalized && !paletteIsCloned) {
+						var palette = document.querySelector(
+							"[id$='PaletteBoundingBox']"
+						);
+
+						var trigger = clone.one('button');
+
+						var list = A.Node.create(
+							'<ul class="dropdown-menu dropdown-menu-left-side"></ul>'
+						);
+
+						trigger.placeAfter(list);
+
+						list.append(palette);
+					}
 
 					if (instance.url) {
 						clonedRow = instance._createCloneFromURL(clone, guid);
@@ -192,7 +203,7 @@ AUI.add(
 						rules = formValidator.get('rules');
 					}
 
-					node.all('input, select, textarea, span, div').each(
+					node.all('button, input, select, textarea, span, div').each(
 						item => {
 							var inputNodeName = item.attr('nodeName');
 							var inputType = item.attr('type');
@@ -249,24 +260,15 @@ AUI.add(
 
 					instance._clearInputsLocalized(node);
 
-					inputsLocalized.each(item => {
-						var inputId = item.attr('id');
+					instance.once('clone', () => {
+						inputsLocalized.each(item => {
+							var inputId = item.attr('id');
 
-						var inputLocalized;
-
-						if (inputId) {
-							inputLocalized =
-								Liferay.InputLocalized._registered[inputId];
-
-							if (inputLocalized) {
-								Liferay.component(inputId).render();
-							}
-
-							inputLocalized =
-								Liferay.InputLocalized._instances[inputId];
-						}
-
-						instance._registerInputLocalized(inputLocalized, guid);
+							instance._registerInputLocalized(
+								Liferay.InputLocalized._instances[inputId],
+								guid
+							);
+						});
 					});
 
 					node.all('.form-validator-stack').remove();
@@ -356,15 +358,16 @@ AUI.add(
 						.get('id')
 						.replace(/([0-9]+)$/, guid);
 
-					var inputLocalizedNamespaceId =
-						inputLocalized.get('namespace') + inputLocalizedId;
+					var inputLocalizedNamespace = inputLocalized.get(
+						'namespace'
+					);
+
+					var inputLocalizedNamespaceId = `${inputLocalizedNamespace}${inputLocalizedId}`;
 
 					Liferay.InputLocalized.register(inputLocalizedNamespaceId, {
-						boundingBox:
-							'#' + inputLocalizedNamespaceId + 'BoundingBox',
+						boundingBox: `#${inputLocalizedNamespaceId}PaletteBoundingBox`,
 						columns: inputLocalized.get('columns'),
-						contentBox:
-							'#' + inputLocalizedNamespaceId + 'ContentBox',
+						contentBox: `#${inputLocalizedNamespaceId}PaletteContentBox`,
 						defaultLanguageId: inputLocalized.get(
 							'defaultLanguageId'
 						),
@@ -372,18 +375,26 @@ AUI.add(
 						fieldPrefixSeparator: inputLocalized.get(
 							'fieldPrefixSeparator'
 						),
+						helpMessage: inputLocalized.get('helpMessage'),
 						id: inputLocalizedId,
+						inputBox: `#${inputLocalizedNamespaceId}BoundingBox`,
 						inputPlaceholder: '#' + inputLocalizedNamespaceId,
 						items: inputLocalized.get('items'),
 						itemsError: inputLocalized.get('itemsError'),
-						lazy: true,
 						name: inputLocalizedId,
 						namespace: inputLocalized.get('namespace'),
+						selected: inputLocalized
+							.get('items')
+							.indexOf(inputLocalized.getSelectedLanguageId()),
 						toggleSelection: inputLocalized.get('toggleSelection'),
 						translatedLanguages: inputLocalized.get(
 							'translatedLanguages'
 						),
 					});
+
+					var inputLocalizedMenuId = `${inputLocalizedNamespace}${inputLocalizedNamespaceId}Menu`;
+
+					Liferay.Menu.register(inputLocalizedMenuId);
 				},
 
 				_updateContentButtons() {
@@ -716,6 +727,7 @@ AUI.add(
 			'aui-parse-content',
 			'base',
 			'liferay-form',
+			'liferay-menu',
 			'liferay-portlet-base',
 			'liferay-undo-manager',
 			'sortable',

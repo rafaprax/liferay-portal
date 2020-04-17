@@ -34,11 +34,13 @@ import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
@@ -65,7 +67,12 @@ public class AnalyticsReportsDisplayContext {
 		_portal = portal;
 		_renderResponse = renderResponse;
 		_resourceBundle = resourceBundle;
+
 		_themeDisplay = themeDisplay;
+
+		_validAnalyticsConnection =
+			_analyticsReportsDataProvider.isValidAnalyticsConnection(
+				_themeDisplay.getCompanyId());
 	}
 
 	public Map<String, Object> getData() {
@@ -74,80 +81,7 @@ public class AnalyticsReportsDisplayContext {
 		}
 
 		_data = HashMapBuilder.<String, Object>put(
-			"context",
-			HashMapBuilder.<String, Object>put(
-				"defaultTimeSpanKey", TimeSpan.defaultTimeSpanKey()
-			).put(
-				"endpoints",
-				HashMapBuilder.<String, Object>put(
-					"getAnalyticsReportsHistoricalReadsURL",
-					() -> {
-						ResourceURL resourceURL =
-							_renderResponse.createResourceURL();
-
-						resourceURL.setResourceID(
-							"/analytics_reports/get_historical_reads");
-
-						return resourceURL.toString();
-					}
-				).put(
-					"getAnalyticsReportsHistoricalViewsURL",
-					() -> {
-						ResourceURL resourceURL =
-							_renderResponse.createResourceURL();
-
-						resourceURL.setResourceID(
-							"/analytics_reports/get_historical_views");
-
-						return resourceURL.toString();
-					}
-				).put(
-					"getAnalyticsReportsTotalReadsURL",
-					() -> {
-						ResourceURL resourceURL =
-							_renderResponse.createResourceURL();
-
-						resourceURL.setResourceID(
-							"/analytics_reports/get_total_reads");
-
-						return resourceURL.toString();
-					}
-				).put(
-					"getAnalyticsReportsTotalViewsURL",
-					() -> {
-						ResourceURL resourceURL =
-							_renderResponse.createResourceURL();
-
-						resourceURL.setResourceID(
-							"/analytics_reports/get_total_views");
-
-						return resourceURL.toString();
-					}
-				).build()
-			).put(
-				"languageTag",
-				() -> {
-					Locale locale = _themeDisplay.getLocale();
-
-					return locale.toLanguageTag();
-				}
-			).put(
-				"namespace",
-				_portal.getPortletNamespace(
-					AnalyticsReportsPortletKeys.ANALYTICS_REPORTS)
-			).put(
-				"page",
-				HashMapBuilder.<String, Object>put(
-					"plid",
-					() -> {
-						Layout layout = _themeDisplay.getLayout();
-
-						return layout.getPlid();
-					}
-				).build()
-			).put(
-				"timeSpans", _getTimeSpansJSONArray()
-			).build()
+			"context", _getContext()
 		).put(
 			"props", getProps()
 		).build();
@@ -189,6 +123,84 @@ public class AnalyticsReportsDisplayContext {
 		).build();
 	}
 
+	private Map<String, Object> _getContext() {
+		return HashMapBuilder.<String, Object>put(
+			"defaultTimeSpanKey", TimeSpan.defaultTimeSpanKey()
+		).put(
+			"endpoints",
+			HashMapBuilder.<String, Object>put(
+				"getAnalyticsReportsHistoricalReadsURL",
+				() -> {
+					ResourceURL resourceURL =
+						_renderResponse.createResourceURL();
+
+					resourceURL.setResourceID(
+						"/analytics_reports/get_historical_reads");
+
+					return resourceURL.toString();
+				}
+			).put(
+				"getAnalyticsReportsHistoricalViewsURL",
+				() -> {
+					ResourceURL resourceURL =
+						_renderResponse.createResourceURL();
+
+					resourceURL.setResourceID(
+						"/analytics_reports/get_historical_views");
+
+					return resourceURL.toString();
+				}
+			).put(
+				"getAnalyticsReportsTotalReadsURL",
+				() -> {
+					ResourceURL resourceURL =
+						_renderResponse.createResourceURL();
+
+					resourceURL.setResourceID(
+						"/analytics_reports/get_total_reads");
+
+					return resourceURL.toString();
+				}
+			).put(
+				"getAnalyticsReportsTotalViewsURL",
+				() -> {
+					ResourceURL resourceURL =
+						_renderResponse.createResourceURL();
+
+					resourceURL.setResourceID(
+						"/analytics_reports/get_total_views");
+
+					return resourceURL.toString();
+				}
+			).build()
+		).put(
+			"languageTag",
+			() -> {
+				Locale locale = _themeDisplay.getLocale();
+
+				return locale.toLanguageTag();
+			}
+		).put(
+			"namespace",
+			_portal.getPortletNamespace(
+				AnalyticsReportsPortletKeys.ANALYTICS_REPORTS)
+		).put(
+			"page",
+			HashMapBuilder.<String, Object>put(
+				"plid",
+				() -> {
+					Layout layout = _themeDisplay.getLayout();
+
+					return layout.getPlid();
+				}
+			).build()
+		).put(
+			"timeSpans", _getTimeSpansJSONArray()
+		).put(
+			"validAnalyticsConnection", _validAnalyticsConnection
+		).build();
+	}
+
 	private JSONArray _getTimeSpansJSONArray() {
 		JSONArray timeSpansJSONArray = JSONFactoryUtil.createJSONArray();
 
@@ -210,6 +222,23 @@ public class AnalyticsReportsDisplayContext {
 		return timeSpansJSONArray;
 	}
 
+	private List<TrafficSource> _getTrafficSources() {
+		List<TrafficSource> trafficSources = Collections.emptyList();
+
+		if (_validAnalyticsConnection) {
+			try {
+				trafficSources =
+					_analyticsReportsDataProvider.getTrafficSources(
+						_themeDisplay.getCompanyId(), _canonicalURL);
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException, portalException);
+			}
+		}
+
+		return trafficSources;
+	}
+
 	private JSONArray _getTrafficSourcesJSONArray() {
 		JSONArray trafficSourcesJSONArray = JSONFactoryUtil.createJSONArray();
 
@@ -224,18 +253,30 @@ public class AnalyticsReportsDisplayContext {
 			"paid", ResourceBundleUtil.getString(_resourceBundle, "paid")
 		).build();
 
-		try {
-			List<TrafficSource> trafficSources =
-				_analyticsReportsDataProvider.getTrafficSources(
-					_themeDisplay.getCompanyId(), _canonicalURL);
+		List<TrafficSource> trafficSources = _getTrafficSources();
 
-			trafficSources.forEach(
-				trafficSource -> trafficSourcesJSONArray.put(
-					trafficSource.toJSONObject(helpMessage, titleMap)));
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException, portalException);
-		}
+		titleMap.forEach(
+			(name, title) -> {
+				Stream<TrafficSource> stream = trafficSources.stream();
+
+				trafficSourcesJSONArray.put(
+					stream.filter(
+						trafficSource -> Objects.equals(
+							name, trafficSource.getName())
+					).findFirst(
+					).map(
+						trafficSource -> trafficSource.toJSONObject(
+							helpMessage, title)
+					).orElse(
+						JSONUtil.put(
+							"helpMessage", helpMessage
+						).put(
+							"name", name
+						).put(
+							"title", title
+						)
+					));
+			});
 
 		return trafficSourcesJSONArray;
 	}
@@ -252,5 +293,6 @@ public class AnalyticsReportsDisplayContext {
 	private final RenderResponse _renderResponse;
 	private final ResourceBundle _resourceBundle;
 	private final ThemeDisplay _themeDisplay;
+	private final boolean _validAnalyticsConnection;
 
 }

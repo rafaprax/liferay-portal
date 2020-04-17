@@ -556,6 +556,8 @@ definition {
 	@description = "This is a test for LPS-105109. Content author having permissions to update page content can introduce new inline content after clicking edit icon in content page."
 	@priority = "5"
 	test EditInlineContentWithUpdatePageContentPermission {
+		property portal.acceptance = "true";
+
 		PageEditor.addFragment(
 			collectionName = "Collection Name",
 			fragmentName = "Rich Text");
@@ -615,11 +617,19 @@ definition {
 
 		ContentPages.clickPencil();
 
-		PageEditor.editFragmentText(
-			contributed = "false",
-			fragmentName = "Rich Text",
-			id = "rich-text",
-			text = "New editable fragment text");
+		AssertElementNotPresent(
+			key_fragmentName = "Rich Text",
+			locator1 = "Fragment#FRAGMENT_HEADER");
+
+		Click(locator1 = "//div[contains(@class,'fragment-rich-text')]/lfr-editable[contains(@id,'rich-text')]");
+
+		Click(locator1 = "PageEditor#EDITABLE_FIELD_TOOLBAR_EDIT_BUTTON");
+
+		Type(
+			locator1 = "//div[contains(@class,'fragment-rich-text')]/lfr-editable[contains(@id,'rich-text')]//div[contains(@class,'cke_editable_inline')]",
+			value1 = "New editable fragment text");
+
+		PageEditor.waitForAutoSave();
 
 		PageEditor.clickPublish();
 
@@ -633,6 +643,8 @@ definition {
 	@description = "This is a test for LPS-105109. Content author having permissions to update page content can introduce new inline content after clicking edit icon in content page."
 	@priority = "5"
 	test MapInlineContentWithUpdatePageContentPermission {
+		property portal.acceptance = "true";
+
 		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
 
 		WebContentNavigator.gotoAddCP();
@@ -723,10 +735,13 @@ definition {
 
 		ContentPages.clickPencil();
 
-		PageEditorMapping.gotoEditableFieldMapping(
-			contributed = "false",
-			fragmentName = "rich-text",
-			id = "rich-text");
+		AssertElementNotPresent(
+			key_fragmentName = "Rich Text",
+			locator1 = "Fragment#FRAGMENT_HEADER");
+
+		Click(locator1 = "//div[contains(@class,'fragment-rich-text')]/lfr-editable[contains(@id,'rich-text')]");
+
+		Click(locator1 = "PageEditor#EDITABLE_FIELD_TOOLBAR_MAP_BUTTON");
 
 		Select(
 			locator1 = "PageEditorEditableLink#FIELD",

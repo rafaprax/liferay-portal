@@ -85,6 +85,8 @@ definition {
 
 		DepotNavigator.gotoSites(depotName = "Test Depot Name");
 
+		Pause(locator1 = "3000");
+
 		Depot.connectSite(siteList = "Site Name");
 
 		DepotNavigator.openDepotAdmin();
@@ -112,7 +114,7 @@ definition {
 
 		DepotNavigator.gotoSites(depotName = "Test Depot Name");
 
-		// we need to add an assertion for the label that will later be developed and update the test description
+		// We need to add an assertion for the label that will later be developed and update the test description
 
 		Depot.viewConnectedSite(
 			depotName = "Test Depot Name",
@@ -165,8 +167,6 @@ definition {
 	@description = "This ensures that a depot web content can be searched on a connected site when searching is reenabled."
 	@priority = "5"
 	test ReenableSearchability {
-		property portal.upstream = "quarantine";
-
 		JSONLayout.addWidgetToPublicLayout(
 			groupName = "Site Name",
 			layoutName = "Page Name",
@@ -254,6 +254,8 @@ definition {
 
 		DepotNavigator.gotoSites(depotName = "Test Depot Name");
 
+		Pause(locator1 = "3000");
+
 		Depot.connectSite(siteList = "Site Name");
 
 		Navigator.gotoSitePage(
@@ -319,11 +321,7 @@ definition {
 			depotDescription = "This is the description of a depot",
 			depotName = "Test Depot Name");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.addCP(
 			dmDocumentDescription = "DM Document Description",
@@ -614,8 +612,7 @@ definition {
 	@description = "This ensures that a depot can be connected to the site."
 	@priority = "5"
 	test Smoke {
-		property portal.acceptance = "quarantine";
-		property portal.upstream = "quarantine";
+		property portal.acceptance = "true";
 
 		JSONDepot.addDepot(
 			depotDescription = "This is the description of a depot",
@@ -662,11 +659,7 @@ definition {
 
 		Depot.connectSite(siteList = "Site Name");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM Document Title");
 
@@ -697,11 +690,7 @@ definition {
 
 		Depot.connectSite(siteList = "Child Site Name");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "Document_1.jpg");
 

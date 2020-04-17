@@ -149,8 +149,6 @@ definition {
 	macro addEntryWithUploadedCoverImage {
 		BlogsNavigator.gotoAddEntry();
 
-		Pause(locator1 = "5000");
-
 		BlogsNavigator.gotoSelectFile();
 
 		ItemSelector.uploadFile(
@@ -174,9 +172,9 @@ definition {
 	macro addViaAP {
 		AssetPublisherPortlet.addAsset(assetType = "Blogs Entry");
 
-		AlloyEditor.addTitleAndContent(
-			content = "${entryContent}",
-			title = "${entryTitle}");
+		BlogsEntry.addTitle(entryTitle = "${entryTitle}");
+
+		AlloyEditor.addContent(content = "${entryContent}");
 
 		AssertClick(
 			locator1 = "Button#PUBLISH",
@@ -202,9 +200,9 @@ definition {
 			assetType = "Blogs Entry",
 			siteScope = "${siteScope}");
 
-		AlloyEditor.addTitleAndContent(
-			content = "${entryContent}",
-			title = "${entryTitle}");
+		BlogsEntry.addTitle(entryTitle = "${entryTitle}");
+
+		AlloyEditor.addContent(content = "${entryContent}");
 
 		AssertClick(
 			locator1 = "Button#PUBLISH",
@@ -304,9 +302,9 @@ definition {
 	macro addWithWorkflowViaAP {
 		AssetPublisherPortlet.addAsset(assetType = "Blogs Entry");
 
-		AlloyEditor.addTitleAndContent(
-			content = "${entryContent}",
-			title = "${entryTitle}");
+		BlogsEntry.addTitle(entryTitle = "${entryTitle}");
+
+		AlloyEditor.addContent(content = "${entryContent}");
 
 		AssertClick(
 			locator1 = "Button#SUBMIT_FOR_PUBLICATION",
@@ -430,7 +428,7 @@ definition {
 	macro publishDraftCP {
 		BlogsNavigator.gotoEditCP(entryTitle = "${entryTitle}");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "${entryContent}",
 			entrySubtitle = "${entrySubtitle}",
 			entryTitle = "${entryTitle}");
@@ -473,9 +471,11 @@ definition {
 
 		BlogsNavigator.gotoConfigurationSetupPG();
 
-		BlogsNavigator.gotoConfigurationScopePG();
+		Navigator.gotoPage(pageName = "${pageName}");
 
-		BlogsConfiguration.selectScopePG(scopeSelection = "Liferay");
+		Portlet.selectScopePG(
+			portletName = "Blogs",
+			scope = "Liferay");
 	}
 
 	macro tearDownCP {

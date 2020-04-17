@@ -15,8 +15,14 @@
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import JSXComponent from 'metal-jsx';
 import Soy from 'metal-soy';
-import React from 'react';
+import {Config} from 'metal-state';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
+
+import Observer from './Observer.es';
+
+const CONFIG_BLACKLIST = ['children', 'events', 'ref', 'visible'];
+const CONFIG_DEFAULT = ['displayErrors'];
 
 /**
  * The Adapter needs the React component instance to render and the soy template
@@ -58,14 +64,74 @@ import ReactDOM from 'react-dom';
 
 function getConnectedReactComponentAdapter(ReactComponent, templates) {
 	class ReactComponentAdapter extends JSXComponent {
+		/**
+		 * For Metal to track config changes, we need to declare the
+		 * configs in the static property so that willReceiveProps is
+		 * called as expected. We added the configs before Metal started
+		 * configuring so that they are recognized later.
+		 */
+		constructor(config, parentElement) {
+			const props = {};
+			Object.keys(config)
+				.concat(CONFIG_DEFAULT)
+				.forEach(key => {
+					if (!CONFIG_BLACKLIST.includes(key)) {
+						props[key] = Config.any();
+					}
+				});
+
+			ReactComponentAdapter.PROPS = props;
+
+			super(config, parentElement);
+		}
+
+		created() {
+			this.observer = new Observer();
+		}
+
 		disposed() {
 			if (this.instance_) {
 				ReactDOM.unmountComponentAtNode(this.instance_);
+				this.instance_ = null;
 			}
 		}
 
+		willReceiveProps(changes) {
+			// Delete the events and children properties to make it easier to
+			// check which values have been changed, events and children are
+			// properties that are changing all the time when new renderings
+			// happen, a new reference is created all the time.
+			delete changes.events;
+			delete changes.children;
+
+			if (changes && Object.keys(changes).length > 0) {
+				const newValues = {};
+				const keys = Object.keys(changes);
+
+				keys.forEach(key => {
+					if (!CONFIG_BLACKLIST.includes(key)) {
+						newValues[key] = changes[key].newVal;
+					}
+				});
+
+				this.observer.dispatch(newValues);
+			}
+		}
+
+		/**
+		 * Disable Metal rendering and let React render in the best
+		 * possible way.
+		 */
+		shouldUpdate() {
+			return false;
+		}
+
+		syncVisible(value) {
+			this.observer.dispatch({visible: value});
+		}
+
 		render() {
-			const {events, ref, store} = this.props;
+			const {events, ref, store, ...otherProps} = this.props;
 
 			/* eslint-disable no-undef */
 			IncrementalDOM.elementOpen(
@@ -81,7 +147,17 @@ function getConnectedReactComponentAdapter(ReactComponent, templates) {
 			/* eslint-enable no-undef */
 
 			// eslint-disable-next-line liferay-portal/no-react-dom-render
-			ReactDOM.render(<ReactComponent {...events} {...store} />, element);
+			ReactDOM.render(
+				<ObserverSubscribe observer={this.observer}>
+					<ReactComponent
+						{...otherProps}
+						{...events}
+						{...store}
+						instance={this}
+					/>
+				</ObserverSubscribe>,
+				element
+			);
 
 			this.instance_ = element;
 		}
@@ -93,6 +169,29 @@ function getConnectedReactComponentAdapter(ReactComponent, templates) {
 
 	return ReactComponentAdapter;
 }
+
+/**
+ * Adds a sub observer to maintain the updated state of the
+ * component.
+ */
+const ObserverSubscribe = ({children, observer}) => {
+	const [state, setState] = useState({});
+
+	useEffect(() => {
+		const change = value => setState({...state, ...value});
+
+		observer.subscribe(change);
+
+		return () => {
+			observer.unsubscribe(change);
+		};
+	}, [state, setState, observer]);
+
+	return React.cloneElement(children, {
+		...children.props,
+		...state,
+	});
+};
 
 export {getConnectedReactComponentAdapter};
 export default getConnectedReactComponentAdapter;

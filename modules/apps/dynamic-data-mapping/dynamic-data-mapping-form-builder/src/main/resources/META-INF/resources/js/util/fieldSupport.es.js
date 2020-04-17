@@ -12,7 +12,11 @@
  * details.
  */
 
-import {PagesVisitor} from 'dynamic-data-mapping-form-renderer';
+import {
+	PagesVisitor,
+	generateName,
+	getRepeatedIndex,
+} from 'dynamic-data-mapping-form-renderer';
 
 import {FIELD_TYPE_FIELDSET} from './constants.es';
 
@@ -218,44 +222,55 @@ export const normalizeSettingsContextPages = (
 ) => {
 	const visitor = new PagesVisitor(pages);
 
-	return visitor.mapFields(field => {
-		const {fieldName} = field;
+	return visitor.mapFields(
+		field => {
+			const {fieldName} = field;
 
-		if (fieldName === 'name') {
-			field = {
-				...field,
-				value: generatedFieldName,
-			};
-		}
-		else if (fieldName === 'label') {
-			field = {
-				...field,
-				localizedValue: {
-					...field.localizedValue,
-					[editingLanguageId]: fieldType.label,
-				},
-				type: 'text',
-				value: fieldType.label,
-			};
-		}
-		else if (fieldName === 'type') {
-			field = {
-				...field,
-				value: fieldType.name,
-			};
-		}
-		else if (fieldName === 'validation') {
-			field = {
-				...field,
-				validation: {
-					...field.validation,
-					fieldName: generatedFieldName,
-				},
-			};
-		}
+			if (fieldName === 'name') {
+				field = {
+					...field,
+					value: generatedFieldName,
+				};
+			}
+			else if (fieldName === 'label') {
+				field = {
+					...field,
+					localizedValue: {
+						...field.localizedValue,
+						[editingLanguageId]: fieldType.label,
+					},
+					type: 'text',
+					value: fieldType.label,
+				};
+			}
+			else if (fieldName === 'type') {
+				field = {
+					...field,
+					value: fieldType.name,
+				};
+			}
+			else if (fieldName === 'validation') {
+				field = {
+					...field,
+					validation: {
+						...field.validation,
+						fieldName: generatedFieldName,
+					},
+				};
+			}
 
-		return {
-			...field,
-		};
-	});
+			const newInstanceId = generateInstanceId(8);
+
+			return {
+				...field,
+				instanceId: newInstanceId,
+				name: generateName(field.name, {
+					instanceId: newInstanceId,
+					repeatedIndex: getRepeatedIndex(field.name),
+				}),
+			};
+		},
+		false,
+		true
+	);
 };

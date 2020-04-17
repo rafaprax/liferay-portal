@@ -35,11 +35,11 @@ definition {
 	@description = "This is a test for LPS-97184. Invalid fragment configuration cannot be published and offers useful advice."
 	@priority = "4"
 	test AddInvalidConfiguration {
-		property test.name.skip.portal.instance = "FragmentsConfiguration#AddInvalidConfiguration";
-
 		FragmentsAdmin.addFragment(fragmentName = "Fragment Name");
 
 		FragmentsEditor.gotoConfigurationTab();
+
+		Pause(locator1 = "3000");
 
 		FragmentsEditor.typeFileContent(fileName = "fragment_configuration_invalid.json");
 
@@ -69,15 +69,17 @@ definition {
 	@description = "This is a test for LPS-97184. Valid fragment configuration can be published."
 	@priority = "4"
 	test AddValidConfiguration {
-		property test.name.skip.portal.instance = "FragmentsConfiguration#AddValidConfiguration";
-
 		FragmentsAdmin.addFragment(fragmentName = "Fragment Name");
 
 		FragmentsEditor.gotoConfigurationTab();
 
+		Pause(locator1 = "3000");
+
 		FragmentsEditor.typeFileContent(fileName = "fragment_configuration.json");
 
 		FragmentsEditor.gotoCodeTab();
+
+		Pause(locator1 = "3000");
 
 		FragmentsEditor.typeFileContent(fileName = "fragment_configuration.html");
 

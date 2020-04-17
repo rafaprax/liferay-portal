@@ -20,12 +20,23 @@ import {
 	getLayoutDataItemPropTypes,
 } from '../../prop-types/index';
 import {LAYOUT_DATA_ITEM_TYPES} from '../config/constants/layoutDataItemTypes';
+import selectCanUpdate from '../selectors/selectCanUpdate';
 import {useSelector} from '../store/index';
 import useDragAndDrop, {TARGET_POSITION} from '../utils/useDragAndDrop';
 import {useToControlsId} from './CollectionItemContext';
 import getLabelName from './layout-data-items/getLabelName';
 
-export default function TopperEmpty({children, item, layoutData}) {
+export default function({children, ...props}) {
+	const canUpdate = useSelector(selectCanUpdate);
+
+	return canUpdate ? (
+		<TopperEmpty {...props}>{children}</TopperEmpty>
+	) : (
+		children
+	);
+}
+
+function TopperEmpty({children, item, layoutData}) {
 	const containerRef = useRef(null);
 	const store = useSelector(state => state);
 	const fragmentEntryLinks = store.fragmentEntryLinks;
@@ -33,10 +44,8 @@ export default function TopperEmpty({children, item, layoutData}) {
 	const toControlsId = useToControlsId();
 
 	const {
-		canDrop,
 		drop,
 		isDragging,
-		isOver,
 		state: {
 			dropItem,
 			dropTargetItemId,
@@ -56,12 +65,8 @@ export default function TopperEmpty({children, item, layoutData}) {
 			? targetPositionWithoutMiddle
 			: targetPositionWithMiddle;
 
-	const childrenElement = children({canDrop, isOver});
-
-	const isFragment = childrenElement.type === React.Fragment;
-	const realChildren = isFragment
-		? childrenElement.props.children
-		: childrenElement;
+	const isFragment = children.type === React.Fragment;
+	const realChildren = isFragment ? children.props.children : children;
 
 	const isDraggableInPosition = position =>
 		targetPosition === position &&

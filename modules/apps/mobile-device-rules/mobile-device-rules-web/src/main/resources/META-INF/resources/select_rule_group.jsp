@@ -38,9 +38,9 @@ if (displayTerms.getGroupId() == 0) {
 	searchTerms.setGroupId(groupId);
 }
 
-LinkedHashMap<String, Object> params = new LinkedHashMap<String, Object>();
-
-params.put("includeGlobalScope", Boolean.TRUE);
+LinkedHashMap<String, Object> params = LinkedHashMapBuilder.<String, Object>put(
+	"includeGlobalScope", Boolean.TRUE
+).build();
 
 int mdrRuleGroupsCount = MDRRuleGroupLocalServiceUtil.searchByKeywordsCount(searchTerms.getGroupId(), searchTerms.getKeywords(), params, searchTerms.isAndOperator());
 
@@ -92,10 +92,11 @@ ruleGroupSearch.setResults(mdrRuleGroups);
 			<%
 			MDRRuleGroupInstance ruleGroupInstance = MDRRuleGroupInstanceLocalServiceUtil.fetchRuleGroupInstance(className, classPK, ruleGroup.getRuleGroupId());
 
-			Map<String, Object> data = new HashMap<String, Object>();
-
-			data.put("rulegroupid", ruleGroup.getRuleGroupId());
-			data.put("rulegroupname", ruleGroup.getName());
+			Map<String, Object> data = HashMapBuilder.<String, Object>put(
+				"rulegroupid", ruleGroup.getRuleGroupId()
+			).put(
+				"rulegroupname", ruleGroup.getName()
+			).build();
 			%>
 
 			<c:choose>

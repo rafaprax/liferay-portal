@@ -383,6 +383,8 @@ definition {
 			userName = "user2 user2",
 			userScreenName = "user2");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
@@ -399,6 +401,8 @@ definition {
 		Organization.viewAssignMemberCP(
 			userName = "userfn userln",
 			userScreenName = "usersn");
+
+		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
 			category = "Users",
@@ -421,6 +425,8 @@ definition {
 			userName = "userfn userln",
 			userScreenName = "usersn");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
@@ -431,6 +437,8 @@ definition {
 		Organization.editSiteCP(
 			orgName = "Organization1",
 			orgNameEdit = "Organization1 Edit");
+
+		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
 			category = "Users",
@@ -443,6 +451,8 @@ definition {
 			orgName = "Sub-organization1",
 			orgNameEdit = "Sub-organization1 Edit");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
@@ -452,6 +462,8 @@ definition {
 
 		Organization.deleteCP(orgName = "Sub-organization2");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
@@ -460,6 +472,8 @@ definition {
 		UsersAndOrganizationsNavigator.gotoOrganizations();
 
 		Organization.deleteCP(orgName = "Organization2");
+
+		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
 			category = "Users",
@@ -472,6 +486,8 @@ definition {
 			orgName = "Sub-organization1 Edit",
 			userFullName = "user2 user2");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
@@ -480,6 +496,8 @@ definition {
 		UsersAndOrganizationsNavigator.gotoOrganizations();
 
 		Organization.deleteCP(orgName = "Sub-organization1 Edit");
+
+		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
 			category = "Users",
@@ -731,7 +749,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Workflow Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Workflow Content",
 			entryTitle = "Blogs Workflow Title");
 
@@ -1089,7 +1107,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "New Blog After Upgrade");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "New Blog After Upgrade");
 
@@ -1289,6 +1307,10 @@ definition {
 			user = "Test Test");
 
 		PageEditor.deleteComment(fragmentComment = "This is a fragment comment");
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/test-content-page-name");
+
+		ContentPages.clickPencil();
 
 		PageEditor.addComment(
 			content = "This is static text.",
@@ -1499,7 +1521,7 @@ definition {
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Profile");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Usersn Blog Entry Content",
 			entryTitle = "Usersn Blog Entry Title");
 
@@ -1847,13 +1869,16 @@ definition {
 			configurationScope = "Virtual Instance Scope");
 
 		FormFields.viewTextMultilineValue(
-			fieldName = "reserved-screen-names",
+			fieldName = "reserved.screen.names",
 			fieldValue = "usersn");
 
 		FormFields.viewTextMultilineValue(
-			fieldName = "reserved-email-addresses",
+			fieldName = "reserved.email.addresses",
 			fieldValue = "userea@liferay.com");
 
+		// Ignore test until LPS-98192 is resolved
+
+		/*
 		PortalSettings.gotoConfiguration(
 			configurationCategory = "Users",
 			configurationName = "Fields",
@@ -1863,7 +1888,7 @@ definition {
 
 		FormFields.viewCheckboxNotChecked(fieldName = "field-enable-com-liferay-portal-kernel-model-Contact-birthday");
 
-		FormFields.viewCheckboxNotChecked(fieldName = "field-enable-com-liferay-portal-kernel-model-Contact-male");
+		FormFields.viewCheckboxNotChecked(fieldName = "field-enable-com-liferay-portal-kernel-model-Contact-male");*/
 
 		PortalSettings.gotoConfiguration(
 			configurationCategory = "Users",
@@ -1871,11 +1896,11 @@ definition {
 			configurationScope = "Virtual Instance Scope");
 
 		FormFields.viewTextMultilineValue(
-			fieldName = "default-group-names",
+			fieldName = "default.group.names",
 			fieldValue = "Liferay");
 
 		FormFields.viewTextMultilineValue(
-			fieldName = "default-role-names",
+			fieldName = "default.role.names",
 			fieldValue = "Administrator");
 
 		PortalSettings.gotoConfiguration(
@@ -1884,7 +1909,7 @@ definition {
 			configurationScope = "Virtual Instance Scope");
 
 		FormFields.viewTextValue(
-			fieldName = "email-from-name",
+			fieldName = "email.from.name",
 			fieldValue = "Test Test");
 
 		PortalSettings.gotoConfiguration(
@@ -1903,9 +1928,13 @@ definition {
 			configurationName = "Language",
 			configurationScope = "Virtual Instance Scope");
 
-		AssertTextEquals(
+		AssertTextEquals.assertPartialText(
 			locator1 = "LanguageConfiguration#LANGUAGES_CURRENT",
-			value1 = "Spanish (Spain)   English (United States)");
+			value1 = "English (United States)");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "LanguageConfiguration#LANGUAGES_CURRENT",
+			value1 = "Spanish (Spain)");
 
 		PortalSettings.gotoConfiguration(
 			configurationCategory = "Localization",
@@ -2418,8 +2447,6 @@ definition {
 
 		FormFields.viewCheckboxNotChecked(fieldName = "journalArticleForceAutogenerateId");
 
-		FormFields.viewCheckboxNotChecked(fieldName = "journalArticlesSearchWithIndex");
-
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
@@ -2508,6 +2535,9 @@ definition {
 
 		FormFields.viewCheckboxNotChecked(fieldName = "enableRelatedAssets");
 
+		// Ignore test until LPS-97976 is resolved
+
+		/*
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
@@ -2544,7 +2574,7 @@ definition {
 
 		FormFields.viewCheckboxNotChecked(fieldName = "autogenerateStructureKey");
 
-		FormFields.viewCheckboxNotChecked(fieldName = "autogenerateTemplateKey");
+		FormFields.viewCheckboxNotChecked(fieldName = "autogenerateTemplateKey");*/
 	}
 
 	macro viewUpgrade {
@@ -2600,7 +2630,7 @@ definition {
 
 		Navigator.gotoPage(pageName = "Blogs");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 
@@ -2669,7 +2699,7 @@ definition {
 
 		Navigator.gotoPage(pageName = "Blogs");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryPG(
 			entryContent = "Blogs Entry Content",
 			entryTitle = "Blogs Entry Title");
 

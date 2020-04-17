@@ -35,6 +35,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesMerger;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.language.Language;
@@ -130,6 +131,18 @@ public class DDMFormAdminDisplayContextTest extends PowerMockito {
 	}
 
 	@Test
+	public void testGetPublishedFormURL() throws Exception {
+		Assert.assertEquals(
+			getSharedFormURL() + _SHARED_FORM_INSTANCE_ID,
+			_ddmFormAdminDisplayContext.getPublishedFormURL(
+				mockDDMFormInstance(_SHARED_FORM_INSTANCE_ID, true, false)));
+		Assert.assertEquals(
+			StringPool.BLANK,
+			_ddmFormAdminDisplayContext.getPublishedFormURL(
+				mockDDMFormInstance(_SHARED_FORM_INSTANCE_ID, false, false)));
+	}
+
+	@Test
 	public void testGetRestrictedFormURL() throws Exception {
 		String restrictedFormURL =
 			_ddmFormAdminDisplayContext.getRestrictedFormURL();
@@ -184,6 +197,26 @@ public class DDMFormAdminDisplayContextTest extends PowerMockito {
 		);
 
 		return formInstance;
+	}
+
+	protected DDMFormInstance mockDDMFormInstance(
+			long formInstanceId, boolean published,
+			boolean requireAuthentication)
+		throws PortalException {
+
+		DDMFormInstance ddmFormInstance = mockDDMFormInstance(
+			formInstanceId, requireAuthentication);
+
+		DDMFormInstanceSettings ddmFormInstanceSettings =
+			ddmFormInstance.getSettingsModel();
+
+		when(
+			ddmFormInstanceSettings.published()
+		).thenReturn(
+			published
+		);
+
+		return ddmFormInstance;
 	}
 
 	protected DDMFormInstanceService mockDDMFormInstanceService()

@@ -47,6 +47,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.util.PropsValues;
@@ -386,6 +387,9 @@ public class AssetVocabularyServiceTest {
 		Assert.assertEquals(title, vocabulary.getTitle(LocaleUtil.US, true));
 		Assert.assertEquals(title, vocabulary.getName());
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected int searchCount() throws Exception {
 		Indexer<AssetCategory> indexer = IndexerRegistryUtil.getIndexer(

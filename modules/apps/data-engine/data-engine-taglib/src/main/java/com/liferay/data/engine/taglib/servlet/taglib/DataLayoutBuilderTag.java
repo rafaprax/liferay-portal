@@ -109,7 +109,7 @@ public class DataLayoutBuilderTag extends BaseDataLayoutBuilderTag {
 			LinkedHashMapBuilder.<String, Object>put(
 				"fields",
 				HashMapBuilder.<String, Object>put(
-					"icon", "grid"
+					"icon", "forms"
 				).put(
 					"isLink", false
 				).put(
@@ -121,6 +121,22 @@ public class DataLayoutBuilderTag extends BaseDataLayoutBuilderTag {
 							"/fields-sidebar/index.es")
 				).put(
 					"sidebarPanelId", "fields"
+				).build()
+			).put(
+				"rules",
+				HashMapBuilder.<String, Object>put(
+					"icon", "rules"
+				).put(
+					"isLink", false
+				).put(
+					"label", LanguageUtil.get(request, "rules")
+				).put(
+					"pluginEntryPoint",
+					DataLayoutTaglibUtil.resolveModule(
+						"data-engine-taglib/data_layout_builder/js/plugins" +
+							"/rules-sidebar/index.es")
+				).put(
+					"sidebarPanelId", "rules"
 				).build()
 			).build();
 

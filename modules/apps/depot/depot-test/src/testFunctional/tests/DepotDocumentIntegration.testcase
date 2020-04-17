@@ -35,13 +35,9 @@ definition {
 	@description = "This ensures that a depot image can be used through Blogs on a connected site."
 	@priority = "5"
 	test AddImageViaBlogs {
-		property portal.upstream = "quarantine";
-
 		DepotNavigator.openDepotAdmin();
 
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.addCP(
 			dmDocumentDescription = "DM Document Description",
@@ -82,7 +78,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -92,13 +88,7 @@ definition {
 	@description = "This ensures that a depot image can be used through page creation on a connected site."
 	@priority = "5"
 	test AddImageViaContentPage {
-		property portal.upstream = "quarantine";
-
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.addCP(
 			dmDocumentDescription = "DM Document Description",
@@ -136,8 +126,6 @@ definition {
 	@description = "This test covers LPS-105401. It ensures that a depot image can be used on a connected staging site."
 	@priority = "5"
 	test AddImageViaStagedSite {
-		property portal.upstream = "quarantine";
-
 		JSONLayout.addPublicLayout(
 			groupName = "Site Name",
 			layoutName = "Test Page");
@@ -151,11 +139,7 @@ definition {
 
 		Staging.activateStagingCP(siteName = "Site Name");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.addCP(
 			dmDocumentDescription = "DM Document Description",
@@ -201,7 +185,7 @@ definition {
 
 		BlogsNavigator.gotoEntryCP(entryTitle = "Blogs Entry Title");
 
-		BlogsEntry.viewEntry(
+		BlogsEntry.viewEntryCP(
 			entryContent = "Blogs Entry Content",
 			entrySubtitle = "Blogs Entry Subtitle",
 			entryTitle = "Blogs Entry Title",
@@ -211,13 +195,7 @@ definition {
 	@description = "This ensures that a depot image can be used through web content on a connected site."
 	@priority = "5"
 	test AddImageViaWebContent {
-		property portal.upstream = "quarantine";
-
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.addCP(
 			dmDocumentDescription = "DM Document Description",

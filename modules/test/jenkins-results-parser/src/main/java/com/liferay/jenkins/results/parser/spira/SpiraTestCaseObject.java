@@ -39,69 +39,17 @@ public class SpiraTestCaseObject extends PathSpiraArtifact {
 		SpiraProject spiraProject, String testCaseName,
 		SpiraTestCaseType spiraTestCaseType) {
 
-		return createSpiraTestCase(
-			spiraProject, testCaseName, spiraTestCaseType, null);
+		return _createSpiraTestCase(
+			spiraProject, testCaseName, spiraTestCaseType, null, true);
 	}
 
 	public static SpiraTestCaseObject createSpiraTestCase(
 		SpiraProject spiraProject, String testCaseName,
 		SpiraTestCaseType spiraTestCaseType, Integer parentTestCaseFolderID) {
 
-		String testCasePath = "/" + testCaseName;
-
-		if ((parentTestCaseFolderID != null) && (parentTestCaseFolderID != 0)) {
-			SpiraTestCaseFolder parentSpiraTestCaseFolder =
-				spiraProject.getSpiraTestCaseFolderByID(parentTestCaseFolderID);
-
-			testCasePath =
-				parentSpiraTestCaseFolder.getPath() + "/" + testCaseName;
-		}
-
-		List<SpiraTestCaseObject> spiraTestCases =
-			spiraProject.getSpiraTestCasesByPath(testCasePath);
-
-		if (!spiraTestCases.isEmpty()) {
-			return spiraTestCases.get(0);
-		}
-
-		String urlPath = "projects/{project_id}/test-cases";
-
-		Map<String, String> urlPathReplacements = new HashMap<>();
-
-		urlPathReplacements.put(
-			"project_id", String.valueOf(spiraProject.getID()));
-
-		JSONObject requestJSONObject = new JSONObject();
-
-		requestJSONObject.put(
-			"Name", StringEscapeUtils.unescapeJava(testCaseName));
-		requestJSONObject.put("TestCaseStatusId", Status.DRAFT.getID());
-
-		if ((parentTestCaseFolderID != null) && (parentTestCaseFolderID != 0)) {
-			requestJSONObject.put(
-				SpiraTestCaseFolder.ID_KEY, parentTestCaseFolderID);
-		}
-
-		if (spiraTestCaseType != null) {
-			requestJSONObject.put("TestCaseTypeId", spiraTestCaseType.getID());
-		}
-
-		try {
-			JSONObject responseJSONObject = SpiraRestAPIUtil.requestJSONObject(
-				urlPath, null, urlPathReplacements, HttpRequestMethod.POST,
-				requestJSONObject.toString());
-
-			SpiraTestCaseObject spiraTestCase =
-				spiraProject.getSpiraTestCaseByID(
-					responseJSONObject.getInt(ID_KEY));
-
-			cacheSpiraArtifact(SpiraTestCaseObject.class, spiraTestCase);
-
-			return spiraTestCase;
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
-		}
+		return _createSpiraTestCase(
+			spiraProject, testCaseName, spiraTestCaseType,
+			parentTestCaseFolderID, true);
 	}
 
 	public static SpiraTestCaseObject createSpiraTestCaseByPath(
@@ -127,9 +75,9 @@ public class SpiraTestCaseObject extends PathSpiraArtifact {
 			SpiraTestCaseFolder.createSpiraTestCaseFolderByPath(
 				spiraProject, parentTestCaseFolderPath);
 
-		return createSpiraTestCase(
+		return _createSpiraTestCase(
 			spiraProject, testCaseName, spiraTestCaseType,
-			parentSpiraTestCaseFolder.getID());
+			parentSpiraTestCaseFolder.getID(), false);
 	}
 
 	public static void deleteSpiraTestCaseByID(
@@ -198,6 +146,13 @@ public class SpiraTestCaseObject extends PathSpiraArtifact {
 		return SpiraTestCaseRun.getSpiraTestCaseRuns(getSpiraProject(), this);
 	}
 
+	public SpiraTestCaseType getSpiraTestCaseType() {
+		SpiraProject spiraProject = getSpiraProject();
+
+		return spiraProject.getSpiraTestCaseTypeByID(
+			jsonObject.getInt("TestCaseTypeId"));
+	}
+
 	public static enum Status {
 
 		APPROVED(4), DRAFT(1), OBSOLETE(9), READY_FOR_REVIEW(2),
@@ -252,6 +207,58 @@ public class SpiraTestCaseObject extends PathSpiraArtifact {
 
 	protected static final String ID_KEY = "TestCaseId";
 
+	private static SpiraTestCaseObject _createSpiraTestCase(
+		SpiraProject spiraProject, String testCaseName,
+		SpiraTestCaseType spiraTestCaseType, Integer parentTestCaseFolderID,
+		boolean checkCache) {
+
+		if (checkCache) {
+			List<SpiraTestCaseObject> spiraTestCases = getSpiraTestCases(
+				spiraProject,
+				new SearchQuery.SearchParameter("Name", testCaseName),
+				new SearchQuery.SearchParameter(
+					"TestCaseFolderId", parentTestCaseFolderID));
+
+			if (!spiraTestCases.isEmpty()) {
+				return spiraTestCases.get(0);
+			}
+		}
+
+		String urlPath = "projects/{project_id}/test-cases";
+
+		Map<String, String> urlPathReplacements = new HashMap<>();
+
+		urlPathReplacements.put(
+			"project_id", String.valueOf(spiraProject.getID()));
+
+		JSONObject requestJSONObject = new JSONObject();
+
+		requestJSONObject.put(
+			"Name", StringEscapeUtils.unescapeJava(testCaseName));
+		requestJSONObject.put("TestCaseStatusId", Status.DRAFT.getID());
+
+		if ((parentTestCaseFolderID != null) && (parentTestCaseFolderID != 0)) {
+			requestJSONObject.put(
+				SpiraTestCaseFolder.ID_KEY, parentTestCaseFolderID);
+		}
+
+		if (spiraTestCaseType != null) {
+			requestJSONObject.put("TestCaseTypeId", spiraTestCaseType.getID());
+		}
+
+		try {
+			JSONObject responseJSONObject = SpiraRestAPIUtil.requestJSONObject(
+				urlPath, null, urlPathReplacements, HttpRequestMethod.POST,
+				requestJSONObject.toString());
+
+			return spiraProject.getSpiraTestCaseByID(
+				responseJSONObject.getInt(ID_KEY));
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+	}
+
 	private static List<JSONObject> _requestSpiraTestCases(
 		SpiraProject spiraProject,
 		SearchQuery.SearchParameter... searchParameters) {
@@ -293,6 +300,8 @@ public class SpiraTestCaseObject extends PathSpiraArtifact {
 
 	private SpiraTestCaseObject(JSONObject jsonObject) {
 		super(jsonObject);
+
+		cacheSpiraArtifact(SpiraTestCaseObject.class, this);
 	}
 
 	private SpiraTestCaseFolder _parentSpiraTestCaseFolder;

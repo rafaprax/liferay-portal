@@ -205,12 +205,14 @@ class Options extends Component {
 	}
 
 	prepareStateForRender(state) {
-		const {editingLanguageId} = this;
+		const {defaultLanguageId, editingLanguageId} = this;
 		const {value} = state;
 
 		return {
 			...state,
-			items: this.getItems(value[editingLanguageId]),
+			items: this.getItems(
+				value[editingLanguageId] || value[defaultLanguageId]
+			),
 		};
 	}
 
@@ -380,14 +382,7 @@ class Options extends Component {
 		if (defaultLanguageId === editingLanguageId) {
 			const copyLanguageLabels = (languageId, options) => {
 				return options.map(({label, value}, index) => {
-					let option = newValue[languageId][index];
-
-					if (!option) {
-						option = {
-							label: '',
-							value: '',
-						};
-					}
+					const option = newValue[languageId][index];
 
 					if (property === 'label') {
 						label = option.label;

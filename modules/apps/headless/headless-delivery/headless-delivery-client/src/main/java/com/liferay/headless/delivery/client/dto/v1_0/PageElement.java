@@ -30,8 +30,9 @@ public class PageElement implements Cloneable {
 
 	public static enum Type {
 
+		COLLECTION("Collection"), COLLECTION_ITEM("CollectionItem"),
 		COLUMN("Column"), DROP_ZONE("DropZone"), FRAGMENT("Fragment"),
-		ROOT("Root"), ROW("Row"), SECTION("Section");
+		ROOT("Root"), ROW("Row"), SECTION("Section"), WIDGET("Widget");
 
 		public static Type create(String value) {
 			for (Type type : values()) {

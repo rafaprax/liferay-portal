@@ -17,6 +17,7 @@ import React, {useContext, useEffect} from 'react';
 import AppContext from '../AppContext.es';
 import {
 	ADD_DATA_LAYOUT_RULE,
+	UPDATE_DATA_LAYOUT_RULE,
 	UPDATE_EDITING_LANGUAGE_ID,
 	UPDATE_FIELD_TYPES,
 	UPDATE_FOCUSED_FIELD,
@@ -75,7 +76,7 @@ export default ({children, dataLayoutBuilder}) => {
 	useEffect(() => {
 		const provider = dataLayoutBuilder.getLayoutProvider();
 
-		const eventHandler = provider.on('ruleAdded', dataRule => {
+		const ruleAddedEventHandler = provider.on('ruleAdded', dataRule => {
 			provider.once('rendered', () => {
 				dispatch({
 					payload: {dataRule},
@@ -84,7 +85,19 @@ export default ({children, dataLayoutBuilder}) => {
 			});
 		});
 
-		return () => eventHandler.removeListener();
+		const ruleEditedEventHandler = provider.on('ruleEdited', dataRule => {
+			provider.once('rendered', () => {
+				dispatch({
+					payload: {dataRule},
+					type: UPDATE_DATA_LAYOUT_RULE,
+				});
+			});
+		});
+
+		return () => {
+			ruleAddedEventHandler.removeListener();
+			ruleEditedEventHandler.removeListener();
+		};
 	}, [dataLayoutBuilder, dispatch]);
 
 	useEffect(() => {

@@ -1,4 +1,4 @@
-<div class="component-tabs pb-${configuration.bottomSpacing}">
+<div class="component-tabs mb-${configuration.marginBottom}">
 	<nav
 		class="navbar navbar-collapse-absolute navbar-expand-md navbar-underline navigation-bar navigation-bar-light"
 	>
@@ -18,24 +18,24 @@
 				<div class="container-fluid container-fluid-max-xl">
 					<ul class="navbar-nav" role="tablist">
 						[#list 0..configuration.numberOfTabs-1 as i]
-						<li class="nav-item" role="presentation">
-							<button
-								aria-controls="${i+1}-tab-panel"
-								aria-selected="false"
-								class="nav-link"
-								id="${i+1}-tab"
-								role="tab"
-							>
-								<span
-									class="navbar-text-truncate"
-									data-lfr-editable-id="${i+1}-title"
-									data-lfr-editable-type="text"
-									tabindex="-1"
+							<li class="nav-item" role="presentation">
+								<button
+									aria-controls="tabPanel${i+1}"
+									aria-selected="false"
+									class="nav-link"
+									id="tab${i+1}"
+									role="tab"
 								>
-									Tab ${i+1}
-								</span>
-							</button>
-						</li>
+									<span
+										class="navbar-text-truncate"
+										data-lfr-editable-id="title${i+1}"
+										data-lfr-editable-type="text"
+										tabindex="-1"
+									>
+										Tab ${i+1}
+									</span>
+								</button>
+							</li>
 						[/#list]
 					</ul>
 				</div>
@@ -45,13 +45,9 @@
 
 	<div class="tab-panel">
 		[#list 0..configuration.numberOfTabs-1 as i]
-		<div aria-labelledby="${i+1}-tab" class="tab-panel-item d-none" id="${i+1}-tab-panel" role="tabpanel" tabindex="0">
-			<img
-				data-lfr-editable-id="${i+1}-editable"
-				data-lfr-editable-type="image"
-				src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAkSURBVHgB7cxBEQAACAIwtH8Pzw52kxD8OBZgNXsPQUOUwCIgAz0DHTyygaAAAAAASUVORK5CYII="
-			/>
-		</div>
+			<div aria-labelledby="tab${i+1}" class="tab-panel-item d-none" id="tabPanel${i+1}" role="tabpanel" tabindex="0">
+				<lfr-drop-zone id="dropZone${i+1}"></lfr-drop-zone>
+			</div>
 		[/#list]
 	</div>
 </div>

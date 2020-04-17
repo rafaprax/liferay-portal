@@ -13,7 +13,7 @@ import ClayLoadingIndicator from '@clayui/loading-indicator';
 import className from 'classnames';
 import {useIsMounted} from 'frontend-js-react-web';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext, useEffect, useMemo} from 'react';
 import {
 	CartesianGrid,
 	Legend,
@@ -25,13 +25,12 @@ import {
 	YAxis,
 } from 'recharts';
 
+import ConnectionContext from '../state/context';
 import {useChartState} from '../utils/chartState';
 import {numberFormat} from '../utils/numberFormat';
 import {ActiveDot as CustomActiveDot, Dot as CustomDot} from './CustomDots';
 import CustomTooltip from './CustomTooltip';
 import TimeSpanSelector from './TimeSpanSelector';
-
-const {useEffect, useMemo} = React;
 
 const CHART_COLORS = {
 	analyticsReportsHistoricalReads: '#50D2A0',
@@ -187,7 +186,11 @@ const generateDateFormatters = key => {
 	};
 };
 
-function legendFormatterGenerator(totals, languageTag) {
+function legendFormatterGenerator(
+	totals,
+	languageTag,
+	validAnalyticsConnection
+) {
 	return value => {
 		const preformattedNumber = totals[value];
 
@@ -203,7 +206,11 @@ function legendFormatterGenerator(totals, languageTag) {
 					{keyToTranslatedLabelValue(value)}
 				</span>
 				{preformattedNumber !== null && (
-					<b>{numberFormat(languageTag, preformattedNumber)}</b>
+					<span className="font-weight-bold">
+						{validAnalyticsConnection
+							? numberFormat(languageTag, preformattedNumber)
+							: '-'}
+					</span>
 				)}
 			</span>
 		);
@@ -217,6 +224,8 @@ export default function Chart({
 	publishDate,
 	timeSpanOptions,
 }) {
+	const {validAnalyticsConnection} = useContext(ConnectionContext);
+
 	const {actions, state: chartState} = useChartState({
 		defaultTimeSpanOption,
 		publishDate,
@@ -311,7 +320,12 @@ export default function Chart({
 	};
 
 	const legendFormatter =
-		dataSet && legendFormatterGenerator(dataSet.totals, languageTag);
+		dataSet &&
+		legendFormatterGenerator(
+			dataSet.totals,
+			languageTag,
+			validAnalyticsConnection
+		);
 
 	const disabledNextTimeSpan = chartState.timeSpanOffset === 0;
 
@@ -356,14 +370,6 @@ export default function Chart({
 							height={CHART_SIZES.height}
 							width={CHART_SIZES.width}
 						>
-							<Legend
-								formatter={legendFormatter}
-								iconSize={0}
-								layout="vertical"
-								verticalAlign="top"
-								wrapperStyle={{left: 0, paddingBottom: '1rem'}}
-							/>
-
 							<CartesianGrid
 								stroke={CHART_COLORS.cartesianGrid}
 								strokeDasharray="0 0"
@@ -395,6 +401,9 @@ export default function Chart({
 								minTickGap={3}
 								tickFormatter={thousandsToKilosFormater}
 								tickLine={false}
+								ticks={
+									!validAnalyticsConnection && [0, 50, 100]
+								}
 								width={CHART_SIZES.yAxisWidth}
 							/>
 
@@ -427,6 +436,17 @@ export default function Chart({
 								strokeWidth={CHART_SIZES.lineWidth}
 								x={referenceDotPosition}
 								y={0}
+							/>
+
+							<Legend
+								formatter={legendFormatter}
+								iconSize={0}
+								layout="vertical"
+								wrapperStyle={{
+									left: 0,
+									paddingBottom: 0,
+									paddingTop: '8px',
+								}}
 							/>
 
 							{keyList.map(keyName => {

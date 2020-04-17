@@ -10,16 +10,18 @@
  */
 
 import ClayAlert from '@clayui/alert';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 
 import Detail from './components/Detail';
 import Main from './components/Main';
+import ConnectionContext from './state/context';
 import APIService from './utils/APIService';
 import {numberFormat} from './utils/numberFormat';
 
 export default function({context, props}) {
 	const {languageTag, namespace, page} = context;
 	const {defaultTimeSpanKey, timeSpans} = context;
+	const {validAnalyticsConnection} = context;
 	const {authorName, publishDate, title} = props;
 	const {trafficSources} = props;
 
@@ -42,16 +44,22 @@ export default function({context, props}) {
 	});
 
 	return (
-		<Navigation
-			api={api}
-			authorName={authorName}
-			defaultTimeSpanKey={defaultTimeSpanKey}
-			languageTag={languageTag}
-			pagePublishDate={publishDate}
-			pageTitle={title}
-			timeSpanOptions={timeSpans}
-			trafficSources={trafficSources}
-		/>
+		<ConnectionContext.Provider
+			value={{
+				validAnalyticsConnection,
+			}}
+		>
+			<Navigation
+				api={api}
+				authorName={authorName}
+				defaultTimeSpanKey={defaultTimeSpanKey}
+				languageTag={languageTag}
+				pagePublishDate={publishDate}
+				pageTitle={title}
+				timeSpanOptions={timeSpans}
+				trafficSources={trafficSources}
+			/>
+		</ConnectionContext.Provider>
 	);
 }
 
@@ -68,6 +76,8 @@ function Navigation({
 	const [currentPage, setCurrentPage] = useState({view: 'main'});
 
 	const [trafficSourceName, setTrafficSourceName] = useState('');
+
+	const {validAnalyticsConnection} = useContext(ConnectionContext);
 
 	const {getHistoricalReads, getHistoricalViews} = api;
 
@@ -132,7 +142,17 @@ function Navigation({
 
 	return (
 		<>
-			{warning && (
+			{!validAnalyticsConnection && (
+				<ClayAlert
+					className="p-0"
+					displayType="danger"
+					variant="stripe"
+				>
+					{Liferay.Language.get('an-unexpected-error-occurred')}
+				</ClayAlert>
+			)}
+
+			{validAnalyticsConnection && warning && (
 				<ClayAlert
 					className="p-0"
 					displayType="warning"

@@ -148,6 +148,13 @@ export const deleteMessage = messageBoardMessage =>
 		return data;
 	});
 
+export const deleteMessageBoardThread = messageBoardThreadId =>
+	request(gql`
+		mutation {
+			deleteMessageBoardThread(messageBoardThreadId: ${messageBoardThreadId})
+		}
+	`);
+
 export const getTags = (page = 1, siteKey) =>
 	request(gql`
         query {
@@ -378,7 +385,7 @@ export const getThreads = ({
 	filter += ')';
 
 	if (taxonomyCategoryId) {
-		filter = `taxonomyCategoryId/any(x:x eq ${taxonomyCategoryId})`;
+		filter = `taxonomyCategoryIds/any(x:x eq ${taxonomyCategoryId})`;
 	}
 	else if (creatorId) {
 		filter = `creator/id eq ${creatorId}`;

@@ -69,8 +69,8 @@ const Grid = ({
 	numberOfColumns,
 	numberOfItems,
 }) => {
-	const numberOfRows = Math.ceil(numberOfItems / numberOfColumns);
 	const maxNumberOfItems = Math.min(collectionLength, numberOfItems);
+	const numberOfRows = Math.ceil(maxNumberOfItems / numberOfColumns);
 
 	const createRows = () => {
 		const rows = [];
@@ -173,6 +173,7 @@ const Collection = React.forwardRef(({children, item}, ref) => {
 	useEffect(() => {
 		if (collectionConfig.collection) {
 			CollectionService.getCollectionMappingFields({
+				itemSubtype: collectionConfig.collection.itemSubtype || '',
 				itemType: collectionConfig.collection.itemType,
 				onNetworkStatus: dispatch,
 			})

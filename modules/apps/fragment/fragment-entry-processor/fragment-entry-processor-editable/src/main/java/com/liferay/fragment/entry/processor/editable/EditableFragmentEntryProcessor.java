@@ -274,6 +274,10 @@ public class EditableFragmentEntryProcessor implements FragmentEntryProcessor {
 				String mapperType = configJSONObject.getString(
 					"mapperType", element.attr("type"));
 
+				if (Validator.isNull(mapperType)) {
+					mapperType = element.attr("data-lfr-editable-type");
+				}
+
 				EditableElementMapper editableElementMapper =
 					_editableElementMappers.get(mapperType);
 
@@ -373,7 +377,8 @@ public class EditableFragmentEntryProcessor implements FragmentEntryProcessor {
 		JSONObject defaultEditableValuesJSONObject =
 			JSONFactoryUtil.createJSONObject();
 
-		Document document = _getDocument(html);
+		Document document = _getDocument(
+			html.replaceAll("\\$\\{([^\\}]+)\\}", "$1"));
 
 		for (Element element :
 				document.select("lfr-editable,*[data-lfr-editable-id]")) {

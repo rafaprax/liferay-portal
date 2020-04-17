@@ -3,28 +3,28 @@
 @import './variables';
 
 .page-editor__toolbar {
-	background-color: #fff;
-	border-bottom: $toolbarBorderWidth solid $toolbarBorderColor;
-	color: #6b6c7e;
+	background-color: $white;
+	border-bottom: $toolbarBorderWidth solid fade_out($secondary-l2, 0.5);
+	color: $secondary;
 	margin-bottom: 0;
 	width: 100%;
 
 	&--master-layout {
-		background-color: #f0f5ff;
-		border-bottom: 1px solid #80acff;
+		background-color: $primary-l3;
+		border-bottom: 1px solid $primary-l1;
 	}
 
 	button {
-		color: #6b6c7e;
+		color: $secondary;
 	}
 
 	button.btn-primary {
-		color: #fff;
+		color: $white;
 	}
 
 	button.btn-secondary {
-		background-color: #fff;
-		color: #6b6c7e !important;
+		background-color: $white;
+		color: $secondary !important;
 	}
 
 	& > .container-fluid {
@@ -56,7 +56,8 @@
 			}
 
 			&:last-child {
-				border-bottom: $toolbarBorderWidth solid $toolbarBorderColor;
+				border-bottom: $toolbarBorderWidth solid
+					fade_out($secondary-l2, 0.5);
 				justify-content: flex-end;
 				order: 0;
 				padding-left: 4px;

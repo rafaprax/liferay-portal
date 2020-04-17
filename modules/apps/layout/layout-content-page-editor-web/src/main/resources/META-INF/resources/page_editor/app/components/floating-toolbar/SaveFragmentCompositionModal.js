@@ -42,7 +42,7 @@ const SaveFragmentCompositionModal = ({
 
 	const collections = useSelector(state => state.collections);
 
-	const [name, setName] = useState('');
+	const [name, setName] = useState(undefined);
 	const [description, setDescription] = useState('');
 	const [fragmentCollectionId, setFragmentCollectionId] = useState(
 		collections.length > 0 ? collections[0].fragmentCollectionId : -1
@@ -58,34 +58,39 @@ const SaveFragmentCompositionModal = ({
 	const handleSubmit = event => {
 		event.preventDefault();
 
-		setLoading(true);
+		if (!name) {
+			setName('');
+		}
+		else {
+			setLoading(true);
 
-		dispatch(
-			addFragmentComposition({
-				description,
-				fragmentCollectionId,
-				itemId,
-				name,
-				previewImageURL: thumbnail.url,
-				saveInlineContent,
-				saveMappingConfiguration,
-				store,
-			})
-		)
-			.then(() => {
-				onClose();
-			})
-			.catch(() => {
-				openToast({
-					message: Liferay.Language.get(
-						'an-unexpected-error-occurred'
-					),
-					title: Liferay.Language.get('error'),
-					type: 'danger',
+			dispatch(
+				addFragmentComposition({
+					description,
+					fragmentCollectionId,
+					itemId,
+					name,
+					previewImageURL: thumbnail.url,
+					saveInlineContent,
+					saveMappingConfiguration,
+					store,
+				})
+			)
+				.then(() => {
+					onClose();
+				})
+				.catch(() => {
+					openToast({
+						message: Liferay.Language.get(
+							'an-unexpected-error-occurred'
+						),
+						title: Liferay.Language.get('error'),
+						type: 'danger',
+					});
+
+					setLoading(false);
 				});
-
-				setLoading(false);
-			});
+		}
 	};
 
 	const handleThumbnailSelected = image => {
@@ -104,15 +109,15 @@ const SaveFragmentCompositionModal = ({
 			size="lg"
 		>
 			<ClayModal.Header>
-				{Liferay.Language.get('new-fragment')}
+				{Liferay.Language.get('save-as-fragment')}
 			</ClayModal.Header>
 
-			<ClayModal.Body>
+			<ClayModal.Body scrollable>
 				<ClayForm
 					autoComplete="off"
 					className="mb-3"
 					noValidate
-					onSubmit={event => event.preventDefault()}
+					onSubmit={handleSubmit}
 				>
 					<InvisibleFieldset disabled={loading}>
 						{errorMessage && (
@@ -122,7 +127,9 @@ const SaveFragmentCompositionModal = ({
 								title={errorMessage}
 							/>
 						)}
-						<ClayForm.Group className="mb-3">
+						<ClayForm.Group
+							className={name === '' ? 'has-error mb-3' : 'mb-3'}
+						>
 							<label htmlFor={nameInputId}>
 								{Liferay.Language.get('name')}
 
@@ -143,6 +150,17 @@ const SaveFragmentCompositionModal = ({
 								type="text"
 								value={name}
 							/>
+
+							{name === '' && (
+								<ClayForm.FeedbackGroup>
+									<ClayForm.FeedbackItem>
+										<ClayForm.FeedbackIndicator symbol="exclamation-full" />
+										{Liferay.Language.get(
+											'this-field-is-required'
+										)}
+									</ClayForm.FeedbackItem>
+								</ClayForm.FeedbackGroup>
+							)}
 						</ClayForm.Group>
 
 						<ClayForm.Group>

@@ -30,18 +30,13 @@ definition {
 	@priority = "5"
 	test CheckExpiredEntries {
 		property custom.properties = "trash.entry.check.interval=1${line.separator}trash.entries.max.age=1";
-		property portal.upstream = "quarantine";
 
 		JSONDocument.addFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "DM Document Title",
 			groupName = "Test Depot Name");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.deleteCP(dmDocumentTitle = "DM Document Title");
 
@@ -51,11 +46,7 @@ definition {
 			site = "false",
 			title = "WC WebContent Title");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		Check(
 			key_webContentTitle = "WC WebContent Title",
@@ -105,11 +96,7 @@ definition {
 
 		Depot.configureRecycleBin(recycleBin = "Disabled");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		LexiconEntry.changeDisplayStyle(displayStyle = "list");
 
@@ -123,13 +110,7 @@ definition {
 	@description = "This ensures that the web content can be deleted after the recycle bin is disabled."
 	@priority = "5"
 	test DeleteWCAfterDisabling {
-		property portal.upstream = "quarantine";
-
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		ProductMenuHelper.openProductMenu();
 
@@ -154,11 +135,7 @@ definition {
 
 		Depot.configureRecycleBin(recycleBin = "Disabled");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		AssertElementNotPresent(
 			key_category = "Recycle Bin",
@@ -170,11 +147,7 @@ definition {
 	@description = "This ensures that the documents can be restored from recycle bin."
 	@priority = "5"
 	test RestoreDocuments {
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMDocument.addMultipleCP(dmDocumentFileList = "Document_1.doc,Document_2.jpg");
 
@@ -206,22 +179,14 @@ definition {
 			assetRestoreLocation = "Home",
 			assetType = "Document");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		for (var dmDocumentTitle : list "Document_1.doc,Document_2.jpg") {
 			DMNavigator.gotoDocumentCP(dmDocumentTitle = "${dmDocumentTitle}");
 
 			DMDocument.viewCP(dmDocumentTitle = "${dmDocumentTitle}");
 
-			DepotNavigator.openDepotAdmin();
-
-			DepotNavigator.gotoDepot(
-				depotName = "Test Depot Name",
-				portlet = "Documents and Media");
+			DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 		}
 	}
 
@@ -236,11 +201,7 @@ definition {
 			site = "false",
 			title = "WC WebContent Title");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContent.moveToRecycleBinCP(
 			assetType = "Web Content Article",
@@ -258,11 +219,7 @@ definition {
 			assetRestoreLocation = "Home",
 			assetType = "Web Content Article");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentNavigator.gotoEditCP(webContentTitle = "WC WebContent Title");
 

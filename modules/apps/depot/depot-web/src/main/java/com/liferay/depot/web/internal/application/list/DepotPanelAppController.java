@@ -24,8 +24,6 @@ import com.liferay.depot.web.internal.application.controller.DepotApplicationCon
 import com.liferay.depot.web.internal.constants.DepotPortletKeys;
 import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Portlet;
@@ -37,8 +35,6 @@ import java.io.IOException;
 
 import java.util.Dictionary;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletURL;
 
@@ -85,27 +81,15 @@ public class DepotPanelAppController {
 			_panelAppRegistry, _panelCategoryRegistry);
 
 		_serviceTracker = ServiceTrackerFactory.open(
-			bundleContext, PanelApp.class,
-			new DepotPanelAppServiceTrackerCustomizer(
-				bundleContext, _serviceRegistrations));
+			bundleContext,
+			"(&(objectClass=com.liferay.application.list.PanelApp)" +
+				"(!(depot.panel.app.wrapper=*)))",
+			new DepotPanelAppServiceTrackerCustomizer(bundleContext));
 	}
 
 	@Deactivate
 	protected void deactivate() {
 		_serviceTracker.close();
-
-		for (ServiceRegistration<PanelApp> serviceRegistration :
-				_serviceRegistrations.values()) {
-
-			try {
-				serviceRegistration.unregister();
-			}
-			catch (IllegalStateException illegalStateException) {
-				_log.error(illegalStateException, illegalStateException);
-			}
-		}
-
-		_serviceRegistrations.clear();
 	}
 
 	private boolean _isAlwaysShow(String portletId) {
@@ -120,9 +104,6 @@ public class DepotPanelAppController {
 		return false;
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		DepotPanelAppController.class);
-
 	@Reference
 	private DepotApplicationController _depotApplicationController;
 
@@ -134,31 +115,16 @@ public class DepotPanelAppController {
 	@Reference
 	private PanelCategoryRegistry _panelCategoryRegistry;
 
-	private final Map<ServiceReference<PanelApp>, ServiceRegistration<PanelApp>>
-		_serviceRegistrations = new ConcurrentHashMap<>();
-	private ServiceTracker<PanelApp, PanelApp> _serviceTracker;
+	private ServiceTracker<?, ?> _serviceTracker;
 
 	private class DepotPanelAppServiceTrackerCustomizer
-		implements ServiceTrackerCustomizer<PanelApp, PanelApp> {
-
-		public DepotPanelAppServiceTrackerCustomizer(
-			BundleContext bundleContext,
-			Map<ServiceReference<PanelApp>, ServiceRegistration<PanelApp>>
-				serviceRegistrations) {
-
-			_bundleContext = bundleContext;
-			_serviceRegistrations = serviceRegistrations;
-		}
+		implements ServiceTrackerCustomizer<PanelApp, ServiceRegistration<?>> {
 
 		@Override
-		public PanelApp addingService(
+		public ServiceRegistration<?> addingService(
 			ServiceReference<PanelApp> serviceReference) {
 
 			PanelApp panelApp = _bundleContext.getService(serviceReference);
-
-			if (panelApp instanceof PanelAppWrapper) {
-				return panelApp;
-			}
 
 			Dictionary<String, Object> panelAppProperties =
 				new HashMapDictionary<>();
@@ -167,66 +133,51 @@ public class DepotPanelAppController {
 				panelAppProperties.put(key, serviceReference.getProperty(key));
 			}
 
-			panelAppProperties.put(
-				"panel.app.order", _getPanelAppOrder(serviceReference) - 1);
+			panelAppProperties.put("depot.panel.app.wrapper", Boolean.TRUE);
 
-			PanelApp wrappedPanelApp = new PanelAppWrapper(panelApp);
+			Integer panelAppOrder = (Integer)serviceReference.getProperty(
+				"panel.app.order");
 
-			ServiceRegistration<PanelApp> serviceRegistration =
-				_bundleContext.registerService(
-					PanelApp.class, wrappedPanelApp, panelAppProperties);
+			if (panelAppOrder == null) {
+				panelAppOrder = 0;
+			}
 
-			_serviceRegistrations.put(serviceReference, serviceRegistration);
+			panelAppProperties.put("panel.app.order", panelAppOrder - 1);
 
-			return wrappedPanelApp;
+			return _bundleContext.registerService(
+				PanelApp.class, new PanelAppWrapper(panelApp),
+				panelAppProperties);
 		}
 
 		@Override
 		public void modifiedService(
-			ServiceReference<PanelApp> serviceReference, PanelApp panelApp) {
+			ServiceReference<PanelApp> serviceReference,
+			ServiceRegistration<?> serviceRegistration) {
 
-			removedService(serviceReference, panelApp);
+			removedService(serviceReference, serviceRegistration);
 
 			addingService(serviceReference);
 		}
 
 		@Override
 		public void removedService(
-			ServiceReference<PanelApp> serviceReference, PanelApp panelApp) {
+			ServiceReference<PanelApp> serviceReference,
+			ServiceRegistration<?> serviceRegistration) {
 
-			ServiceRegistration<PanelApp> serviceRegistration =
-				_serviceRegistrations.remove(serviceReference);
-
-			if (serviceRegistration != null) {
-				serviceRegistration.unregister();
-			}
+			serviceRegistration.unregister();
 		}
 
-		private Integer _getPanelAppOrder(
-			ServiceReference<PanelApp> serviceReference) {
+		private DepotPanelAppServiceTrackerCustomizer(
+			BundleContext bundleContext) {
 
-			Integer panelAppOrder = (Integer)serviceReference.getProperty(
-				"panel.app.order");
-
-			if (panelAppOrder != null) {
-				return panelAppOrder;
-			}
-
-			return 0;
+			_bundleContext = bundleContext;
 		}
 
 		private final BundleContext _bundleContext;
-		private final Map
-			<ServiceReference<PanelApp>, ServiceRegistration<PanelApp>>
-				_serviceRegistrations;
 
 	}
 
 	private class PanelAppWrapper implements PanelApp {
-
-		public PanelAppWrapper(PanelApp panelApp) {
-			_panelApp = panelApp;
-		}
 
 		@Override
 		public String getKey() {
@@ -291,6 +242,10 @@ public class DepotPanelAppController {
 		@Override
 		public void setPortlet(Portlet portlet) {
 			_panelApp.setPortlet(portlet);
+		}
+
+		private PanelAppWrapper(PanelApp panelApp) {
+			_panelApp = panelApp;
 		}
 
 		private final PanelApp _panelApp;

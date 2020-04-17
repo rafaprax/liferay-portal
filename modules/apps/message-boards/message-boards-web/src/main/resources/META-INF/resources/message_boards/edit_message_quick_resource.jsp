@@ -140,7 +140,7 @@ boolean showPermanentLink = GetterUtil.getBoolean(request.getAttribute("edit-mes
 
 			<aui:model-context bean="<%= message %>" model="<%= MBMessage.class %>" />
 
-			<liferay-ui:input-editor
+			<liferay-editor:editor
 				allowBrowseDocuments="<%= false %>"
 				autoCreate="<%= true %>"
 				configKey="replyMBEditor"
@@ -157,11 +157,7 @@ boolean showPermanentLink = GetterUtil.getBoolean(request.getAttribute("edit-mes
 			<aui:input name="body" type="hidden" />
 
 			<c:if test="<%= captchaConfiguration.messageBoardsEditMessageCaptchaEnabled() %>">
-				<portlet:resourceURL id="/message_boards/captcha" var="captchaURL" />
-
-				<liferay-captcha:captcha
-					url="<%= captchaURL %>"
-				/>
+				<liferay-captcha:captcha />
 			</c:if>
 
 			<aui:button cssClass="advanced-reply btn btn-link btn-sm" value="advanced-reply" />

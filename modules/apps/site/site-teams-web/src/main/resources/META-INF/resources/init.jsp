@@ -28,7 +28,6 @@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@
-page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
 page import="com.liferay.portal.kernel.exception.DuplicateTeamException" %><%@
 page import="com.liferay.portal.kernel.exception.TeamNameException" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
@@ -43,7 +42,9 @@ page import="com.liferay.portal.kernel.service.TeamLocalServiceUtil" %><%@
 page import="com.liferay.portal.kernel.service.UserLocalServiceUtil" %><%@
 page import="com.liferay.portal.kernel.service.permission.TeamPermissionUtil" %><%@
 page import="com.liferay.portal.kernel.util.ArrayUtil" %><%@
+page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
+page import="com.liferay.portal.kernel.util.LinkedHashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.StringUtil" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
@@ -68,8 +69,7 @@ page import="com.liferay.site.teams.web.internal.servlet.taglib.clay.UserUserCar
 page import="com.liferay.site.teams.web.internal.servlet.taglib.util.UserActionDropdownItemsProvider" %><%@
 page import="com.liferay.taglib.util.LexiconUtil" %>
 
-<%@ page import="java.util.HashMap" %><%@
-page import="java.util.LinkedHashMap" %><%@
+<%@ page import="java.util.LinkedHashMap" %><%@
 page import="java.util.Map" %><%@
 page import="java.util.Objects" %>
 

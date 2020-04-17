@@ -29,8 +29,6 @@ public interface WorkflowMetricsIndex {
 
 	public String getIndexType();
 
-	public void reindex(long companyId) throws PortalException;
-
 	public void removeIndex(long companyId) throws PortalException;
 
 }

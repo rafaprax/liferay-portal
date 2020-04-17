@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;
@@ -604,6 +605,9 @@ public class DDMTemplateServiceTest extends BaseDDMServiceTestCase {
 
 		Assert.assertEquals(3, count);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void setUpPermissionThreadLocal() throws Exception {
 		_originalPermissionChecker =

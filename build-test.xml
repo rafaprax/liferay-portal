@@ -3493,7 +3493,12 @@ go</echo>
 					</then>
 				</elseif>
 				<elseif>
-					<equals arg1="@{liferay.portal.bundle}" arg2="7.1.10.3" />
+					<or>
+						<equals arg1="@{liferay.portal.bundle}" arg2="7.1.10.3" />
+						<equals arg1="@{liferay.portal.bundle}" arg2="7.2.1" />
+						<equals arg1="@{liferay.portal.bundle}" arg2="7.2.10" />
+						<equals arg1="@{liferay.portal.bundle}" arg2="7.2.10.1" />
+					</or>
 					<then>
 						<var name="app.server.tomcat.version" value="9.0.17" />
 					</then>
@@ -3515,7 +3520,16 @@ go</echo>
 			<var name="app.server.tomcat.lib.global.dir" value="${app.server.parent.dir}/tomcat-${app.server.tomcat.version}/lib/ext" />
 			<var name="app.server.tomcat.lib.portal.dir" value="${app.server.parent.dir}/tomcat-${app.server.tomcat.version}/webapps/ROOT/WEB-INF/lib" />
 			<var name="app.server.tomcat.zip.name" value="apache-tomcat-${app.server.tomcat.version}.zip" />
-			<var name="app.server.tomcat.zip.url" value="http://archive.apache.org/dist/tomcat/tomcat-9/v${app.server.tomcat.version}/bin/${app.server.tomcat.zip.name}" />
+
+			<propertyregex
+				input="${app.server.tomcat.version}"
+				override="true"
+				property="app.server.tomcat.major.version"
+				regexp="(\d+)\..*"
+				replace="\1"
+			/>
+
+			<var name="app.server.tomcat.zip.url" value="http://archive.apache.org/dist/tomcat/tomcat-${app.server.tomcat.major.version}/v${app.server.tomcat.version}/bin/${app.server.tomcat.zip.name}" />
 
 			<echo append="true" file="app.server.${user.name}.properties">
 				app.server.tomcat.dir=${app.server.tomcat.dir}
@@ -4151,6 +4165,43 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 								done
 
 								pg_isready
+							]]>
+						</echo>
+
+						<get-database-property property.name="database.host" />
+
+						<execute>
+							<![CDATA[
+								docker cp ${setup.sh.file} ${database.host}:/tmp/setup.sh
+
+								docker exec ${database.host} /bin/bash /tmp/setup.sh
+							]]>
+						</execute>
+					</then>
+				</elseif>
+				<elseif>
+					<equals arg1="${database.type}" arg2="sqlserver" />
+					<then>
+						<property location="setup.sh" name="setup.sh.file" />
+
+						<get-database-property property.name="database.password" />
+						<get-database-property property.name="database.username" />
+						<get-database-property property.name="database.version" />
+
+						<local name="test.query" />
+
+						<property name="test.query" value="select name from sys.databases" />
+
+						<echo file="${setup.sh.file}">
+							<![CDATA[
+								#!/bin/bash
+
+								until /opt/mssql-tools/bin/sqlcmd -P ${database.password} -U ${database.username} -Q "${test.query}";
+								do
+									echo "Waiting for SQL Server ${database.version} to be ready"
+
+									sleep 10
+								done
 							]]>
 						</echo>
 
@@ -4885,7 +4936,9 @@ war.path=${app.server.portal.dir}/</echo>
 
 								DirectoryScanner directoryScanner = new DirectoryScanner();
 
-								directoryScanner.setIncludes(new String[] {project.getProperty("test.app.server.dir") + "/logs/catalina.*.log"});
+								File appServerDir = new File(project.getProperty("test.app.server.dir"));
+
+								directoryScanner.setIncludes(new String[] {appServerDir.getCanonicalPath() + "/logs/catalina.*.log"});
 
 								directoryScanner.scan();
 
@@ -8404,30 +8457,8 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 		<if>
 			<contains string="${test.class}" substring="," />
 			<then>
-				<propertyregex
-					input="${test.class}"
-					override="false"
-					property="test.name.skip.portal.instance"
-					regexp="(.*?),.*"
-					replace="\1"
-				/>
-
-				<if>
-					<contains string="${test.name.skip.portal.instance}" substring="." />
-					<then>
-						<propertyregex
-							input="${test.name.skip.portal.instance}"
-							override="true"
-							property="test.name.skip.portal.instance"
-							regexp=".*\.(.*)"
-							replace="\1"
-						/>
-					</then>
-				</if>
-
 				<echo append="true" file="${test.ext.properties.file}">
 					test.portal.instance=true
-					test.name.skip.portal.instance=${test.name.skip.portal.instance}
 				</echo>
 			</then>
 			<else>

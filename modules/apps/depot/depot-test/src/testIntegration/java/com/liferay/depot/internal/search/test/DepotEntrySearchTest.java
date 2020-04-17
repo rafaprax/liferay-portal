@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.test.util.SearchContextTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -47,6 +48,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,6 +90,7 @@ public class DepotEntrySearchTest {
 			});
 	}
 
+	@Ignore
 	@Test
 	public void testSearchBothWithPermissions() throws Exception {
 		DepotEntry depotEntry1 = _addDepotEntry(
@@ -175,6 +178,9 @@ public class DepotEntrySearchTest {
 						firstSearchResult.getClassPK()));
 			});
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	private DepotEntry _addDepotEntry(User user, String name) throws Exception {
 		DepotEntry depotEntry = _depotEntryService.addDepotEntry(

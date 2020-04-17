@@ -174,20 +174,6 @@ definition {
 			formViewName = "My Form View");
 	}
 
-	@description = "Add a Form View with a Grid field"
-	@ignore = "true"
-	@priority = "5"
-	test AddSimpleFormViewWithGridField {
-		AppBuilderAdmin.addCustomObject(
-			customObjectName = "my custom object",
-			isCreatingFormView = "true",
-			isCreatingViaPlusIcon = "true");
-
-		FormViewBuilder.addFormViewAndValidateFieldLabel(
-			fieldType = "Grid",
-			formViewName = "My Form View");
-	}
-
 	@description = "Add a Form View with a Multiple Selection field"
 	@priority = "5"
 	test AddSimpleFormViewWithMultipleSelectionField {
@@ -500,8 +486,7 @@ definition {
 	@description = "Create, Remove, Update and Delete entries of an application deployed as Product Menu"
 	@priority = "5"
 	test CreateRemoveUpdateDeleteEntriesOfProductMenuApp {
-		property portal.acceptance = "quarantine";
-		property portal.upstream = "quarantine";
+		property portal.acceptance = "true";
 
 		var myFormViewName = "My Registration form";
 		var myTableViewName = "My display table";
@@ -754,8 +739,7 @@ definition {
 	@description = "Create, Remove, Update and Delete entries of an application deployed as a Standalone"
 	@priority = "5"
 	test CreateRemoveUpdateDeleteEntriesOfStandaloneApp {
-		property portal.acceptance = "quarantine";
-		property portal.upstream = "quarantine";
+		property portal.acceptance = "true";
 
 		var myFormViewName = "My Registration form";
 		var myTableViewName = "My display table";
@@ -1005,13 +989,10 @@ definition {
 		AppBuilderAdmin.validateItemNameOnTable(itemName = "Multiple 1");
 	}
 
-	// Ignored because of the ticket LRQA-57209
-
 	@description = "Create, Remove, Update and Delete entries of an application deployed as a Widget"
-	@ignore = "true"
 	@priority = "5"
 	test CreateRemoveUpdateDeleteEntriesOfWidgetApp {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		var myFormViewName = "My Registration form";
 		var myTableViewName = "My display table";
@@ -1186,7 +1167,6 @@ definition {
 	@description = "Create table views with a fixed entries filter of list field types (select from list and single selection)"
 	@priority = "5"
 	test CreateTableViewsWithFixedEntriesFilter {
-		property portal.upstream = "quarantine";
 
 		AppBuilderAdmin.addCustomObject(
 			customObjectName = "my custom object",
@@ -1274,14 +1254,14 @@ definition {
 		App.selectFormView(formViewName = "My Form View");
 		App.selectTableView(tableViewName = "Table Full");
 		App.toggleDeploy(deployOption = "Product Menu");
-		Button.click(button = "Deploy");
+		App.clickDeploy();
 
 		AppBuilderAdmin.add();
 		AppBuilderAdmin.setName(title = "App Filtered");
 		App.selectFormView(formViewName = "My Form View");
 		App.selectTableView(tableViewName = "Table Filtered");
 		App.toggleDeploy(deployOption = "Product Menu");
-		Button.click(button = "Deploy");
+		App.clickDeploy();
 
 		AppBuilderAdmin.gotoCustomAppCP(
 			panel = "Control Panel",
@@ -1545,6 +1525,7 @@ definition {
 	@description = "Delete fields from the Form View through the Delete options and assert its affect on other Form and Table views"
 	@priority = "5"
 	test DeleteFormViewFieldFromObject {
+		property portal.upstream = "quarantine";
 
 		AppBuilderAdmin.addCustomObject(
 			customObjectName = "my custom object",
@@ -2074,7 +2055,6 @@ definition {
 	@description = "No results found screen is shown when the search doesn't retrieve any results"
 	@priority = "5"
 	test FormViewSearchNoResultsFound {
-		property portal.upstream = "quarantine";
 
 		AppBuilderAdmin.addCustomObject(
 			customObjectName = "Custom Object Title",
@@ -2094,6 +2074,47 @@ definition {
 		AppBuilderAdmin.searchByItem(itemName = "Apple");
 
 		AppBuilderAdmin.validateIfSearchItemIsNotFound(itemName = "Apple");
+	}
+
+	@description = "Remove a field added to the Objects Sidebar and make sure is not possible to save an empty form"
+	@priority = "5"
+	test MakeSureIsNotPossibleSaveEmptyFormView {
+		property portal.upstream = "quarantine";
+
+		AppBuilderAdmin.addCustomObject(
+			customObjectName = "my custom object",
+			isCreatingFormView = "true",
+			isCreatingViaPlusIcon = "true");
+
+		FormViewBuilder.addFormView(
+			fieldType = "Text",
+			formViewName = "My Form View Title");
+
+		FormViewBuilder.openFormView(formViewName = "My Form View Title");
+
+		FormViewBuilder.deleteObjectSidebarField(
+			fieldLabel = "Text",
+			fieldName = "Text");
+
+		Button.clickSave();
+
+		Alert.viewErrorMessage(errorMessage = "Layout is empty.");
+
+		FormViewBuilder.addFieldToObject(fieldName = "Text");
+
+		Button.clickSave();
+
+		Alert.viewErrorMessage(errorMessage = "Layout is empty.");
+
+		FormViewBuilder.addFieldByDoubleClickFromObjectSidebar(fieldLabel = "Text");
+
+		FormViewBuilder.fieldEllipsisAction(
+			fieldLabel = "Text",
+			selectAction = "Remove");
+
+		Button.clickSave();
+
+		Alert.viewErrorMessage(errorMessage = "Layout is empty.");
 	}
 
 	@description = "Place a widget in my page with only a Form View of my App"
@@ -2746,31 +2767,6 @@ definition {
 		FormViewBuilder.validateObjectFieldName(fieldName = "Text");
 	}
 
-	@description = "Remove a field from the Form View from the Objects Sidebar"
-	@priority = "5"
-	test RemoveFormViewFieldInObjectSidebar {
-		property portal.upstream = "quarantine";
-
-		AppBuilderAdmin.addCustomObject(
-			customObjectName = "my custom object",
-			isCreatingFormView = "true",
-			isCreatingViaPlusIcon = "true");
-
-		FormViewBuilder.addFormView(
-			fieldType = "Text",
-			formViewName = "My Form View Title");
-
-		FormViewBuilder.openFormView(formViewName = "My Form View Title");
-
-		FormViewBuilder.deleteObjectSidebarField(
-			fieldLabel = "Text",
-			fieldName = "Text");
-
-		Button.clickSave();
-
-		Alert.viewErrorMessage(errorMessage = "Layout is empty.");
-	}
-
 	@description = "Remove fields from the Form View through the 'Remove' option"
 	@priority = "5"
 	test RemoveFormViewFields {
@@ -2897,7 +2893,7 @@ definition {
 		AppBuilderAdmin.openItem(itemName = "My Form View");
 		/*
 
-		//TODO: Remove this comment once LPS-110060 is fixed.
+		// TODO: Remove this comment once LPS-110060 is fixed.
 
 		FormViewBuilder.addFieldByDoubleClickFromObjectSidebar(fieldLabel = "Hobbies");
 
@@ -3577,7 +3573,6 @@ definition {
 	@description = "Unpublish and Republish an App"
 	@priority = "5"
 	test UnpublishAndRepublish {
-		property portal.upstream = "quarantine";
 
 		AppBuilderAdmin.addCustomObject(
 			customObjectName = "my custom object",
@@ -4041,10 +4036,7 @@ definition {
 		AppBuilderAdmin.assertNewButtonIsVisible(buttonValue = "New Table View");
 	}
 
-	// LRQA-57481 Ignore AppBuilder#ViewEntryDetails due to LPS-107920
-
 	@description = "View details of an entry in an App"
-	@ignore = "true"
 	@priority = "5"
 	test ViewEntryDetails {
 		property portal.upstream = "quarantine";

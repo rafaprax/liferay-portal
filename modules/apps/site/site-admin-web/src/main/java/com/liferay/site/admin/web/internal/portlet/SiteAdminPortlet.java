@@ -53,6 +53,7 @@ import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.MembershipRequest;
 import com.liferay.portal.kernel.model.MembershipRequestConstants;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.security.auth.AuthException;
@@ -952,6 +953,11 @@ public class SiteAdminPortlet extends MVCPortlet {
 				StringUtil.merge(
 					LocaleUtil.toLanguageIds(
 						LanguageUtil.getAvailableLocales())));
+
+			User user = themeDisplay.getDefaultUser();
+
+			formTypeSettingsUnicodeProperties.setProperty(
+				"languageId", user.getLanguageId());
 		}
 
 		if (formTypeSettingsUnicodeProperties.containsKey(PropsKeys.LOCALES) &&

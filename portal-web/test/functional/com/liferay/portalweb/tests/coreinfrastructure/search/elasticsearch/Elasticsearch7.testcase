@@ -31,6 +31,8 @@ definition {
 	}
 
 	test AssertSearchAdmin {
+		property test.name.skip.portal.instance = "Elasticsearch7#AssertSearchAdmin";
+
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
@@ -291,6 +293,107 @@ definition {
 		SearchResultPortlet.viewSearchResults(
 			searchAssetTitle = "apple",
 			searchAssetType = "Web Content Article");
+	}
+
+	test MultipleConnectionsSmokeTest {
+		property portal.upstream = "quarantine";
+		property remote.elasticsearch.clusters.enabled = "true";
+		property remote.elasticsearch.enabled = "true";
+
+		OSGiConfig.deployOSGiConfigs(
+			OSGiConfigFileName = "com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConnectionConfiguration-connection2.config",
+			OSGiConfigs = "active=&quot;true&quot;,connectionId=&quot;connection2&quot;,networkHostAddresses=[&quot;http://localhost:9202&quot;]");
+
+		Pause(locator1 = "5000");
+
+		ProductMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "Search");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "SearchAdmin#REMOTE_CLUSTER_NAME",
+			value1 = "LiferayElasticsearchCluster");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "SearchAdmin#LOCAL_CLUSTER_NAME",
+			value1 = "LiferayElasticsearchClusterTwo");
+
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "apple");
+
+		var curlSecondConnection = '''
+			http://localhost:9202/connection2_index/_doc/1?pretty \
+				-H 'Content-Type: application/json' \
+				-d '{"connection2_field" : "multiple connections is cool"}'
+		''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curlSecondConnection}");
+
+		var portalURL = PropsUtil.get("portal.url");
+
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page");
+
+		JSONLayout.updateLayoutTemplateOfPublicLayout(
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page",
+			layoutTemplate = "3 Columns");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "1",
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page",
+			widgetName = "Custom Filter");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "2",
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page",
+			widgetName = "Search Results");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "3",
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page",
+			widgetName = "Search Options");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "3",
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page",
+			widgetName = "Low Level Search Options");
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/multiple-connections-page");
+
+		SearchPortlets.configureSearchOptions(allowEmptySearches = "true");
+
+		Refresh();
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "apple",
+			searchAssetType = "Web Content Article");
+
+		SearchPortlets.configureCustomFilter(
+			filterField = "connection2_field",
+			filterQueryType = "Match",
+			filterValue = "cool",
+			occur = "must");
+
+		SearchResultPortlet.configureSearchResults(fieldsToDisplay = "connection2_field");
+
+		SearchPortlets.configureLowLevelSearchOptions(
+			connectionId = "connection2",
+			indexes = "connection2_index");
+
+		Refresh();
+
+		AssertElementPresent(
+			key_searchAssetTitle = "multiple connections is cool",
+			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
 	}
 
 	@priority = "5"

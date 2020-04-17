@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.cache.PortalCacheListenerScope;
 import com.liferay.portal.kernel.cache.PortalCacheManager;
 import com.liferay.portal.kernel.cache.PortalCacheManagerListener;
 import com.liferay.portal.kernel.model.MVCCModel;
-import com.liferay.portal.kernel.resiliency.spi.SPIUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -184,8 +183,11 @@ public abstract class BasePortalCacheManager<K extends Serializable, V>
 		_clusterAware = clusterAware;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	public void setMpiOnly(boolean mpiOnly) {
-		_mpiOnly = mpiOnly;
 	}
 
 	public void setPortalCacheManagerName(String portalCacheManagerName) {
@@ -230,9 +232,7 @@ public abstract class BasePortalCacheManager<K extends Serializable, V>
 		getPortalCacheManagerConfiguration();
 
 	protected void initialize() {
-		if ((_portalCacheManagerConfiguration != null) ||
-			(_mpiOnly && SPIUtil.isSPI())) {
-
+		if (_portalCacheManagerConfiguration != null) {
 			return;
 		}
 
@@ -403,7 +403,6 @@ public abstract class BasePortalCacheManager<K extends Serializable, V>
 	private boolean _blockingPortalCacheAllowed;
 	private boolean _clusterAware;
 	private PortalCacheConfiguration _defaultPortalCacheConfiguration;
-	private boolean _mpiOnly;
 	private PortalCacheManagerConfiguration _portalCacheManagerConfiguration;
 	private String _portalCacheManagerName;
 	private boolean _transactionalPortalCacheEnabled;

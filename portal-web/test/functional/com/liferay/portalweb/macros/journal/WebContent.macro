@@ -299,11 +299,20 @@ definition {
 		PortletEntry.inputTitle(title = "${webContentTitle}");
 
 		Type.typeCKEditorWaitForCKEditor(
-			locator1 = "CKEditor#BODY_FIELD",
+			key_fieldLabel = "content",
+			locator1 = "CKEditor#BODY_FIELD_WEB_CONTENT_ARTICLE",
 			value1 = "${webContentContent}");
 	}
 
 	macro addWithCategoryCP {
+		for (var key_panel : list "Basic Information,Default Template,Display Page Template,Featured Image ") {
+			if ((IsElementPresent(locator1 = "Panel#PANEL_EXPANDED")) && (IsVisible(locator1 = "Panel#PANEL_EXPANDED"))) {
+				AssertClick(
+					locator1 = "Panel#PANEL_EXPANDED",
+					value1 = "${key_panel}");
+			}
+		}
+
 		WebContent.addCP(
 			webContentContent = "${webContentContent}",
 			webContentTitle = "${webContentTitle}");
@@ -402,6 +411,14 @@ definition {
 	}
 
 	macro addWithMultipleCategories {
+		for (var key_panel : list "Basic Information,Default Template,Display Page Template,Featured Image ") {
+			if ((IsElementPresent(locator1 = "Panel#PANEL_EXPANDED")) && (IsVisible(locator1 = "Panel#PANEL_EXPANDED"))) {
+				AssertClick(
+					locator1 = "Panel#PANEL_EXPANDED",
+					value1 = "${key_panel}");
+			}
+		}
+
 		WebContent.addCP(
 			webContentContent = "${webContentContent}",
 			webContentTitle = "${webContentTitle}");
@@ -661,7 +678,10 @@ definition {
 		}
 
 		if (isSet(description)) {
-			AlloyEditor.addDescription(description = "${description}");
+			Type.typeCKEditorWaitForCKEditor(
+				key_fieldLabel = "Summary",
+				locator1 = "CKEditor#BODY_FIELD_WEB_CONTENT_ARTICLE",
+				value1 = "${description}");
 		}
 
 		if (isSet(templateName)) {
@@ -683,6 +703,14 @@ definition {
 	}
 
 	macro addWithTagCP {
+		for (var key_panel : list "Basic Information,Default Template,Display Page Template,Featured Image ") {
+			if ((IsElementPresent(locator1 = "Panel#PANEL_EXPANDED")) && (IsVisible(locator1 = "Panel#PANEL_EXPANDED"))) {
+				AssertClick(
+					locator1 = "Panel#PANEL_EXPANDED",
+					value1 = "${key_panel}");
+			}
+		}
+
 		WebContent.addCP(
 			webContentContent = "${webContentContent}",
 			webContentTitle = "${webContentTitle}");
@@ -1446,7 +1474,9 @@ definition {
 			navTab = "${navTab}",
 			type = "Audio");
 
-		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+		SelectFrame.selectFrameNoLoading(
+			key_fieldLabel = "content",
+			locator1 = "CKEditor#BODY_FIELD_IFRAME_WEB_CONTENT_ARTICLE");
 
 		AssertElementPresent(locator1 = "CKEditor#CONTENT_AUDIO_LINK_IMAGE");
 
@@ -1461,7 +1491,9 @@ definition {
 			navTab = "${navTab}",
 			type = "Video");
 
-		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+		SelectFrame.selectFrameNoLoading(
+			key_fieldLabel = "content",
+			locator1 = "CKEditor#BODY_FIELD_IFRAME_WEB_CONTENT_ARTICLE");
 
 		AssertElementPresent(locator1 = "CKEditor#CONTENT_VIDEO_LINK_IMAGE");
 
@@ -2041,30 +2073,6 @@ definition {
 		}
 	}
 
-	macro viewUnlocalizableTextBox {
-		AssertTextEquals(
-			locator1 = "TextInput#TITLE",
-			value1 = "${webContentTitle}");
-
-		FormFields.viewTextMultilineValue(
-			fieldName = "TextBox",
-			fieldValue = "${webContentTextBox}");
-
-		PortletEntry.changeLocale(locale = "es-ES");
-
-		AssertTextEquals(
-			locator1 = "TextInput#TITLE",
-			value1 = "${localizedTitle}");
-
-		FormFields.viewTextValue(
-			fieldName = "Text",
-			fieldValue = "${localizedText}");
-
-		FormFields.viewTextMultilineValue(
-			fieldName = "TextBox",
-			fieldValue = "${localizedTextBox}");
-	}
-
 	macro viewUserEditCP {
 		AssertTextEquals.assertPartialText(
 			key_webContentTitle = "${webContentTitle}",
@@ -2077,7 +2085,17 @@ definition {
 	}
 
 	macro viewVersion {
+		var key_panel = "Basic Information";
+
 		WebContentNavigator.gotoEditCP(webContentTitle = "${webContentTitle}");
+
+		if ((IsElementPresent(locator1 = "Panel#PANEL_COLLAPSED")) && (IsVisible(locator1 = "Panel#PANEL_COLLAPSED"))) {
+			AssertClick(
+				locator1 = "Panel#PANEL_COLLAPSED",
+				value1 = "${key_panel}");
+		}
+
+		AssertElementPresent(locator1 = "Panel#PANEL_EXPANDED");
 
 		AssertTextEquals.assertPartialText(
 			locator1 = "WCEditWebContent#VERSION",
@@ -2110,10 +2128,15 @@ definition {
 			value1 = "${webContentTitle}");
 
 		if (isSet(description)) {
+			SelectFrame.selectFrameNoLoading(
+				key_fieldLabel = "Summary",
+				locator1 = "CKEditor#BODY_FIELD_IFRAME_WEB_CONTENT_ARTICLE");
+
 			AssertTextEquals(
-				key_editor = "description",
-				locator1 = "AlloyEditor#EDITOR",
+				locator1 = "CKEditor#BODY",
 				value1 = "${description}");
+
+			SelectFrameTop(value1 = "relative=top");
 		}
 
 		if (isSet(webContentImage)) {

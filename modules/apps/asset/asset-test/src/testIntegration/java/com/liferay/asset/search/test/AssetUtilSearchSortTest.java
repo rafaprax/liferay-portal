@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.search.test.util.DocumentsAssert;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -98,6 +99,9 @@ public class AssetUtilSearchSortTest {
 			(String)searchContext.getAttribute("queryString"), hits.getDocs(),
 			Field.PRIORITY, Arrays.asList("1.0", "5.3", "10.0", "40.0"));
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected void addJournalArticle(Consumer<ServiceContext> consumer)
 		throws Exception {

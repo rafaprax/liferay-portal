@@ -563,3 +563,5 @@ It's still possible to use TinyMCE. For that you need to:
 
 To consolidate all our UX for writing Rich Text Content
 around a single Editor to provide a more cohesive and comprehensive experience.
+
+---------------------------------------

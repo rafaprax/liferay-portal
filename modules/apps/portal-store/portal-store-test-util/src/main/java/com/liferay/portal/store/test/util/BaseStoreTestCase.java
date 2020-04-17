@@ -37,14 +37,14 @@ import org.junit.Test;
 public abstract class BaseStoreTestCase {
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		_companyId = RandomTestUtil.nextLong();
 		_repositoryId = RandomTestUtil.nextLong();
 		_store = getStore();
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		_store.deleteDirectory(_companyId, _repositoryId, StringPool.SLASH);
 	}
 
@@ -267,7 +267,7 @@ public abstract class BaseStoreTestCase {
 	}
 
 	@Test
-	public void testGetFileNamesWithInvalidRepository() throws Exception {
+	public void testGetFileNamesWithInvalidRepository() {
 		String[] fileNames = _store.getFileNames(
 			_companyId, _repositoryId, StringPool.BLANK);
 
@@ -324,6 +324,24 @@ public abstract class BaseStoreTestCase {
 		_store.getFileSize(
 			_companyId, _repositoryId, RandomTestUtil.randomString(),
 			StringPool.BLANK);
+	}
+
+	@Test
+	public void testGetFileVersions() throws Exception {
+		String fileName = RandomTestUtil.randomString();
+
+		_store.addFile(
+			_companyId, _repositoryId, fileName, Store.VERSION_DEFAULT,
+			new UnsyncByteArrayInputStream(_DATA_VERSION_1));
+
+		addVersions(fileName, 5);
+
+		String[] fileVersions = _store.getFileVersions(
+			_companyId, _repositoryId, fileName);
+
+		for (int i = 0; i < 5; i++) {
+			Assert.assertEquals("1." + i, fileVersions[i]);
+		}
 	}
 
 	@Test

@@ -27,6 +27,7 @@ import Answer from '../../components/Answer.es';
 import ArticleBodyRenderer from '../../components/ArticleBodyRenderer.es';
 import CreatorRow from '../../components/CreatorRow.es';
 import Link from '../../components/Link.es';
+import Modal from '../../components/Modal.es';
 import Rating from '../../components/Rating.es';
 import RelatedQuestions from '../../components/RelatedQuestions.es';
 import SectionLabel from '../../components/SectionLabel.es';
@@ -34,6 +35,7 @@ import Subscription from '../../components/Subscription.es';
 import TagList from '../../components/TagList.es';
 import {
 	createAnswer,
+	deleteMessageBoardThread,
 	getMessages,
 	getThread,
 	markAsAnswerMessageBoardMessage,
@@ -47,6 +49,7 @@ import {
 
 export default withRouter(
 	({
+		history,
 		location: key,
 		match: {
 			params: {questionId},
@@ -57,6 +60,7 @@ export default withRouter(
 
 		const [answers, setAnswers] = useState([]);
 		const [articleBody, setArticleBody] = useState();
+		const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 		const [page, setPage] = useState(1);
 		const [question, setQuestion] = useState();
 		const [sectionTitle, setSectionTitle] = useState('');
@@ -82,6 +86,10 @@ export default withRouter(
 
 				return loadThread();
 			});
+		};
+
+		const deleteThread = () => {
+			deleteMessageBoardThread(question.id).then(() => history.goBack());
 		};
 
 		const deleteAnswer = useCallback(
@@ -231,6 +239,42 @@ export default withRouter(
 													}
 													question={question}
 												/>
+											)}
+
+											{question.actions.delete && (
+												<>
+													<Modal
+														body={Liferay.Language.get(
+															'do-you-want-to-delete–this-thread'
+														)}
+														callback={deleteThread}
+														onClose={() =>
+															setDeleteModalVisible(
+																false
+															)
+														}
+														status="warning"
+														textPrimaryButton={Liferay.Language.get(
+															'delete'
+														)}
+														title={Liferay.Language.get(
+															'delete-thread'
+														)}
+														visible={
+															deleteModalVisible
+														}
+													/>
+													<ClayButton
+														displayType="secondary"
+														onClick={() =>
+															setDeleteModalVisible(
+																true
+															)
+														}
+													>
+														<ClayIcon symbol="trash" />
+													</ClayButton>
+												</>
 											)}
 
 											{question.actions.replace && (

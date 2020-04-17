@@ -46,6 +46,10 @@ class Validation extends Component {
 			};
 		}
 
+		this._enableValidation = parsedState.enableValidation;
+		this._errorMessage = parsedState.errorMessage;
+		this._parameter = parsedState.parameter;
+
 		return {
 			...state,
 			...parsedState,
@@ -154,6 +158,9 @@ class Validation extends Component {
 	_getValue() {
 		let expression = {};
 		const {
+			_enableValidation: enableValidation,
+			_errorMessage,
+			_parameter,
 			editingLanguageId,
 			validation: {fieldName: name},
 		} = this;
@@ -161,14 +168,13 @@ class Validation extends Component {
 		let parameter = '';
 
 		if (this.refs.errorMessage) {
-			errorMessage = this.refs.errorMessage.value;
+			errorMessage = _errorMessage;
 		}
 
-		if (this.refs.parameter) {
-			parameter = this.refs.parameter.value;
+		if (this.refs.parameterText || this.refs.parameterNumeric) {
+			parameter = _parameter;
 		}
 
-		const enableValidation = this.refs.enableValidation.value;
 		let selectedValidation = this._getSelectedValidation();
 
 		if (
@@ -231,6 +237,21 @@ class Validation extends Component {
 		}
 
 		return validation;
+	}
+
+	_updateErrorMessageValue(event) {
+		this._errorMessage = event.value;
+		this._updateValue();
+	}
+
+	_updateParameterValue(event) {
+		this._parameter = event.value;
+		this._updateValue();
+	}
+
+	_updateCheckboxValue(event) {
+		this._enableValidation = event.value;
+		this._updateValue();
 	}
 
 	_updateValue() {

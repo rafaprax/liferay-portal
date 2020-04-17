@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;
@@ -531,6 +532,9 @@ public class DDMTemplateLocalServiceTest extends BaseDDMServiceTestCase {
 
 		Assert.assertEquals(true, template.isSmallImage());
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected DDMTemplate copyTemplate(DDMTemplate template) throws Exception {
 		return DDMTemplateLocalServiceUtil.copyTemplate(

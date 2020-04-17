@@ -133,8 +133,9 @@ definition {
 			Type(
 				locator1 = "CKEditor#BODY_FIELD_SOURCE_ON",
 				value1 = "${kbArticleContentSource}");
-
-			Click(locator1 = "CKEditor#TOOLBAR_SOURCE_BUTTON");
+		}
+		else if ("${kbArticleAddViaTemplate}" == "true") {
+			CKEditor.addContent(kbArticleContentEdit = "${kbArticleContent}");
 		}
 		else {
 			CKEditor.addContent(content = "${kbArticleContent}");
@@ -587,7 +588,7 @@ definition {
 			locator1 = "TextInput#TITLE",
 			value1 = "${kbArticleTitleEdit}");
 
-		CKEditor.addContent(content = "${kbArticleContentEdit}");
+		CKEditor.addContent(kbArticleContentEdit = "${kbArticleContentEdit}");
 
 		if (isSet(kbArticleAttachment)) {
 			KBArticle.selectAttachmentCP(kbArticleAttachment = "${kbArticleAttachment}");
@@ -630,7 +631,7 @@ definition {
 
 		var kbArticleContentEdit = "${kbArticleContentEdit}";
 
-		CKEditor.addContent(content = "${kbArticleContentEdit}");
+		CKEditor.addContent(kbArticleContentEdit = "${kbArticleContentEdit}");
 
 		if ("${cancel}" == "true") {
 			Button.clickCancel();
@@ -667,7 +668,7 @@ definition {
 
 		var kbArticleContentEdit = "${kbArticleContentEdit}";
 
-		CKEditor.addContent(content = "${kbArticleContentEdit}");
+		CKEditor.addContent(kbArticleContentEdit = "${kbArticleContentEdit}");
 
 		if (IsElementPresent(locator1 = "Home#PORTAL_LOCALIZATION_TRANSLATION_LANGUAGE_MESSAGE")) {
 			Click(locator1 = "Home#PORTAL_LOCALIZATION_IGNORE_BUTTON");
@@ -876,30 +877,6 @@ definition {
 			value1 = "Select");
 	}
 
-	macro rateArticle1Star {
-		AssertTextEquals(
-			locator1 = "KnowledgeBase#DISPLAY_TITLE",
-			value1 = "${kbArticleTitle}");
-
-		Click.clickWaitForInlineCKEditorNoMouseOver(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_1");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_1");
-
-		AssertElementNotPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_5");
-	}
-
-	macro rateArticleFrom1StarTo5Star {
-		AssertTextEquals(
-			locator1 = "KnowledgeBase#DISPLAY_TITLE",
-			value1 = "${kbArticleTitle}");
-
-		Click.clickWaitForInlineCKEditorNoMouseOver(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_4");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_5");
-
-		AssertElementNotPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_1");
-	}
-
 	macro selectAllCP {
 		PortletEntry.selectAll();
 
@@ -995,37 +972,6 @@ definition {
 		SelectFrame(value1 = "relative=top");
 	}
 
-	macro selectScopePG {
-		SelectFrame(locator1 = "KnowledgeBaseConfiguration#IFRAME");
-
-		Navigator.gotoNavItem(navItem = "Scope");
-
-		Select(
-			locator1 = "Select#SCOPE",
-			value1 = "${newKBPageScope}");
-
-		PortletEntry.save();
-
-		SelectFrame(value1 = "relative=top");
-	}
-
-	macro setScopeCP {
-		if (IsElementNotPresent(locator1 = "ProductMenu#PRODUCT_MENU_OPENED")) {
-			Click(locator1 = "ProductMenu#TOGGLE");
-		}
-
-		Click(locator1 = "ProductMenu#PRODUCT_MENU_PANEL_SCOPE_COG");
-
-		AssertClick.assertPartialTextClickAt(
-			key_menuItem = "${kbPageScope}",
-			locator1 = "MenuItem#ANY_MENU_ITEM",
-			value1 = "${kbPageScope}");
-
-		AssertTextEquals.assertPartialText(
-			locator1 = "ProductMenu#PRODUCT_MENU_PANEL_SCOPE",
-			value1 = "${kbPageScope}");
-	}
-
 	macro subscribeCP {
 		LexiconEntry.gotoHeaderMenuItem(menuItem = "Subscribe");
 
@@ -1049,70 +995,6 @@ definition {
 
 			Alert.viewSuccessMessage();
 		}
-	}
-
-	macro viewArticle1StarRatingPG {
-		AssertTextEquals(
-			locator1 = "Ratings#AVERAGE_LABEL",
-			value1 = "Average (1 Vote)");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_1");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_2");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_3");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_4");
-
-		AssertElementNotPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_5");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_1");
-
-		AssertElementNotPresent(locator1 = "Ratings#YOUR_RATING_STAR_2");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_EMPTY_1");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_EMPTY_2");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_EMPTY_3");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_EMPTY_4");
-
-		AssertElementNotPresent(locator1 = "Ratings#AVERAGE_STAR_EMPTY_5");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_1");
-
-		AssertElementNotPresent(locator1 = "Ratings#AVERAGE_STAR_2");
-	}
-
-	macro viewArticle5StarRatingPG {
-		AssertTextEquals(
-			locator1 = "Ratings#AVERAGE_LABEL",
-			value1 = "Average (1 Vote)");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_1");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_2");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_3");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_4");
-
-		AssertElementPresent(locator1 = "Ratings#YOUR_RATING_STAR_5");
-
-		AssertElementNotPresent(locator1 = "Ratings#YOUR_RATING_STAR_EMPTY_1");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_1");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_2");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_3");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_4");
-
-		AssertElementPresent(locator1 = "Ratings#AVERAGE_STAR_5");
-
-		AssertElementNotPresent(locator1 = "Ratings#AVERAGE_STAR_EMPTY_1");
 	}
 
 	macro viewArticleHistoryPG {
@@ -1380,12 +1262,16 @@ definition {
 			value1 = "A new version is created automatically if this content is modified.");
 
 		AssertTextEquals(
-			locator1 = "KnowledgeBaseArticle#TITLE",
+			locator1 = "ControlMenu#HEADING",
 			value1 = "${kbArticleTitle}");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
 
 		AssertTextEquals(
 			locator1 = "CKEditor#BODY",
 			value1 = "${kbArticleContent}");
+
+		SelectFrame(value1 = "relative=top");
 
 		if (IsElementNotPresent(locator1 = "KnowledgeBaseArticle#ATTACHMENTS_HEADER_EXPANDED")) {
 			Click(locator1 = "KnowledgeBaseArticle#ATTACHMENTS_HEADER_COLLAPSED");

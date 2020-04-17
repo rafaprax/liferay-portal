@@ -20,6 +20,7 @@ import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderer;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.values.factory.DDMFormValuesFactory;
 import com.liferay.dynamic.data.mapping.form.web.internal.configuration.DDMFormWebConfiguration;
+import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.DDMFormInstanceStagingUtil;
 import com.liferay.dynamic.data.mapping.form.web.internal.security.permission.resource.DDMFormInstancePermission;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
@@ -383,6 +384,18 @@ public class DDMFormDisplayContext {
 				group.isStagingGroup() && !scopeGroup.isStagingGroup()) {
 
 				return false;
+			}
+
+			if ((group != null) && group.isStagedRemotely()) {
+				ThemeDisplay themeDisplay = getThemeDisplay();
+
+				if (!DDMFormInstanceStagingUtil.
+						isFormInstancePublishedToRemoteLive(
+							group, themeDisplay.getUser(),
+							formInstance.getUuid())) {
+
+					return false;
+				}
 			}
 		}
 

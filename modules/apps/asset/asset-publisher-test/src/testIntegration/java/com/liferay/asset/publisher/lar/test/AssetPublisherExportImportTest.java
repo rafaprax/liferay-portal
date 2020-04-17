@@ -76,6 +76,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.spring.mock.web.portlet.MockPortletRequest;
@@ -898,6 +899,9 @@ public class AssetPublisherExportImportTest
 	public void testSortByGlobalAssetVocabulary() throws Exception {
 		testSortByAssetVocabulary(true);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected List<AssetEntry> addAssetEntries(
 			Group group, int count, List<AssetEntry> assetEntries,

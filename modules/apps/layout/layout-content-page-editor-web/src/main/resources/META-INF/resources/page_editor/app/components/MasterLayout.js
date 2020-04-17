@@ -12,7 +12,6 @@
  * details.
  */
 
-import classNames from 'classnames';
 import {useIsMounted} from 'frontend-js-react-web';
 import {debounce} from 'frontend-js-web';
 import {closest} from 'metal-dom';
@@ -27,7 +26,8 @@ import {LAYOUT_DATA_ITEM_TYPES} from '../config/constants/layoutDataItemTypes';
 import {config} from '../config/index';
 import {useSelector} from '../store/index';
 import {useGetFieldValue} from './CollectionItemContext';
-import PageEditor from './PageEditor';
+import {useSelectItem} from './Controls';
+import Layout from './Layout';
 import UnsafeHTML from './UnsafeHTML';
 import getAllEditables from './fragment-content/getAllEditables';
 import resolveEditableValue from './fragment-content/resolveEditableValue';
@@ -47,19 +47,11 @@ const LAYOUT_DATA_ITEMS = {
 export default function MasterPage() {
 	const fragmentEntryLinks = useSelector(state => state.fragmentEntryLinks);
 	const masterLayoutData = useSelector(state => state.masterLayoutData);
-	const sidebarOpen = useSelector(
-		state => state.sidebar.panelId && state.sidebar.open
-	);
 
 	const mainItem = masterLayoutData.items[masterLayoutData.rootItems.main];
 
 	return (
-		<div
-			className={classNames('master-page', 'master-page--with-sidebar', {
-				'master-page--with-sidebar-open': sidebarOpen,
-			})}
-			id="master-layout"
-		>
+		<div className="master-page" id="master-layout">
 			<MasterLayoutDataItem
 				fragmentEntryLinks={fragmentEntryLinks}
 				item={mainItem}
@@ -103,11 +95,9 @@ MasterLayoutDataItem.propTypes = {
 };
 
 function DropZoneContainer() {
-	const mainItem = useSelector(
-		state => state.layoutData.items[state.layoutData.rootItems.main]
-	);
+	const mainItemId = useSelector(state => state.layoutData.rootItems.main);
 
-	return <PageEditor mainItem={mainItem} withinMasterPage />;
+	return <Layout mainItemId={mainItemId} withinMasterPage />;
 }
 
 function Root({children}) {
@@ -126,7 +116,7 @@ const FragmentContent = React.memo(function FragmentContent({
 	const ref = useRef(null);
 	const isMounted = useIsMounted();
 	const [content, setContent] = useState(defaultContent);
-
+	const selectItem = useSelectItem();
 	const getFieldValue = useGetFieldValue();
 
 	useEffect(() => {
@@ -142,6 +132,8 @@ const FragmentContent = React.memo(function FragmentContent({
 			if (closest(element, '[href]')) {
 				event.preventDefault();
 			}
+
+			selectItem(null);
 		};
 
 		element.addEventListener('click', handler);

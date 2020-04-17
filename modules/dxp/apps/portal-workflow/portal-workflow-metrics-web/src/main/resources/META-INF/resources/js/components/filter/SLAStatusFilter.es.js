@@ -32,12 +32,12 @@ const SLAStatusFilter = ({
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	options = useMemo(() => ({...defaultOptions, ...options}), [options]);
 
-	const {items, selectedItems} = useFilterStatic(
+	const {items, selectedItems} = useFilterStatic({
 		filterKey,
 		prefixKey,
-		options.withoutRouteParams,
-		slaStatuses
-	);
+		staticItems: slaStatuses,
+		withoutRouteParams: options.withoutRouteParams,
+	});
 
 	const defaultItem = useMemo(() => (items ? items[0] : undefined), [items]);
 
@@ -50,7 +50,7 @@ const SLAStatusFilter = ({
 
 	return (
 		<Filter
-			data-testid="SLAStatusFilter"
+			data-testid="slaStatusFilter"
 			defaultItem={defaultItem}
 			elementClasses={className}
 			filterKey={filterKey}

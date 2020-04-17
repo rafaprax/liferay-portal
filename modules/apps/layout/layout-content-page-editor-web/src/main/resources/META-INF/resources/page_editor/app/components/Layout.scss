@@ -1,0 +1,186 @@
+@import 'atlas-variables';
+
+@import 'variables';
+
+.page-editor {
+	&__collection {
+		&__block {
+			box-shadow: inset 0 0 0 1px rgba(175, 120, 255, 0.2);
+		}
+
+		&__no-items-message {
+			background-color: fade_out($purple, 0.9);
+			color: $purple;
+			font-size: 14px;
+			margin-top: 0;
+			padding: 7em 0;
+			text-align: center;
+		}
+
+		&__not-collection-selected-message {
+			background-color: $gray-100;
+			color: $gray-500;
+			font-size: 14px;
+			font-weight: 600;
+			margin-top: 0;
+			padding: 7em 0;
+			text-align: center;
+		}
+
+		&-item {
+			border: 1px solid fade_out($purple, 0.9);
+			min-height: 80px;
+
+			&__title {
+				color: $purple;
+				font-size: 0.75rem;
+				font-style: italic;
+				padding-left: 8px;
+				padding-top: 8px;
+			}
+		}
+	}
+
+	&__col &__col__resizer {
+		border-radius: 50%;
+		cursor: col-resize;
+		height: 16px;
+		left: 100%;
+		outline: none;
+		padding: 0;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 16px;
+		z-index: 1;
+
+		html.rtl & {
+			transform: translate(50%, -50%);
+		}
+	}
+
+	&__col:after,
+	&__container,
+	&__container > .container:after,
+	&__container > .container-fluid:after,
+	&__row:after {
+		box-shadow: inset 0 0 0 1px $primary-l2;
+	}
+
+	&__col &__row:after,
+	&__container &__row:after {
+		box-shadow: none;
+	}
+
+	&__col,
+	&__container > .container,
+	&__container > .container-fluid,
+	&__row,
+	&__collection-item {
+		position: relative;
+
+		&:after {
+			$spacingUnit: 12px;
+
+			content: '';
+			display: block;
+			height: 100%;
+			left: $spacingUnit;
+			pointer-events: none;
+			position: absolute;
+			top: 0;
+			width: calc(100% - #{$spacingUnit * 2});
+		}
+	}
+
+	&__collection-item {
+		&:after {
+			left: 0;
+			width: 100%;
+		}
+	}
+
+	&__container.empty > .container,
+	&__container.empty > .container-fluid,
+	&__row.empty {
+		height: 10em;
+	}
+
+	&__editable {
+		transition: box-shadow ease 0.3s;
+
+		$editablesBorderWidth: 1px;
+
+		&--hovered {
+			box-shadow: 0 0 0 $editablesBorderWidth $primary-l1;
+		}
+
+		&--mapped {
+			box-shadow: 0 0 0 $editablesBorderWidth fade_out($purple, 0.7);
+
+			&.page-editor__editable--hovered {
+				box-shadow: 0 0 0 $editablesBorderWidth fade_out($purple, 0.3);
+			}
+
+			&.page-editor__editable--active {
+				box-shadow: 0 0 0 $editablesBorderWidth $purple;
+			}
+		}
+
+		&--translated {
+			box-shadow: 0 0 0 $editablesBorderWidth fade_out($success-l1, 0.7);
+
+			&.page-editor__editable--hovered {
+				box-shadow: 0 0 0 $editablesBorderWidth
+					fade_out($success-l1, 0.3);
+			}
+
+			&.page-editor__editable--active {
+				box-shadow: 0 0 0 $editablesBorderWidth $success-l1;
+			}
+		}
+
+		&--active {
+			box-shadow: 0 0 0 $editablesBorderWidth $primary;
+		}
+	}
+
+	&__row.no-gutters > .page-editor__col:after {
+		left: 0;
+		width: 100%;
+	}
+
+	&__no-fragments-message {
+		background: $primary-l3;
+		border: 2px dashed $primary-l2;
+		padding: 15vh 0;
+
+		&__title {
+			color: $gray-500;
+			font-size: 14px;
+			font-weight: 600;
+			margin-top: 0;
+			text-align: center;
+		}
+	}
+
+	&__conversion-messages {
+		padding-right: $sidebarButtonWidth;
+		transition: padding-right ease $defaultTransitionDuration;
+		will-change: padding-right;
+
+		&--with-sidebar-open {
+			@include media-breakpoint-up(sm) {
+				padding-right: $sidebarButtonWidth + $sidebarContentWidth;
+			}
+		}
+	}
+
+	// LPS-103745
+	// Keep legacy lfr-editable tags
+	// stylelint-disable-next-line selector-type-no-unknown
+	lfr-editable {
+		cursor: pointer;
+		display: block;
+	}
+}

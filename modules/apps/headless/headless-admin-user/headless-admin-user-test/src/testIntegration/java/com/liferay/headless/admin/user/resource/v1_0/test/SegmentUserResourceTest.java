@@ -54,6 +54,28 @@ public class SegmentUserResourceTest extends BaseSegmentUserResourceTestCase {
 		Assert.assertEquals(0, page.getTotalCount());
 	}
 
+	@Override
+	@Test
+	public void testGetSegmentUserAccountsPage() throws Exception {
+		Page<SegmentUser> page = segmentUserResource.getSegmentUserAccountsPage(
+			testGetSegmentUserAccountsPage_getSegmentId(), null);
+
+		long totalCount = page.getTotalCount();
+
+		Long segmentId = testGetSegmentUserAccountsPage_getSegmentId();
+
+		testGetSegmentUserAccountsPage_addSegmentUser(
+			segmentId, randomSegmentUser());
+		testGetSegmentUserAccountsPage_addSegmentUser(
+			segmentId, randomSegmentUser());
+
+		page = segmentUserResource.getSegmentUserAccountsPage(segmentId, null);
+
+		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+
+		assertValid(page);
+	}
+
 	@Test(expected = Problem.ProblemException.class)
 	public void testGetSegmentUserAccountsPageWithNonexistingSegmentId()
 		throws Exception {

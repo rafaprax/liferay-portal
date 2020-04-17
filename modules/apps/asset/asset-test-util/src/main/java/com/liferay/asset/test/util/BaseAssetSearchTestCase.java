@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Registry;
@@ -1131,6 +1132,9 @@ public abstract class BaseAssetSearchTestCase {
 
 		testPaginationType(assetEntryQuery, 5);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected abstract BaseModel<?> addBaseModel(
 			BaseModel<?> parentBaseModel, Map<Locale, String> titleMap,

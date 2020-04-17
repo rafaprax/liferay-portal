@@ -43,11 +43,7 @@ definition {
 	@description = "This ensures that the approved image from a depot is available to use in its connected site."
 	@priority = "5"
 	test ApproveImage {
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMFolder.addCP(
 			dmFolderDescription = "DM Folder Description",
@@ -103,11 +99,7 @@ definition {
 			workflowAssetType = "Document",
 			workflowTask = "Review");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMNavigator.gotoFolder(dmFolderName = "DM Folder Name");
 
@@ -142,11 +134,7 @@ definition {
 			workflowDefinition = "Single Approver",
 			workflowResourceValue = "Web Content Article");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentNavigator.gotoAddCP();
 
@@ -209,11 +197,7 @@ definition {
 			workflowAssetType = "Web Content Article",
 			workflowTask = "Review");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentNavigator.gotoViewStatus(
 			webContentStatus = "Approved",
@@ -237,11 +221,7 @@ definition {
 	@description = "This ensures that the approved WC article in folder from a depot is available to use in its connected site."
 	@priority = "5"
 	test ApproveWCInFolder {
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentFolder.addCP(
 			folderDescription = "WC Folder Description",
@@ -318,11 +298,7 @@ definition {
 			workflowAssetType = "Web Content Article",
 			workflowTask = "Review");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentFolder.gotoCP(
 			folderName = "WC Folder Name",
@@ -351,11 +327,7 @@ definition {
 	@description = "This ensures that the resubmitted document from a depot is available to use in its connected site."
 	@priority = "5"
 	test RejectAndResubmitDocument {
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMFolder.addCP(
 			dmFolderDescription = "DM Folder Description",
@@ -422,11 +394,7 @@ definition {
 			workflowAssetType = "Document",
 			workflowTask = "Review");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMNavigator.gotoFolder(dmFolderName = "DM Folder Name");
 
@@ -489,11 +457,7 @@ definition {
 			workflowDefinition = "Single Approver",
 			workflowResourceValue = "Web Content Article");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentNavigator.gotoAddCP();
 
@@ -552,11 +516,7 @@ definition {
 			workflowAssetType = "Web Content Article",
 			workflowTask = "Review");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		WebContentNavigator.gotoViewStatus(
 			webContentStatus = "Approved",

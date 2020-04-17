@@ -27,6 +27,10 @@ import java.util.List;
  */
 public final class Experiment {
 
+	public String getChannelId() {
+		return _channelId;
+	}
+
 	public Double getConfidenceLevel() {
 		return _confidenceLevel;
 	}
@@ -59,6 +63,11 @@ public final class Experiment {
 	@JsonProperty("dxpExperienceName")
 	public String getDXPExperienceName() {
 		return _dxpExperienceName;
+	}
+
+	@JsonProperty("dxpGroupId")
+	public Long getDXPGroupId() {
+		return _dxpGroupId;
 	}
 
 	@JsonProperty("dxpLayoutId")
@@ -143,6 +152,10 @@ public final class Experiment {
 		return new Date(_startedDate.getTime());
 	}
 
+	public void setChannelId(String channelId) {
+		_channelId = channelId;
+	}
+
 	public void setConfidenceLevel(Double confidenceLevel) {
 		_confidenceLevel = confidenceLevel;
 	}
@@ -167,6 +180,10 @@ public final class Experiment {
 
 	public void setDXPExperienceName(String dxpExperienceName) {
 		_dxpExperienceName = dxpExperienceName;
+	}
+
+	public void setDXPGroupId(Long dxpGroupId) {
+		_dxpGroupId = dxpGroupId;
 	}
 
 	public void setDXPLayoutId(String dxpLayoutId) {
@@ -233,12 +250,14 @@ public final class Experiment {
 		}
 	}
 
+	private String _channelId;
 	private Double _confidenceLevel;
 	private Date _createDate;
 	private String _dataSourceId;
 	private String _description;
 	private String _dxpExperienceId;
 	private String _dxpExperienceName;
+	private Long _dxpGroupId;
 	private String _dxpLayoutId;
 	private String _dxpSegmentId;
 	private String _dxpSegmentName;

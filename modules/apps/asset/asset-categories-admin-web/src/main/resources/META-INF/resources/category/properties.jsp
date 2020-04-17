@@ -67,6 +67,11 @@ else {
 String redirect = ParamUtil.getString(request, "redirect", assetCategoriesDisplayContext.getEditCategoryRedirect());
 
 long vocabularyId = ParamUtil.getLong(request, "vocabularyId");
+
+portletDisplay.setShowBackIcon(true);
+portletDisplay.setURLBack(redirect);
+
+renderResponse.setTitle(category.getTitle(locale));
 %>
 
 <portlet:actionURL name="editProperties" var="editPropertiesURL">

@@ -12,16 +12,18 @@
  * details.
  */
 
+import ClayButton from '@clayui/button';
 import ClayLabel from '@clayui/label';
 import classNames from 'classnames';
-import React from 'react';
+import React, {useContext} from 'react';
 
-import {confirmDelete} from '../../utils/client.es';
+import AppContext from '../../AppContext.es';
+import {DELETE_DATA_LAYOUT_RULE} from '../../actions.es';
 import CollapsablePanel from '../collapsable-panel/CollapsablePanel.es';
 
 const Text = ({capitalize = false, children = '', lowercase = false}) => (
 	<span
-		className={classNames('pr-2', {
+		className={classNames('pr-1', {
 			'text-capitalize': capitalize,
 			'text-lowercase': lowercase,
 		})}
@@ -42,24 +44,37 @@ const OPERATOR_LABELS = {
 
 export default function RuleItem({rule, toggleRulesEditorVisibility}) {
 	const {actions, conditions, logicalOperator, name} = rule;
+	const [, dispatch] = useContext(AppContext);
+
+	const dropDownActions = [
+		{
+			action: () => toggleRulesEditorVisibility(rule),
+			name: Liferay.Language.get('edit'),
+		},
+		{
+			action: () => {
+				const confirmed = confirm(
+					Liferay.Language.get('are-you-sure-you-want-to-delete-this')
+				);
+
+				if (confirmed) {
+					dispatch({
+						payload: rule,
+						type: DELETE_DATA_LAYOUT_RULE,
+					});
+				}
+			},
+			name: Liferay.Language.get('delete'),
+		},
+	];
 
 	return (
-		<CollapsablePanel
-			actions={[
-				{
-					action: () => toggleRulesEditorVisibility(rule),
-					name: Liferay.Language.get('edit'),
-				},
-				{
-					action: confirmDelete('../'),
-					name: Liferay.Language.get('delete'),
-				},
-			]}
-			title={name}
-		>
-			<span>
+		<CollapsablePanel actions={dropDownActions} title={name}>
+			<ClayButton
+				displayType="unstyled"
+				onClick={() => toggleRulesEditorVisibility(rule)}
+			>
 				<Text capitalize>{Liferay.Language.get('if')}</Text>
-
 				{conditions.map(({operands, operator}, index) => {
 					const [first, last] = operands;
 
@@ -104,7 +119,7 @@ export default function RuleItem({rule, toggleRulesEditorVisibility}) {
 						)}
 					</>
 				))}
-			</span>
+			</ClayButton>
 		</CollapsablePanel>
 	);
 }

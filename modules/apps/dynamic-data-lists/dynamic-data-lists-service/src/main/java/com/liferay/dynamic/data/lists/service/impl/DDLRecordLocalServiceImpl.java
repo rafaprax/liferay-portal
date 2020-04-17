@@ -26,6 +26,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.DDLRecordVersionLocalService;
 import com.liferay.dynamic.data.lists.service.base.DDLRecordLocalServiceBaseImpl;
 import com.liferay.dynamic.data.lists.util.DDL;
+import com.liferay.dynamic.data.lists.util.comparator.DDLRecordIdComparator;
 import com.liferay.dynamic.data.mapping.exception.StorageException;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
@@ -325,6 +326,12 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		for (DDLRecord record : records) {
 			ddlRecordLocalService.deleteRecord(record);
 		}
+	}
+
+	@Override
+	public DDLRecord fetchFirstRecord(String className, long classPK) {
+		return ddlRecordPersistence.fetchByC_C_First(
+			className, classPK, new DDLRecordIdComparator(true));
 	}
 
 	/**
@@ -829,9 +836,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		record.setVersion(version);
 
-		record = ddlRecordPersistence.update(record);
-
-		return record;
+		return ddlRecordPersistence.update(record);
 	}
 
 	/**

@@ -37,7 +37,7 @@ definition {
 			BlogsEntry.addSubtitle(entrySubtitle = "${entrySubtitle}");
 		}
 
-		BlogsEntry.addContent(entryContent = "${entryContent}");
+		AlloyEditor.addContent(content = "${entryContent}");
 
 		if (isSet(embedVideo)) {
 			AlloyEditor.clickContentField();
@@ -112,13 +112,17 @@ definition {
 	}
 
 	macro addSubtitle {
-		AlloyEditor.typeEditor(
-			content = "${entrySubtitle}",
-			editor = "subtitle");
+		Type(
+			key_text = "Subtitle",
+			locator1 = "TextArea#ANY",
+			value1 = "${entrySubtitle}");
 	}
 
 	macro addTitle {
-		AlloyEditor.addTitle(title = "${entryTitle}");
+		Type(
+			key_text = "Title",
+			locator1 = "TextArea#ANY",
+			value1 = "${entryTitle}");
 	}
 
 	macro addWithTrackbackURLPG {
@@ -273,22 +277,20 @@ definition {
 
 	macro editSubtitle {
 		AssertTextEquals(
-			key_editor = "subtitle",
-			locator1 = "AlloyEditor#EDITOR",
+			key_text = "Subtitle",
+			locator1 = "TextArea#ANY",
 			value1 = "${entrySubtitle}");
 
-		AlloyEditor.typeEditor(
-			content = "${entrySubtitleEdit}",
-			editor = "subtitle");
+		BlogsEntry.addSubtitle(entrySubtitle = "${entrySubtitleEdit}");
 	}
 
 	macro editTitle {
 		AssertTextEquals(
-			key_editor = "title",
-			locator1 = "AlloyEditor#EDITOR",
+			key_text = "Title",
+			locator1 = "TextArea#ANY",
 			value1 = "${entryTitle}");
 
-		AlloyEditor.addTitle(title = "${entryTitleEdit}");
+		BlogsEntry.addTitle(entryTitle = "${entryTitleEdit}");
 	}
 
 	macro entryAddPermissions {
@@ -662,7 +664,102 @@ definition {
 		AssertElementNotPresent(locator1 = "Blogs#ENTRY_TABLE_TITLE");
 	}
 
-	macro viewEntry {
+	macro viewEntryAsWorkflowAsset {
+		SiteAdmin.viewPortletTitle(portletTitle = "${entryTitle}");
+
+		var key_entryContent = "${entryContent}";
+
+		AssertTextEquals(
+			locator1 = "BlogsEntry#CONTENT",
+			value1 = "${entryContent}");
+	}
+
+	macro viewEntryAuthorCP {
+		var entryAuthorFullName = "${entryAuthorFullName}";
+		var key_entryTitle = "${entryTitle}";
+
+		AssertTextEquals(
+			locator1 = "Blogs#ENTRY_TABLE_AUTHOR",
+			value1 = "${entryAuthorFullName}");
+	}
+
+	macro viewEntryCP {
+		var key_entryContent = "${entryContent}";
+		var key_entrySubtitle = "${entrySubtitle}";
+		var key_entryTitle = "${entryTitle}";
+
+		Pause(locator1 = "3000");
+
+		AssertTextEquals(
+			key_text = "Title",
+			locator1 = "TextArea#ANY",
+			value1 = "${entryTitle}");
+
+		if (isSet(entrySubtitle)) {
+			AssertTextEquals(
+				key_text = "Subtitle",
+				locator1 = "TextArea#ANY",
+				value1 = "${entrySubtitle}");
+		}
+
+		if (isSet(uploadFileName)) {
+			AssertElementPresent(
+				key_uploadFileName = "${uploadFileName}",
+				locator1 = "BlogsEntry#ENTRY_COVER_IMAGE");
+		}
+
+		if (isSet(embedVideo)) {
+			AssertElementPresent(
+				key_service = "youtube",
+				locator1 = "BlogsEntry#CONTENT_VIDEO");
+		}
+
+		if (isSet(entryContent)) {
+			AssertTextEquals(
+				locator1 = "BlogsEntry#CONTENT",
+				value1 = "${entryContent}");
+		}
+
+		if (isSet(entryContentBold)) {
+			AssertTextEquals.assertPartialText(
+				locator1 = "BlogsEntry#CONTENT_HTML_BOLD",
+				value1 = "${entryContentBold}");
+		}
+
+		if (isSet(entryContentItalics)) {
+			AssertTextEquals.assertPartialText(
+				locator1 = "BlogsEntry#CONTENT_HTML_ITALICS",
+				value1 = "${entryContentItalics}");
+		}
+
+		if (isSet(entryExternalURL)) {
+			AssertClick(
+				locator1 = "BlogsEntry#CONTENT_LINK",
+				value1 = "${entryContent}");
+
+			AssertLocation(value1 = "${entryExternalURL}/");
+		}
+
+		if (isSet(entryInlineImage)) {
+			BlogsEntry.viewInlineImage(uploadFileName = "${entryInlineImage}");
+		}
+	}
+
+	macro viewEntryExternalURL {
+		BlogsNavigator.gotoEditCP(entryTitle = "${entryTitle}");
+
+		DoubleClick(
+			key_entryContent = "${entryContent}",
+			locator1 = "BlogsEntry#CONTENT_LINK_IN_EDIT");
+
+		Click(locator1 = "AlloyEditor#TEXT_FORMATTING_LINK");
+
+		AssertTextEquals(
+			locator1 = "AlloyEditor#TEXT_FORMATTING_LINK_INPUT",
+			value1 = "${entryExternalURL}");
+	}
+
+	macro viewEntryPG {
 		var key_entryContent = "${entryContent}";
 		var key_entrySubtitle = "${entrySubtitle}";
 		var key_entryTitle = "${entryTitle}";
@@ -720,39 +817,6 @@ definition {
 		if (isSet(entryInlineImage)) {
 			BlogsEntry.viewInlineImage(uploadFileName = "${entryInlineImage}");
 		}
-	}
-
-	macro viewEntryAsWorkflowAsset {
-		SiteAdmin.viewPortletTitle(portletTitle = "${entryTitle}");
-
-		var key_entryContent = "${entryContent}";
-
-		AssertTextEquals(
-			locator1 = "BlogsEntry#CONTENT",
-			value1 = "${entryContent}");
-	}
-
-	macro viewEntryAuthorCP {
-		var entryAuthorFullName = "${entryAuthorFullName}";
-		var key_entryTitle = "${entryTitle}";
-
-		AssertTextEquals(
-			locator1 = "Blogs#ENTRY_TABLE_AUTHOR",
-			value1 = "${entryAuthorFullName}");
-	}
-
-	macro viewEntryExternalURL {
-		BlogsNavigator.gotoEditCP(entryTitle = "${entryTitle}");
-
-		DoubleClick(
-			key_entryContent = "${entryContent}",
-			locator1 = "BlogsEntry#CONTENT_LINK_IN_EDIT");
-
-		Click(locator1 = "AlloyEditor#TEXT_FORMATTING_LINK");
-
-		AssertTextEquals(
-			locator1 = "AlloyEditor#TEXT_FORMATTING_LINK_INPUT",
-			value1 = "${entryExternalURL}");
 	}
 
 	macro viewEntryTable {
@@ -1066,7 +1130,8 @@ definition {
 				value1 = "Entries with tag ${tagName}");
 
 			AssertTextEquals(
-				locator1 = "BlogsEntry#TITLE",
+				key_text = "Title",
+				locator1 = "TextArea#ANY",
 				value1 = "${entryTitle}");
 		}
 	}
@@ -1114,7 +1179,8 @@ definition {
 		var key_entryTitle = "${entryTitle}";
 
 		AssertTextEquals(
-			locator1 = "BlogsEntry#TITLE",
+			key_text = "Title",
+			locator1 = "TextArea#ANY",
 			value1 = "${entryTitle}");
 	}
 

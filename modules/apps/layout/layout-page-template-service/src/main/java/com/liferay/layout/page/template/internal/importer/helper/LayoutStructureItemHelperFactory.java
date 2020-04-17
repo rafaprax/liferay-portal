@@ -28,12 +28,24 @@ public class LayoutStructureItemHelperFactory {
 	public LayoutStructureItemHelper getLayoutStructureItemHelper(
 		PageElement.Type pageElementType) {
 
+		if (pageElementType == PageElement.Type.COLLECTION) {
+			return new CollectionLayoutStructureItemHelper();
+		}
+
+		if (pageElementType == PageElement.Type.COLLECTION_ITEM) {
+			return new CollectionItemLayoutStructureItemHelper();
+		}
+
 		if (pageElementType == PageElement.Type.COLUMN) {
 			return new ColumnLayoutStructureItemHelper();
 		}
 
 		if (pageElementType == PageElement.Type.DROP_ZONE) {
 			return new DropZoneLayoutStructureItemHelper();
+		}
+
+		if (pageElementType == PageElement.Type.FRAGMENT) {
+			return new FragmentLayoutStructureItemHelper();
 		}
 
 		if (pageElementType == PageElement.Type.ROW) {
@@ -44,8 +56,8 @@ public class LayoutStructureItemHelperFactory {
 			return new ContainerLayoutStructureItemHelper();
 		}
 
-		if (pageElementType == PageElement.Type.FRAGMENT) {
-			return new FragmentLayoutStructureItemHelper();
+		if (pageElementType == PageElement.Type.WIDGET) {
+			return new WidgetLayoutStructureItemHelper();
 		}
 
 		return null;

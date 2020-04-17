@@ -57,7 +57,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		Navigator.gotoSitePage(
 			pageName = "Staging Test Page",
@@ -509,7 +509,9 @@ definition {
 
 		Navigator.openSiteURL(siteName = "Site Name");
 
-		MessageboardsPortlet.configureScopePG(scopeName = "Staging Test Page (Create New)");
+		Portlet.selectScopePG(
+			portletName = "Message Boards",
+			scope = "Staging Test Page");
 
 		Navigator.openSiteURL(siteName = "Site Name");
 
@@ -754,7 +756,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		User.logoutPG(
 			password = "test",
@@ -949,7 +951,7 @@ definition {
 
 		Staging.gotoPublishToLive();
 
-		Staging.publishToLive();
+		Staging.publishToLive(remoteStaging = "true");
 
 		User.logoutPG(
 			password = "test",

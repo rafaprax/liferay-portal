@@ -1204,7 +1204,9 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		Property classNameIdProperty = PropertyFactoryUtil.forName(
 			"classNameId");
 
-		dynamicQuery.add(classNameIdProperty.eq(Long.valueOf(0)));
+		dynamicQuery.add(
+			classNameIdProperty.ne(
+				classNameLocalService.getClassNameId(Layout.class.getName())));
 
 		Property typeProperty = PropertyFactoryUtil.forName("type");
 
@@ -1783,6 +1785,11 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		return layoutPersistence.findByGroupId(groupId, start, end, obc);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getMasterLayouts(long, long)}
+	 */
+	@Deprecated
 	@Override
 	public List<Layout> getLayouts(long groupId, long masterLayoutPlid) {
 		return layoutPersistence.findByG_MLP(groupId, masterLayoutPlid);
@@ -2037,6 +2044,11 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		return layoutPersistence.countByG_P(groupId, privateLayout);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getMasterLayoutsCount(long, long)}
+	 */
+	@Deprecated
 	@Override
 	public int getLayoutsCount(long groupId, long masterLayoutPlid) {
 		return layoutPersistence.countByG_MLP(groupId, masterLayoutPlid);
@@ -2100,6 +2112,16 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 			user.getCompanyId(), classNameId, user.getUserId());
 
 		return getLayoutsCount(group, privateLayout, includeUserGroups);
+	}
+
+	@Override
+	public List<Layout> getMasterLayouts(long groupId, long masterLayoutPlid) {
+		return layoutPersistence.findByG_MLP(groupId, masterLayoutPlid);
+	}
+
+	@Override
+	public int getMasterLayoutsCount(long groupId, long masterLayoutPlid) {
+		return layoutPersistence.countByG_MLP(groupId, masterLayoutPlid);
 	}
 
 	/**

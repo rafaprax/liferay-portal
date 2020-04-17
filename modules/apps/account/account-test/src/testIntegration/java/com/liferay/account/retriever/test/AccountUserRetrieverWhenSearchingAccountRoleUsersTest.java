@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.comparator.UserIdComparator;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -182,6 +183,9 @@ public class AccountUserRetrieverWhenSearchingAccountRoleUsersTest {
 			ListUtil.sort(_users, new UserIdComparator(false)),
 			baseModelSearchResult.getBaseModels());
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	private User _addAccountRoleUser(long accountEntryId, long accountRoleId)
 		throws Exception {

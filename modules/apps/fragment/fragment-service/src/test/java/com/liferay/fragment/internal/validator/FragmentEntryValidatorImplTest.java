@@ -17,7 +17,9 @@ package com.liferay.fragment.internal.validator;
 import com.liferay.fragment.exception.FragmentEntryConfigurationException;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.FileImpl;
 
 import org.hamcrest.core.StringStartsWith;
@@ -626,6 +628,124 @@ public class FragmentEntryValidatorImplTest {
 	public void testValidateConfigurationValidRequired() throws Exception {
 		_fragmentEntryValidatorImpl.validateConfiguration(
 			_read("configuration_valid_required.json"));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeInvalidEmail()
+		throws Exception {
+
+		expectedException.expect(FragmentEntryConfigurationException.class);
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read("configuration_field_text_typeoptions_validation_email.json"),
+			JSONUtil.put("emailField", "test-liferay.com"));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeInvalidLength()
+		throws Exception {
+
+		expectedException.expect(FragmentEntryConfigurationException.class);
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_length.json"),
+			JSONUtil.put("textField", StringUtil.randomString(11)));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeInvalidNumberLimit()
+		throws Exception {
+
+		expectedException.expect(FragmentEntryConfigurationException.class);
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_number.json"),
+			JSONUtil.put("numberField", 1000));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeInvalidNumberNAN()
+		throws Exception {
+
+		expectedException.expect(FragmentEntryConfigurationException.class);
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_number.json"),
+			JSONUtil.put("numberField", StringUtil.randomString()));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeInvalidRegexp()
+		throws Exception {
+
+		expectedException.expect(FragmentEntryConfigurationException.class);
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_regexp.json"),
+			JSONUtil.put("regexpField", StringUtil.randomString()));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeInvalidURL()
+		throws Exception {
+
+		expectedException.expect(FragmentEntryConfigurationException.class);
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read("configuration_field_text_typeoptions_validation_url.json"),
+			JSONUtil.put("urlField", StringUtil.randomString()));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeValidEmail()
+		throws Exception {
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read("configuration_field_text_typeoptions_validation_email.json"),
+			JSONUtil.put("emailField", "test@liferay.com"));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeValidLength()
+		throws Exception {
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_length.json"),
+			JSONUtil.put("textField", StringUtil.randomString(9)));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeValidNumber()
+		throws Exception {
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_number.json"),
+			JSONUtil.put("numberField", 256));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeValidRegexp()
+		throws Exception {
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read(
+				"configuration_field_text_typeoptions_validation_regexp.json"),
+			JSONUtil.put("regexpField", "test-256"));
+	}
+
+	@Test
+	public void testValidateConfigurationValuesTextFieldTypeValidURL()
+		throws Exception {
+
+		_fragmentEntryValidatorImpl.validateConfigurationValues(
+			_read("configuration_field_text_typeoptions_validation_url.json"),
+			JSONUtil.put("urlField", "http://www.liferay.com"));
 	}
 
 	@Rule

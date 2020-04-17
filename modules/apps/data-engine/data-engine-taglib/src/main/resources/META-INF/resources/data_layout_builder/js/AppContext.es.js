@@ -20,12 +20,14 @@ import {
 	ADD_DATA_LAYOUT_RULE,
 	DELETE_DATA_DEFINITION_FIELD,
 	DELETE_DATA_LAYOUT_FIELD,
+	DELETE_DATA_LAYOUT_RULE,
 	EDIT_CUSTOM_OBJECT_FIELD,
 	SWITCH_SIDEBAR_PANEL,
 	UPDATE_CONFIG,
 	UPDATE_DATA_DEFINITION,
 	UPDATE_DATA_LAYOUT,
 	UPDATE_DATA_LAYOUT_NAME,
+	UPDATE_DATA_LAYOUT_RULE,
 	UPDATE_EDITING_LANGUAGE_ID,
 	UPDATE_FIELDSETS,
 	UPDATE_FIELD_TYPES,
@@ -219,20 +221,12 @@ const createReducer = dataLayoutBuilder => {
 				};
 			}
 			case ADD_DATA_LAYOUT_RULE: {
-				const {dataRule} = action.payload;
+				let {dataRule} = action.payload;
 				const {
 					dataLayout: {dataRules},
 				} = state;
 
-				if (
-					Object.prototype.hasOwnProperty.call(
-						dataRule,
-						'logical-operator'
-					)
-				) {
-					dataRule['logicalOperator'] = dataRule['logical-operator'];
-					delete dataRule['logical-operator'];
-				}
+				dataRule = DataLayoutVisitor.normalizeLogicalOperator(dataRule);
 
 				return {
 					...state,
@@ -261,6 +255,23 @@ const createReducer = dataLayoutBuilder => {
 				return {
 					...state,
 					dataLayout: deleteDataLayoutField(dataLayout, fieldName),
+				};
+			}
+			case DELETE_DATA_LAYOUT_RULE: {
+				const {ruleEditedIndex} = action.payload;
+
+				const {
+					dataLayout: {dataRules},
+				} = state;
+
+				return {
+					...state,
+					dataLayout: {
+						...state.dataLayout,
+						dataRules: dataRules.filter(
+							rule => rule.ruleEditedIndex !== ruleEditedIndex
+						),
+					},
 				};
 			}
 			case EDIT_CUSTOM_OBJECT_FIELD: {
@@ -337,6 +348,31 @@ const createReducer = dataLayoutBuilder => {
 					dataLayout: {
 						...state.dataLayout,
 						name,
+					},
+				};
+			}
+			case UPDATE_DATA_LAYOUT_RULE: {
+				let {dataRule} = action.payload;
+				const {
+					dataLayout: {dataRules},
+				} = state;
+
+				dataRule = DataLayoutVisitor.normalizeLogicalOperator(dataRule);
+
+				return {
+					...state,
+					dataLayout: {
+						...state.dataLayout,
+						dataRules: dataRules.map(rule => {
+							if (
+								rule.ruleEditedIndex ===
+								dataRule.ruleEditedIndex
+							) {
+								return dataRule;
+							}
+
+							return rule;
+						}),
 					},
 				};
 			}

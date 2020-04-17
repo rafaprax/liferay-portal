@@ -129,6 +129,7 @@
 			value: string
 		]>
 	}
+	{@param? handleRuleAdded: any}
 	{@param invalidRule: bool}
 	{@param logicalOperator: string}
 	{@param pageOptions: list<[
@@ -151,7 +152,6 @@
 	{@param? _handleLogicalOperationChange: any}
 	{@param? _handleModalButtonClicked: any}
 	{@param? _handleOperatorEdited: any}
-	{@param? _handleRuleAdded: any}
 	{@param? _handleRuleCancelled: any}
 	{@param? _handleSecondOperandFieldEdited: any}
 	{@param? _handleSecondOperandTypeEdited: any}
@@ -289,7 +289,7 @@
 		<div class="liferay-ddm-form-rule-builder-footer">
 			{call ClayButton.render}
 				{param events: [
-					'click': $_handleRuleAdded
+					'click': $handleRuleAdded
 				] /}
 				{param disabled: $invalidRule /}
 				{param label kind="text"}

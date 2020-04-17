@@ -83,6 +83,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -117,6 +118,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -528,6 +530,8 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			smallImageFileEntryId = _addSmallImageFileEntry(
 				entry.getUserId(), entry.getGroupId(), entryId, imageSelector);
 		}
+
+		_validate(smallImageFileEntryId);
 
 		entry.setSmallImage(smallImage);
 		entry.setSmallImageFileEntryId(smallImageFileEntryId);
@@ -1748,7 +1752,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		return _uniqueFileNameProvider.provide(
 			fileName,
-			curFileName -> _hasFileEntry(groupId, folderId, fileName));
+			curFileName -> _hasFileEntry(groupId, folderId, curFileName));
 	}
 
 	private String _getUniqueUrlTitle(BlogsEntry entry) {
@@ -1809,6 +1813,29 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		}
 
 		return true;
+	}
+
+	private boolean _isValidImageMimeType(FileEntry fileEntry) {
+		if (ArrayUtil.contains(
+				_blogsFileUploadsConfiguration.imageExtensions(),
+				StringPool.STAR)) {
+
+			return true;
+		}
+
+		Set<String> extensions = MimeTypesUtil.getExtensions(
+			fileEntry.getMimeType());
+
+		if (Stream.of(
+				_blogsFileUploadsConfiguration.imageExtensions()).anyMatch(
+					extension ->
+						extension.equals(StringPool.STAR) ||
+						extensions.contains(extension))) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void _notifySubscribers(
@@ -2214,22 +2241,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		FileEntry fileEntry = _portletFileRepository.getPortletFileEntry(
 			smallImageFileEntryId);
 
-		boolean validSmallImageExtension = false;
-
-		for (String imageExtension :
-				_blogsFileUploadsConfiguration.imageExtensions()) {
-
-			if (StringPool.STAR.equals(imageExtension) ||
-				imageExtension.equals(
-					StringPool.PERIOD + fileEntry.getExtension())) {
-
-				validSmallImageExtension = true;
-
-				break;
-			}
-		}
-
-		if (!validSmallImageExtension) {
+		if (!_isValidImageMimeType(fileEntry)) {
 			throw new EntrySmallImageNameException(
 				"Invalid small image for file entry " + smallImageFileEntryId);
 		}

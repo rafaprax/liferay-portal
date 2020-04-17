@@ -14,6 +14,7 @@
 
 package com.liferay.layout.content.page.editor.web.internal.portlet.action;
 
+import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.info.display.contributor.InfoDisplayContributor;
 import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
 import com.liferay.info.display.contributor.InfoDisplayField;
@@ -25,10 +26,13 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
+import java.util.Objects;
 import java.util.Set;
 
 import javax.portlet.ResourceRequest;
@@ -56,7 +60,13 @@ public class GetCollectionMappingFieldsMVCResourceCommand
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
+		// LPS-111037
+
 		String itemType = ParamUtil.getString(resourceRequest, "itemType");
+
+		if (Objects.equals(DLFileEntryConstants.getClassName(), itemType)) {
+			itemType = FileEntry.class.getName();
+		}
 
 		InfoDisplayContributor infoDisplayContributor =
 			_infoDisplayContributorTracker.getInfoDisplayContributor(itemType);
@@ -72,12 +82,15 @@ public class GetCollectionMappingFieldsMVCResourceCommand
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		String itemSubtype = ParamUtil.getString(
+			resourceRequest, "itemSubtype");
+
 		try {
 			JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 			Set<InfoDisplayField> infoDisplayFields =
 				infoDisplayContributor.getInfoDisplayFields(
-					0, themeDisplay.getLocale());
+					GetterUtil.getLong(itemSubtype), themeDisplay.getLocale());
 
 			for (InfoDisplayField infoDisplayField : infoDisplayFields) {
 				jsonArray.put(

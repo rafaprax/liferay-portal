@@ -32,10 +32,10 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.ClassedModel;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
-import com.liferay.portal.kernel.template.TemplateManager;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
@@ -99,9 +99,20 @@ public class FragmentEntryProcessorHelperImpl
 
 		ClassedModel classedModel = (ClassedModel)displayObject;
 
+		// LPS-111037
+
+		String className = classedModel.getModelClassName();
+
+		if (classedModel instanceof FileEntry) {
+			className = FileEntry.class.getName();
+		}
+
 		InfoDisplayContributor infoDisplayContributor =
-			_infoDisplayContributorTracker.getInfoDisplayContributor(
-				classedModel.getModelClassName());
+			_infoDisplayContributorTracker.getInfoDisplayContributor(className);
+
+		if (infoDisplayContributor == null) {
+			return null;
+		}
 
 		Object fieldValue = infoDisplayContributor.getInfoDisplayFieldValue(
 			displayObjectOptional.get(),
@@ -273,15 +284,7 @@ public class FragmentEntryProcessorHelperImpl
 			TemplateConstants.LANG_TYPE_FTL,
 			new StringTemplateResource("template_id", "[#ftl] " + html), true);
 
-		TemplateManager templateManager =
-			TemplateManagerUtil.getTemplateManager(
-				TemplateConstants.LANG_TYPE_FTL);
-
-		templateManager.addTaglibSupport(
-			template, fragmentEntryProcessorContext.getHttpServletRequest(),
-			fragmentEntryProcessorContext.getHttpServletResponse());
-		templateManager.addTaglibTheme(
-			template, "taglibLiferay",
+		template.prepareTaglib(
 			fragmentEntryProcessorContext.getHttpServletRequest(),
 			fragmentEntryProcessorContext.getHttpServletResponse());
 

@@ -12,184 +12,117 @@
  * details.
  */
 
-import '../FieldBase/FieldBase.es';
-
-import './ColorPickerAdapter.soy';
-
 import './ColorPickerRegister.soy';
 
-import './ReactColorPickerAdapter.es';
+import ClayColorPicker from '@clayui/color-picker';
+import React, {useEffect, useState} from 'react';
 
-import Component from 'metal-component';
-import Soy from 'metal-soy';
-import {Config} from 'metal-state';
+import {FieldBaseProxy} from '../FieldBase/ReactFieldBase.es';
+import getConnectedReactComponentAdapter from '../util/ReactComponentAdapter.es';
+import {connectStore} from '../util/connectStore.es';
+import templates from './ColorPickerAdapter.soy';
 
-import templates from './ColorPicker.soy';
+const DEFAULT_COLORS = [
+	'000000',
+	'5F5F5F',
+	'9A9A9A',
+	'CBCBCB',
+	'E1E1E1',
+	'FFFFFF',
+	'FF0D0D',
+	'FF8A1C',
+	'2BA676',
+	'006EF8',
+	'7F26FF',
+	'FF21A0',
+];
 
-class ColorPicker extends Component {
-	dispatchEvent(event, name, value) {
-		this.emit(name, {
-			fieldInstance: this,
-			originalEvent: event,
-			value,
-		});
-	}
+const ClayColorPickerWithState = ({
+	inputValue,
+	name,
+	onBlur,
+	onFocus,
+	onValueChange,
+	readOnly,
+	spritemap,
+}) => {
+	const [customColors, setCustoms] = useState(DEFAULT_COLORS);
 
-	_handleOnDispatch(event) {
-		switch (event.type) {
-			case 'value':
-				this.dispatchEvent(event, 'fieldEdited', event.payload);
-				break;
-			case 'blur':
-				this.dispatchEvent(
-					event.payload,
-					'fieldBlurred',
-					event.payload.target.value
-				);
-				break;
-			case 'focus':
-				this.dispatchEvent(
-					event.payload,
-					'fieldFocused',
-					event.payload.target.value
-				);
-				break;
-			default:
-				console.error(new TypeError(`There is no type ${event.type}`));
-				break;
+	const [color, setColor] = useState(
+		inputValue ? inputValue : customColors[0]
+	);
+
+	useEffect(() => {
+		if (inputValue) {
+			setColor(inputValue);
 		}
-	}
-}
+	}, [inputValue]);
 
-ColorPicker.STATE = {
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	errorMessage: Config.string(),
-
-	/**
-	 * @default false
-	 * @instance
-	 * @memberof ColorPicker
-	 * @type {?bool}
-	 */
-
-	evaluable: Config.bool().value(false),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	fieldName: Config.string(),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	label: Config.string(),
-
-	/**
-	 * @default {}
-	 * @instance
-	 * @memberof ColorPicker
-	 * @type {?(object|undefined)}
-	 */
-
-	localizedValue: Config.object().value({}),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	name: Config.string().required(),
-
-	/**
-	 * @default '000000'
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	predefinedValue: Config.string().value('000000'),
-
-	/**
-	 * @default false
-	 * @instance
-	 * @memberof Text
-	 * @type {?bool}
-	 */
-
-	readOnly: Config.bool().value(false),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof FieldBase
-	 * @type {?(bool|undefined)}
-	 */
-
-	repeatable: Config.bool().value(false),
-
-	/**
-	 * @default false
-	 * @instance
-	 * @memberof Text
-	 * @type {?(bool|undefined)}
-	 */
-
-	required: Config.bool().value(false),
-
-	/**
-	 * @default true
-	 * @instance
-	 * @memberof Text
-	 * @type {?(bool|undefined)}
-	 */
-
-	showLabel: Config.bool().value(true),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	spritemap: Config.string(),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	tip: Config.string(),
-
-	/**
-	 * @default undefined
-	 * @instance
-	 * @memberof Text
-	 * @type {?(string|undefined)}
-	 */
-
-	value: Config.string(),
+	return (
+		<ClayColorPicker
+			colors={customColors}
+			disabled={readOnly}
+			label={Liferay.Language.get('color-field-type-label')}
+			name={name}
+			onBlur={onBlur}
+			onColorsChange={setCustoms}
+			onFocus={onFocus}
+			onValueChange={value => {
+				if (value !== color) {
+					setColor(value);
+					onValueChange(value);
+				}
+			}}
+			spritemap={spritemap}
+			value={color}
+		/>
+	);
 };
 
-Soy.register(ColorPicker, templates);
+/**
+ * The Proxy is on the front line of `PageRenderer.RegisterFieldType`, communicates
+ * directly with the store and issues events from the Metal instance. This should
+ * be overridden when we have a Store/Provider React implementation.
+ */
+const ColorPickerProxy = connectStore(
+	({
+		dispatch,
+		emit,
+		name,
+		predefinedValue = '000000',
+		readOnly,
+		spritemap,
+		value,
+		...otherProps
+	}) => (
+		<FieldBaseProxy
+			dispatch={dispatch}
+			name={name}
+			readOnly={readOnly}
+			spritemap={spritemap}
+			{...otherProps}
+		>
+			<ClayColorPickerWithState
+				inputValue={value ? value : predefinedValue}
+				name={name}
+				onBlur={event =>
+					emit('fieldBlurred', event, event.target.value)
+				}
+				onFocus={event =>
+					emit('fieldFocused', event, event.target.value)
+				}
+				onValueChange={value => emit('fieldEdited', {}, value)}
+				readOnly={readOnly}
+				spritemap={spritemap}
+			/>
+		</FieldBaseProxy>
+	)
+);
 
-export {ColorPicker};
-export default ColorPicker;
+const ReactColorPickerAdapter = getConnectedReactComponentAdapter(
+	ColorPickerProxy,
+	templates
+);
+
+export {ClayColorPickerWithState, ReactColorPickerAdapter};
+export default ReactColorPickerAdapter;

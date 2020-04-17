@@ -22,11 +22,11 @@ import MillerColumnsColumn from './MillerColumnsColumn';
 const getItemsMap = columns => {
 	const map = new Map();
 
-	let parentKey;
+	let parentId, parentKey;
 
 	columns.forEach((column, columnIndex) => {
 		let childrenCount = 0;
-		let newParentKey;
+		let newParentId, newParentKey;
 
 		column.forEach(item => {
 			childrenCount++;
@@ -34,10 +34,12 @@ const getItemsMap = columns => {
 			map.set(item.key, {
 				...item,
 				columnIndex,
+				parentId,
 				parentKey,
 			});
 
 			if (item.active && item.hasChild) {
+				newParentId = item.id;
 				newParentKey = item.key;
 			}
 		});
@@ -49,6 +51,7 @@ const getItemsMap = columns => {
 			});
 		}
 
+		parentId = newParentId;
 		parentKey = newParentKey;
 	});
 
@@ -125,8 +128,10 @@ const MillerColumns = ({
 	const onItemDrop = (sourceId, newParentId, newIndex) => {
 		const newItems = new Map();
 
-		const source = items.get(sourceId);
-		const parent = items.get(newParentId);
+		const itemsArray = Array.from(items.values());
+
+		const source = itemsArray.find(item => item.id === sourceId);
+		const parent = itemsArray.find(item => item.id === newParentId);
 
 		// If no newIndex is provided set it as the last of the siblings.
 		if (typeof newIndex !== 'number') {
@@ -198,10 +203,10 @@ const MillerColumns = ({
 				columnIndex === newSource.columnIndex &&
 				parent.active
 			) {
-				newItems.set(newSource.id, newSource);
+				newItems.set(newSource.key, newSource);
 			}
 
-			newItems.set(item.id, {...item});
+			newItems.set(item.key, {...item});
 
 			itemIndex++;
 			prevColumnIndex = item.columnIndex;

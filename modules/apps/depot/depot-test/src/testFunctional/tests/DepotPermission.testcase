@@ -131,6 +131,7 @@ definition {
 			portlet = "Memberships");
 
 		Site.assignUserAsMemberCP(
+			depotName = "Test Depot Name",
 			userFirstName = "userfn1",
 			userLastName = "userln1",
 			userScreenName = "usersn1");
@@ -258,11 +259,7 @@ definition {
 			userLoginEmailAddress = "userea@liferay.com",
 			userLoginFullName = "userfn userln");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name");
 
 		Pause(locator1 = "3000");
 
@@ -274,11 +271,7 @@ definition {
 
 		PortletEntry.publish();
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name 2",
-			portlet = "Web Content");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-depot-name-2");
 
 		AssertElementNotPresent(locator1 = "Button#PLUS");
 
@@ -410,7 +403,7 @@ definition {
 
 	@description = "This ensures that able to select specific asset libraries scope from Collections permissions."
 	@priority = "5"
-	test SelectDepotFromContentSetsPermissions {
+	test SelectDepotFromCollectionsPermissions {
 		Permissions.setUpRegRoleLoginUserCP(
 			roleTitle = "Depot Regrole Name",
 			userEmailAddress = "userea@liferay.com",
@@ -427,7 +420,7 @@ definition {
 
 		Role.definePermissionCP(
 			assetLibrariesScope = "true",
-			permissionDefinitionKey = "SITE_ADMIN_CONTENT_CONTENT_SETS_ASSET_LIST_ENTRY_DELETE_CHECKBOX",
+			permissionDefinitionKey = "SITE_ADMIN_CONTENT_COLLECTIONS_ASSET_LIST_ENTRY_DELETE_CHECKBOX",
 			permissionDefinitionValue = "Delete",
 			roleTitle = "Depot Regrole Name",
 			siteNameScope = "Test Depot Name");
@@ -486,8 +479,6 @@ definition {
 	@description = "This ensures that the user can view documents on site and library with all sites and libraries scope view permissions."
 	@priority = "5"
 	test ViewDocumentOnSiteAndLibrary {
-		property portal.upstream = "quarantine";
-
 		JSONDocument.addFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "Depot DM Document Title",
@@ -568,11 +559,7 @@ definition {
 
 		DMDocument.viewCP(dmDocumentTitle = "Site DM Document Title");
 
-		DepotNavigator.openDepotAdmin();
-
-		DepotNavigator.gotoDepot(
-			depotName = "Test Depot Name",
-			portlet = "Documents and Media");
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
 
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "Depot DM Document Title");
 

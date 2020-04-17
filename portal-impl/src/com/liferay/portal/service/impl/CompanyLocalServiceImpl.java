@@ -683,13 +683,11 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		company.setMaxUsers(maxUsers);
 		company.setActive(active);
 
-		company = companyPersistence.update(company);
+		companyPersistence.update(company);
 
 		// Virtual host
 
-		company = updateVirtualHostname(companyId, virtualHostname);
-
-		return company;
+		return updateVirtualHostname(companyId, virtualHostname);
 	}
 
 	/**
@@ -760,9 +758,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 		// Virtual host
 
-		company = updateVirtualHostname(companyId, virtualHostname);
-
-		return company;
+		return updateVirtualHostname(companyId, virtualHostname);
 	}
 
 	/**

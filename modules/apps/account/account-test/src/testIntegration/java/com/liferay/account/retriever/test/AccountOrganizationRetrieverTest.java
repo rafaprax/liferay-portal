@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.test.util.OrganizationTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.comparator.OrganizationNameComparator;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -187,6 +188,9 @@ public class AccountOrganizationRetrieverTest {
 				_organizations, new OrganizationNameComparator(false)),
 			organizations);
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	@DeleteAfterTestRun
 	private final List<AccountEntry> _accountEntries = new ArrayList<>();
