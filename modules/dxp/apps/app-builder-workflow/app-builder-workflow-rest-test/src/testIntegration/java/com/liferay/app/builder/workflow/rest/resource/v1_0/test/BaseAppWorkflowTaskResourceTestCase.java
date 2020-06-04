@@ -263,6 +263,11 @@ public abstract class BaseAppWorkflowTaskResourceTestCase {
 		Assert.assertTrue(false);
 	}
 
+	@Test
+	public void testPutAppWorkflowTasks() throws Exception {
+		Assert.assertTrue(false);
+	}
+
 	protected void assertHttpResponseStatusCode(
 		int expectedHttpResponseStatusCode,
 		HttpInvoker.HttpResponse actualHttpResponse) {

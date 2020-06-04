@@ -58,6 +58,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -106,6 +107,26 @@ public abstract class BaseAppWorkflowTaskResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@Tags(value = {@Tag(name = "AppWorkflowTask")})
 	public Page<AppWorkflowTask> postAppWorkflowTasks(
+			@NotNull @Parameter(hidden = true) @PathParam("appId") Long appId,
+			AppWorkflowTask[] appWorkflowTasks)
+		throws Exception {
+
+		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/app-builder-workflow/v1.0/apps/{appId}/app-workflow-tasks'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@PUT
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "appId")})
+	@Path("/apps/{appId}/app-workflow-tasks")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "AppWorkflowTask")})
+	public Page<AppWorkflowTask> putAppWorkflowTasks(
 			@NotNull @Parameter(hidden = true) @PathParam("appId") Long appId,
 			AppWorkflowTask[] appWorkflowTasks)
 		throws Exception {

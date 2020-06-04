@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.kaleo.definition.export;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.workflow.kaleo.definition.Definition;
 
 /**
  * @author Michael C. Han
@@ -24,6 +25,9 @@ public interface DefinitionExporter {
 	public String export(long kaleoDefinitionId) throws PortalException;
 
 	public String export(long companyId, String name, int version)
+		throws PortalException;
+
+	public String export(Definition definition)
 		throws PortalException;
 
 }

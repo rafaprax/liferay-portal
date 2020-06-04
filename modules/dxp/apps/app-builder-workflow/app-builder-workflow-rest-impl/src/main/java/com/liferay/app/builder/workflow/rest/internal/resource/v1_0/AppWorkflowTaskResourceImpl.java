@@ -15,26 +15,26 @@
 package com.liferay.app.builder.workflow.rest.internal.resource.v1_0;
 
 import com.liferay.app.builder.model.AppBuilderApp;
+import com.liferay.app.builder.service.AppBuilderAppLocalService;
 import com.liferay.app.builder.workflow.model.AppBuilderWorkflowTaskLink;
 import com.liferay.app.builder.workflow.rest.dto.v1_0.AppWorkflowTask;
-import com.liferay.app.builder.workflow.rest.internal.jaxrs.application.AppBuilderWorkflowRESTApplication;
+import com.liferay.app.builder.workflow.rest.internal.resource.v1_0.helper.AppWorkflowTaskResourceHelper;
 import com.liferay.app.builder.workflow.rest.resource.v1_0.AppWorkflowTaskResource;
 import com.liferay.app.builder.workflow.service.AppBuilderWorkflowTaskLinkLocalService;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
-import com.liferay.portal.kernel.workflow.WorkflowDefinitionManager;
 import com.liferay.portal.vulcan.pagination.Page;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Rafael Praxedes
@@ -75,26 +75,32 @@ public class AppWorkflowTaskResourceImpl
 		}
 
 		WorkflowDefinition workflowDefinition =
-			_createWorkflowDefinition(appWorkflowTasks);
+			_appWorkflowTaskResourceHelper.createWorkflowDefinition(
+				_appBuilderAppLocalService.getAppBuilderApp(appId),
+				appWorkflowTasks, contextCompany.getCompanyId(),
+				contextUser.getUserId());
 
 		_workflowDefinitionLinkLocalService.addWorkflowDefinitionLink(
 			contextUser.getUserId(), contextCompany.getCompanyId(), 0,
 			AppBuilderApp.class.getName(), appId, 0,
 			workflowDefinition.getName(), workflowDefinition.getVersion());
 
-		return _toAppWorkflowTaskPage(
-			appId,
-			_appBuilderWorkflowTaskLinkLocalService.
-				getAppBuilderWorkflowTaskLinks(appId));
+		return _toAppWorkflowTaskPage(appId, appBuilderWorkflowTaskLinks);
 	}
 
-	private WorkflowDefinition _createWorkflowDefinition(
-		long appId, AppWorkflowTask[] appWorkflowTasks) {
+	@Override
+	public Page<AppWorkflowTask> putAppWorkflowTasks(
+			Long appId, AppWorkflowTask[] appWorkflowTasks)
+		throws Exception {
 
-		return _workflowDefinitionManager.deployWorkflowDefinition(
-			contextCompany.getCompanyId(), contextUser.getUserId(),
-			"Workflow definition for App with the id = " + appId,
-			String.valueOf(appId), null);
+		_appBuilderWorkflowTaskLinkLocalService.
+			deleteAppBuilderWorkflowTaskLinks(appId);
+
+		_workflowDefinitionLinkLocalService.deleteWorkflowDefinitionLink(
+			contextCompany.getCompanyId(), 0,
+			AppBuilderApp.class.getName(), appId, 0);
+
+		return postAppWorkflowTasks(appId, appWorkflowTasks);
 	}
 
 	private AppWorkflowTask _toAppWorkflowTask(
@@ -137,14 +143,17 @@ public class AppWorkflowTaskResourceImpl
 	}
 
 	@Reference
+	private AppBuilderAppLocalService _appBuilderAppLocalService;
+
+	@Reference
 	private AppBuilderWorkflowTaskLinkLocalService
 		_appBuilderWorkflowTaskLinkLocalService;
 
 	@Reference
-	private WorkflowDefinitionManager _workflowDefinitionManager;
-
-	@Reference
 	private WorkflowDefinitionLinkLocalService
 		_workflowDefinitionLinkLocalService;
+
+	@Reference
+	private AppWorkflowTaskResourceHelper _appWorkflowTaskResourceHelper;
 
 }

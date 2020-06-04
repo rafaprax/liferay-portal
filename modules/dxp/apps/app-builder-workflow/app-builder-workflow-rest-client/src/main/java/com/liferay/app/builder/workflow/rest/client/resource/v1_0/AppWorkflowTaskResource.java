@@ -56,6 +56,14 @@ public interface AppWorkflowTaskResource {
 			Long appId, AppWorkflowTask[] appWorkflowTasks)
 		throws Exception;
 
+	public Page<AppWorkflowTask> putAppWorkflowTasks(
+			Long appId, AppWorkflowTask[] appWorkflowTasks)
+		throws Exception;
+
+	public HttpInvoker.HttpResponse putAppWorkflowTasksHttpResponse(
+			Long appId, AppWorkflowTask[] appWorkflowTasks)
+		throws Exception;
+
 	public static class Builder {
 
 		public Builder authentication(String login, String password) {
@@ -236,6 +244,80 @@ public interface AppWorkflowTaskResource {
 			}
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.POST);
+
+			httpInvoker.path(
+				_builder._scheme + "://" + _builder._host + ":" +
+					_builder._port +
+						"/o/app-builder-workflow/v1.0/apps/{appId}/app-workflow-tasks",
+				appId);
+
+			httpInvoker.userNameAndPassword(
+				_builder._login + ":" + _builder._password);
+
+			return httpInvoker.invoke();
+		}
+
+		public Page<AppWorkflowTask> putAppWorkflowTasks(
+				Long appId, AppWorkflowTask[] appWorkflowTasks)
+			throws Exception {
+
+			HttpInvoker.HttpResponse httpResponse =
+				putAppWorkflowTasksHttpResponse(appId, appWorkflowTasks);
+
+			String content = httpResponse.getContent();
+
+			_logger.fine("HTTP response content: " + content);
+
+			_logger.fine("HTTP response message: " + httpResponse.getMessage());
+			_logger.fine(
+				"HTTP response status code: " + httpResponse.getStatusCode());
+
+			try {
+				return Page.of(content, AppWorkflowTaskSerDes::toDTO);
+			}
+			catch (Exception e) {
+				_logger.log(
+					Level.WARNING,
+					"Unable to process HTTP response: " + content, e);
+
+				throw new Problem.ProblemException(Problem.toDTO(content));
+			}
+		}
+
+		public HttpInvoker.HttpResponse putAppWorkflowTasksHttpResponse(
+				Long appId, AppWorkflowTask[] appWorkflowTasks)
+			throws Exception {
+
+			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
+
+			httpInvoker.body(
+				Stream.of(
+					appWorkflowTasks
+				).map(
+					value -> String.valueOf(value)
+				).collect(
+					Collectors.toList()
+				).toString(),
+				"application/json");
+
+			if (_builder._locale != null) {
+				httpInvoker.header(
+					"Accept-Language", _builder._locale.toLanguageTag());
+			}
+
+			for (Map.Entry<String, String> entry :
+					_builder._headers.entrySet()) {
+
+				httpInvoker.header(entry.getKey(), entry.getValue());
+			}
+
+			for (Map.Entry<String, String> entry :
+					_builder._parameters.entrySet()) {
+
+				httpInvoker.parameter(entry.getKey(), entry.getValue());
+			}
+
+			httpInvoker.httpMethod(HttpInvoker.HttpMethod.PUT);
 
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +

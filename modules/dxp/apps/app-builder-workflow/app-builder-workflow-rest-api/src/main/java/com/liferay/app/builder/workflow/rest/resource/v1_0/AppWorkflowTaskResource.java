@@ -52,6 +52,10 @@ public interface AppWorkflowTaskResource {
 			Long appId, AppWorkflowTask[] appWorkflowTasks)
 		throws Exception;
 
+	public Page<AppWorkflowTask> putAppWorkflowTasks(
+			Long appId, AppWorkflowTask[] appWorkflowTasks)
+		throws Exception;
+
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {
 	}

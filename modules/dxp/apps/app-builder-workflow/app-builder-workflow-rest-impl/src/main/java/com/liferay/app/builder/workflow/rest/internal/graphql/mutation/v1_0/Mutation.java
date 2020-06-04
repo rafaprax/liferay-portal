@@ -68,6 +68,24 @@ public class Mutation {
 			});
 	}
 
+	@GraphQLField
+	public java.util.Collection<AppWorkflowTask> updateAppWorkflowTasks(
+			@GraphQLName("appId") Long appId,
+			@GraphQLName("appWorkflowTasks") AppWorkflowTask[] appWorkflowTasks)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appWorkflowTaskResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appWorkflowTaskResource -> {
+				Page paginationPage =
+					appWorkflowTaskResource.putAppWorkflowTasks(
+						appId, appWorkflowTasks);
+
+				return paginationPage.getItems();
+			});
+	}
+
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
 			_applyComponentServiceObjects(
 				ComponentServiceObjects<T> componentServiceObjects,

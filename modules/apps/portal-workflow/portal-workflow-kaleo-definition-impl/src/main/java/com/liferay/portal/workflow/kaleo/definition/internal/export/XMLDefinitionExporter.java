@@ -63,6 +63,11 @@ public class XMLDefinitionExporter implements DefinitionExporter {
 		return doExport(definition);
 	}
 
+	@Override
+	public String export(Definition definition) throws PortalException {
+		return doExport(definition);
+	}
+
 	public void setVersion(String version) {
 		_version = version;
 	}
