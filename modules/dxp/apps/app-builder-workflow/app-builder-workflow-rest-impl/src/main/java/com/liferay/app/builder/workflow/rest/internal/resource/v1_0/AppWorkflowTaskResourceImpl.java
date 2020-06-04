@@ -14,10 +14,15 @@
 
 package com.liferay.app.builder.workflow.rest.internal.resource.v1_0;
 
+import com.liferay.app.builder.model.AppBuilderApp;
 import com.liferay.app.builder.workflow.model.AppBuilderWorkflowTaskLink;
 import com.liferay.app.builder.workflow.rest.dto.v1_0.AppWorkflowTask;
+import com.liferay.app.builder.workflow.rest.internal.jaxrs.application.AppBuilderWorkflowRESTApplication;
 import com.liferay.app.builder.workflow.rest.resource.v1_0.AppWorkflowTaskResource;
 import com.liferay.app.builder.workflow.service.AppBuilderWorkflowTaskLinkLocalService;
+import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
+import com.liferay.portal.kernel.workflow.WorkflowDefinition;
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionManager;
 import com.liferay.portal.vulcan.pagination.Page;
 
 import java.util.ArrayList;
@@ -56,9 +61,6 @@ public class AppWorkflowTaskResourceImpl
 			Long appId, AppWorkflowTask[] appWorkflowTasks)
 		throws Exception {
 
-		_appBuilderWorkflowTaskLinkLocalService.
-			deleteAppBuilderWorkflowTaskLinks(appId);
-
 		List<AppBuilderWorkflowTaskLink> appBuilderWorkflowTaskLinks =
 			new ArrayList<>();
 
@@ -72,10 +74,27 @@ public class AppWorkflowTaskResourceImpl
 			}
 		}
 
+		WorkflowDefinition workflowDefinition =
+			_createWorkflowDefinition(appWorkflowTasks);
+
+		_workflowDefinitionLinkLocalService.addWorkflowDefinitionLink(
+			contextUser.getUserId(), contextCompany.getCompanyId(), 0,
+			AppBuilderApp.class.getName(), appId, 0,
+			workflowDefinition.getName(), workflowDefinition.getVersion());
+
 		return _toAppWorkflowTaskPage(
 			appId,
 			_appBuilderWorkflowTaskLinkLocalService.
 				getAppBuilderWorkflowTaskLinks(appId));
+	}
+
+	private WorkflowDefinition _createWorkflowDefinition(
+		long appId, AppWorkflowTask[] appWorkflowTasks) {
+
+		return _workflowDefinitionManager.deployWorkflowDefinition(
+			contextCompany.getCompanyId(), contextUser.getUserId(),
+			"Workflow definition for App with the id = " + appId,
+			String.valueOf(appId), null);
 	}
 
 	private AppWorkflowTask _toAppWorkflowTask(
@@ -120,5 +139,12 @@ public class AppWorkflowTaskResourceImpl
 	@Reference
 	private AppBuilderWorkflowTaskLinkLocalService
 		_appBuilderWorkflowTaskLinkLocalService;
+
+	@Reference
+	private WorkflowDefinitionManager _workflowDefinitionManager;
+
+	@Reference
+	private WorkflowDefinitionLinkLocalService
+		_workflowDefinitionLinkLocalService;
 
 }

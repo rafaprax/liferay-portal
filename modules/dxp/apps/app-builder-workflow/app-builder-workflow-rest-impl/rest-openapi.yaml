@@ -100,3 +100,40 @@ paths:
                     description:
                         ""
             tags: ["AppWorkflowTask"]
+        put:
+            operationId: putAppWorkflowTasks
+            parameters:
+                - in: path
+                  name: appId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            items:
+                                $ref: "#/components/schemas/AppWorkflowTask"
+                            type: array
+                    application/xml:
+                        schema:
+                            items:
+                                $ref: "#/components/schemas/AppWorkflowTask"
+                            type: array
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/AppWorkflowTask"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/AppWorkflowTask"
+                                type: array
+                    description:
+                        ""
+            tags: ["AppWorkflowTask"]
