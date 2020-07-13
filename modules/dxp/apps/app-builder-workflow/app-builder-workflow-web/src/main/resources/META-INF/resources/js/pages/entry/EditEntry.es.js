@@ -116,6 +116,7 @@ export default function EditEntry({dataRecordId, redirect}) {
 
 					const action = transitions.find(({primary}) => primary);
 
+					params.taskName = stepName;
 					params.transitionName = transitionName ?? action.name;
 					params.workflowInstanceId = id;
 				}
