@@ -23,8 +23,8 @@ import useAppWorkflow from '../../hooks/useAppWorkflow.es';
 import useDDMForms from '../../hooks/useDDMForms.es';
 
 const createWorkflowInfoPortal = (props) => {
-	const portalElementId = 'workflowInfoBar';
 	const targetElement = document.getElementById('edit-app-content');
+	const portalElementId = 'workflowInfoBar';
 
 	let portalElement = document.getElementById(portalElementId);
 	let portalContainer = portalElement?.parentNode;
@@ -69,7 +69,7 @@ export default function EditEntry({dataRecordId, redirect}) {
 	const [workflowInfo, setWorkflowInfo] = useState();
 
 	const actionButtons = [];
-	const isEdit = dataRecordId !== '0';
+	const isUpdate = dataRecordId !== '0';
 	let pageTitle =
 		dataRecordId !== '0'
 			? Liferay.Language.get('edit-entry')
@@ -100,23 +100,22 @@ export default function EditEntry({dataRecordId, redirect}) {
 					dataRecordId,
 				};
 
-				const resource = `${isEdit ? 'update' : 'add'}_data_record`;
+				const resource = `${isUpdate ? 'update' : 'add'}_data_record`;
 
 				if (workflowInfo) {
 					const {
 						id,
 						tasks = [],
-						taskNames: [taskName],
+						taskNames: [stepName],
 					} = workflowInfo;
 
 					//avoids enter submission putting primary action
 
 					const {appWorkflowTransitions: transitions = []} =
-						tasks.find(({name}) => name === taskName) || {};
+						tasks.find(({name}) => name === stepName) || {};
 
 					const action = transitions.find(({primary}) => primary);
 
-					params.taskName = taskName;
 					params.transitionName = transitionName ?? action.name;
 					params.workflowInstanceId = id;
 				}
@@ -133,7 +132,7 @@ export default function EditEntry({dataRecordId, redirect}) {
 					}
 				).then(() => {
 					successToast(
-						isEdit
+						isUpdate
 							? Liferay.Language.get('an-entry-was-updated')
 							: Liferay.Language.get('an-entry-was-added')
 					);
@@ -144,7 +143,7 @@ export default function EditEntry({dataRecordId, redirect}) {
 				appId,
 				baseResourceURL,
 				dataRecordId,
-				isEdit,
+				isUpdate,
 				namespace,
 				onCancel,
 				workflowInfo,
@@ -200,7 +199,7 @@ export default function EditEntry({dataRecordId, redirect}) {
 	}
 
 	useEffect(() => {
-		if (appWorkflowDefinitionId && isEdit) {
+		if (appWorkflowDefinitionId && isUpdate) {
 			getItem(
 				`/o/portal-workflow-metrics/v1.0/processes/${appWorkflowDefinitionId}/instances`,
 				{classPKs: [dataRecordId]}
@@ -213,7 +212,7 @@ export default function EditEntry({dataRecordId, redirect}) {
 				}
 			});
 		}
-	}, [appWorkflowDefinitionId, appWorkflowTasks, dataRecordId, isEdit]);
+	}, [appWorkflowDefinitionId, appWorkflowTasks, dataRecordId, isUpdate]);
 
 	return (
 		<>
