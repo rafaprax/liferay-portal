@@ -29,6 +29,8 @@ public class AppBuilderWebKeys {
 
 	public static final String DATA_LAYOUT_IDS = "DATA_LAYOUT_IDS";
 
+	public static final String DATA_LAYOUT_MAP = "DATA_LAYOUT_MAP";
+
 	public static final String SHOW_FORM_VIEW = "SHOW_FORM_VIEW";
 
 	public static final String SHOW_NATIVE_OBJECTS_TAB =

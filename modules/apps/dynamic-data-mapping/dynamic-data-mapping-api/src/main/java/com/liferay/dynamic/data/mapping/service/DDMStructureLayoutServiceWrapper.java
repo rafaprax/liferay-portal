@@ -34,6 +34,12 @@ public class DDMStructureLayoutServiceWrapper
 		_ddmStructureLayoutService = ddmStructureLayoutService;
 	}
 
+	@Override
+	public DDMStructureLayout fetchDDMStructureLayout(long structureLayoutId) {
+		return _ddmStructureLayoutService.fetchDDMStructureLayout(
+			structureLayoutId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *

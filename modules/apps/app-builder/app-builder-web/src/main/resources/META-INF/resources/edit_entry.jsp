@@ -19,6 +19,7 @@
 <%
 AppBuilderApp appBuilderApp = (AppBuilderApp)request.getAttribute(AppBuilderWebKeys.APP);
 List<Long> dataLayoutIds = (List<Long>)request.getAttribute(AppBuilderWebKeys.DATA_LAYOUT_IDS);
+Map<DDMStructureLayout, Boolean> dataLayoutMap = (Map<DDMStructureLayout, Boolean>)request.getAttribute(AppBuilderWebKeys.DATA_LAYOUT_MAP);
 %>
 
 <div class="app-builder-root">
@@ -37,15 +38,27 @@ List<Long> dataLayoutIds = (List<Long>)request.getAttribute(AppBuilderWebKeys.DA
 					<div class="card-body px-0">
 
 						<%
-						for (Long dataLayoutId : dataLayoutIds) {
+						for (Map.Entry<DDMStructureLayout, Boolean> entry : dataLayoutMap.entrySet()) {
+							DDMStructureLayout ddmStructureLayout = entry.getKey();
+
+							if (dataLayoutMap.size() > 1) {
 						%>
 
-							<aui:form name='<%= dataLayoutId + "_fm" %>'>
+								<h3>
+									<%= ddmStructureLayout.getName(locale) %>
+								</h3>
+
+							<%
+							}
+							%>
+
+							<aui:form name='<%= ddmStructureLayout.getStructureLayoutId() + "_fm" %>'>
 								<liferay-data-engine:data-layout-renderer
-									containerId='<%= liferayPortletResponse.getNamespace() + "container" + dataLayoutId %>'
-									dataLayoutId="<%= dataLayoutId %>"
+									containerId='<%= liferayPortletResponse.getNamespace() + "container" + ddmStructureLayout.getStructureLayoutId() %>'
+									dataLayoutId="<%= ddmStructureLayout.getStructureLayoutId() %>"
 									dataRecordId='<%= ParamUtil.getLong(request, "dataRecordId") %>'
 									namespace="<%= liferayPortletResponse.getNamespace() %>"
+									readOnly="<%= entry.getValue() %>"
 								/>
 							</aui:form>
 

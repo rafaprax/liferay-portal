@@ -16,10 +16,12 @@ package com.liferay.app.builder.web.internal.portlet.tab;
 
 import com.liferay.app.builder.model.AppBuilderApp;
 import com.liferay.app.builder.portlet.tab.AppBuilderAppPortletTab;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutService;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -35,11 +37,13 @@ public class StandardAppBuilderAppPortletTab
 	implements AppBuilderAppPortletTab {
 
 	@Override
-	public List<Long> getDataLayoutIds(
+	public Map<DDMStructureLayout, Boolean> getDataLayoutMap(
 		AppBuilderApp appBuilderApp, long dataRecordId) {
 
-		return Collections.singletonList(
-			appBuilderApp.getDdmStructureLayoutId());
+		return Collections.singletonMap(
+			_ddmStructureLayoutService.fetchDDMStructureLayout(
+				appBuilderApp.getDdmStructureLayoutId()),
+			false);
 	}
 
 	@Override
@@ -59,6 +63,9 @@ public class StandardAppBuilderAppPortletTab
 		return _npmResolver.resolveModuleName(
 			"app-builder-web/js/pages/entry/ViewEntry.es");
 	}
+
+	@Reference
+	private DDMStructureLayoutService _ddmStructureLayoutService;
 
 	@Reference
 	private NPMResolver _npmResolver;

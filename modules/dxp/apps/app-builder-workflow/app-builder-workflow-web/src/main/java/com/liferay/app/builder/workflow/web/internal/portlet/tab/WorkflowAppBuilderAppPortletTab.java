@@ -16,17 +16,23 @@ package com.liferay.app.builder.workflow.web.internal.portlet.tab;
 
 import com.liferay.app.builder.model.AppBuilderApp;
 import com.liferay.app.builder.portlet.tab.AppBuilderAppPortletTab;
-import com.liferay.app.builder.workflow.model.AppBuilderWorkflowTaskLink;
 import com.liferay.app.builder.workflow.service.AppBuilderWorkflowTaskLinkLocalService;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutService;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.WorkflowInstanceLink;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
@@ -43,8 +49,8 @@ public class WorkflowAppBuilderAppPortletTab
 	implements AppBuilderAppPortletTab {
 
 	@Override
-	public List<Long> getDataLayoutIds(
-		AppBuilderApp appBuilderApp, long dataRecordId) {
+	public Map<DDMStructureLayout, Boolean> getDataLayoutMap(
+			AppBuilderApp appBuilderApp, long dataRecordId) {
 
 		WorkflowInstanceLink workflowInstanceLink =
 			_workflowInstanceLinkLocalService.fetchWorkflowInstanceLink(
@@ -54,8 +60,10 @@ public class WorkflowAppBuilderAppPortletTab
 				dataRecordId);
 
 		if (workflowInstanceLink == null) {
-			return Collections.singletonList(
-				appBuilderApp.getDdmStructureLayoutId());
+			return Collections.singletonMap(
+				_ddmStructureLayoutService.fetchDDMStructureLayout(
+					appBuilderApp.getDdmStructureLayoutId()),
+				false);
 		}
 
 		return Stream.of(
@@ -65,9 +73,17 @@ public class WorkflowAppBuilderAppPortletTab
 		).flatMap(
 			List::stream
 		).map(
-			AppBuilderWorkflowTaskLink::getDdmStructureLayoutId
+			appBuilderWorkflowTask ->
+				new SimpleEntry<DDMStructureLayout, Boolean>(
+					_ddmStructureLayoutService.fetchDDMStructureLayout(
+						appBuilderApp.getDdmStructureLayoutId()),
+					appBuilderWorkflowTask.getReadOnly())
+		).filter(
+			entry -> Objects.nonNull(entry.getKey())
 		).collect(
-			Collectors.toList()
+			LinkedHashMap::new,
+			(map, entry) -> map.put(entry.getKey(), entry.getValue()),
+			Map::putAll
 		);
 	}
 
@@ -94,9 +110,15 @@ public class WorkflowAppBuilderAppPortletTab
 		_appBuilderWorkflowTaskLinkLocalService;
 
 	@Reference
+	private DDMStructureLayoutService _ddmStructureLayoutService;
+
+	@Reference
 	private NPMResolver _npmResolver;
 
 	@Reference
 	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		WorkflowAppBuilderAppPortletTab.class);
 
 }

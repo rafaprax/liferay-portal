@@ -27,6 +27,7 @@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.app.builder.model.AppBuilderApp" %><%@
 page import="com.liferay.app.builder.web.internal.constants.AppBuilderWebKeys" %><%@
+page import="com.liferay.dynamic.data.mapping.model.DDMStructureLayout" %><%@
 page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@

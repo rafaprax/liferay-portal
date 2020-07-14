@@ -61,6 +61,26 @@ import java.rmi.RemoteException;
  */
 public class DDMStructureLayoutServiceSoap {
 
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureLayoutSoap
+			fetchDDMStructureLayout(long structureLayoutId)
+		throws RemoteException {
+
+		try {
+			com.liferay.dynamic.data.mapping.model.DDMStructureLayout
+				returnValue =
+					DDMStructureLayoutServiceUtil.fetchDDMStructureLayout(
+						structureLayoutId);
+
+			return com.liferay.dynamic.data.mapping.model.
+				DDMStructureLayoutSoap.toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
 	public static
 		com.liferay.dynamic.data.mapping.model.DDMStructureLayoutSoap[]
 				getStructureLayouts(long groupId, int start, int end)

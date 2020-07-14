@@ -15,8 +15,13 @@
 package com.liferay.app.builder.portlet.tab;
 
 import com.liferay.app.builder.model.AppBuilderApp;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -26,7 +31,28 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface AppBuilderAppPortletTab {
 
-	public List<Long> getDataLayoutIds(
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getDataLayoutMap(AppBuilderApp, long)}
+	 */
+	@Deprecated
+	public default List<Long> getDataLayoutIds(
+		AppBuilderApp appBuilderApp, long dataRecordId) {
+
+		return Stream.of(
+			getDataLayoutMap(appBuilderApp, dataRecordId)
+		).map(
+			Map::keySet
+		).flatMap(
+			Set::stream
+		).map(
+			DDMStructureLayout::getStructureLayoutId
+		).collect(
+			Collectors.toList()
+		);
+	}
+
+	public Map<DDMStructureLayout, Boolean> getDataLayoutMap(
 		AppBuilderApp appBuilderApp, long dataRecordId);
 
 	public String getEditEntryPoint();

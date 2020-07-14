@@ -37,6 +37,11 @@ public class DDMStructureLayoutServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.dynamic.data.mapping.service.impl.DDMStructureLayoutServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static com.liferay.dynamic.data.mapping.model.DDMStructureLayout
+		fetchDDMStructureLayout(long structureLayoutId) {
+
+		return getService().fetchDDMStructureLayout(structureLayoutId);
+	}
 
 	/**
 	 * Returns the OSGi service identifier.
