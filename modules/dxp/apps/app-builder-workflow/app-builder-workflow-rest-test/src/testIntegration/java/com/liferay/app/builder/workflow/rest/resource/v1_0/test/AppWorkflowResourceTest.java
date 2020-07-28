@@ -140,7 +140,7 @@ public class AppWorkflowResourceTest extends BaseAppWorkflowResourceTestCase {
 			getAppWorkflow.getAppWorkflowTasks();
 
 		Assert.assertEquals(
-			appWorkflowTasks.toString(), 1, appWorkflowTasks.length);
+			appWorkflowTasks.toString(), 2, appWorkflowTasks.length);
 
 		AppWorkflowTask appWorkflowTask = appWorkflowTasks[0];
 
@@ -199,7 +199,9 @@ public class AppWorkflowResourceTest extends BaseAppWorkflowResourceTestCase {
 
 	@Override
 	protected AppWorkflow randomAppWorkflow() throws Exception {
-		String appWorkflowTaskName = StringUtil.toLowerCase(
+		String appWorkflowTaskName1 = StringUtil.toLowerCase(
+			RandomTestUtil.randomString());
+		String appWorkflowTaskName2 = StringUtil.toLowerCase(
 			RandomTestUtil.randomString());
 		String terminalStateName = StringUtil.toLowerCase(
 			RandomTestUtil.randomString());
@@ -217,7 +219,7 @@ public class AppWorkflowResourceTest extends BaseAppWorkflowResourceTestCase {
 											name = StringUtil.toLowerCase(
 												RandomTestUtil.randomString());
 											primary = true;
-											transitionTo = appWorkflowTaskName;
+											transitionTo = appWorkflowTaskName1;
 										}
 									}
 								};
@@ -271,11 +273,61 @@ public class AppWorkflowResourceTest extends BaseAppWorkflowResourceTestCase {
 											name = StringUtil.toLowerCase(
 												RandomTestUtil.randomString());
 											primary = true;
-											transitionTo = terminalStateName;
+											transitionTo = appWorkflowTaskName2;
 										}
 									}
 								};
-							name = appWorkflowTaskName;
+							name = appWorkflowTaskName1;
+						}
+					},
+					new AppWorkflowTask() {
+						{
+							appWorkflowDataLayoutLinks =
+								new AppWorkflowDataLayoutLink[] {
+									new AppWorkflowDataLayoutLink() {
+										{
+											dataLayoutId =
+												_appBuilderApp.
+													getDdmStructureLayoutId();
+											readOnly = false;
+										}
+									}
+								};
+							appWorkflowRoleAssignments =
+								new AppWorkflowRoleAssignment[] {
+									new AppWorkflowRoleAssignment() {
+										{
+											Role role =
+												_roleLocalService.getRole(
+													testCompany.getCompanyId(),
+													RoleConstants.
+														PORTAL_CONTENT_REVIEWER);
+
+											roleId = role.getRoleId();
+											roleName = role.getName();
+										}
+									}
+								};
+							appWorkflowTransitions =
+								new AppWorkflowTransition[] {
+									new AppWorkflowTransition() {
+										{
+											name = StringUtil.toLowerCase(
+												RandomTestUtil.randomString());
+											primary = true;
+											transitionTo = terminalStateName;
+										}
+									},
+									new AppWorkflowTransition() {
+										{
+											name = StringUtil.toLowerCase(
+												RandomTestUtil.randomString());
+											primary = false;
+											transitionTo = appWorkflowTaskName1;
+										}
+									}
+								};
+							name = appWorkflowTaskName2;
 						}
 					}
 				};
