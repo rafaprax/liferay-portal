@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,24 +70,20 @@ public class DataRecordValuesUtil {
 			ddmFormValues.setDefaultLocale(locale);
 		}
 
+		if (MapUtil.isEmpty(dataRecordValues)) {
+			return ddmFormValues;
+		}
+
 		Map<String, DDMFormField> ddmFormFields = ddmForm.getDDMFormFieldsMap(
 			true);
 
-		if (MapUtil.isNotEmpty(dataRecordValues)) {
-			for (Map.Entry<String, DDMFormField> entry :
-					ddmFormFields.entrySet()) {
+		for (Map.Entry<String, Object> entry : dataRecordValues.entrySet()) {
+			String[] parts = StringUtil.split(entry.getKey(), "_INSTANCE_");
 
-				if (dataRecordValues.containsKey(entry.getKey())) {
-					List<DDMFormFieldValue> ddmFormFieldValues =
-						createDDMFormFieldValues(
-							dataRecordValues, entry.getValue(), locale);
-
-					Stream<DDMFormFieldValue> stream =
-						ddmFormFieldValues.stream();
-
-					stream.forEach(ddmFormValues::addDDMFormFieldValue);
-				}
-			}
+			ddmFormValues.addDDMFormFieldValue(
+				createDDMFormFieldValue(
+					ddmFormFields.get(parts[0]), ddmFormFields,
+					(Map<String, Object>)entry.getValue(), parts[1], locale));
 		}
 
 		return ddmFormValues;
@@ -131,131 +126,31 @@ public class DataRecordValuesUtil {
 		return jsonObject.toString();
 	}
 
-	protected static List<DDMFormFieldValue> createDDMFormFieldValues(
-		Map<String, Object> dataRecordValues, DDMFormField ddmFormField,
+	protected static DDMFormFieldValue createDDMFormFieldValue(
+		DDMFormField ddmFormField, Map<String, DDMFormField> ddmFormFields,
+		Map<String, Object> fieldInstanceValue, String instanceId,
 		Locale locale) {
-
-		if ((dataRecordValues == null) ||
-			!dataRecordValues.containsKey(ddmFormField.getName())) {
-
-			return ListUtil.fromArray(
-				new DDMFormFieldValue() {
-					{
-						setName(ddmFormField.getName());
-					}
-				});
-		}
-
-		if (StringUtil.equals(ddmFormField.getType(), "fieldset")) {
-			if (ListUtil.isEmpty(ddmFormField.getNestedDDMFormFields())) {
-				return ListUtil.fromArray(
-					new DDMFormFieldValue() {
-						{
-							setName(ddmFormField.getName());
-						}
-					});
-			}
-
-			Map<String, Object> fieldSetInstanceValues =
-				(Map<String, Object>)dataRecordValues.get(
-					ddmFormField.getName());
-
-			List<DDMFormFieldValue> ddmFormFieldValues = new ArrayList<>(
-				fieldSetInstanceValues.size());
-
-			for (Map.Entry<String, Object> entry :
-					fieldSetInstanceValues.entrySet()) {
-
-				DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue() {
-					{
-						setName(ddmFormField.getName());
-						setInstanceId(entry.getKey());
-					}
-				};
-
-				for (DDMFormField nestedDDMFormField :
-						ddmFormField.getNestedDDMFormFields()) {
-
-					List<DDMFormFieldValue> nestedDDMFormFieldValues =
-						createDDMFormFieldValues(
-							(Map<String, Object>)fieldSetInstanceValues.get(
-								ddmFormFieldValue.getInstanceId()),
-							nestedDDMFormField, locale);
-
-					Stream<DDMFormFieldValue> stream =
-						nestedDDMFormFieldValues.stream();
-
-					stream.forEach(
-						ddmFormFieldValue::addNestedDDMFormFieldValue);
-				}
-
-				ddmFormFieldValues.add(ddmFormFieldValue);
-			}
-
-			return ddmFormFieldValues;
-		}
 
 		DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue() {
 			{
 				setName(ddmFormField.getName());
-				setValue(ddmFormField.getPredefinedValue());
+				setInstanceId(instanceId);
 			}
 		};
 
-		if (ddmFormField.isRepeatable()) {
-			List<Object> list = null;
-
-			if (ddmFormField.isLocalizable()) {
-				Object value = dataRecordValues.get(ddmFormField.getName());
-
-				if (!(value instanceof Map)) {
-					throw new IllegalArgumentException(
-						"Field value is not a map");
-				}
-
-				Map<String, Object> localizedValues =
-					(Map<String, Object>)value;
-
-				list = (List<Object>)localizedValues.get(
-					LanguageUtil.getLanguageId(locale));
-			}
-			else {
-				list = (List<Object>)dataRecordValues.get(
-					ddmFormField.getName());
-			}
-
-			if (list == null) {
-				return ListUtil.fromArray(ddmFormFieldValue);
-			}
-
-			List<DDMFormFieldValue> ddmFormFieldValues = new ArrayList<>(
-				list.size());
-
-			for (Object object : list) {
-				ddmFormFieldValue = new DDMFormFieldValue();
-
-				ddmFormFieldValue.setName(ddmFormField.getName());
-
-				LocalizedValue localizedValue = new LocalizedValue();
-
-				localizedValue.addString(locale, String.valueOf(object));
-
-				ddmFormFieldValue.setValue(localizedValue);
-
-				ddmFormFieldValues.add(ddmFormFieldValue);
-			}
-
-			return ddmFormFieldValues;
-		}
-
-		if (dataRecordValues.get(ddmFormField.getName()) != null) {
+		if (!StringUtil.equals(ddmFormField.getType(), "fieldset")) {
 			ddmFormFieldValue.setValue(
 				createValue(
-					ddmFormField, locale,
-					dataRecordValues.get(ddmFormField.getName())));
+					ddmFormField, locale, fieldInstanceValue.get("value")));
 		}
 
-		return ListUtil.fromArray(ddmFormFieldValue);
+		if (ListUtil.isNotEmpty(ddmFormField.getNestedDDMFormFields())) {
+			_setNestedDDMFormFieldValues(
+				ddmFormFields, ddmFormFieldValue, locale,
+				(Map<String, Object>)fieldInstanceValue.get("nestedValues"));
+		}
+
+		return ddmFormFieldValue;
 	}
 
 	protected static LocalizedValue createLocalizedValue(
@@ -313,6 +208,10 @@ public class DataRecordValuesUtil {
 	protected static Value createValue(
 		DDMFormField ddmFormField, Locale locale, Object value) {
 
+		if (value == null) {
+			return ddmFormField.getPredefinedValue();
+		}
+
 		if (value instanceof Object[]) {
 			JSONArray jsonArray = JSONUtil.putAll((Object[])value);
 
@@ -331,6 +230,25 @@ public class DataRecordValuesUtil {
 		}
 
 		return new UnlocalizedValue(GetterUtil.getString(value));
+	}
+
+	private static void _setNestedDDMFormFieldValues(
+		Map<String, DDMFormField> ddmFormFields,
+		DDMFormFieldValue ddmFormFieldValue, Locale locale,
+		Map<String, Object> nestedValues) {
+
+		if (MapUtil.isEmpty(nestedValues)) {
+			return;
+		}
+
+		for (Map.Entry<String, Object> entry : nestedValues.entrySet()) {
+			String[] parts = StringUtil.split(entry.getKey(), "_INSTANCE_");
+
+			ddmFormFieldValue.addNestedDDMFormFieldValue(
+				createDDMFormFieldValue(
+					ddmFormFields.get(parts[0]), ddmFormFields,
+					(Map<String, Object>)entry.getValue(), parts[1], locale));
+		}
 	}
 
 }
