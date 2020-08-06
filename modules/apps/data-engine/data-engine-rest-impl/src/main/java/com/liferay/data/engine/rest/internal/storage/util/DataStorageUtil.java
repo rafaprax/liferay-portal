@@ -12,8 +12,10 @@
  * details.
  */
 
-package com.liferay.dynamic.data.mapping.internal.util;
+package com.liferay.data.engine.rest.internal.storage.util;
 
+import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
+import com.liferay.data.engine.rest.dto.v2_0.DataDefinitionField;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
@@ -22,39 +24,34 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToMapConverter;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
+ * @author Jeyvison Nascimento
  * @author Leonardo Barros
  */
-@Component(immediate = true, service = DDMFormValuesToMapConverter.class)
-public class DDMFormValuesToMapConverterImpl
-	implements DDMFormValuesToMapConverter {
+public class DataStorageUtil {
 
-	@Override
-	public Map<String, Object> convert(
+	public static Map<String, Object> toDataRecordValues(
 			DDMFormValues ddmFormValues, DDMStructure ddmStructure)
 		throws PortalException {
 
@@ -81,7 +78,44 @@ public class DDMFormValuesToMapConverterImpl
 		return values;
 	}
 
-	private void _addMissingDDMFormFieldValues(
+	public static String toJSON(
+		DataDefinition dataDefinition, Map<String, ?> dataRecordValues) {
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		Map<String, DataDefinitionField> dataDefinitionFields = Stream.of(
+			dataDefinition.getDataDefinitionFields()
+		).collect(
+			Collectors.toMap(
+				dataDefinitionField -> dataDefinitionField.getName(),
+				Function.identity())
+		);
+
+		for (Map.Entry<String, DataDefinitionField> entry :
+				dataDefinitionFields.entrySet()) {
+
+			if (!dataRecordValues.containsKey(entry.getKey())) {
+				continue;
+			}
+
+			DataDefinitionField dataDefinitionField = entry.getValue();
+
+			if (dataDefinitionField.getRepeatable()) {
+				jsonObject.put(
+					entry.getKey(),
+					JSONFactoryUtil.createJSONArray(
+						(List<Object>)dataRecordValues.get(entry.getKey())));
+			}
+			else {
+				jsonObject.put(
+					entry.getKey(), dataRecordValues.get(entry.getKey()));
+			}
+		}
+
+		return jsonObject.toString();
+	}
+
+	private static void _addMissingDDMFormFieldValues(
 		List<DDMFormField> ddmFormFields, DDMFormValues ddmFormValues) {
 
 		Map<String, List<DDMFormFieldValue>> ddmFormFieldValues =
@@ -112,7 +146,7 @@ public class DDMFormValuesToMapConverterImpl
 		}
 	}
 
-	private void _addMissingDDMFormFieldValues(
+	private static void _addMissingDDMFormFieldValues(
 		List<DDMFormField> ddmFormFields,
 		Map<String, List<DDMFormFieldValue>> ddmFormFieldValues,
 		DDMFormFieldValue parentDDMFormFieldValue) {
@@ -140,7 +174,7 @@ public class DDMFormValuesToMapConverterImpl
 		}
 	}
 
-	private void _addValue(
+	private static void _addValue(
 		DDMFormField ddmFormField, DDMFormFieldValue ddmFormFieldValue,
 		Map<String, Object> values) {
 
@@ -148,65 +182,105 @@ public class DDMFormValuesToMapConverterImpl
 			return;
 		}
 
+		String name = ddmFormField.getName();
+
 		Value value = ddmFormFieldValue.getValue();
 
 		if (value == null) {
+			values.put(name, null);
+
 			return;
 		}
 
-		if (ddmFormField.isLocalizable()) {
+		if (ddmFormField.isRepeatable()) {
+			if (ddmFormField.isLocalizable()) {
+				Map<String, Object> localizedValues =
+					(Map<String, Object>)values.getOrDefault(
+						name, new HashMap<>());
+
+				LocalizedValue localizedValue = (LocalizedValue)value;
+
+				Set<Locale> availableLocales =
+					localizedValue.getAvailableLocales();
+
+				for (Locale locale : availableLocales) {
+					String languageId = LanguageUtil.getLanguageId(locale);
+
+					List<Object> list =
+						(List<Object>)localizedValues.getOrDefault(
+							languageId, new ArrayList<>());
+
+					list.add(localizedValue.getString(locale));
+
+					localizedValues.put(languageId, list);
+				}
+
+				values.put(name, localizedValues);
+			}
+			else {
+				List<Object> list = (List<Object>)values.getOrDefault(
+					name, new ArrayList<>());
+
+				list.add(value.getString(value.getDefaultLocale()));
+
+				values.put(name, list);
+			}
+		}
+		else if (ddmFormField.isLocalizable()) {
 			values.put(
-				"value",
+				name,
 				_toLocalizedMap(ddmFormField.getType(), (LocalizedValue)value));
 		}
 		else {
-			values.put("value", value.getString(value.getDefaultLocale()));
+			values.put(name, value.getString(value.getDefaultLocale()));
 		}
 	}
 
-	private void _addValues(
+	private static void _addValues(
 		Map<String, DDMFormField> ddmFormFields,
 		DDMFormFieldValue ddmFormFieldValue, Map<String, Object> values) {
 
 		DDMFormField ddmFormField = ddmFormFields.get(
 			ddmFormFieldValue.getName());
 
-		Map<String, Object> fieldInstanceValue =
-			(Map<String, Object>)values.computeIfAbsent(
-				_getFieldValueInstanceKey(ddmFormFieldValue),
-				k -> new LinkedHashMap<>());
-
-		if (!Objects.equals(ddmFormField.getType(), "fieldset")) {
-			_addValue(ddmFormField, ddmFormFieldValue, fieldInstanceValue);
-		}
-
 		if ((ddmFormField != null) &&
-			ListUtil.isNotEmpty(
-				ddmFormFieldValue.getNestedDDMFormFieldValues())) {
+			StringUtil.equals(ddmFormField.getType(), "fieldset")) {
 
-			Map<String, Object> nestedFieldInstanceValues =
-				(Map<String, Object>)fieldInstanceValue.computeIfAbsent(
-					"nestedValues", k -> new LinkedHashMap<>());
+			if (ListUtil.isEmpty(
+					ddmFormFieldValue.getNestedDDMFormFieldValues())) {
+
+				return;
+			}
+
+			if (!values.containsKey(ddmFormField.getName())) {
+				values.put(ddmFormField.getName(), new HashMap<>());
+			}
+
+			Map<String, Object> fieldSetInstanceValues =
+				(Map<String, Object>)values.get(ddmFormField.getName());
+
+			if (!fieldSetInstanceValues.containsKey(
+					ddmFormFieldValue.getInstanceId())) {
+
+				fieldSetInstanceValues.put(
+					ddmFormFieldValue.getInstanceId(), new HashMap<>());
+			}
 
 			for (DDMFormFieldValue nestedDDMFormFieldValue :
 					ddmFormFieldValue.getNestedDDMFormFieldValues()) {
 
 				_addValues(
 					ddmFormFields, nestedDDMFormFieldValue,
-					nestedFieldInstanceValues);
+					(Map<String, Object>)fieldSetInstanceValues.get(
+						ddmFormFieldValue.getInstanceId()));
 			}
+		}
+		else {
+			_addValue(ddmFormField, ddmFormFieldValue, values);
 		}
 	}
 
-	private String _getFieldValueInstanceKey(
-		DDMFormFieldValue ddmFormFieldValue) {
-
-		return StringBundler.concat(
-			ddmFormFieldValue.getName(), "_INSTANCE_",
-			ddmFormFieldValue.getInstanceId());
-	}
-
-	private Map<String, Object> _toLocalizedMap(
+	private static Map<String, Object> _toLocalizedMap(
 		String fieldType, LocalizedValue localizedValue) {
 
 		Set<Locale> availableLocales = localizedValue.getAvailableLocales();
@@ -227,7 +301,7 @@ public class DDMFormValuesToMapConverterImpl
 				LanguageUtil::getLanguageId, localizedValue::getString));
 	}
 
-	private List<String> _toStringList(
+	private static List<String> _toStringList(
 		Locale locale, LocalizedValue localizedValue) {
 
 		try {

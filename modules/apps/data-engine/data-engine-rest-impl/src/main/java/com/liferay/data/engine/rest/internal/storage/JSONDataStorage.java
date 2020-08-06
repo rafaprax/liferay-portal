@@ -17,7 +17,8 @@ package com.liferay.data.engine.rest.internal.storage;
 import com.liferay.data.engine.rest.dto.v2_0.DataRecord;
 import com.liferay.data.engine.rest.dto.v2_0.DataRecordCollection;
 import com.liferay.data.engine.rest.internal.dto.v2_0.util.DataRecordCollectionUtil;
-import com.liferay.data.engine.rest.internal.dto.v2_0.util.DataRecordValuesUtil;
+import com.liferay.data.engine.rest.internal.dto.v2_0.util.MapToDDMFormValuesConverterUtil;
+import com.liferay.data.engine.rest.internal.storage.util.DataStorageUtil;
 import com.liferay.data.engine.storage.DataStorage;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
 import com.liferay.dynamic.data.mapping.io.DDMFormValuesDeserializer;
@@ -32,7 +33,6 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMContentLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.util.DDMFormValuesToMapConverter;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Portal;
@@ -74,7 +74,7 @@ public class JSONDataStorage implements DataStorage {
 		DDMStructure ddmStructure = _ddmStructureLocalService.getStructure(
 			dataDefinitionId);
 
-		return _ddmFormValuesToMapConverter.convert(
+		return DataStorageUtil.toDataRecordValues(
 			_deserializeDDMFormValues(
 				ddmContent.getData(), ddmStructure.getFullHierarchyDDMForm()),
 			ddmStructure);
@@ -97,7 +97,7 @@ public class JSONDataStorage implements DataStorage {
 			PrincipalThreadLocal.getUserId(), siteId,
 			DataRecord.class.getName(), null,
 			_serializeDDMFormValues(
-				DataRecordValuesUtil.toDDMFormValues(
+				MapToDDMFormValuesConverterUtil.toDDMFormValues(
 					dataRecordValues, ddmStructure.getFullHierarchyDDMForm(),
 					_portal.getSiteDefaultLocale(siteId))),
 			new ServiceContext() {
@@ -141,9 +141,6 @@ public class JSONDataStorage implements DataStorage {
 
 	@Reference
 	private DDMContentLocalService _ddmContentLocalService;
-
-	@Reference
-	private DDMFormValuesToMapConverter _ddmFormValuesToMapConverter;
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;

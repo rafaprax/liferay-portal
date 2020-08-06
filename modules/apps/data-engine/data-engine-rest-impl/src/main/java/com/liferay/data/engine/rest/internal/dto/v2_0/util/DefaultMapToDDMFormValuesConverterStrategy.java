@@ -14,8 +14,6 @@
 
 package com.liferay.data.engine.rest.internal.dto.v2_0.util;
 
-import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
-import com.liferay.data.engine.rest.dto.v2_0.DataDefinitionField;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
@@ -24,8 +22,6 @@ import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -38,9 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ClassUtils;
@@ -49,89 +42,34 @@ import org.apache.commons.lang.ClassUtils;
  * @author Jeyvison Nascimento
  * @author Leonardo Barros
  */
-public class DataRecordValuesUtil {
+public class DefaultMapToDDMFormValuesConverterStrategy
+	implements MapToDDMFormValuesConverterStrategy {
 
-	public static DDMFormValues toDDMFormValues(
-		Map<String, Object> dataRecordValues, DDMForm ddmForm, Locale locale) {
-
-		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
-
-		if (locale == null) {
-			Set<Locale> availableLocales = ddmForm.getAvailableLocales();
-
-			Stream<Locale> stream = availableLocales.stream();
-
-			stream.forEach(ddmFormValues::addAvailableLocale);
-
-			ddmFormValues.setDefaultLocale(ddmForm.getDefaultLocale());
-		}
-		else {
-			ddmFormValues.addAvailableLocale(locale);
-
-			ddmFormValues.setDefaultLocale(locale);
-		}
-
-		if (MapUtil.isNotEmpty(dataRecordValues)) {
-			Map<String, DDMFormField> ddmFormFields =
-				ddmForm.getDDMFormFieldsMap(true);
-
-			for (Map.Entry<String, DDMFormField> entry :
-					ddmFormFields.entrySet()) {
-
-				if (dataRecordValues.containsKey(entry.getKey())) {
-					List<DDMFormFieldValue> ddmFormFieldValues =
-						createDDMFormFieldValues(
-							dataRecordValues, entry.getValue(), locale);
-
-					Stream<DDMFormFieldValue> stream =
-						ddmFormFieldValues.stream();
-
-					stream.forEach(ddmFormValues::addDDMFormFieldValue);
-				}
-			}
-		}
-
-		return ddmFormValues;
+	public static DefaultMapToDDMFormValuesConverterStrategy getInstance() {
+		return _defaultMapToDDMFormValuesConverterStrategy;
 	}
 
-	public static String toJSON(
-		DataDefinition dataDefinition, Map<String, ?> dataRecordValues) {
+	public void setDDMFormFieldValues(
+		Map<String, Object> dataRecordValues, DDMForm ddmForm,
+		DDMFormValues ddmFormValues, Locale locale) {
 
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+		Map<String, DDMFormField> ddmFormFields = ddmForm.getDDMFormFieldsMap(
+			true);
 
-		Map<String, DataDefinitionField> dataDefinitionFields = Stream.of(
-			dataDefinition.getDataDefinitionFields()
-		).collect(
-			Collectors.toMap(
-				dataDefinitionField -> dataDefinitionField.getName(),
-				Function.identity())
-		);
+		for (Map.Entry<String, DDMFormField> entry : ddmFormFields.entrySet()) {
+			if (dataRecordValues.containsKey(entry.getKey())) {
+				List<DDMFormFieldValue> ddmFormFieldValues =
+					createDDMFormFieldValues(
+						dataRecordValues, entry.getValue(), locale);
 
-		for (Map.Entry<String, DataDefinitionField> entry :
-				dataDefinitionFields.entrySet()) {
+				Stream<DDMFormFieldValue> stream = ddmFormFieldValues.stream();
 
-			if (!dataRecordValues.containsKey(entry.getKey())) {
-				continue;
-			}
-
-			DataDefinitionField dataDefinitionField = entry.getValue();
-
-			if (dataDefinitionField.getRepeatable()) {
-				jsonObject.put(
-					entry.getKey(),
-					JSONFactoryUtil.createJSONArray(
-						(List<Object>)dataRecordValues.get(entry.getKey())));
-			}
-			else {
-				jsonObject.put(
-					entry.getKey(), dataRecordValues.get(entry.getKey()));
+				stream.forEach(ddmFormValues::addDDMFormFieldValue);
 			}
 		}
-
-		return jsonObject.toString();
 	}
 
-	protected static List<DDMFormFieldValue> createDDMFormFieldValues(
+	protected List<DDMFormFieldValue> createDDMFormFieldValues(
 		Map<String, Object> dataRecordValues, DDMFormField ddmFormField,
 		Locale locale) {
 
@@ -258,9 +196,7 @@ public class DataRecordValuesUtil {
 		return ListUtil.fromArray(ddmFormFieldValue);
 	}
 
-	protected static LocalizedValue createLocalizedValue(
-		Locale locale, Object value) {
-
+	protected LocalizedValue createLocalizedValue(Locale locale, Object value) {
 		if (!(value instanceof Map)) {
 			throw new IllegalArgumentException("Field's value must be a map");
 		}
@@ -310,7 +246,7 @@ public class DataRecordValuesUtil {
 		return localizedValue;
 	}
 
-	protected static Value createValue(
+	protected Value createValue(
 		DDMFormField ddmFormField, Locale locale, Object value) {
 
 		if (value instanceof Object[]) {
@@ -332,5 +268,12 @@ public class DataRecordValuesUtil {
 
 		return new UnlocalizedValue(GetterUtil.getString(value));
 	}
+
+	private DefaultMapToDDMFormValuesConverterStrategy() {
+	}
+
+	private static DefaultMapToDDMFormValuesConverterStrategy
+		_defaultMapToDDMFormValuesConverterStrategy =
+			new DefaultMapToDDMFormValuesConverterStrategy();
 
 }
