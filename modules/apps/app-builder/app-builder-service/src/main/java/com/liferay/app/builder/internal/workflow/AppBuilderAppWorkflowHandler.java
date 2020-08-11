@@ -14,13 +14,18 @@
 
 package com.liferay.app.builder.internal.workflow;
 
+import com.liferay.app.builder.deploy.AppDeployer;
+import com.liferay.app.builder.deploy.AppDeployerTracker;
 import com.liferay.app.builder.model.AppBuilderApp;
 import com.liferay.app.builder.model.AppBuilderAppDataRecordLink;
+import com.liferay.app.builder.model.AppBuilderAppDeployment;
 import com.liferay.app.builder.service.AppBuilderAppDataRecordLinkLocalService;
+import com.liferay.app.builder.service.AppBuilderAppDeploymentLocalService;
 import com.liferay.app.builder.service.AppBuilderAppLocalService;
 import com.liferay.dynamic.data.lists.model.DDLRecord;
 import com.liferay.dynamic.data.lists.model.DDLRecordVersion;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalService;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -29,12 +34,17 @@ import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.BaseWorkflowHandler;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
+import com.liferay.portal.kernel.workflow.WorkflowTask;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
 
 import java.io.Serializable;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -74,6 +84,54 @@ public class AppBuilderAppWorkflowHandler
 	@Override
 	public String getType(Locale locale) {
 		return ResourceActionsUtil.getModelResource(locale, getClassName());
+	}
+
+	@Override
+	public String getURLEditWorkflowTask(
+			long workflowTaskId, ServiceContext serviceContext)
+		throws PortalException {
+
+		try {
+			WorkflowTask workflowTask = _workflowTaskManager.getWorkflowTask(
+				serviceContext.getCompanyId(), workflowTaskId);
+
+			AppBuilderAppDataRecordLink appBuilderAppDataRecordLink =
+				_appBuilderAppDataRecordLinkLocalService.
+					getDDLRecordAppBuilderAppDataRecordLink(
+						MapUtil.getLong(
+							workflowTask.getOptionalAttributes(),
+							WorkflowConstants.CONTEXT_ENTRY_CLASS_PK));
+
+			if (appBuilderAppDataRecordLink == null) {
+				return StringPool.BLANK;
+			}
+
+			List<AppBuilderAppDeployment> appBuilderAppDeployments =
+				_appBuilderAppDeploymentLocalService.
+					getAppBuilderAppDeployments(
+						appBuilderAppDataRecordLink.getAppBuilderAppId());
+
+			for (AppBuilderAppDeployment appBuilderAppDeployment :
+					appBuilderAppDeployments) {
+
+				AppDeployer appDeployer = _appDeployerTracker.getAppDeployer(
+					appBuilderAppDeployment.getType());
+
+				String appPortletURL = appDeployer.getAppPortletURL(
+					appBuilderAppDataRecordLink.getAppBuilderAppId(),
+					appBuilderAppDataRecordLink.getGroupId(),
+					serviceContext.getRequest());
+
+				if (Validator.isNotNull(appPortletURL)) {
+					return appPortletURL;
+				}
+			}
+
+			return StringPool.BLANK;
+		}
+		catch (Exception exception) {
+			throw new PortalException(exception);
+		}
 	}
 
 	@Override
@@ -138,7 +196,14 @@ public class AppBuilderAppWorkflowHandler
 		_appBuilderAppDataRecordLinkLocalService;
 
 	@Reference
+	private AppBuilderAppDeploymentLocalService
+		_appBuilderAppDeploymentLocalService;
+
+	@Reference
 	private AppBuilderAppLocalService _appBuilderAppLocalService;
+
+	@Reference
+	private AppDeployerTracker _appDeployerTracker;
 
 	@Reference
 	private DDLRecordLocalService _ddlRecordLocalService;
@@ -146,5 +211,8 @@ public class AppBuilderAppWorkflowHandler
 	@Reference
 	private WorkflowDefinitionLinkLocalService
 		_workflowDefinitionLinkLocalService;
+
+	@Reference
+	private WorkflowTaskManager _workflowTaskManager;
 
 }
