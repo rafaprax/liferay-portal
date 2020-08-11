@@ -22,10 +22,12 @@ import com.liferay.app.builder.service.AppBuilderAppDeploymentLocalService;
 import com.liferay.app.builder.web.internal.application.list.ProductMenuPanelApp;
 import com.liferay.app.builder.web.internal.portlet.AppPortlet;
 import com.liferay.application.list.constants.PanelCategoryKeys;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
@@ -35,6 +37,11 @@ import com.liferay.portal.kernel.util.Portal;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -93,6 +100,49 @@ public class ProductMenuAppDeployer extends BaseAppDeployer {
 			});
 
 		appBuilderAppLocalService.updateAppBuilderApp(appBuilderApp);
+	}
+
+	@Override
+	public String getAppPortletURL(
+			long appId, long groupId, HttpServletRequest httpServletRequest)
+		throws Exception {
+
+		String portletName = _getPortletName(appId);
+
+		AppBuilderAppDeployment appBuilderAppDeployment =
+			_appBuilderAppDeploymentLocalService.getAppBuilderAppDeployment(
+				appId, "productMenu");
+
+		JSONObject jsonObject = _jsonFactory.createJSONObject(
+			appBuilderAppDeployment.getSettings());
+
+		JSONArray scopeJSONArray = jsonObject.getJSONArray("scope");
+
+		if ((scopeJSONArray.length() == 2) ||
+			Objects.equals(
+				scopeJSONArray.get(0),
+				PanelCategoryKeys.APPLICATIONS_MENU_APPLICATIONS)) {
+
+			portletName = portletName.concat("applications");
+		}
+		else {
+			portletName = portletName.concat("site");
+		}
+
+		Group group = _groupLocalService.fetchGroup(groupId);
+
+		if (group == null) {
+			return StringPool.BLANK;
+		}
+
+		PortletURL portletURL = _portal.getControlPanelPortletURL(
+			httpServletRequest, group, portletName, 0, 0,
+			PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter(
+			"p_v_l_s_g_id", String.valueOf(group.getGroupId()));
+
+		return portletURL.toString();
 	}
 
 	@Override

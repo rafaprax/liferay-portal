@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -42,7 +43,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -97,6 +102,25 @@ public class StandaloneAppDeployer extends BaseAppDeployer {
 			});
 
 		appBuilderAppLocalService.updateAppBuilderApp(appBuilderApp);
+	}
+
+	@Override
+	public String getAppPortletURL(
+			long appId, long groupId, HttpServletRequest httpServletRequest)
+		throws Exception {
+
+		Layout layout = _layoutLocalService.fetchLayoutByFriendlyURL(
+			groupId, false, "/shared");
+
+		if (layout == null) {
+			return StringPool.BLANK;
+		}
+
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			httpServletRequest, _getPortletName(appId), layout,
+			PortletRequest.RENDER_PHASE);
+
+		return portletURL.toString();
 	}
 
 	@Override
