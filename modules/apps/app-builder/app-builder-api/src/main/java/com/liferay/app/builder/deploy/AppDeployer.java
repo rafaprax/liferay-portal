@@ -19,6 +19,8 @@ import com.liferay.app.builder.service.AppBuilderAppLocalService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.framework.ServiceRegistration;
 
@@ -29,6 +31,10 @@ import org.osgi.framework.ServiceRegistration;
 public interface AppDeployer {
 
 	public void deploy(long appId) throws Exception;
+
+	public String getAppPortletURL(
+			long appId, long groupId, HttpServletRequest httpServletRequest)
+		throws Exception;
 
 	public default boolean undeploy(
 			AppBuilderAppLocalService appBuilderAppLocalService, long appId,
