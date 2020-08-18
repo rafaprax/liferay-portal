@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.product.navigation.user.personal.bar.web.internal.contants.ProductNavigationUserPersonalBarPortletKeys;
@@ -28,11 +29,11 @@ import com.liferay.product.navigation.user.personal.bar.web.internal.contants.Pr
 import com.liferay.site.util.RecentGroupManager;
 
 import java.io.IOException;
-
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -79,9 +80,16 @@ public class ProductNavigationUserPersonalBarPortlet extends MVCPortlet {
 				getNotificationsCount(themeDisplay));
 		}
 
-		_recentGroupManager.addRecentGroup(
-			_portal.getHttpServletRequest(renderRequest),
-			themeDisplay.getScopeGroupId());
+		HttpServletRequest httpServletRequest =
+			_portal.getHttpServletRequest(renderRequest);
+
+		if (GetterUtil.getBoolean(
+				httpServletRequest.getAttribute(
+					"com.liferay.site.util_addRecentGroup"), true)) {
+
+			_recentGroupManager.addRecentGroup(
+				httpServletRequest, themeDisplay.getScopeGroupId());
+		}
 
 		super.doDispatch(renderRequest, renderResponse);
 	}
