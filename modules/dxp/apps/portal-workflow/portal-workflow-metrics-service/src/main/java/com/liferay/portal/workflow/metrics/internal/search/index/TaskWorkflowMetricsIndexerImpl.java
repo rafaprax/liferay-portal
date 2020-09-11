@@ -18,9 +18,13 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilder;
+import com.liferay.portal.search.engine.adapter.document.UpdateByQueryDocumentRequest;
 import com.liferay.portal.search.query.BooleanQuery;
+import com.liferay.portal.search.script.ScriptBuilder;
+import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 
 import java.time.Duration;
@@ -120,7 +124,40 @@ public class TaskWorkflowMetricsIndexerImpl
 
 		Document document = documentBuilder.build();
 
-		workflowMetricsPortalExecutor.execute(() -> addDocument(document));
+		workflowMetricsPortalExecutor.execute(
+			() -> {
+				addDocument(document);
+
+				ScriptBuilder builder = scripts.builder();
+
+				UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
+					new UpdateByQueryDocumentRequest(
+						queries.term("instanceId", instanceId),
+						builder.idOrCode(
+							StringUtil.read(
+								getClass(),
+								"dependencies/workflow-metrics-add-task-" +
+									"script.painless")
+						).language(
+							"painless"
+						).putParameter(
+							"task",
+							HashMapBuilder.<String, Object>put(
+								"assigneeIds", assigneeIds
+							).put(
+								"assigneeType", assigneeType
+							).put(
+								"taskId", taskId
+							).put(
+								"taskName", name
+							).build()
+						).scriptType(
+							ScriptType.INLINE
+						).build(),
+						_instanceWorkflowMetricsIndex.getIndexName(companyId));
+
+				searchEngineAdapter.execute(updateByQueryDocumentRequest);
+			});
 
 		return document;
 	}
@@ -158,6 +195,8 @@ public class TaskWorkflowMetricsIndexerImpl
 			() -> {
 				updateDocument(document);
 
+				_deleteInstanceTask(companyId, taskId);
+
 				BooleanQuery booleanQuery = queries.booleanQuery();
 
 				booleanQuery.addMustQueryClauses(
@@ -190,7 +229,11 @@ public class TaskWorkflowMetricsIndexerImpl
 		);
 
 		workflowMetricsPortalExecutor.execute(
-			() -> deleteDocument(documentBuilder));
+			() -> {
+				deleteDocument(documentBuilder);
+
+				_deleteInstanceTask(companyId, taskId);
+			});
 	}
 
 	@Override
@@ -255,9 +298,55 @@ public class TaskWorkflowMetricsIndexerImpl
 						"assigneeType", assigneeType
 					).build(),
 					booleanQuery);
+
+				ScriptBuilder builder = scripts.builder();
+
+				UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
+					new UpdateByQueryDocumentRequest(
+						queries.nested("tasks", queries.term("taskId", taskId)),
+						builder.idOrCode(
+							StringUtil.read(
+								getClass(),
+								"dependencies/workflow-metrics-update-task-" +
+									"script.painless")
+						).language(
+							"painless"
+						).putParameter(
+							"assigneeIds", assigneeIds
+						).putParameter(
+							"assigneeType", assigneeType
+						).scriptType(
+							ScriptType.INLINE
+						).build(),
+						_instanceWorkflowMetricsIndex.getIndexName(companyId));
+
+				searchEngineAdapter.execute(updateByQueryDocumentRequest);
 			});
 
 		return document;
+	}
+
+	private void _deleteInstanceTask(long companyId, long taskId) {
+		ScriptBuilder builder = scripts.builder();
+
+		UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
+			new UpdateByQueryDocumentRequest(
+				queries.nested("tasks", queries.term("taskId", taskId)),
+				builder.idOrCode(
+					StringUtil.read(
+						getClass(),
+						"dependencies/workflow-metrics-delete-task-" +
+							"script.painless")
+				).language(
+					"painless"
+				).putParameter(
+					"taskId", taskId
+				).scriptType(
+					ScriptType.INLINE
+				).build(),
+				_instanceWorkflowMetricsIndex.getIndexName(companyId));
+
+		searchEngineAdapter.execute(updateByQueryDocumentRequest);
 	}
 
 	private long _getDuration(Date completionDate, Date createDate) {
@@ -266,6 +355,9 @@ public class TaskWorkflowMetricsIndexerImpl
 
 		return duration.toMillis();
 	}
+
+	@Reference(target = "(workflow.metrics.index.entity.name=instance)")
+	private WorkflowMetricsIndex _instanceWorkflowMetricsIndex;
 
 	@Reference
 	private SLATaskResultWorkflowMetricsIndexer
