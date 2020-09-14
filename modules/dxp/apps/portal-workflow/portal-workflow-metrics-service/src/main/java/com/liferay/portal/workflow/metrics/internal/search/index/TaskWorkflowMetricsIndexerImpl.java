@@ -18,7 +18,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilder;
@@ -26,9 +25,6 @@ import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.UpdateByQueryDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.UpdateByQueryDocumentResponse;
 import com.liferay.portal.search.engine.adapter.document.UpdateDocumentRequest;
-import com.liferay.portal.search.engine.adapter.document.UpdateDocumentResponse;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.script.ScriptBuilder;
 import com.liferay.portal.search.script.ScriptType;
@@ -36,7 +32,6 @@ import com.liferay.portal.workflow.metrics.internal.search.index.util.WorkflowMe
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 
 import java.time.Duration;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -141,23 +136,6 @@ public class TaskWorkflowMetricsIndexerImpl
 				if (completed) {
 					return;
 				}
-
-				SearchSearchRequest searchSearchRequest =
-					new SearchSearchRequest();
-
-				searchSearchRequest.setQuery(
-					queries.term("instanceId", instanceId));
-				searchSearchRequest.setIndexNames(
-					_instanceWorkflowMetricsIndex.getIndexName(companyId));
-
-				SearchSearchResponse searchSearchResponse =
-					searchEngineAdapter.execute(searchSearchRequest);
-
-				System.out.println(
-					"[ADD TASK] searchSearchResponse.getSearchHits().getTotalHits() = " +
-						searchSearchResponse.getSearchHits(
-						).getTotalHits());
-
 				ScriptBuilder builder = scripts.builder();
 
 				HashMap<String, Object> taskAttributesMap =
@@ -205,13 +183,7 @@ public class TaskWorkflowMetricsIndexerImpl
 						_instanceWorkflowMetricsIndex.getIndexName(companyId),
 						instanceDocument.getString("uid"), instanceDocument));
 
-				UpdateDocumentResponse updateDocumentResponse =
-					searchEngineAdapter.execute(updateDocumentRequest);
-
-				System.out.println("##### ADD TASK ######");
-				System.out.println(
-					"title=" + assetTitleMap.get(LocaleUtil.getSiteDefault()));
-				System.out.println("taskId=" + taskId);
+				searchEngineAdapter.execute(updateDocumentRequest);
 			});
 
 		return document;
@@ -358,6 +330,8 @@ public class TaskWorkflowMetricsIndexerImpl
 						)
 					).put(
 						"assigneeType", assigneeType
+					).put(
+						"taskId", taskId
 					).build(),
 					booleanQuery);
 
