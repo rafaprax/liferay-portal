@@ -1,4 +1,4 @@
-if (ctx._source.tasks != null) {
+if (ctx._source.containsKey("tasks")) {
 	def task = ctx._source.tasks.find(task -> task.taskId == params.taskId);
 
 	if (task != null) {

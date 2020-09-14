@@ -18,21 +18,31 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilder;
+import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.UpdateByQueryDocumentRequest;
+import com.liferay.portal.search.engine.adapter.document.UpdateByQueryDocumentResponse;
+import com.liferay.portal.search.engine.adapter.document.UpdateDocumentRequest;
+import com.liferay.portal.search.engine.adapter.document.UpdateDocumentResponse;
+import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
+import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.script.ScriptBuilder;
 import com.liferay.portal.search.script.ScriptType;
+import com.liferay.portal.workflow.metrics.internal.search.index.util.WorkflowMetricsIndexerUtil;
 import com.liferay.portal.workflow.metrics.search.index.TaskWorkflowMetricsIndexer;
 
 import java.time.Duration;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -128,11 +138,52 @@ public class TaskWorkflowMetricsIndexerImpl
 			() -> {
 				addDocument(document);
 
+				if (completed) {
+					return;
+				}
+
+				SearchSearchRequest searchSearchRequest =
+					new SearchSearchRequest();
+
+				searchSearchRequest.setQuery(
+					queries.term("instanceId", instanceId));
+				searchSearchRequest.setIndexNames(
+					_instanceWorkflowMetricsIndex.getIndexName(companyId));
+
+				SearchSearchResponse searchSearchResponse =
+					searchEngineAdapter.execute(searchSearchRequest);
+
+				System.out.println(
+					"[ADD TASK] searchSearchResponse.getSearchHits().getTotalHits() = " +
+						searchSearchResponse.getSearchHits(
+						).getTotalHits());
+
 				ScriptBuilder builder = scripts.builder();
 
-				UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
-					new UpdateByQueryDocumentRequest(
-						queries.term("instanceId", instanceId),
+				HashMap<String, Object> taskAttributesMap =
+					HashMapBuilder.<String, Object>put(
+						"assigneeIds",
+						Stream.of(
+							assigneeIds
+						).map(
+							String::valueOf
+						).toArray(
+							String[]::new
+						)
+					).put(
+						"assigneeType", assigneeType
+					).put(
+						"taskId", taskId
+					).put(
+						"taskName", name
+					).build();
+
+				UpdateDocumentRequest updateDocumentRequest =
+					new UpdateDocumentRequest(
+						_instanceWorkflowMetricsIndex.getIndexName(companyId),
+						WorkflowMetricsIndexerUtil.digest(
+							_instanceWorkflowMetricsIndex.getIndexType(),
+							companyId, instanceId),
 						builder.idOrCode(
 							StringUtil.read(
 								getClass(),
@@ -141,22 +192,26 @@ public class TaskWorkflowMetricsIndexerImpl
 						).language(
 							"painless"
 						).putParameter(
-							"task",
-							HashMapBuilder.<String, Object>put(
-								"assigneeIds", assigneeIds
-							).put(
-								"assigneeType", assigneeType
-							).put(
-								"taskId", taskId
-							).put(
-								"taskName", name
-							).build()
+							"task", taskAttributesMap
 						).scriptType(
 							ScriptType.INLINE
-						).build(),
-						_instanceWorkflowMetricsIndex.getIndexName(companyId));
+						).build());
 
-				searchEngineAdapter.execute(updateByQueryDocumentRequest);
+				Document instanceDocument = _createInstanceDocument(
+					companyId, instanceId, taskAttributesMap);
+
+				updateDocumentRequest.setIndexDocumentRequest(
+					new IndexDocumentRequest(
+						_instanceWorkflowMetricsIndex.getIndexName(companyId),
+						instanceDocument.getString("uid"), instanceDocument));
+
+				UpdateDocumentResponse updateDocumentResponse =
+					searchEngineAdapter.execute(updateDocumentRequest);
+
+				System.out.println("##### ADD TASK ######");
+				System.out.println(
+					"title=" + assetTitleMap.get(LocaleUtil.getSiteDefault()));
+				System.out.println("taskId=" + taskId);
 			});
 
 		return document;
@@ -293,7 +348,14 @@ public class TaskWorkflowMetricsIndexerImpl
 				_slaTaskResultWorkflowMetricsIndexer.updateDocuments(
 					companyId,
 					HashMapBuilder.<String, Object>put(
-						"assigneeIds", assigneeIds
+						"assigneeIds",
+						Stream.of(
+							assigneeIds
+						).map(
+							String::valueOf
+						).toArray(
+							String[]::new
+						)
 					).put(
 						"assigneeType", assigneeType
 					).build(),
@@ -303,7 +365,8 @@ public class TaskWorkflowMetricsIndexerImpl
 
 				UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
 					new UpdateByQueryDocumentRequest(
-						queries.nested("tasks", queries.term("taskId", taskId)),
+						queries.nested(
+							"tasks", queries.term("tasks.taskId", taskId)),
 						builder.idOrCode(
 							StringUtil.read(
 								getClass(),
@@ -312,18 +375,53 @@ public class TaskWorkflowMetricsIndexerImpl
 						).language(
 							"painless"
 						).putParameter(
-							"assigneeIds", assigneeIds
+							"assigneeIds",
+							Stream.of(
+								assigneeIds
+							).map(
+								String::valueOf
+							).toArray(
+								String[]::new
+							)
 						).putParameter(
 							"assigneeType", assigneeType
+						).putParameter(
+							"taskId", taskId
 						).scriptType(
 							ScriptType.INLINE
 						).build(),
 						_instanceWorkflowMetricsIndex.getIndexName(companyId));
 
-				searchEngineAdapter.execute(updateByQueryDocumentRequest);
+				UpdateByQueryDocumentResponse updateByQueryDocumentResponse =
+					searchEngineAdapter.execute(updateByQueryDocumentRequest);
+
+				System.out.println("##### UPDATE TASK ######");
+				System.out.println("taskId=" + taskId);
+				System.out.println(
+					"updated=" + updateByQueryDocumentResponse.getUpdated());
 			});
 
 		return document;
+	}
+
+	private Document _createInstanceDocument(
+		long companyId, long instanceId,
+		HashMap<String, Object> taskAttributesMap) {
+
+		DocumentBuilder documentBuilder = documentBuilderFactory.builder();
+
+		documentBuilder.setLong(
+			"companyId", companyId
+		).setValue(
+			"task", taskAttributesMap
+		).setString(
+			"uid",
+			WorkflowMetricsIndexerUtil.digest(
+				_instanceWorkflowMetricsIndex.getIndexType(), companyId,
+				instanceId)
+		);
+
+		return documentBuilder.build();
 	}
 
 	private void _deleteInstanceTask(long companyId, long taskId) {
@@ -331,7 +429,7 @@ public class TaskWorkflowMetricsIndexerImpl
 
 		UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
 			new UpdateByQueryDocumentRequest(
-				queries.nested("tasks", queries.term("taskId", taskId)),
+				queries.nested("tasks", queries.term("tasks.taskId", taskId)),
 				builder.idOrCode(
 					StringUtil.read(
 						getClass(),
@@ -346,7 +444,13 @@ public class TaskWorkflowMetricsIndexerImpl
 				).build(),
 				_instanceWorkflowMetricsIndex.getIndexName(companyId));
 
-		searchEngineAdapter.execute(updateByQueryDocumentRequest);
+		UpdateByQueryDocumentResponse updateByQueryDocumentResponse =
+			searchEngineAdapter.execute(updateByQueryDocumentRequest);
+
+		System.out.println("##### DELETE TASK ######");
+		System.out.println("taskId=" + taskId);
+		System.out.println(
+			"updated=" + updateByQueryDocumentResponse.getUpdated());
 	}
 
 	private long _getDuration(Date completionDate, Date createDate) {

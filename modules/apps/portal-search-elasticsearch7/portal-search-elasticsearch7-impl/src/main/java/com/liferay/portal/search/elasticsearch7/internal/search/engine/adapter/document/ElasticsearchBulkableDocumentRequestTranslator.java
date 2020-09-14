@@ -115,6 +115,12 @@ public class ElasticsearchBulkableDocumentRequestTranslator
 
 		updateRequest.id(_getUid(updateDocumentRequest));
 		updateRequest.index(updateDocumentRequest.getIndexName());
+
+		if (updateDocumentRequest.getIndexDocumentRequest() != null) {
+			updateRequest.upsert(
+				translate(updateDocumentRequest.getIndexDocumentRequest()));
+		}
+
 		updateRequest.type(_getType(updateDocumentRequest.getType()));
 
 		return updateRequest;

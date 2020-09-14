@@ -136,4 +136,14 @@ public class UpdateDocumentRequest
 	private final String _uid;
 	private boolean _upsert;
 
+	private IndexDocumentRequest _indexDocumentRequest;
+
+	public IndexDocumentRequest getIndexDocumentRequest() {
+		return _indexDocumentRequest;
+	}
+
+	public void setIndexDocumentRequest(
+		IndexDocumentRequest indexDocumentRequest) {
+		_indexDocumentRequest = indexDocumentRequest;
+	}
 }
