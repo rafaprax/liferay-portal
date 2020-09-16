@@ -16,6 +16,7 @@ package com.liferay.app.builder.web.internal.portlet;
 
 import com.liferay.app.builder.constants.AppBuilderPortletKeys;
 import com.liferay.app.builder.portlet.tab.AppBuilderAppsPortletTab;
+import com.liferay.app.builder.web.internal.configuration.AppBuilderConfiguration;
 import com.liferay.app.builder.web.internal.constants.AppBuilderWebKeys;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
@@ -45,6 +46,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Rafael Praxedes
  */
 @Component(
+	configurationPid = "com.liferay.app.builder.web.internal.configuration.AppBuilderConfiguration",
 	immediate = true,
 	property = {
 		"com.liferay.portlet.add-default-resource=true",
@@ -94,6 +96,9 @@ public class AppsPortlet extends MVCPortlet {
 		}
 
 		renderRequest.setAttribute(AppBuilderWebKeys.APPS_TABS, appsTabs);
+		renderRequest.setAttribute(
+			AppBuilderWebKeys.SHOW_TRANSLATION_MANAGER,
+			_appBuilderConfiguration.showTranslationManager());
 
 		super.render(renderRequest, renderResponse);
 	}
@@ -104,6 +109,11 @@ public class AppsPortlet extends MVCPortlet {
 			ServiceTrackerMapFactory.openSingleValueMap(
 				bundleContext, AppBuilderAppsPortletTab.class,
 				"app.builder.apps.tabs.name");
+
+		// não sei o que fazer aqui, tá contigo
+		// _appBuilderConfiguration = ConfigurableUtil.createConfigurable(
+		// 	AppBuilderConfiguration.class, properties);
+
 	}
 
 	@Deactivate
@@ -113,6 +123,7 @@ public class AppsPortlet extends MVCPortlet {
 
 	private ServiceTrackerMap<String, AppBuilderAppsPortletTab>
 		_appBuilderAppsPortletTabTrackerMap;
+	private volatile AppBuilderConfiguration _appBuilderConfiguration;
 
 	@Reference
 	private NPMResolver _npmResolver;
