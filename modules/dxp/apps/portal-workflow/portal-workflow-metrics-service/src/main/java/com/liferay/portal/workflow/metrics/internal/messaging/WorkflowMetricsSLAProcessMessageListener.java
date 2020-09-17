@@ -101,6 +101,15 @@ public class WorkflowMetricsSLAProcessMessageListener
 
 		actionableDynamicQuery.setAddCriteriaMethod(
 			dynamicQuery -> {
+				long processId = _getProcessId(message);
+
+				if (processId > 0) {
+					Property processIdProperty = PropertyFactoryUtil.forName(
+						"processId");
+
+					dynamicQuery.add(processIdProperty.eq(processId));
+				}
+
 				Property statusProperty = PropertyFactoryUtil.forName("status");
 
 				dynamicQuery.add(
@@ -175,6 +184,16 @@ public class WorkflowMetricsSLAProcessMessageListener
 			WorkflowMetricsSLAProcessMessageListener.class.getSimpleName(), "-",
 			workflowMetricsSLADefinition.getProcessId(),
 			workflowMetricsSLADefinition.getPrimaryKey());
+	}
+
+	private long _getProcessId(Message message) {
+		JSONObject payloadJSONObject = (JSONObject)message.getPayload();
+
+		if (payloadJSONObject == null) {
+			return 0L;
+		}
+
+		return payloadJSONObject.getLong("processId");
 	}
 
 	private boolean _isReindex(Message message) {

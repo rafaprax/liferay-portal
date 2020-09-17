@@ -479,6 +479,31 @@
 				"store": true,
 				"type": "long"
 			},
+			"slaStatus": {
+				"store": true,
+				"type": "keyword"
+			},
+			"tasks": {
+				"properties": {
+					"assigneeIds": {
+						"store": true,
+						"type": "long"
+					},
+					"assigneeType": {
+						"store": true,
+						"type": "keyword"
+					},
+					"taskId": {
+						"store": true,
+						"type": "long"
+					},
+					"taskName": {
+						"store": true,
+						"type": "keyword"
+					}
+				},
+				"type": "nested"
+			},
 			"uid": {
 				"store": true,
 				"type": "keyword"

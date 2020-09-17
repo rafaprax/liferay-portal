@@ -542,6 +542,33 @@ public class ElasticsearchSearchEngineAdapterDocumentRequestTest {
 		Assert.assertEquals(Boolean.FALSE.toString(), map2.get(_FIELD_NAME));
 	}
 
+	@Test
+	public void testExecuteUpdateDocumentRequestNoIndexedDocument() {
+		String id = "1";
+
+		Document updateDocument = new DocumentImpl();
+
+		updateDocument.addKeyword(Field.UID, id);
+		updateDocument.addKeyword(_FIELD_NAME, false);
+
+		Document indexDocument = new DocumentImpl();
+
+		indexDocument.addKeyword(Field.UID, id);
+		indexDocument.addKeyword(_FIELD_NAME, true);
+
+		UpdateDocumentResponse updateDocumentResponse =
+			_updateDocumentWithAdapter(id, indexDocument, updateDocument);
+
+		Assert.assertEquals(
+			RestStatus.CREATED.getStatus(), updateDocumentResponse.getStatus());
+
+		GetResponse getResponse = _getDocument(id);
+
+		Map<String, Object> map = getResponse.getSource();
+
+		Assert.assertEquals(Boolean.TRUE.toString(), map.get(_FIELD_NAME));
+	}
+
 	protected static DocumentRequestExecutor createDocumentRequestExecutor(
 		ElasticsearchClientResolver elasticsearchClientResolver,
 		ElasticsearchDocumentFactory elasticsearchDocumentFactory) {
@@ -650,6 +677,23 @@ public class ElasticsearchSearchEngineAdapterDocumentRequestTest {
 		UpdateDocumentRequest updateDocumentRequest = new UpdateDocumentRequest(
 			_INDEX_NAME, uid, document);
 
+		updateDocumentRequest.setType(_MAPPING_NAME);
+
+		return _searchEngineAdapter.execute(updateDocumentRequest);
+	}
+
+	private UpdateDocumentResponse _updateDocumentWithAdapter(
+		String uid, Document indexDocument, Document updateDocument) {
+
+		UpdateDocumentRequest updateDocumentRequest = new UpdateDocumentRequest(
+			_INDEX_NAME, uid, updateDocument);
+
+		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
+			_INDEX_NAME, uid, indexDocument);
+
+		indexDocumentRequest.setType(_MAPPING_NAME);
+
+		updateDocumentRequest.setIndexDocumentRequest(indexDocumentRequest);
 		updateDocumentRequest.setType(_MAPPING_NAME);
 
 		return _searchEngineAdapter.execute(updateDocumentRequest);
