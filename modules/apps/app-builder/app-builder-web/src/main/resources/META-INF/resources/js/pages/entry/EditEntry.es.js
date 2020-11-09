@@ -80,11 +80,20 @@ export const EditEntry = ({
 			validateForm(event)
 				.then((dataRecord) => {
 					if (dataRecordId !== '0') {
-						updateItem({
-							endpoint: `/o/data-engine/v2.0/data-records/${dataRecordId}`,
-							item: dataRecord,
-							method: 'PATCH',
-						})
+						fetch(
+							createResourceURL(baseResourceURL, {
+								p_p_resource_id: '/app_builder/update_data_record',
+							}),
+							{
+								body: new URLSearchParams(
+									Liferay.Util.ns(namespace, {
+										dataRecord: JSON.stringify(dataRecord),
+										dataRecordId
+									})
+								),
+								method: 'POST',
+							}
+						)
 							.then(() => {
 								successToast(
 									Liferay.Language.get('an-entry-was-updated')
