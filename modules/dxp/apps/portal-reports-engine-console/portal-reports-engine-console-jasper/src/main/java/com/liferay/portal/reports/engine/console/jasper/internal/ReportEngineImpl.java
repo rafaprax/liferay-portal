@@ -94,7 +94,14 @@ public class ReportEngineImpl implements ReportEngine {
 			ReportRequest reportRequest, ReportResultContainer resultContainer)
 		throws ReportGenerationException {
 
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader classLoader = currentThread.getContextClassLoader();
+
 		try {
+			currentThread.setContextClassLoader(
+				ReportEngineImpl.class.getClassLoader());
+
 			JasperReport jasperReport = _reportCompiler.compile(
 				reportRequest.getReportDesignRetriever());
 
@@ -119,6 +126,9 @@ public class ReportEngineImpl implements ReportEngine {
 			throw new ReportGenerationException(
 				"Unable to execute report: " +
 					StackTraceUtil.getStackTrace(exception));
+		}
+		finally {
+			currentThread.setContextClassLoader(classLoader);
 		}
 	}
 
