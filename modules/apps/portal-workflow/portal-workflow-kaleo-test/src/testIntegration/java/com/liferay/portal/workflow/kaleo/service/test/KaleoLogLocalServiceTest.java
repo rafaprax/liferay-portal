@@ -16,23 +16,29 @@ package com.liferay.portal.workflow.kaleo.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.test.rule.DataGuard;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.workflow.WorkflowLog;
 import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactory;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.workflow.kaleo.KaleoWorkflowModelConverter;
+import com.liferay.portal.workflow.kaleo.definition.Assignment;
+import com.liferay.portal.workflow.kaleo.definition.RoleAssignment;
+import com.liferay.portal.workflow.kaleo.definition.Task;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstance;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstanceToken;
 import com.liferay.portal.workflow.kaleo.model.KaleoLog;
+import com.liferay.portal.workflow.kaleo.model.KaleoNode;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
-import com.liferay.portal.workflow.kaleo.runtime.util.WorkflowContextUtil;
 import com.liferay.portal.workflow.kaleo.runtime.util.comparator.KaleoLogOrderByComparator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
@@ -46,6 +52,53 @@ import org.junit.runner.RunWith;
 @DataGuard(scope = DataGuard.Scope.METHOD)
 @RunWith(Arquillian.class)
 public class KaleoLogLocalServiceTest extends BaseKaleoLocalServiceTestCase {
+
+	@Test
+	public void testAddTaskAssignmentKaleoLogs() throws Exception {
+		KaleoInstance kaleoInstance = addKaleoInstance();
+
+		KaleoInstanceToken kaleoInstanceToken = addKaleoInstanceToken(
+			kaleoInstance);
+
+		KaleoTaskInstanceToken kaleoTaskInstanceToken =
+			addKaleoTaskInstanceToken(kaleoInstance, kaleoInstanceToken);
+
+		Task task = new Task(RandomTestUtil.randomString(), StringPool.BLANK);
+
+		task.setAssignments(
+			new HashSet<Assignment>() {
+				{
+					add(
+						new RoleAssignment(
+							RoleConstants.ADMINISTRATOR,
+							RoleConstants.TYPE_REGULAR_LABEL));
+					add(
+						new RoleAssignment(
+							RoleConstants.GUEST,
+							RoleConstants.TYPE_REGULAR_LABEL));
+					add(
+						new RoleAssignment(
+							RoleConstants.OWNER,
+							RoleConstants.TYPE_REGULAR_LABEL));
+				}
+			});
+
+		long kaleoClassPK = RandomTestUtil.nextLong();
+
+		KaleoNode kaleoNode = addKaleoNode(kaleoInstance, task);
+
+		for (Assignment assignment : task.getAssignments()) {
+			addKaleoTaskAssignmentInstance(
+				kaleoTaskInstanceToken,
+				addKaleoTaskAssignment(kaleoNode, assignment, kaleoClassPK));
+		}
+
+		List<KaleoLog> kaleoLogs = addTaskAssignmentKaleoLogs(
+			kaleoInstance, kaleoTaskInstanceToken);
+
+		Assert.assertTrue(ListUtil.isNotEmpty(kaleoLogs));
+		Assert.assertEquals(kaleoLogs.toString(), 3, kaleoLogs.size());
+	}
 
 	@Test
 	public void testGetKaleoInstanceKaleoLogs() throws Exception {
@@ -125,12 +178,8 @@ public class KaleoLogLocalServiceTest extends BaseKaleoLocalServiceTestCase {
 		KaleoTaskInstanceToken kaleoTaskInstanceToken =
 			addKaleoTaskInstanceToken(kaleoInstance, kaleoInstanceToken);
 
-		KaleoLog assignmentKaleoLog =
-			kaleoLogLocalService.addTaskAssignmentKaleoLog(
-				Collections.emptyList(), kaleoTaskInstanceToken,
-				StringPool.BLANK,
-				WorkflowContextUtil.convert(kaleoInstance.getWorkflowContext()),
-				serviceContext);
+		KaleoLog assignmentKaleoLog = addTaskAssignmentKaleoLog(
+			kaleoInstance, kaleoTaskInstanceToken);
 
 		KaleoLog completionKaleoLog = addTaskCompletionKaleoLog(
 			kaleoInstance, kaleoTaskInstanceToken);

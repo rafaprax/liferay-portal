@@ -19,13 +19,10 @@ import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignment;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignmentInstance;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
-import com.liferay.portal.workflow.kaleo.runtime.assignment.TaskAssignmentSelector;
-import com.liferay.portal.workflow.kaleo.runtime.assignment.TaskAssignmentSelectorRegistry;
+import com.liferay.portal.workflow.kaleo.runtime.assignment.AggregateTaskAssignmentSelector;
 import com.liferay.portal.workflow.kaleo.service.KaleoLogLocalService;
 import com.liferay.portal.workflow.kaleo.service.KaleoTaskInstanceTokenLocalService;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
@@ -48,34 +45,22 @@ public class TaskAssignerHelper {
 		List<KaleoTaskAssignmentInstance> previousTaskAssignmentInstances =
 			kaleoTaskInstanceToken.getKaleoTaskAssignmentInstances();
 
-		List<KaleoTaskAssignment> reassignedKaleoTaskAssignments =
-			new ArrayList<>();
-
-		for (KaleoTaskAssignment kaleoTaskAssignment : kaleoTaskAssignments) {
-			TaskAssignmentSelector taskAssignmentSelector =
-				_taskAssignmentSelectorRegistry.getTaskAssignmentSelector(
-					kaleoTaskAssignment.getAssigneeClassName());
-
-			Collection<KaleoTaskAssignment> calculatedKaleoTaskAssignments =
-				taskAssignmentSelector.calculateTaskAssignments(
-					kaleoTaskAssignment, executionContext);
-
-			reassignedKaleoTaskAssignments.addAll(
-				calculatedKaleoTaskAssignments);
-		}
-
 		kaleoTaskInstanceToken =
 			_kaleoTaskInstanceTokenLocalService.assignKaleoTaskInstanceToken(
 				kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
-				reassignedKaleoTaskAssignments,
+				_aggregateTaskAssignmentSelector.getTaskAssignments(
+					kaleoTaskAssignments, executionContext),
 				executionContext.getWorkflowContext(),
 				executionContext.getServiceContext());
 
-		_kaleoLogLocalService.addTaskAssignmentKaleoLog(
+		_kaleoLogLocalService.addTaskAssignmentKaleoLogs(
 			previousTaskAssignmentInstances, kaleoTaskInstanceToken, null,
 			executionContext.getWorkflowContext(),
 			executionContext.getServiceContext());
 	}
+
+	@Reference
+	private AggregateTaskAssignmentSelector _aggregateTaskAssignmentSelector;
 
 	@Reference
 	private KaleoLogLocalService _kaleoLogLocalService;
@@ -83,8 +68,5 @@ public class TaskAssignerHelper {
 	@Reference
 	private KaleoTaskInstanceTokenLocalService
 		_kaleoTaskInstanceTokenLocalService;
-
-	@Reference
-	private TaskAssignmentSelectorRegistry _taskAssignmentSelectorRegistry;
 
 }

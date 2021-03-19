@@ -19,27 +19,15 @@ import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignment;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * @author Michael C. Han
+ * @author Rafael Praxedes
  */
-public interface TaskAssignmentSelector {
-
-	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
-	 *             #getTaskAssignments(KaleoTaskAssignment, ExecutionContext)}
-	 */
-	@Deprecated
-	public default Collection<KaleoTaskAssignment> calculateTaskAssignments(
-			KaleoTaskAssignment kaleoTaskAssignment,
-			ExecutionContext executionContext)
-		throws PortalException {
-
-		return getTaskAssignments(kaleoTaskAssignment, executionContext);
-	}
+public interface AggregateTaskAssignmentSelector {
 
 	public Collection<KaleoTaskAssignment> getTaskAssignments(
-			KaleoTaskAssignment kaleoTaskAssignment,
+			List<KaleoTaskAssignment> kaleoTaskAssignments,
 			ExecutionContext executionContext)
 		throws PortalException;
 
