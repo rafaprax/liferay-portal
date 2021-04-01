@@ -55,7 +55,7 @@ KaleoDefinitionVersionSearch kaleoDefinitionVersionSearch = kaleoDesignerDisplay
 				<portlet:param name="mvcPath" value="<%= KaleoDesignerUtil.getEditJspPath() %>" />
 				<portlet:param name="redirect" value="<%= currentURL %>" />
 				<portlet:param name="name" value="<%= kaleoDefinitionVersion.getName() %>" />
-				<portlet:param name="draftVersion" value="<%= kaleoDefinitionVersion.getVersion() %>" />
+				<portlet:param name="draftVersion" value="<%= String.valueOf(kaleoDefinitionVersion.getVersion()) %>" />
 				<portlet:param name="clearSessionMessage" value="true" />
 			</liferay-portlet:renderURL>
 

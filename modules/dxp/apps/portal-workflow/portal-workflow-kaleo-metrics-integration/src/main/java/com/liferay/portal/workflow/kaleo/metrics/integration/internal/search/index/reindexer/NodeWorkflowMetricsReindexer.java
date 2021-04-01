@@ -83,8 +83,8 @@ public class NodeWorkflowMetricsReindexer implements WorkflowMetricsReindexer {
 					kaleoNode.isInitial(), kaleoNode.getModifiedDate(),
 					kaleoNode.getName(), kaleoNode.getKaleoNodeId(),
 					kaleoNode.getKaleoDefinitionId(),
-					kaleoDefinitionVersion.getVersion(), kaleoNode.isTerminal(),
-					kaleoNode.getType());
+					String.valueOf(kaleoDefinitionVersion.getVersion()),
+					kaleoNode.isTerminal(), kaleoNode.getType());
 			});
 
 		actionableDynamicQuery.performActions();
@@ -124,7 +124,7 @@ public class NodeWorkflowMetricsReindexer implements WorkflowMetricsReindexer {
 					kaleoTask.getModifiedDate(), kaleoTask.getName(),
 					kaleoTask.getKaleoTaskId(),
 					kaleoTask.getKaleoDefinitionId(),
-					kaleoDefinitionVersion.getVersion(), false,
+					String.valueOf(kaleoDefinitionVersion.getVersion()), false,
 					NodeType.TASK.name());
 
 				_workflowMetricsReindexStatusMessageSender.sendStatusMessage(

@@ -84,7 +84,7 @@ public class InstanceWorkflowMetricsReindexer
 					kaleoInstance.getKaleoInstanceId(),
 					kaleoInstance.getModifiedDate(),
 					kaleoInstance.getKaleoDefinitionId(),
-					kaleoDefinitionVersion.getVersion(),
+					String.valueOf(kaleoDefinitionVersion.getVersion()),
 					kaleoInstance.getUserId(), kaleoInstance.getUserName());
 
 				_workflowMetricsReindexStatusMessageSender.sendStatusMessage(

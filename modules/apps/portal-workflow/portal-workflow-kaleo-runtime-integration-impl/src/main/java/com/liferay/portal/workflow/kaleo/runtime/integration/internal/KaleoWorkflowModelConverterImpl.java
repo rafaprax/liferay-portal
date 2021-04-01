@@ -187,7 +187,7 @@ public class KaleoWorkflowModelConverterImpl
 				content = _definitionExporter.export(
 					kaleoDefinitionVersion.getCompanyId(),
 					kaleoDefinitionVersion.getName(),
-					getVersion(kaleoDefinitionVersion.getVersion()));
+					kaleoDefinitionVersion.getVersion());
 
 				kaleoDefinitionVersion.setContent(content);
 
@@ -214,7 +214,7 @@ public class KaleoWorkflowModelConverterImpl
 		defaultWorkflowDefinition.setTitle(kaleoDefinitionVersion.getTitle());
 		defaultWorkflowDefinition.setUserId(kaleoDefinitionVersion.getUserId());
 		defaultWorkflowDefinition.setVersion(
-			getVersion(kaleoDefinitionVersion.getVersion()));
+			kaleoDefinitionVersion.getVersion());
 		defaultWorkflowDefinition.setWorkflowNodes(
 			_getWorkflowNodes(
 				kaleoDefinitionVersion.getKaleoDefinitionVersionId()));
