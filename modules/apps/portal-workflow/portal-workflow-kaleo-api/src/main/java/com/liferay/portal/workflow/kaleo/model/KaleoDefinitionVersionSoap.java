@@ -245,11 +245,11 @@ public class KaleoDefinitionVersionSoap implements Serializable {
 		_content = content;
 	}
 
-	public String getVersion() {
+	public int getVersion() {
 		return _version;
 	}
 
-	public void setVersion(String version) {
+	public void setVersion(int version) {
 		_version = version;
 	}
 
@@ -285,7 +285,7 @@ public class KaleoDefinitionVersionSoap implements Serializable {
 	private String _title;
 	private String _description;
 	private String _content;
-	private String _version;
+	private int _version;
 	private long _startKaleoNodeId;
 	private int _status;
 

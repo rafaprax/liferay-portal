@@ -503,7 +503,7 @@ public class KaleoDefinitionVersionUtil {
 	 * @throws NoSuchDefinitionVersionException if a matching kaleo definition version could not be found
 	 */
 	public static KaleoDefinitionVersion findByC_N_V(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws com.liferay.portal.workflow.kaleo.exception.
 			NoSuchDefinitionVersionException {
 
@@ -519,7 +519,7 @@ public class KaleoDefinitionVersionUtil {
 	 * @return the matching kaleo definition version, or <code>null</code> if a matching kaleo definition version could not be found
 	 */
 	public static KaleoDefinitionVersion fetchByC_N_V(
-		long companyId, String name, String version) {
+		long companyId, String name, int version) {
 
 		return getPersistence().fetchByC_N_V(companyId, name, version);
 	}
@@ -534,7 +534,7 @@ public class KaleoDefinitionVersionUtil {
 	 * @return the matching kaleo definition version, or <code>null</code> if a matching kaleo definition version could not be found
 	 */
 	public static KaleoDefinitionVersion fetchByC_N_V(
-		long companyId, String name, String version, boolean useFinderCache) {
+		long companyId, String name, int version, boolean useFinderCache) {
 
 		return getPersistence().fetchByC_N_V(
 			companyId, name, version, useFinderCache);
@@ -549,7 +549,7 @@ public class KaleoDefinitionVersionUtil {
 	 * @return the kaleo definition version that was removed
 	 */
 	public static KaleoDefinitionVersion removeByC_N_V(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws com.liferay.portal.workflow.kaleo.exception.
 			NoSuchDefinitionVersionException {
 
@@ -564,9 +564,7 @@ public class KaleoDefinitionVersionUtil {
 	 * @param version the version
 	 * @return the number of matching kaleo definition versions
 	 */
-	public static int countByC_N_V(
-		long companyId, String name, String version) {
-
+	public static int countByC_N_V(long companyId, String name, int version) {
 		return getPersistence().countByC_N_V(companyId, name, version);
 	}
 

@@ -350,7 +350,7 @@ public interface KaleoDefinitionVersionPersistence
 	 * @throws NoSuchDefinitionVersionException if a matching kaleo definition version could not be found
 	 */
 	public KaleoDefinitionVersion findByC_N_V(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws NoSuchDefinitionVersionException;
 
 	/**
@@ -362,7 +362,7 @@ public interface KaleoDefinitionVersionPersistence
 	 * @return the matching kaleo definition version, or <code>null</code> if a matching kaleo definition version could not be found
 	 */
 	public KaleoDefinitionVersion fetchByC_N_V(
-		long companyId, String name, String version);
+		long companyId, String name, int version);
 
 	/**
 	 * Returns the kaleo definition version where companyId = &#63; and name = &#63; and version = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
@@ -374,7 +374,7 @@ public interface KaleoDefinitionVersionPersistence
 	 * @return the matching kaleo definition version, or <code>null</code> if a matching kaleo definition version could not be found
 	 */
 	public KaleoDefinitionVersion fetchByC_N_V(
-		long companyId, String name, String version, boolean useFinderCache);
+		long companyId, String name, int version, boolean useFinderCache);
 
 	/**
 	 * Removes the kaleo definition version where companyId = &#63; and name = &#63; and version = &#63; from the database.
@@ -385,7 +385,7 @@ public interface KaleoDefinitionVersionPersistence
 	 * @return the kaleo definition version that was removed
 	 */
 	public KaleoDefinitionVersion removeByC_N_V(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws NoSuchDefinitionVersionException;
 
 	/**
@@ -396,7 +396,7 @@ public interface KaleoDefinitionVersionPersistence
 	 * @param version the version
 	 * @return the number of matching kaleo definition versions
 	 */
-	public int countByC_N_V(long companyId, String name, String version);
+	public int countByC_N_V(long companyId, String name, int version);
 
 	/**
 	 * Caches the kaleo definition version in the entity cache if it is enabled.

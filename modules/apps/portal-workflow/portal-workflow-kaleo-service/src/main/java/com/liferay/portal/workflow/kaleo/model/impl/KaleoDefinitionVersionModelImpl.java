@@ -86,7 +86,7 @@ public class KaleoDefinitionVersionModelImpl
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
 		{"kaleoDefinitionId", Types.BIGINT}, {"name", Types.VARCHAR},
 		{"title", Types.VARCHAR}, {"description", Types.VARCHAR},
-		{"content", Types.CLOB}, {"version", Types.VARCHAR},
+		{"content", Types.CLOB}, {"version", Types.INTEGER},
 		{"startKaleoNodeId", Types.BIGINT}, {"status", Types.INTEGER}
 	};
 
@@ -110,13 +110,13 @@ public class KaleoDefinitionVersionModelImpl
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("content", Types.CLOB);
-		TABLE_COLUMNS_MAP.put("version", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("version", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("startKaleoNodeId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table KaleoDefinitionVersion (mvccVersion LONG default 0 not null,kaleoDefinitionVersionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(200) null,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,createDate DATE null,modifiedDate DATE null,kaleoDefinitionId LONG,name VARCHAR(200) null,title STRING null,description STRING null,content TEXT null,version VARCHAR(75) null,startKaleoNodeId LONG,status INTEGER)";
+		"create table KaleoDefinitionVersion (mvccVersion LONG default 0 not null,kaleoDefinitionVersionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(200) null,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,createDate DATE null,modifiedDate DATE null,kaleoDefinitionId LONG,name VARCHAR(200) null,title STRING null,description STRING null,content TEXT null,version INTEGER,startKaleoNodeId LONG,status INTEGER)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table KaleoDefinitionVersion";
@@ -400,7 +400,7 @@ public class KaleoDefinitionVersionModelImpl
 			"version", KaleoDefinitionVersion::getVersion);
 		attributeSetterBiConsumers.put(
 			"version",
-			(BiConsumer<KaleoDefinitionVersion, String>)
+			(BiConsumer<KaleoDefinitionVersion, Integer>)
 				KaleoDefinitionVersion::setVersion);
 		attributeGetterFunctions.put(
 			"startKaleoNodeId", KaleoDefinitionVersion::getStartKaleoNodeId);
@@ -822,17 +822,12 @@ public class KaleoDefinitionVersionModelImpl
 	}
 
 	@Override
-	public String getVersion() {
-		if (_version == null) {
-			return "";
-		}
-		else {
-			return _version;
-		}
+	public int getVersion() {
+		return _version;
 	}
 
 	@Override
-	public void setVersion(String version) {
+	public void setVersion(int version) {
 		if (_columnOriginalValues == Collections.EMPTY_MAP) {
 			_setColumnOriginalValues();
 		}
@@ -845,8 +840,9 @@ public class KaleoDefinitionVersionModelImpl
 	 *             #getColumnOriginalValue(String)}
 	 */
 	@Deprecated
-	public String getOriginalVersion() {
-		return getColumnOriginalValue("version");
+	public int getOriginalVersion() {
+		return GetterUtil.getInteger(
+			this.<Integer>getColumnOriginalValue("version"));
 	}
 
 	@Override
@@ -1278,12 +1274,6 @@ public class KaleoDefinitionVersionModelImpl
 
 		kaleoDefinitionVersionCacheModel.version = getVersion();
 
-		String version = kaleoDefinitionVersionCacheModel.version;
-
-		if ((version != null) && (version.length() == 0)) {
-			kaleoDefinitionVersionCacheModel.version = null;
-		}
-
 		kaleoDefinitionVersionCacheModel.startKaleoNodeId =
 			getStartKaleoNodeId();
 
@@ -1382,7 +1372,7 @@ public class KaleoDefinitionVersionModelImpl
 	private String _titleCurrentLanguageId;
 	private String _description;
 	private String _content;
-	private String _version;
+	private int _version;
 	private long _startKaleoNodeId;
 	private int _status;
 

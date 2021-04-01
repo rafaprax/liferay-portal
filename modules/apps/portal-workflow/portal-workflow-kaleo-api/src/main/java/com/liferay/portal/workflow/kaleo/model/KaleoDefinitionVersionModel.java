@@ -436,15 +436,14 @@ public interface KaleoDefinitionVersionModel
 	 *
 	 * @return the version of this kaleo definition version
 	 */
-	@AutoEscape
-	public String getVersion();
+	public int getVersion();
 
 	/**
 	 * Sets the version of this kaleo definition version.
 	 *
 	 * @param version the version of this kaleo definition version
 	 */
-	public void setVersion(String version);
+	public void setVersion(int version);
 
 	/**
 	 * Returns the start kaleo node ID of this kaleo definition version.
