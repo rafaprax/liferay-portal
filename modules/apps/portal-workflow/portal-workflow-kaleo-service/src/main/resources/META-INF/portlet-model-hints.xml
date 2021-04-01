@@ -115,7 +115,7 @@
 		<field name="content" type="String">
 			<hint-collection name="CLOB" />
 		</field>
-		<field name="version" type="String" />
+		<field name="version" type="int" />
 		<field name="startKaleoNodeId" type="long" />
 		<field name="status" type="int" />
 	</model>

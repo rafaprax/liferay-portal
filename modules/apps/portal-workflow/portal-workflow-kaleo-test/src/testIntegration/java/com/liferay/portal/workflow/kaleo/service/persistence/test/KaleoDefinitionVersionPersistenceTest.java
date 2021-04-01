@@ -161,7 +161,7 @@ public class KaleoDefinitionVersionPersistenceTest {
 
 		newKaleoDefinitionVersion.setContent(RandomTestUtil.randomString());
 
-		newKaleoDefinitionVersion.setVersion(RandomTestUtil.randomString());
+		newKaleoDefinitionVersion.setVersion(RandomTestUtil.nextInt());
 
 		newKaleoDefinitionVersion.setStartKaleoNodeId(
 			RandomTestUtil.nextLong());
@@ -256,11 +256,12 @@ public class KaleoDefinitionVersionPersistenceTest {
 
 	@Test
 	public void testCountByC_N_V() throws Exception {
-		_persistence.countByC_N_V(RandomTestUtil.nextLong(), "", "");
+		_persistence.countByC_N_V(
+			RandomTestUtil.nextLong(), "", RandomTestUtil.nextInt());
 
-		_persistence.countByC_N_V(0L, "null", "null");
+		_persistence.countByC_N_V(0L, "null", 0);
 
-		_persistence.countByC_N_V(0L, (String)null, (String)null);
+		_persistence.countByC_N_V(0L, (String)null, 0);
 	}
 
 	@Test
@@ -604,8 +605,8 @@ public class KaleoDefinitionVersionPersistenceTest {
 				kaleoDefinitionVersion, "getColumnOriginalValue",
 				new Class<?>[] {String.class}, "name"));
 		Assert.assertEquals(
-			kaleoDefinitionVersion.getVersion(),
-			ReflectionTestUtil.invoke(
+			Integer.valueOf(kaleoDefinitionVersion.getVersion()),
+			ReflectionTestUtil.<Integer>invoke(
 				kaleoDefinitionVersion, "getColumnOriginalValue",
 				new Class<?>[] {String.class}, "version"));
 	}
@@ -648,7 +649,7 @@ public class KaleoDefinitionVersionPersistenceTest {
 
 		kaleoDefinitionVersion.setContent(RandomTestUtil.randomString());
 
-		kaleoDefinitionVersion.setVersion(RandomTestUtil.randomString());
+		kaleoDefinitionVersion.setVersion(RandomTestUtil.nextInt());
 
 		kaleoDefinitionVersion.setStartKaleoNodeId(RandomTestUtil.nextLong());
 

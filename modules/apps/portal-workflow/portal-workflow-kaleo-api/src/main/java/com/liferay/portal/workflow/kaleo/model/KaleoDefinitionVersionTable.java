@@ -80,9 +80,9 @@ public class KaleoDefinitionVersionTable
 			"description", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<KaleoDefinitionVersionTable, Clob> content =
 		createColumn("content", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
-	public final Column<KaleoDefinitionVersionTable, String> version =
+	public final Column<KaleoDefinitionVersionTable, Integer> version =
 		createColumn(
-			"version", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
+			"version", Integer.class, Types.INTEGER, Column.FLAG_DEFAULT);
 	public final Column<KaleoDefinitionVersionTable, Long> startKaleoNodeId =
 		createColumn(
 			"startKaleoNodeId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
