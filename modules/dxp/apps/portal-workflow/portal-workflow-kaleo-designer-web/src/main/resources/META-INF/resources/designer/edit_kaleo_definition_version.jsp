@@ -51,11 +51,11 @@ String successMessageKey = KaleoDesignerPortletKeys.KALEO_DESIGNER + "requestPro
 				name = kaleoDefinitionVersion.getName();
 			}
 
-			draftVersion = kaleoDefinitionVersion.getVersion();
+			draftVersion = String.valueOf(kaleoDefinitionVersion.getVersion());
 
 			latestKaleoDefinitionVersion = KaleoDefinitionVersionLocalServiceUtil.getLatestKaleoDefinitionVersion(themeDisplay.getCompanyId(), name);
 
-			latestDraftVersion = latestKaleoDefinitionVersion.getVersion();
+			latestDraftVersion = String.valueOf(latestKaleoDefinitionVersion.getVersion());
 
 			if (kaleoDefinition != null) {
 				version = kaleoDefinition.getVersion();
@@ -742,7 +742,7 @@ String successMessageKey = KaleoDesignerPortletKeys.KALEO_DESIGNER + "requestPro
 									<portlet:param name="mvcPath" value='<%= "/designer/edit_kaleo_definition_version.jsp" %>' />
 									<portlet:param name="redirect" value="<%= currentURL %>" />
 									<portlet:param name="name" value="<%= kaleoDefinitionVersion.getName() %>" />
-									<portlet:param name="draftVersion" value="<%= kaleoDefinitionVersion.getVersion() %>" />
+									<portlet:param name="draftVersion" value="<%= String.valueOf(kaleoDefinitionVersion.getVersion()) %>" />
 								</portlet:renderURL>
 
 								<aui:button-row>

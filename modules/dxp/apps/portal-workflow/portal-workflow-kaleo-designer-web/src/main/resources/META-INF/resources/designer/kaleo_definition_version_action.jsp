@@ -46,7 +46,7 @@ String kaleoNamespace = PortalUtil.getPortletNamespace(KaleoDesignerPortletKeys.
 		<portlet:param name="mvcPath" value="/designer/edit_kaleo_definition_version.jsp" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
 		<portlet:param name="name" value="<%= kaleoDefinitionVersion.getName() %>" />
-		<portlet:param name="draftVersion" value="<%= kaleoDefinitionVersion.getVersion() %>" />
+		<portlet:param name="draftVersion" value="<%= String.valueOf(kaleoDefinitionVersion.getVersion()) %>" />
 		<portlet:param name="<%= WorkflowWebKeys.WORKFLOW_JSP_STATE %>" value="view" />
 	</liferay-portlet:renderURL>
 
@@ -60,7 +60,7 @@ String kaleoNamespace = PortalUtil.getPortletNamespace(KaleoDesignerPortletKeys.
 			<portlet:param name="mvcPath" value='<%= "/designer/edit_kaleo_definition_version.jsp" %>' />
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="name" value="<%= kaleoDefinitionVersion.getName() %>" />
-			<portlet:param name="draftVersion" value="<%= kaleoDefinitionVersion.getVersion() %>" />
+			<portlet:param name="draftVersion" value="<%= String.valueOf(kaleoDefinitionVersion.getVersion()) %>" />
 		</liferay-portlet:renderURL>
 
 		<liferay-ui:icon
@@ -115,7 +115,7 @@ String kaleoNamespace = PortalUtil.getPortletNamespace(KaleoDesignerPortletKeys.
 				<liferay-portlet:actionURL name="/portal_workflow/delete_workflow_definition" portletName="<%= KaleoDesignerPortletKeys.CONTROL_PANEL_WORKFLOW %>" var="deleteURL">
 					<portlet:param name="redirect" value="<%= currentURL %>" />
 					<portlet:param name="name" value="<%= kaleoDefinitionVersion.getName() %>" />
-					<portlet:param name="version" value="<%= kaleoDefinitionVersion.getVersion() %>" />
+					<portlet:param name="version" value="<%= String.valueOf(kaleoDefinitionVersion.getVersion()) %>" />
 				</liferay-portlet:actionURL>
 
 				<liferay-ui:icon

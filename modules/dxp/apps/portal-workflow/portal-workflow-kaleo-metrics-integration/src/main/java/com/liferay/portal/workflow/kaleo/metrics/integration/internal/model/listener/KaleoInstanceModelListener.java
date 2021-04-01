@@ -56,8 +56,8 @@ public class KaleoInstanceModelListener
 			kaleoInstance.getCompanyId(), null, kaleoInstance.getCreateDate(),
 			kaleoInstance.getKaleoInstanceId(), kaleoInstance.getModifiedDate(),
 			kaleoInstance.getKaleoDefinitionId(),
-			kaleoDefinitionVersion.getVersion(), kaleoInstance.getUserId(),
-			kaleoInstance.getUserName());
+			String.valueOf(kaleoDefinitionVersion.getVersion()),
+			kaleoInstance.getUserId(), kaleoInstance.getUserName());
 	}
 
 	@Override

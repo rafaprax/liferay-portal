@@ -143,7 +143,7 @@ public class TaskWorkflowMetricsReindexer implements WorkflowMetricsReindexer {
 					kaleoTaskInstanceToken.getKaleoTaskName(),
 					kaleoTaskInstanceToken.getKaleoTaskId(),
 					kaleoInstance.getKaleoDefinitionId(),
-					kaleoDefinitionVersion.getVersion(),
+					String.valueOf(kaleoDefinitionVersion.getVersion()),
 					kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
 					kaleoTaskInstanceToken.getUserId());
 

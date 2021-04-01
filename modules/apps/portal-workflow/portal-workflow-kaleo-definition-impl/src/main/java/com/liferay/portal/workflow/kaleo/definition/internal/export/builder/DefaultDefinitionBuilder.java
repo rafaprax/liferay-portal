@@ -16,9 +16,7 @@ package com.liferay.portal.workflow.kaleo.definition.internal.export.builder;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.Node;
 import com.liferay.portal.workflow.kaleo.definition.Transition;
@@ -75,7 +73,7 @@ public class DefaultDefinitionBuilder implements DefinitionBuilder {
 			kaleoDefinitionVersion.getName(),
 			kaleoDefinitionVersion.getDescription(),
 			kaleoDefinitionVersion.getContent(),
-			_getVersion(kaleoDefinitionVersion.getVersion()));
+			kaleoDefinitionVersion.getVersion());
 
 		List<KaleoNode> kaleoNodes =
 			_kaleoNodeLocalService.getKaleoDefinitionVersionKaleoNodes(
@@ -114,12 +112,6 @@ public class DefaultDefinitionBuilder implements DefinitionBuilder {
 		}
 
 		return definition;
-	}
-
-	private int _getVersion(String version) {
-		int[] versionParts = StringUtil.split(version, StringPool.PERIOD, 0);
-
-		return versionParts[0];
 	}
 
 	@Reference

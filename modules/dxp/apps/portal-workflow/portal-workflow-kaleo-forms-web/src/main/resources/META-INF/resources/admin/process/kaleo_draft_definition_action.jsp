@@ -36,7 +36,7 @@ KaleoDefinitionVersion kaleoDefinitionVersion = (KaleoDefinitionVersion)row.getO
 			<portlet:param name="closeRedirect" value='<%= (String)row.getParameter("backURL") %>' />
 			<portlet:param name="historyKey" value="workflow" />
 			<portlet:param name="name" value="<%= kaleoDefinitionVersion.getName() %>" />
-			<portlet:param name="draftVersion" value="<%= kaleoDefinitionVersion.getVersion() %>" />
+			<portlet:param name="draftVersion" value="<%= String.valueOf(kaleoDefinitionVersion.getVersion()) %>" />
 		</liferay-portlet:renderURL>
 
 		<liferay-ui:icon

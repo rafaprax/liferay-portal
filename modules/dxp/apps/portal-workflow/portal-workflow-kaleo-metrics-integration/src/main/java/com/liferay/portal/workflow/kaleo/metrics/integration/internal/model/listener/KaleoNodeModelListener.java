@@ -49,8 +49,8 @@ public class KaleoNodeModelListener extends BaseKaleoModelListener<KaleoNode> {
 			kaleoNode.isInitial(), kaleoNode.getModifiedDate(),
 			kaleoNode.getName(), kaleoNode.getKaleoNodeId(),
 			kaleoNode.getKaleoDefinitionId(),
-			kaleoDefinitionVersion.getVersion(), kaleoNode.isTerminal(),
-			kaleoNode.getType());
+			String.valueOf(kaleoDefinitionVersion.getVersion()),
+			kaleoNode.isTerminal(), kaleoNode.getType());
 	}
 
 	@Override

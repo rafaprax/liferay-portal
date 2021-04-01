@@ -44,7 +44,8 @@ public class KaleoTaskModelListener extends BaseKaleoModelListener<KaleoTask> {
 			kaleoTask.getCompanyId(), kaleoTask.getCreateDate(), false,
 			kaleoTask.getModifiedDate(), kaleoTask.getName(),
 			kaleoTask.getKaleoTaskId(), kaleoTask.getKaleoDefinitionId(),
-			kaleoDefinitionVersion.getVersion(), false, NodeType.TASK.name());
+			String.valueOf(kaleoDefinitionVersion.getVersion()), false,
+			NodeType.TASK.name());
 	}
 
 	@Override

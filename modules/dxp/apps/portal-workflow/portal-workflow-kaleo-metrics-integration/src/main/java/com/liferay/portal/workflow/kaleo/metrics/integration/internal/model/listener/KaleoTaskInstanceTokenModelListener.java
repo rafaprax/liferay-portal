@@ -109,7 +109,7 @@ public class KaleoTaskInstanceTokenModelListener
 					kaleoTaskInstanceToken.getKaleoTaskName(),
 					kaleoTaskInstanceToken.getKaleoTaskId(),
 					kaleoTaskInstanceToken.getKaleoDefinitionId(),
-					kaleoDefinitionVersion.getVersion(),
+					String.valueOf(kaleoDefinitionVersion.getVersion()),
 					kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
 					kaleoTaskInstanceToken.getUserId());
 

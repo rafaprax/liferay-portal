@@ -83,7 +83,7 @@ public class TransitionWorkflowMetricsReindexer
 					kaleoTransition.getName(),
 					_getNodeId(kaleoTransition.getKaleoNodeId()),
 					kaleoTransition.getKaleoDefinitionId(),
-					kaleoDefinitionVersion.getVersion(),
+					String.valueOf(kaleoDefinitionVersion.getVersion()),
 					_getNodeId(kaleoTransition.getSourceKaleoNodeId()),
 					kaleoTransition.getSourceKaleoNodeName(),
 					_getNodeId(kaleoTransition.getTargetKaleoNodeId()),
