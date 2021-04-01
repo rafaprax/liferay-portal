@@ -14,9 +14,7 @@
 
 package com.liferay.portal.workflow.kaleo.util.comparator;
 
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 
 /**
@@ -40,31 +38,13 @@ public class KaleoDefinitionVersionVersionComparator
 
 		int value = 0;
 
-		String version1 = kaleoDefinitionVersion1.getVersion();
-		String version2 = kaleoDefinitionVersion2.getVersion();
+		int version1 = kaleoDefinitionVersion1.getVersion();
+		int version2 = kaleoDefinitionVersion2.getVersion();
 
-		int[] versionParts1 = StringUtil.split(version1, StringPool.PERIOD, 0);
-		int[] versionParts2 = StringUtil.split(version2, StringPool.PERIOD, 0);
-
-		if ((versionParts1.length != 2) && (versionParts2.length != 2)) {
-			value = 0;
-		}
-		else if (versionParts1.length != 2) {
-			value = -1;
-		}
-		else if (versionParts2.length != 2) {
+		if (version1 > version2) {
 			value = 1;
 		}
-		else if (versionParts1[0] > versionParts2[0]) {
-			value = 1;
-		}
-		else if (versionParts1[0] < versionParts2[0]) {
-			value = -1;
-		}
-		else if (versionParts1[1] > versionParts2[1]) {
-			value = 1;
-		}
-		else if (versionParts1[1] < versionParts2[1]) {
+		else if (version1 < version2) {
 			value = -1;
 		}
 
