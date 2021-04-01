@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.kaleo.service.impl;
 
 import com.liferay.exportimport.kernel.staging.Staging;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -32,6 +33,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.workflow.exception.IncompleteWorkflowInstancesException;
@@ -96,7 +98,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		kaleoDefinitionVersion.setTitle(title);
 		kaleoDefinitionVersion.setDescription(description);
 		kaleoDefinitionVersion.setContent(content);
-		kaleoDefinitionVersion.setVersion(version);
+		kaleoDefinitionVersion.setVersion(getVersion(version));
 
 		int status = GetterUtil.getInteger(
 			serviceContext.getAttribute("status"),
@@ -213,7 +215,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		long companyId, String name, String version) {
 
 		return kaleoDefinitionVersionPersistence.fetchByC_N_V(
-			companyId, name, version);
+			companyId, name, getVersion(version));
 	}
 
 	@Override
@@ -250,7 +252,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		throws PortalException {
 
 		return kaleoDefinitionVersionPersistence.findByC_N_V(
-			companyId, name, version);
+			companyId, name, getVersion(version));
 	}
 
 	@Override
@@ -296,7 +298,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 
 		KaleoDefinitionVersion kaleoDefinitionVersion =
 			kaleoDefinitionVersionPersistence.findByC_N_V(
-				companyId, name, version);
+				companyId, name, getVersion(version));
 
 		return kaleoDefinitionVersionPersistence.findByC_N_PrevAndNext(
 			kaleoDefinitionVersion.getKaleoDefinitionVersionId(), companyId,
@@ -414,6 +416,12 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		}
 
 		return kaleoDefinitionVersionIds;
+	}
+
+	protected int getVersion(String version) {
+		int[] versionParts = StringUtil.split(version, StringPool.PERIOD, 0);
+
+		return versionParts[0];
 	}
 
 	@Reference

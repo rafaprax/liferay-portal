@@ -49,7 +49,7 @@ public class KaleoDefinitionVersionLocalServiceTest
 				kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
 				_getVersion(kaleoDefinition.getVersion()));
 
-		Assert.assertEquals("1.0", kaleoDefinitionVersion.getVersion());
+		Assert.assertEquals(1, kaleoDefinitionVersion.getVersion());
 	}
 
 	@Test(expected = NoSuchDefinitionVersionException.class)
@@ -119,7 +119,7 @@ public class KaleoDefinitionVersionLocalServiceTest
 				kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
 				_getVersion(kaleoDefinition.getVersion()));
 
-		Assert.assertEquals("2.0", kaleoDefinitionVersion.getVersion());
+		Assert.assertEquals(2, kaleoDefinitionVersion.getVersion());
 	}
 
 	@Inject
