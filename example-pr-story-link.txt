@@ -1,0 +1,1 @@
+Story: [LPS-XXXXXX](https://issues.liferay.com/browse/LPS-XXXXXX)
