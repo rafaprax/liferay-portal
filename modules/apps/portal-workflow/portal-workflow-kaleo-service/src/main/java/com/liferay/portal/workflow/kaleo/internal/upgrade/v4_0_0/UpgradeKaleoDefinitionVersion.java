@@ -24,9 +24,11 @@ public class UpgradeKaleoDefinitionVersion extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		alter(
-			KaleoDefinitionVersionTable.class,
-			new AlterColumnType("version", "INT"));
+		if (!hasColumnType("KaleoDefinitionVersion", "version", "INT")) {
+			alter(
+				KaleoDefinitionVersionTable.class,
+				new AlterColumnType("version", "INT"));
+		}
 	}
 
 }
