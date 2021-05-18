@@ -27,7 +27,7 @@ public class UpgradeAssetVocabulary extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			AssetVocabularyTable.class,
-			new AlterTableAddColumn("visibilityType", "INT"));
+			new AlterTableAddColumn("visibilityType", "INTEGER"));
 
 		runSQL(
 			"update AssetVocabulary set visibilityType = " +
