@@ -542,8 +542,7 @@ public class AssigneeMetricResourceTest
 		for (NodeMetric nodeMetric : nodeMetrics) {
 			_workflowMetricsRESTTestHelper.addNodeMetric(
 				assignee, testGroup.getCompanyId(), instanceSupplier,
-				nodeMetric, processId, status, TestPropsValues.getUser(),
-				"1.0");
+				nodeMetric, processId, status, TestPropsValues.getUser(), "1");
 		}
 	}
 

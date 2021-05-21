@@ -58,7 +58,7 @@ public class SLAResourceTest extends BaseSLAResourceTestCase {
 			testGroup.getCompanyId());
 
 		_node = _workflowMetricsRESTTestHelper.addNode(
-			testGroup.getCompanyId(), _process.getId(), "1.0");
+			testGroup.getCompanyId(), _process.getId(), "1");
 	}
 
 	@After

@@ -49,7 +49,7 @@ public class TaskWorkflowMetricsIndexerTest
 			false, "processId", workflowDefinition.getWorkflowDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
 			"taskId", kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
-			"version", "1.0");
+			"version", 1);
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TaskWorkflowMetricsIndexerTest
 			false, "processId", workflowDefinition.getWorkflowDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
 			"taskId", kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
-			"version", "1.0");
+			"version", 1);
 
 		kaleoTaskInstanceToken = assignKaleoTaskInstanceToken(
 			kaleoTaskInstanceToken);
@@ -94,7 +94,7 @@ public class TaskWorkflowMetricsIndexerTest
 			false, "processId", workflowDefinition.getWorkflowDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
 			"taskId", kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
-			"version", "1.0");
+			"version", 1);
 
 		kaleoTaskInstanceToken = completeKaleoTaskInstanceToken(
 			kaleoTaskInstanceToken);
@@ -133,7 +133,7 @@ public class TaskWorkflowMetricsIndexerTest
 			true, "processId", workflowDefinition.getWorkflowDefinitionId(),
 			"nodeId", kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review",
 			"taskId", kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(),
-			"version", "1.0");
+			"version", 1);
 	}
 
 	@Test
@@ -150,8 +150,7 @@ public class TaskWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "completed", false, "processId",
 			workflowDefinition.getWorkflowDefinitionId(), "nodeId",
 			kaleoTaskInstanceToken.getKaleoTaskId(), "name", "review", "taskId",
-			kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(), "version",
-			"1.0");
+			kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId(), "version", 1);
 	}
 
 	@Inject(filter = "workflow.metrics.index.entity.name=task")

@@ -46,8 +46,8 @@ public class ProcessWorkflowMetricsIndexerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0",
-			"versions", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1,
+			"versions", "1");
 		assertCount(
 			_instanceWorkflowMetricsIndexNameBuilder.getIndexName(
 				workflowDefinition.getCompanyId()),
@@ -73,7 +73,7 @@ public class ProcessWorkflowMetricsIndexerTest
 		assertCount(
 			_processWorkflowMetricsIndexNameBuilder.getIndexName(companyId),
 			"WorkflowMetricsProcessType", "companyId", companyId, "deleted",
-			true, "processId", workflowDefinitionId, "version", "1.0");
+			true, "processId", workflowDefinitionId, "version", 1);
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class ProcessWorkflowMetricsIndexerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1);
 
 		updateWorkflowDefinition();
 
@@ -110,7 +110,7 @@ public class ProcessWorkflowMetricsIndexerTest
 			booleanQuery -> {
 				TermsQuery termsQuery = queries.terms("versions");
 
-				termsQuery.addValues("1.0", "2.0");
+				termsQuery.addValues("1", "2");
 
 				booleanQuery.addMustQueryClauses(termsQuery);
 			},
@@ -119,7 +119,7 @@ public class ProcessWorkflowMetricsIndexerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "2.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 2);
 	}
 
 	@Inject(filter = "workflow.metrics.index.entity.name=instance")
