@@ -61,7 +61,7 @@ public class KaleoTaskInstanceTokenModelListener
 				_taskWorkflowMetricsIndexer.addTask(
 					_indexerHelper.createAddTaskRequest(
 						null, kaleoTaskInstanceToken,
-						kaleoDefinitionVersion.getVersion()));
+						String.valueOf(kaleoDefinitionVersion.getVersion())));
 
 				return null;
 			});
