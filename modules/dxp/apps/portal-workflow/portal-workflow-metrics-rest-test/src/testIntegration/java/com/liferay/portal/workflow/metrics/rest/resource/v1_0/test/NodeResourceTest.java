@@ -117,7 +117,7 @@ public class NodeResourceTest extends BaseNodeResourceTestCase {
 	protected Node testGetProcessNodesPage_addNode(Long processId, Node node)
 		throws Exception {
 
-		return _addNode(node, processId, "1.0");
+		return _addNode(node, processId, "1");
 	}
 
 	@Override
