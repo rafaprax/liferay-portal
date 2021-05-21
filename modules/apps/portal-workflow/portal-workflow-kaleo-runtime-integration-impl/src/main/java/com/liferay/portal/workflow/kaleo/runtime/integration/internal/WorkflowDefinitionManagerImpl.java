@@ -438,13 +438,19 @@ public class WorkflowDefinitionManagerImpl
 	}
 
 	protected String getNextVersion(String version) {
-		int[] versionParts = StringUtil.split(version, StringPool.PERIOD, 0);
+		try {
+			return String.valueOf(Integer.parseInt(version) + 1);
+		}
+		catch (NumberFormatException numberFormatException) {
+			int[] versionParts = StringUtil.split(
+				version, StringPool.PERIOD, 0);
 
-		return String.valueOf(++versionParts[0]);
+			return String.valueOf(++versionParts[0]);
+		}
 	}
 
 	protected String getVersion(int version) {
-		return version + StringPool.PERIOD + 0;
+		return String.valueOf(version);
 	}
 
 	protected List<WorkflowDefinition> toWorkflowDefinitions(
