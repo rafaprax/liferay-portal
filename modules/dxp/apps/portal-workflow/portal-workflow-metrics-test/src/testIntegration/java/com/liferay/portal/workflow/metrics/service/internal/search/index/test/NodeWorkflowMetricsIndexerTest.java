@@ -57,8 +57,7 @@ public class NodeWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "deleted", false, "initial",
 			true, "name", "start", "nodeId", kaleoNode.getKaleoNodeId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"terminal", false, "type", NodeType.STATE.toString(), "version",
-			"1.0");
+			"terminal", false, "type", NodeType.STATE.toString(), "version", 1);
 
 		kaleoNode = addKaleoNode(new State("end", StringPool.BLANK, false));
 
@@ -69,8 +68,7 @@ public class NodeWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "deleted", false, "initial",
 			false, "name", "end", "nodeId", kaleoNode.getKaleoNodeId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"terminal", true, "type", NodeType.STATE.toString(), "version",
-			"1.0");
+			"terminal", true, "type", NodeType.STATE.toString(), "version", 1);
 	}
 
 	@Test
@@ -88,8 +86,7 @@ public class NodeWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "deleted", false, "initial",
 			false, "name", "review", "nodeId", kaleoTask.getKaleoTaskId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"terminal", false, "type", NodeType.TASK.toString(), "version",
-			"1.0");
+			"terminal", false, "type", NodeType.TASK.toString(), "version", 1);
 		assertCount(
 			_slaTaskResultWorkflowMetricsIndexNameBuilder.getIndexName(
 				workflowDefinition.getCompanyId()),
@@ -106,7 +103,7 @@ public class NodeWorkflowMetricsIndexerTest
 			false, "instanceId", 0, "processId",
 			workflowDefinition.getWorkflowDefinitionId(), "nodeId",
 			kaleoTask.getKaleoTaskId(), "name", "review", "taskId", 0,
-			"version", "1.0");
+			"version", 1);
 	}
 
 	@Test
@@ -121,8 +118,7 @@ public class NodeWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "deleted", false, "initial",
 			false, "name", "end", "nodeId", kaleoNode.getKaleoNodeId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"terminal", true, "type", NodeType.STATE.toString(), "version",
-			"1.0");
+			"terminal", true, "type", NodeType.STATE.toString(), "version", 1);
 
 		deleteKaleoNode(kaleoNode);
 
@@ -133,8 +129,7 @@ public class NodeWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "deleted", true, "initial",
 			false, "name", "end", "nodeId", kaleoNode.getKaleoNodeId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"terminal", true, "type", NodeType.STATE.toString(), "version",
-			"1.0");
+			"terminal", true, "type", NodeType.STATE.toString(), "version", 1);
 	}
 
 	@Test
@@ -154,8 +149,7 @@ public class NodeWorkflowMetricsIndexerTest
 			workflowDefinition.getCompanyId(), "deleted", true, "initial",
 			false, "name", "review", "nodeId", kaleoTask.getKaleoTaskId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"terminal", false, "type", NodeType.TASK.toString(), "version",
-			"1.0");
+			"terminal", false, "type", NodeType.TASK.toString(), "version", 1);
 	}
 
 	@Test

@@ -56,7 +56,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", false,
 			"deleted", false, "instanceId", kaleoInstance.getKaleoInstanceId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"version", "1.0");
+			"version", 1);
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", false,
 			"deleted", false, "instanceId", kaleoInstance.getKaleoInstanceId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"version", "1.0");
+			"version", 1);
 
 		kaleoInstance = completeKaleoInstance(kaleoInstance);
 
@@ -90,7 +90,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", true,
 			"deleted", false, "duration", duration.toMillis(), "instanceId",
 			kaleoInstance.getKaleoInstanceId(), "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", false,
 			"deleted", true, "instanceId", kaleoInstance.getKaleoInstanceId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"version", "1.0");
+			"version", 1);
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", false,
 			"deleted", false, "instanceId", kaleoInstance.getKaleoInstanceId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"version", "1.0");
+			"version", 1);
 
 		User user = UserTestUtil.addUser(
 			RandomTestUtil.randomString(
@@ -167,7 +167,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", false,
 			"deleted", false, "instanceId", kaleoInstance.getKaleoInstanceId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"version", "1.0");
+			"version", 1);
 
 		user.setMiddleName(RandomTestUtil.randomString());
 
@@ -187,7 +187,7 @@ public class InstanceWorkflowMetricsIndexerTest
 			"companyId", kaleoInstance.getCompanyId(), "completed", false,
 			"deleted", false, "instanceId", kaleoInstance.getKaleoInstanceId(),
 			"processId", workflowDefinition.getWorkflowDefinitionId(),
-			"version", "1.0");
+			"version", 1);
 	}
 
 	@Inject(filter = "workflow.metrics.index.entity.name=instance")

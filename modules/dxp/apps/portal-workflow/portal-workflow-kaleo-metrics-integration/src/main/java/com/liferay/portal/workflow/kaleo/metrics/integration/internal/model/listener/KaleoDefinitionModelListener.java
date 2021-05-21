@@ -14,8 +14,6 @@
 
 package com.liferay.portal.workflow.kaleo.metrics.integration.internal.model.listener;
 
-import com.liferay.petra.string.CharPool;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
@@ -47,8 +45,7 @@ public class KaleoDefinitionModelListener
 			kaleoDefinition.getKaleoDefinitionId(),
 			kaleoDefinition.getTitle(defaultLanguageId),
 			kaleoDefinition.getTitleMap(),
-			StringBundler.concat(
-				kaleoDefinition.getVersion(), CharPool.PERIOD, 0));
+			String.valueOf(kaleoDefinition.getVersion()));
 	}
 
 	@Override
@@ -64,8 +61,7 @@ public class KaleoDefinitionModelListener
 			kaleoDefinition.getKaleoDefinitionId(),
 			kaleoDefinition.getTitle(defaultLanguageId),
 			kaleoDefinition.getTitleMap(),
-			StringBundler.concat(
-				kaleoDefinition.getVersion(), CharPool.PERIOD, 0));
+			String.valueOf(kaleoDefinition.getVersion()));
 	}
 
 	@Override

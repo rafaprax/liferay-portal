@@ -50,13 +50,13 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsNodeType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1);
 		assertCount(
 			_processWorkflowMetricsIndexNameBuilder.getIndexName(
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "active", true, "companyId",
 			workflowDefinition.getCompanyId(), "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1);
 
 		WorkflowMetricsSLADefinition workflowMetricsSLADefinition =
 			_workflowMetricsSLADefinitionLocalService.
@@ -74,14 +74,14 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "active", true, "companyId",
 			workflowDefinition.getCompanyId(), "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "2.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 2);
 		assertCount(
 			4,
 			_nodeWorkflowMetricsIndexNameBuilder.getIndexName(
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsNodeType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "2.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 2);
 
 		_workflowMetricsSLADefinitionTransformerMessageListener.receive(
 			new Message());
@@ -92,16 +92,16 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 					getWorkflowMetricsSLADefinitionVersion(
 						workflowMetricsSLADefinition.
 							getWorkflowMetricsSLADefinitionId(),
-						"2.0");
+						"2");
 
 		Assert.assertEquals(
 			workflowDefinition.getWorkflowDefinitionId(),
 			workflowMetricsSLADefinitionVersion.getProcessId());
 		Assert.assertEquals(
-			getInitialNodeKey(workflowDefinition, "2.0"),
+			getInitialNodeKey(workflowDefinition, "2"),
 			workflowMetricsSLADefinitionVersion.getStartNodeKeys());
 		Assert.assertEquals(
-			getTerminalNodeKey(workflowDefinition, "2.0"),
+			getTerminalNodeKey(workflowDefinition, "2"),
 			workflowMetricsSLADefinitionVersion.getStopNodeKeys());
 	}
 
@@ -113,13 +113,13 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsNodeType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1);
 		assertCount(
 			_processWorkflowMetricsIndexNameBuilder.getIndexName(
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "active", true, "companyId",
 			workflowDefinition.getCompanyId(), "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "1.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 1);
 
 		WorkflowMetricsSLADefinition workflowMetricsSLADefinition =
 			_workflowMetricsSLADefinitionLocalService.
@@ -141,14 +141,14 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsProcessType", "active", true, "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "2.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 2);
 		assertCount(
 			4,
 			_nodeWorkflowMetricsIndexNameBuilder.getIndexName(
 				workflowDefinition.getCompanyId()),
 			"WorkflowMetricsNodeType", "companyId",
 			workflowDefinition.getCompanyId(), "deleted", false, "processId",
-			workflowDefinition.getWorkflowDefinitionId(), "version", "2.0");
+			workflowDefinition.getWorkflowDefinitionId(), "version", 2);
 
 		_workflowMetricsSLADefinitionTransformerMessageListener.receive(
 			new Message());
@@ -159,7 +159,7 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 					getWorkflowMetricsSLADefinitionVersion(
 						workflowMetricsSLADefinition.
 							getWorkflowMetricsSLADefinitionId(),
-						"2.0");
+						"2");
 
 		Assert.assertEquals(
 			workflowDefinition.getWorkflowDefinitionId(),
