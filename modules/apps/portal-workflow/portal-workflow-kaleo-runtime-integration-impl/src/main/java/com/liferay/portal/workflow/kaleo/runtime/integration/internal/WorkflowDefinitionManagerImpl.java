@@ -437,18 +437,6 @@ public class WorkflowDefinitionManagerImpl
 			new UnsyncByteArrayInputStream(bytes));
 	}
 
-	protected String getNextVersion(String version) {
-		try {
-			return String.valueOf(Integer.parseInt(version) + 1);
-		}
-		catch (NumberFormatException numberFormatException) {
-			int[] versionParts = StringUtil.split(
-				version, StringPool.PERIOD, 0);
-
-			return String.valueOf(++versionParts[0]);
-		}
-	}
-
 	protected String getVersion(int version) {
 		return String.valueOf(version);
 	}
