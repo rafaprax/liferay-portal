@@ -25,16 +25,40 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface KaleoSignaler {
 
-	public void signalEntry(
+	public default void signalEntry(
 			String transitionName, ExecutionContext executionContext)
+		throws PortalException {
+
+		signalEntry(transitionName, executionContext, false);
+	}
+
+	public void signalEntry(
+			String transitionName, ExecutionContext executionContext,
+			boolean waitForCompletion)
 		throws PortalException;
+
+	public default void signalExecute(
+			KaleoNode currentKaleoNode, ExecutionContext executionContext)
+		throws PortalException {
+
+		signalExecute(currentKaleoNode, executionContext, false);
+	}
 
 	public void signalExecute(
-			KaleoNode currentKaleoNode, ExecutionContext executionContext)
+			KaleoNode currentKaleoNode, ExecutionContext executionContext,
+			boolean waitForCompletion)
 		throws PortalException;
 
-	public void signalExit(
+	public default void signalExit(
 			String transitionName, ExecutionContext executionContext)
+		throws PortalException {
+
+		signalExit(transitionName, executionContext, false);
+	}
+
+	public void signalExit(
+			String transitionName, ExecutionContext executionContext,
+			boolean waitForCompletion)
 		throws PortalException;
 
 }

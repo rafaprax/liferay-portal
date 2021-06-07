@@ -28,7 +28,6 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -66,7 +65,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -213,19 +211,8 @@ public class DefaultWorkflowEngineImpl
 					updateKaleoTimerInstanceToken(kaleoTimerInstanceToken);
 			}
 
-			TransactionCommitCallbackUtil.registerCallback(
-				new Callable<Void>() {
-
-					@Override
-					public Void call() throws Exception {
-						_kaleoSignaler.signalExecute(
-							kaleoInstanceToken.getCurrentKaleoNode(),
-							executionContext);
-
-						return null;
-					}
-
-				});
+			_kaleoSignaler.signalExecute(
+				kaleoInstanceToken.getCurrentKaleoNode(), executionContext);
 
 			return executionContext;
 		}
@@ -551,27 +538,16 @@ public class DefaultWorkflowEngineImpl
 
 			serviceContext.setScopeGroupId(kaleoInstanceToken.getGroupId());
 
-			final ExecutionContext executionContext = new ExecutionContext(
-				kaleoInstanceToken, workflowContext, serviceContext);
-
-			TransactionCommitCallbackUtil.registerCallback(
-				new Callable<Void>() {
-
-					@Override
-					public Void call() throws Exception {
-						try {
-							_kaleoSignaler.signalExit(
-								transitionName, executionContext);
-						}
-						catch (Exception exception) {
-							throw new WorkflowException(
-								"Unable to signal next transition", exception);
-						}
-
-						return null;
-					}
-
-				});
+			try {
+				_kaleoSignaler.signalExit(
+					transitionName,
+					new ExecutionContext(
+						kaleoInstanceToken, workflowContext, serviceContext));
+			}
+			catch (Exception exception) {
+				throw new WorkflowException(
+					"Unable to signal next transition", exception);
+			}
 
 			return _kaleoWorkflowModelConverter.toWorkflowInstance(
 				kaleoInstance, kaleoInstanceToken, workflowContext);
@@ -651,27 +627,17 @@ public class DefaultWorkflowEngineImpl
 			kaleoLogLocalService.addWorkflowInstanceStartKaleoLog(
 				rootKaleoInstanceToken, serviceContext);
 
-			final ExecutionContext executionContext = new ExecutionContext(
-				rootKaleoInstanceToken, workflowContext, serviceContext);
-
-			TransactionCommitCallbackUtil.registerCallback(
-				new Callable<Void>() {
-
-					@Override
-					public Void call() throws Exception {
-						try {
-							_kaleoSignaler.signalEntry(
-								transitionName, executionContext);
-						}
-						catch (Exception exception) {
-							throw new WorkflowException(
-								"Unable to start workflow", exception);
-						}
-
-						return null;
-					}
-
-				});
+			try {
+				_kaleoSignaler.signalEntry(
+					transitionName,
+					new ExecutionContext(
+						rootKaleoInstanceToken, workflowContext,
+						serviceContext));
+			}
+			catch (Exception exception) {
+				throw new WorkflowException(
+					"Unable to start workflow", exception);
+			}
 
 			return _kaleoWorkflowModelConverter.toWorkflowInstance(
 				kaleoInstance, rootKaleoInstanceToken, workflowContext);
