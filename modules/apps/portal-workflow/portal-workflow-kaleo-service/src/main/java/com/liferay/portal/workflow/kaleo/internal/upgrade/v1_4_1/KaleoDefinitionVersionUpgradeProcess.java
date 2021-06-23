@@ -61,6 +61,14 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 		return version + StringPool.PERIOD + 0;
 	}
 
+	protected String getVersion(int version, int draftVersion) {
+		if (version == 0) {
+			version = 1;
+		}
+
+		return version + StringPool.PERIOD + --draftVersion;
+	}
+
 	protected void removeDuplicateKaleoDefinitions()
 		throws IOException, SQLException {
 
@@ -184,6 +192,49 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 						preparedStatement, kaleoDefinitionId,
 						kaleoDefinitionVersionId);
 				}
+			}
+
+			PreparedStatement preparedStatement3 = connection.prepareStatement(
+				"select * from KaleoDraftDefinition where draftVersion != 1");
+
+			ResultSet resultSet2 = preparedStatement3.executeQuery();
+
+			while (resultSet2.next()) {
+				long kaleoDefinitionVersionId = increment();
+				long groupId = resultSet2.getLong("groupId");
+				long companyId = resultSet2.getLong("companyId");
+				long userId = resultSet2.getLong("userId");
+				String userName = resultSet2.getString("userName");
+				Timestamp createDate = resultSet2.getTimestamp("createDate");
+				Timestamp modifiedDate = resultSet2.getTimestamp(
+					"modifiedDate");
+				String name = resultSet2.getString("name");
+				String title = resultSet2.getString("title");
+				String content = resultSet2.getString("content");
+				int version = resultSet2.getInt("version");
+				int draftVersion = resultSet2.getInt("draftVersion");
+
+				preparedStatement2.setLong(1, kaleoDefinitionVersionId);
+				preparedStatement2.setLong(2, groupId);
+				preparedStatement2.setLong(3, companyId);
+				preparedStatement2.setLong(4, userId);
+				preparedStatement2.setString(5, userName);
+				preparedStatement2.setLong(6, userId);
+				preparedStatement2.setString(7, userName);
+				preparedStatement2.setTimestamp(8, modifiedDate);
+				preparedStatement2.setTimestamp(9, createDate);
+				preparedStatement2.setTimestamp(10, modifiedDate);
+				preparedStatement2.setString(11, name);
+				preparedStatement2.setString(12, title);
+				preparedStatement2.setString(13, StringPool.BLANK);
+				preparedStatement2.setString(14, content);
+				preparedStatement2.setString(
+					15, getVersion(version, draftVersion));
+				preparedStatement2.setLong(16, 0);
+				preparedStatement2.setInt(
+					17, WorkflowConstants.STATUS_APPROVED);
+
+				preparedStatement2.addBatch();
 			}
 
 			preparedStatement2.executeBatch();
