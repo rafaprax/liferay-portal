@@ -15,6 +15,7 @@
 package com.liferay.portal.workflow.kaleo.internal.upgrade.v4_0_0;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.dao.orm.common.SQLTransformer;
 import com.liferay.portal.kernel.upgrade.UpgradeException;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -35,10 +36,10 @@ public class UpgradeKaleoDefinitionVersion extends UpgradeProcess {
 
 		sb.append("select kaleoDefinitionVersionId, name, version, ");
 		sb.append("kaleoDefinitionId from KaleoDefinitionVersion order by ");
-		sb.append("name, length(version), cast(version as decimal(4, 2)) asc");
+		sb.append("name, LENGTH(version), cast(version as decimal(4, 2)) asc");
 
 		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
-				sb.toString());
+				SQLTransformer.transform(sb.toString()));
 			ResultSet resultSet = preparedStatement1.executeQuery();
 			PreparedStatement preparedStatement2 = connection.prepareStatement(
 				"update KaleoDefinitionVersion set version = ? where " +
