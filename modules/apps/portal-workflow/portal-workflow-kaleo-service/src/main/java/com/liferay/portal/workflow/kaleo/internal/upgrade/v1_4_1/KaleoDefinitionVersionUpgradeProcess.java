@@ -16,7 +16,6 @@ package com.liferay.portal.workflow.kaleo.internal.upgrade.v1_4_1;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.dao.db.DBInspector;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -26,7 +25,6 @@ import com.liferay.portal.workflow.kaleo.internal.upgrade.v1_4_1.util.KaleoDefin
 
 import java.io.IOException;
 
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -196,15 +194,7 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 				}
 			}
 
-			DBInspector dbInspector = new DBInspector(connection);
-
-			DatabaseMetaData metaData = connection.getMetaData();
-
-			ResultSet metaDataResultSet = metaData.getTables(
-				dbInspector.getCatalog(), dbInspector.getSchema(),
-				"KaleoDraftDefinition", new String[] {"TABLE"});
-
-			if (metaDataResultSet.next()) {
+			if (hasTable("KaleoDraftDefinition")) {
 				PreparedStatement preparedStatement3 =
 					connection.prepareStatement(
 						"select * from KaleoDraftDefinition where " +
