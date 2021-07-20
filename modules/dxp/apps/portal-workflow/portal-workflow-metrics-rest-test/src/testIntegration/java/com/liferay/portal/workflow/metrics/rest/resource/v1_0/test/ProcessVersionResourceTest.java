@@ -72,13 +72,13 @@ public class ProcessVersionResourceTest
 			Arrays.asList(
 				new ProcessVersion() {
 					{
-						name = "1.0";
+						name = "1";
 					}
 				}),
 			(List<ProcessVersion>)page.getItems());
 
 		_workflowMetricsRESTTestHelper.updateProcess(
-			testGroup.getCompanyId(), _process.getId(), "2.0");
+			testGroup.getCompanyId(), _process.getId(), "2");
 
 		IdempotentRetryAssert.retryAssert(
 			3, TimeUnit.SECONDS,
@@ -91,12 +91,13 @@ public class ProcessVersionResourceTest
 					Arrays.asList(
 						new ProcessVersion() {
 							{
-								name = "1.0";
+								name = "1";
 							}
 						},
 						new ProcessVersion() {
 							{
-								name = "2.0";
+								name = "2";
+								name = "2";
 							}
 						}),
 					(List<ProcessVersion>)processVersionsPage.getItems());
@@ -125,7 +126,7 @@ public class ProcessVersionResourceTest
 			Arrays.asList(
 				new ProcessVersion() {
 					{
-						name = "1.0";
+						name = "1";
 					}
 				}),
 			Arrays.asList(
