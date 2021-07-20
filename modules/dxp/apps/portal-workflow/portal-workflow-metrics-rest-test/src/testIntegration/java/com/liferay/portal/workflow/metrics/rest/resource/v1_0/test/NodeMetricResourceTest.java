@@ -81,7 +81,7 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 		_deleteTasks();
 
 		_workflowMetricsRESTTestHelper.updateProcess(
-			testGroup.getCompanyId(), _process.getId(), "2.0");
+			testGroup.getCompanyId(), _process.getId(), "2");
 
 		NodeMetric nodeMetric1 = randomNodeMetric();
 
@@ -314,7 +314,7 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 			(List<NodeMetric>)page.getItems());
 
 		_workflowMetricsRESTTestHelper.updateProcess(
-			testGroup.getCompanyId(), _process.getId(), "3.0");
+			testGroup.getCompanyId(), _process.getId(), "3");
 
 		NodeMetric nodeMetric5 = randomNodeMetric();
 
@@ -336,7 +336,7 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 		nodeMetric6.setOverdueInstanceCount(0L);
 
 		testGetProcessNodeMetricsPage_addNodeMetric(
-			_process.getId(), "COMPLETED", nodeMetric6, "3.0");
+			_process.getId(), "COMPLETED", nodeMetric6, "3");
 
 		page = nodeMetricResource.getProcessNodeMetricsPage(
 			_process.getId(), true, null, null, null, "3", Pagination.of(1, 2),
@@ -382,7 +382,7 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 			(List<NodeMetric>)page.getItems());
 
 		page = nodeMetricResource.getProcessNodeMetricsPage(
-			_process.getId(), true, null, null, node5.getName(), "3.0",
+			_process.getId(), true, null, null, node5.getName(), "3",
 			Pagination.of(1, 2), null);
 
 		assertEquals(
@@ -406,7 +406,7 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 			(List<NodeMetric>)page.getItems());
 
 		_workflowMetricsRESTTestHelper.updateProcess(
-			testGroup.getCompanyId(), _process.getId(), "4.0");
+			testGroup.getCompanyId(), _process.getId(), "4");
 
 		NodeMetric nodeMetric7 = randomNodeMetric();
 
@@ -417,11 +417,11 @@ public class NodeMetricResourceTest extends BaseNodeMetricResourceTestCase {
 		nodeMetric7.setOverdueInstanceCount(0L);
 
 		testGetProcessNodeMetricsPage_addNodeMetric(
-			_process.getId(), nodeMetric7, "4.0");
+			_process.getId(), nodeMetric7, "4");
 
 		page = nodeMetricResource.getProcessNodeMetricsPage(
-			_process.getId(), true, null, null, null, "4.0",
-			Pagination.of(1, 2), null);
+			_process.getId(), true, null, null, null, "4", Pagination.of(1, 2),
+			null);
 
 		Assert.assertEquals(0, page.getTotalCount());
 	}
