@@ -188,10 +188,15 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 			}
 
 			if (hasTable("KaleoDraftDefinition")) {
+				StringBundler sb3 = new StringBundler(4);
+
+				sb3.append("select * from KaleoDraftDefinition kdd where not ");
+				sb3.append("exists (select 1 from KaleoDefinitionVersion kdv ");
+				sb3.append("where kdv.name = kdd.name and kdv.companyId = ");
+				sb3.append("kdd.companyId)");
+
 				PreparedStatement preparedStatement3 =
-					connection.prepareStatement(
-						"select * from KaleoDraftDefinition where " +
-							"draftVersion != 1");
+					connection.prepareStatement(sb3.toString());
 
 				ResultSet resultSet2 = preparedStatement3.executeQuery();
 
