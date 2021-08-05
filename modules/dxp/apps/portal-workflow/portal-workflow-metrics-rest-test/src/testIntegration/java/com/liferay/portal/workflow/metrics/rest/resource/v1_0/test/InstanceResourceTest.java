@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.test.rule.DataGuard;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -207,11 +208,11 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 
 		testGetProcessInstancesPage_addInstance(
 			new long[] {TestPropsValues.getGroupId()}, _process.getId(),
-			instance2, new long[] {siteAdministrationRole.getRoleId()}, _user);
+			instance2, new long[] {siteAdministrationRole.getRoleId()});
 
 		testGetProcessInstancesPage_addInstance(
 			new long[] {TestPropsValues.getGroupId()}, _process.getId(),
-			instance3, new long[] {siteMemberRole.getRoleId()}, _user);
+			instance3, new long[] {siteMemberRole.getRoleId()});
 
 		_testGetProcessInstancesPage(
 			null, null, null, null, new String[] {"Completed"},
@@ -240,16 +241,19 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 
 		_testGetProcessInstancesPage(
 			null, null, null, null, new String[] {"Pending"},
-			instances -> {
-				Assert.assertTrue(
-					instances.get(
-						0
-					).getAssignees()[0].getReviewer());
-				Assert.assertFalse(
-					instances.get(
-						1
-					).getAssignees()[0].getReviewer());
-			});
+			instances ->
+				instances.forEach(instance -> {
+					Assignee assignee =
+						(Assignee)ArrayUtil.getValue(instance.getAssignees(), 0);
+
+					if (Objects.equals(instance.getId(), instance2.getId())) {
+						Assert.assertTrue(assignee.getReviewer());
+					}
+					else if (Objects.equals(instance.getId(), instance3.getId())) {
+						Assert.assertFalse(assignee.getReviewer());
+					}
+				})
+			);
 
 		Date dateEnd = DateUtils.addSeconds(instance1.getDateCompletion(), 1);
 		Date dateStart = DateUtils.addSeconds(
@@ -467,33 +471,12 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 			Long processId, Instance instance)
 		throws Exception {
 
-		instance.setProcessId(processId);
-
-		instance = _workflowMetricsRESTTestHelper.addInstance(
-			testGroup.getCompanyId(), instance);
-
-		for (Assignee assignee : instance.getAssignees()) {
-			_workflowMetricsRESTTestHelper.addTask(
-				assignee, testGroup.getCompanyId(), instance,
-				TestPropsValues.getUser());
-		}
-
-		if (instance.getCompleted()) {
-			_workflowMetricsRESTTestHelper.completeInstance(
-				testGroup.getCompanyId(), instance);
-		}
-
-		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
-			testGroup.getCompanyId(), instance, instance.getSlaResults());
-
-		_instances.add(instance);
-
-		return instance;
+		return testGetProcessInstancesPage_addInstance(
+			null, processId, instance, null);
 	}
 
 	protected Instance testGetProcessInstancesPage_addInstance(
-			long[] groupIds, Long processId, Instance instance, long[] roleIds,
-			User user)
+			long[] groupIds, Long processId, Instance instance, long[] roleIds)
 		throws Exception {
 
 		instance.setProcessId(processId);
@@ -509,7 +492,7 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 			}
 			else {
 				_workflowMetricsRESTTestHelper.addTask(
-					assignee, testGroup.getCompanyId(), instance, user);
+					assignee, testGroup.getCompanyId(), instance, TestPropsValues.getUser());
 			}
 		}
 
@@ -593,7 +576,7 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 
 		Page<Instance> page = instanceResource.getProcessInstancesPage(
 			_process.getId(), assigneeIds, classPKs, dateEnd, dateStart, null,
-			statuses, null, Pagination.of(1, 3), "assetType:asc");
+			statuses, null, Pagination.of(1, 3), null);
 
 		unsafeConsumer.accept((List<Instance>)page.getItems());
 	}

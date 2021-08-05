@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilder;
 import com.liferay.portal.search.engine.adapter.document.UpdateByQueryDocumentRequest;
@@ -193,10 +194,11 @@ public class TaskWorkflowMetricsIndexerImpl
 		return document;
 	}
 
+	// {1 = [1, 2]} => (1, 1) , (1, 2)
 	@Override
 	public Document addTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
-		Map<Long, Long> assigneeGroupIds, String assigneeType, String className,
+		List<Long, List<Long>> assigneeGroupIds, String assigneeType, String className,
 		long classPK, long companyId, boolean completed, Date completionDate,
 		Long completionUserId, Date createDate, boolean instanceCompleted,
 		Date instanceCompletionDate, long instanceId, Date modifiedDate,

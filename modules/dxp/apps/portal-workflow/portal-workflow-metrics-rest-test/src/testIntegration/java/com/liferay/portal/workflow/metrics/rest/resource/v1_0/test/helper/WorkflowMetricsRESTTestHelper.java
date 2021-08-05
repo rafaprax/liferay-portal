@@ -530,7 +530,7 @@ public class WorkflowMetricsRESTTestHelper {
 	public Task addTask(long companyId, Instance instance, Task task, User user)
 		throws Exception {
 
-		Map<Long, Long> assigneeGroupIds = new HashMap<>();
+		Map<Long, List<Long>> assigneeGroupIds = new HashMap<>();
 		String assigneeType = Role.class.getName();
 
 		Assignee assignee = task.getAssignee();
@@ -583,22 +583,20 @@ public class WorkflowMetricsRESTTestHelper {
 			List<Long> assigneeIds = ListUtil.fromCollection(
 				assigneeGroupIds.keySet());
 
-			if (!assigneeIds.isEmpty()) {
-				_taskWorkflowMetricsIndexer.updateTask(
-					_createLocalizationMap(task.getAssetTitle()),
-					_createLocalizationMap(task.getAssetType()),
-					assigneeGroupIds, assigneeType, companyId, new Date(),
-					task.getId(), 0);
+			_taskWorkflowMetricsIndexer.updateTask(
+				_createLocalizationMap(task.getAssetTitle()),
+				_createLocalizationMap(task.getAssetType()),
+				assigneeGroupIds, assigneeType, companyId, new Date(),
+				task.getId(), 0);
 
-				_assertCount(
-					_taskWorkflowMetricsIndexNameBuilder.getIndexName(
-						companyId),
-					"assigneeIds", assigneeIds.get(0), "assigneeType",
-					assigneeType, "companyId", companyId, "deleted", false,
-					"instanceId", instance.getId(), "processId",
-					task.getProcessId(), "nodeId", task.getNodeId(), "name",
-					task.getName(), "taskId", task.getId());
-			}
+			_assertCount(
+				_taskWorkflowMetricsIndexNameBuilder.getIndexName(
+					companyId),
+				"assigneeIds", assigneeIds.get(0), "assigneeType",
+				assigneeType, "companyId", companyId, "deleted", false,
+				"instanceId", instance.getId(), "processId",
+				task.getProcessId(), "nodeId", task.getNodeId(), "name",
+				task.getName(), "taskId", task.getId());
 		}
 
 		if (task.getCompleted()) {

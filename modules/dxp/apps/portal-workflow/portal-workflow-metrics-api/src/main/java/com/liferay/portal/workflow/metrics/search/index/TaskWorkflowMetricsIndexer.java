@@ -17,6 +17,7 @@ package com.liferay.portal.workflow.metrics.search.index;
 import com.liferay.portal.search.document.Document;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,8 +27,10 @@ import java.util.Map;
 public interface TaskWorkflowMetricsIndexer {
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
-	 *    #addTask(Map, Map, Map, String, String, long, long, boolean, Date, Long, Date, boolean, Date, long, Date, String, long, long, String, long, long)}}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #addTask(Map,
+	 *             Map, Map, String, String, long, long, boolean, Date, Long,
+	 *             Date, boolean, Date, long, Date, String, long, long, String,
+	 *             long, long)}}
 	 */
 	@Deprecated
 	public Document addTask(
@@ -41,12 +44,12 @@ public interface TaskWorkflowMetricsIndexer {
 
 	public Document addTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
-		Map<Long, Long> assigneeGroupIds, String assigneeType, String className,
-		long classPK, long companyId, boolean completed, Date completionDate,
-		Long completionUserId, Date createDate, boolean instanceCompleted,
-		Date instanceCompletionDate, long instanceId, Date modifiedDate,
-		String name, long nodeId, long processId, String processVersion,
-		long taskId, long userId);
+		Map<Long, List<Long>> assigneeGroupIds, String assigneeType,
+		String className, long classPK, long companyId, boolean completed,
+		Date completionDate, Long completionUserId, Date createDate,
+		boolean instanceCompleted, Date instanceCompletionDate, long instanceId,
+		Date modifiedDate, String name, long nodeId, long processId,
+		String processVersion, long taskId, long userId);
 
 	public Document completeTask(
 		long companyId, Date completionDate, long completionUserId,
@@ -55,8 +58,8 @@ public interface TaskWorkflowMetricsIndexer {
 	public void deleteTask(long companyId, long taskId);
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
-	 *    #updateTask(Map, Map, Map, String, long, Date, long, long)}}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateTask(Map,
+	 *             Map, Map, String, long, Date, long, long)}}
 	 */
 	@Deprecated
 	public Document updateTask(
@@ -66,7 +69,7 @@ public interface TaskWorkflowMetricsIndexer {
 
 	public Document updateTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
-		Map<Long, Long> assigneeGroupIds, String assigneeType, long companyId,
-		Date modifiedDate, long taskId, long userId);
+		Map<Long, List<Long>> assigneeGroupIds, String assigneeType,
+		long companyId, Date modifiedDate, long taskId, long userId);
 
 }
