@@ -68,7 +68,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 	@Override
 	public KaleoDefinitionVersion addKaleoDefinitionVersion(
 			long kaleoDefinitionId, String name, String title,
-			String description, String content, String version,
+			String description, String content, int version,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -98,7 +98,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		kaleoDefinitionVersion.setTitle(title);
 		kaleoDefinitionVersion.setDescription(description);
 		kaleoDefinitionVersion.setContent(content);
-		kaleoDefinitionVersion.setVersion(getVersion(version));
+		kaleoDefinitionVersion.setVersion(version);
 
 		int status = GetterUtil.getInteger(
 			serviceContext.getAttribute("status"),
@@ -111,6 +111,24 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		kaleoDefinitionVersion.setStatusDate(modifiedDate);
 
 		return kaleoDefinitionVersionPersistence.update(kaleoDefinitionVersion);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #addKaleoDefinitionVersion(long, String, String, String,
+	 *             String, int, ServiceContext)}
+	 */
+	@Deprecated
+	@Override
+	public KaleoDefinitionVersion addKaleoDefinitionVersion(
+			long kaleoDefinitionId, String name, String title,
+			String description, String content, String version,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		return addKaleoDefinitionVersion(
+			kaleoDefinitionId, name, title, description, content,
+			getVersion(version), serviceContext);
 	}
 
 	@Override
@@ -162,11 +180,24 @@ public class KaleoDefinitionVersionLocalServiceImpl
 
 	@Override
 	public void deleteKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException {
 
 		kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
 			getKaleoDefinitionVersion(companyId, name, version));
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #deleteKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
+	@Override
+	public void deleteKaleoDefinitionVersion(
+			long companyId, String name, String version)
+		throws PortalException {
+
+		deleteKaleoDefinitionVersion(companyId, name, getVersion(version));
 	}
 
 	@Override
@@ -212,9 +243,22 @@ public class KaleoDefinitionVersionLocalServiceImpl
 
 	@Override
 	public KaleoDefinitionVersion fetchKaleoDefinitionVersion(
-		long companyId, String name, String version) {
+		long companyId, String name, int version) {
 
 		return kaleoDefinitionVersionPersistence.fetchByC_N_V(
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #fetchKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
+	@Override
+	public KaleoDefinitionVersion fetchKaleoDefinitionVersion(
+		long companyId, String name, String version) {
+
+		return fetchKaleoDefinitionVersion(
 			companyId, name, getVersion(version));
 	}
 
@@ -248,11 +292,24 @@ public class KaleoDefinitionVersionLocalServiceImpl
 
 	@Override
 	public KaleoDefinitionVersion getKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException {
 
 		return kaleoDefinitionVersionPersistence.findByC_N_V(
-			companyId, name, getVersion(version));
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #getKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
+	@Override
+	public KaleoDefinitionVersion getKaleoDefinitionVersion(
+			long companyId, String name, String version)
+		throws PortalException {
+
+		return getKaleoDefinitionVersion(companyId, name, getVersion(version));
 	}
 
 	@Override
@@ -293,16 +350,30 @@ public class KaleoDefinitionVersionLocalServiceImpl
 
 	@Override
 	public KaleoDefinitionVersion[] getKaleoDefinitionVersionsPrevAndNext(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException {
 
 		KaleoDefinitionVersion kaleoDefinitionVersion =
 			kaleoDefinitionVersionPersistence.findByC_N_V(
-				companyId, name, getVersion(version));
+				companyId, name, version);
 
 		return kaleoDefinitionVersionPersistence.findByC_N_PrevAndNext(
 			kaleoDefinitionVersion.getKaleoDefinitionVersionId(), companyId,
 			name, new KaleoDefinitionVersionIdComparator(true));
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
+	 */
+	@Deprecated
+	@Override
+	public KaleoDefinitionVersion[] getKaleoDefinitionVersionsPrevAndNext(
+			long companyId, String name, String version)
+		throws PortalException {
+
+		return getKaleoDefinitionVersionsPrevAndNext(
+			companyId, name, getVersion(version));
 	}
 
 	@Override
