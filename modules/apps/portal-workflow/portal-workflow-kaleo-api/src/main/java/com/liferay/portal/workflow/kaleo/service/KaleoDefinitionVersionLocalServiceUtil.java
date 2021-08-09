@@ -63,6 +63,21 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 
 	public static KaleoDefinitionVersion addKaleoDefinitionVersion(
 			long kaleoDefinitionId, String name, String title,
+			String description, String content, int version,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		return getService().addKaleoDefinitionVersion(
+			kaleoDefinitionId, name, title, description, content, version,
+			serviceContext);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #addKaleoDefinitionVersion(long, String, String, String, String, int, ServiceContext)}
+	 */
+	@Deprecated
+	public static KaleoDefinitionVersion addKaleoDefinitionVersion(
+			long kaleoDefinitionId, String name, String title,
 			String description, String content, String version,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
@@ -133,6 +148,17 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 			kaleoDefinitionVersionId);
 	}
 
+	public static void deleteKaleoDefinitionVersion(
+			long companyId, String name, int version)
+		throws PortalException {
+
+		getService().deleteKaleoDefinitionVersion(companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #deleteKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
 	public static void deleteKaleoDefinitionVersion(
 			long companyId, String name, String version)
 		throws PortalException {
@@ -265,6 +291,17 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	public static KaleoDefinitionVersion fetchKaleoDefinitionVersion(
+		long companyId, String name, int version) {
+
+		return getService().fetchKaleoDefinitionVersion(
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #fetchKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
+	public static KaleoDefinitionVersion fetchKaleoDefinitionVersion(
 		long companyId, String name, String version) {
 
 		return getService().fetchKaleoDefinitionVersion(
@@ -321,6 +358,17 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 		return getService().getKaleoDefinitionVersion(kaleoDefinitionVersionId);
 	}
 
+	public static KaleoDefinitionVersion getKaleoDefinitionVersion(
+			long companyId, String name, int version)
+		throws PortalException {
+
+		return getService().getKaleoDefinitionVersion(companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
 	public static KaleoDefinitionVersion getKaleoDefinitionVersion(
 			long companyId, String name, String version)
 		throws PortalException {
@@ -387,6 +435,19 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 		return getService().getKaleoDefinitionVersionsCount(companyId, name);
 	}
 
+	public static KaleoDefinitionVersion[]
+			getKaleoDefinitionVersionsPrevAndNext(
+				long companyId, String name, int version)
+		throws PortalException {
+
+		return getService().getKaleoDefinitionVersionsPrevAndNext(
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
+	 */
+	@Deprecated
 	public static KaleoDefinitionVersion[]
 			getKaleoDefinitionVersionsPrevAndNext(
 				long companyId, String name, String version)

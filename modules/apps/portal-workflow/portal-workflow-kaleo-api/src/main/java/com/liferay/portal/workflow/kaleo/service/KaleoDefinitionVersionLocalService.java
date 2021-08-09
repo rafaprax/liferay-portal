@@ -80,6 +80,16 @@ public interface KaleoDefinitionVersionLocalService
 
 	public KaleoDefinitionVersion addKaleoDefinitionVersion(
 			long kaleoDefinitionId, String name, String title,
+			String description, String content, int version,
+			ServiceContext serviceContext)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #addKaleoDefinitionVersion(long, String, String, String, String, int, ServiceContext)}
+	 */
+	@Deprecated
+	public KaleoDefinitionVersion addKaleoDefinitionVersion(
+			long kaleoDefinitionId, String name, String title,
 			String description, String content, String version,
 			ServiceContext serviceContext)
 		throws PortalException;
@@ -132,6 +142,14 @@ public interface KaleoDefinitionVersionLocalService
 			long kaleoDefinitionVersionId)
 		throws PortalException;
 
+	public void deleteKaleoDefinitionVersion(
+			long companyId, String name, int version)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #deleteKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
 	public void deleteKaleoDefinitionVersion(
 			long companyId, String name, String version)
 		throws PortalException;
@@ -231,6 +249,14 @@ public interface KaleoDefinitionVersionLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion fetchKaleoDefinitionVersion(
+		long companyId, String name, int version);
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #fetchKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public KaleoDefinitionVersion fetchKaleoDefinitionVersion(
 		long companyId, String name, String version);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -267,6 +293,15 @@ public interface KaleoDefinitionVersionLocalService
 			long kaleoDefinitionVersionId)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public KaleoDefinitionVersion getKaleoDefinitionVersion(
+			long companyId, String name, int version)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion getKaleoDefinitionVersion(
 			long companyId, String name, String version)
@@ -316,6 +351,15 @@ public interface KaleoDefinitionVersionLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getKaleoDefinitionVersionsCount(long companyId, String name);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public KaleoDefinitionVersion[] getKaleoDefinitionVersionsPrevAndNext(
+			long companyId, String name, int version)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
+	 */
+	@Deprecated
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion[] getKaleoDefinitionVersionsPrevAndNext(
 			long companyId, String name, String version)
