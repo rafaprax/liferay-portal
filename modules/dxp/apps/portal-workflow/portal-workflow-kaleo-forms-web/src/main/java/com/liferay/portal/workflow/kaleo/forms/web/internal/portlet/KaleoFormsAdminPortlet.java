@@ -136,14 +136,13 @@ public class KaleoFormsAdminPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		String name = ParamUtil.getString(actionRequest, "name");
-		String version = ParamUtil.getString(actionRequest, "version");
-
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			actionRequest);
 
 		_kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
-			serviceContext.getCompanyId(), name, version);
+			serviceContext.getCompanyId(),
+			ParamUtil.getString(actionRequest, "name"),
+			ParamUtil.getInteger(actionRequest, "version"));
 	}
 
 	@Override
@@ -413,11 +412,11 @@ public class KaleoFormsAdminPortlet extends MVCPortlet {
 		throws Exception {
 
 		String name = ParamUtil.getString(resourceRequest, "name");
-		String version = ParamUtil.getString(resourceRequest, "version");
+		int version = ParamUtil.getInteger(resourceRequest, "version");
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-		if (Validator.isNotNull(name) && Validator.isNotNull(version)) {
+		if (Validator.isNotNull(name) && (version > 0)) {
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)resourceRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);

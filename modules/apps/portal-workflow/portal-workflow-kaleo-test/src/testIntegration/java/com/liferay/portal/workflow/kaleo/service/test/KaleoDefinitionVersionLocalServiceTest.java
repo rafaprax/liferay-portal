@@ -15,7 +15,6 @@
 package com.liferay.portal.workflow.kaleo.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.test.rule.DataGuard;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchDefinitionVersionException;
@@ -42,7 +41,7 @@ public class KaleoDefinitionVersionLocalServiceTest
 		KaleoDefinitionVersion kaleoDefinitionVersion =
 			kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
 				kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
-				_getVersion(kaleoDefinition.getVersion()));
+				kaleoDefinition.getVersion());
 
 		Assert.assertEquals(1, kaleoDefinitionVersion.getVersion());
 	}
@@ -59,7 +58,7 @@ public class KaleoDefinitionVersionLocalServiceTest
 
 		kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
 			kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
-			_getVersion(kaleoDefinition.getVersion()));
+			kaleoDefinition.getVersion());
 	}
 
 	@Test
@@ -73,7 +72,7 @@ public class KaleoDefinitionVersionLocalServiceTest
 		KaleoDefinitionVersion kaleoDefinitionVersion =
 			kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
 				kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
-				_getVersion(kaleoDefinition.getVersion()));
+				kaleoDefinition.getVersion());
 
 		Assert.assertEquals(2, kaleoDefinitionVersion.getVersion());
 	}
@@ -81,9 +80,5 @@ public class KaleoDefinitionVersionLocalServiceTest
 	@Inject
 	protected KaleoDefinitionVersionLocalService
 		kaleoDefinitionVersionLocalService;
-
-	private String _getVersion(int version) {
-		return version + StringPool.PERIOD + 0;
-	}
 
 }

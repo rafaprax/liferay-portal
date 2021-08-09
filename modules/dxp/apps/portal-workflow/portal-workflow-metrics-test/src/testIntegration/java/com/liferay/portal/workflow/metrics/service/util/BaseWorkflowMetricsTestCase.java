@@ -180,7 +180,7 @@ public abstract class BaseWorkflowMetricsTestCase {
 	}
 
 	protected String getInitialNodeKey(
-			WorkflowDefinition workflowDefinition, String version)
+			WorkflowDefinition workflowDefinition, int version)
 		throws Exception {
 
 		return _getInitialNodeKey(
@@ -242,7 +242,7 @@ public abstract class BaseWorkflowMetricsTestCase {
 	}
 
 	protected String getTerminalNodeKey(
-			WorkflowDefinition workflowDefinition, String version)
+			WorkflowDefinition workflowDefinition, int version)
 		throws PortalException {
 
 		return _getTerminalNodeKey(
