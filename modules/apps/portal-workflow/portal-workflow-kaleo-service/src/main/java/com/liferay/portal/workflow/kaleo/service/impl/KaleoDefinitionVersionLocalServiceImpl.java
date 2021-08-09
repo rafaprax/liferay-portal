@@ -126,7 +126,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 
 		return addKaleoDefinitionVersion(
 			kaleoDefinitionId, name, title, description, content,
-			getVersion(version), serviceContext);
+			_getVersion(version), serviceContext);
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 			long companyId, String name, String version)
 		throws PortalException {
 
-		deleteKaleoDefinitionVersion(companyId, name, getVersion(version));
+		deleteKaleoDefinitionVersion(companyId, name, _getVersion(version));
 	}
 
 	@Override
@@ -256,7 +256,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		long companyId, String name, String version) {
 
 		return fetchKaleoDefinitionVersion(
-			companyId, name, getVersion(version));
+			companyId, name, _getVersion(version));
 	}
 
 	@Override
@@ -306,7 +306,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 			long companyId, String name, String version)
 		throws PortalException {
 
-		return getKaleoDefinitionVersion(companyId, name, getVersion(version));
+		return getKaleoDefinitionVersion(companyId, name, _getVersion(version));
 	}
 
 	@Override
@@ -370,7 +370,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		throws PortalException {
 
 		return getKaleoDefinitionVersionsPrevAndNext(
-			companyId, name, getVersion(version));
+			companyId, name, _getVersion(version));
 	}
 
 	@Override
@@ -485,7 +485,7 @@ public class KaleoDefinitionVersionLocalServiceImpl
 		return kaleoDefinitionVersionIds;
 	}
 
-	protected int getVersion(String version) {
+	private int _getVersion(String version) {
 		int[] versionParts = StringUtil.split(version, StringPool.PERIOD, 0);
 
 		return versionParts[0];
