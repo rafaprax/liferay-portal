@@ -98,10 +98,10 @@ public class WorkflowMetricsSLADefinitionTransformerMessageListenerTest
 			workflowDefinition.getWorkflowDefinitionId(),
 			workflowMetricsSLADefinitionVersion.getProcessId());
 		Assert.assertEquals(
-			getInitialNodeKey(workflowDefinition, "2"),
+			getInitialNodeKey(workflowDefinition, 2),
 			workflowMetricsSLADefinitionVersion.getStartNodeKeys());
 		Assert.assertEquals(
-			getTerminalNodeKey(workflowDefinition, "2"),
+			getTerminalNodeKey(workflowDefinition, 2),
 			workflowMetricsSLADefinitionVersion.getStopNodeKeys());
 	}
 

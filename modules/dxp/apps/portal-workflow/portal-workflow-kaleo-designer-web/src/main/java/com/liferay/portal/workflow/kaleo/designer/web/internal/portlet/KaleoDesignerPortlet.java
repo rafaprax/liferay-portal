@@ -516,10 +516,9 @@ public class KaleoDesignerPortlet extends MVCPortlet {
 
 		KaleoDefinitionVersion kaleoDefinitionVersion = null;
 
-		String draftVersion = ParamUtil.getString(
-			renderRequest, "draftVersion");
+		int draftVersion = ParamUtil.getInteger(renderRequest, "draftVersion");
 
-		if (Validator.isNull(draftVersion)) {
+		if (draftVersion == 0) {
 			kaleoDefinitionVersion =
 				_kaleoDefinitionVersionLocalService.
 					fetchLatestKaleoDefinitionVersion(

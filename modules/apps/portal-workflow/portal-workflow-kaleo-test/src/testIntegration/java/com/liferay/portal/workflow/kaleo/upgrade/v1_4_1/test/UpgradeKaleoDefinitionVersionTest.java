@@ -16,7 +16,6 @@ package com.liferay.portal.workflow.kaleo.upgrade.v1_4_1.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBInspector;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
@@ -185,11 +184,7 @@ public class UpgradeKaleoDefinitionVersionTest {
 		throws Exception {
 
 		return _kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
-			companyId, name, _getVersion(version));
-	}
-
-	private String _getVersion(int version) {
-		return version + StringPool.PERIOD + 0;
+			companyId, name, version);
 	}
 
 	private void _setUpOldColumnsAndIndexes() throws Exception {

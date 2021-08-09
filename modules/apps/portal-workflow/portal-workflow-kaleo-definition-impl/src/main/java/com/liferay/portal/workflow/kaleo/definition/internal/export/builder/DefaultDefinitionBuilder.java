@@ -49,7 +49,7 @@ public class DefaultDefinitionBuilder implements DefinitionBuilder {
 		return doBuildDefinition(
 			_kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
 				kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
-				String.valueOf(kaleoDefinition.getVersion())));
+				kaleoDefinition.getVersion()));
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class DefaultDefinitionBuilder implements DefinitionBuilder {
 
 		return doBuildDefinition(
 			_kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
-				companyId, name, String.valueOf(version)));
+				companyId, name, version));
 	}
 
 	protected Definition doBuildDefinition(
