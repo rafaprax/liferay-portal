@@ -62,6 +62,23 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
 			addKaleoDefinitionVersion(
 				long kaleoDefinitionId, String name, String title,
+				String description, String content, int version,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _kaleoDefinitionVersionLocalService.addKaleoDefinitionVersion(
+			kaleoDefinitionId, name, title, description, content, version,
+			serviceContext);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #addKaleoDefinitionVersion(long, String, String, String, String, int, ServiceContext)}
+	 */
+	@Deprecated
+	@Override
+	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
+			addKaleoDefinitionVersion(
+				long kaleoDefinitionId, String name, String title,
 				String description, String content, String version,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -139,6 +156,19 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 			kaleoDefinitionVersionId);
 	}
 
+	@Override
+	public void deleteKaleoDefinitionVersion(
+			long companyId, String name, int version)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #deleteKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
 	@Override
 	public void deleteKaleoDefinitionVersion(
 			long companyId, String name, String version)
@@ -303,6 +333,18 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 
 	@Override
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
+		fetchKaleoDefinitionVersion(long companyId, String name, int version) {
+
+		return _kaleoDefinitionVersionLocalService.fetchKaleoDefinitionVersion(
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #fetchKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
+	@Override
+	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
 		fetchKaleoDefinitionVersion(
 			long companyId, String name, String version) {
 
@@ -373,6 +415,19 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 			kaleoDefinitionVersionId);
 	}
 
+	@Override
+	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
+			getKaleoDefinitionVersion(long companyId, String name, int version)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
+			companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersion(long, String, int)}
+	 */
+	@Deprecated
 	@Override
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
 			getKaleoDefinitionVersion(
@@ -462,6 +517,20 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 			getKaleoDefinitionVersionsCount(companyId, name);
 	}
 
+	@Override
+	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion[]
+			getKaleoDefinitionVersionsPrevAndNext(
+				long companyId, String name, int version)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _kaleoDefinitionVersionLocalService.
+			getKaleoDefinitionVersionsPrevAndNext(companyId, name, version);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
+	 */
+	@Deprecated
 	@Override
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion[]
 			getKaleoDefinitionVersionsPrevAndNext(
