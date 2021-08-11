@@ -50,26 +50,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = GraphWalkerPortalExecutor.class)
 public class GraphWalkerPortalExecutor {
 
-	public CountDownLatch execute(PathElement pathElement) {
-		CountDownLatch countDownLatch = new CountDownLatch(1);
-
-		if (PortalRunMode.isTestMode()) {
-			_doWalk(pathElement);
-
-			countDownLatch.countDown();
-
-			return countDownLatch;
-		}
-
-		NoticeableFuture<?> noticeableFuture =
-			_noticeableExecutorService.submit(() -> _doWalk(pathElement));
-
-		noticeableFuture.addFutureListener(
-			future -> {
-				countDownLatch.countDown();
-			});
-
-		return countDownLatch;
+	public NoticeableFuture<?> execute(PathElement pathElement) {
+		return _noticeableExecutorService.submit(() -> _doWalk(pathElement));
 	}
 
 	@Activate
