@@ -146,6 +146,17 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 			Map<String, Serializable> workflowContext)
 		throws WorkflowException {
 
+		return completeWorkflowTask(
+			companyId, userId, workflowTaskId, transitionName, comment,
+			workflowContext, false);
+	}
+	@Override
+	public WorkflowTask completeWorkflowTask(
+			long companyId, long userId, long workflowTaskId,
+			String transitionName, String comment,
+			Map<String, Serializable> workflowContext, boolean waitForCompletion)
+		throws WorkflowException {
+
 		Lock lock = null;
 
 		try {
@@ -197,28 +208,18 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 			workflowContext.put(
 				WorkflowConstants.CONTEXT_TRANSITION_NAME, transitionName);
 
-			ExecutionContext executionContext = new ExecutionContext(
-				kaleoInstanceToken, kaleoTaskInstanceToken, workflowContext,
-				serviceContext);
-
-			TransactionCommitCallbackUtil.registerCallback(
-				new Callable<Void>() {
-
-					@Override
-					public Void call() throws Exception {
-						try {
-							_kaleoSignaler.signalExit(
-								transitionName, executionContext);
-						}
-						catch (Exception exception) {
-							throw new WorkflowException(
-								"Unable to signal next transition", exception);
-						}
-
-						return null;
-					}
-
-				});
+			try {
+				_kaleoSignaler.signalExit(
+					transitionName,
+					new ExecutionContext(
+						kaleoInstanceToken, kaleoTaskInstanceToken,
+						workflowContext, serviceContext),
+					waitForCompletion);
+			}
+			catch (Exception exception) {
+				throw new WorkflowException(
+					"Unable to signal next transition", exception);
+			}
 
 			return workflowTask;
 		}

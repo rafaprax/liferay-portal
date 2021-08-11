@@ -51,6 +51,11 @@ public class DefaultGraphWalker
 			ExecutionContext executionContext)
 		throws PortalException {
 
+		System.out.println(
+			"[" +
+				Thread.currentThread(
+				).getName() + "] Graph Walker start ");
+
 		if (sourceKaleoNode != null) {
 			NodeExecutor nodeExecutor = _nodeExecutorFactory.getNodeExecutor(
 				sourceKaleoNode.getType());
@@ -77,6 +82,11 @@ public class DefaultGraphWalker
 		}
 
 		_executionContextHelper.checkKaleoInstanceComplete(executionContext);
+
+		System.out.println(
+			"[" +
+				Thread.currentThread(
+				).getName() + "] Graph Walker finish ");
 	}
 
 	@Reference
