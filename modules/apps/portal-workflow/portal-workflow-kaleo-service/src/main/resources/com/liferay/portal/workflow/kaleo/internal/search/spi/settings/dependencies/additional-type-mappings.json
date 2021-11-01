@@ -1,0 +1,8 @@
+{
+	"properties": {
+		"kaleoInstanceId": {
+			"store": true,
+			"type": "keyword"
+		}
+	}
+}
