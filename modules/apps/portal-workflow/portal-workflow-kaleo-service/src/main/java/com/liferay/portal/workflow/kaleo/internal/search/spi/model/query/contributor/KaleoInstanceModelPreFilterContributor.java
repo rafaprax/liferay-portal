@@ -66,8 +66,6 @@ public class KaleoInstanceModelPreFilterContributor
 		BooleanFilter innerBooleanFilter = new BooleanFilter();
 
 		appendClassName(innerBooleanFilter, kaleoInstanceQuery);
-		appendCurrentKaleoNodeNameTerm(innerBooleanFilter, kaleoInstanceQuery);
-		appendKaleoDefinitionNameTerm(innerBooleanFilter, kaleoInstanceQuery);
 
 		if (innerBooleanFilter.hasClauses()) {
 			booleanFilter.add(innerBooleanFilter, BooleanClauseOccur.MUST);
