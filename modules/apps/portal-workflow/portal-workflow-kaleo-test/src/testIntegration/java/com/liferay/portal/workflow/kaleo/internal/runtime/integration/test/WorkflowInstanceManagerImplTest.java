@@ -17,7 +17,11 @@ package com.liferay.portal.workflow.kaleo.internal.runtime.integration.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.workflow.WorkflowDefinition;
+import com.liferay.portal.kernel.workflow.WorkflowDefinitionManager;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowInstance;
@@ -26,6 +30,7 @@ import com.liferay.portal.kernel.workflow.search.WorkflowModelSearchResult;
 
 import java.util.List;
 
+import com.liferay.portal.test.rule.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,4 +87,47 @@ public class WorkflowInstanceManagerImplTest
 			workflowInstances.toString(), 0, workflowInstances.size());
 	}
 
+	@Test
+	public void testSearchWorkflowInstancesWhenThereAreMoreThanOneInstanceToken()
+		throws Exception {
+
+
+		WorkflowDefinition workflowDefinition =
+			_workflowDefinitionManager.deployWorkflowDefinition(
+				TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+				FileUtil.getBytes(_getResourceInputStream("matching-fork-and-join-1-workflow-definition.xml")));
+
+		ServiceRegistration<WorkflowHandler<?>>
+			workflowHandlerServiceRegistration =
+			registryWorkflowHandler(workflowDefinition.getName());
+
+		Class<?> clazz = getClass();
+
+		WorkflowHandlerRegistryUtil.startWorkflowInstance(
+			TestPropsValues.getCompanyId(), 0, TestPropsValues.getUserId(),
+			clazz.getName(), 1, null, new ServiceContext());
+
+		WorkflowModelSearchResult<WorkflowInstance> workflowModelSearchResult =
+			workflowInstanceManager.searchWorkflowInstances(
+				TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+				StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+				StringPool.BLANK, StringPool.BLANK, null, true, 0, 1,
+				WorkflowComparatorFactoryUtil.getInstanceCompletedComparator(
+					false));
+
+		List<WorkflowInstance> workflowInstances =
+			workflowModelSearchResult.getWorkflowModels();
+
+		Assert.assertEquals(
+			workflowInstances.toString(), 1, workflowInstances.size());
+
+		workflowHandlerServiceRegistration.unregister();
+
+		Assert.assertEquals(
+			workflowInstances.toString(), 0, workflowInstances.size());
+	}
+
+	@Inject
+	private WorkflowDefinitionManager _workflowDefinitionManager;
 }

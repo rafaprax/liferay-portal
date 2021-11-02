@@ -394,7 +394,10 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 
 	@Test
 	public void testApproveJoinXorWorkflow() throws Exception {
-		_activateWorkflow(BlogsEntry.class.getName(), 0, 0, _JOIN_XOR, 1);
+		activateWorkflow(
+			_adminUser.getUserId(), _company.getCompanyId(),
+			_group.getGroupId(), BlogsEntry.class.getName(), 0, 0, _JOIN_XOR,
+			1);
 
 		BlogsEntry blogsEntry = _addBlogsEntry();
 
@@ -679,7 +682,8 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 		_serviceContext = ServiceContextTestUtil.getServiceContext(
 			organization.getGroupId());
 
-		_activateWorkflow(
+		activateWorkflow(
+			_adminUser.getUserId(), _company.getCompanyId(),
 			organization.getGroupId(), BlogsEntry.class.getName(), 0, 0,
 			_SCRIPTED_SINGLE_APPROVER, 1);
 
@@ -705,8 +709,9 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 
 	@Test
 	public void testApproveSiteMember() throws Exception {
-		_activateWorkflow(
-			JournalFolder.class.getName(),
+		activateWorkflow(
+			_adminUser.getUserId(), _company.getCompanyId(),
+			_group.getGroupId(), JournalFolder.class.getName(),
 			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			JournalArticleConstants.DDM_STRUCTURE_ID_ALL,
 			_SITE_MEMBER_SINGLE_APPROVER, 1);
@@ -1251,38 +1256,19 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 			long groupId, String className, long classPK, long typePK)
 		throws Exception {
 
-		_activateWorkflow(
-			groupId, className, classPK, typePK, "Single Approver", 1);
+		activateWorkflow(
+			_adminUser.getUserId(), _company.getCompanyId(), groupId, className, classPK, typePK, "Single Approver", 1);
 	}
 
 	private void _activateSingleApproverWorkflow(
 			String className, long classPK, long typePK)
 		throws Exception {
 
-		_activateWorkflow(
-			_group.getGroupId(), className, classPK, typePK, "Single Approver",
+		activateWorkflow(
+			_adminUser.getUserId(), _company.getCompanyId(), _group.getGroupId(), className, classPK, typePK, "Single Approver",
 			1);
 	}
 
-	private void _activateWorkflow(
-			long groupId, String className, long classPK, long typePK,
-			String workflowDefinitionName, int workflowDefinitionVersion)
-		throws Exception {
-
-		workflowDefinitionLinkLocalService.updateWorkflowDefinitionLink(
-			_adminUser.getUserId(), _company.getCompanyId(), groupId, className,
-			classPK, typePK, workflowDefinitionName, workflowDefinitionVersion);
-	}
-
-	private void _activateWorkflow(
-			String className, long classPK, long typePK,
-			String workflowDefinitionName, int workflowDefinitionVersion)
-		throws Exception {
-
-		_activateWorkflow(
-			_group.getGroupId(), className, classPK, typePK,
-			workflowDefinitionName, workflowDefinitionVersion);
-	}
 
 	private BlogsEntry _addBlogsEntry() throws Exception {
 		return _addBlogsEntry(_adminUser);

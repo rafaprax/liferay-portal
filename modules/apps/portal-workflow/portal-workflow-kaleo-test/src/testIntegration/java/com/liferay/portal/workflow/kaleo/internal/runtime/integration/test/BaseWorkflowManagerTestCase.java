@@ -28,6 +28,7 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.test.rule.SynchronousMailTestRule;
 
+import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.Map;
@@ -56,6 +57,12 @@ public abstract class BaseWorkflowManagerTestCase {
 
 	protected ServiceRegistration<WorkflowHandler<?>>
 		registryWorkflowHandler() {
+
+		return registryWorkflowHandler("Single Approver");
+	}
+
+	protected ServiceRegistration<WorkflowHandler<?>>
+		registryWorkflowHandler(String workflowDefinitionName) {
 
 		Class<?> clazz = getClass();
 
@@ -88,7 +95,7 @@ public abstract class BaseWorkflowManagerTestCase {
 							updateWorkflowDefinitionLink(
 								TestPropsValues.getUserId(),
 								TestPropsValues.getCompanyId(), 0,
-								clazz.getName(), 0, 0, "Single Approver", 1);
+								clazz.getName(), 0, 0, workflowDefinitionName, 1);
 					}
 
 					if (Objects.equals(
@@ -105,6 +112,25 @@ public abstract class BaseWorkflowManagerTestCase {
 			HashMapDictionaryBuilder.put(
 				"model.class.name=", clazz.getName()
 			).build());
+	}
+
+	protected void activateWorkflow(
+		long userId, long companyId, long groupId, String className, long classPK, long typePK,
+		String workflowDefinitionName, int workflowDefinitionVersion)
+		throws Exception {
+
+		workflowDefinitionLinkLocalService.updateWorkflowDefinitionLink(
+			userId, companyId, groupId, className,
+			classPK, typePK, workflowDefinitionName, workflowDefinitionVersion);
+	}
+
+	protected InputStream _getResourceInputStream(String name) {
+		Class<?> clazz = getClass();
+
+		ClassLoader classLoader = clazz.getClassLoader();
+
+		return classLoader.getResourceAsStream(
+			"com/liferay/portal/workflow/kaleo/dependencies/" + name);
 	}
 
 	@Inject

@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
  */
 @DataGuard(scope = DataGuard.Scope.METHOD)
 @RunWith(Arquillian.class)
-public class WorkflowDefinitionManagerTest {
+public class WorkflowDefinitionManagerTest extends BaseWorkflowManagerTestCase {
 
 	@ClassRule
 	@Rule
@@ -482,15 +482,6 @@ public class WorkflowDefinitionManagerTest {
 	private void _assertValid(InputStream inputStream) throws Exception {
 		_workflowDefinitionManager.validateWorkflowDefinition(
 			FileUtil.getBytes(inputStream));
-	}
-
-	private InputStream _getResourceInputStream(String name) {
-		Class<?> clazz = getClass();
-
-		ClassLoader classLoader = clazz.getClassLoader();
-
-		return classLoader.getResourceAsStream(
-			"com/liferay/portal/workflow/kaleo/dependencies/" + name);
 	}
 
 	private WorkflowDefinition _saveWorkflowDefinition() throws Exception {
