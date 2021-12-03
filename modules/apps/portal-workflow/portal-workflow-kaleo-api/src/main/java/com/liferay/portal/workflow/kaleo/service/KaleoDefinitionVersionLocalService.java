@@ -87,7 +87,9 @@ public interface KaleoDefinitionVersionLocalService
 		throws PortalException;
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #addKaleoDefinitionVersion(long, String, String, String, String, int, ServiceContext)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #addKaleoDefinitionVersion(long, String, String, String,
+	 String, int, ServiceContext)}
 	 */
 	@Deprecated
 	public KaleoDefinitionVersion addKaleoDefinitionVersion(
@@ -150,7 +152,8 @@ public interface KaleoDefinitionVersionLocalService
 		throws PortalException;
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #deleteKaleoDefinitionVersion(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #deleteKaleoDefinitionVersion(long, String, int)}
 	 */
 	@Deprecated
 	public void deleteKaleoDefinitionVersion(
@@ -255,7 +258,8 @@ public interface KaleoDefinitionVersionLocalService
 		long companyId, String name, int version);
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #fetchKaleoDefinitionVersion(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #fetchKaleoDefinitionVersion(long, String, int)}
 	 */
 	@Deprecated
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -302,7 +306,8 @@ public interface KaleoDefinitionVersionLocalService
 		throws PortalException;
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersion(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #getKaleoDefinitionVersion(long, String, int)}
 	 */
 	@Deprecated
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -360,7 +365,8 @@ public interface KaleoDefinitionVersionLocalService
 		throws PortalException;
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
 	 */
 	@Deprecated
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

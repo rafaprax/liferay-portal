@@ -73,7 +73,9 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #addKaleoDefinitionVersion(long, String, String, String, String, int, ServiceContext)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #addKaleoDefinitionVersion(long, String, String, String,
+	 String, int, ServiceContext)}
 	 */
 	@Deprecated
 	public static KaleoDefinitionVersion addKaleoDefinitionVersion(
@@ -156,7 +158,8 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #deleteKaleoDefinitionVersion(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #deleteKaleoDefinitionVersion(long, String, int)}
 	 */
 	@Deprecated
 	public static void deleteKaleoDefinitionVersion(
@@ -298,7 +301,8 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #fetchKaleoDefinitionVersion(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #fetchKaleoDefinitionVersion(long, String, int)}
 	 */
 	@Deprecated
 	public static KaleoDefinitionVersion fetchKaleoDefinitionVersion(
@@ -366,7 +370,8 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersion(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #getKaleoDefinitionVersion(long, String, int)}
 	 */
 	@Deprecated
 	public static KaleoDefinitionVersion getKaleoDefinitionVersion(
@@ -445,7 +450,8 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	/**
-	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #getKaleoDefinitionVersionsPrevAndNext(long, String, int)}
 	 */
 	@Deprecated
 	public static KaleoDefinitionVersion[]

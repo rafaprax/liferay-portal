@@ -1143,7 +1143,7 @@ public class KaleoDefinitionVersionModelImpl
 		kaleoDefinitionVersionImpl.setContent(
 			this.<String>getColumnOriginalValue("content"));
 		kaleoDefinitionVersionImpl.setVersion(
-			this.<String>getColumnOriginalValue("version"));
+			this.<Integer>getColumnOriginalValue("version"));
 		kaleoDefinitionVersionImpl.setStartKaleoNodeId(
 			this.<Long>getColumnOriginalValue("startKaleoNodeId"));
 		kaleoDefinitionVersionImpl.setStatus(
