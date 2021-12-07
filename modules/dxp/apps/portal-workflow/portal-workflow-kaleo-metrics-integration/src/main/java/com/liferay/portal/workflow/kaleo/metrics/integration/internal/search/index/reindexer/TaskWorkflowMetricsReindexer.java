@@ -84,7 +84,7 @@ public class TaskWorkflowMetricsReindexer implements WorkflowMetricsReindexer {
 				_taskWorkflowMetricsIndexer.addTask(
 					_indexerHelper.createAddTaskRequest(
 						kaleoInstance, kaleoTaskInstanceToken,
-						kaleoDefinitionVersion.getVersion()));
+						String.valueOf(kaleoDefinitionVersion.getVersion())));
 
 				_workflowMetricsReindexStatusMessageSender.sendStatusMessage(
 					atomicCounter.incrementAndGet(), total, "task");
