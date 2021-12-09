@@ -694,7 +694,7 @@ public class WorkflowMetricsRESTTestHelper {
 		return addTask(
 			assignee, assignments, companyId, 0L, instance,
 			RandomTestUtil.randomString(), RandomTestUtil.randomLong(),
-			instance.getProcessId(), "1.0", RandomTestUtil.randomLong());
+			instance.getProcessId(), "1", RandomTestUtil.randomLong());
 	}
 
 	public Task addTask(long companyId, Instance instance, Task task, User user)

@@ -96,7 +96,7 @@ public class TaskWorkflowMetricsReindexer implements WorkflowMetricsReindexer {
 	@Reference
 	private IndexerHelper _indexerHelper;
 
-	@ReferenceBaseWorkflowMetricsTestCase
+	@Reference
 	private KaleoDefinitionVersionLocalService
 		_kaleoDefinitionVersionLocalService;
 
