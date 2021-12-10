@@ -63,7 +63,7 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 
 	public static KaleoDefinitionVersion addKaleoDefinitionVersion(
 			long kaleoDefinitionId, String name, String title,
-			String description, String content, String version,
+			String description, String content, int version,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
@@ -134,7 +134,7 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	public static void deleteKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException {
 
 		getService().deleteKaleoDefinitionVersion(companyId, name, version);
@@ -265,7 +265,7 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	public static KaleoDefinitionVersion fetchKaleoDefinitionVersion(
-		long companyId, String name, String version) {
+		long companyId, String name, int version) {
 
 		return getService().fetchKaleoDefinitionVersion(
 			companyId, name, version);
@@ -322,7 +322,7 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 	}
 
 	public static KaleoDefinitionVersion getKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException {
 
 		return getService().getKaleoDefinitionVersion(companyId, name, version);
@@ -389,7 +389,7 @@ public class KaleoDefinitionVersionLocalServiceUtil {
 
 	public static KaleoDefinitionVersion[]
 			getKaleoDefinitionVersionsPrevAndNext(
-				long companyId, String name, String version)
+				long companyId, String name, int version)
 		throws PortalException {
 
 		return getService().getKaleoDefinitionVersionsPrevAndNext(

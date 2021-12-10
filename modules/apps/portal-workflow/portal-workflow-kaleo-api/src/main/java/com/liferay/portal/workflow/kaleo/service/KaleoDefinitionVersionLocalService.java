@@ -82,7 +82,7 @@ public interface KaleoDefinitionVersionLocalService
 
 	public KaleoDefinitionVersion addKaleoDefinitionVersion(
 			long kaleoDefinitionId, String name, String title,
-			String description, String content, String version,
+			String description, String content, int version,
 			ServiceContext serviceContext)
 		throws PortalException;
 
@@ -136,7 +136,7 @@ public interface KaleoDefinitionVersionLocalService
 		throws PortalException;
 
 	public void deleteKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException;
 
 	public void deleteKaleoDefinitionVersions(KaleoDefinition kaleoDefinition)
@@ -234,7 +234,7 @@ public interface KaleoDefinitionVersionLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion fetchKaleoDefinitionVersion(
-		long companyId, String name, String version);
+		long companyId, String name, int version);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion fetchLatestKaleoDefinitionVersion(
@@ -272,7 +272,7 @@ public interface KaleoDefinitionVersionLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion getKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException;
 
 	/**
@@ -321,7 +321,7 @@ public interface KaleoDefinitionVersionLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KaleoDefinitionVersion[] getKaleoDefinitionVersionsPrevAndNext(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

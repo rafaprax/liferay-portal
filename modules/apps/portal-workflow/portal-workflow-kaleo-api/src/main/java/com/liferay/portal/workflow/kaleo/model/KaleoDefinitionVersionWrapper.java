@@ -167,7 +167,7 @@ public class KaleoDefinitionVersionWrapper
 			setContent(content);
 		}
 
-		String version = (String)attributes.get("version");
+		Integer version = (Integer)attributes.get("version");
 
 		if (version != null) {
 			setVersion(version);
@@ -497,7 +497,7 @@ public class KaleoDefinitionVersionWrapper
 	 * @return the version of this kaleo definition version
 	 */
 	@Override
-	public String getVersion() {
+	public int getVersion() {
 		return model.getVersion();
 	}
 
@@ -871,7 +871,7 @@ public class KaleoDefinitionVersionWrapper
 	 * @param version the version of this kaleo definition version
 	 */
 	@Override
-	public void setVersion(String version) {
+	public void setVersion(int version) {
 		model.setVersion(version);
 	}
 

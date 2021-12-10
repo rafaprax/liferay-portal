@@ -62,7 +62,7 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
 			addKaleoDefinitionVersion(
 				long kaleoDefinitionId, String name, String title,
-				String description, String content, String version,
+				String description, String content, int version,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -141,7 +141,7 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 
 	@Override
 	public void deleteKaleoDefinitionVersion(
-			long companyId, String name, String version)
+			long companyId, String name, int version)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		_kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
@@ -303,8 +303,7 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 
 	@Override
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
-		fetchKaleoDefinitionVersion(
-			long companyId, String name, String version) {
+		fetchKaleoDefinitionVersion(long companyId, String name, int version) {
 
 		return _kaleoDefinitionVersionLocalService.fetchKaleoDefinitionVersion(
 			companyId, name, version);
@@ -375,8 +374,7 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 
 	@Override
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion
-			getKaleoDefinitionVersion(
-				long companyId, String name, String version)
+			getKaleoDefinitionVersion(long companyId, String name, int version)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
@@ -465,7 +463,7 @@ public class KaleoDefinitionVersionLocalServiceWrapper
 	@Override
 	public com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion[]
 			getKaleoDefinitionVersionsPrevAndNext(
-				long companyId, String name, String version)
+				long companyId, String name, int version)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _kaleoDefinitionVersionLocalService.
