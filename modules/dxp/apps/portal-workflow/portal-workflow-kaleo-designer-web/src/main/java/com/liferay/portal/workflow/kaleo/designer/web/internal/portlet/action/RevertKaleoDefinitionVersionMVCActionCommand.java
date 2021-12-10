@@ -65,12 +65,11 @@ public class RevertKaleoDefinitionVersionMVCActionCommand
 			WebKeys.THEME_DISPLAY);
 
 		String name = ParamUtil.getString(actionRequest, "name");
-		String draftVersion = ParamUtil.getString(
-			actionRequest, "draftVersion");
 
 		KaleoDefinitionVersion kaleoDefinitionVersion =
 			kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
-				themeDisplay.getCompanyId(), name, draftVersion);
+				themeDisplay.getCompanyId(), name,
+				ParamUtil.getInteger(actionRequest, "draftVersion"));
 
 		actionRequest.setAttribute(
 			WorkflowWebKeys.WORKFLOW_DEFINITION_MODIFIED_DATE,

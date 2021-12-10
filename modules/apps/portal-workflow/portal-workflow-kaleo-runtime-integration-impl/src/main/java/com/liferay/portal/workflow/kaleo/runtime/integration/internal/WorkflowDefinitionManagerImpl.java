@@ -270,7 +270,7 @@ public class WorkflowDefinitionManagerImpl
 		try {
 			KaleoDefinitionVersion kaleoDefinitionVersion =
 				_kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
-					companyId, name, getVersion(version));
+					companyId, name, version);
 
 			return _kaleoWorkflowModelConverter.toWorkflowDefinition(
 				kaleoDefinitionVersion);

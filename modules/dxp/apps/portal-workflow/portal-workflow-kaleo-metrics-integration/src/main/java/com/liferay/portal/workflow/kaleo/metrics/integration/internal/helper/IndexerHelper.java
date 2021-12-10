@@ -68,7 +68,7 @@ public class IndexerHelper {
 
 	public AddTaskRequest createAddTaskRequest(
 		KaleoInstance kaleoInstance,
-		KaleoTaskInstanceToken kaleoTaskInstanceToken, String processVersion) {
+		KaleoTaskInstanceToken kaleoTaskInstanceToken, int processVersion) {
 
 		AddTaskRequest.Builder builder = new AddTaskRequest.Builder();
 
@@ -121,7 +121,7 @@ public class IndexerHelper {
 		).processId(
 			kaleoTaskInstanceToken.getKaleoDefinitionId()
 		).processVersion(
-			processVersion
+			String.valueOf(processVersion)
 		).taskId(
 			kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId()
 		).userId(
@@ -130,7 +130,7 @@ public class IndexerHelper {
 	}
 
 	public AddTransitionRequest createAddTransitionRequest(
-			KaleoTransition kaleoTransition, String processVersion)
+			KaleoTransition kaleoTransition, int processVersion)
 		throws PortalException {
 
 		AddTransitionRequest.Builder builder =
@@ -149,7 +149,7 @@ public class IndexerHelper {
 		).processId(
 			kaleoTransition.getKaleoDefinitionId()
 		).processVersion(
-			processVersion
+			String.valueOf(processVersion)
 		).sourceNodeId(
 			_getNodeId(kaleoTransition.getSourceKaleoNodeId())
 		).sourceNodeName(

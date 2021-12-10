@@ -134,7 +134,7 @@ public class KaleoWorkflowModelConverterImpl
 			KaleoDefinitionVersion kaleoDefinitionVersion =
 				_kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
 					kaleoDefinition.getCompanyId(), kaleoDefinition.getName(),
-					kaleoDefinition.getVersion() + StringPool.PERIOD + 0);
+					kaleoDefinition.getVersion());
 
 			defaultWorkflowDefinition.setWorkflowNodes(
 				_getWorkflowNodes(

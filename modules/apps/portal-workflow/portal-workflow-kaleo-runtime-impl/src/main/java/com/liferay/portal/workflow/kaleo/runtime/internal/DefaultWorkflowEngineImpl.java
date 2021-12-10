@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUID;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -623,7 +622,7 @@ public class DefaultWorkflowEngineImpl
 			KaleoDefinitionVersion kaleoDefinitionVersion =
 				kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
 					serviceContext.getCompanyId(), workflowDefinitionName,
-					getVersion(workflowDefinitionVersion));
+					workflowDefinitionVersion);
 
 			KaleoNode kaleoStartNode =
 				kaleoDefinitionVersion.getKaleoStartNode();
@@ -840,16 +839,6 @@ public class DefaultWorkflowEngineImpl
 				transitionNames.add(kaleoTransition.getName());
 			}
 		}
-	}
-
-	protected String getVersion(int version) {
-		return version + StringPool.PERIOD + 0;
-	}
-
-	protected int getVersion(String version) {
-		int[] versionParts = StringUtil.split(version, StringPool.PERIOD, 0);
-
-		return versionParts[0];
 	}
 
 	protected List<WorkflowInstance> toWorkflowInstances(

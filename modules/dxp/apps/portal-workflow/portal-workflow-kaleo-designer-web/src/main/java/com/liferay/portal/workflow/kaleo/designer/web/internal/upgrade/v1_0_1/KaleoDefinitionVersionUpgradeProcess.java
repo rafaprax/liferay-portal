@@ -122,8 +122,7 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 
 		_kaleoDefinitionVersionLocalService.addKaleoDefinitionVersion(
 			kaleoDefinition.getKaleoDefinitionId(), name, title,
-			StringPool.BLANK, content, getVersion(version, draftVersion),
-			serviceContext);
+			StringPool.BLANK, content, getVersion(version), serviceContext);
 	}
 
 	@Override
@@ -133,12 +132,12 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 		}
 	}
 
-	protected String getVersion(int version, int draftVersion) {
+	protected int getVersion(int version) {
 		if (version == 0) {
-			version = 1;
+			return 1;
 		}
 
-		return version + StringPool.PERIOD + --draftVersion;
+		return version;
 	}
 
 	protected boolean hasApprovedKaleoDefinitionVersion(
@@ -146,7 +145,7 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 
 		KaleoDefinitionVersion kaleoDefinitionVersion =
 			_kaleoDefinitionVersionLocalService.fetchKaleoDefinitionVersion(
-				companyId, name, getVersion(version, draftVersion));
+				companyId, name, getVersion(version));
 
 		if (kaleoDefinitionVersion == null) {
 			return false;
@@ -167,7 +166,7 @@ public class KaleoDefinitionVersionUpgradeProcess extends UpgradeProcess {
 		try {
 			KaleoDefinitionVersion kaleoDefinitionVersion =
 				_kaleoDefinitionVersionLocalService.getKaleoDefinitionVersion(
-					companyId, name, getVersion(version, draftVersion));
+					companyId, name, getVersion(version));
 
 			_kaleoDefinitionVersionLocalService.deleteKaleoDefinitionVersion(
 				kaleoDefinitionVersion);

@@ -38,7 +38,7 @@ String backURL = (String)row.getParameter("backURL");
 			<portlet:param name="closeRedirect" value="<%= backURL %>" />
 			<portlet:param name="historyKey" value="workflow" />
 			<portlet:param name="name" value="<%= workflowDefinition.getName() %>" />
-			<portlet:param name="draftVersion" value="<%= String.valueOf(workflowDefinition.getVersion()) + StringPool.PERIOD + '0' %>" />
+			<portlet:param name="draftVersion" value="<%= String.valueOf(workflowDefinition.getVersion()) %>" />
 		</liferay-portlet:renderURL>
 
 		<liferay-ui:icon

@@ -38,10 +38,10 @@ String successMessageKey = KaleoDesignerPortletKeys.KALEO_DESIGNER + "requestPro
 		KaleoDefinition kaleoDefinition = kaleoDesignerDisplayContext.getKaleoDefinition(kaleoDefinitionVersion);
 
 		String name = BeanParamUtil.getString(kaleoDefinitionVersion, request, "name");
-		String draftVersion = BeanParamUtil.getString(kaleoDefinitionVersion, request, "version");
+		int draftVersion = BeanParamUtil.getInteger(kaleoDefinitionVersion, request, "version");
 		String content = BeanParamUtil.getString(kaleoDefinitionVersion, request, "content");
 
-		String latestDraftVersion = StringPool.BLANK;
+		int latestDraftVersion = 0;
 		int version = 0;
 
 		KaleoDefinitionVersion latestKaleoDefinitionVersion = null;
@@ -51,11 +51,11 @@ String successMessageKey = KaleoDesignerPortletKeys.KALEO_DESIGNER + "requestPro
 				name = kaleoDefinitionVersion.getName();
 			}
 
-			draftVersion = String.valueOf(kaleoDefinitionVersion.getVersion());
+			draftVersion = kaleoDefinitionVersion.getVersion();
 
 			latestKaleoDefinitionVersion = KaleoDefinitionVersionLocalServiceUtil.getLatestKaleoDefinitionVersion(themeDisplay.getCompanyId(), name);
 
-			latestDraftVersion = String.valueOf(latestKaleoDefinitionVersion.getVersion());
+			latestDraftVersion = latestKaleoDefinitionVersion.getVersion();
 
 			if (kaleoDefinition != null) {
 				version = kaleoDefinition.getVersion();
@@ -246,8 +246,8 @@ String successMessageKey = KaleoDesignerPortletKeys.KALEO_DESIGNER + "requestPro
 						<aui:input name="name" type="hidden" value="<%= name %>" />
 						<aui:input name="content" type="hidden" value="<%= content %>" />
 						<aui:input name="version" type="hidden" value="<%= String.valueOf(version) %>" />
-						<aui:input name="draftVersion" type="hidden" value="<%= draftVersion %>" />
-						<aui:input name="latestDraftVersion" type="hidden" value="<%= latestDraftVersion %>" />
+						<aui:input name="draftVersion" type="hidden" value="<%= String.valueOf(draftVersion) %>" />
+						<aui:input name="latestDraftVersion" type="hidden" value="<%= String.valueOf(latestDraftVersion) %>" />
 
 						<%@ include file="/designer/edit_kaleo_definition_version_exceptions.jspf" %>
 
