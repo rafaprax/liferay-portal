@@ -49,28 +49,31 @@ public class UpgradeKaleoDefinitionVersion extends UpgradeProcess {
 					"kaleoDefinitionId = ?")) {
 
 			int count = 1;
-			String curName = null;
 			String previousName = null;
 
 			while (resultSet.next()) {
-				long kaleoDefinitionVersionId = resultSet.getLong(1);
-				curName = resultSet.getString(2);
-				long kaleoDefinitionId = resultSet.getLong(4);
+				String currentName = resultSet.getString(2);
 
-				if (StringUtil.equals(previousName, curName)) {
+				if (StringUtil.equals(previousName, currentName)) {
 					count++;
 				}
 				else {
 					count = 1;
-					previousName = curName;
+					previousName = currentName;
 				}
 
 				preparedStatement2.setString(1, String.valueOf(count));
+
+				long kaleoDefinitionVersionId = resultSet.getLong(1);
+
 				preparedStatement2.setLong(2, kaleoDefinitionVersionId);
 
 				preparedStatement2.addBatch();
 
 				preparedStatement3.setInt(1, count);
+
+				long kaleoDefinitionId = resultSet.getLong(4);
+
 				preparedStatement3.setLong(2, kaleoDefinitionId);
 
 				preparedStatement3.addBatch();

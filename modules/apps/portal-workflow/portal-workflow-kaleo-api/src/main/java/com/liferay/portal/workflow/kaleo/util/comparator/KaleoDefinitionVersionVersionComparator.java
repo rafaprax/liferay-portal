@@ -38,13 +38,14 @@ public class KaleoDefinitionVersionVersionComparator
 
 		int value = 0;
 
-		int version1 = kaleoDefinitionVersion1.getVersion();
-		int version2 = kaleoDefinitionVersion2.getVersion();
+		if (kaleoDefinitionVersion1.getVersion() >
+				kaleoDefinitionVersion2.getVersion()) {
 
-		if (version1 > version2) {
 			value = 1;
 		}
-		else if (version1 < version2) {
+		else if (kaleoDefinitionVersion1.getVersion() <
+					kaleoDefinitionVersion2.getVersion()) {
+
 			value = -1;
 		}
 
