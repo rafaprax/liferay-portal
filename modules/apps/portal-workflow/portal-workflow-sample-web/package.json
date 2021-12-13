@@ -1,0 +1,8 @@
+{
+	"name": "portal-workflow-sample-web",
+	"private": true,
+	"scripts": {
+		"build": "liferay-npm-scripts build"
+	},
+	"version": "1.0.0"
+}

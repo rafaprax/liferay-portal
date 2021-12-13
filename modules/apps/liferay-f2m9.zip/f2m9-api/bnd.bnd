@@ -1,0 +1,10 @@
+Bundle-Name: Acme F2M9 API
+Bundle-SymbolicName: com.acme.f2m9.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.acme.f2m9.exception,\
+	com.acme.f2m9.model,\
+	com.acme.f2m9.service,\
+	com.acme.f2m9.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../f2m9-service/service.xml
