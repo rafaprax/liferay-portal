@@ -14,20 +14,28 @@
 
 package com.liferay.portal.metadata;
 
+import com.liferay.document.library.kernel.util.AudioProcessorUtil;
+import com.liferay.document.library.kernel.util.VideoProcessorUtil;
+import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.process.ProcessCallable;
 import com.liferay.petra.process.ProcessChannel;
 import com.liferay.petra.process.ProcessException;
 import com.liferay.petra.process.ProcessExecutor;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.fabric.InputResource;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.DummyWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ServiceProxyFactory;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.util.PortalClassPathUtil;
 import com.liferay.portal.util.PropsValues;
 
@@ -35,6 +43,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.text.DecimalFormat;
 
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -57,17 +67,75 @@ import org.xml.sax.ContentHandler;
  * @author Alexander Chow
  * @author Shuyang Zhou
  */
-public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
+public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
+
+	@Override
+	public void exportGeneratedFiles(
+			PortletDataContext portletDataContext, FileEntry fileEntry,
+			Element fileEntryElement)
+		throws Exception {
+	}
+
+	@Override
+	public void importGeneratedFiles(
+			PortletDataContext portletDataContext, FileEntry fileEntry,
+			FileEntry importedFileEntry, Element fileEntryElement)
+		throws Exception {
+	}
 
 	public void setParser(Parser parser) {
 		_parser = parser;
+	}
+
+	protected String convertTime(long microseconds) {
+		long milliseconds = microseconds / 1000L;
+
+		return StringBundler.concat(
+			_decimalFormatter.format(milliseconds / Time.HOUR),
+			StringPool.COLON,
+			_decimalFormatter.format(milliseconds % Time.HOUR / Time.MINUTE),
+			StringPool.COLON,
+			_decimalFormatter.format(milliseconds % Time.MINUTE / Time.SECOND),
+			StringPool.PERIOD,
+			_decimalFormatter.format(milliseconds % Time.SECOND / 10));
+	}
+
+	protected Metadata extractMetadata(File file) throws Exception {
+		IContainer container = IContainer.make();
+
+		try {
+			int result = container.open(
+				file.getCanonicalPath(), IContainer.Type.READ, null);
+
+			if (result < 0) {
+				throw new IllegalArgumentException("Could not open stream");
+			}
+
+			if (container.queryStreamMetaData() < 0) {
+				throw new IllegalStateException(
+					"Could not query stream metadata");
+			}
+
+			Metadata metadata = new Metadata();
+
+			long microseconds = container.getDuration();
+
+			metadata.set(XMPDM.DURATION, convertTime(microseconds));
+
+			return metadata;
+		}
+		finally {
+			if (container.isOpened()) {
+				container.close();
+			}
+		}
 	}
 
 	@Override
 	protected Metadata extractMetadata(
 		String extension, String mimeType, File file) {
 
-		Metadata metadata = super.extractMetadata(extension, mimeType, file);
+		Metadata metadata = _extractMetadata(mimeType, file);
 
 		boolean forkProcess = false;
 
@@ -129,6 +197,31 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 		}
 	}
 
+	protected boolean isSupported(String mimeType) {
+		if (AudioProcessorUtil.isAudioSupported(mimeType) ||
+			VideoProcessorUtil.isVideoSupported(mimeType)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private Metadata _extractMetadata(String mimeType, File file) {
+		if (!isSupported(mimeType)) {
+			return null;
+		}
+
+		try {
+			return extractMetadata(file);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+		}
+
+		return null;
+	}
+
 	private Metadata _postProcessMetadata(String mimeType, Metadata metadata) {
 		if (!mimeType.equals(ContentTypes.IMAGE_SVG_XML)) {
 			return metadata;
@@ -150,6 +243,8 @@ public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 	private static final Log _log = LogFactoryUtil.getLog(
 		TikaRawMetadataProcessor.class);
 
+	private static final DecimalFormat _decimalFormatter = new DecimalFormat(
+		"00");
 	private static volatile ProcessExecutor _processExecutor =
 		ServiceProxyFactory.newServiceTrackedInstance(
 			ProcessExecutor.class, TikaRawMetadataProcessor.class,
