@@ -14,9 +14,6 @@
 
 package com.liferay.portal.metadata;
 
-import com.liferay.document.library.kernel.util.AudioProcessorUtil;
-import com.liferay.document.library.kernel.util.VideoProcessorUtil;
-import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.process.ProcessCallable;
 import com.liferay.petra.process.ProcessChannel;
 import com.liferay.petra.process.ProcessException;
@@ -26,13 +23,11 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.DummyWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ServiceProxyFactory;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.util.PortalClassPathUtil;
 import com.liferay.portal.util.PropsValues;
 
@@ -62,21 +57,7 @@ import org.xml.sax.ContentHandler;
  * @author Alexander Chow
  * @author Shuyang Zhou
  */
-public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
-
-	@Override
-	public void exportGeneratedFiles(
-			PortletDataContext portletDataContext, FileEntry fileEntry,
-			Element fileEntryElement)
-		throws Exception {
-	}
-
-	@Override
-	public void importGeneratedFiles(
-			PortletDataContext portletDataContext, FileEntry fileEntry,
-			FileEntry importedFileEntry, Element fileEntryElement)
-		throws Exception {
-	}
+public class TikaRawMetadataProcessor extends XugglerRawMetadataProcessor {
 
 	public void setParser(Parser parser) {
 		_parser = parser;
@@ -86,7 +67,7 @@ public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
 	protected Metadata extractMetadata(
 		String extension, String mimeType, File file) {
 
-		Metadata metadata = new Metadata();
+		Metadata metadata = super.extractMetadata(extension, mimeType, file);
 
 		boolean forkProcess = false;
 
@@ -146,16 +127,6 @@ public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
 		finally {
 			file.delete();
 		}
-	}
-
-	protected boolean isSupported(String mimeType) {
-		if (AudioProcessorUtil.isAudioSupported(mimeType) ||
-			VideoProcessorUtil.isVideoSupported(mimeType)) {
-
-			return true;
-		}
-
-		return false;
 	}
 
 	private Metadata _postProcessMetadata(String mimeType, Metadata metadata) {
