@@ -81,6 +81,39 @@ AUI.add(
 					form.append(inputsArray.join(''));
 				},
 
+				_installXuggler() {
+					var instance = this;
+
+					var form = instance.get(STR_FORM);
+
+					var data = A.IO.stringify(form.getDOM());
+
+					data = A.QueryString.parse(data);
+
+					var redirectKey = instance.ns('redirect');
+
+					var url = Liferay.Util.addParams(
+						'p_p_isolated=1',
+						instance.get(STR_URL)
+					);
+
+					data[redirectKey] = Liferay.Util.addParams(
+						'p_p_isolated=1',
+						data[redirectKey]
+					);
+
+					A.one('#adminXugglerPanelContent').load(url, {
+						data,
+						loadingMask: {
+							'strings.loading': Liferay.Language.get(
+								'xuggler-library-is-installing'
+							),
+						},
+						selector: '#adminXugglerPanelContent',
+						where: 'outer',
+					});
+				},
+
 				_onSubmit(event) {
 					var instance = this;
 
@@ -96,7 +129,20 @@ AUI.add(
 
 					instance._addInputsFromData(data);
 
-					submitForm(form, instance.get(STR_URL));
+					if (cmd === 'installXuggler') {
+						var cmdNode = instance.one('#cmd');
+
+						instance._installXuggler();
+
+						if (cmdNode) {
+							cmdNode.remove();
+						}
+
+						instance._installXuggler();
+					}
+					else {
+						submitForm(form, instance.get(STR_URL));
+					}
 				},
 
 				bindUI() {

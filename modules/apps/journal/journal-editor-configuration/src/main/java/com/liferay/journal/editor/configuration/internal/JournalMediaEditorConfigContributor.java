@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.xuggler.XugglerUtil;
 
 import java.util.Map;
 import java.util.Objects;
@@ -48,7 +49,7 @@ public class JournalMediaEditorConfigContributor
 		ThemeDisplay themeDisplay,
 		RequestBackedPortletURLFactory requestBackedPortletURLFactory) {
 
-		if (!AudioProcessorUtil.isEnabled()) {
+		if (!AudioProcessorUtil.isEnabled() && !XugglerUtil.isEnabled()) {
 			return;
 		}
 
