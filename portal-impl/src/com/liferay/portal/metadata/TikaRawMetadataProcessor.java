@@ -62,21 +62,7 @@ import org.xml.sax.ContentHandler;
  * @author Alexander Chow
  * @author Shuyang Zhou
  */
-public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
-
-	@Override
-	public void exportGeneratedFiles(
-			PortletDataContext portletDataContext, FileEntry fileEntry,
-			Element fileEntryElement)
-		throws Exception {
-	}
-
-	@Override
-	public void importGeneratedFiles(
-			PortletDataContext portletDataContext, FileEntry fileEntry,
-			FileEntry importedFileEntry, Element fileEntryElement)
-		throws Exception {
-	}
+public class TikaRawMetadataProcessor extends FFMPEGRawMetadataProcessor {
 
 	public void setParser(Parser parser) {
 		_parser = parser;
@@ -86,7 +72,7 @@ public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
 	protected Metadata extractMetadata(
 		String extension, String mimeType, File file) {
 
-		Metadata metadata = new Metadata();
+		Metadata metadata = super.extractMetadata(extension, mimeType, file);
 
 		boolean forkProcess = false;
 
@@ -146,16 +132,6 @@ public class TikaRawMetadataProcessor extends BaseRawMetadataProcessor {
 		finally {
 			file.delete();
 		}
-	}
-
-	protected boolean isSupported(String mimeType) {
-		if (AudioProcessorUtil.isAudioSupported(mimeType) ||
-			VideoProcessorUtil.isVideoSupported(mimeType)) {
-
-			return true;
-		}
-
-		return false;
 	}
 
 	private Metadata _postProcessMetadata(String mimeType, Metadata metadata) {
