@@ -24,18 +24,18 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.xml.Element;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
-
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
@@ -58,77 +58,12 @@ public class FFMPEGRawMetadataProcessor extends BaseRawMetadataProcessor {
 		FileEntry importedFileEntry, Element fileEntryElement) {
 	}
 
-	protected String convertTime(long microseconds) {
-		long milliseconds = microseconds / 1000L;
-
-		return StringBundler.concat(
-			_decimalFormatter.format(milliseconds / Time.HOUR),
-			StringPool.COLON,
-			_decimalFormatter.format(milliseconds % Time.HOUR / Time.MINUTE),
-			StringPool.COLON,
-			_decimalFormatter.format(milliseconds % Time.MINUTE / Time.SECOND),
-			StringPool.PERIOD,
-			_decimalFormatter.format(milliseconds % Time.SECOND / 10));
-	}
-
 	protected Metadata extractMetadata(File file) throws Exception {
+		Metadata metadata = new Metadata();
 
-		try {
-			Metadata metadata = new Metadata();
+		_extractDurationMetadata(file, metadata);
 
-			_runFFMPEGCommand(
-				Arrays.asList(
-					"ffmpeg", "-y", "-i", file.getAbsolutePath(), "-f null -"
-					));
-
-			//metadata.set(XMPDM.DURATION, convertTime(microseconds));
-
-			return metadata;
-		}
-		finally {
-		}
-	}
-
-	private void _runFFMPEGCommand(List<String> ffmpegCommand)
-		throws Exception {
-
-		ProcessBuilder processBuilder = new ProcessBuilder(ffmpegCommand);
-
-		processBuilder.redirectErrorStream(true);
-
-		Process process = processBuilder.start();
-
-		InputStream inputStream = process.getInputStream();
-
-		while (true) {
-			try {
-				BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(inputStream));
-
-				while (bufferedReader.ready()) {
-					bufferedReader.readLine();
-				}
-
-				if (!process.waitFor(5, TimeUnit.SECONDS)) {
-					continue;
-				}
-
-				if (process.exitValue() != 0) {
-					throw new Exception(
-						StringBundler.concat(
-							"FFMPEG command ",
-							StringUtil.merge(ffmpegCommand, StringPool.SPACE),
-							" failed with exit status ", process.exitValue()));
-				}
-
-				return;
-			}
-			catch (InterruptedException interruptedException) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(interruptedException, interruptedException);
-				}
-			}
-		}
+		return metadata;
 	}
 
 	@Override
@@ -177,8 +112,8 @@ public class FFMPEGRawMetadataProcessor extends BaseRawMetadataProcessor {
 	}
 
 	protected boolean isSupported(String mimeType) {
-		if ((AudioProcessorUtil.isAudioSupported(mimeType) ||
-			 VideoProcessorUtil.isVideoSupported(mimeType))) {
+		if (AudioProcessorUtil.isAudioSupported(mimeType) ||
+			VideoProcessorUtil.isVideoSupported(mimeType)) {
 
 			return true;
 		}
@@ -186,10 +121,61 @@ public class FFMPEGRawMetadataProcessor extends BaseRawMetadataProcessor {
 		return false;
 	}
 
+	private void _extractDurationMetadata(File file, Metadata metadata)
+		throws Exception {
+
+		List<String> ffmpegCommand = Arrays.asList(
+			"ffmpeg", "-y", "-i", file.getAbsolutePath(), "-f null -");
+
+		ProcessBuilder processBuilder = new ProcessBuilder(ffmpegCommand);
+
+		processBuilder.redirectErrorStream(true);
+
+		Process process = processBuilder.start();
+
+		InputStream inputStream = process.getInputStream();
+
+		while (true) {
+			try (BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(inputStream))) {
+
+				while (bufferedReader.ready()) {
+					Matcher matcher = _timePattern.matcher(
+						bufferedReader.readLine());
+
+					if (matcher.find()) {
+						metadata.set(XMPDM.DURATION, matcher.group());
+
+						return;
+					}
+				}
+
+				if (!process.waitFor(5, TimeUnit.SECONDS)) {
+					continue;
+				}
+
+				if (process.exitValue() != 0) {
+					throw new Exception(
+						StringBundler.concat(
+							"FFMPEG command ",
+							StringUtil.merge(ffmpegCommand, StringPool.SPACE),
+							" failed with exit status ", process.exitValue()));
+				}
+
+				return;
+			}
+			catch (InterruptedException interruptedException) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(interruptedException, interruptedException);
+				}
+			}
+		}
+	}
+
+	private static final Pattern _timePattern = Pattern.compile(
+		"(\\d+):(\\d+):(\\d+(?:\\.\\d+)?)");
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		FFMPEGRawMetadataProcessor.class);
-
-	private static final DecimalFormat _decimalFormatter = new DecimalFormat(
-		"00");
 
 }
