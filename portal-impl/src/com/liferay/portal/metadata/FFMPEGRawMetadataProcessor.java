@@ -125,7 +125,7 @@ public class FFMPEGRawMetadataProcessor extends BaseRawMetadataProcessor {
 		throws Exception {
 
 		List<String> ffmpegCommand = Arrays.asList(
-			"ffmpeg", "-y", "-i", file.getAbsolutePath(), "-f null -");
+			"ffmpeg", "-y", "-i", file.getAbsolutePath(), "-f", "null", "-");
 
 		ProcessBuilder processBuilder = new ProcessBuilder(ffmpegCommand);
 
@@ -133,18 +133,16 @@ public class FFMPEGRawMetadataProcessor extends BaseRawMetadataProcessor {
 
 		Process process = processBuilder.start();
 
-		InputStream inputStream = process.getInputStream();
-
 		while (true) {
 			try (BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(inputStream))) {
+					new InputStreamReader(process.getInputStream()))) {
 
-				while (bufferedReader.ready()) {
-					Matcher matcher = _timePattern.matcher(
-						bufferedReader.readLine());
+				String line;
+				while ((line = bufferedReader.readLine()) != null) {
+					Matcher matcher = _timePattern.matcher(line);
 
 					if (matcher.find()) {
-						metadata.set(XMPDM.DURATION, matcher.group());
+						metadata.set(XMPDM.DURATION, matcher.group(1));
 
 						return;
 					}
@@ -173,7 +171,7 @@ public class FFMPEGRawMetadataProcessor extends BaseRawMetadataProcessor {
 	}
 
 	private static final Pattern _timePattern = Pattern.compile(
-		"(\\d+):(\\d+):(\\d+(?:\\.\\d+)?)");
+		"time=(\\d+:\\d+:\\d+(?:\\.\\d+)?)");
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		FFMPEGRawMetadataProcessor.class);

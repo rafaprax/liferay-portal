@@ -72,7 +72,8 @@ public class TikaRawMetadataProcessor extends FFMPEGRawMetadataProcessor {
 	protected Metadata extractMetadata(
 		String extension, String mimeType, File file) {
 
-		Metadata metadata = super.extractMetadata(extension, mimeType, file);
+		Metadata metadata = null;
+		//super.extractMetadata(extension, mimeType, file);
 
 		boolean forkProcess = false;
 
