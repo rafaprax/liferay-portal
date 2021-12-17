@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.image;
+package com.liferay.image.internal;
 
 import com.liferay.portal.kernel.image.ImageBag;
 import com.liferay.portal.kernel.image.ImageTool;
