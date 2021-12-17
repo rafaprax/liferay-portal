@@ -344,7 +344,7 @@ public class ImageToolImpl implements ImageTool {
 			return _defaultCompanyLogo;
 		}
 
-		ClassLoader classLoader = ImageToolImpl.class.getClassLoader();
+		ClassLoader classLoader = ImageTool.class.getClassLoader();
 
 		try {
 			InputStream inputStream = null;
@@ -411,7 +411,7 @@ public class ImageToolImpl implements ImageTool {
 			return _defaultOrganizationLogo;
 		}
 
-		ClassLoader classLoader = ImageToolImpl.class.getClassLoader();
+		ClassLoader classLoader = ImageTool.class.getClassLoader();
 
 		try {
 			InputStream inputStream = classLoader.getResourceAsStream(
@@ -438,7 +438,7 @@ public class ImageToolImpl implements ImageTool {
 			return _defaultSpacer;
 		}
 
-		ClassLoader classLoader = ImageToolImpl.class.getClassLoader();
+		ClassLoader classLoader = ImageTool.class.getClassLoader();
 
 		try {
 			InputStream inputStream = classLoader.getResourceAsStream(
@@ -465,7 +465,7 @@ public class ImageToolImpl implements ImageTool {
 			return _defaultUserFemalePortrait;
 		}
 
-		ClassLoader classLoader = ImageToolImpl.class.getClassLoader();
+		ClassLoader classLoader = ImageTool.class.getClassLoader();
 
 		try {
 			InputStream inputStream = classLoader.getResourceAsStream(
@@ -492,7 +492,7 @@ public class ImageToolImpl implements ImageTool {
 			return _defaultUserMalePortrait;
 		}
 
-		ClassLoader classLoader = ImageToolImpl.class.getClassLoader();
+		ClassLoader classLoader = ImageTool.class.getClassLoader();
 
 		try {
 			InputStream inputStream = classLoader.getResourceAsStream(
@@ -519,7 +519,7 @@ public class ImageToolImpl implements ImageTool {
 			return _defaultUserPortrait;
 		}
 
-		ClassLoader classLoader = ImageToolImpl.class.getClassLoader();
+		ClassLoader classLoader = ImageTool.class.getClassLoader();
 
 		try {
 			InputStream inputStream = classLoader.getResourceAsStream(
