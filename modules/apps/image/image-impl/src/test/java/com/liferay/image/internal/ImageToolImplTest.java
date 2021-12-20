@@ -14,6 +14,7 @@
 
 package com.liferay.image.internal;
 
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.portal.kernel.image.ImageBag;
 import com.liferay.portal.kernel.image.ImageTool;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -30,11 +31,16 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.RandomAccessFile;
 
+import java.lang.reflect.Field;
+
+import java.net.URL;
+
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -47,6 +53,16 @@ public class ImageToolImplTest {
 	@ClassRule
 	public static LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		_imageTool = new ImageToolImpl();
+
+		Field field = ReflectionUtil.getDeclaredField(
+			ImageToolImpl.class, "_imageMagick");
+
+		field.set(_imageTool, new ImageMagickImpl());
+	}
 
 	@Test
 	public void testCropBMP() throws Exception {
@@ -101,7 +117,7 @@ public class ImageToolImplTest {
 	@Test
 	public void testRotation90Degrees() throws Exception {
 		ImageBag imageBag = _imageTool.read(
-			new File(_FILE_DIR, "rotation_90_degrees.jpg"));
+			_getFile("rotation_90_degrees.jpg"));
 
 		RenderedImage originalImage = imageBag.getRenderedImage();
 
@@ -109,6 +125,13 @@ public class ImageToolImplTest {
 
 		Assert.assertEquals(originalImage.getHeight(), rotatedImage.getWidth());
 		Assert.assertEquals(originalImage.getWidth(), rotatedImage.getHeight());
+	}
+
+	private File _getFile(String fileName) {
+		URL url = ImageToolImplTest.class.getResource(
+			"dependencies/" + fileName);
+
+		return new File(url.getFile());
 	}
 
 	private void _testCrop(
@@ -130,7 +153,7 @@ public class ImageToolImplTest {
 
 		// Crop bottom right
 
-		ImageBag imageBag = _imageTool.read(new File(_FILE_DIR, fileName));
+		ImageBag imageBag = _imageTool.read(_getFile(fileName));
 
 		RenderedImage image = imageBag.getRenderedImage();
 
@@ -169,7 +192,7 @@ public class ImageToolImplTest {
 	}
 
 	private void _testRead(String fileName) throws Exception {
-		File file = new File(_FILE_DIR, fileName);
+		File file = _getFile(fileName);
 
 		BufferedImage expectedImage = ImageIO.read(file);
 
@@ -233,9 +256,6 @@ public class ImageToolImplTest {
 		}
 	}
 
-	private static final String _FILE_DIR =
-		"portal-impl/test/unit/com/liferay/portal/image/dependencies";
-
-	private final ImageTool _imageTool = ImageToolImpl.getInstance();
+	private static ImageTool _imageTool;
 
 }
