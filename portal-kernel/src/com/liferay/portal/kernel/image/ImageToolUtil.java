@@ -288,6 +288,6 @@ public class ImageToolUtil {
 
 	private static volatile ImageTool _imageTool =
 		ServiceProxyFactory.newServiceTrackedInstance(
-			ImageTool.class, ImageToolUtil.class, "_imageMagick", true);
+			ImageTool.class, ImageToolUtil.class, "_imageTool", true);
 
 }

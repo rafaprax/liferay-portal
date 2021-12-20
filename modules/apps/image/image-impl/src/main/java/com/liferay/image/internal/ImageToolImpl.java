@@ -81,6 +81,7 @@ import org.monte.media.jpeg.CMYKJPEGImageReaderSpi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -820,12 +821,6 @@ public class ImageToolImpl implements ImageTool {
 		}
 	}
 
-	protected ImageToolImpl() {
-		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
-
-		orderImageReaderSpis();
-	}
-
 	protected RenderedImage doScale(
 		RenderedImage renderedImage, int scaledHeight, int scaledWidth) {
 
@@ -930,6 +925,13 @@ public class ImageToolImpl implements ImageTool {
 		scaledGraphics2D.dispose();
 
 		return scaledBufferedImage;
+	}
+
+	@Activate
+	public void activate() {
+		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
+
+		orderImageReaderSpis();
 	}
 
 	protected void orderImageReaderSpis() {
