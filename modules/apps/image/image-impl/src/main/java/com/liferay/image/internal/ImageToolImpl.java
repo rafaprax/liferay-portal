@@ -81,25 +81,22 @@ import org.monte.media.jpeg.CMYKJPEGImageReaderSpi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Brian Wing Shun Chan
  * @author Alexander Chow
  * @author Shuyang Zhou
  */
+@Component(immediate = true, service = ImageTool.class)
 public class ImageToolImpl implements ImageTool {
-
-	public static ImageTool getInstance() {
-		return _instance;
-	}
 
 	@Override
 	public Future<RenderedImage> convertCMYKtoRGB(
 		byte[] bytes, final String type) {
 
-		ImageMagick imageMagick = getImageMagick();
-
-		if (!imageMagick.isEnabled()) {
+		if (!_imageMagick.isEnabled()) {
 			return null;
 		}
 
@@ -114,7 +111,7 @@ public class ImageToolImpl implements ImageTool {
 			imOperation.addRawArgs("-format", "%[colorspace]");
 			imOperation.addImage(inputFile.getPath());
 
-			String[] output = imageMagick.identify(imOperation.getCmdArgs());
+			String[] output = _imageMagick.identify(imOperation.getCmdArgs());
 
 			if ((output.length == 1) &&
 				StringUtil.equalsIgnoreCase(output[0], "CMYK")) {
@@ -129,7 +126,7 @@ public class ImageToolImpl implements ImageTool {
 				imOperation.addImage(inputFile.getPath());
 				imOperation.addImage(outputFile.getPath());
 
-				Future<Object> future = (Future<Object>)imageMagick.convert(
+				Future<Object> future = (Future<Object>)_imageMagick.convert(
 					imOperation.getCmdArgs());
 
 				return new FutureConverter<RenderedImage, Object>(future) {
@@ -823,6 +820,12 @@ public class ImageToolImpl implements ImageTool {
 		}
 	}
 
+	protected ImageToolImpl() {
+		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
+
+		orderImageReaderSpis();
+	}
+
 	protected RenderedImage doScale(
 		RenderedImage renderedImage, int scaledHeight, int scaledWidth) {
 
@@ -929,16 +932,6 @@ public class ImageToolImpl implements ImageTool {
 		return scaledBufferedImage;
 	}
 
-	protected ImageMagick getImageMagick() {
-		if (_imageMagick == null) {
-			_imageMagick = ImageMagickImpl.getInstance();
-
-			_imageMagick.reset();
-		}
-
-		return _imageMagick;
-	}
-
 	protected void orderImageReaderSpis() {
 		IIORegistry defaultIIORegistry = IIORegistry.getDefaultInstance();
 
@@ -998,18 +991,9 @@ public class ImageToolImpl implements ImageTool {
 		return multiBytes;
 	}
 
-	private ImageToolImpl() {
-		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
-
-		orderImageReaderSpis();
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(ImageToolImpl.class);
 
-	private static final ImageTool _instance = new ImageToolImpl();
-
 	private static final FileImpl _fileImpl = FileImpl.getInstance();
-	private static ImageMagick _imageMagick;
 
 	private Image _defaultCompanyLogo;
 	private Image _defaultOrganizationLogo;
@@ -1017,5 +1001,8 @@ public class ImageToolImpl implements ImageTool {
 	private Image _defaultUserFemalePortrait;
 	private Image _defaultUserMalePortrait;
 	private Image _defaultUserPortrait;
+
+	@Reference
+	private ImageMagick _imageMagick;
 
 }
