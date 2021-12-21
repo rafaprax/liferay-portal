@@ -1,3 +1,4 @@
+Bundle-Activator: com.liferay.image.internal.activator.ImageImplBundleActivator
 Bundle-Name: Liferay Image Implementation
 Bundle-SymbolicName: com.liferay.image.impl
 Bundle-Version: 1.0.5
