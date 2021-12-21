@@ -101,7 +101,11 @@ export async function getTaskStatus({
 			default:
 				onProgress(
 					contentType,
-					Math.round((processedItemsCount / totalItemsCount) * 100)
+					totalItemsCount === 0
+						? 0
+						: Math.round(
+								(processedItemsCount / totalItemsCount) * 100
+						  )
 				);
 		}
 	}

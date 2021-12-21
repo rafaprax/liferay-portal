@@ -17,7 +17,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Dynamic Data Lists Display Page");
+		PagesAdmin.addPublicPage(pageName = "Dynamic Data Lists Display Page");
 
 		Navigator.gotoPage(pageName = "Dynamic Data Lists Display Page");
 
@@ -39,7 +39,7 @@ definition {
 
 			DDLDataDefinition.tearDownCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -712,7 +712,7 @@ definition {
 
 		PortletEntry.publish();
 
-		SitePages.configurePage(
+		PagesAdmin.configurePage(
 			columnName = "1 Column",
 			pageName = "Dynamic Data Lists Display Page",
 			privacy = "Public Pages",

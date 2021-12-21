@@ -78,6 +78,7 @@ describe('Export', () => {
 
 	beforeEach(() => {
 		const blob = new Blob(['a', 'b', 'c', 'd']);
+
 		mockApi = fetchMock
 			.mock(BASE_PROPS.formExportURL, () => ({
 				exportTaskId: mockTaskID,
@@ -151,6 +152,7 @@ describe('Export', () => {
 		const exportButton = await waitForElement(() =>
 			getByText(Liferay.Language.get('download'))
 		);
+
 		expect(exportButton).toBeDisabled();
 	});
 

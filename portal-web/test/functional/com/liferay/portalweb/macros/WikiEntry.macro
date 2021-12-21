@@ -1,5 +1,18 @@
 definition {
 
+	macro addLinkToContent {
+		Click(locator1 = "CKEditor#TOOLBAR_LINK_BUTTON_BALLOON");
+
+		if (isSet(externalLink)) {
+			Type(
+				key_text = "URL",
+				locator1 = "TextInput#ANY",
+				value1 = "${externalLink}");
+		}
+
+		Click(locator1 = "CKEditor#OK_BUTTON");
+	}
+
 	macro addPageContent {
 		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
 

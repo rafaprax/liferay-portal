@@ -19,7 +19,7 @@
 											"modified": {
 												"decay": "${configuration.decay}",
 												"offset": "${configuration.offset}",
-												"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
+												"origin": "${time.current_date|date_format=yyyyMMddHHmmss}",
 												"scale": "${configuration.scale}"
 											}
 										}

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import org.talend.components.api.properties.ComponentPropertiesImpl;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.components.common.UserPasswordProperties;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessageProvider;
@@ -81,7 +82,7 @@ public class LiferayConnectionProperties extends ComponentPropertiesImpl {
 	}
 
 	public String getPassword() {
-		return _getValue(basicAuthorizationProperties.password);
+		return _getValue(userPasswordProperties.password);
 	}
 
 	public int getReadTimeout() {
@@ -93,7 +94,7 @@ public class LiferayConnectionProperties extends ComponentPropertiesImpl {
 	}
 
 	public String getUserId() {
-		return _getValue(basicAuthorizationProperties.userId);
+		return _getValue(userPasswordProperties.userId);
 	}
 
 	public boolean isBasicAuthorization() {
@@ -141,7 +142,7 @@ public class LiferayConnectionProperties extends ComponentPropertiesImpl {
 		_setHidden(
 			hidden, form.getWidget(hostURL.getName()),
 			form.getWidget(loginType.getName()),
-			form.getWidget(basicAuthorizationProperties.getName()));
+			form.getWidget(userPasswordProperties.getName()));
 
 		if (_logger.isTraceEnabled()) {
 			_logger.trace("Refreshed " + System.identityHashCode(this));
@@ -192,8 +193,6 @@ public class LiferayConnectionProperties extends ComponentPropertiesImpl {
 	}
 
 	public PresentationItem advanced = new PresentationItem("advanced");
-	public BasicAuthorizationProperties basicAuthorizationProperties =
-		new BasicAuthorizationProperties("basicAuthorizationProperties");
 	public Property<Integer> connectTimeout = PropertyFactory.newInteger(
 		"connectTimeout", _CONNECT_TIMEOUT);
 	public Property<Boolean> followRedirects = PropertyFactory.newBoolean(
@@ -213,6 +212,8 @@ public class LiferayConnectionProperties extends ComponentPropertiesImpl {
 			"referencedComponent", TLiferayConnectionDefinition.COMPONENT_NAME);
 	public PresentationItem testConnection = new PresentationItem(
 		"testConnection");
+	public UserPasswordProperties userPasswordProperties =
+		new UserPasswordProperties("userPasswordProperties");
 
 	public enum LoginType {
 
@@ -249,12 +250,7 @@ public class LiferayConnectionProperties extends ComponentPropertiesImpl {
 		}
 
 		form.addRow(loginWidget);
-
-		Form basicAuthorizationPropertiesForm =
-			basicAuthorizationProperties.getForm(
-				UIKeys.FORM_BASIC_AUTHORIZATION);
-
-		form.addRow(basicAuthorizationPropertiesForm);
+		form.addRow(userPasswordProperties.getForm(Form.MAIN));
 	}
 
 	private Form _createAdvancedForm(

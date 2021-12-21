@@ -997,11 +997,11 @@ definition {
 		}
 
 		task ("Navigate to Pages admin in the live site") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 		}
 
 		task ("Delete the third page from the live site") {
-			SitePages.deletePage(pageName = "Test Page Name 3");
+			PagesAdmin.deletePage(pageName = "Test Page Name 3");
 		}
 
 		task ("Publish to live without the third page") {
@@ -1222,11 +1222,11 @@ definition {
 		}
 
 		task ("Navigate to pages admin in the live site") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 		}
 
 		task ("Delete the third page from the live site") {
-			SitePages.deletePage(pageName = "Test Page Name 3");
+			PagesAdmin.deletePage(pageName = "Test Page Name 3");
 		}
 
 		task ("Publish to live without the third page") {

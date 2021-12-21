@@ -66,8 +66,6 @@ import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.filter.RangeTermFilter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.search.filter.TermsFilter;
-import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -213,26 +211,26 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 
 			BooleanFilter commerceChannelBooleanFilter = new BooleanFilter();
 
-			BooleanFilter commerceChannelFilterEnabledBooleanFilter =
+			BooleanFilter commerceChannelFilterEnableBooleanFilter =
 				new BooleanFilter();
 
-			commerceChannelFilterEnabledBooleanFilter.addTerm(
+			commerceChannelFilterEnableBooleanFilter.addTerm(
 				CPField.CHANNEL_FILTER_ENABLED, Boolean.TRUE.toString(),
 				BooleanClauseOccur.MUST);
 
 			if (commerceChannelId > 0) {
-				commerceChannelFilterEnabledBooleanFilter.addTerm(
+				commerceChannelFilterEnableBooleanFilter.addTerm(
 					CPField.COMMERCE_CHANNEL_GROUP_IDS,
 					String.valueOf(commerceChannelId), BooleanClauseOccur.MUST);
 			}
 			else {
-				commerceChannelFilterEnabledBooleanFilter.addTerm(
+				commerceChannelFilterEnableBooleanFilter.addTerm(
 					CPField.COMMERCE_CHANNEL_GROUP_IDS, "-1",
 					BooleanClauseOccur.MUST);
 			}
 
 			commerceChannelBooleanFilter.add(
-				commerceChannelFilterEnabledBooleanFilter,
+				commerceChannelFilterEnableBooleanFilter,
 				BooleanClauseOccur.SHOULD);
 			commerceChannelBooleanFilter.addTerm(
 				CPField.CHANNEL_FILTER_ENABLED, Boolean.FALSE.toString(),
@@ -247,15 +245,12 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 			BooleanFilter commerceAccountGroupsBooleanFilter =
 				new BooleanFilter();
 
-			BooleanFilter commerceAccountGroupsFilterEnabledBooleanFilter =
+			BooleanFilter commerceAccountGroupsFilterEnableBooleanFilter =
 				new BooleanFilter();
 
-			commerceAccountGroupsFilterEnabledBooleanFilter.addTerm(
+			commerceAccountGroupsFilterEnableBooleanFilter.addTerm(
 				CPField.ACCOUNT_GROUP_FILTER_ENABLED, Boolean.TRUE.toString(),
 				BooleanClauseOccur.MUST);
-
-			PermissionChecker permissionChecker =
-				PermissionThreadLocal.getPermissionChecker();
 
 			if ((commerceAccountGroupIds != null) &&
 				(commerceAccountGroupIds.length > 0)) {
@@ -272,20 +267,17 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 						termFilter, BooleanClauseOccur.SHOULD);
 				}
 
-				commerceAccountGroupsFilterEnabledBooleanFilter.add(
+				commerceAccountGroupsFilterEnableBooleanFilter.add(
 					commerceAccountGroupIdsBooleanFilter,
 					BooleanClauseOccur.MUST);
 			}
-			else if (!permissionChecker.isCompanyAdmin(
-						searchContext.getCompanyId()) ||
-					 !permissionChecker.isOmniadmin()) {
-
-				commerceAccountGroupsFilterEnabledBooleanFilter.addTerm(
+			else {
+				commerceAccountGroupsFilterEnableBooleanFilter.addTerm(
 					"commerceAccountGroupIds", "-1", BooleanClauseOccur.MUST);
 			}
 
 			commerceAccountGroupsBooleanFilter.add(
-				commerceAccountGroupsFilterEnabledBooleanFilter,
+				commerceAccountGroupsFilterEnableBooleanFilter,
 				BooleanClauseOccur.SHOULD);
 			commerceAccountGroupsBooleanFilter.addTerm(
 				CPField.ACCOUNT_GROUP_FILTER_ENABLED, Boolean.FALSE.toString(),
@@ -802,11 +794,7 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 						firstCPInstance.getCPInstanceUuid(),
 						CommercePriceListConstants.TYPE_PRICE_LIST);
 
-			BigDecimal lowestPrice = BigDecimal.ZERO;
-
-			if (commercePriceEntry != null) {
-				lowestPrice = commercePriceEntry.getPrice();
-			}
+			BigDecimal lowestPrice = commercePriceEntry.getPrice();
 
 			for (CPInstance cpInstance : cpInstances) {
 				commercePriceEntry =
@@ -815,11 +803,7 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 							cpInstance.getCPInstanceUuid(),
 							CommercePriceListConstants.TYPE_PRICE_LIST);
 
-				BigDecimal price = BigDecimal.ZERO;
-
-				if (commercePriceEntry != null) {
-					price = commercePriceEntry.getPrice();
-				}
+				BigDecimal price = commercePriceEntry.getPrice();
 
 				BigDecimal promoPrice = cpInstance.getPromoPrice();
 

@@ -30,7 +30,7 @@ definition {
 			panel = "Site Administration",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Page Comments Page");
+		PagesAdmin.addPublicPage(pageName = "Page Comments Page");
 
 		Navigator.gotoPage(pageName = "Page Comments Page");
 
@@ -46,7 +46,7 @@ definition {
 		else {
 			PageComment.tearDownPG(pageName = "Page Comments Page");
 
-			Page.tearDownPG();
+			PagesAdmin.tearDownCP();
 
 			Workflow.tearDownPortalWorkflow();
 

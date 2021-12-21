@@ -18,7 +18,7 @@
 			</then>
 		</elseif>
 		<else>
-			<property name="elasticsearch.version" value="7.15.0" />
+			<property name="elasticsearch.version" value="7.16.1" />
 		</else>
 	</if>
 
@@ -848,6 +848,10 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 				<equals arg1="${elastic.pki.authentication.enabled}" arg2="true" />
 				<then>
 					<start-elastic-trial authentication.type="PKI" />
+
+					<antcall target="stop-elasticsearch" />
+
+					<antcall target="start-elasticsearch-node" />
 
 					<check-elasticsearch-security authentication.type="PKI" />
 

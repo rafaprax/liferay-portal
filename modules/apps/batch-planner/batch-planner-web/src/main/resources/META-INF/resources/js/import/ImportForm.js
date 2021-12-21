@@ -105,6 +105,12 @@ function ImportForm({
 				)
 		) || [];
 
+	const hasSelectedField = Object.values(fieldsSelections).find(
+		(selection) => selection !== null
+	);
+
+	const disableButtons = !(hasSelectedField && dbFields);
+
 	return (
 		<>
 			{fileFields && dbFields && (
@@ -139,6 +145,7 @@ function ImportForm({
 
 					<span>
 						<SaveTemplate
+							forceDisable={disableButtons}
 							formSaveAsTemplateDataQuerySelector={
 								formDataQuerySelector
 							}
@@ -148,7 +155,7 @@ function ImportForm({
 					</span>
 
 					<ImportSubmit
-						disabled={!(fileFields && dbFields)}
+						disabled={disableButtons}
 						formDataQuerySelector={formDataQuerySelector}
 						formImportURL={formImportURL}
 						portletNamespace={portletNamespace}

@@ -39,11 +39,11 @@ definition {
 	@priority = "4"
 	test ChangeDisplayStyle {
 		task ("Navigate to the Pages admin in new site") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 		}
 
 		task ("Access to content page at edit mode") {
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "Edit",
 				pageName = "Test Content Page Name");
 
@@ -89,7 +89,7 @@ definition {
 		}
 
 		task ("Access to content page at edit mode again") {
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "Edit",
 				pageName = "Test Content Page Name");
 
@@ -109,7 +109,7 @@ definition {
 		}
 
 		task ("Access to content page can be edited at view mode") {
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "View",
 				pageName = "Test Content Page Name");
 

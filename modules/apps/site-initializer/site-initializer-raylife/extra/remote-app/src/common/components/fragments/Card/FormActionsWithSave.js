@@ -18,6 +18,7 @@ export function CardFormActionsWithSave({
 		setValue,
 	} = useFormContext();
 
+	const productQuote = getValues('basics.productQuoteName');
 	const email = getValues('basics.businessInformation.business.email');
 	const emailHasError = !!errors?.basics?.businessInformation?.business
 		?.email;
@@ -50,7 +51,7 @@ export function CardFormActionsWithSave({
 			<div className="d-flex justify-content-between mt-5">
 				{onPrevious && (
 					<ClayButton
-						className="btn btn-borderless btn-variant-neutral font-weight-bolder previous text-paragraph text-small-caps"
+						className="btn-borderless btn-style-neutral font-weight-bolder previous text-paragraph text-small-caps"
 						displayType="null"
 						onClick={onPrevious}
 					>
@@ -72,7 +73,7 @@ export function CardFormActionsWithSave({
 
 					{onNext && (
 						<ClayButton
-							className="btn btn-solid btn-variant-secondary continue font-weight-bolder text-paragraph text-small-caps"
+							className="btn-solid btn-style-secondary continue font-weight-bolder text-paragraph text-small-caps"
 							disabled={!isValid}
 							onClick={onNext}
 						>
@@ -96,6 +97,7 @@ export function CardFormActionsWithSave({
 							}
 						);
 					}}
+					productQuote={productQuote}
 					setError={(message) => setErrorModal(message)}
 					show={showProgressModal}
 				/>

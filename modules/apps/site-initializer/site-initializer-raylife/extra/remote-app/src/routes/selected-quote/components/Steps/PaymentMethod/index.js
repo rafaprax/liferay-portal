@@ -12,6 +12,8 @@ const PaymentMethod = () => {
 	const [agree, setAgree] = useState(false);
 	const [{orderId, product}] = useContext(SelectedQuoteContext);
 	const [methods, setMethods] = useState([]);
+	const productDiscounted = Number(product.price) * 0.95;
+	const productPromo = Number(product.price) * 0.05;
 
 	useEffect(() => {
 		if (orderId) {
@@ -34,13 +36,13 @@ const PaymentMethod = () => {
 					options: [
 						{
 							checked: true,
-							description: `Save $${Number(
-								product.promo
-							).toLocaleString('en-US')}`,
+							description: `Save $${productPromo.toLocaleString(
+								'en-US'
+							)}`,
 							id: 0,
-							title: `Pay in full – $${Number(
-								product.price
-							).toLocaleString('en-US')}`,
+							title: `Pay in full – $${productDiscounted.toLocaleString(
+								'en-US'
+							)}`,
 						},
 						{
 							checked: false,
@@ -190,8 +192,9 @@ const PaymentMethod = () => {
 								</div>
 								<div className="c-mb-2 c-mt-10 d-flex justify-content-end payment-button">
 									<ClayButton
-										className="btn btn-solid btn-variant-secondary c-px-5 display-4 text-link-md text-uppercase"
+										className="btn-solid c-px-5 display-4 text-link-md text-uppercase"
 										disabled={!agree}
+										displayType="style-secondary"
 										onClick={() =>
 											onClickPayNow(checkedMethod)
 										}

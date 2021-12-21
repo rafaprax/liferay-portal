@@ -41,7 +41,9 @@ describe('FileUpload', () => {
 
 	it('must read the file on input change', async () => {
 		const mockFileSchemaListener = jest.fn();
+
 		Liferay.on(FILE_SCHEMA_EVENT, mockFileSchemaListener);
+
 		parseFile.mockImplementationOnce(({onComplete}) =>
 			onComplete(fileSchema)
 		);

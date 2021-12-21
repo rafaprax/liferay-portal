@@ -3,11 +3,13 @@ import {
 	ACTIONS,
 	SelectedQuoteContext,
 } from '../../../context/SelectedQuoteContextProvider';
+import DiscardSelectedFiles from '../../DiscardChangesModal';
 import CheckButton from '../../Panel/CheckButton';
 
 const DiscardChanges = ({checked, expanded, hasError}) => {
 	const [showDiscardChanges, setShowDiscardChanges] = useState(false);
 	const [{sections}, dispatch] = useContext(SelectedQuoteContext);
+	const [showDiscardFilesModal, setShowDiscardFilesModal] = useState(false);
 
 	const onDiscardChanges = () => {
 		dispatch({
@@ -64,7 +66,9 @@ const DiscardChanges = ({checked, expanded, hasError}) => {
 				)}
 
 				{!checked && expanded && showDiscardChanges && (
-					<span onClick={onDiscardChanges}>Discard Changes</span>
+					<span onClick={() => setShowDiscardFilesModal(true)}>
+						Discard Changes
+					</span>
 				)}
 			</div>
 
@@ -72,6 +76,12 @@ const DiscardChanges = ({checked, expanded, hasError}) => {
 				checked={checked}
 				expanded={expanded}
 				hasError={hasError}
+			/>
+
+			<DiscardSelectedFiles
+				onClose={() => setShowDiscardFilesModal(false)}
+				onDiscardChanges={onDiscardChanges}
+				show={showDiscardFilesModal}
 			/>
 		</div>
 	);

@@ -33,7 +33,7 @@ definition {
 
 			WebContent.tearDownCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -429,7 +429,9 @@ definition {
 
 		Page.uploadFileForLogo(logoFile = "Document_2.png");
 
-		AssertElementPresent(locator1 = "Button#DELETE_LAYOUT_LOGO");
+		AssertElementPresent(
+			key_text = "Delete",
+			locator1 = "Button#ANY");
 
 		AssertElementNotPresent(
 			key_text = "Delete",
@@ -445,7 +447,8 @@ definition {
 			configurationScope = "Virtual Instance Scope");
 
 		AssertClick(
-			locator1 = "Button#DELETE_LAYOUT_LOGO",
+			key_text = "Delete",
+			locator1 = "Button#ANY",
 			value1 = "Delete");
 
 		PortletEntry.save();
@@ -521,7 +524,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.togglePrivacy(privacy = "Public Pages");
+		PagesAdmin.togglePrivacy(privacy = "Public Pages");
 
 		Click(
 			key_pageName = "Public Pages",
@@ -1311,7 +1314,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "AP Test Page");
+		PagesAdmin.addPublicPage(pageName = "AP Test Page");
 
 		Navigator.openSiteURL(siteName = "Site Name");
 
@@ -1336,7 +1339,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "AP Test Page");
+		PagesAdmin.addPublicPage(pageName = "AP Test Page");
 
 		Navigator.gotoPage(pageName = "AP Test Page");
 

@@ -18,6 +18,10 @@ definition {
 		CalendarResource.view(calendarResourceName = "${calendarResourceName}");
 	}
 
+	macro clearSearchResults {
+		Click(locator1 = "WorkflowConfiguration#CLEAR_BUTTON");
+	}
+
 	macro deactivate {
 		CalendarResource._expandDetailsPanel();
 
@@ -70,8 +74,18 @@ definition {
 		CalendarResource.view(calendarResourceName = "${calendarResourceNameEdit}");
 	}
 
+	macro editResourceDescription {
+		CalendarResource._expandDetailsPanel();
+
+		PortletEntry.inputDescription(description = "${calendarResourceDescription}");
+	}
+
 	macro editResourceName {
 		PortletEntry.inputName(name = "${calendarResourceName}");
+	}
+
+	macro resourceSetFilterAndOrder {
+		ManagementBar.setFilterAndOrder(filterBy = "${filterBy}");
 	}
 
 	macro save {
@@ -80,6 +94,12 @@ definition {
 		var key_calendarResourceName = "${calendarResourceName}";
 
 		Alert.viewSuccessMessage();
+	}
+
+	macro search {
+		Search.searchPG(
+			portletName = "Calendar",
+			searchTerm = "${searchTerm}");
 	}
 
 	macro tearDown {
@@ -158,6 +178,18 @@ definition {
 		AssertElementNotPresent(locator1 = "CalendarResources#RESOURCE_TABLE_NAME");
 
 		AssertTextNotPresent(value1 = "${calendarResourceName}");
+	}
+
+	macro viewSearchSummaryResults {
+		AssertTextEquals(
+			locator1 = "ManagementBar#SEARCH_RESULT_SUMMARY",
+			value1 = "${searchResults}");
+	}
+
+	macro viewTableEmpty {
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No resources were found.");
 	}
 
 }

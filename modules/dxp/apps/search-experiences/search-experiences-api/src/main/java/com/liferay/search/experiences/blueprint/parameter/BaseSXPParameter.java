@@ -15,7 +15,6 @@
 package com.liferay.search.experiences.blueprint.parameter;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.util.GetterUtil;
 
 import java.util.Map;
 import java.util.Objects;
@@ -71,7 +70,7 @@ public abstract class BaseSXPParameter implements SXPParameter {
 
 	@Override
 	public String evaluateToString(Map<String, String> options) {
-		return GetterUtil.getString(getValue());
+		return String.valueOf(getValue());
 	}
 
 	@Override

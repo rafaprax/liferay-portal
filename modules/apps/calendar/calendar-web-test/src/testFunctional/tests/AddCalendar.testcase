@@ -18,11 +18,11 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(
+		PagesAdmin.addPublicPage(
 			pageName = "Calendar Page",
 			sitePageType = "Widget Page");
 
-		SitePages.configurePage(
+		PagesAdmin.configurePage(
 			columnName = "1 Column",
 			pageName = "Calendar Page",
 			privacy = "Public Pages",
@@ -52,7 +52,7 @@ definition {
 
 			CalendarConfiguration.tearDown();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -575,7 +575,7 @@ definition {
 				userScreenName = "usersn");
 		}
 
-		SitePages.openPagesAdmin(siteURLKey = "Site A");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Site A");
 
 		ProductMenu.gotoPortlet(
 			category = "People",
@@ -587,7 +587,7 @@ definition {
 
 		Navigator.gotoPage(pageName = "Calendar Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "Site C");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Site C");
 
 		ProductMenu.gotoPortlet(
 			category = "People",

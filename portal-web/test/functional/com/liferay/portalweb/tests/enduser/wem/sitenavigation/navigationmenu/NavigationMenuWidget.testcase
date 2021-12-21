@@ -51,7 +51,7 @@ definition {
 		}
 
 		task ("Grand all permissions to Power User for that page") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
 			PermissionsInline.gotoSitePageCP(
 				pageName = "Test Page Name",
@@ -195,9 +195,9 @@ definition {
 		}
 
 		task ("Add the second page") {
-			SitePages.openPagesAdmin(siteURLKey = "Test Site Name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "Test Site Name");
 
-			SitePages.addPublicPage(pageName = "Test Page Name 2");
+			PagesAdmin.addPublicPage(pageName = "Test Page Name 2");
 		}
 
 		task ("Rename the second page") {
@@ -221,9 +221,9 @@ definition {
 		}
 
 		task ("Changes the order of pages") {
-			SitePages.openPagesAdmin(siteURLKey = "Test Site Name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "Test Site Name");
 
-			SitePages.movePageToPageUp(
+			PagesAdmin.movePageItemUp(
 				pageName = "Test Page Name 2 Edit",
 				pageNameTo = "Test Page Name");
 		}
@@ -291,9 +291,9 @@ definition {
 		}
 
 		task ("Hide the second page from Navigation Menu widget") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "Configure",
 				pageName = "Test Page Name 2");
 

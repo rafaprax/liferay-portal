@@ -18,25 +18,44 @@ export default function ({namespace}) {
 		`${namespace}dropdownToggle`
 	);
 
+	let closeSimulationPanelEvent = null;
+	let openSimulationPanelEvent = null;
+
 	const handleClick = () => {
 		if (dropdownToggle.getAttribute('aria-expanded') === 'false') {
-			dropdownToggle.setAttribute('aria-expanded', 'true');
 			dropdown.classList.add('show');
+			dropdownToggle.setAttribute('aria-expanded', 'true');
 		}
 		else {
-			dropdownToggle.setAttribute('aria-expanded', 'false');
 			dropdown.classList.remove('show');
+			dropdownToggle.setAttribute('aria-expanded', 'false');
 		}
 	};
 
+	const handleDisable = (disable) => {
+		dropdown.classList.remove('show');
+		dropdownToggle.classList[disable ? 'add' : 'remove']('disabled');
+		dropdownToggle.setAttribute('aria-expanded', 'false');
+	};
+
 	if (dropdown && dropdownToggle) {
+		closeSimulationPanelEvent = Liferay.on(
+			'SimulationMenu:closeSimulationPanel',
+			() => handleDisable(false)
+		);
 		dropdownToggle.addEventListener('click', handleClick);
+		openSimulationPanelEvent = Liferay.on(
+			'SimulationMenu:openSimulationPanel',
+			() => handleDisable(true)
+		);
 	}
 
 	return {
 		dispose() {
 			if (dropdownToggle) {
+				closeSimulationPanelEvent.detach();
 				dropdownToggle.removeEventListener('click', handleClick);
+				openSimulationPanelEvent.detach();
 			}
 		},
 	};

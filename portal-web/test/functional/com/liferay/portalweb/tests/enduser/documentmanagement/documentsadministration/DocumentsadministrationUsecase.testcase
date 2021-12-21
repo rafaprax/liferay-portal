@@ -29,7 +29,7 @@ definition {
 
 			DMMetadataSet.tearDownCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 
 			JSONUser.tearDownNonAdminUsers();
 
@@ -407,7 +407,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPrivatePage(
+		PagesAdmin.addPrivatePage(
 			pageName = "DM Site Page Name - Global",
 			siteTemplate = "true");
 
@@ -420,7 +420,7 @@ definition {
 			siteName = "DM Site Name",
 			siteTemplateName = "Site Template Name");
 
-		SitePages.openPagesAdmin(siteURLKey = "DM Site Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "DM Site Name");
 
 		Navigator.gotoSitePage(
 			pageName = "DM Site Page Name - Global",

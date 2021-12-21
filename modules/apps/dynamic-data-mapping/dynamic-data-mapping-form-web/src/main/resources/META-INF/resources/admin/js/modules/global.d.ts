@@ -35,7 +35,13 @@ type Locale =
 	| 'sv_SE'
 	| 'zh_CN';
 
-type LocalizedTextKey = 'error' | 'please-add-at-least-one-field';
+type LocalizedTextKey =
+	| 'error'
+	| 'please-add-at-least-one-field'
+	| 'your-responses-will-be-visible-to-all-form-respondents'
+	| 'see-partial-results'
+	| 'submit-again'
+	| 'understood';
 
 type LocalizedValue<T> = {
 	[key in Locale]?: T;

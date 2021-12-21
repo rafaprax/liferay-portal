@@ -1,3 +1,12 @@
+Bundle-Activator: com.liferay.image.internal.activator.ImageImplBundleActivator
 Bundle-Name: Liferay Image Implementation
 Bundle-SymbolicName: com.liferay.image.impl
 Bundle-Version: 1.0.5
+Import-Package:\
+	!com.sun.awt,\
+	!com.sun.imageio.plugins.jpeg,\
+	!javax.media.jai,\
+	!sun.audio,\
+	\
+	*
+-fixupmessages: "The default package '.' is not permitted ...";is:=ignore

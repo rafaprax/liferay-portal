@@ -26,11 +26,11 @@ definition {
 			portlet = "Pages",
 			site = "Site Name");
 
-		SitePages.addPublicPage(pageName = "Test Page1");
+		PagesAdmin.addPublicPage(pageName = "Test Page1");
 
-		SitePages.addPublicPage(pageName = "Test Page2");
+		PagesAdmin.addPublicPage(pageName = "Test Page2");
 
-		SitePages.addPublicPage(pageName = "Test Page3");
+		PagesAdmin.addPublicPage(pageName = "Test Page3");
 
 		var pageName = "Test Page1";
 		var portletBody = "Test Page1";
@@ -70,7 +70,7 @@ definition {
 
 		task ("Add a '${fragmentName}' fragment to the content page named '${contentPageName}'") {
 			task ("Create a Content Page") {
-				SitePages.openPagesAdmin(siteURLKey = "${siteName}");
+				PagesAdmin.openPagesAdmin(siteURLKey = "${siteName}");
 
 				ContentPages.addPage(pageName = "${contentPageName}");
 			}

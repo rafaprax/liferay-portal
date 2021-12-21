@@ -103,7 +103,6 @@
 /portal/ccpp-ri.jar
 /portal/ccpp.jar
 /portal/cglib-nodep.jar
-/portal/chardet.jar
 /portal/closure-compiler.jar
 /portal/commons-beanutils.jar
 /portal/commons-chain.jar
@@ -131,10 +130,8 @@
 /portal/daisydiff.jar
 /portal/dom4j.jar
 /portal/eclipse-core-runtime.jar
-/portal/ecs.jar
 /portal/fontbox.jar
 /portal/freshcookies-security.jar
-/portal/gif89.jar
 /portal/hessian.jar
 /portal/hibernate-core.jar
 /portal/hikaricp.jar
@@ -142,8 +139,6 @@
 /portal/httpclient.jar
 /portal/httpcore.jar
 /portal/httpmime.jar
-/portal/ical4j.jar
-/portal/im4java.jar
 /portal/isoparser.jar
 /portal/istack-commons-runtime.jar
 /portal/jabsorb.jar
@@ -170,13 +165,11 @@
 /portal/jbig2-imageio.jar
 /portal/jcifs.jar
 /portal/jcl-over-slf4j.jar
-/portal/jcommon.jar
 /portal/jdom2.jar
 /portal/jempbox.jar
 /portal/jena.jar
 /portal/jericho-html.jar
 /portal/jersey-common.jar
-/portal/jfreechart.jar
 /portal/jhighlight.jar
 /portal/jhlabs-filters.jar
 /portal/jmatio.jar
@@ -202,7 +195,6 @@
 /portal/mime4j-core.jar
 /portal/mime4j-dom.jar
 /portal/mimepull.jar
-/portal/monte-cc.jar
 /portal/mp4parser.jar
 /portal/nekohtml.jar
 /portal/netcdf.jar
@@ -271,5 +263,4 @@
 /portal/xmpcore.jar
 /portal/xpp3.jar
 /portal/xstream.jar
-/portal/xuggle-xuggler-noarch.jar
 /portal/xz.jar

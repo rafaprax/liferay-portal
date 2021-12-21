@@ -121,7 +121,7 @@ public class DuplicateSegmentsExperienceMVCActionCommandTest {
 			segmentsExperience.isActive(),
 			segmentsExperienceJSONObject.getBoolean("active"));
 		Assert.assertEquals(
-			"Experience (Copy)",
+			"Copy of Experience",
 			segmentsExperienceJSONObject.getString("name"));
 		Assert.assertEquals(
 			segmentsExperience.getPriority() - 1,

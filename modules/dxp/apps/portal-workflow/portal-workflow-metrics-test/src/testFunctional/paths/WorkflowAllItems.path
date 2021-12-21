@@ -81,6 +81,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>UPDATE_DUE_DATE_DROPDOWN</td>
+	<td>//div[@class='dropdown-menu show']//button[@class='dropdown-item'][contains(text(),'Update Due Date')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>TRANSITION_DROPDOWN</td>
 	<td>//div[@class='dropdown-menu show']//button[@class='dropdown-item'][contains(text(),'Transition')]</td>
 	<td></td>
@@ -483,6 +488,11 @@
 <tr>
 	<td>TRACK_APPROVAL_NODE</td>
 	<td>//span[contains(@class, 'truncate-container')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>TRACK_APPROVAL_BODY</td>
+	<td>//div[contains(@class, 'modal-title') and contains(.,'Track Workflow')]//..//..//div[contains(@class,'modal-body')]</td>
 	<td></td>
 </tr>
 </tbody>

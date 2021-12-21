@@ -17,6 +17,8 @@ package com.liferay.site.navigation.admin.web.internal.util;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.site.navigation.model.SiteNavigationMenu;
@@ -92,12 +94,39 @@ public class SiteNavigationMenuPortletUtil {
 					"siteNavigationMenuItemId", siteNavigationMenuItemId
 				).put(
 					"title",
-					siteNavigationMenuItemType.getTitle(
-						siteNavigationMenuItem, themeDisplay.getLocale())
+					() -> {
+						if (siteNavigationMenuItemType != null) {
+							return siteNavigationMenuItemType.getTitle(
+								siteNavigationMenuItem,
+								themeDisplay.getLocale());
+						}
+
+						return siteNavigationMenuItem.getName();
+					}
 				).put(
 					"type",
-					siteNavigationMenuItemType.getSubtitle(
-						siteNavigationMenuItem, themeDisplay.getLocale())
+					() -> {
+						if (siteNavigationMenuItemType != null) {
+							return siteNavigationMenuItemType.getSubtitle(
+								siteNavigationMenuItem,
+								themeDisplay.getLocale());
+						}
+
+						String typeLabel = ResourceActionsUtil.getModelResource(
+							themeDisplay.getLocale(),
+							siteNavigationMenuItem.getType());
+
+						if (typeLabel.startsWith(
+								ResourceActionsUtil.
+									getModelResourceNamePrefix())) {
+
+							return LanguageUtil.get(
+								themeDisplay.getLocale(),
+								siteNavigationMenuItem.getType());
+						}
+
+						return typeLabel;
+					}
 				));
 		}
 

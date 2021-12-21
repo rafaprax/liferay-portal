@@ -5,6 +5,16 @@
 	"elementDefinition": {
 		"category": "commerce",
 		"configuration": {
+			"parameterConfiguration": {
+				"parameters": {
+					"commerceAccountGroupIds": {
+						"type": "LongArray"
+					},
+					"commerceChannelGroupId": {
+						"type": "Long"
+					}
+				}
+			},
 			"queryConfiguration": {
 				"queryEntries": [
 					{
@@ -15,7 +25,7 @@
 								"query": {
 									"terms": {
 										"boost": "${configuration.boost}",
-										"commerceAccountGroupIds": "${commerce.account_group_ids}"
+										"commerceAccountGroupIds": "${commerceAccountGroupIds}"
 									}
 								}
 							}

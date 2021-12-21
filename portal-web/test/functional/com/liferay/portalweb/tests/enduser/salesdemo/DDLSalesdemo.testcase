@@ -24,7 +24,7 @@ definition {
 
 			DDLDataDefinition.tearDownCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -36,9 +36,9 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Company Picnic");
+		PagesAdmin.addPublicPage(pageName = "Company Picnic");
 
-		SitePages.configurePage(
+		PagesAdmin.configurePage(
 			columnName = "1 Column",
 			pageName = "Company Picnic",
 			privacy = "Public Pages",

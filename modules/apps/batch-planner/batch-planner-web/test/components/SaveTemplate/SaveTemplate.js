@@ -82,6 +82,20 @@ describe('SaveTemplateModal', () => {
 		).not.toBeDisabled();
 	});
 
+	it('must has button disabled if forceDisable property is true', () => {
+		const {getByText} = render(
+			<SaveTemplate {...BASE_PROPS} forceDisable={true} />
+		);
+
+		act(() => {
+			fireSchemaChangeEvent();
+		});
+
+		expect(
+			getByText(Liferay.Language.get('save-as-template'))
+		).toBeDisabled();
+	});
+
 	it('must show modal when the button is clicked', async () => {
 		const {getByText} = render(<SaveTemplate {...BASE_PROPS} />);
 

@@ -27,13 +27,13 @@ import com.liferay.layout.content.page.editor.web.internal.segments.SegmentsExpe
 import com.liferay.layout.content.page.editor.web.internal.util.FragmentEntryLinkUtil;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.comment.CommentManager;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -92,11 +92,10 @@ public class DuplicateSegmentsExperienceMVCActionCommand
 				segmentsExperience.getClassPK(),
 				Collections.singletonMap(
 					LocaleUtil.getSiteDefault(),
-					StringBundler.concat(
-						segmentsExperience.getName(LocaleUtil.getSiteDefault()),
-						StringPool.SPACE, StringPool.OPEN_PARENTHESIS,
-						_language.get(themeDisplay.getLocale(), "copy"),
-						StringPool.CLOSE_PARENTHESIS)),
+					LanguageUtil.format(
+						themeDisplay.getLocale(), "copy-of-x",
+						segmentsExperience.getName(
+							LocaleUtil.getSiteDefault()))),
 				segmentsExperience.isActive(), serviceContext);
 
 		SegmentsExperienceUtil.copySegmentsExperienceData(

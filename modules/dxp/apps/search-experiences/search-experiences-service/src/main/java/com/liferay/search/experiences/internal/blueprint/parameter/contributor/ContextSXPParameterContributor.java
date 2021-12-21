@@ -20,7 +20,9 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.search.experiences.blueprint.parameter.BooleanSXPParameter;
+import com.liferay.search.experiences.blueprint.parameter.LongArraySXPParameter;
 import com.liferay.search.experiences.blueprint.parameter.LongSXPParameter;
 import com.liferay.search.experiences.blueprint.parameter.SXPParameter;
 import com.liferay.search.experiences.blueprint.parameter.StringSXPParameter;
@@ -48,6 +50,25 @@ public class ContextSXPParameterContributor implements SXPParameterContributor {
 	public void contribute(
 		SearchContext searchContext, SXPBlueprint sxpBlueprint,
 		Set<SXPParameter> sxpParameters) {
+
+		long[] commerceAccountGroupIds = (long[])searchContext.getAttribute(
+			"commerceAccountGroupIds");
+
+		if (commerceAccountGroupIds != null) {
+			sxpParameters.add(
+				new LongArraySXPParameter(
+					"commerceAccountGroupIds", true,
+					ArrayUtil.toArray(commerceAccountGroupIds)));
+		}
+
+		Long commerceChannelGroupId = (Long)searchContext.getAttribute(
+			"commerceChannelGroupId");
+
+		if (commerceChannelGroupId != null) {
+			sxpParameters.add(
+				new LongSXPParameter(
+					"commerceChannelGroupId", true, commerceChannelGroupId));
+		}
 
 		sxpParameters.add(
 			new LongSXPParameter(

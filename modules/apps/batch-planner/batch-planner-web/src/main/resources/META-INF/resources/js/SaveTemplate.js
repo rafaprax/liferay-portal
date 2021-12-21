@@ -14,12 +14,14 @@
 
 import ClayButton from '@clayui/button';
 import {useModal} from '@clayui/modal';
+import PropTypes from 'prop-types';
 import React, {useCallback, useEffect, useState} from 'react';
 
 import SaveTemplateModal from './SaveTemplateModal';
 import {SCHEMA_SELECTED_EVENT} from './constants';
 
 function SaveTemplate({
+	forceDisable,
 	formSaveAsTemplateDataQuerySelector,
 	formSaveAsTemplateURL,
 	portletNamespace,
@@ -40,6 +42,7 @@ function SaveTemplate({
 				setDisable(false);
 			}
 		}
+
 		Liferay.on(SCHEMA_SELECTED_EVENT, handleSchemaChange);
 
 		return () => Liferay.detach(SCHEMA_SELECTED_EVENT, handleSchemaChange);
@@ -48,7 +51,7 @@ function SaveTemplate({
 	return (
 		<span className="mr-3">
 			<ClayButton
-				disabled={disable}
+				disabled={disable || forceDisable}
 				displayType="secondary"
 				id={`${portletNamespace}saveTemplate`}
 				onClick={onButtonClick}
@@ -69,5 +72,12 @@ function SaveTemplate({
 		</span>
 	);
 }
+
+SaveTemplate.propTypes = {
+	forceDisable: PropTypes.bool,
+	formSaveAsTemplateDataQuerySelector: PropTypes.string.isRequired,
+	formSaveAsTemplateURL: PropTypes.string.isRequired,
+	portletNamespace: PropTypes.string.isRequired,
+};
 
 export default SaveTemplate;

@@ -81,6 +81,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>ANY_SECONDARY</td>
+	<td>//*[not(self::div)][contains(@class,'btn-secondary')][normalize-space()='${key_text}'][not(contains(@class,'navbar'))]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>ANY_TITLE</td>
 	<td>//button[@title='${key_title}']</td>
 	<td></td>
@@ -293,11 +298,6 @@
 <tr>
 	<td>DELETE_FRAGMENT_COMMENT</td>
 	<td>//button[contains(@class,'page-editor')]/span[contains(.,'Delete')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DELETE_LAYOUT_LOGO</td>
-	<td>//button[contains(@class,'delete-logo')]</td>
 	<td></td>
 </tr>
 <tr>

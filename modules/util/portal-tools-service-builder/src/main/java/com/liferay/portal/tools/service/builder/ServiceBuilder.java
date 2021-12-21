@@ -3076,7 +3076,18 @@ public class ServiceBuilder {
 	}
 
 	private void _createModelArgumentsResolver(Entity entity) throws Exception {
+		File file = new File(
+			StringBundler.concat(
+				_outputPath, "/service/persistence/impl/", entity.getName(),
+				"ModelArgumentsResolver.java"));
+
 		if (!entity.hasPersistence() || isVersionLTE_7_3_0()) {
+			if (file.exists()) {
+				System.out.println("Removing " + file);
+
+				file.delete();
+			}
+
 			return;
 		}
 
@@ -3092,12 +3103,7 @@ public class ServiceBuilder {
 
 		String content = _processTemplate(_tplModelArgumentsResolver, context);
 
-		File argumentsResolverFile = new File(
-			StringBundler.concat(
-				_outputPath, "/service/persistence/impl/", entity.getName(),
-				"ModelArgumentsResolver.java"));
-
-		_write(argumentsResolverFile, content, _modifiedFileNames);
+		_write(file, content, _modifiedFileNames);
 	}
 
 	private void _createModelCache(Entity entity) throws Exception {

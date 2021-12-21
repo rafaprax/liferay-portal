@@ -582,7 +582,7 @@ definition {
 
 		task ("Delete the AP widget from the created template") {
 			SiteTemplatesNavigator.gotoSiteTemplatesPage(
-				pageName = "Home",
+				pageName = "home",
 				siteName = "Liferay DXP",
 				siteTemplateName = "Site Template Name");
 

@@ -24,14 +24,14 @@ definition {
 			siteName = "Site Name",
 			siteType = "Blank");
 
-		SitePages.openPagesAdmin(siteURLKey = "Site Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Site Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Site Page Name");
+		PagesAdmin.addPublicPage(pageName = "Site Page Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Publishing",
@@ -42,7 +42,7 @@ definition {
 			pageVersioningEnabled = "true",
 			siteName = "Site Name");
 
-		SitePages.openPagesAdmin(siteURLKey = "Site Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Site Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
@@ -134,7 +134,7 @@ definition {
 			panel = "Site Administration",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "${pageName}");
+		PagesAdmin.addPublicPage(pageName = "${pageName}");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "${pageName}",
@@ -319,7 +319,7 @@ definition {
 			panel = "Site Administration",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "${pageName}");
+		PagesAdmin.addPublicPage(pageName = "${pageName}");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "${pageName}",
@@ -387,7 +387,7 @@ definition {
 			panel = "Site Administration",
 			portlet = "Pages");
 
-		SitePages.deletePage(pageName = "${pageName}");
+		PagesAdmin.deletePage(pageName = "${pageName}");
 	}
 
 	@description = "This is a use case for LPS-58754"

@@ -313,19 +313,19 @@ definition {
 			siteName = "Organization Name",
 			siteType = "Private");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPrivatePage(pageName = "Private Page");
+		PagesAdmin.addPrivatePage(pageName = "Private Page");
 
 		Navigator.gotoSpecificURLPage(
 			pageName = "Private Page",
 			url = "${portalURL}/group/organization-name/private-page");
 
-		Page.view(
+		PagesAdmin.viewPageItemPresent(
 			pageName = "Private Page",
 			privacy = "Private Pages");
 	}
@@ -352,19 +352,19 @@ definition {
 
 		Organization.addSiteCP(orgName = "Organization Name");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Public Page");
+		PagesAdmin.addPublicPage(pageName = "Public Page");
 
 		Navigator.gotoSpecificURLPage(
 			pageName = "Public Page",
 			url = "${portalURL}/web/organization-name/public-page");
 
-		Page.view(
+		PagesAdmin.viewPageItemPresent(
 			pageName = "Public Page",
 			privacy = "Public Pages");
 	}
@@ -413,15 +413,15 @@ definition {
 			userName = "Test Test",
 			userScreenName = "test");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Organization Public Page");
+		PagesAdmin.addPublicPage(pageName = "Organization Public Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name");
 
 		ProductMenu.gotoPortlet(
 			category = "People",
@@ -498,7 +498,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Mock LDAP Page");
+		PagesAdmin.addPublicPage(pageName = "Mock LDAP Page");
 
 		Navigator.gotoPage(pageName = "Mock LDAP Page");
 
@@ -1140,15 +1140,15 @@ definition {
 			userName = "userfn userln",
 			userScreenName = "usersn");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Public Page");
+		PagesAdmin.addPublicPage(pageName = "Public Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name");
 
 		ProductMenu.gotoPortlet(
 			category = "People",
@@ -1914,7 +1914,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Sites Directory Page");
+		PagesAdmin.addPublicPage(pageName = "Sites Directory Page");
 
 		Navigator.gotoPage(pageName = "Sites Directory Page");
 
@@ -1938,13 +1938,13 @@ definition {
 
 		Organization.addSiteCP(orgName = "Organization Name 1");
 
-		SitePages.openPagesAdmin(siteURLKey = "Organization Name 1");
+		PagesAdmin.openPagesAdmin(siteURLKey = "Organization Name 1");
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(pageName = "Test Page");
+		PagesAdmin.addPublicPage(pageName = "Test Page");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",

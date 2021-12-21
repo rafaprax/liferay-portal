@@ -21,7 +21,7 @@ definition {
 		else {
 			PortalSettings.tearDownAuthenticationCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -407,9 +407,9 @@ definition {
 		}
 
 		task ("Disable mobile device rules are inherited from public pages") {
-			SitePages.openPagesAdmin(siteURLKey = "guest");
+			PagesAdmin.openPagesAdmin(siteURLKey = "guest");
 
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "Configure",
 				pageName = "Search");
 

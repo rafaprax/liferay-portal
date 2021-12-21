@@ -12,24 +12,9 @@
  * details.
  */
 
-export const PROCESS_STARTED = 'STARTED';
-export const PROCESS_COMPLETED = 'COMPLETED';
-export const PROCESS_FAILED = 'FAILED';
-
-export const POLL_INTERVAL = 1000;
+export const CSV_FORMAT = 'csv';
 export const EXPORT_FILE_NAME = 'Export.zip';
 export const FILE_SCHEMA_EVENT = 'file-schema';
-export const SCHEMA_SELECTED_EVENT = 'schema-selected';
-export const TEMPLATE_SELECTED_EVENT = 'template-selected';
-export const HEADLESS_ENDPOINT_POLICY_NAME = 'headlessEndpoint';
-export const TEMPLATE_SOILED = 'template-soiled';
-export const NULL_TEMPLATE_VALUE = '';
-
-export const PARSE_FILE_CHUNK_SIZE = 64 * 1024;
-export const CSV_FORMAT = 'csv';
-export const JSON_FORMAT = 'json';
-export const JSONL_FORMAT = 'jsonl';
-export const IMPORT_FILE_FORMATS = [CSV_FORMAT, JSON_FORMAT, JSONL_FORMAT];
 
 export const HEADERS = new Headers({
 	'Accept': 'application/json',
@@ -37,4 +22,17 @@ export const HEADERS = new Headers({
 });
 
 export const HEADLESS_BATCH_ENGINE_URL = '/o/headless-batch-engine/v1.0';
-export const HEADERS_BATCH_PLANNER_URL = '/o/batch-planner/v1.0';
+export const HEADLESS_ENDPOINT_POLICY_NAME = 'headlessEndpoint';
+export const JSON_FORMAT = 'json';
+export const JSONL_FORMAT = 'jsonl';
+export const NULL_TEMPLATE_VALUE = '';
+export const PARSE_FILE_CHUNK_SIZE = 64 * 1024;
+export const POLL_INTERVAL = 1000;
+export const PROCESS_COMPLETED = 'COMPLETED';
+export const PROCESS_FAILED = 'FAILED';
+export const PROCESS_STARTED = 'STARTED';
+export const SCHEMA_SELECTED_EVENT = 'schema-selected';
+export const TEMPLATE_SELECTED_EVENT = 'template-selected';
+export const TEMPLATE_SOILED = 'template-soiled';
+
+export const IMPORT_FILE_FORMATS = [CSV_FORMAT, JSON_FORMAT, JSONL_FORMAT];

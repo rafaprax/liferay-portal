@@ -56,13 +56,13 @@ public class SXPElementsTableFDSView extends BaseTableFDSView {
 			fdsTableSchemaBuilder.addFDSTableSchemaField(
 				"createDate", "created");
 
-		createDateFDSTableSchemaField.setContentRenderer("date");
+		createDateFDSTableSchemaField.setContentRenderer("dateTime");
 
 		FDSTableSchemaField modifiedDateFDSTableSchemaField =
 			fdsTableSchemaBuilder.addFDSTableSchemaField(
 				"modifiedDate", "modified");
 
-		modifiedDateFDSTableSchemaField.setContentRenderer("date");
+		modifiedDateFDSTableSchemaField.setContentRenderer("dateTime");
 
 		return fdsTableSchemaBuilder.build();
 	}

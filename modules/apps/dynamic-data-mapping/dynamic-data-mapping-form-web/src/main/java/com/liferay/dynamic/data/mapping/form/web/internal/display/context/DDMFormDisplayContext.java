@@ -38,6 +38,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormLayoutRow;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordVersionLocalService;
@@ -79,6 +80,7 @@ import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.CookieKeys;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -459,6 +461,32 @@ public class DDMFormDisplayContext {
 		return LanguageUtil.get(resourceBundle, "submit-form");
 	}
 
+	public String getSuccessPageDescription(Locale locale)
+		throws PortalException {
+
+		DDMFormSuccessPageSettings ddmFormSuccessPageSettings =
+			getDDMFormSuccessPageSettings();
+
+		LocalizedValue body = ddmFormSuccessPageSettings.getBody();
+
+		return HtmlUtil.escape(
+			GetterUtil.getString(
+				body.getString(locale),
+				body.getString(body.getDefaultLocale())));
+	}
+
+	public String getSuccessPageTitle(Locale locale) throws PortalException {
+		DDMFormSuccessPageSettings ddmFormSuccessPageSettings =
+			getDDMFormSuccessPageSettings();
+
+		LocalizedValue title = ddmFormSuccessPageSettings.getTitle();
+
+		return HtmlUtil.escape(
+			GetterUtil.getString(
+				title.getString(locale),
+				title.getString(title.getDefaultLocale())));
+	}
+
 	public boolean hasAddFormInstanceRecordPermission() throws PortalException {
 		if (_hasAddFormInstanceRecordPermission != null) {
 			return _hasAddFormInstanceRecordPermission;
@@ -566,6 +594,16 @@ public class DDMFormDisplayContext {
 		}
 
 		return _autosaveEnabled;
+	}
+
+	public boolean isExpirationDateEnabled() {
+		return _ffSubmissionsSettingsConfigurationActivator.
+			expirationDateEnabled();
+	}
+
+	public boolean isFFShowPartialResultsEnabled() {
+		return _ffSubmissionsSettingsConfigurationActivator.
+			showPartialResultsEnabled();
 	}
 
 	public boolean isFormAvailable() throws PortalException {

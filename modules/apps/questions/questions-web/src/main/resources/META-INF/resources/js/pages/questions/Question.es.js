@@ -39,7 +39,6 @@ import DeleteQuestion from '../../components/DeleteQuestion.es';
 import Link from '../../components/Link.es';
 import PaginatedList from '../../components/PaginatedList.es';
 import Rating from '../../components/Rating.es';
-import RelatedQuestions from '../../components/RelatedQuestions.es';
 import SectionLabel from '../../components/SectionLabel.es';
 import SubscriptionButton from '../../components/SubscriptionButton.es';
 import TagList from '../../components/TagList.es';
@@ -481,10 +480,6 @@ export default withRouter(
 									)}
 							</div>
 						</div>
-					)}
-
-					{question && question.id && (
-						<RelatedQuestions question={question} />
 					)}
 
 					<Alert info={error} />

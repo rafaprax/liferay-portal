@@ -924,3 +924,49 @@ This requires no code changes. When you run the `buildService` task, you must ta
 This was done to clarify the folder that `buildService` should target.
 
 ---------------------------------------
+
+## Title
+- **Date: 2021-Dic-16**
+- **JIRA Ticket: [LPS-125034](https://issues.liferay.com/browse/LPS-125034)**
+
+### What changed?
+
+The `addFragmentEntry` methods from `FragmentEntryLocalService` and `FragmentEntryService` have been removed.
+
+### Who is affected?
+
+This affects you if you use `FragmentEntryLocalService` and `FragmentEntryService` to add fragment entries.
+
+### How should I update my code?
+
+Use the new method `addFragmentEntry` in `FragmentEntryLocalService` and `FragmentEntryService`. Note, that they include a new `String` parameter for the `icon` of a `FragmentEntry`.
+
+### Why was this change made?
+
+This change removes unnecessary methods.
+
+---------------------------------------
+
+## Title
+- **Date: 2021-Dic-17**
+- **JIRA Ticket: [LPS-141471](https://issues.liferay.com/browse/LPS-141471)**
+
+### What changed?
+
+The `getSegmentsExperienceIds` method from `FragmentEntryProcessorContext`, `DefaultFragmentEntryProcessorContext`, `FragmentRendererContext` and `DefaultFragmentRendererContext` has been removed.
+The method with signature `getContextObjects(JSONObject, String)` from `FragmentEntryConfigurationParser` has been removed.
+
+### Who is affected?
+
+This affects you if you use `FragmentEntryProcessorContext`, `DefaultFragmentEntryProcessorContext`, `FragmentRendererContext` or `DefaultFragmentRendererContext` to get the `long array` of `segmentsExperienceIds` or if you use the method with signature `getContextObjects(JSONObject, String)` from `FragmentEntryConfigurationParser`.
+
+### How should I update my code?
+
+Use `getSegmentsEntryIds` in `FragmentEntryProcessorContext`, `DefaultFragmentEntryProcessorContext`, `FragmentRendererContext` and `DefaultFragmentRendererContext`.
+Use the method with signature `getContextObjects(JSONObject, String, long[])` from `FragmentEntryConfigurationParser`, where the third parameter represents the `long array` of `segmentsEntryIds`.
+
+### Why was this change made?
+
+This change removes unnecessary methods.
+
+---------------------------------------

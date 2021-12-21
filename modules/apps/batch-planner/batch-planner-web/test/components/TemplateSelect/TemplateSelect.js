@@ -33,7 +33,6 @@ const BASE_PROPS = {
 const headlessEndpoint = '/o/headless-commerce-admin-channel/v1.0/openapi.json';
 const internalClassName =
 	'com.liferay.headless.commerce.admin.channel.dto.v1_0.Channel';
-
 const mockedMapping = {
 	currencyCode: 'currencyCode',
 	id: 'externalReferenceCode',
@@ -48,6 +47,7 @@ const initialTemplate = {
 	mapping: mockedMapping,
 };
 const mockPlanId = 106902;
+
 const getPlanInfoURL = `${HEADERS_BATCH_PLANNER_URL}/plans/${mockPlanId}`;
 
 describe('TemplateSelect', () => {
@@ -57,7 +57,9 @@ describe('TemplateSelect', () => {
 
 	afterEach(() => {
 		fetchMock.restore();
+
 		jest.resetAllMocks();
+
 		cleanup();
 	});
 
@@ -69,12 +71,15 @@ describe('TemplateSelect', () => {
 
 	it('must fire new template event when preselected', async () => {
 		const mockTemplateSelected = jest.fn();
+
 		Liferay.on(TEMPLATE_SELECTED_EVENT, mockTemplateSelected);
+
 		render(
 			<TemplateSelect {...BASE_PROPS} initialTemplate={initialTemplate} />
 		);
 
 		const documentReadyEvent = document.createEvent('CustomEvent');
+
 		documentReadyEvent.initEvent('readystatechange', false, true);
 		document.dispatchEvent(documentReadyEvent);
 
@@ -82,12 +87,14 @@ describe('TemplateSelect', () => {
 			const expectedEvent = new CustomEvent(TEMPLATE_SELECTED_EVENT);
 
 			expectedEvent.template = {...initialTemplate};
+
 			expect(mockTemplateSelected).toBeCalledWith(expectedEvent);
 		});
 	});
 
 	it('must fire empty event when no template get selected', async () => {
 		const mockTemplateSelected = jest.fn();
+
 		Liferay.on(TEMPLATE_SELECTED_EVENT, mockTemplateSelected);
 
 		const {getByLabelText} = render(
@@ -107,7 +114,9 @@ describe('TemplateSelect', () => {
 
 		await wait(() => {
 			const expectedEvent = new CustomEvent(TEMPLATE_SELECTED_EVENT);
+
 			expectedEvent.template = null;
+
 			expect(mockTemplateSelected).toHaveBeenLastCalledWith(
 				expectedEvent
 			);
@@ -116,7 +125,9 @@ describe('TemplateSelect', () => {
 
 	it('must fire event with right template configuration', async () => {
 		const mockTempalteSelected = jest.fn();
+
 		Liferay.on(TEMPLATE_SELECTED_EVENT, mockTempalteSelected);
+
 		const {getByLabelText} = render(<TemplateSelect {...BASE_PROPS} />);
 
 		act(() => {

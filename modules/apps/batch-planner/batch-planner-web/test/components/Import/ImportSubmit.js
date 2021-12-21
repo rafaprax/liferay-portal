@@ -72,6 +72,7 @@ describe('ImportSubmit', () => {
 	it('must start polling import status', async () => {
 		jest.useFakeTimers();
 		const importTaskStatusURL = getImportTaskStatusURL(mockTaskID);
+
 		mockApi.mock(
 			importTaskStatusURL,
 			{
@@ -105,7 +106,9 @@ describe('ImportSubmit', () => {
 
 	it('must enable button when import process is completed', async () => {
 		jest.useFakeTimers();
+
 		const importTaskStatusURL = getImportTaskStatusURL(mockTaskID);
+
 		mockApi.mock(
 			importTaskStatusURL,
 			{

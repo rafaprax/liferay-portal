@@ -1473,9 +1473,6 @@ public interface PropsKeys {
 	public static final String INVOKER_FILTER_URI_MAX_LENGTH =
 		"invoker.filter.uri.max.length";
 
-	public static final String JAVADOC_MANAGER_ENABLED =
-		"javadoc.manager.enabled";
-
 	public static final String JAVASCRIPT_BAREBONE_ENABLED =
 		"javascript.barebone.enabled";
 
@@ -3617,18 +3614,6 @@ public interface PropsKeys {
 
 	public static final String XML_VALIDATION_ENABLED =
 		"xml.validation.enabled";
-
-	public static final String XUGGLER_ENABLED = "xuggler.enabled";
-
-	public static final String XUGGLER_FFPRESET = "xuggler.ffpreset.";
-
-	public static final String XUGGLER_JAR_FILE = "xuggler.jar.file";
-
-	public static final String XUGGLER_JAR_NAME = "xuggler.jar.name";
-
-	public static final String XUGGLER_JAR_OPTIONS = "xuggler.jar.options";
-
-	public static final String XUGGLER_JAR_URL = "xuggler.jar.url";
 
 	public static final String YUI_COMPRESSOR_CSS_LINE_BREAK =
 		"yui.compressor.css.line.break";

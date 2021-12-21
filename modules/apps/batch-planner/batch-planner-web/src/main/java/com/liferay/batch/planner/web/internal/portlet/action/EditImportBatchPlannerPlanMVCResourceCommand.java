@@ -80,14 +80,38 @@ public class EditImportBatchPlannerPlanMVCResourceCommand
 			_submitBatchPlannerPlan(resourceRequest, resourceResponse);
 		}
 		else if (cmd.equals(Constants.SAVE)) {
-			_addBatchPlannerPlan(resourceRequest);
+			_addBatchPlannerPlan(resourceRequest, resourceResponse);
 		}
 	}
 
-	private void _addBatchPlannerPlan(ResourceRequest resourceRequest)
+	private void _addBatchPlannerPlan(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		_addBatchPlannerPlan(resourceRequest, null);
+		try {
+			BatchPlannerPlan batchPlannerPlan = _addBatchPlannerPlan(
+				resourceRequest, StringPool.BLANK);
+
+			JSONPortletResponseUtil.writeJSON(
+				resourceRequest, resourceResponse,
+				JSONUtil.put(
+					"batchPlannerPlanId",
+					batchPlannerPlan.getBatchPlannerPlanId()
+				).put(
+					"name", batchPlannerPlan.getName()
+				).put(
+					"success", StringPool.TRUE
+				));
+		}
+		catch (Exception exception) {
+			JSONPortletResponseUtil.writeJSON(
+				resourceRequest, resourceResponse,
+				JSONUtil.put(
+					"error", exception.getMessage()
+				).put(
+					"success", StringPool.FALSE
+				));
+		}
 	}
 
 	private BatchPlannerPlan _addBatchPlannerPlan(
@@ -112,6 +136,9 @@ public class EditImportBatchPlannerPlanMVCResourceCommand
 		_batchPlannerPolicyService.addBatchPlannerPolicy(
 			batchPlannerPlan.getBatchPlannerPlanId(), "containsHeaders",
 			_getCheckboxValue(resourceRequest, "containsHeaders"));
+		_batchPlannerPolicyService.addBatchPlannerPolicy(
+			batchPlannerPlan.getBatchPlannerPlanId(), "headlessEndpoint",
+			ParamUtil.getString(resourceRequest, "headlessEndpoint"));
 
 		List<BatchPlannerMapping> batchPlannerMappings =
 			_getBatchPlannerMappings(resourceRequest);

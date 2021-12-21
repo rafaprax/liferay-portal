@@ -34,28 +34,71 @@ definition {
 
 			WikiNode.tearDownCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
 	@description = "This is a test for LPS-136983. It checks that an external link can be accessed from a wiki page."
-	@ignore = "Test Stub"
 	@priority = "3"
 	test CanAccessExternalLink {
-		property portal.acceptance = "false";
+		WikiNavigator.openToAddPage(
+			groupName = "Guest",
+			siteURLKey = "guest",
+			wikiNodeName = "Main");
 
-		// TODO LPS-136983 CanAccessExternalLink pending implementation
+		WikiEntry.addPageTitle(wikiPageTitle = "Wiki Page Title");
 
+		WikiEntry.addLinkToContent(externalLink = "https://raw.githubusercontent.com/liferay/liferay-portal/master/portal-web/test/functional/com/liferay/portalweb/dependencies/Document_1.jpg");
+
+		PortletEntry.publish();
+
+		WikiNavigator.openToWikiPage(
+			layoutURLKey = "wiki-test-page",
+			siteURLKey = "guest",
+			wikiNodeName = "Main",
+			wikiPageTitle = "Wiki Page Title");
+
+		Click(locator1 = "WikiEntry#BODY_LINK");
+
+		AssertVisible(
+			key_contentImageName = "Document_1.jpg",
+			locator1 = "Wiki#CONTENT_IMAGE_NAME");
 	}
 
 	@description = "This is a test for LPS-136987. It checks that related assets can be added to a page."
-	@ignore = "Test Stub"
 	@priority = "3"
 	test CanAddRelatedAssets {
-		property portal.acceptance = "false";
+		JSONWebcontent.addWebContent(
+			content = "Web Content Content",
+			groupName = "Guest",
+			title = "Web Content Title");
 
-		// TODO LPS-136987 CanAddRelatedAssets pending implementation
+		JSONWiki.addWikiPage(
+			groupName = "Guest",
+			wikiNodeName = "Main",
+			wikiPageContent = "Wiki Page Content",
+			wikiPageName = "Wiki Page Title");
 
+		WikiNavigator.openToEditPage(
+			groupName = "Guest",
+			layoutURLKey = "wiki-test-page",
+			siteURLKey = "guest",
+			wikiNodeName = "Main",
+			wikiPageTitle = "Wiki Page Title");
+
+		RelatedAssets.selectAsset(
+			assetTitle = "Web Content Title",
+			assetType = "Basic Web Content");
+
+		Button.clickPublish();
+
+		WikiNavigator.openToWikiPage(
+			layoutURLKey = "wiki-test-page",
+			siteURLKey = "guest",
+			wikiNodeName = "Main",
+			wikiPageTitle = "Wiki Page Title");
+
+		WikiPage.viewRelatedAsset(relatedAssetTitle = "Web Content Title");
 	}
 
 	@description = "This is a test for LPS-136985. It checks that a summary can be added to a page."
@@ -89,13 +132,34 @@ definition {
 	}
 
 	@description = "This is a test for LPS-136996. It checks that a minor change can be created for a page."
-	@ignore = "Test Stub"
 	@priority = "3"
 	test CanCreateMinorChange {
-		property portal.acceptance = "false";
+		JSONWiki.addWikiPage(
+			groupName = "Guest",
+			wikiNodeName = "Main",
+			wikiPageContent = "Wiki Page Content",
+			wikiPageName = "Wiki Page Title");
 
-		// TODO LPS-136996 CanCreateMinorChange pending implementation
+		WikiPage.editPagePG(
+			groupName = "Guest",
+			layoutURLKey = "wiki-test-page",
+			minorEdit = "true",
+			siteURLKey = "guest",
+			wikiNodeName = "Main",
+			wikiPageContent = "Wiki Page Content",
+			wikiPageContentEdit = "Wiki Page Content Edit",
+			wikiPageTitle = "Wiki Page Title");
 
+		WikiNavigator.gotoWidgetSpecificTabByURL(
+			layoutURLKey = "wiki-test-page",
+			siteURLKey = "guest",
+			tabURLKey = "all_pages",
+			wikiNodeName = "Main");
+
+		WikiTable.viewEntry(
+			entryStatus = "APPROVED",
+			revision = "1.1 (Minor Edit)",
+			wikiPageTitle = "Wiki Page Title");
 	}
 
 	@description = "This is a test for LPS-136989. It checks that pages can be imported into a specific node."

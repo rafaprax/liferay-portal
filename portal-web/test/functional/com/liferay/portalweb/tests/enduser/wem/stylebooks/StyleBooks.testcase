@@ -503,9 +503,9 @@ definition {
 				groupName = "Test Site Name",
 				layoutName = "Test Public Page");
 
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			Site.changeCurrentTheme(
+			PagesAdmin.changeSiteCurrentTheme(
 				privacy = "Public Pages",
 				themeName = "Minium");
 		}
@@ -515,9 +515,9 @@ definition {
 				groupName = "Test Site Name",
 				layoutName = "Test Private Page");
 
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			Site.changeCurrentTheme(
+			PagesAdmin.changeSiteCurrentTheme(
 				privacy = "Private Pages",
 				themeName = "Speedwell");
 		}

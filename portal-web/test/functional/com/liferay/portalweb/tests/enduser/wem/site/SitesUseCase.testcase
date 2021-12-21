@@ -26,7 +26,7 @@ definition {
 
 			Team.tearDownCP();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 
 			UserGroup.tearDownCP();
 		}
@@ -721,7 +721,7 @@ definition {
 				category = "Site Builder",
 				portlet = "Pages");
 
-			SitePages.addPublicPage(pageName = "site Page Name");
+			PagesAdmin.addPublicPage(pageName = "site Page Name");
 		}
 
 		task ("Add a user ") {
@@ -961,7 +961,7 @@ definition {
 		}
 
 		task ("Change site logo for the new site") {
-			SitePages.openPagesAdmin(siteURLKey = "russia2018");
+			PagesAdmin.openPagesAdmin(siteURLKey = "russia2018");
 
 			Site.changeSiteLogo(
 				logoFile = "Document_3.png",
@@ -969,9 +969,9 @@ definition {
 		}
 
 		task ("Add alert js to Arenas page") {
-			SitePages.openPagesAdmin(siteURLKey = "russia2018");
+			PagesAdmin.openPagesAdmin(siteURLKey = "russia2018");
 
-			Page.addJavaScript(
+			PagesAdmin.addJavaScript(
 				javaScript = "alert('Welcome to Russia.');",
 				pageName = "Arenas");
 		}
@@ -1021,7 +1021,7 @@ definition {
 				category = "Site Builder",
 				portlet = "Pages");
 
-			Page.addJavaScript(
+			PagesAdmin.addJavaScript(
 				javaScript = " ",
 				pageName = "Arenas");
 		}

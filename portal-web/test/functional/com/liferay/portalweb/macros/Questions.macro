@@ -853,12 +853,6 @@ definition {
 		AssertElementNotPresent(locator1 = "Questions#NEW_TOPIC");
 	}
 
-	macro viewNoRelatedQuestions {
-		AssertTextEquals(
-			locator1 = "Questions#RELATED_QUESTIONS_EMPTY_TEXT",
-			value1 = "No related questions were found.");
-	}
-
 	macro viewNoSearchResults {
 		for (var questionTitle : list "${questionsList}") {
 			AssertElementNotPresent(
@@ -895,14 +889,6 @@ definition {
 		AssertElementPresent(
 			key_titleField = "${questionTitle}",
 			locator1 = "Questions#ASK_QUESTION_SEARCH_QUESTION");
-	}
-
-	macro viewRelatedQuestion {
-		AssertElementPresent(
-			key_questionTitle = "${questionTitle}",
-			locator1 = "Questions#RELATED_QUESTIONS_QUESTIONS_TITLE");
-
-		AssertElementNotPresent(locator1 = "Questions#RELATED_QUESTIONS_EMPTY_TEXT");
 	}
 
 	macro viewSearchField {

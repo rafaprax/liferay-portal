@@ -18,11 +18,11 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(
+		PagesAdmin.addPublicPage(
 			pageName = "Calendar Page",
 			sitePageType = "Widget Page");
 
-		SitePages.configurePage(
+		PagesAdmin.configurePage(
 			columnName = "1 Column",
 			pageName = "Calendar Page",
 			privacy = "Public Pages",
@@ -52,7 +52,7 @@ definition {
 
 			CalendarConfiguration.tearDown();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -80,12 +80,27 @@ definition {
 	}
 
 	@description = "LRQA-71886 - Verify that is possible to create an Inactive Resource"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test CanAddInactiveResource {
+		CalendarNavigator.gotoAddResource();
 
-		// TODO LRQA-71918 CanAddInactiveResource pending implementation
+		CalendarResource.editResourceName(calendarResourceName = "Resource Active");
 
+		CalendarResource.save();
+
+		CalendarNavigator.gotoAddResource();
+
+		CalendarResource.editResourceName(calendarResourceName = "Resource Inactive");
+
+		CalendarResource.deactivate();
+
+		CalendarResource.save();
+
+		CalendarResource.viewResourceNameNotPresent(calendarResourceName = "Resource Inactive");
+
+		CalendarResource.resourceSetFilterAndOrder(filterBy = "No");
+
+		CalendarResource.viewResourceName(calendarResourceName = "Resource Inactive");
 	}
 
 }

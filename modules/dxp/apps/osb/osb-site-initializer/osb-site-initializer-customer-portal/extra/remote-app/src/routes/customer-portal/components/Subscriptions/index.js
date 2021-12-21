@@ -2,16 +2,45 @@ import {useQuery} from '@apollo/client';
 import React, {useState} from 'react';
 import {getAccountSubscriptions} from '../../../../common/services/liferay/graphql/queries';
 import CardSubscription from '../CardSubscription';
+import SubscriptionsFilterByStatus from '../SubscriptionsFilterByStatus';
 import SubscriptionsNavbar from '../SubscriptionsNavbar';
+
+export const POSSIBLE_STATUS = {
+	active: 'Active',
+	expired: 'Expired',
+	future: 'Future',
+};
 
 const Subscriptions = ({accountKey}) => {
 	const [selectedSubscriptionGroup, setSelectedSubscriptionGroup] = useState(
 		''
 	);
-	const [selectedStatus, setSelectedStatus] = useState('');
+	const [selectedStatus, setSelectedStatus] = useState([
+		POSSIBLE_STATUS.active,
+		POSSIBLE_STATUS.expired,
+		POSSIBLE_STATUS.future,
+	]);
 
 	const parseAccountSubscriptionGroupERC = (subscriptionName) => {
 		return subscriptionName.toLowerCase().replace(' ', '-');
+	};
+
+	const getAccountSubscriptionFilterQueryString = (
+		previousValue,
+		currentValue,
+		currentIndex,
+		array
+	) => {
+		if (currentIndex === array.length - 1) {
+			return previousValue + ` subscriptionStatus eq '${currentValue}'`;
+		}
+
+		return (
+			previousValue +
+			` subscriptionStatus eq '${currentValue}' or accountSubscriptionGroupERC eq '${accountKey}_${parseAccountSubscriptionGroupERC(
+				selectedSubscriptionGroup
+			)}' and`
+		);
 	};
 
 	const {
@@ -22,9 +51,12 @@ const Subscriptions = ({accountKey}) => {
 			filter: `accountSubscriptionGroupERC eq '${accountKey}_${parseAccountSubscriptionGroupERC(
 				selectedSubscriptionGroup
 			)}'${
-				selectedStatus === 'All'
+				selectedStatus.length === Object.keys(POSSIBLE_STATUS).length
 					? ''
-					: ` and subscriptionStatus eq '${selectedStatus}'`
+					: `${selectedStatus.reduce(
+							getAccountSubscriptionFilterQueryString,
+							' and'
+					  )}`
 			}`,
 		},
 	});
@@ -38,21 +70,34 @@ const Subscriptions = ({accountKey}) => {
 
 			<SubscriptionsNavbar
 				accountKey={accountKey}
+				possibleStatusAmount={Object.keys(POSSIBLE_STATUS).length}
+				selectedStatus={selectedStatus}
 				setSelectedStatus={setSelectedStatus}
 				setSelectedSubscriptionGroup={setSelectedSubscriptionGroup}
 			/>
 
+			<SubscriptionsFilterByStatus
+				selectedStatus={selectedStatus}
+				setSelectedStatus={setSelectedStatus}
+			/>
+
 			<div className="d-flex flex-wrap">
 				{!loadingAccountSubscriptions &&
-					accountSubscriptions.map((item, index) => (
+				accountSubscriptions.length > 0 ? (
+					accountSubscriptions.map((accountSubscription, index) => (
 						<CardSubscription
-							cardSubscriptionData={item}
+							cardSubscriptionData={accountSubscription}
 							key={index}
 							selectedSubscriptionGroup={
 								selectedSubscriptionGroup
 							}
 						/>
-					))}
+					))
+				) : (
+					<p className="mx-auto pt-5">
+						No subscriptions match these criteria.
+					</p>
+				)}
 			</div>
 		</div>
 	);

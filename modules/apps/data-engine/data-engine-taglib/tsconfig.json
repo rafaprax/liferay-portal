@@ -1,5 +1,5 @@
 {
-	"@generated": "c950209e6d87c9a20f17d56d67f7efa046552fe6",
+	"@generated": "d3db1ece14143c8dbac01a6d5fd2ea50777f1ab6",
 	"@overrides": {
 	},
 	"@readonly": "** AUTO-GENERATED: DO NOT EDIT OUTSIDE @overrides **",
@@ -15,6 +15,9 @@
 		"paths": {
 			"@liferay/frontend-js-react-web": [
 				"../../frontend-js/frontend-js-react-web/src/main/resources/META-INF/resources/js/index.ts"
+			],
+			"data-engine-js-components-web": [
+				"../data-engine-js-components-web/src/main/resources/META-INF/resources/js/index.es.ts"
 			]
 		},
 		"sourceMap": false,
@@ -33,6 +36,9 @@
 	"references": [
 		{
 			"path": "../../frontend-js/frontend-js-react-web"
+		},
+		{
+			"path": "../data-engine-js-components-web"
 		}
 	]
 }

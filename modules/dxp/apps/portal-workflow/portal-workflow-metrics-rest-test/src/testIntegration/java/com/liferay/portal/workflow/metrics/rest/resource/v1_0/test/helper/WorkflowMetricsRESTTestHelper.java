@@ -46,9 +46,11 @@ import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
+import com.liferay.portal.workflow.metrics.model.AddNodeRequest;
 import com.liferay.portal.workflow.metrics.model.AddTaskRequest;
 import com.liferay.portal.workflow.metrics.model.Assignment;
 import com.liferay.portal.workflow.metrics.model.CompleteTaskRequest;
+import com.liferay.portal.workflow.metrics.model.DeleteNodeRequest;
 import com.liferay.portal.workflow.metrics.model.RoleAssignment;
 import com.liferay.portal.workflow.metrics.model.UpdateTaskRequest;
 import com.liferay.portal.workflow.metrics.model.UserAssignment;
@@ -197,25 +199,42 @@ public class WorkflowMetricsRESTTestHelper {
 			long companyId, Node node, long processId, String version)
 		throws Exception {
 
+		AddNodeRequest.Builder builder = new AddNodeRequest.Builder();
+
 		_nodeWorkflowMetricsIndexer.addNode(
-			companyId,
-			Optional.ofNullable(
-				node.getDateCreated()
-			).orElseGet(
-				Date::new
-			),
-			false,
-			Optional.ofNullable(
-				node.getDateModified()
-			).orElseGet(
-				Date::new
-			),
-			node.getName(), node.getId(), processId, version, false,
-			Optional.ofNullable(
-				node.getType()
-			).orElseGet(
-				() -> "TASK"
-			));
+			builder.companyId(
+				companyId
+			).createDate(
+				Optional.ofNullable(
+					node.getDateCreated()
+				).orElseGet(
+					Date::new
+				)
+			).initial(
+				false
+			).modifiedDate(
+				Optional.ofNullable(
+					node.getDateModified()
+				).orElseGet(
+					Date::new
+				)
+			).name(
+				node.getName()
+			).nodeId(
+				node.getId()
+			).processId(
+				processId
+			).processVersion(
+				version
+			).terminal(
+				false
+			).type(
+				Optional.ofNullable(
+					node.getType()
+				).orElse(
+					"TASK"
+				)
+			).build());
 
 		_assertCount(
 			_nodeWorkflowMetricsIndexNameBuilder.getIndexName(companyId),
@@ -876,7 +895,14 @@ public class WorkflowMetricsRESTTestHelper {
 	public void deleteNode(long companyId, Node node, long processId)
 		throws Exception {
 
-		_nodeWorkflowMetricsIndexer.deleteNode(companyId, node.getId());
+		DeleteNodeRequest.Builder builder = new DeleteNodeRequest.Builder();
+
+		_nodeWorkflowMetricsIndexer.deleteNode(
+			builder.companyId(
+				companyId
+			).nodeId(
+				node.getId()
+			).build());
 
 		_assertCount(
 			_nodeWorkflowMetricsIndexNameBuilder.getIndexName(companyId),

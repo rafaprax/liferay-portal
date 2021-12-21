@@ -18,11 +18,11 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(
+		PagesAdmin.addPublicPage(
 			pageName = "Calendar Page",
 			sitePageType = "Widget Page");
 
-		SitePages.configurePage(
+		PagesAdmin.configurePage(
 			columnName = "1 Column",
 			pageName = "Calendar Page",
 			privacy = "Public Pages",
@@ -52,7 +52,7 @@ definition {
 
 			CalendarConfiguration.tearDown();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -120,12 +120,29 @@ definition {
 	}
 
 	@description = "LRQA-71885 - Verify that the user can search by Resource Description"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test CanSearchByResourceDescription {
+		CalendarNavigator.gotoAddResource();
 
-		// TODO LRQA-71919 CanSearchByResourceDescription pending implementation
+		CalendarResource.editResourceName(calendarResourceName = "Resource Name");
 
+		CalendarResource.editResourceDescription(calendarResourceDescription = "Resource Description");
+
+		CalendarResource.save();
+
+		CalendarResource.search(searchTerm = "Description");
+
+		CalendarResource.viewSearchSummaryResults(searchResults = "1 Results for Description");
+
+		CalendarResource.viewResourceName(calendarResourceName = "Resource Name");
+
+		CalendarResource.clearSearchResults();
+
+		CalendarResource.search(searchTerm = "Test Test");
+
+		CalendarResource.viewSearchSummaryResults(searchResults = "0 Results for Test Test");
+
+		CalendarResource.viewTableEmpty();
 	}
 
 	@priority = "4"
@@ -217,11 +234,11 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.addPublicPage(
+		PagesAdmin.addPublicPage(
 			pageName = "Calendar Page",
 			sitePageType = "Widget Page");
 
-		SitePages.configurePage(
+		PagesAdmin.configurePage(
 			columnName = "1 Column",
 			pageName = "Calendar Page",
 			privacy = "Public Pages",

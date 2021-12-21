@@ -1231,9 +1231,6 @@ public class PropsValues {
 		GetterUtil.getBoolean(
 			PropsUtil.get(PropsKeys.INTRABAND_PROXY_DUMP_CLASSES_ENABLED));
 
-	public static final boolean JAVADOC_MANAGER_ENABLED = GetterUtil.getBoolean(
-		PropsUtil.get(PropsKeys.JAVADOC_MANAGER_ENABLED));
-
 	public static final boolean JAVASCRIPT_BAREBONE_ENABLED =
 		GetterUtil.getBoolean(
 			PropsUtil.get(PropsKeys.JAVASCRIPT_BAREBONE_ENABLED));
@@ -3195,12 +3192,6 @@ public class PropsValues {
 
 	public static final boolean XML_VALIDATION_ENABLED = GetterUtil.getBoolean(
 		PropsUtil.get(PropsKeys.XML_VALIDATION_ENABLED));
-
-	public static final boolean XUGGLER_ENABLED = GetterUtil.getBoolean(
-		PropsUtil.get(PropsKeys.XUGGLER_ENABLED));
-
-	public static final String XUGGLER_JAR_URL = PropsUtil.get(
-		PropsKeys.XUGGLER_JAR_URL);
 
 	public static final int YUI_COMPRESSOR_CSS_LINE_BREAK =
 		GetterUtil.getInteger(

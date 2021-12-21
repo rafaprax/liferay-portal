@@ -1,4 +1,3 @@
-/* eslint-disable @liferay/empty-line-between-elements */
 import ClayIcon from '@clayui/icon';
 import classNames from 'classnames';
 import React, {useEffect, useRef, useState} from 'react';
@@ -53,7 +52,21 @@ const DropArea = ({
 		setWidth(data);
 	};
 
-	const showFile = (currentFiles) => {
+	function getFileReader(file) {
+		return new Promise((resolve, reject) => {
+			const fileReader = new FileReader();
+
+			fileReader.readAsDataURL(file);
+
+			fileReader.onload = () => {
+				resolve(fileReader);
+			};
+
+			fileReader.onerror = reject;
+		});
+	}
+
+	const showFile = async (currentFiles) => {
 		const countFiles = filesRef.current.length + currentFiles.length;
 
 		if (countFiles > limitFiles) {
@@ -80,21 +93,19 @@ const DropArea = ({
 				continue;
 			}
 
-			const fileReader = new FileReader();
+			const fileReader = await getFileReader(currentFile);
 
-			fileReader.onload = () => {
-				const fileURL = fileReader.result;
+			currentFile.icon = chooseIcon(fileType);
+			currentFile.id = `${fileName}-${Math.random()}`;
+			currentFile.fileURL = fileReader.result;
 
-				currentFile.icon = chooseIcon(fileType);
-				currentFile.id = `${fileName}-${Math.random()}`;
-				currentFile.fileURL = fileURL;
-
-				_setFiles([...filesRef.current, currentFile]);
-			};
-
-			fileReader.readAsDataURL(currentFile);
+			_setFiles([...filesRef.current, currentFile]);
 		}
 	};
+
+	useEffect(() => {
+		filesRef.current = files;
+	}, [files]);
 
 	useEffect(() => {
 		const button = buttonRef.current;
@@ -107,6 +118,7 @@ const DropArea = ({
 		}
 
 		button.onclick = () => {
+			input.value = null;
 			input.click();
 		};
 
@@ -161,10 +173,6 @@ const DropArea = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [files]);
 
-	useEffect(() => {
-		filesRef.current = files;
-	}, [files]);
-
 	return (
 		<div
 			className={classNames(
@@ -186,6 +194,7 @@ const DropArea = ({
 					Drag &amp; drop files or
 					{type !== 'image' && <span>&nbsp;</span>}
 				</p>
+
 				<a
 					className="align-items-center c-px-3 c-py-2 d-flex font-weight-bolder justify-content-center link-button rounded-xs text-brand-primary text-paragraph-sm"
 					ref={buttonRef}
@@ -193,7 +202,9 @@ const DropArea = ({
 					<ClayIcon className="c-mr-2" symbol="upload" />
 					BROWSE FILES
 				</a>
+
 				{` `}
+
 				<input
 					className="d-none input-file position-relative rounded-xl"
 					multiple

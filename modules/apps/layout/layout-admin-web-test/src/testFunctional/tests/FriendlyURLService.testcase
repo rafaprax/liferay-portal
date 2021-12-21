@@ -51,9 +51,9 @@ definition {
 	test RedirectToUpdatedFriendlyURL {
 		var portalURL = PropsUtil.get("portal.url");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
@@ -73,25 +73,16 @@ definition {
 	test RedirectToUpdatedLocalizedFriendlyURL {
 		var portalURL = PropsUtil.get("portal.url");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/pagina-de-prueba");
-
-		PortletEntry.inputName(name = "Pagina de prueba");
-
-		Button.clickSave();
-
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/nueva-pagina-de-prueba");
-
-		Button.clickSave();
+		PagesAdmin.addLocalizedFriendlyURL(
+			friendlyUrlLocalizedList = "es-ES,es-ES",
+			localizedFriendlyURLList = "/pagina-de-prueba,/nueva-pagina-de-prueba",
+			localizedNameList = "Pagina de prueba,-");
 
 		Navigator.openSpecificURL(url = "${portalURL}/es/web/test-site-name/pagina-de-prueba");
 
@@ -111,9 +102,9 @@ definition {
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Page");
 
@@ -137,9 +128,9 @@ definition {
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Page");
 
@@ -167,9 +158,9 @@ definition {
 
 		Staging.activateStagingCP(siteName = "Test Site Name");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name-staging");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name-staging");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
@@ -201,19 +192,16 @@ definition {
 
 		Staging.activateStagingCP(siteName = "Test Site Name");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name-staging");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name-staging");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/pagina-de-prueba");
-
-		PortletEntry.inputName(name = "Pagina de prueba");
-
-		Button.clickSave();
+		PagesAdmin.addLocalizedFriendlyURL(
+			friendlyUrlLocalizedList = "es-ES",
+			localizedFriendlyURLList = "/pagina-de-prueba",
+			localizedNameList = "Pagina de prueba");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "Test Source Page",
@@ -223,17 +211,16 @@ definition {
 
 		Staging.publishToLive();
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name-staging");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name-staging");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/nueva-pagina-de-prueba");
-
-		Button.clickSave();
+		PagesAdmin.addLocalizedFriendlyURL(
+			friendlyUrlLocalizedList = "es-ES",
+			localizedFriendlyURLList = "/nueva-pagina-de-prueba",
+			localizedNameList = "-");
 
 		Navigator.gotoStagedSitePage(
 			pageName = "Test Source Page",
@@ -259,9 +246,9 @@ definition {
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Page");
 
@@ -285,9 +272,9 @@ definition {
 	@description = "This test covers LPS-116068. It ensures that both the active URL and old friendlyURL can be viewed from the history of a default page."
 	@priority = "5"
 	test ViewFriendlyURLsViaDefaultPage {
-		SitePages.openPagesAdmin(siteURLKey = "guest");
+		PagesAdmin.openPagesAdmin(siteURLKey = "guest");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Search");
 
@@ -311,19 +298,16 @@ definition {
 	@description = "This test covers LPS-119836. It ensures the localized URL with special characters can be escaped correctly and viewed in friendly URL history."
 	@priority = "4"
 	test ViewFriendlyURLWithSpecialCharacters {
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/^_^");
-
-		PortletEntry.inputName(name = "Página de prueba");
-
-		Button.clickSave();
+		PagesAdmin.addLocalizedFriendlyURL(
+			friendlyUrlLocalizedList = "es-ES",
+			localizedFriendlyURLList = "/^_^",
+			localizedNameList = "Pagina de prueba");
 
 		var portalURL = PropsUtil.get("portal.url");
 
@@ -335,17 +319,16 @@ definition {
 
 		Navigator.openWithAppendToBaseURL(urlAppend = "en/web/test-site-name/test-source-page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Source Page");
 
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/página-de-prueba");
-
-		Button.clickSave();
+		PagesAdmin.addLocalizedFriendlyURL(
+			friendlyUrlLocalizedList = "es-ES",
+			localizedFriendlyURLList = "/página-de-prueba",
+			localizedNameList = "-");
 
 		Page.gotoFriendlyURLHistory();
 
@@ -371,27 +354,18 @@ definition {
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Page");
 
 		Page.editFriendlyURL(friendlyURLEdit = "/new-test-page");
 
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/pagina-de-prueba");
-
-		PortletEntry.inputName(name = "Pagina de prueba");
-
-		Button.clickSave();
-
-		Page.addFriendlyURLLocalizedPG(
-			friendlyUrlLocalized = "es-ES",
-			localizedFriendlyURL = "/nueva-pagina-de-prueba");
-
-		Button.clickSave();
+		PagesAdmin.addLocalizedFriendlyURL(
+			friendlyUrlLocalizedList = "es-ES,es-ES",
+			localizedFriendlyURLList = "/pagina-de-prueba,/nueva-pagina-de-prueba",
+			localizedNameList = "Pagina de prueba,-");
 
 		Page.gotoFriendlyURLHistory();
 
@@ -419,9 +393,9 @@ definition {
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Page");
 
@@ -445,9 +419,9 @@ definition {
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
 
-		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+		PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-		SitePages.gotoPageMenuItem(
+		PagesAdmin.gotoPageEllipsisMenuItem(
 			menuItem = "Configure",
 			pageName = "Test Page");
 

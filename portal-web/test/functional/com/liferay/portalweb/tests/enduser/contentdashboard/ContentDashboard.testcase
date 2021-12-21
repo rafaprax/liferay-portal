@@ -1321,6 +1321,17 @@ definition {
 		}
 	}
 
+	@description = "LPS-136512 Given The Content Performance panel of a document is opened
+	When the user clicks on the times icon ( X )
+	Then the Content Performance panel is closed"
+	@ignore = "true"
+	@priority = "3"
+	test CloseContentPerformancePanel {
+
+		// TODO LPS-144038 CloseContentPerformancePanel pending implementation
+
+	}
+
 	@description = "Given a document created in an Asset Library
 	When the user goes to the content dashboard
 	Then the user can see the document listed"
@@ -1407,6 +1418,17 @@ definition {
 
 			Click(locator1 = "ContentDashboard#ICON_VIEW_LISTED_MODIFIED_DATE");
 		}
+	}
+
+	@description = "LPS-119966 Given the Content Dashboard
+	When a document is listed in the assets list
+	Then the following metadata are shown: Title, Author (Owner), Subtype, Site or Asset Library, Status, Category 1, Category 2, Modified Date"
+	@ignore = "true"
+	@priority = "3"
+	test DocumentMetadata {
+
+		// TODO LPS-144036 DocumentMetadata pending implementation
+
 	}
 
 	@description = "Given a document created in site A in the instance, and another one created in the site B
@@ -1635,6 +1657,24 @@ definition {
 		}
 	}
 
+	@description = "LPS-124960 When there's a WebContent1 authored by Author1 and has Category1 and Category2 and a WebContent2 authored by Author2 and has Category1, and the user filters by Author1 and Category1 and Category2, only the WebContent1 is shown in the list"
+	@ignore = "true"
+	@priority = "3"
+	test FilterByCategoriesAndAuthor {
+
+		// TODO LPS-144032 FilterByCategoriesAndAuthor pending implementation
+
+	}
+
+	@description = "LPS-124960 When there's a WebContent1 of type Subtype1 and WebContent2 of type Subtype2, and the user filters by Subtype1 and Subtype2, both web content are shown in the list"
+	@ignore = "true"
+	@priority = "3"
+	test FilterByCategoriesFromDifferentAssets {
+
+		// TODO LPS-144032 FilterByCategoriesFromDifferentAssets pending implementation
+
+	}
+
 	@description = "Validate if the user can filter by category"
 	@priority = "5"
 	test FilterByCategory {
@@ -1676,6 +1716,33 @@ definition {
 
 			Vocabulary.deleteByMenuCP(vocabularyName = "Vocabulary Name");
 		}
+	}
+
+	@description = "LPS-124960 When there's a WebContent1 authored by Author1 and has Category1 and Category2 and a WebContent2 authored by Author2 and has Category1, and the user filters by Author1 and Category1, only the WebContent1 is shown in the list"
+	@ignore = "true"
+	@priority = "3"
+	test FilterByCategoryAndAuthor {
+
+		// TODO LPS-144032 FilterByCategoryAndAuthor pending implementation
+
+	}
+
+	@description = "LPS-124960 When there's a WebContent1 authored by Author1 and has Category1 and Category2 and a WebContent2 authored by Author2 and has Category1, and the user filters by Author1, Author2 and Category1, both web content are shown in the list"
+	@ignore = "true"
+	@priority = "3"
+	test FilterByCategoryAndAuthors {
+
+		// TODO LPS-144032 FilterByCategoryAndAuthors pending implementation
+
+	}
+
+	@description = "LPS-124960 When there's a WebContent1 that has Tag1, Category1 and Category2 and a WebContent2 that has Tag2 and Category1, and the user filters by Tag1 and Category1, both web content are shown in the list"
+	@ignore = "true"
+	@priority = "3"
+	test FilterByCategoryAndTag {
+
+		// TODO LPS-144032 FilterByCategoryAndTag pending implementation
+
 	}
 
 	@description = "Validate if the user can filter by multiple tags"
@@ -1941,7 +2008,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When the user selects one or more extensions and clicks on 'Select' button
 	Then the extensions selected appear as filter boxes above the Content table in the Content Dashboard, with the format 'Extension: [extension_name]' "
-	@ignore = "true"
 	@priority = "5"
 	test FilteringExtensionsOnTheDashboard {
 		task ("Add a text file") {
@@ -2201,7 +2267,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'audio'
 	Then the MIME type 'audio' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeAudio {
 		task ("Add an audio file") {
@@ -2230,7 +2295,6 @@ definition {
 	@description = "LPS-133354 Given The Extension filter modal
 	When there are file extensions for the MIME type 'code'
 	Then the MIME type 'code' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeCode {
 		task ("Add a document") {
@@ -2259,7 +2323,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'compressed'
 	Then the MIME type 'compressed' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeCompressed {
 		task ("Add a compressed file") {
@@ -2288,7 +2351,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'others'
 	Then the MIME type 'others' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeOthers {
 		task ("Add a vectorial file") {
@@ -2317,7 +2379,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'presentation'
 	Then the MIME type 'presentation' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypePresentation {
 		task ("Add a compressed file") {
@@ -2346,7 +2407,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'spreadSheet'
 	Then the MIME type 'spreadSheet' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeSpreadsheet {
 		task ("Add a spreadSheet file") {
@@ -2375,7 +2435,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'text'
 	Then the MIME type 'text' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeText {
 		task ("Add a text file") {
@@ -2404,7 +2463,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'vectorial'
 	Then the MIME type 'vectorial' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeVectorial {
 		task ("Add a vectorial file") {
@@ -2433,7 +2491,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When there are file extensions for the MIME type 'video'
 	Then the MIME type 'video' appears as father and all of the file extensions for it appear as children and available to be selected"
-	@ignore = "true"
 	@priority = "4"
 	test MimeTypeVideo {
 		task ("Add a video file") {
@@ -2472,7 +2529,7 @@ definition {
 		}
 
 		task ("Choose the site of interest") {
-			SitePages.openPagesAdmin(siteURLKey = "global");
+			PagesAdmin.openPagesAdmin(siteURLKey = "global");
 		}
 
 		task ("Go to Documents and Media and clik on Add Button and File Upload") {
@@ -2507,7 +2564,7 @@ definition {
 		}
 
 		task ("Choose the site of interest") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 		}
 
 		task ("Go to Documents and Media and clik on Add Button and File Upload") {
@@ -2896,7 +2953,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When the user selects one or more extensions
 	Then the number of file extensions preselected will be shown as a text with the format '[number] Subtypes selected' "
-	@ignore = "true"
 	@priority = "3"
 	test SelectedExtensionNumbers {
 		task ("Add a text file") {
@@ -2949,7 +3005,6 @@ definition {
 	@description = "LPS-133354: Given The Extension filter modal
 	When the text input matches to one or more extensions from a MIME type and the user clicks on the MIME type parent
 	Then all the children that appear filtered will be selected"
-	@ignore = "true"
 	@priority = "3"
 	test SelectedParentAndChildExtensions {
 		task ("Add a text file") {
@@ -3343,6 +3398,28 @@ definition {
 					locator1 = "ContentDashboard#BAR_FROM_NO_VOCABULARY_SPECIFIED");
 			}
 		}
+	}
+
+	@description = "LPS-136512 Given A document associated with a Display Page
+	When the user clicks on the option "View metrics" in the kebab menu
+	Then the Content Performance panel is displayed"
+	@ignore = "true"
+	@priority = "4"
+	test ViewMetricsButtonKebabWhenDocumentHasDPT {
+
+		// TODO LPS-144038 ViewMetricsButtonKebabWhenDocumentHasDPT pending implementation
+
+	}
+
+	@description = "LPS-136512 Given A document associated with a Display Page
+	When the user clicks on the "Metrics" button in the hover action
+	Then the Content Performance panel is displayed"
+	@ignore = "true"
+	@priority = "4"
+	test ViewMetricsButtonWhenDocumentHasDPT {
+
+		// TODO LPS-144038 ViewMetricsButtonWhenDocumentHasDPT pending implementation
+
 	}
 
 	@description = "LPS-116840 When the user clicks on the view icon of a content with an associated display page, the user is led to the view mode of the page"

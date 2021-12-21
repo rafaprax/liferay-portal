@@ -36,7 +36,7 @@ definition {
 				Questions.tearDown();
 			}
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -113,8 +113,6 @@ definition {
 			questionTitle = "Title AddQuestionWithTheImage");
 
 		Questions.viewImageInQuestion(imageFileName = "Document_1.svg");
-
-		Questions.viewNoRelatedQuestions();
 	}
 
 	@description = "Validate if the user can view the topic selector and category label."
@@ -2055,32 +2053,6 @@ definition {
 		Click(locator1 = "Questions#PAGINATION_NEXT_LINK");
 
 		Questions.viewPaginationResults(results = "Showing 9 to 10 of 10");
-	}
-
-	@description = "Validate if the user can view the related question."
-	@priority = "4"
-	@refactordone
-	test RelatedQuestionCanBeViewedInDetails {
-		JSONMBMessage.addCategory(
-			categoryDescription = "Description",
-			categoryName = "Questions Test Category",
-			userEmailAddress = "test@liferay.com");
-
-		for (var title : list "What is your name,How about your experience") {
-			JSONQuestions.addQuestion(
-				bodyField = "Question Body Text",
-				categoryName = "Questions Test Category",
-				groupName = "Guest",
-				titleField = "${title}");
-		}
-
-		Questions.openToQuestionDetails(
-			layoutName = "questions-page",
-			questionsTitle = "how-about-your-experience",
-			siteURLKey = "guest",
-			topicName = "questions-test-category");
-
-		Questions.viewRelatedQuestion(questionTitle = "What is your name");
 	}
 
 }

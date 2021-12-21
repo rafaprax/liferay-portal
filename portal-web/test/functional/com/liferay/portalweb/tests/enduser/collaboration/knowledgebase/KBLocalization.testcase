@@ -27,7 +27,7 @@ definition {
 
 			JSONUser.tearDownNonAdminUsers();
 
-			Page.tearDownCP();
+			PagesAdmin.tearDownCP();
 		}
 	}
 
@@ -48,7 +48,7 @@ definition {
 			portlet = "Pages",
 			site = "${siteName}");
 
-		SitePages.addPublicChildPage(
+		PagesAdmin.addPublicChildPage(
 			childPageName = "Knowledge Base Display Page",
 			parentPageName = "Home");
 
@@ -56,7 +56,7 @@ definition {
 			category = "Site Builder",
 			portlet = "Pages");
 
-		SitePages.configureChildPage(
+		PagesAdmin.configureChildPage(
 			columnName = "1 Column",
 			pageName = "Knowledge Base Display Page",
 			parentPagesHierarchy = "Home",

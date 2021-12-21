@@ -33,9 +33,9 @@ definition {
 	@uitest
 	test AddAssetsViaCollaborationPanel {
 		task ("Add a panel page with collaboration component") {
-			SitePages.openPagesAdmin(siteURLKey = "Test Site Name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "Test Site Name");
 
-			SitePages.addPublicPage(
+			PagesAdmin.addPublicPage(
 				componentName = "Collaboration",
 				pageName = "Test Page Name",
 				sitePageType = "Panel");
@@ -96,13 +96,13 @@ definition {
 	@priority = "3"
 	test CannotDeleteLastPublicPageOnDefaultSite {
 		task ("Delete the Search page in Liferay instance") {
-			SitePages.openPagesAdmin(siteURLKey = "guest");
+			PagesAdmin.openPagesAdmin(siteURLKey = "guest");
 
-			SitePages.deletePage(pageName = "Search");
+			PagesAdmin.deletePage(pageName = "Search");
 		}
 
 		task ("View the last public page can not be deleted") {
-			SitePages.clickPageMenu(pageName = "Home");
+			PagesAdmin.openPageEllipsisMenu(pageName = "Home");
 
 			MenuItem.viewNotPresent(menuItem = "Delete");
 		}
@@ -117,16 +117,16 @@ definition {
 		property testray.component.names = "Training";
 
 		task ("Add an embedded page") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			SitePages.addPublicPage(
+			PagesAdmin.addPublicPage(
 				pageName = "Test Page Name 1",
 				pageTypeURL = "https://www.google.com",
 				sitePageType = "Embedded");
 		}
 
 		task ("Change embedded type URL") {
-			SitePages.configurePage(
+			PagesAdmin.configurePage(
 				pageName = "Test Page Name 1",
 				pageTypeURL = "http://iscaliforniaonfire.com/",
 				privacy = "Public Pages",
@@ -134,16 +134,16 @@ definition {
 		}
 
 		task ("Add a panel page with community component") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			SitePages.addPublicPage(
+			PagesAdmin.addPublicPage(
 				componentName = "Community",
 				pageName = "Test Page Name 2",
 				sitePageType = "Panel");
 		}
 
 		task ("View the community options are checked in page settings") {
-			Page.viewPanelPortletListCP(
+			PagesAdmin.viewPanelPortletList(
 				componentName = "Community",
 				pageName = "Test Page Name 2",
 				portletNameList = "Bookmarks,My Sites,Page Comments,Page Flags,Page Ratings");
@@ -200,7 +200,7 @@ definition {
 				pageName = "Test Page Name Edit",
 				siteName = "Test Site Name");
 
-			Page.view(
+			PagesAdmin.viewPageItemPresent(
 				pageName = "Test Page Name Edit",
 				privacy = "Public Pages");
 		}
@@ -242,15 +242,17 @@ definition {
 		}
 
 		task ("Add a localized friendly url") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "Configure",
 				pageName = "Test Page Name");
 
-			Page.addFriendlyURLLocalizedPG(
-				friendlyUrlLocalized = "de-DE",
-				localizedFriendlyURL = "/german");
+			PagesAdmin.addLocalizedFriendlyURL(
+				configureWithoutSave = "true",
+				friendlyUrlLocalizedList = "de-DE",
+				localizedFriendlyURLList = "/german",
+				localizedNameList = "-");
 		}
 
 		task ("Delete default friendly url") {
@@ -266,9 +268,9 @@ definition {
 		}
 
 		task ("View default friendly url") {
-			SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+			PagesAdmin.openPagesAdmin(siteURLKey = "test-site-name");
 
-			SitePages.gotoPageMenuItem(
+			PagesAdmin.gotoPageEllipsisMenuItem(
 				menuItem = "Configure",
 				pageName = "Test Page Name");
 

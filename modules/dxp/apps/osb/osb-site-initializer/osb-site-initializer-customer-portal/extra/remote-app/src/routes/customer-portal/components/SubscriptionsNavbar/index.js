@@ -1,14 +1,9 @@
 import {useQuery} from '@apollo/client';
 import React, {useEffect, useState} from 'react';
 import {getAccountSubscriptionGroups} from '../../../../common/services/liferay/graphql/queries';
-import SubscriptionsFilterByStatus from '../SubscriptionsFilterByStatus';
 
-const SubscriptionsNavbar = ({
-	accountKey,
-	setSelectedStatus,
-	setSelectedSubscriptionGroup,
-}) => {
-	const [subscriptionsTags, setSubscriptionsTags] = useState([]);
+const SubscriptionsNavbar = ({accountKey, setSelectedSubscriptionGroup}) => {
+	const [subscriptionsTags, setSubscriptionsTags] = useState(() => []);
 
 	const {
 		data: accountSubscriptions,
@@ -54,10 +49,6 @@ const SubscriptionsNavbar = ({
 								</button>
 							))}
 					</nav>
-
-					<SubscriptionsFilterByStatus
-						setSelectedStatus={setSelectedStatus}
-					/>
 				</>
 			)}
 		</div>

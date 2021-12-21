@@ -125,7 +125,7 @@ const ColorPicker = ({
 				>
 					<span className="c-inner" tabIndex="-1">
 						<span
-							className="mr-3 page-editor__color-picker__selector-splotch rounded-circle"
+							className="page-editor__color-picker__selector-splotch rounded-circle"
 							style={{
 								background: `${value}`,
 							}}
@@ -230,10 +230,10 @@ const Wrapper = ({
 	const focusableItemsRef = useRef(null);
 
 	useLayoutEffect(() => {
-		focusableItemsRef.current = dropdownContainerRef.current.querySelectorAll(
+		focusableItemsRef.current = dropdownContainerRef.current?.querySelectorAll(
 			'button, input'
 		);
-		focusableItemsRef.current[0].focus();
+		focusableItemsRef.current?.[0].focus();
 	}, [dropdownContainerRef]);
 
 	return (

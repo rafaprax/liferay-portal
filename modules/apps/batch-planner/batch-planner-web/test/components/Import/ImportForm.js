@@ -63,36 +63,45 @@ describe('ImportForm', () => {
 	it('must show import mapping on schema change', () => {
 		const {getByLabelText} = render(<ImportForm {...BASE_PROPS} />);
 
-		act(() =>
+		act(() => {
 			Liferay.fire(SCHEMA_SELECTED_EVENT, {
 				schema: SCHEMA,
-			})
-		);
-
-		act(() =>
+			});
 			Liferay.fire(FILE_SCHEMA_EVENT, {
 				schema: fileSchema,
-			})
-		);
+			});
+		});
 
 		fileSchema.forEach((field) => getByLabelText(field));
+	});
+
+	it('must have button disabled with no selection', () => {
+		const {getByText} = render(<ImportForm {...BASE_PROPS} />);
+
+		act(() => {
+			Liferay.fire(SCHEMA_SELECTED_EVENT, {
+				schema: SCHEMA,
+			});
+			Liferay.fire(FILE_SCHEMA_EVENT, {
+				schema: fileSchema,
+			});
+		});
+
+		expect(getByText(Liferay.Language.get('import'))).toBeDisabled();
 	});
 
 	it('must select the item on user click dropdown item', () => {
 		const selectedField = 'type';
 		const {getAllByRole} = render(<ImportForm {...BASE_PROPS} />);
 
-		act(() =>
+		act(() => {
 			Liferay.fire(SCHEMA_SELECTED_EVENT, {
 				schema: SCHEMA,
-			})
-		);
-
-		act(() =>
+			});
 			Liferay.fire(FILE_SCHEMA_EVENT, {
 				schema: fileSchema,
-			})
-		);
+			});
+		});
 
 		act(() => {
 			fireEvent.click(getAllByRole('button')[0]);
@@ -111,17 +120,14 @@ describe('ImportForm', () => {
 		const selectedField = 'type';
 		const {getAllByRole} = render(<ImportForm {...BASE_PROPS} />);
 
-		act(() =>
+		act(() => {
 			Liferay.fire(SCHEMA_SELECTED_EVENT, {
 				schema: SCHEMA,
-			})
-		);
-
-		act(() =>
+			});
 			Liferay.fire(FILE_SCHEMA_EVENT, {
 				schema: fileSchema,
-			})
-		);
+			});
+		});
 
 		act(() => {
 			fireEvent.click(getAllByRole('button')[0]);

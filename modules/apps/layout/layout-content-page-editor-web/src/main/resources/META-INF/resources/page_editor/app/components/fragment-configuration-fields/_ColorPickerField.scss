@@ -1,6 +1,8 @@
 html#{$cadmin-selector} {
 	.cadmin {
 		.page-editor__color-picker-field {
+			min-height: 32px;
+
 			.input-group
 				> .input-group-item
 				> .form-control.page-editor__color-picker-field__autocomplete__input {
@@ -26,6 +28,10 @@ html#{$cadmin-selector} {
 					> .form-control.page-editor__color-picker-field__autocomplete__input {
 					background-color: transparent;
 				}
+			}
+
+			&.hovered .page-editor__color-picker__selector {
+				background-color: $cadmin-gray-100;
 			}
 
 			&:not(:hover):not(:focus-within):not(.hovered) {

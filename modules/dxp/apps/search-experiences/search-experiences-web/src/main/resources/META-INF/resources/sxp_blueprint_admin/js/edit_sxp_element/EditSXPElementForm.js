@@ -42,9 +42,78 @@ import {openErrorToast} from '../utils/toasts';
 import {getUIConfigurationValues} from '../utils/utils';
 import SidebarPanel from './SidebarPanel';
 
+/**
+ * Converts a JSON string to an object.
+ * @param {string} jsonString The JSON to parse.
+ * @param {string} fieldName The name of the field to specify where the error.
+ * 	ocurred.
+ * @returns {object}
+ */
+const parseJSONString = (jsonString, fieldName) => {
+	try {
+		return JSON.parse(jsonString);
+	}
+	catch {
+		throw sub(Liferay.Language.get('x-is-invalid'), [fieldName]);
+	}
+};
+
+/**
+ * Checks if all `${configuration.___}` template strings are defined in the
+ * `uiConfiguration`.
+ * @param {object} configurationJSONObject The configuration object to check.
+ * @param {object} uiConfigurationJSONObject The definition of configuration
+ * 	variables.
+ */
+const validateConfigKeys = (
+	configurationJSONObject,
+	uiConfigurationJSONObject
+) => {
+	const regex = new RegExp(`\\$\\{${CONFIG_PREFIX}.([\\w\\d_]+)\\}`, 'g');
+
+	const elementKeys = [
+		...JSON.stringify(configurationJSONObject).matchAll(regex),
+	].map((item) => item[1]);
+
+	const uiConfigKeys = uiConfigurationJSONObject.fieldSets
+		? uiConfigurationJSONObject.fieldSets.reduce((acc, curr) => {
+
+				// Find names within each fields array
+
+				const configKeys = curr.fields
+					? curr.fields.map((item) => item.name)
+					: [];
+
+				return [...acc, ...configKeys];
+		  }, [])
+		: [];
+
+	const missingKeys = elementKeys.filter(
+		(item) => !uiConfigKeys.includes(item)
+	);
+
+	if (missingKeys.length === 1) {
+		throw sub(
+			Liferay.Language.get(
+				'the-following-configuration-key-is-missing-x'
+			),
+			[missingKeys[0]]
+		);
+	}
+
+	if (missingKeys.length > 1) {
+		throw sub(
+			Liferay.Language.get(
+				'the-following-configuration-keys-are-missing-x'
+			),
+			[missingKeys.join(', ')]
+		);
+	}
+};
+
 function EditSXPElementForm({
 	initialDescription = {},
-	initialElementDefinition = {},
+	initialElementJSONEditorValue = {},
 	initialTitle = {},
 	predefinedVariables = [],
 	readOnly,
@@ -54,13 +123,16 @@ function EditSXPElementForm({
 	const {defaultLocale, redirectURL} = useContext(ThemeContext);
 
 	const formRef = useRef();
-	const sxpElementTemplateJSONRef = useRef();
+	const elementJSONEditorRef = useRef();
 
 	const [errors, setErrors] = useState([]);
+	const [expandAllVariables, setExpandAllVariables] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showSidebar, setShowSidebar] = useState(false);
 	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
-	const [expandAllVariables, setExpandAllVariables] = useState(false);
+	const [elementJSONEditorValue, setElementJSONEditorValue] = useState(
+		JSON.stringify(initialElementJSONEditorValue, null, '\t')
+	);
 
 	const filteredCategories = {};
 
@@ -75,31 +147,11 @@ function EditSXPElementForm({
 
 	const [variables, setVariables] = useState(filteredCategories);
 
-	const {
-		uiConfiguration,
-		...restOfElementDefinition
-	} = initialElementDefinition;
-
-	const [sxpElementTemplateJSON, setSXPElementTemplateJSON] = useState(
-		JSON.stringify(
-			{
-				...restOfElementDefinition,
-				description_i18n: initialDescription,
-				title_i18n: initialTitle,
-			},
-			null,
-			'\t'
-		)
-	);
-	const [uiConfigurationJSON, setUIConfigurationJSON] = useState(
-		JSON.stringify(uiConfiguration || {}, null, '\t')
-	);
-
+	/**
+	 * Workaround to force a re-render so `elementJSONEditorRef` will be
+	 * defined when calling `_handleVariableClick`
+	 */
 	useEffect(() => {
-
-		// Workaround to force a re-render so `sxpElementTemplateJSONRef` will be
-		// defined when calling `_handleVariableClick`
-
 		if (!readOnly) {
 			setShowSidebar(true);
 		}
@@ -131,32 +183,27 @@ function EditSXPElementForm({
 
 		setIsSubmitting(true);
 
-		let parseSXPElementTemplateJSON;
-		let parseUIConfigurationJSON;
+		let sxpElementJSONObject;
 
 		try {
-			parseSXPElementTemplateJSON = _validateJSON(
-				sxpElementTemplateJSON,
-				Liferay.Language.get('element-template-json')
-			);
-			parseUIConfigurationJSON = _validateJSON(
-				uiConfigurationJSON,
-				Liferay.Language.get('ui-configuration-json')
+			sxpElementJSONObject = parseJSONString(
+				elementJSONEditorValue,
+				Liferay.Language.get('element-source-json')
 			);
 
-			_validateConfigKeys(
-				sxpElementTemplateJSON,
-				parseUIConfigurationJSON
+			validateConfigKeys(
+				sxpElementJSONObject?.elementDefinition?.configuration,
+				sxpElementJSONObject?.elementDefinition?.uiConfiguration
 			);
 
 			if (
-				!parseSXPElementTemplateJSON.title &&
-				!parseSXPElementTemplateJSON.title_i18n
+				!sxpElementJSONObject.title &&
+				!sxpElementJSONObject.title_i18n
 			) {
 				throw Liferay.Language.get('error.title-empty');
 			}
 
-			if (!parseSXPElementTemplateJSON.title_i18n[defaultLocale]) {
+			if (!sxpElementJSONObject.title_i18n[defaultLocale]) {
 				throw Liferay.Language.get('error.default-locale-title-empty');
 			}
 		}
@@ -172,9 +219,9 @@ function EditSXPElementForm({
 
 		const {
 			description_i18n,
+			elementDefinition,
 			title_i18n,
-			...restOfSXPElementTemplateJSON
-		} = parseSXPElementTemplateJSON;
+		} = sxpElementJSONObject;
 
 		try {
 
@@ -193,10 +240,7 @@ function EditSXPElementForm({
 					{
 						body: JSON.stringify({
 							description_i18n,
-							elementDefinition: {
-								uiConfiguration: parseUIConfigurationJSON,
-								...restOfSXPElementTemplateJSON,
-							},
+							elementDefinition,
 							title_i18n,
 							type,
 						}),
@@ -219,10 +263,7 @@ function EditSXPElementForm({
 				{
 					body: JSON.stringify({
 						description_i18n,
-						elementDefinition: {
-							uiConfiguration: parseUIConfigurationJSON,
-							...restOfSXPElementTemplateJSON,
-						},
+						elementDefinition,
 						title_i18n,
 						type,
 					}),
@@ -263,64 +304,20 @@ function EditSXPElementForm({
 				console.error(error);
 			}
 		}
-
-		return fetch(
-			`/o/search-experiences-rest/v1.0/sxp-elements/${sxpElementId}`,
-			{
-				body: JSON.stringify({
-					description_i18n,
-					elementDefinition: {
-						uiConfiguration: parseUIConfigurationJSON,
-						...restOfSXPElementTemplateJSON,
-					},
-					title_i18n,
-					type,
-				}),
-				headers: new Headers({
-					'Content-Type': 'application/json',
-				}),
-				method: 'PATCH',
-			}
-		)
-			.then((response) => response.json())
-			.then((responseContent) => {
-				if (
-					Object.prototype.hasOwnProperty.call(
-						responseContent,
-						'errors'
-					)
-				) {
-					responseContent.errors.forEach((message) =>
-						openErrorToast({message})
-					);
-
-					setIsSubmitting(false);
-				}
-				else {
-					navigate(redirectURL);
-				}
-			})
-			.catch(() => {
-				openErrorToast();
-
-				setIsSubmitting(false);
-			});
 	};
 
 	function _handleVariableClick(variable) {
-		const doc = sxpElementTemplateJSONRef.current.getDoc();
+		const doc = elementJSONEditorRef.current.getDoc();
 		const cursor = doc.getCursor();
 
 		doc.replaceRange(variable, cursor);
 	}
 
 	function _renderPreviewBody() {
-		let previewSXPElementTemplateJSON = {};
-		let previewUIConfigurationJSON = {};
+		let previewSXPElementJSON = {};
 
 		try {
-			previewSXPElementTemplateJSON = JSON.parse(sxpElementTemplateJSON);
-			previewUIConfigurationJSON = JSON.parse(uiConfigurationJSON);
+			previewSXPElementJSON = JSON.parse(elementJSONEditorValue);
 		}
 		catch (error) {
 			return (
@@ -334,82 +331,20 @@ function EditSXPElementForm({
 			);
 		}
 
-		const {
-			description_i18n,
-			title_i18n,
-			...restOfSXPElementTemplateJSON
-		} = previewSXPElementTemplateJSON;
-
-		const sxpElement = {
-			description_i18n,
-			elementDefinition: {
-				uiConfiguration: previewUIConfigurationJSON,
-				...restOfSXPElementTemplateJSON,
-			},
-			title_i18n,
-			type,
-		};
-
 		return (
 			<div className="portlet-sxp-blueprint-admin">
 				<ErrorBoundary>
 					<SXPElement
 						collapseAll={false}
-						sxpElement={sxpElement}
+						sxpElement={previewSXPElementJSON}
 						uiConfigurationValues={getUIConfigurationValues(
-							sxpElement
+							previewSXPElementJSON
 						)}
 					/>
 				</ErrorBoundary>
 			</div>
 		);
 	}
-
-	const _validateConfigKeys = (
-		sxpElementTemplateJSON,
-		parseUIConfigurationJSON
-	) => {
-		const regex = new RegExp(`\\$\\{${CONFIG_PREFIX}.([\\w\\d_]+)\\}`, 'g');
-
-		const elementKeys = [...sxpElementTemplateJSON.matchAll(regex)].map(
-			(item) => item[1]
-		);
-
-		const uiConfigKeys = parseUIConfigurationJSON.fieldSets
-			? parseUIConfigurationJSON.fieldSets.reduce((acc, curr) => {
-
-					// Find names within each fields array
-
-					const configKeys = curr.fields
-						? curr.fields.map((item) => item.name)
-						: [];
-
-					return [...acc, ...configKeys];
-			  }, [])
-			: [];
-
-		const missingKeys = elementKeys.filter(
-			(item) => !uiConfigKeys.includes(item)
-		);
-
-		if (missingKeys.length > 0) {
-			throw sub(
-				Liferay.Language.get(
-					'the-following-configuration-key-is-missing-x'
-				),
-				[missingKeys.join(', ')]
-			);
-		}
-	};
-
-	const _validateJSON = (text, name) => {
-		try {
-			return JSON.parse(text);
-		}
-		catch {
-			throw sub(Liferay.Language.get('x-is-invalid'), [name]);
-		}
-	};
 
 	return (
 		<>
@@ -526,7 +461,7 @@ function EditSXPElementForm({
 
 			<div className="sxp-element-row">
 				<ClayLayout.Row>
-					<ClayLayout.Col size={8}>
+					<ClayLayout.Col size={12}>
 						<div className="sxp-element-section">
 							<div className="sxp-element-header">
 								{!readOnly && (
@@ -553,7 +488,7 @@ function EditSXPElementForm({
 									<div className="header-label">
 										<label>
 											{Liferay.Language.get(
-												'element-template-json'
+												'element-source-json'
 											)}
 
 											<ClayTooltipProvider>
@@ -561,7 +496,7 @@ function EditSXPElementForm({
 													displayType="unstyled"
 													size="sm"
 													title={Liferay.Language.get(
-														'element-template-json-help'
+														'element-source-json-help'
 													)}
 												>
 													<ClayIcon
@@ -645,55 +580,14 @@ function EditSXPElementForm({
 								>
 									<CodeMirrorEditor
 										onChange={(value) =>
-											setSXPElementTemplateJSON(value)
+											setElementJSONEditorValue(value)
 										}
 										readOnly={readOnly}
-										ref={sxpElementTemplateJSONRef}
-										value={sxpElementTemplateJSON}
+										ref={elementJSONEditorRef}
+										value={elementJSONEditorValue}
 									/>
 								</ClayLayout.Col>
 							</ClayLayout.Row>
-						</div>
-					</ClayLayout.Col>
-
-					<ClayLayout.Col size={4}>
-						<div className="sxp-element-section">
-							<div className="sxp-element-header">
-								<div className="expand-header">
-									<div className="header-label">
-										<label>
-											{Liferay.Language.get(
-												'ui-configuration-json'
-											)}
-
-											<ClayTooltipProvider>
-												<ClaySticker
-													displayType="unstyled"
-													size="sm"
-													title={Liferay.Language.get(
-														'ui-configuration-json-help'
-													)}
-												>
-													<ClayIcon
-														data-tooltip-align="top"
-														symbol="info-circle"
-													/>
-												</ClaySticker>
-											</ClayTooltipProvider>
-										</label>
-									</div>
-								</div>
-							</div>
-
-							<div className="json-section">
-								<CodeMirrorEditor
-									onChange={(value) =>
-										setUIConfigurationJSON(value)
-									}
-									readOnly={readOnly}
-									value={uiConfigurationJSON}
-								/>
-							</div>
 						</div>
 					</ClayLayout.Col>
 				</ClayLayout.Row>
