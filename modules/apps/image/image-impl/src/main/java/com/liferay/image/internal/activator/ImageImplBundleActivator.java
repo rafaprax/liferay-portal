@@ -14,16 +14,16 @@
 
 package com.liferay.image.internal.activator;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.spi.ImageWriterSpi;
-import javax.imageio.spi.ServiceRegistry;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ServiceRegistry;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
  * @author Rafael Praxedes
@@ -44,7 +44,8 @@ public class ImageImplBundleActivator implements BundleActivator {
 		IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
 
 		Iterator<ImageReaderSpi> iterator = ServiceRegistry.lookupProviders(
-			ImageReaderSpi.class, ImageImplBundleActivator.class.getClassLoader());
+			ImageReaderSpi.class,
+			ImageImplBundleActivator.class.getClassLoader());
 
 		while (iterator.hasNext()) {
 			_imageReaderSpiSet.add(iterator.next());

@@ -821,6 +821,13 @@ public class ImageToolImpl implements ImageTool {
 		}
 	}
 
+	@Activate
+	protected void activate() {
+		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
+
+		orderImageReaderSpis();
+	}
+
 	protected RenderedImage doScale(
 		RenderedImage renderedImage, int scaledHeight, int scaledWidth) {
 
@@ -925,13 +932,6 @@ public class ImageToolImpl implements ImageTool {
 		scaledGraphics2D.dispose();
 
 		return scaledBufferedImage;
-	}
-
-	@Activate
-	public void activate() {
-		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
-
-		orderImageReaderSpis();
 	}
 
 	protected void orderImageReaderSpis() {
