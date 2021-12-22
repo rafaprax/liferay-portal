@@ -89,7 +89,7 @@ public class PDFProcessorTest {
 		_dlFileEntryPreviewForkProcessEnabled =
 			dlFileEntryPreviewForkProcessEnabledField.get(null);
 
-		dlFileEntryPreviewForkProcessEnabledField.set(null, Boolean.FALSE);
+		dlFileEntryPreviewForkProcessEnabledField.set(null, Boolean.TRUE);
 
 		_group = GroupTestUtil.addGroup();
 
