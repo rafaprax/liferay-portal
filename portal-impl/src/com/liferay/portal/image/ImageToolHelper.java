@@ -1,4 +1,18 @@
-package com.liferay.portal.kernel.image;
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.portal.image;
 
 import com.liferay.portal.kernel.util.ArrayUtil;
 
@@ -9,9 +23,16 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.Hashtable;
 
-public class ImageScaleUtil {
+/**
+ * @author Rafael Praxedes
+ */
+public class ImageToolHelper {
 
-	public static BufferedImage getBufferedImage(RenderedImage renderedImage) {
+	public static ImageToolHelper getInstance() {
+		return _imageToolHelper;
+	}
+
+	public BufferedImage getBufferedImage(RenderedImage renderedImage) {
 		if (renderedImage instanceof BufferedImage) {
 			return (BufferedImage)renderedImage;
 		}
@@ -41,7 +62,7 @@ public class ImageScaleUtil {
 		return bufferedImage;
 	}
 
-	public static RenderedImage scale(RenderedImage renderedImage, int width) {
+	public RenderedImage scale(RenderedImage renderedImage, int width) {
 		if (width <= 0) {
 			return renderedImage;
 		}
@@ -59,7 +80,7 @@ public class ImageScaleUtil {
 		return _scale(renderedImage, scaledHeight, scaledWidth);
 	}
 
-	public static RenderedImage scale(
+	public RenderedImage scale(
 		RenderedImage renderedImage, int maxHeight, int maxWidth) {
 
 		int imageHeight = renderedImage.getHeight();
@@ -86,7 +107,7 @@ public class ImageScaleUtil {
 		return _scale(renderedImage, scaledHeight, scaledWidth);
 	}
 
-	private static RenderedImage _scale(
+	private RenderedImage _scale(
 		RenderedImage renderedImage, int scaledHeight, int scaledWidth) {
 
 		// See http://www.oracle.com/technetwork/java/index-137037.html
@@ -191,4 +212,10 @@ public class ImageScaleUtil {
 
 		return scaledBufferedImage;
 	}
+
+	private ImageToolHelper() {
+
+	}
+
+	private static final ImageToolHelper _imageToolHelper = new ImageToolHelper();
 }
