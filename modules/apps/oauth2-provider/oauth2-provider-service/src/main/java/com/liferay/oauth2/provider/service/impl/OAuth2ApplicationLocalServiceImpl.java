@@ -44,7 +44,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.ImageTypeException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.image.ImageBag;
-import com.liferay.portal.kernel.image.ImageToolUtil;
+import com.liferay.portal.kernel.image.ImageTool;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.model.Group;
@@ -454,7 +454,7 @@ public class OAuth2ApplicationLocalServiceImpl
 			new UnsyncByteArrayOutputStream();
 
 		try {
-			ImageBag imageBag = ImageToolUtil.read(inputStream);
+			ImageBag imageBag = _imageTool.read(inputStream);
 
 			RenderedImage renderedImage = imageBag.getRenderedImage();
 
@@ -462,9 +462,9 @@ public class OAuth2ApplicationLocalServiceImpl
 				throw new ImageTypeException("Unable to read icon");
 			}
 
-			renderedImage = ImageToolUtil.scale(renderedImage, 160, 160);
+			renderedImage = _imageTool.scale(renderedImage, 160, 160);
 
-			ImageToolUtil.write(
+			_imageTool.write(
 				renderedImage, imageBag.getType(), unsyncByteArrayOutputStream);
 		}
 		catch (IOException ioException) {
@@ -881,5 +881,8 @@ public class OAuth2ApplicationLocalServiceImpl
 
 	@Reference
 	private UserLocalService _userLocalService;
+
+	@Reference
+	private ImageTool _imageTool;
 
 }
