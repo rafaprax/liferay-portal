@@ -14,7 +14,7 @@
 
 package com.liferay.portlet.documentlibrary.util;
 
-import com.liferay.portal.kernel.image.ImageToolUtil;
+import com.liferay.portal.image.ImageToolHelper;
 
 import java.awt.image.RenderedImage;
 
@@ -80,11 +80,14 @@ public class LiferayPDFBoxConverter {
 		RenderedImage renderedImage = pdfRenderer.renderImageWithDPI(
 			pageIndex, _dpi, ImageType.RGB);
 
+		ImageToolHelper imageToolHelper = ImageToolHelper.getInstance();
+
 		if (_height != 0) {
-			renderedImage = ImageToolUtil.scale(renderedImage, _width, _height);
+			renderedImage = imageToolHelper.scale(
+				renderedImage, _width, _height);
 		}
 		else {
-			renderedImage = ImageToolUtil.scale(renderedImage, _width);
+			renderedImage = imageToolHelper.scale(renderedImage, _width);
 		}
 
 		outputFile.createNewFile();
