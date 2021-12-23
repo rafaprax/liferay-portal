@@ -856,6 +856,9 @@ public class OAuth2ApplicationLocalServiceImpl
 	@Reference
 	private Http _http;
 
+	@Reference
+	private ImageTool _imageTool;
+
 	@Reference(
 		target = "(indexer.class.name=com.liferay.document.library.kernel.model.DLFileEntry)"
 	)
@@ -881,8 +884,5 @@ public class OAuth2ApplicationLocalServiceImpl
 
 	@Reference
 	private UserLocalService _userLocalService;
-
-	@Reference
-	private ImageTool _imageTool;
 
 }

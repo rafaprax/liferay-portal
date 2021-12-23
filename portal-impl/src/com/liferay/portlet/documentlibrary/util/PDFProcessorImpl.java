@@ -33,8 +33,6 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.fabric.InputResource;
 import com.liferay.portal.fabric.OutputResource;
 import com.liferay.portal.kernel.image.GhostscriptUtil;
-import com.liferay.portal.kernel.image.ImageTool;
-import com.liferay.portal.kernel.image.ImageToolUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
@@ -1126,8 +1124,8 @@ public class PDFProcessorImpl
 			try {
 				LiferayPDFBoxConverter liferayConverter =
 					new LiferayPDFBoxConverter(
-						_inputFile, _thumbnailFile, _previewFiles,
-						_extension, _thumbnailExtension, _dpi, _height, _width,
+						_inputFile, _thumbnailFile, _previewFiles, _extension,
+						_thumbnailExtension, _dpi, _height, _width,
 						_generatePreview, _generateThumbnail);
 
 				liferayConverter.generateImagesPB();

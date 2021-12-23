@@ -16,9 +16,9 @@ package com.liferay.image.internal;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.image.ImageToolHelper;
 import com.liferay.portal.kernel.concurrent.FutureConverter;
 import com.liferay.portal.kernel.exception.ImageResolutionException;
-import com.liferay.portal.image.ImageToolHelper;
 import com.liferay.portal.kernel.image.ImageBag;
 import com.liferay.portal.kernel.image.ImageMagick;
 import com.liferay.portal.kernel.image.ImageTool;
@@ -285,9 +285,7 @@ public class ImageToolImpl implements ImageTool {
 	}
 
 	@Override
-	public BufferedImage getBufferedImage(
-		RenderedImage renderedImage) {
-
+	public BufferedImage getBufferedImage(RenderedImage renderedImage) {
 		return _imageToolHelper.getBufferedImage(renderedImage);
 	}
 
@@ -534,7 +532,6 @@ public class ImageToolImpl implements ImageTool {
 		return image;
 	}
 
-
 	@Override
 	public Image getImage(File file)
 		throws ImageResolutionException, IOException {
@@ -723,6 +720,7 @@ public class ImageToolImpl implements ImageTool {
 	@Override
 	public RenderedImage scale(
 		RenderedImage renderedImage, int maxHeight, int maxWidth) {
+
 		return _imageToolHelper.scale(renderedImage, maxHeight, maxWidth);
 	}
 
@@ -779,10 +777,11 @@ public class ImageToolImpl implements ImageTool {
 		return multiBytes;
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(ImageTool.class);
+	private static final Log _log = LogFactoryUtil.getLog(ImageToolImpl.class);
 
 	private static final FileImpl _fileImpl = FileImpl.getInstance();
-	private static final ImageToolHelper _imageToolHelper= ImageToolHelper.getInstance();
+	private static final ImageToolHelper _imageToolHelper =
+		ImageToolHelper.getInstance();
 
 	private Image _defaultCompanyLogo;
 	private Image _defaultOrganizationLogo;

@@ -14,21 +14,21 @@
 
 package com.liferay.imageio.plugins.internal.activator;
 
+import com.liferay.portal.kernel.util.ArrayUtil;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.spi.ServiceRegistry;
 
-import com.liferay.portal.kernel.util.ArrayUtil;
 import org.monte.media.jpeg.CMYKJPEGImageReaderSpi;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import com.liferay.portal.util.PropsValues;
 
 /**
  * @author Adolfo Pérez
@@ -41,6 +41,12 @@ public class ImageIOPluginsBundleActivator implements BundleActivator {
 		_register(ImageWriterSpi.class, _imageWriterSpiSet);
 
 		orderImageReaderSpis();
+	}
+
+	@Override
+	public void stop(BundleContext bundleContext) {
+		_unregister(_imageReaderSpiSet);
+		_unregister(_imageWriterSpiSet);
 	}
 
 	protected void orderImageReaderSpis() {
@@ -74,12 +80,6 @@ public class ImageIOPluginsBundleActivator implements BundleActivator {
 				ImageReaderSpi.class, firstImageReaderSpi,
 				secondImageReaderSpi);
 		}
-	}
-
-	@Override
-	public void stop(BundleContext bundleContext) {
-		_unregister(_imageReaderSpiSet);
-		_unregister(_imageWriterSpiSet);
 	}
 
 	private <T> void _register(Class<T> clazz, Set<T> registeredProviders) {

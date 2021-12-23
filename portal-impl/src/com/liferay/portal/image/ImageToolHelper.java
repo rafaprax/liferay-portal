@@ -16,11 +16,14 @@ package com.liferay.portal.image;
 
 import com.liferay.portal.kernel.util.ArrayUtil;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+
 import java.util.Hashtable;
 
 /**
@@ -105,6 +108,9 @@ public class ImageToolHelper {
 		int scaledWidth = Math.max(1, (int)Math.round(factor * imageWidth));
 
 		return _scale(renderedImage, scaledHeight, scaledWidth);
+	}
+
+	private ImageToolHelper() {
 	}
 
 	private RenderedImage _scale(
@@ -213,9 +219,7 @@ public class ImageToolHelper {
 		return scaledBufferedImage;
 	}
 
-	private ImageToolHelper() {
+	private static final ImageToolHelper _imageToolHelper =
+		new ImageToolHelper();
 
-	}
-
-	private static final ImageToolHelper _imageToolHelper = new ImageToolHelper();
 }

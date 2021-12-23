@@ -23,7 +23,6 @@ import com.liferay.adaptive.media.image.scaler.AMImageScaler;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.image.ImageTool;
-import com.liferay.portal.kernel.image.ImageToolUtil;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.util.GetterUtil;
 
@@ -89,4 +88,5 @@ public class AMDefaultImageScaler implements AMImageScaler {
 
 	@Reference
 	private ImageTool _imageTool;
+
 }
