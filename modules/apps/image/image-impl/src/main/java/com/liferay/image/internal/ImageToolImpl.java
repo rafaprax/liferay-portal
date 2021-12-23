@@ -64,20 +64,15 @@ import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 
 import net.jmge.gif.Gif89Encoder;
 
 import org.im4java.core.IMOperation;
 
-import org.monte.media.jpeg.CMYKJPEGImageReaderSpi;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -539,6 +534,7 @@ public class ImageToolImpl implements ImageTool {
 		return image;
 	}
 
+
 	@Override
 	public Image getImage(File file)
 		throws ImageResolutionException, IOException {
@@ -754,46 +750,6 @@ public class ImageToolImpl implements ImageTool {
 				 contentType.contains("tif")) {
 
 			ImageIO.write(renderedImage, "tiff", outputStream);
-		}
-	}
-
-	@Activate
-	protected void activate() {
-		ImageIO.setUseCache(PropsValues.IMAGE_IO_USE_DISK_CACHE);
-
-		orderImageReaderSpis();
-	}
-
-	protected void orderImageReaderSpis() {
-		IIORegistry defaultIIORegistry = IIORegistry.getDefaultInstance();
-
-		ImageReaderSpi firstImageReaderSpi = null;
-		ImageReaderSpi secondImageReaderSpi = null;
-
-		Iterator<ImageReaderSpi> iterator =
-			defaultIIORegistry.getServiceProviders(ImageReaderSpi.class, true);
-
-		while (iterator.hasNext()) {
-			ImageReaderSpi imageReaderSpi = iterator.next();
-
-			if (imageReaderSpi instanceof CMYKJPEGImageReaderSpi) {
-				secondImageReaderSpi = imageReaderSpi;
-			}
-			else {
-				String[] formatNames = imageReaderSpi.getFormatNames();
-
-				if (ArrayUtil.contains(formatNames, TYPE_JPEG, true) ||
-					ArrayUtil.contains(formatNames, "jpeg", true)) {
-
-					firstImageReaderSpi = imageReaderSpi;
-				}
-			}
-		}
-
-		if ((firstImageReaderSpi != null) && (secondImageReaderSpi != null)) {
-			defaultIIORegistry.setOrdering(
-				ImageReaderSpi.class, firstImageReaderSpi,
-				secondImageReaderSpi);
 		}
 	}
 
