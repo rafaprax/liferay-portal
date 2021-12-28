@@ -16,6 +16,7 @@ package com.liferay.portal.kernel.image;
 
 import com.liferay.portal.kernel.exception.ImageResolutionException;
 import com.liferay.portal.kernel.model.Image;
+import com.liferay.portal.kernel.util.ServiceProxyFactory;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -285,10 +286,8 @@ public class ImageToolUtil {
 		_imageTool.write(renderedImage, contentType, outputStream);
 	}
 
-	public void setImageTool(ImageTool imageTool) {
-		_imageTool = imageTool;
-	}
-
-	private static ImageTool _imageTool;
+	private static volatile ImageTool _imageTool =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			ImageTool.class, ImageToolUtil.class, "_imageTool", true);
 
 }
