@@ -48,7 +48,7 @@ public class SpriteProcessorUtil {
 
 	private static volatile SpriteProcessor _spriteProcessor =
 		ServiceProxyFactory.newServiceTrackedInstance(
-			SpriteProcessor.class, ImageMagickUtil.class, "_spriteProcessor",
+			SpriteProcessor.class, SpriteProcessorUtil.class, "_spriteProcessor",
 			true);
 
 }
