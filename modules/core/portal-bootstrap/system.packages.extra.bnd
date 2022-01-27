@@ -96,8 +96,6 @@ Export-Package:\
 	\
 	com.ibm.crypto.provider,\
 	\
-	com.liferay.ibm.icu.*;version='4.0.1',\
-	\
 	com.rometools.rome;version='1.16.0',\
 	com.rometools.rome.feed;version='1.16.0',\
 	com.rometools.rome.feed.atom;version='1.16.0',\

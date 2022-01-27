@@ -12,17 +12,15 @@
  * details.
  */
 
-package com.liferay.portal.util;
+package com.liferay.friendly.url.internal.util;
 
 import com.liferay.petra.nio.CharsetEncoderUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
-import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.util.Normalizer;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -30,11 +28,17 @@ import java.nio.charset.CharsetEncoder;
 
 import java.util.Arrays;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author Brian Wing Shun Chan
  * @author Shuyang Zhou
  */
-@OSGiBeanProperties(property = "service.ranking:Integer=100")
+@Component(
+	immediate = true, property = "service.ranking:Integer=100",
+	service = FriendlyURLNormalizer.class
+)
 public class FriendlyURLNormalizerImpl implements FriendlyURLNormalizer {
 
 	@Override
@@ -48,10 +52,10 @@ public class FriendlyURLNormalizerImpl implements FriendlyURLNormalizer {
 			return friendlyURL;
 		}
 
-		String decodedFriendlyURL = HttpUtil.decodePath(friendlyURL);
+		String decodedFriendlyURL = _http.decodePath(friendlyURL);
 
 		if (Validator.isNull(decodedFriendlyURL)) {
-			decodedFriendlyURL = HttpUtil.decodePath(
+			decodedFriendlyURL = _http.decodePath(
 				StringUtil.replace(
 					friendlyURL, CharPool.PERCENT, CharPool.POUND));
 		}
@@ -232,5 +236,8 @@ public class FriendlyURLNormalizerImpl implements FriendlyURLNormalizer {
 
 		_REPLACE_CHARS = replaceChars;
 	}
+
+	@Reference
+	private Http _http;
 
 }
