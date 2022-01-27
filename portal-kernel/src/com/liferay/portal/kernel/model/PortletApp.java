@@ -80,8 +80,6 @@ public interface PortletApp extends Serializable {
 
 	public int getSpecMinorVersion();
 
-	public SpriteImage getSpriteImage(String fileName);
-
 	public Set<String> getUserAttributes();
 
 	public boolean isWARFile();
@@ -95,8 +93,6 @@ public interface PortletApp extends Serializable {
 	public void setSpecMajorVersion(int specMajorVersion);
 
 	public void setSpecMinorVersion(int specMinorVersion);
-
-	public void setSpriteImages(String spriteFileName, Properties properties);
 
 	public void setWARFile(boolean warFile);
 

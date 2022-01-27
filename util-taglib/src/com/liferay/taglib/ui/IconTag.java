@@ -19,10 +19,6 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.PortletApp;
-import com.liferay.portal.kernel.model.SpriteImage;
-import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -36,9 +32,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.util.IncludeTag;
 import com.liferay.taglib.util.TagResourceBundleUtil;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -544,96 +537,6 @@ public class IconTag extends IncludeTag {
 			sb.append("\"");
 
 			details = sb.toString();
-		}
-
-		if (Validator.isNull(_src) || !themeDisplay.isThemeImagesFastLoad() ||
-			isAUIImage()) {
-
-			return details;
-		}
-
-		SpriteImage spriteImage = null;
-		String spriteFileURL = null;
-
-		String imageFileName = StringUtil.removeSubstring(_src, "common/../");
-
-		HttpServletRequest httpServletRequest = getRequest();
-
-		if (imageFileName.contains(Http.PROTOCOL_DELIMITER)) {
-			String portalURL = PortalUtil.getPortalURL(httpServletRequest);
-
-			if (imageFileName.startsWith(portalURL)) {
-				imageFileName = imageFileName.substring(portalURL.length());
-			}
-			else {
-				URL imageURL = null;
-
-				try {
-					imageURL = new URL(imageFileName);
-
-					imageFileName = imageURL.getPath();
-				}
-				catch (MalformedURLException malformedURLException) {
-					if (_log.isDebugEnabled()) {
-						_log.debug(
-							malformedURLException, malformedURLException);
-					}
-				}
-			}
-		}
-
-		Theme theme = themeDisplay.getTheme();
-
-		String contextPath = theme.getContextPath();
-
-		String imagesPath = contextPath.concat(theme.getImagesPath());
-
-		if (imageFileName.startsWith(imagesPath)) {
-			spriteImage = theme.getSpriteImage(imageFileName);
-
-			if (spriteImage != null) {
-				String cdnBaseURL = themeDisplay.getCDNBaseURL();
-
-				spriteFileURL = cdnBaseURL.concat(
-					spriteImage.getSpriteFileName());
-			}
-		}
-
-		if (spriteImage == null) {
-			Portlet portlet = (Portlet)httpServletRequest.getAttribute(
-				"liferay-portlet:icon_portlet:portlet");
-
-			if (portlet == null) {
-				portlet = (Portlet)httpServletRequest.getAttribute(
-					WebKeys.RENDER_PORTLET);
-			}
-
-			if (portlet != null) {
-				PortletApp portletApp = portlet.getPortletApp();
-
-				spriteImage = portletApp.getSpriteImage(imageFileName);
-
-				if (spriteImage != null) {
-					String cdnBaseURL = themeDisplay.getCDNBaseURL();
-
-					spriteFileURL = cdnBaseURL.concat(
-						spriteImage.getSpriteFileName());
-				}
-			}
-		}
-
-		if (spriteImage != null) {
-			String themeImagesPath = themeDisplay.getPathThemeImages();
-
-			_src = themeImagesPath.concat("/spacer.png");
-
-			details = StringBundler.concat(
-				details, " style=\"background-image: url('",
-				HtmlUtil.escapeCSS(spriteFileURL),
-				"'); background-position: 50% -", spriteImage.getOffset(),
-				"px; background-repeat: no-repeat; height: ",
-				spriteImage.getHeight(), "px; width: ", spriteImage.getWidth(),
-				"px;\"");
 		}
 
 		return details;
