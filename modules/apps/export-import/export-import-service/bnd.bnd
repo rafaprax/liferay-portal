@@ -1,3 +1,19 @@
 Bundle-Name: Liferay Export Import Service
 Bundle-SymbolicName: com.liferay.exportimport.service
 Bundle-Version: 8.0.34
+Import-Package:\
+	!com.bea.*,\
+	\
+	!net.sf.cglib.*,\
+	\
+	!nu.xom,\
+	\
+	!org.codehaus.jettison.*,\
+	\
+	!org.jdom.*,\
+	\
+	!org.joda.time.*,\
+	\
+	!org.xmlpull.*,\
+	\
+	*

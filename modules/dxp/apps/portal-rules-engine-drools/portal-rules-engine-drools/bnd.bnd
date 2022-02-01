@@ -24,6 +24,8 @@ Import-Package:\
 	!org.eclipse.jdt.core.index.*,\
 	!org.eclipse.jdt.core.util.*,\
 	\
+	!org.jdom.*,\
+	\
 	!org.joda.time.*,\
 	\
 	!org.kxml2.*,\

@@ -2,6 +2,8 @@ Bundle-Name: Liferay Document Library Document Conversion
 Bundle-SymbolicName: com.liferay.document.library.document.conversion
 Bundle-Version: 4.0.13
 Import-Package:\
+	!com.bea.*,\
+	\
 	!com.google.common.collect.*,\
 	!com.google.gson.*,\
 	\
@@ -9,9 +11,21 @@ Import-Package:\
 	\
 	!net.oauth.jsontoken.*,\
 	\
+	!net.sf.cglib.*,\
+	\
+	!nu.xom,\
+	\
 	!org.apache.http.*,\
 	\
+	!org.codehaus.jettison.*,\
+	\
+	!org.jdom.*,\
+	\
 	!org.joda.time.*,\
+	\
+	!org.kxml2.*,\
+	\
+	!org.xmlpull.*,\
 	\
 	*
 Require-Capability:\
