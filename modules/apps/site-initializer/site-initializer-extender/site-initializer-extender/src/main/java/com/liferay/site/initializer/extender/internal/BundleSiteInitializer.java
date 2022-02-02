@@ -179,7 +179,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Supplier;
 
 import javax.servlet.ServletContext;
 
@@ -195,7 +194,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 		AccountResource.Factory accountResourceFactory,
 		AssetCategoryLocalService assetCategoryLocalService,
 		AssetListEntryLocalService assetListEntryLocalService, Bundle bundle,
-		Supplier<CommerceReferencesHolder> commerceReferencesHolderSupplier,
+		CommerceReferencesHolder commerceReferencesHolder,
 		DDMStructureLocalService ddmStructureLocalService,
 		DDMTemplateLocalService ddmTemplateLocalService,
 		DefaultDDMStructureHelper defaultDDMStructureHelper,
@@ -241,7 +240,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 		_assetCategoryLocalService = assetCategoryLocalService;
 		_assetListEntryLocalService = assetListEntryLocalService;
 		_bundle = bundle;
-		_commerceReferencesHolderSupplier = commerceReferencesHolderSupplier;
+		_commerceReferencesHolder = commerceReferencesHolder;
 		_ddmStructureLocalService = ddmStructureLocalService;
 		_ddmTemplateLocalService = ddmTemplateLocalService;
 		_defaultDDMStructureHelper = defaultDDMStructureHelper;
@@ -325,8 +324,6 @@ public class BundleSiteInitializer implements SiteInitializer {
 
 	@Override
 	public void initialize(long groupId) throws InitializationException {
-		_commerceReferencesHolder = _commerceReferencesHolderSupplier.get();
-
 		if (_log.isDebugEnabled()) {
 			_log.debug(
 				"Commerce references holder " + _commerceReferencesHolder);
@@ -3183,9 +3180,7 @@ public class BundleSiteInitializer implements SiteInitializer {
 	private final AssetListEntryLocalService _assetListEntryLocalService;
 	private final Bundle _bundle;
 	private final ClassLoader _classLoader;
-	private CommerceReferencesHolder _commerceReferencesHolder;
-	private final Supplier<CommerceReferencesHolder>
-		_commerceReferencesHolderSupplier;
+	private final CommerceReferencesHolder _commerceReferencesHolder;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private final DDMTemplateLocalService _ddmTemplateLocalService;
 	private final DefaultDDMStructureHelper _defaultDDMStructureHelper;
