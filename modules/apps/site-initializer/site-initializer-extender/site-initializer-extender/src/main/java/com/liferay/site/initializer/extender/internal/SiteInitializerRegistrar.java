@@ -58,8 +58,6 @@ import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 
-import java.util.function.Supplier;
-
 import javax.servlet.ServletContext;
 
 import org.osgi.framework.Bundle;
@@ -76,7 +74,6 @@ public class SiteInitializerRegistrar {
 		AssetCategoryLocalService assetCategoryLocalService,
 		AssetListEntryLocalService assetListEntryLocalService, Bundle bundle,
 		BundleContext bundleContext,
-		Supplier<CommerceReferencesHolder> commerceReferencesHolderSupplier,
 		DDMStructureLocalService ddmStructureLocalService,
 		DDMTemplateLocalService ddmTemplateLocalService,
 		DefaultDDMStructureHelper defaultDDMStructureHelper,
@@ -123,7 +120,6 @@ public class SiteInitializerRegistrar {
 		_assetListEntryLocalService = assetListEntryLocalService;
 		_bundle = bundle;
 		_bundleContext = bundleContext;
-		_commerceReferencesHolderSupplier = commerceReferencesHolderSupplier;
 		_ddmStructureLocalService = ddmStructureLocalService;
 		_ddmTemplateLocalService = ddmTemplateLocalService;
 		_defaultDDMStructureHelper = defaultDDMStructureHelper;
@@ -171,6 +167,12 @@ public class SiteInitializerRegistrar {
 		_userLocalService = userLocalService;
 	}
 
+	protected void setCommerceReferencesHolder(
+		CommerceReferencesHolder commerceReferencesHolder) {
+
+		_commerceReferencesHolder = commerceReferencesHolder;
+	}
+
 	protected void setServletContext(ServletContext servletContext) {
 		_servletContext = servletContext;
 	}
@@ -180,14 +182,13 @@ public class SiteInitializerRegistrar {
 			SiteInitializer.class,
 			new BundleSiteInitializer(
 				_accountResourceFactory, _assetCategoryLocalService,
-				_assetListEntryLocalService, _bundle,
-				_commerceReferencesHolderSupplier, _ddmStructureLocalService,
-				_ddmTemplateLocalService, _defaultDDMStructureHelper,
-				_dlURLHelper, _documentFolderResourceFactory,
-				_documentResourceFactory, _fragmentsImporter,
-				_groupLocalService, _journalArticleLocalService, _jsonFactory,
-				_layoutCopyHelper, _layoutLocalService,
-				_layoutPageTemplateEntryLocalService,
+				_assetListEntryLocalService, _bundle, _commerceReferencesHolder,
+				_ddmStructureLocalService, _ddmTemplateLocalService,
+				_defaultDDMStructureHelper, _dlURLHelper,
+				_documentFolderResourceFactory, _documentResourceFactory,
+				_fragmentsImporter, _groupLocalService,
+				_journalArticleLocalService, _jsonFactory, _layoutCopyHelper,
+				_layoutLocalService, _layoutPageTemplateEntryLocalService,
 				_layoutPageTemplatesImporter,
 				_layoutPageTemplateStructureLocalService,
 				_layoutSetLocalService, _listTypeDefinitionResource,
@@ -209,13 +210,18 @@ public class SiteInitializerRegistrar {
 				"site.initializer.key", _bundle.getSymbolicName()));
 	}
 
+	protected void unsetCommerceReferencesHolder(
+		CommerceReferencesHolder commerceReferencesHolder) {
+
+		_commerceReferencesHolder = null;
+	}
+
 	private final AccountResource.Factory _accountResourceFactory;
 	private final AssetCategoryLocalService _assetCategoryLocalService;
 	private final AssetListEntryLocalService _assetListEntryLocalService;
 	private final Bundle _bundle;
 	private final BundleContext _bundleContext;
-	private final Supplier<CommerceReferencesHolder>
-		_commerceReferencesHolderSupplier;
+	private CommerceReferencesHolder _commerceReferencesHolder;
 	private final DDMStructureLocalService _ddmStructureLocalService;
 	private final DDMTemplateLocalService _ddmTemplateLocalService;
 	private final DefaultDDMStructureHelper _defaultDDMStructureHelper;
