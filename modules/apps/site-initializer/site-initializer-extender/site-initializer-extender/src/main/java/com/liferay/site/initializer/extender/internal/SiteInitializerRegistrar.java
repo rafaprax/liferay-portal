@@ -171,6 +171,8 @@ public class SiteInitializerRegistrar {
 		CommerceReferencesHolder commerceReferencesHolder) {
 
 		_commerceReferencesHolder = commerceReferencesHolder;
+
+		_restartServiceRegistration();
 	}
 
 	protected void setServletContext(ServletContext servletContext) {
@@ -178,6 +180,18 @@ public class SiteInitializerRegistrar {
 	}
 
 	protected void start() {
+		_registerBundleSiteInitializer();
+	}
+
+	protected void unsetCommerceReferencesHolder(
+		CommerceReferencesHolder commerceReferencesHolder) {
+
+		_commerceReferencesHolder = null;
+
+		_restartServiceRegistration();
+	}
+
+	private void _registerBundleSiteInitializer() {
 		_serviceRegistration = _bundleContext.registerService(
 			SiteInitializer.class,
 			new BundleSiteInitializer(
@@ -210,10 +224,14 @@ public class SiteInitializerRegistrar {
 				"site.initializer.key", _bundle.getSymbolicName()));
 	}
 
-	protected void unsetCommerceReferencesHolder(
-		CommerceReferencesHolder commerceReferencesHolder) {
+	private void _restartServiceRegistration() {
+		if (_serviceRegistration == null) {
+			return;
+		}
 
-		_commerceReferencesHolder = null;
+		_serviceRegistration.unregister();
+
+		_registerBundleSiteInitializer();
 	}
 
 	private final AccountResource.Factory _accountResourceFactory;
