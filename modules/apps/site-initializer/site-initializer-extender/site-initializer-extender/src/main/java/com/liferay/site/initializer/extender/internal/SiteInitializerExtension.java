@@ -56,8 +56,6 @@ import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 
-import java.util.function.Supplier;
-
 import javax.servlet.ServletContext;
 
 import org.apache.felix.dm.Component;
@@ -77,7 +75,6 @@ public class SiteInitializerExtension {
 		AssetCategoryLocalService assetCategoryLocalService,
 		AssetListEntryLocalService assetListEntryLocalService, Bundle bundle,
 		BundleContext bundleContext,
-		Supplier<CommerceReferencesHolder> commerceReferencesHolderSupplier,
 		DDMStructureLocalService ddmStructureLocalService,
 		DDMTemplateLocalService ddmTemplateLocalService,
 		DefaultDDMStructureHelper defaultDDMStructureHelper,
@@ -127,8 +124,8 @@ public class SiteInitializerExtension {
 			new SiteInitializerRegistrar(
 				accountResourceFactory, assetCategoryLocalService,
 				assetListEntryLocalService, bundle, bundleContext,
-				commerceReferencesHolderSupplier, ddmStructureLocalService,
-				ddmTemplateLocalService, defaultDDMStructureHelper, dlURLHelper,
+				ddmStructureLocalService, ddmTemplateLocalService,
+				defaultDDMStructureHelper, dlURLHelper,
 				documentFolderResourceFactory, documentResourceFactory,
 				fragmentsImporter, groupLocalService,
 				journalArticleLocalService, jsonFactory, layoutCopyHelper,
@@ -158,6 +155,15 @@ public class SiteInitializerExtension {
 		serviceDependency.setService(
 			ServletContext.class,
 			"(osgi.web.symbolicname=" + bundle.getSymbolicName() + ")");
+
+		_component.add(serviceDependency);
+
+		serviceDependency = _dependencyManager.createServiceDependency();
+
+		serviceDependency.setCallbacks(
+			"setCommerceReferencesHolder", "unsetCommerceReferencesHolder");
+		serviceDependency.setRequired(false);
+		serviceDependency.setService(CommerceReferencesHolder.class);
 
 		_component.add(serviceDependency);
 	}
