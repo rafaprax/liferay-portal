@@ -19,6 +19,8 @@ import com.liferay.document.library.kernel.service.DLAppHelperLocalService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.BaseRepository;
 import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.kernel.repository.Repository;
@@ -47,6 +49,10 @@ public class SharepointWSRepositoryFactory implements RepositoryFactory {
 
 		SharepointWSRepository sharepointWSRepository =
 			(SharepointWSRepository)createRepository(repositoryId);
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("sharepointWSRepository " + sharepointWSRepository);
+		}
 
 		return sharepointWSRepository.getLocalRepository();
 	}
@@ -91,6 +97,9 @@ public class SharepointWSRepositoryFactory implements RepositoryFactory {
 			repository.getTypeSettingsProperties());
 		baseRepository.setUserLocalService(_userLocalService);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SharepointWSRepositoryFactory.class);
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
