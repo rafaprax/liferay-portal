@@ -1,0 +1,3 @@
+Bundle-Name: Liferay URL Validator Implementation
+Bundle-SymbolicName: com.liferay.url.validator.impl
+Bundle-Version: 1.0.0
