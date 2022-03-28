@@ -1441,18 +1441,6 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/portal/jaxws-api.jar</file-name>
-				<version>2.3.0</version>
-				<project-name>JAX-WS (JSR 224) API</project-name>
-				<project-url>https://github.com/javaee/jax-ws-spec</project-url>
-				<licenses>
-					<license>
-						<license-name>CDDL 1.1</license-name>
-						<license-url>https://oss.oracle.com/licenses/CDDL-1.1</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
 				<file-name>lib/portal/jcl-over-slf4j.jar</file-name>
 				<version>1.7.2</version>
 				<project-name>SLF4J</project-name>
