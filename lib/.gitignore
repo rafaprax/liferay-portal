@@ -161,7 +161,6 @@
 /portal/spring-web.jar
 /portal/spring-webmvc.jar
 /portal/stax-ex.jar
-/portal/stax.jar
 /portal/tomcat-jdbc.jar
 /portal/tomcat-juli.jar
 /portal/transaction.jar
