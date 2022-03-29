@@ -1919,18 +1919,6 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/portal/streambuffer.jar</file-name>
-				<version>0.9</version>
-				<project-name>XML Stream Buffer</project-name>
-				<project-url>http://java.net/projects/xmlstreambuffer</project-url>
-				<licenses>
-					<license>
-						<license-name>CDDL 1.0</license-name>
-						<license-url>http://glassfish.java.net/public/CDDLv1.0.html</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
 				<file-name>lib/portal/tomcat-jdbc.jar</file-name>
 				<version>9.0.56</version>
 				<project-name>Tomcat</project-name>
