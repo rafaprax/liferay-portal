@@ -1614,30 +1614,6 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/portal/saaj-api.jar</file-name>
-				<version>1.3</version>
-				<project-name>SAAJ</project-name>
-				<project-url>http://saaj.dev.java.net</project-url>
-				<licenses>
-					<license>
-						<license-name>CDDL 1.0</license-name>
-						<license-url>http://glassfish.java.net/public/CDDLv1.0.html</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
-				<file-name>lib/portal/saaj-impl.jar</file-name>
-				<version>1.3</version>
-				<project-name>SAAJ</project-name>
-				<project-url>http://saaj.dev.java.net</project-url>
-				<licenses>
-					<license>
-						<license-name>CDDL 1.0</license-name>
-						<license-url>http://glassfish.java.net/public/CDDLv1.0.html</license-url>
-					</license>
-				</licenses>
-			</library>
-			<library>
 				<file-name>lib/portal/slf4j-api.jar</file-name>
 				<version>1.7.26</version>
 				<project-name>SLF4J</project-name>
