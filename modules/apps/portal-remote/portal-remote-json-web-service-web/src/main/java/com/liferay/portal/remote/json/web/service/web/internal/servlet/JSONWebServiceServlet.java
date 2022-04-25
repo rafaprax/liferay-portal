@@ -58,19 +58,23 @@ public class JSONWebServiceServlet extends JSONServlet {
 			HttpServletResponse httpServletResponse)
 		throws IOException, ServletException {
 
-		String path = GetterUtil.getString(httpServletRequest.getPathInfo());
+		HttpServletRequest originalServletRequest =
+			PortalUtil.getOriginalServletRequest(httpServletRequest);
+
+		String path = GetterUtil.getString(
+			originalServletRequest.getPathInfo());
 
 		if (!PropsValues.JSONWS_WEB_SERVICE_API_DISCOVERABLE ||
 			(!path.equals(StringPool.BLANK) &&
 			 !path.equals(StringPool.SLASH)) ||
-			(httpServletRequest.getParameter("discover") != null)) {
+			(originalServletRequest.getParameter("discover") != null)) {
 
 			Locale locale = PortalUtil.getLocale(
-				httpServletRequest, httpServletResponse, true);
+				originalServletRequest, httpServletResponse, true);
 
 			LocaleThreadLocal.setThemeDisplayLocale(locale);
 
-			super.service(httpServletRequest, httpServletResponse);
+			super.service(originalServletRequest, httpServletResponse);
 
 			return;
 		}
