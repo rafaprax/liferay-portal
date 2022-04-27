@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.servlet.JSONServlet;
 import com.liferay.portal.struts.JSONAction;
 import com.liferay.portal.util.PropsValues;
@@ -34,9 +33,11 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Igor Spasic
@@ -58,23 +59,23 @@ public class JSONWebServiceServlet extends JSONServlet {
 			HttpServletResponse httpServletResponse)
 		throws IOException, ServletException {
 
-		HttpServletRequest originalServletRequest =
-			PortalUtil.getOriginalServletRequest(httpServletRequest);
+		httpServletRequest = new JSONWebServiceRequestWrapper(
+			httpServletRequest,
+			_portal.getOriginalServletRequest(httpServletRequest));
 
-		String path = GetterUtil.getString(
-			originalServletRequest.getPathInfo());
+		String path = GetterUtil.getString(httpServletRequest.getPathInfo());
 
 		if (!PropsValues.JSONWS_WEB_SERVICE_API_DISCOVERABLE ||
 			(!path.equals(StringPool.BLANK) &&
 			 !path.equals(StringPool.SLASH)) ||
-			(originalServletRequest.getParameter("discover") != null)) {
+			(httpServletRequest.getParameter("discover") != null)) {
 
-			Locale locale = PortalUtil.getLocale(
-				originalServletRequest, httpServletResponse, true);
+			Locale locale = _portal.getLocale(
+				httpServletRequest, httpServletResponse, true);
 
 			LocaleThreadLocal.setThemeDisplayLocale(locale);
 
-			super.service(originalServletRequest, httpServletResponse);
+			super.service(httpServletRequest, httpServletResponse);
 
 			return;
 		}
@@ -97,6 +98,35 @@ public class JSONWebServiceServlet extends JSONServlet {
 		jsonWebServiceServiceAction.setServletContext(servletContext);
 
 		return jsonWebServiceServiceAction;
+	}
+
+	@Reference
+	private Portal _portal;
+
+	private static class JSONWebServiceRequestWrapper
+		extends HttpServletRequestWrapper {
+
+		public JSONWebServiceRequestWrapper(
+			HttpServletRequest httpServletRequest,
+			HttpServletRequest originalHttpServletRequest) {
+
+			super(httpServletRequest);
+
+			_originalHttpServletRequest = originalHttpServletRequest;
+		}
+
+		@Override
+		public String getPathInfo() {
+			return _originalHttpServletRequest.getPathInfo();
+		}
+
+		@Override
+		public ServletContext getServletContext() {
+			return _originalHttpServletRequest.getServletContext();
+		}
+
+		private final HttpServletRequest _originalHttpServletRequest;
+
 	}
 
 }
