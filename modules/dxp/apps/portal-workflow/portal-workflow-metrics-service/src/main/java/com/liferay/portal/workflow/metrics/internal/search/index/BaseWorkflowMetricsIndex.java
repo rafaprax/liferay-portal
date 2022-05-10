@@ -55,12 +55,9 @@ public abstract class BaseWorkflowMetricsIndex implements WorkflowMetricsIndex {
 				_indexesMap.computeIfAbsent(
 					getIndexName(companyId),
 					indexName -> {
-						IndicesExistsIndexRequest indicesExistsIndexRequest =
-							new IndicesExistsIndexRequest(indexName);
-
 						IndicesExistsIndexResponse indicesExistsIndexResponse =
 							searchEngineAdapter.execute(
-								indicesExistsIndexRequest);
+								new IndicesExistsIndexRequest(indexName));
 
 						if (indicesExistsIndexResponse.isExists()) {
 							return indexName;
