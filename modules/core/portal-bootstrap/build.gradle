@@ -113,9 +113,17 @@ dependencies {
 	compileOnly project(":core:petra:petra-string")
 	compileOnly project(":core:petra:petra-url-pattern-mapper")
 	compileOnly project(":core:portal-app-license-api")
+	compileInclude group: "xml-apis", name: "xml-apis", version: "1.4.01"
+	compileInclude group: "xerces", name: "xercesImpl", version: "2.12.2"
 }
 
 deployDependencies {
 	from configurations.compileOnly
 	include "org.eclipse.osgi-*.jar"
+	exclude "xml-apis-*.jar"
+	exclude "xercesImpl-*.jar"
+}
+
+liferayOSGi {
+	expandCompileInclude = true
 }
