@@ -139,4 +139,10 @@
 /portal/spring-web.jar
 /portal/stax-ex.jar
 /portal/transaction.jar
+<<<<<<< HEAD
 /portal/wstx.jar
+/portal/xercesImpl.jar
+/portal/xml-apis.jar
+=======
+/portal/wstx.jar
+>>>>>>> 08ef96a0a68b (WIP)
