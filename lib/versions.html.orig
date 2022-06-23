@@ -42,12 +42,12 @@
 									</th>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.adaptive.media.image.impl.jar!metadata-extractor.jar</td><td nowrap="nowrap">2.18.0</td><td nowrap="nowrap"><a href="https://drewnoakes.com/code/exif/">metadata-extractor</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.adaptive.media.image.impl.jar!metadata-extractor.jar</td><td nowrap="nowrap">2.13.0</td><td nowrap="nowrap"><a href="https://drewnoakes.com/code/exif/">metadata-extractor</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.adaptive.media.image.impl.jar!xmpcore.jar</td><td nowrap="nowrap">6.1.11</td><td nowrap="nowrap"><a href="https://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html">Adobe XMPCore</a></td><td nowrap><a href="https://opensource.org/licenses/BSD-3-Clause">The BSD 3-Clause License (BSD3)</a>
+<td nowrap="nowrap">com.liferay.adaptive.media.image.impl.jar!xmpcore.jar</td><td nowrap="nowrap">6.0.6</td><td nowrap="nowrap"><a href="https://zerowing.corp.adobe.com/display/granite">XMP Library for Java</a></td><td nowrap><a href="http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
@@ -247,7 +247,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.commerce.payment.method.paypal.jar!json.jar</td><td nowrap="nowrap">20220320</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
+<td nowrap="nowrap">com.liferay.commerce.payment.method.paypal.jar!json.jar</td><td nowrap="nowrap">20180813</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
 <br>
 </td><td></td>
 </tr>
@@ -897,7 +897,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.frontend.js.loader.modules.extender.jar!json.jar</td><td nowrap="nowrap">20220320</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
+<td nowrap="nowrap">com.liferay.frontend.js.loader.modules.extender.jar!json.jar</td><td nowrap="nowrap">20180813</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
 <br>
 </td><td></td>
 </tr>
@@ -922,92 +922,92 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!common-image.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: Common :: Image</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!common-image.jar</td><td nowrap="nowrap">3.3.2</td><td nowrap="nowrap">TwelveMonkeys :: Common :: Image</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!common-io.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: Common :: IO</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!common-io.jar</td><td nowrap="nowrap">3.3.2</td><td nowrap="nowrap">TwelveMonkeys :: Common :: IO</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!common-lang.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: Common :: Language support</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!common-lang.jar</td><td nowrap="nowrap">3.3.2</td><td nowrap="nowrap">TwelveMonkeys :: Common :: Language support</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-bmp.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: BMP plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-bmp.jar</td><td nowrap="nowrap">3.4.3</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: BMP plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-core.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: Core</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-core.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: Core</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-hdr.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: HDR plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-hdr.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: HDR plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-icns.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: ICNS plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-icns.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: ICNS plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-iff.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: IFF plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-iff.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: IFF plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-jpeg.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: JPEG plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-jpeg.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: JPEG plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-metadata.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: Metadata</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-metadata.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: Metadata</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-pcx.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PCX plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-pcx.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PCX plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-pict.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PICT plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-pict.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PICT plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-pnm.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PNM plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-pnm.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PNM plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-psd.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PSD plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-psd.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: PSD plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-sgi.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: SGI plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-sgi.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: SGI plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-tga.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: TGA plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-tga.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: TGA plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-thumbsdb.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: Thumbs.db plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-thumbsdb.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: Thumbs.db plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-tiff.jar</td><td nowrap="nowrap">3.8.2</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: TIFF plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
+<td nowrap="nowrap">com.liferay.imageio.plugins.jar!imageio-tiff.jar</td><td nowrap="nowrap">3.5</td><td nowrap="nowrap">TwelveMonkeys :: ImageIO :: TIFF plugin</td><td nowrap><a href="https://github.com/haraldk/TwelveMonkeys#license">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
@@ -1167,6 +1167,51 @@
 </td><td></td>
 </tr>
 <tr>
+<td nowrap="nowrap">com.liferay.petra.doulos.jar!commons-lang3.jar</td><td nowrap="nowrap">3.4</td><td nowrap="nowrap"><a href="http://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.doulos.jar!concurrentlinkedhashmap-lru.jar</td><td nowrap="nowrap">1.4.2</td><td nowrap="nowrap"><a href="http://code.google.com/p/concurrentlinkedhashmap">ConcurrentLinkedHashMap</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!commons-codec.jar</td><td nowrap="nowrap">1.7</td><td nowrap="nowrap"><a href="http://commons.apache.org/codec/">Commons Codec</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!httpasyncclient.jar</td><td nowrap="nowrap">4.1.4</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-asyncclient">Apache HttpAsyncClient</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!httpclient.jar</td><td nowrap="nowrap">4.5.13</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-client">Apache HttpClient</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!httpcore-nio.jar</td><td nowrap="nowrap">4.4.14</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-core-ga">Apache HttpCore NIO</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!httpcore.jar</td><td nowrap="nowrap">4.4.14</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-core-ga">HttpComponents Apache HttpCore</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!signpost-commonshttp4.jar</td><td nowrap="nowrap">1.2.1.2</td><td nowrap="nowrap">signpost-commonshttp4</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">com.liferay.petra.json.web.service.client.jar!signpost-core.jar</td><td nowrap="nowrap">1.2.1.2</td><td nowrap="nowrap">signpost-core</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
 <td nowrap="nowrap">com.liferay.portal.cache.ehcache.impl.jar!net.sf.ehcache.jar</td><td nowrap="nowrap">2.10.6.LIFERAY-PATCHED-2</td><td nowrap="nowrap"><a href="http://www.terracotta.org">ehcache</a></td><td nowrap><a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt">LGPL 2.1</a>
 <br>
 </td><td></td>
@@ -1222,7 +1267,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.portal.json.validator.jar!json.jar</td><td nowrap="nowrap">20220320</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
+<td nowrap="nowrap">com.liferay.portal.json.validator.jar!json.jar</td><td nowrap="nowrap">20180813</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
 <br>
 </td><td></td>
 </tr>
@@ -1233,206 +1278,6 @@
 </tr>
 <tr>
 <td nowrap="nowrap">com.liferay.portal.json.validator.jar!re2j.jar</td><td nowrap="nowrap">1.2</td><td nowrap="nowrap"><a href="http://github.com/google/re2j">RE2/J</a></td><td nowrap><a href="https://golang.org/LICENSE">Go License</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!commons-codec.jar</td><td nowrap="nowrap">1.7</td><td nowrap="nowrap"><a href="http://commons.apache.org/codec/">Commons Codec</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!httpasyncclient.jar</td><td nowrap="nowrap">4.1.4</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-asyncclient">Apache HttpAsyncClient</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!httpclient.jar</td><td nowrap="nowrap">4.5.13</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-client">Apache HttpClient</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!httpcore-nio.jar</td><td nowrap="nowrap">4.4.14</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-core-ga">Apache HttpCore NIO</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!httpcore.jar</td><td nowrap="nowrap">4.4.14</td><td nowrap="nowrap"><a href="http://hc.apache.org/httpcomponents-core-ga">HttpComponents Apache HttpCore</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!signpost-commonshttp4.jar</td><td nowrap="nowrap">1.2.1.2</td><td nowrap="nowrap">signpost-commonshttp4</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.json.web.service.client.jar!signpost-core.jar</td><td nowrap="nowrap">1.2.1.2</td><td nowrap="nowrap">signpost-core</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!automaton.jar</td><td nowrap="nowrap">1.11-8</td><td nowrap="nowrap"><a href="http://www.brics.dk/automaton/">Automaton</a></td><td nowrap><a href="http://www.opensource.org/licenses/bsd-license.php">BSD</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!generex.jar</td><td nowrap="nowrap">1.0.2</td><td nowrap="nowrap"><a href="https://github.com/mifmif/Generex/tree/master">Generex</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!jackson-annotations.jar</td><td nowrap="nowrap">2.13.2</td><td nowrap="nowrap"><a href="http://github.com/FasterXML/jackson">Jackson-annotations</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!jackson-core.jar</td><td nowrap="nowrap">2.13.2</td><td nowrap="nowrap"><a href="https://github.com/FasterXML/jackson-core">Jackson-core</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!jackson-databind.jar</td><td nowrap="nowrap">2.13.2.2</td><td nowrap="nowrap"><a href="http://github.com/FasterXML/jackson">jackson-databind</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!jackson-dataformat-yaml.jar</td><td nowrap="nowrap">2.13.2</td><td nowrap="nowrap"><a href="https://github.com/FasterXML/jackson-dataformats-text">Jackson-dataformat-YAML</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!jackson-datatype-jsr310.jar</td><td nowrap="nowrap">2.13.2</td><td nowrap="nowrap"><a href="https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310">Jackson datatype: JSR310</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-client.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap">Fabric8 :: Kubernetes :: Java Client</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-admissionregistration.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Admission Registration, Authentication and Authorization</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-apiextensions.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: API Extensions</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-apps.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Apps</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-autoscaling.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Autoscaling</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-batch.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Batch</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-certificates.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Certificates</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-common.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Common</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-coordination.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Coordination</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-core.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Core</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-discovery.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Discovery</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-events.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Events</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-extensions.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Extensions</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-flowcontrol.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: FlowControl</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-metrics.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Metrics</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-networking.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Networking</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-node.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Node</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-policy.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Policy</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-rbac.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: RBAC</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-scheduling.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Scheduling</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!kubernetes-model-storageclass.jar</td><td nowrap="nowrap">5.12.2</td><td nowrap="nowrap"><a href="http://redhat.com">Fabric8 :: Kubernetes Model :: Storage Class</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!logging-interceptor.jar</td><td nowrap="nowrap">3.12.12</td><td nowrap="nowrap">OkHttp Logging Interceptor</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!okhttp.jar</td><td nowrap="nowrap">3.12.12</td><td nowrap="nowrap">OkHttp</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!okio.jar</td><td nowrap="nowrap">1.15.0</td><td nowrap="nowrap">Okio</td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!snakeyaml.jar</td><td nowrap="nowrap">1.30</td><td nowrap="nowrap"><a href="https://bitbucket.org/snakeyaml/snakeyaml">SnakeYAML</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.portal.k8s.agent.impl.jar!zjsonpatch.jar</td><td nowrap="nowrap">0.3.0</td><td nowrap="nowrap"><a href="https://github.com/fabric8io/zjsonpatch/">zjsonpatch</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
@@ -2082,11 +1927,6 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.portal.template.velocity.jar!commons-collections.jar</td><td nowrap="nowrap">3.2.2</td><td nowrap="nowrap"><a href="http://commons.apache.org/collections/">Apache Commons Collections</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
 <td nowrap="nowrap">com.liferay.portal.template.velocity.jar!org.apache.velocity.jar</td><td nowrap="nowrap">1.6.4.LIFERAY-PATCHED-1</td><td nowrap="nowrap">org.apache.velocity</td><td nowrap><a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt">LGPL 2.1</a>
 <br>
 </td><td></td>
@@ -2157,7 +1997,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.portal.tika.jar!metadata-extractor.jar</td><td nowrap="nowrap">2.18.0</td><td nowrap="nowrap"><a href="https://drewnoakes.com/code/exif/">metadata-extractor</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.portal.tika.jar!metadata-extractor.jar</td><td nowrap="nowrap">2.13.0</td><td nowrap="nowrap"><a href="https://drewnoakes.com/code/exif/">metadata-extractor</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
@@ -2222,7 +2062,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.portal.tika.jar!xmpcore.jar</td><td nowrap="nowrap">6.1.11</td><td nowrap="nowrap"><a href="https://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html">Adobe XMPCore</a></td><td nowrap><a href="https://opensource.org/licenses/BSD-3-Clause">The BSD 3-Clause License (BSD3)</a>
+<td nowrap="nowrap">com.liferay.portal.tika.jar!xmpcore.jar</td><td nowrap="nowrap">6.0.6</td><td nowrap="nowrap"><a href="https://zerowing.corp.adobe.com/display/granite">XMP Library for Java</a></td><td nowrap><a href="http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html">The BSD License</a>
 <br>
 </td><td></td>
 </tr>
@@ -2372,12 +2212,12 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.portal.workflow.kaleo.service.jar!json.jar</td><td nowrap="nowrap">20220320</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
+<td nowrap="nowrap">com.liferay.portal.workflow.kaleo.service.jar!json.jar</td><td nowrap="nowrap">20180813</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="http://json.org/license.html">The JSON License</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.portal.workflow.kaleo.service.jar!org.jabsorb.jar</td><td nowrap="nowrap">1.3.2.LIFERAY-PATCHED-2</td><td nowrap="nowrap">org.jabsorb</td><td nowrap><a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt">LGPL 2.1</a>
+<td nowrap="nowrap">com.liferay.portal.workflow.kaleo.service.jar!org.jabsorb.jar</td><td nowrap="nowrap">1.3.2.LIFERAY-PATCHED-1</td><td nowrap="nowrap">org.jabsorb</td><td nowrap><a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt">LGPL 2.1</a>
 <br>
 </td><td></td>
 </tr>
@@ -2482,16 +2322,6 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.apache.commons.jar!commons-beanutils.jar</td><td nowrap="nowrap">1.9.4</td><td nowrap="nowrap"><a href="https://commons.apache.org/proper/commons-beanutils/">Apache Commons BeanUtils</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.apache.commons.jar!commons-codec.jar</td><td nowrap="nowrap">1.13</td><td nowrap="nowrap"><a href="https://commons.apache.org/proper/commons-codec/">Apache Commons Codec</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
-<br>
-</td><td></td>
-</tr>
-<tr>
 <td nowrap="nowrap">com.liferay.shared.dependencies.apache.commons.jar!commons-compress.jar</td><td nowrap="nowrap">1.21</td><td nowrap="nowrap"><a href="https://commons.apache.org/proper/commons-compress/">Apache Commons Compress</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
@@ -2547,52 +2377,52 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-buffer.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Buffer</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-buffer.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Buffer</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-codec-http.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Codec/HTTP</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-codec-http.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Codec/HTTP</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-codec-http2.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Codec/HTTP2</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-codec-http2.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Codec/HTTP2</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-codec.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Codec</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-codec.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Codec</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-common.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Common</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-common.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Common</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-handler-proxy.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Handler/Proxy</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-handler-proxy.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Handler/Proxy</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-handler.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Handler</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-handler.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Handler</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-resolver-dns.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Resolver/DNS</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-resolver-dns.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Resolver/DNS</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-resolver.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Resolver</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-resolver.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Resolver</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-transport.jar</td><td nowrap="nowrap">4.1.77.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Transport</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+<td nowrap="nowrap">com.liferay.shared.dependencies.netty.jar!netty-transport.jar</td><td nowrap="nowrap">4.1.72.Final</td><td nowrap="nowrap"><a href="https://netty.io/">Netty/Transport</a></td><td nowrap><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
 <br>
 </td><td></td>
 </tr>
@@ -2817,12 +2647,12 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/development/com.liferay.jenkins.results.parser.jar</td><td nowrap="nowrap">1.0.1060</td><td nowrap="nowrap">Liferay Jenkins Results Parser</td><td nowrap><a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPL 2.1</a>
+<td nowrap="nowrap">lib/development/com.liferay.jenkins.results.parser.jar</td><td nowrap="nowrap">1.0.1029</td><td nowrap="nowrap">Liferay Jenkins Results Parser</td><td nowrap><a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPL 2.1</a>
 <br>
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/development/com.liferay.poshi.core.jar</td><td nowrap="nowrap">1.0.63</td><td nowrap="nowrap">Liferay Poshi Core</td><td nowrap><a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPL 2.1</a>
+<td nowrap="nowrap">lib/development/com.liferay.poshi.core.jar</td><td nowrap="nowrap">1.0.59</td><td nowrap="nowrap">Liferay Poshi Core</td><td nowrap><a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPL 2.1</a>
 <br>
 </td><td></td>
 </tr>
@@ -3248,7 +3078,7 @@
 				</td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/portal/hikaricp.jar</td><td nowrap="nowrap">4.0.3</td><td nowrap="nowrap"><a href="https://github.com/brettwooldridge/HikariCP">HikariCP</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<td nowrap="nowrap">lib/portal/hikaricp.jar</td><td nowrap="nowrap">2.6.3</td><td nowrap="nowrap"><a href="https://github.com/brettwooldridge/HikariCP">HikariCP</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
 <br>
 </td><td></td>
 </tr>
@@ -3258,14 +3088,19 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/portal/jabsorb.jar</td><td nowrap="nowrap">1.3.2.LIFERAY-PATCHED-2</td><td nowrap="nowrap"><a href="http://jabsorb.org">jabsorb</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<td nowrap="nowrap">lib/portal/jabsorb.jar</td><td nowrap="nowrap">1.3.2.LIFERAY-PATCHED-1</td><td nowrap="nowrap"><a href="http://jabsorb.org">jabsorb</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
 <br>
 </td><td>
 					Removed org.json.* because it json-java.jar. See LPS-78517.
 				</td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/portal/javassist.jar</td><td nowrap="nowrap">3.29.0 GA</td><td nowrap="nowrap"><a href="http://www.csg.is.titech.ac.jp/~chiba/javassist">Javassist</a></td><td nowrap><a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPL 2.1</a>
+<td nowrap="nowrap">lib/portal/jackson-databind.jar</td><td nowrap="nowrap">2.13.2.2</td><td nowrap="nowrap"><a href="https://github.com/FasterXML/jackson-databind">Jackson Databind</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">lib/portal/javassist.jar</td><td nowrap="nowrap">3.18.2 GA</td><td nowrap="nowrap"><a href="http://www.csg.is.titech.ac.jp/~chiba/javassist">Javassist</a></td><td nowrap><a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPL 2.1</a>
 <br>
 </td><td></td>
 </tr>
@@ -3275,7 +3110,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/portal/jaxb-runtime.jar</td><td nowrap="nowrap">2.3.1.LIFERAY-PATCHED-1</td><td nowrap="nowrap"><a href="https://javaee.github.io/jaxb-v2/">Java Architecture for XML Binding</a></td><td nowrap><a href="http://glassfish.java.net/public/CDDLv1.0.html">CDDL 1.0</a>
+<td nowrap="nowrap">lib/portal/jaxb-runtime.jar</td><td nowrap="nowrap">2.3.1</td><td nowrap="nowrap"><a href="https://javaee.github.io/jaxb-v2/">Java Architecture for XML Binding</a></td><td nowrap><a href="http://glassfish.java.net/public/CDDLv1.0.html">CDDL 1.0</a>
 <br>
 </td><td></td>
 </tr>
@@ -3283,6 +3118,11 @@
 <td nowrap="nowrap">lib/portal/jaxen.jar</td><td nowrap="nowrap">1.1.6</td><td nowrap="nowrap"><a href="http://jaxen.org">Jaxen</a></td><td nowrap><a href="http://jaxen.codehaus.org/license.html">Jaxen License</a>
 <br>
 <copyright-notice>Copyright (c) 2003 The Werken Company. All Rights Reserved.</copyright-notice>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">lib/portal/jaxrs-api.jar</td><td nowrap="nowrap">2.1</td><td nowrap="nowrap"><a href="http://jax-rs-spec.java.net">Java API for RESTful Web Services</a></td><td nowrap><a href="https://oss.oracle.com/licenses/CDDL-1.1">CDDL 1.1</a>
 <br>
 </td><td></td>
 </tr>
@@ -3295,6 +3135,11 @@
 <td nowrap="nowrap">lib/portal/jcl-over-slf4j.jar</td><td nowrap="nowrap">1.7.2</td><td nowrap="nowrap"><a href="http://www.slf4j.org">SLF4J</a></td><td nowrap><a href="http://opensource.org/licenses/MIT">MIT License</a>
 <br>
 <copyright-notice>Copyright (c) 2004-2007 QOS.ch</copyright-notice>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">lib/portal/jersey-common.jar</td><td nowrap="nowrap">2.26</td><td nowrap="nowrap"><a href="https://jersey.github.io/">Jersey core common packages</a></td><td nowrap><a href="https://oss.oracle.com/licenses/CDDL+GPL-1.1">CDDL 1.1</a>
 <br>
 </td><td></td>
 </tr>
@@ -3314,7 +3159,7 @@
 </td><td></td>
 </tr>
 <tr>
-<td nowrap="nowrap">lib/portal/json-java.jar</td><td nowrap="nowrap">20220320</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="https://github.com/douglascrockford/JSON-java/blob/master/README">JSON License</a>
+<td nowrap="nowrap">lib/portal/json-java.jar</td><td nowrap="nowrap">20180813</td><td nowrap="nowrap"><a href="https://github.com/douglascrockford/JSON-java">JSON in Java</a></td><td nowrap><a href="https://github.com/douglascrockford/JSON-java/blob/master/README">JSON License</a>
 <br>
 </td><td>
 					See the Ant target "build-json-java-jar" in portal-impl/build.xml.
@@ -3440,6 +3285,39 @@
 <br>
 </td><td></td>
 </tr>
+<<<<<<< HEAD
+<tr>
+<td nowrap="nowrap">lib/portal/xercesImpl.jar</td><td nowrap="nowrap">2.12.2</td><td nowrap="nowrap"><a href="http://xerces.apache.org/xerces2-j">Xerces</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+<copyright-notice>Copyright (c) 1999, IBM Corporation., http://www.ibm.com</copyright-notice>
+<br>
+<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+<copyright-notice>copyright (c) 1999, Sun Microsystems., http://www.sun.com</copyright-notice>
+<br>
+<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+<copyright-notice>Copyright (c) 1999, iClick, Inc.</copyright-notice>
+<br>
+</td><td></td>
+</tr>
+<tr>
+<td nowrap="nowrap">lib/portal/xml-apis.jar</td><td nowrap="nowrap">1.4.01</td><td nowrap="nowrap"><a href="http://xerces.apache.org/xml-commons">xml-commons</a></td><td nowrap><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+<copyright-notice>Copyright (c) 1999, IBM Corporation., http://www.ibm.com</copyright-notice>
+<br>
+<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+<copyright-notice>Copyright (c) 1999, Sun Microsystems., http://www.sun.com</copyright-notice>
+<br>
+<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
+<br>
+<copyright-notice>Copyright (c) 2000 World Wide Web Consortium, http://www.w3.org</copyright-notice>
+<br>
+</td><td></td>
+</tr>
+=======
+>>>>>>> 08ef96a0a68b (WIP)
 </table>
 </div>
 <h4>Written Offer for Source Code</h4>

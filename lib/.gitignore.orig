@@ -102,12 +102,18 @@
 /portal/isoparser.jar
 /portal/istack-commons-runtime.jar
 /portal/jabsorb.jar
+/portal/jackson-annotations.jar
+/portal/jackson-core.jar
+/portal/jackson-databind.jar
+/portal/jackson-module-jaxb-annotations.jar
 /portal/javassist.jar
 /portal/jaxb-api.jar
 /portal/jaxb-runtime.jar
 /portal/jaxen.jar
+/portal/jaxrs-api.jar
 /portal/jaxws-api.jar
 /portal/jcl-over-slf4j.jar
+/portal/jersey-common.jar
 /portal/jhlabs-filters.jar
 /portal/jodd-json.jar
 /portal/jodd-proxetta.jar
@@ -133,4 +139,10 @@
 /portal/spring-web.jar
 /portal/stax-ex.jar
 /portal/transaction.jar
+<<<<<<< HEAD
 /portal/wstx.jar
+/portal/xercesImpl.jar
+/portal/xml-apis.jar
+=======
+/portal/wstx.jar
+>>>>>>> 08ef96a0a68b (WIP)
