@@ -870,12 +870,64 @@ public class ModuleFrameworkImpl implements ModuleFramework {
 			PropsValues.MODULE_FRAMEWORK_MARKETPLACE_DIR + "/override");
 	}
 
+	private void _installBundle(
+		Map<String, Long> checksums, Set<String> fragmentHosts,
+		BundleContext bundleContext, File file, String location) {
+
+		try (InputStream inputStream = new FileInputStream(file)) {
+			Bundle bundle = bundleContext.installBundle(location, inputStream);
+
+			checksums.put(
+				bundle.getBundleId() + _CHECKSUM_SUFFIX,
+				_calculateChecksum(file));
+
+			if ((bundle.getState() != Bundle.INSTALLED) &&
+				(bundle.getState() != Bundle.RESOLVED)) {
+
+				// Defense for bundle blacklist auto uninstall
+
+				return;
+			}
+
+			BundleStartLevel bundleStartLevel = bundle.adapt(
+				BundleStartLevel.class);
+
+			Dictionary<String, String> headers = bundle.getHeaders(
+				StringPool.BLANK);
+
+			String header = headers.get("Web-ContextPath");
+
+			if (header == null) {
+				bundleStartLevel.setStartLevel(
+					PropsValues.MODULE_FRAMEWORK_DYNAMIC_INSTALL_START_LEVEL);
+			}
+			else {
+				bundleStartLevel.setStartLevel(
+					PropsValues.MODULE_FRAMEWORK_WEB_START_LEVEL);
+			}
+
+			if (_isFragmentBundle(bundle)) {
+				fragmentHosts.add(_getFragmentHost(bundle));
+			}
+			else {
+				bundle.start();
+			}
+		}
+		catch (Exception exception) {
+			_log.error("Unable to install bundle at " + location, exception);
+		}
+	}
+
 	private void _installBundlesFromDir(
 			String dirPath, Map<String, Long> checksums,
 			Set<String> fragmentHosts)
 		throws Exception {
 
 		BundleContext bundleContext = _framework.getBundleContext();
+
+		ExecutorService executorService = Executors.newWorkStealingPool();
+
+		List<Future<?>> futures = new ArrayList<>();
 
 		File dir = new File(dirPath);
 
@@ -894,51 +946,17 @@ public class ModuleFrameworkImpl implements ModuleFramework {
 				continue;
 			}
 
-			try (InputStream inputStream = new FileInputStream(file)) {
-				Bundle bundle = bundleContext.installBundle(
-					location, inputStream);
+			futures.add(
+				executorService.submit(
+					() -> _installBundle(
+						checksums, fragmentHosts, bundleContext, file,
+						location)));
+		}
 
-				checksums.put(
-					bundle.getBundleId() + _CHECKSUM_SUFFIX,
-					_calculateChecksum(file));
+		executorService.shutdown();
 
-				if ((bundle.getState() != Bundle.INSTALLED) &&
-					(bundle.getState() != Bundle.RESOLVED)) {
-
-					// Defense for bundle blacklist auto uninstall
-
-					continue;
-				}
-
-				BundleStartLevel bundleStartLevel = bundle.adapt(
-					BundleStartLevel.class);
-
-				Dictionary<String, String> headers = bundle.getHeaders(
-					StringPool.BLANK);
-
-				String header = headers.get("Web-ContextPath");
-
-				if (header == null) {
-					bundleStartLevel.setStartLevel(
-						PropsValues.
-							MODULE_FRAMEWORK_DYNAMIC_INSTALL_START_LEVEL);
-				}
-				else {
-					bundleStartLevel.setStartLevel(
-						PropsValues.MODULE_FRAMEWORK_WEB_START_LEVEL);
-				}
-
-				if (_isFragmentBundle(bundle)) {
-					fragmentHosts.add(_getFragmentHost(bundle));
-				}
-				else {
-					bundle.start();
-				}
-			}
-			catch (BundleException bundleException) {
-				_log.error(
-					"Unable to install bundle at " + location, bundleException);
-			}
+		for (Future<?> future : futures) {
+			future.get();
 		}
 	}
 
