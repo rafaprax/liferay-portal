@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.module.framework.ThrowableCollector;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.NamedThreadFactory;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -881,63 +882,66 @@ public class ModuleFrameworkImpl implements ModuleFramework {
 
 		dir = dir.getCanonicalFile();
 
-		for (File file :
-				dir.listFiles((folder, name) -> name.endsWith(".jar"))) {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			for (File file :
+					dir.listFiles((folder, name) -> name.endsWith(".jar"))) {
 
-			URI uri = file.toURI();
+				URI uri = file.toURI();
 
-			uri = uri.normalize();
+				uri = uri.normalize();
 
-			String location = uri.toString();
+				String location = uri.toString();
 
-			if (bundleContext.getBundle(location) != null) {
-				continue;
-			}
-
-			try (InputStream inputStream = new FileInputStream(file)) {
-				Bundle bundle = bundleContext.installBundle(
-					location, inputStream);
-
-				checksums.put(
-					bundle.getBundleId() + _CHECKSUM_SUFFIX,
-					_calculateChecksum(file));
-
-				if ((bundle.getState() != Bundle.INSTALLED) &&
-					(bundle.getState() != Bundle.RESOLVED)) {
-
-					// Defense for bundle blacklist auto uninstall
-
+				if (bundleContext.getBundle(location) != null) {
 					continue;
 				}
 
-				BundleStartLevel bundleStartLevel = bundle.adapt(
-					BundleStartLevel.class);
+				try (InputStream inputStream = new FileInputStream(file)) {
+					Bundle bundle = bundleContext.installBundle(
+						location, inputStream);
 
-				Dictionary<String, String> headers = bundle.getHeaders(
-					StringPool.BLANK);
+					checksums.put(
+						bundle.getBundleId() + _CHECKSUM_SUFFIX,
+						_calculateChecksum(file));
 
-				String header = headers.get("Web-ContextPath");
+					if ((bundle.getState() != Bundle.INSTALLED) &&
+						(bundle.getState() != Bundle.RESOLVED)) {
 
-				if (header == null) {
-					bundleStartLevel.setStartLevel(
-						PropsValues.
-							MODULE_FRAMEWORK_DYNAMIC_INSTALL_START_LEVEL);
-				}
-				else {
-					bundleStartLevel.setStartLevel(
-						PropsValues.MODULE_FRAMEWORK_WEB_START_LEVEL);
-				}
+						// Defense for bundle blacklist auto uninstall
 
-				if (_isFragmentBundle(bundle)) {
-					fragmentHosts.add(_getFragmentHost(bundle));
+						continue;
+					}
+
+					BundleStartLevel bundleStartLevel = bundle.adapt(
+						BundleStartLevel.class);
+
+					Dictionary<String, String> headers = bundle.getHeaders(
+						StringPool.BLANK);
+
+					String header = headers.get("Web-ContextPath");
+
+					if (header == null) {
+						bundleStartLevel.setStartLevel(
+							PropsValues.
+								MODULE_FRAMEWORK_DYNAMIC_INSTALL_START_LEVEL);
+					}
+					else {
+						bundleStartLevel.setStartLevel(
+							PropsValues.MODULE_FRAMEWORK_WEB_START_LEVEL);
+					}
+
+					if (_isFragmentBundle(bundle)) {
+						fragmentHosts.add(_getFragmentHost(bundle));
+					}
+					else {
+						bundle.start();
+					}
 				}
-				else {
-					bundle.start();
+				catch (BundleException bundleException) {
+					_log.error(
+						"Unable to install bundle at " + location,
+						bundleException);
 				}
-			}
-			catch (BundleException bundleException) {
-				_log.error(
-					"Unable to install bundle at " + location, bundleException);
 			}
 		}
 	}
