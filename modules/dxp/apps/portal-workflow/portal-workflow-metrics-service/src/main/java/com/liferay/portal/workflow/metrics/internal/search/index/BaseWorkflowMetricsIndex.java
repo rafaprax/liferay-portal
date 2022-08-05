@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.index.CreateIndexRequest;
@@ -72,13 +71,6 @@ public abstract class BaseWorkflowMetricsIndex implements WorkflowMetricsIndex {
 						new DeleteIndexRequest(indexName));
 				}
 			});
-	}
-
-	@Reference(
-		target = ModuleServiceLifecycle.PORTLETS_INITIALIZED, unbind = "-"
-	)
-	protected void setModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
 	}
 
 	@Reference(
