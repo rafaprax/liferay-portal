@@ -16,6 +16,11 @@ package com.liferay.user.service.test;
 
 import com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.concurrent.NoticeableExecutorService;
+import com.liferay.petra.concurrent.NoticeableFuture;
+import com.liferay.petra.executor.PortalExecutorManager;
+import com.liferay.petra.function.UnsafeConsumer;
+import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -103,53 +108,63 @@ public class UserLocalServiceTest {
 
 	@Test
 	public void testAuthenticateByEmailAddress() throws Exception {
-		User user = UserTestUtil.addUser();
-
 		String password = "password";
 
-		user = _userLocalService.updatePassword(
-			user.getUserId(), password, password, false, true);
+		_execute(
+			() -> {
+				User user = UserTestUtil.addUser();
 
-		PasswordPolicy passwordPolicy = user.getPasswordPolicy();
+				return _userLocalService.updatePassword(
+					user.getUserId(), password, password, false, true);
+			},
+			user -> {
+				PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
-		passwordPolicy.setExpireable(true);
-		passwordPolicy.setMaxAge(0);
+				passwordPolicy.setExpireable(true);
+				passwordPolicy.setMaxAge(0);
 
-		_passwordPolicyLocalService.updatePasswordPolicy(passwordPolicy);
+				_passwordPolicyLocalService.updatePasswordPolicy(
+					passwordPolicy);
 
-		int failedLoginAttempts = user.getFailedLoginAttempts();
+				int failedLoginAttempts = user.getFailedLoginAttempts();
 
-		Assert.assertEquals(
-			Authenticator.FAILURE,
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(),
-				RandomTestUtil.randomString(), null, null, null));
+				Assert.assertEquals(
+					Authenticator.FAILURE,
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(),
+						RandomTestUtil.randomString(), null, null, null));
 
-		try {
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(), password, null,
-				null, null);
-		}
-		catch (PortalException portalException) {
-			Assert.assertEquals(
-				PasswordExpiredException.class, portalException.getClass());
-		}
+				try {
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(), password,
+						null, null, null);
+				}
+				catch (PortalException portalException) {
+					Assert.assertEquals(
+						PasswordExpiredException.class,
+						portalException.getClass());
+				}
 
-		user = _userLocalService.fetchUser(user.getUserId());
+				User updatedUser = _userLocalService.fetchUser(
+					user.getUserId());
 
-		Assert.assertEquals(
-			failedLoginAttempts + 2, user.getFailedLoginAttempts());
-		passwordPolicy = user.getPasswordPolicy();
+				Assert.assertEquals(
+					failedLoginAttempts + 2,
+					updatedUser.getFailedLoginAttempts());
+				passwordPolicy = updatedUser.getPasswordPolicy();
 
-		passwordPolicy.setExpireable(false);
+				passwordPolicy.setExpireable(false);
 
-		_passwordPolicyLocalService.updatePasswordPolicy(passwordPolicy);
+				_passwordPolicyLocalService.updatePasswordPolicy(
+					passwordPolicy);
 
-		Assert.assertEquals(
-			Authenticator.SUCCESS,
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(), password, null,
-				null, null));
+				Assert.assertEquals(
+					Authenticator.SUCCESS,
+					_userLocalService.authenticateByEmailAddress(
+						updatedUser.getCompanyId(),
+						updatedUser.getEmailAddress(), password, null, null,
+						null));
+			});
 	}
 
 	@Test
@@ -431,71 +446,77 @@ public class UserLocalServiceTest {
 
 	@Test
 	public void testLockout() throws Exception {
-		User user = UserTestUtil.addUser();
-
 		String password = "password";
 
-		user = _userLocalService.updatePassword(
-			user.getUserId(), password, password, false, true);
+		_execute(
+			() -> {
+				User user = UserTestUtil.addUser();
 
-		Assert.assertEquals(
-			Authenticator.SUCCESS,
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(), password, null,
-				null, null));
+				return _userLocalService.updatePassword(
+					user.getUserId(), password, password, false, true);
+			},
+			user -> {
+				Assert.assertEquals(
+					Authenticator.SUCCESS,
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(), password,
+						null, null, null));
 
-		PasswordPolicy passwordPolicy = user.getPasswordPolicy();
+				PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
-		passwordPolicy.setLockout(true);
-		passwordPolicy.setMaxFailure(1);
+				passwordPolicy.setLockout(true);
+				passwordPolicy.setMaxFailure(1);
 
-		_passwordPolicyLocalService.updatePasswordPolicy(passwordPolicy);
+				_passwordPolicyLocalService.updatePasswordPolicy(
+					passwordPolicy);
 
-		int failedLoginAttempts = user.getFailedLoginAttempts();
+				int failedLoginAttempts = user.getFailedLoginAttempts();
 
-		Assert.assertEquals(
-			Authenticator.FAILURE,
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(),
-				RandomTestUtil.randomString(), null, null, null));
+				Assert.assertEquals(
+					Authenticator.FAILURE,
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(),
+						RandomTestUtil.randomString(), null, null, null));
 
-		try {
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(), password, null,
-				null, null);
-		}
-		catch (PortalException portalException) {
-			Assert.assertEquals(
-				UserLockoutException.PasswordPolicyLockout.class,
-				portalException.getClass());
-		}
+				try {
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(), password,
+						null, null, null);
+				}
+				catch (PortalException portalException) {
+					Assert.assertEquals(
+						UserLockoutException.PasswordPolicyLockout.class,
+						portalException.getClass());
+				}
 
-		try {
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(),
-				RandomTestUtil.randomString(), null, null, null);
-		}
-		catch (PortalException portalException) {
-			Assert.assertEquals(
-				AuthException.class, portalException.getClass());
-		}
+				try {
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(),
+						RandomTestUtil.randomString(), null, null, null);
+				}
+				catch (PortalException portalException) {
+					Assert.assertEquals(
+						AuthException.class, portalException.getClass());
+				}
 
-		user = _userLocalService.fetchUser(user.getUserId());
+				user = _userLocalService.fetchUser(user.getUserId());
 
-		Assert.assertEquals(
-			failedLoginAttempts + 3, user.getFailedLoginAttempts());
+				Assert.assertEquals(
+					failedLoginAttempts + 3, user.getFailedLoginAttempts());
 
-		passwordPolicy = user.getPasswordPolicy();
+				passwordPolicy = user.getPasswordPolicy();
 
-		passwordPolicy.setLockout(false);
+				passwordPolicy.setLockout(false);
 
-		_passwordPolicyLocalService.updatePasswordPolicy(passwordPolicy);
+				_passwordPolicyLocalService.updatePasswordPolicy(
+					passwordPolicy);
 
-		Assert.assertEquals(
-			Authenticator.SUCCESS,
-			_userLocalService.authenticateByEmailAddress(
-				user.getCompanyId(), user.getEmailAddress(), password, null,
-				null, null));
+				Assert.assertEquals(
+					Authenticator.SUCCESS,
+					_userLocalService.authenticateByEmailAddress(
+						user.getCompanyId(), user.getEmailAddress(), password,
+						null, null, null));
+			});
 	}
 
 	@Test
@@ -758,6 +779,32 @@ public class UserLocalServiceTest {
 		return userIds;
 	}
 
+	private void _execute(
+			UnsafeSupplier<User, Exception> unsafeSupplier,
+			UnsafeConsumer<User, Exception> unsafeConsumer)
+		throws Exception {
+
+		User user = unsafeSupplier.get();
+
+		NoticeableExecutorService noticeableExecutorService =
+			_portalExecutorManager.getPortalExecutor(
+				UserLocalServiceTest.class.getName());
+
+		NoticeableFuture<?> noticeableFuture = noticeableExecutorService.submit(
+			() -> {
+				try {
+					unsafeConsumer.accept(user);
+				}
+				catch (Throwable throwable) {
+					Assert.fail(throwable.getMessage());
+				}
+			});
+
+		noticeableFuture.get();
+
+		noticeableExecutorService.shutdown();
+	}
+
 	@Inject
 	private AnnouncementsDeliveryLocalService
 		_announcementsDeliveryLocalService;
@@ -767,6 +814,9 @@ public class UserLocalServiceTest {
 
 	@Inject
 	private PasswordPolicyLocalService _passwordPolicyLocalService;
+
+	@Inject
+	private PortalExecutorManager _portalExecutorManager;
 
 	@Inject
 	private PortalPreferencesLocalService _portalPreferencesLocalService;
