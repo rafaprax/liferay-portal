@@ -12,20 +12,21 @@
  * details.
  */
 
-package com.liferay.portlet.documentlibrary.util;
+package com.liferay.document.library.preview.image.internal;
 
 import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.model.DLProcessorConstants;
 import com.liferay.document.library.kernel.store.DLStoreUtil;
 import com.liferay.document.library.kernel.util.DLPreviewableProcessor;
+import com.liferay.document.library.kernel.util.DLProcessor;
 import com.liferay.document.library.kernel.util.ImageProcessor;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.image.CMYKImageTool;
 import com.liferay.portal.kernel.image.ImageBag;
 import com.liferay.portal.kernel.image.ImageTool;
-import com.liferay.portal.kernel.image.ImageToolUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
@@ -52,11 +53,18 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author Sergio González
  * @author Alexander Chow
  * @author Ivica Cardic
  */
+@Component(
+	property = "type=" + DLProcessorConstants.IMAGE_PROCESSOR,
+	service = {DLProcessor.class, ImageProcessor.class}
+)
 public class ImageProcessorImpl
 	extends DLPreviewableProcessor implements ImageProcessor {
 
@@ -284,7 +292,7 @@ public class ImageProcessorImpl
 
 				byte[] bytes = FileUtil.getBytes(inputStream);
 
-				ImageBag imageBag = ImageToolUtil.read(bytes);
+				ImageBag imageBag = _imageTool.read(bytes);
 
 				RenderedImage renderedImage = imageBag.getRenderedImage();
 
@@ -299,7 +307,7 @@ public class ImageProcessorImpl
 
 				if (colorModel.getNumColorComponents() == 4) {
 					Future<RenderedImage> future =
-						ImageToolUtil.convertCMYKtoRGB(
+						_cmykImageTool.convertCMYKtoRGB(
 							bytes, imageBag.getType());
 
 					if (future == null) {
@@ -433,7 +441,7 @@ public class ImageProcessorImpl
 			try (FileOutputStream fileOutputStream = new FileOutputStream(
 					file)) {
 
-				ImageToolUtil.write(renderedImage, type, fileOutputStream);
+				_imageTool.write(renderedImage, type, fileOutputStream);
 			}
 
 			addFileToStore(
@@ -492,8 +500,14 @@ public class ImageProcessorImpl
 				FileVersionPreviewEventListener.class, ImageProcessorImpl.class,
 				"_fileVersionPreviewEventListener", false, false);
 
+	@Reference
+	private CMYKImageTool _cmykImageTool;
+
 	private final List<Long> _fileVersionIds = new Vector<>();
 	private final Set<String> _imageMimeTypes = SetUtil.fromArray(
 		PropsValues.DL_FILE_ENTRY_PREVIEW_IMAGE_MIME_TYPES);
+
+	@Reference
+	private ImageTool _imageTool;
 
 }

@@ -41,7 +41,6 @@ import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portlet.documentlibrary.util.ImageProcessorImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -408,7 +407,9 @@ public class AMImageEntryProcessor implements DLProcessor, ImageProcessor {
 	private AMImageValidator _amImageValidator;
 
 	private volatile AMSystemImagesConfiguration _amSystemImagesConfiguration;
-	private final ImageProcessor _imageProcessor = new ImageProcessorImpl();
+
+	@Reference
+	private ImageProcessor _imageProcessor;
 
 	@Reference
 	private InputStreamSanitizer _inputStreamSanitizer;
