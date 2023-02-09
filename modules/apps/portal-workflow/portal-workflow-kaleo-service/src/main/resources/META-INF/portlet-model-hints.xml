@@ -39,6 +39,8 @@
 			<hint-collection name="TEXTAREA" />
 		</field>
 		<field name="priority" type="int" />
+		<field name="status" type="int" />
+		<field name="type" type="String" />
 	</model>
 	<model name="com.liferay.portal.workflow.kaleo.model.KaleoCondition">
 		<field name="mvccVersion" type="long" />
