@@ -43,6 +43,7 @@ import com.liferay.portal.workflow.kaleo.definition.NotificationReceptionType;
 import com.liferay.portal.workflow.kaleo.definition.ResourceActionAssignment;
 import com.liferay.portal.workflow.kaleo.definition.RoleAssignment;
 import com.liferay.portal.workflow.kaleo.definition.RoleRecipient;
+import com.liferay.portal.workflow.kaleo.definition.ScriptAction;
 import com.liferay.portal.workflow.kaleo.definition.ScriptAssignment;
 import com.liferay.portal.workflow.kaleo.definition.ScriptRecipient;
 import com.liferay.portal.workflow.kaleo.definition.State;
@@ -51,6 +52,7 @@ import com.liferay.portal.workflow.kaleo.definition.TaskForm;
 import com.liferay.portal.workflow.kaleo.definition.TaskFormReference;
 import com.liferay.portal.workflow.kaleo.definition.Timer;
 import com.liferay.portal.workflow.kaleo.definition.Transition;
+import com.liferay.portal.workflow.kaleo.definition.UpdateStatusAction;
 import com.liferay.portal.workflow.kaleo.definition.UserAssignment;
 import com.liferay.portal.workflow.kaleo.definition.UserRecipient;
 import com.liferay.portal.workflow.kaleo.definition.parser.WorkflowModelParser;
@@ -193,19 +195,23 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 			String description = actionElement.elementTextTrim("description");
 			String executionType = actionElement.elementTextTrim(
 				"execution-type");
-			String script = actionElement.elementText("script");
-			String scriptLanguage = actionElement.elementTextTrim(
-				"script-language");
-			String scriptRequiredContexts = actionElement.elementTextTrim(
-				"script-required-contexts");
 			int priority = GetterUtil.getInteger(
 				actionElement.elementTextTrim("priority"));
 
-			Action action = new Action(
-				name, description, executionType, script, scriptLanguage,
-				scriptRequiredContexts, priority);
-
-			actions.add(action);
+			if (actionElement.element("script") != null) {
+				actions.add(new ScriptAction(
+					name, description, executionType,
+					actionElement.elementText("script"),
+					actionElement.elementTextTrim("script-language"),
+					actionElement.elementTextTrim("script-required-contexts"),
+					priority));
+			}
+			else if (actionElement.element("status") != null) {
+				actions.add(new UpdateStatusAction(
+					name, description, executionType,
+					GetterUtil.getInteger(actionElement.elementText("status")),
+					priority));
+			}
 		}
 
 		actionAware.setActions(actions);
