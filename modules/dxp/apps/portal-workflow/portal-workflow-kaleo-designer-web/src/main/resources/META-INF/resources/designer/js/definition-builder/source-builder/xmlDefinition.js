@@ -90,7 +90,7 @@ XMLDefinition.prototype = {
 					},
 					{
 						key: 'status',
-						locator: 'status',
+						locator: 'status-code',
 					},
 				],
 				resultListLocator: tagName || 'action',
@@ -385,7 +385,7 @@ XMLDefinition.prototype = {
 				},
 				{
 					key: 'status',
-					locator: 'status',
+					locator: 'status-code',
 				},
 				instance.getSchemaActions(),
 				instance.getSchemaAssignments(),

@@ -57,7 +57,12 @@ DeserializeUtil.prototype = {
 					});
 
 					node.actions = node.actions.filter((item) => {
-						if (item.script || item.script === '' || item.status !== '') {
+						if (
+							item.script ||
+							item.script === '' ||
+							item.statusCode !== '' ||
+							item['status-code'] !== ''
+						) {
 							return item;
 						}
 					});
