@@ -73,6 +73,10 @@ public class AntivirusAsyncStatisticsManager
 
 	@Override
 	public int getActiveScanCount() {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Hi");
+		}
+
 		if (_autoRefresh || (_destinationStatistics == null)) {
 			refresh();
 		}
