@@ -28,8 +28,8 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.portlet.AddPortletProvider;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.preferences.UpdatePortletPreferencesProvider;
 import com.liferay.portal.kernel.portlet.render.PortletRenderParts;
 import com.liferay.portal.kernel.portlet.render.PortletRenderUtil;
 import com.liferay.portal.kernel.service.LayoutRevisionLocalService;
@@ -267,7 +267,8 @@ public class UpdateLayoutStrutsAction implements StrutsAction {
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
-			bundleContext, AddPortletProvider.class, "model.class.name");
+			bundleContext, UpdatePortletPreferencesProvider.class,
+			"model.class.name");
 	}
 
 	protected void addPortlet(
@@ -378,16 +379,16 @@ public class UpdateLayoutStrutsAction implements StrutsAction {
 			return;
 		}
 
-		AddPortletProvider addPortletProvider = _serviceTrackerMap.getService(
-			className);
+		UpdatePortletPreferencesProvider updatePortletPreferencesProvider =
+			_serviceTrackerMap.getService(className);
 
-		if (addPortletProvider == null) {
-			addPortletProvider = _serviceTrackerMap.getService(
+		if (updatePortletPreferencesProvider == null) {
+			updatePortletPreferencesProvider = _serviceTrackerMap.getService(
 				AssetEntry.class.getName());
 		}
 
-		if (addPortletProvider != null) {
-			addPortletProvider.updatePortletPreferences(
+		if (updatePortletPreferencesProvider != null) {
+			updatePortletPreferencesProvider.updatePortletPreferences(
 				portletSetup, portletId, className, classPK, themeDisplay);
 		}
 
@@ -406,7 +407,8 @@ public class UpdateLayoutStrutsAction implements StrutsAction {
 	@Reference
 	private PortletLocalService _portletLocalService;
 
-	private ServiceTrackerMap<String, AddPortletProvider> _serviceTrackerMap;
+	private ServiceTrackerMap<String, UpdatePortletPreferencesProvider>
+		_serviceTrackerMap;
 
 	@Reference
 	private Staging _staging;
