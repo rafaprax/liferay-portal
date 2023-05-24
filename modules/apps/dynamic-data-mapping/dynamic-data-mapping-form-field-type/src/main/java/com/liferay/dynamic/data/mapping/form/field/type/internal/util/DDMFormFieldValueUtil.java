@@ -28,11 +28,13 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * @author Renan Vasconcelos
  */
-public class CheckboxMultipleDDMFormFieldValueUtil {
+public class DDMFormFieldValueUtil {
 
 	public static JSONArray createJSONArray(String json) {
 		try {
@@ -47,8 +49,42 @@ public class CheckboxMultipleDDMFormFieldValueUtil {
 		}
 	}
 
+	public static DDMFormFieldOptions getDDMFormFieldOptions(
+		DDMFormFieldValue ddmFormFieldValue) {
+
+		DDMFormField ddmFormField = ddmFormFieldValue.getDDMFormField();
+
+		return ddmFormField.getDDMFormFieldOptions();
+	}
+
+	public static String getOptionLabel(
+		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
+
+		DDMFormFieldOptions ddmFormFieldOptions = getDDMFormFieldOptions(
+			ddmFormFieldValue);
+
+		String optionValue = getOptionValue(ddmFormFieldValue, locale);
+
+		LocalizedValue optionLabel = ddmFormFieldOptions.getOptionLabels(
+			optionValue);
+
+		if (optionLabel == null) {
+			return optionValue;
+		}
+
+		return optionLabel.getString(locale);
+	}
+
 	public static String getOptionsLabels(
 		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
+
+		return getOptionsLabels(
+			ddmFormFieldValue, locale, ddmFormField -> true);
+	}
+
+	public static String getOptionsLabels(
+		DDMFormFieldValue ddmFormFieldValue, Locale locale,
+		Predicate<DDMFormField> ddmFormFieldPredicate) {
 
 		JSONArray optionsValuesJSONArray = getOptionsValuesJSONArray(
 			ddmFormFieldValue, locale);
@@ -60,7 +96,7 @@ public class CheckboxMultipleDDMFormFieldValueUtil {
 		StringBundler sb = new StringBundler(
 			(optionsValuesJSONArray.length() * 2) - 1);
 
-		DDMFormFieldOptions ddmFormFieldOptions = _getDDMFormFieldOptions(
+		DDMFormFieldOptions ddmFormFieldOptions = getDDMFormFieldOptions(
 			ddmFormFieldValue);
 
 		for (int i = 0; i < optionsValuesJSONArray.length(); i++) {
@@ -69,7 +105,10 @@ public class CheckboxMultipleDDMFormFieldValueUtil {
 			LocalizedValue optionLabel = ddmFormFieldOptions.getOptionLabels(
 				optionValue);
 
-			if (optionLabel != null) {
+			if ((optionLabel != null) &&
+				ddmFormFieldPredicate.test(
+					ddmFormFieldValue.getDDMFormField())) {
+
 				sb.append(optionLabel.getString(locale));
 			}
 			else {
@@ -98,15 +137,23 @@ public class CheckboxMultipleDDMFormFieldValueUtil {
 		return createJSONArray(value.getString(locale));
 	}
 
-	private static DDMFormFieldOptions _getDDMFormFieldOptions(
-		DDMFormFieldValue ddmFormFieldValue) {
+	public static String getOptionValue(
+		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
 
-		DDMFormField ddmFormField = ddmFormFieldValue.getDDMFormField();
+		Value value = ddmFormFieldValue.getValue();
 
-		return ddmFormField.getDDMFormFieldOptions();
+		return value.getString(locale);
+	}
+
+	public static boolean isManualDataSourceType(DDMFormField ddmFormField) {
+		if (Objects.equals(ddmFormField.getDataSourceType(), "manual")) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		CheckboxMultipleDDMFormFieldValueUtil.class);
+		DDMFormFieldValueUtil.class);
 
 }

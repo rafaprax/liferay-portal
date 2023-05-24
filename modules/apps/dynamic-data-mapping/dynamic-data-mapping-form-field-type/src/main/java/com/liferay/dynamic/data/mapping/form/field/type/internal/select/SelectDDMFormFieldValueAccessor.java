@@ -16,7 +16,7 @@ package com.liferay.dynamic.data.mapping.form.field.type.internal.select;
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueAccessor;
 import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
-import com.liferay.dynamic.data.mapping.form.field.type.internal.util.SelectDDMFormFieldValueUtil;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.util.DDMFormFieldValueUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
@@ -54,7 +54,7 @@ public class SelectDDMFormFieldValueAccessor
 	public JSONArray getValue(
 		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
 
-		return SelectDDMFormFieldValueUtil.getOptionsValuesJSONArray(
+		return DDMFormFieldValueUtil.getOptionsValuesJSONArray(
 			ddmFormFieldValue, locale);
 	}
 
@@ -63,7 +63,7 @@ public class SelectDDMFormFieldValueAccessor
 		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
 
 		JSONArray optionsValuesJSONArray =
-			SelectDDMFormFieldValueUtil.getOptionsValuesJSONArray(
+			DDMFormFieldValueUtil.getOptionsValuesJSONArray(
 				ddmFormFieldValue, locale);
 
 		if (ddmFormFieldValue.getDDMFormValues() == null) {
@@ -75,12 +75,13 @@ public class SelectDDMFormFieldValueAccessor
 				optionsValuesJSONArray.getString(i));
 
 			if (matcher.matches()) {
-				JSONArray jsonArray =
-					SelectDDMFormFieldValueUtil.createJSONArray("[]");
+				JSONArray jsonArray = DDMFormFieldValueUtil.createJSONArray(
+					"[]");
 
 				jsonArray.put(
-					SelectDDMFormFieldValueUtil.getOptionsLabels(
-						ddmFormFieldValue, locale));
+					DDMFormFieldValueUtil.getOptionsLabels(
+						ddmFormFieldValue, locale,
+						DDMFormFieldValueUtil::isManualDataSourceType));
 
 				return jsonArray;
 			}

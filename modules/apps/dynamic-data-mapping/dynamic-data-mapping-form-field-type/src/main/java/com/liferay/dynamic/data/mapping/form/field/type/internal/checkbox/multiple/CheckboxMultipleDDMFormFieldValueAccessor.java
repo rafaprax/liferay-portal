@@ -16,7 +16,7 @@ package com.liferay.dynamic.data.mapping.form.field.type.internal.checkbox.multi
 
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueAccessor;
 import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
-import com.liferay.dynamic.data.mapping.form.field.type.internal.util.CheckboxMultipleDDMFormFieldValueUtil;
+import com.liferay.dynamic.data.mapping.form.field.type.internal.util.DDMFormFieldValueUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
@@ -54,7 +54,7 @@ public class CheckboxMultipleDDMFormFieldValueAccessor
 	public JSONArray getValue(
 		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
 
-		return CheckboxMultipleDDMFormFieldValueUtil.getOptionsValuesJSONArray(
+		return DDMFormFieldValueUtil.getOptionsValuesJSONArray(
 			ddmFormFieldValue, locale);
 	}
 
@@ -63,7 +63,7 @@ public class CheckboxMultipleDDMFormFieldValueAccessor
 		DDMFormFieldValue ddmFormFieldValue, Locale locale) {
 
 		JSONArray optionsValuesJSONArray =
-			CheckboxMultipleDDMFormFieldValueUtil.getOptionsValuesJSONArray(
+			DDMFormFieldValueUtil.getOptionsValuesJSONArray(
 				ddmFormFieldValue, locale);
 
 		if (ddmFormFieldValue.getDDMFormValues() == null) {
@@ -75,10 +75,10 @@ public class CheckboxMultipleDDMFormFieldValueAccessor
 				optionsValuesJSONArray.getString(i));
 
 			if (matcher.matches()) {
-				return CheckboxMultipleDDMFormFieldValueUtil.createJSONArray(
+				return DDMFormFieldValueUtil.createJSONArray(
 					StringBundler.concat(
 						StringPool.OPEN_BRACKET,
-						CheckboxMultipleDDMFormFieldValueUtil.getOptionsLabels(
+						DDMFormFieldValueUtil.getOptionsLabels(
 							ddmFormFieldValue, locale),
 						StringPool.CLOSE_BRACKET));
 			}
