@@ -48,7 +48,7 @@ public class ServiceTrackerMapFactory {
 		return new ServiceTrackerMapImpl<>(
 			bundleContext, clazz, filterString, serviceReferenceMapper,
 			new DefaultServiceTrackerCustomizer<S>(bundleContext),
-			new MultiValueServiceTrackerBucketFactory<S, S>(), null);
+			new w<S, S>(), null);
 	}
 
 	public static <K, S> ServiceTrackerMap<K, List<S>> openMultiValueMap(

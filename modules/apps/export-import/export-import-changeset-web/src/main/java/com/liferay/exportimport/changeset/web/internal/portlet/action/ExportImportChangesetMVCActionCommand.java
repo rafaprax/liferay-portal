@@ -1,25 +1,9 @@
-/**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- */
-
 package com.liferay.exportimport.changeset.web.internal.portlet.action;
 
-import com.liferay.exportimport.changeset.Changeset;
 import com.liferay.exportimport.changeset.ChangesetManager;
 import com.liferay.exportimport.changeset.constants.ChangesetConstants;
 import com.liferay.exportimport.changeset.constants.ChangesetPortletKeys;
 import com.liferay.exportimport.changeset.exception.ExportImportEntityException;
-import com.liferay.exportimport.changeset.portlet.action.ExportImportChangesetMVCActionCommand;
 import com.liferay.exportimport.constants.ExportImportPortletKeys;
 import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationParameterMapFactory;
 import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationSettingsMapFactory;
@@ -32,7 +16,6 @@ import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.exportimport.kernel.staging.Staging;
 import com.liferay.exportimport.kernel.staging.StagingURLHelper;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
@@ -54,62 +37,28 @@ import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.service.http.LayoutServiceHttp;
-
-import java.io.Serializable;
-
-import java.util.Map;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-/**
- * @author Akos Thurzo
- */
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import java.io.Serializable;
+import java.util.Map;
+
 @Component(
 	property = {
 		"javax.portlet.name=" + ChangesetPortletKeys.CHANGESET,
 		"mvc.command.name=/export_import_changeset/export_import_changeset"
 	},
-	service = {
-		ExportImportChangesetMVCActionCommand.class, MVCActionCommand.class
-	}
+	service = MVCActionCommand.class
 )
-public class ExportImportChangesetMVCActionCommandImpl
-	extends BaseMVCActionCommand
-	implements ExportImportChangesetMVCActionCommand {
+public class ExportImportChangesetMVCActionCommand extends
+	BaseMVCActionCommand {
 
-	@Override
-	public void processExportAction(
-			ActionRequest actionRequest, ActionResponse actionResponse,
-			Changeset changeset)
-		throws Exception {
-
-		_changesetManager.addChangeset(changeset);
-
-		_processExportAndPublishAction(
-			actionRequest, actionResponse, Constants.EXPORT,
-			changeset.getUuid());
-	}
-
-	@Override
-	public void processPublishAction(
-			ActionRequest actionRequest, ActionResponse actionResponse,
-			Changeset changeset)
-		throws Exception {
-
-		_changesetManager.addChangeset(changeset);
-
-		_processExportAndPublishAction(
-			actionRequest, actionResponse, Constants.PUBLISH,
-			changeset.getUuid());
-	}
 
 	@Override
 	protected void doProcessAction(
-			ActionRequest actionRequest, ActionResponse actionResponse)
+		ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
 		String cmd = ParamUtil.getString(actionRequest, "cmd");
@@ -117,7 +66,7 @@ public class ExportImportChangesetMVCActionCommandImpl
 		if (cmd.equals(Constants.EXPORT) || cmd.equals(Constants.PUBLISH) ||
 			cmd.equals(ChangesetConstants.PUBLISH_CHANGESET)) {
 
-			_processExportAndPublishAction(
+			processExportAndPublishAction(
 				actionRequest, actionResponse, cmd, null);
 		}
 		else {
@@ -128,9 +77,9 @@ public class ExportImportChangesetMVCActionCommandImpl
 		}
 	}
 
-	private void _processExportAndPublishAction(
-			ActionRequest actionRequest, ActionResponse actionResponse,
-			String cmd, String changesetUuid)
+	protected void processExportAndPublishAction(
+		ActionRequest actionRequest, ActionResponse actionResponse,
+		String cmd, String changesetUuid)
 		throws Exception {
 
 		if (Validator.isNotNull(actionRequest.getParameter("changesetUuid"))) {
@@ -167,30 +116,8 @@ public class ExportImportChangesetMVCActionCommandImpl
 
 		long backgroundTaskId = 0;
 
-		if (cmd.equals(Constants.EXPORT)) {
-			Portlet portlet = _portletLocalService.getPortletById(portletId);
-
-			Map<String, Serializable> settingsMap =
-				_exportImportConfigurationSettingsMapFactory.
-					buildExportPortletSettingsMap(
-						themeDisplay.getUser(), themeDisplay.getPlid(),
-						themeDisplay.getScopeGroupId(),
-						ChangesetPortletKeys.CHANGESET, parameterMap,
-						_exportImportHelper.getPortletExportFileName(portlet));
-
-			ExportImportConfiguration exportImportConfiguration =
-				_exportImportConfigurationLocalService.
-					addDraftExportImportConfiguration(
-						themeDisplay.getUserId(), portletId,
-						ExportImportConfigurationConstants.TYPE_EXPORT_PORTLET,
-						settingsMap);
-
-			backgroundTaskId =
-				_exportImportLocalService.exportPortletInfoAsFileInBackground(
-					themeDisplay.getUserId(), exportImportConfiguration);
-		}
-		else if (cmd.equals(Constants.PUBLISH) ||
-				 cmd.equals(ChangesetConstants.PUBLISH_CHANGESET)) {
+		if (cmd.equals(Constants.PUBLISH) ||
+			cmd.equals(ChangesetConstants.PUBLISH_CHANGESET)) {
 
 			Group scopeGroup = _groupLocalService.fetchGroup(
 				ParamUtil.getLong(actionRequest, "groupId"));
@@ -291,8 +218,8 @@ public class ExportImportChangesetMVCActionCommandImpl
 	}
 
 	private void _sendRedirect(
-			ActionRequest actionRequest, ActionResponse actionResponse,
-			long backgroundTaskId)
+		ActionRequest actionRequest, ActionResponse actionResponse,
+		long backgroundTaskId)
 		throws Exception {
 
 		actionRequest.setAttribute(
@@ -351,5 +278,4 @@ public class ExportImportChangesetMVCActionCommandImpl
 
 	@Reference
 	private StagingURLHelper _stagingURLHelper;
-
 }
