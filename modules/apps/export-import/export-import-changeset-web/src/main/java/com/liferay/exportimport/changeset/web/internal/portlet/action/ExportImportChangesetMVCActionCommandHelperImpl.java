@@ -17,7 +17,7 @@ package com.liferay.exportimport.changeset.web.internal.portlet.action;
 import com.liferay.exportimport.changeset.Changeset;
 import com.liferay.exportimport.changeset.ChangesetManager;
 import com.liferay.exportimport.changeset.constants.ChangesetPortletKeys;
-import com.liferay.exportimport.changeset.portlet.action.ExportImportChangesetMVCActionCommandContributor;
+import com.liferay.exportimport.changeset.portlet.action.ExportImportChangesetMVCActionCommandHelper;
 import com.liferay.portal.kernel.util.Constants;
 
 import javax.portlet.ActionRequest;
@@ -30,15 +30,11 @@ import org.osgi.service.component.annotations.Reference;
  * @author Akos Thurzo
  */
 @Component(
-	property = {
-		"javax.portlet.name=" + ChangesetPortletKeys.CHANGESET,
-		"mvc.command.name=/export_import_changeset/export_import_changeset"
-	},
-	service = ExportImportChangesetMVCActionCommandContributor.class
+	service = ExportImportChangesetMVCActionCommandHelper.class
 )
-public class ExportImportChangesetMVCActionCommandContributorImpl
+public class ExportImportChangesetMVCActionCommandHelperImpl
 	extends ExportImportChangesetMVCActionCommand
-	implements ExportImportChangesetMVCActionCommandContributor {
+	implements ExportImportChangesetMVCActionCommandHelper {
 
 	@Override
 	public void publish(

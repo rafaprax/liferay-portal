@@ -26,8 +26,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * @author Máté Thurzó
  */
 @ProviderType
-public interface ExportImportChangesetMVCActionCommandContributor
-	extends MVCActionCommand {
+public interface ExportImportChangesetMVCActionCommandHelper {
 
 	public void publish(
 			ActionRequest actionRequest, ActionResponse actionResponse,
