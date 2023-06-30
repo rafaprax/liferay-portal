@@ -25,7 +25,6 @@ import com.liferay.portal.language.override.service.PLOEntryLocalServiceUtil;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 /**
  * @author Regisson Cesar
@@ -33,26 +32,20 @@ import java.util.function.Supplier;
 public class PLOLanguageOverrideProviderUtil {
 
 	public static void add(PLOEntry ploEntry) {
-		_add(_ploEntriesMapDCLSingleton.getSingleton(_supplier), ploEntry);
+		_add(getPLOEntries(), ploEntry);
 	}
 
 	public static String encodeKey(long companyId, String languageId) {
 		return StringBundler.concat(companyId, StringPool.POUND, languageId);
 	}
 
-	public static DCLSingleton<Map<String, HashMap<String, String>>>
-		getPloEntriesMapDCLSingleton() {
-
-		return _ploEntriesMapDCLSingleton;
-	}
-
-	public static Supplier<Map<String, HashMap<String, String>>> getSupplier() {
-		return _supplier;
+	public static Map<String, HashMap<String, String>> getPLOEntries() {
+		return _ploEntriesMapDCLSingleton.getSingleton(
+			PLOLanguageOverrideProviderUtil::_createPLOEntriesMap);
 	}
 
 	public static void remove(PLOEntry ploEntry) {
-		Map<String, HashMap<String, String>> ploEntriesMap =
-			_ploEntriesMapDCLSingleton.getSingleton(_supplier);
+		Map<String, HashMap<String, String>> ploEntriesMap = getPLOEntries();
 
 		ploEntriesMap.computeIfPresent(
 			encodeKey(ploEntry.getCompanyId(), ploEntry.getLanguageId()),
@@ -68,8 +61,7 @@ public class PLOLanguageOverrideProviderUtil {
 	}
 
 	public static void update(PLOEntry ploEntry) {
-		Map<String, HashMap<String, String>> ploEntriesMap =
-			_ploEntriesMapDCLSingleton.getSingleton(_supplier);
+		Map<String, HashMap<String, String>> ploEntriesMap = getPLOEntries();
 
 		ploEntriesMap.computeIfPresent(
 			encodeKey(ploEntry.getCompanyId(), ploEntry.getLanguageId()),
@@ -120,7 +112,5 @@ public class PLOLanguageOverrideProviderUtil {
 			PLOLanguageOverrideProviderUtil.class, CompanyLocalService.class);
 	private static final DCLSingleton<Map<String, HashMap<String, String>>>
 		_ploEntriesMapDCLSingleton = new DCLSingleton<>();
-	private static final Supplier<Map<String, HashMap<String, String>>>
-		_supplier = PLOLanguageOverrideProviderUtil::_createPLOEntriesMap;
 
 }

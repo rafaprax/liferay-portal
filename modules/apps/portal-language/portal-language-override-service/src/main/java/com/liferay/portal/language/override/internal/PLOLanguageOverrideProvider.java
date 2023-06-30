@@ -14,7 +14,6 @@
 
 package com.liferay.portal.language.override.internal;
 
-import com.liferay.petra.concurrent.DCLSingleton;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.language.LanguageOverrideProvider;
@@ -38,13 +37,8 @@ public class PLOLanguageOverrideProvider implements LanguageOverrideProvider {
 
 	@Override
 	public String get(String key, Locale locale) {
-		DCLSingleton<Map<String, HashMap<String, String>>>
-			ploEntriesMapDCLSingleton =
-				PLOLanguageOverrideProviderUtil.getPloEntriesMapDCLSingleton();
-
 		Map<String, HashMap<String, String>> ploEntriesMap =
-			ploEntriesMapDCLSingleton.getSingleton(
-				PLOLanguageOverrideProviderUtil.getSupplier());
+			PLOLanguageOverrideProviderUtil.getPLOEntries();
 
 		if (ploEntriesMap.isEmpty() ||
 			PLOOriginalTranslationThreadLocal.isUseOriginalTranslation()) {
@@ -60,13 +54,8 @@ public class PLOLanguageOverrideProvider implements LanguageOverrideProvider {
 
 	@Override
 	public Set<String> keySet(Locale locale) {
-		DCLSingleton<Map<String, HashMap<String, String>>>
-			ploEntriesMapDCLSingleton =
-				PLOLanguageOverrideProviderUtil.getPloEntriesMapDCLSingleton();
-
 		Map<String, HashMap<String, String>> ploEntriesMap =
-			ploEntriesMapDCLSingleton.getSingleton(
-				PLOLanguageOverrideProviderUtil.getSupplier());
+			PLOLanguageOverrideProviderUtil.getPLOEntries();
 
 		if (ploEntriesMap.isEmpty() ||
 			PLOOriginalTranslationThreadLocal.isUseOriginalTranslation()) {
