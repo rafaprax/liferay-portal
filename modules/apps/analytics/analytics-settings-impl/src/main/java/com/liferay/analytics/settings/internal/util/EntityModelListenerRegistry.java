@@ -10,6 +10,7 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceReferenceMapper;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.ModelListener;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -42,8 +43,9 @@ public class EntityModelListenerRegistry {
 
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
 			bundleContext,
-			(Class<EntityModelListener<?>>)(Class<?>)EntityModelListener.class,
-			null, new EntityModelListenerServiceReferenceMapper());
+			(Class<ModelListener<?>>)(Class<?>)ModelListener.class,
+			"(entity.model.listener=true)",
+			new EntityModelListenerServiceReferenceMapper());
 	}
 
 	@Deactivate
