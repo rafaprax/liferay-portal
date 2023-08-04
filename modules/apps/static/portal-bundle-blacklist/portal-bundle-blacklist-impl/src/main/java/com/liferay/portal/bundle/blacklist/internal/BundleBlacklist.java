@@ -123,6 +123,8 @@ public class BundleBlacklist {
 		}
 	}
 
+
+
 	private void _addToBlacklistFile(
 			String symbolicName, UninstalledBundleData uninstalledBundleData)
 		throws IOException {
