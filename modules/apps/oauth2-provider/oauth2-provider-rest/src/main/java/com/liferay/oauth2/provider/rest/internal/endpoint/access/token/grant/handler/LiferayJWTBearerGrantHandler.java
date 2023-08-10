@@ -6,9 +6,10 @@
 package com.liferay.oauth2.provider.rest.internal.endpoint.access.token.grant.handler;
 
 import com.liferay.oauth2.provider.configuration.OAuth2ProviderConfiguration;
-import com.liferay.oauth2.provider.rest.internal.configuration.admin.service.OAuth2InAssertionManagedServiceFactory;
+import com.liferay.oauth2.provider.rest.internal.configuration.admin.service.OAuth2ConfigurationUtil;
 import com.liferay.oauth2.provider.rest.internal.endpoint.constants.OAuth2ProviderRESTEndpointConstants;
 import com.liferay.oauth2.provider.rest.internal.endpoint.liferay.LiferayOAuthDataProvider;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -106,10 +107,6 @@ public class LiferayJWTBearerGrantHandler extends BaseAccessTokenGrantHandler {
 	@Reference
 	private LiferayOAuthDataProvider _liferayOAuthDataProvider;
 
-	@Reference
-	private OAuth2InAssertionManagedServiceFactory
-		_oAuth2InAssertionManagedServiceFactory;
-
 	private OAuth2ProviderConfiguration _oAuth2ProviderConfiguration;
 
 	private class CustomJWTBearerGrantHandler extends JwtBearerGrantHandler {
@@ -167,9 +164,7 @@ public class LiferayJWTBearerGrantHandler extends BaseAccessTokenGrantHandler {
 			String userAuthType = null;
 
 			try {
-				userAuthType =
-					_oAuth2InAssertionManagedServiceFactory.getUserAuthType(
-						companyId, issuer);
+				userAuthType = _getUserAuthType(companyId, issuer);
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
 				if (_log.isWarnEnabled()) {
@@ -200,6 +195,37 @@ public class LiferayJWTBearerGrantHandler extends BaseAccessTokenGrantHandler {
 			return userSubject;
 		}
 
+		private String _getUserAuthType(long companyId, String issuer)
+			throws IllegalArgumentException {
+
+			StringBundler sb = new StringBundler(6);
+
+			Map<String, String> userAuthTypes =
+				OAuth2ConfigurationUtil.getUserAuthTypes(companyId);
+
+			if (userAuthTypes == null) {
+				userAuthTypes = OAuth2ConfigurationUtil.getUserAuthTypes(CompanyConstants.SYSTEM);
+			}
+
+			if (userAuthTypes == null) {
+				sb.append("No user auth types in company: ");
+				sb.append(companyId);
+
+				throw new IllegalArgumentException(sb.toString());
+			}
+
+			if (!userAuthTypes.containsKey(issuer)) {
+				sb.append("No user auth type for issuer: ");
+				sb.append(issuer);
+				sb.append(", in company: ");
+				sb.append(companyId);
+
+				throw new IllegalArgumentException(sb.toString());
+			}
+
+			return userAuthTypes.get(issuer);
+		}
+
 		private void _initGrantHandler(
 			long companyId, JwtClaims jwtClaims, JwsHeaders jwsHeaders) {
 
@@ -207,8 +233,7 @@ public class LiferayJWTBearerGrantHandler extends BaseAccessTokenGrantHandler {
 
 			try {
 				jwsSignatureVerifier =
-					_oAuth2InAssertionManagedServiceFactory.
-						getJWSSignatureVerifier(
+						_getJWSSignatureVerifier(
 							companyId, jwtClaims.getIssuer(),
 							jwsHeaders.getKeyId());
 			}
@@ -221,6 +246,54 @@ public class LiferayJWTBearerGrantHandler extends BaseAccessTokenGrantHandler {
 			}
 
 			setJwsVerifier(jwsSignatureVerifier);
+		}
+
+		private JwsSignatureVerifier _getJWSSignatureVerifier(
+			long companyId, String issuer, String kid)
+			throws IllegalArgumentException {
+
+			StringBundler sb = new StringBundler(12);
+
+			Map<String, Map<String, JwsSignatureVerifier>> jwsSignatureVerifiers =
+				OAuth2ConfigurationUtil.getJWSSignatureVerifiers(companyId);
+
+			if (jwsSignatureVerifiers == null) {
+				jwsSignatureVerifiers =
+					OAuth2ConfigurationUtil.getJWSSignatureVerifiers(
+						CompanyConstants.SYSTEM);
+			}
+
+			if (jwsSignatureVerifiers == null) {
+				sb.append("No JWS signature keys in company: ");
+				sb.append(companyId);
+
+				throw new IllegalArgumentException(sb.toString());
+			}
+
+			Map<String, JwsSignatureVerifier> kidsJWSSignatureVerifiers =
+				jwsSignatureVerifiers.get(issuer);
+
+			if (kidsJWSSignatureVerifiers == null) {
+				sb.append("No JWS signature keys for issuer: ");
+				sb.append(issuer);
+				sb.append(", in company: ");
+				sb.append(companyId);
+
+				throw new IllegalArgumentException(sb.toString());
+			}
+
+			if (!kidsJWSSignatureVerifiers.containsKey(kid)) {
+				sb.append("No JWS signature key of kid: ");
+				sb.append(kid);
+				sb.append(", for issuer: ");
+				sb.append(issuer);
+				sb.append(", in company: ");
+				sb.append(companyId);
+
+				throw new IllegalArgumentException(sb.toString());
+			}
+
+			return kidsJWSSignatureVerifiers.get(kid);
 		}
 
 	}
