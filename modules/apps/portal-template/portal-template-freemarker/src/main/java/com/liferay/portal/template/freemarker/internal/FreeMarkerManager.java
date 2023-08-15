@@ -32,6 +32,8 @@ import com.liferay.portal.kernel.util.NamedThreadFactory;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.template.BaseTemplateResourceCache;
+import com.liferay.portal.template.BaseTemplateResourceLoader;
 import com.liferay.portal.template.engine.BaseTemplateManager;
 import com.liferay.portal.template.engine.TemplateContextHelper;
 import com.liferay.portal.template.freemarker.configuration.FreeMarkerEngineConfiguration;
@@ -163,7 +165,7 @@ public class FreeMarkerManager extends BaseTemplateManager {
 						getSecondLevelPortalCache();
 
 			TemplateCache templateCache = new LiferayTemplateCache(
-				_configuration, _templateResourceLoader, portalCache);
+				_configuration, _freeMarkerTemplateResourceLoader, portalCache);
 
 			field.set(_configuration, templateCache);
 
@@ -214,6 +216,47 @@ public class FreeMarkerManager extends BaseTemplateManager {
 			_restrictedBeansWrapper);
 	}
 
+	public class FreeMarkerTemplateResourceCache
+		extends BaseTemplateResourceCache {
+
+		public void destroy() {
+			super.destroy();
+		}
+
+		public void init() {
+			init(
+				_freeMarkerEngineConfiguration.resourceModificationCheck(),
+				_portalCacheName,
+				StringBundler.concat(
+					TemplateResource.class.getName(), StringPool.POUND,
+					TemplateConstants.LANG_TYPE_FTL));
+		}
+
+		public void setModificationCheckInterval() {
+			setModificationCheckInterval(
+				_freeMarkerEngineConfiguration.resourceModificationCheck());
+		}
+
+		private final String _portalCacheName =
+			FreeMarkerManager.FreeMarkerTemplateResourceCache.class.getName();
+
+	}
+
+	public class FreeMarkerTemplateResourceLoader
+		extends BaseTemplateResourceLoader {
+
+		public void destroy() {
+			super.destroy();
+		}
+
+		public void init(BundleContext bundleContext) {
+			init(
+				bundleContext, TemplateConstants.LANG_TYPE_FTL,
+				_freeMarkerTemplateResourceCache);
+		}
+
+	}
+
 	@Activate
 	protected void activate(ComponentContext componentContext) {
 		_freeMarkerEngineConfiguration = ConfigurableUtil.createConfigurable(
@@ -221,6 +264,15 @@ public class FreeMarkerManager extends BaseTemplateManager {
 			componentContext.getProperties());
 
 		BundleContext bundleContext = componentContext.getBundleContext();
+
+		_templateResourceLoaderServiceRegistration =
+			bundleContext.registerService(
+				TemplateResourceLoader.class, _freeMarkerTemplateResourceLoader,
+				null);
+
+		_freeMarkerTemplateResourceLoader.init(bundleContext);
+
+		_freeMarkerTemplateResourceCache.init();
 
 		_bundle = bundleContext.getBundle();
 
@@ -299,6 +351,12 @@ public class FreeMarkerManager extends BaseTemplateManager {
 
 			_serviceRegistration.unregister();
 		}
+
+		_freeMarkerTemplateResourceCache.destroy();
+
+		_freeMarkerTemplateResourceLoader.destroy();
+
+		_templateResourceLoaderServiceRegistration.unregister();
 	}
 
 	@Override
@@ -324,7 +382,9 @@ public class FreeMarkerManager extends BaseTemplateManager {
 	}
 
 	@Modified
-	protected void modified(ComponentContext componentContext) {
+	protected void modified(
+		ComponentContext componentContext, BundleContext bundleContext) {
+
 		if (_freeMarkerEngineConfiguration.asyncRenderTimeout() > 0) {
 			_noticeableExecutorService.shutdownNow();
 
@@ -342,6 +402,10 @@ public class FreeMarkerManager extends BaseTemplateManager {
 		_freeMarkerEngineConfiguration = ConfigurableUtil.createConfigurable(
 			FreeMarkerEngineConfiguration.class,
 			componentContext.getProperties());
+
+		_freeMarkerTemplateResourceCache.setModificationCheckInterval();
+
+		_freeMarkerTemplateResourceLoader.init(bundleContext);
 
 		_initAsyncRender(componentContext.getBundleContext());
 	}
@@ -534,10 +598,12 @@ public class FreeMarkerManager extends BaseTemplateManager {
 	private volatile FreeMarkerBundleClassloader _freeMarkerBundleClassloader;
 	private volatile FreeMarkerEngineConfiguration
 		_freeMarkerEngineConfiguration;
-
-	@Reference
-	private FreeMarkerTemplateResourceCache _freeMarkerTemplateResourceCache;
-
+	private final FreeMarkerTemplateResourceCache
+		_freeMarkerTemplateResourceCache =
+			new FreeMarkerTemplateResourceCache();
+	private final FreeMarkerTemplateResourceLoader
+		_freeMarkerTemplateResourceLoader =
+			new FreeMarkerTemplateResourceLoader();
 	private volatile NoticeableExecutorService _noticeableExecutorService;
 
 	@Reference
@@ -559,12 +625,8 @@ public class FreeMarkerManager extends BaseTemplateManager {
 
 	private final Map<String, TemplateModel> _templateModels =
 		new ConcurrentHashMap<>();
-
-	@Reference(
-		target = "(component.name=com.liferay.portal.template.freemarker.internal.FreeMarkerTemplateResourceLoader)"
-	)
-	private TemplateResourceLoader _templateResourceLoader;
-
+	private ServiceRegistration<TemplateResourceLoader>
+		_templateResourceLoaderServiceRegistration;
 	private volatile Map<String, AtomicInteger> _timeoutTemplateCounters;
 
 	private static class ThreadLocalUtil {
