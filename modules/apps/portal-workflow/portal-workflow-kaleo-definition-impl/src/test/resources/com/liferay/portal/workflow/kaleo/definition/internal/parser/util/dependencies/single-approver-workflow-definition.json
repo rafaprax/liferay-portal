@@ -1,0 +1,357 @@
+{
+	"workflow-definition":
+	{
+		"xmlns": "urn:liferay.com:liferay-workflow_7.4.0",
+		"task":
+		[
+			{
+				"metadata":
+				{
+					"#cdata-value":
+					[
+						"",
+						"        {",
+						"          \"transitions\": {",
+						"            \"resubmit\": {",
+						"              \"bendpoints\": [",
+						"                [",
+						"                  303,",
+						"                  140",
+						"                ]",
+						"              ]",
+						"            }",
+						"          },",
+						"          \"xy\": [",
+						"            328,",
+						"            199",
+						"          ]",
+						"        }",
+						"      "
+					]
+				},
+				"assignments":
+				{},
+				"name":
+				{
+					"#value": "update"
+				},
+				"transitions":
+				{
+					"transition":
+					{
+						"default":
+						{
+							"#value": "true"
+						},
+						"name":
+						{
+							"#value": "resubmit"
+						},
+						"target":
+						{
+							"#value": "review"
+						}
+					}
+				},
+				"actions":
+				{
+					"notification":
+					{
+						"template":
+						{
+							"#cdata-value":
+							[
+								"Your submission was rejected by ${userName}, please modify and resubmit."
+							]
+						},
+						"notification-type":
+						[
+							{
+								"#value": "email"
+							},
+							{
+								"#value": "user-notification"
+							}
+						],
+						"execution-type":
+						{
+							"#value": "onAssignment"
+						},
+						"name":
+						{
+							"#value": "Creator Modification Notification"
+						},
+						"template-language":
+						{
+							"#value": "freemarker"
+						}
+					}
+				}
+			},
+			{
+				"metadata":
+				{
+					"#cdata-value":
+					[
+						"",
+						"        {",
+						"          \"xy\": [",
+						"            168,",
+						"            36",
+						"          ]",
+						"        }",
+						"      "
+					]
+				},
+				"assignments":
+				{
+					"scripted-assignment":
+					{
+						"script-language":
+						{
+							"#value": "groovy"
+						},
+						"script":
+						{
+							"#cdata-value":
+							[
+								"",
+								"            import com.liferay.portal.kernel.model.Group;",
+								"            import com.liferay.portal.kernel.model.Role;",
+								"            import com.liferay.portal.kernel.service.GroupLocalServiceUtil;",
+								"            import com.liferay.portal.kernel.service.RoleLocalServiceUtil;",
+								"            import com.liferay.portal.kernel.util.GetterUtil;",
+								"            import com.liferay.portal.kernel.workflow.WorkflowConstants;",
+								"",
+								"            long companyId = GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_COMPANY_ID));",
+								"",
+								"            long groupId = GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_GROUP_ID));",
+								"",
+								"            Group group = GroupLocalServiceUtil.getGroup(groupId);",
+								"",
+								"            roles = new ArrayList<Role>();",
+								"",
+								"            Role adminRole = RoleLocalServiceUtil.getRole(companyId, \"Administrator\");",
+								"",
+								"            roles.add(adminRole);",
+								"",
+								"            if (group.isOrganization()) {",
+								"              Role role = RoleLocalServiceUtil.getRole(companyId, \"Organization Content Reviewer\");",
+								"",
+								"              roles.add(role);",
+								"            }",
+								"            else {",
+								"              Role role = RoleLocalServiceUtil.getRole(companyId, \"Site Content Reviewer\");",
+								"",
+								"              roles.add(role);",
+								"            }",
+								"",
+								"            user = null;",
+								"          "
+							]
+						}
+					}
+				},
+				"name":
+				{
+					"#value": "review"
+				},
+				"transitions":
+				{
+					"transition":
+					[
+						{
+							"default":
+							{
+								"#value": "true"
+							},
+							"name":
+							{
+								"#value": "approve"
+							},
+							"target":
+							{
+								"#value": "approved"
+							}
+						},
+						{
+							"default":
+							{
+								"#value": "false"
+							},
+							"name":
+							{
+								"#value": "reject"
+							},
+							"target":
+							{
+								"#value": "update"
+							}
+						}
+					]
+				},
+				"actions":
+				{
+					"notification":
+					[
+						{
+							"template":
+							{
+								"#cdata-value":
+								[
+									"Your submission was reviewed<#if taskComments?has_content> and the reviewer applied the following ${taskComments}</#if>."
+								]
+							},
+							"notification-type":
+							{
+								"#value": "email"
+							},
+							"execution-type":
+							{
+								"#value": "onExit"
+							},
+							"recipients":
+							{},
+							"name":
+							{
+								"#value": "Review Completion Notification"
+							},
+							"template-language":
+							{
+								"#value": "freemarker"
+							}
+						},
+						{
+							"template":
+							{
+								"#cdata-value":
+								[
+									"${userName} sent you a ${entryType} for review in the workflow."
+								]
+							},
+							"notification-type":
+							[
+								{
+									"#value": "email"
+								},
+								{
+									"#value": "user-notification"
+								}
+							],
+							"execution-type":
+							{
+								"#value": "onAssignment"
+							},
+							"name":
+							{
+								"#value": "Review Notification"
+							},
+							"template-language":
+							{
+								"#value": "freemarker"
+							}
+						}
+					]
+				}
+			}
+		],
+		"xsi:schemaLocation": "urn:liferay.com:liferay-workflow_7.4.0 http://www.liferay.com/dtd/liferay-workflow-definition_7_4_0.xsd",
+		"name":
+		{
+			"#value": "Scripted Single Approver"
+		},
+		"description":
+		{
+			"#value": "A single approver can approve a workflow content."
+		},
+		"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+		"state":
+		[
+			{
+				"metadata":
+				{
+					"#cdata-value":
+					[
+						"",
+						"        {",
+						"          \"xy\": [",
+						"            36,",
+						"            51",
+						"          ]",
+						"        }",
+						"      "
+					]
+				},
+				"initial":
+				{
+					"#value": "true"
+				},
+				"name":
+				{
+					"#value": "created"
+				},
+				"transitions":
+				{
+					"transition":
+					{
+						"default":
+						{
+							"#value": "true"
+						},
+						"name":
+						{
+							"#value": "review"
+						},
+						"target":
+						{
+							"#value": "review"
+						}
+					}
+				}
+			},
+			{
+				"metadata":
+				{
+					"#cdata-value":
+					[
+						"",
+						"        {",
+						"          \"terminal\": true,",
+						"          \"xy\": [",
+						"            380,",
+						"            51",
+						"          ]",
+						"        }",
+						"      "
+					]
+				},
+				"name":
+				{
+					"#value": "approved"
+				},
+				"actions":
+				{
+					"action":
+					{
+						"execution-type":
+						{
+							"#value": "onEntry"
+						},
+						"name":
+						{
+							"#value": "approve"
+						},
+						"status":
+						{
+							"#value": "0"
+						}
+					}
+				}
+			}
+		],
+		"version":
+		{
+			"#value": "1"
+		}
+	}
+}
