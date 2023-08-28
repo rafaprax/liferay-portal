@@ -1,0 +1,16 @@
+{
+	"labels":
+	{
+		"label":
+		[
+			{
+				"#value": "Sum 1",
+				"language-id": "en_US"
+			},
+			{
+				"#value": "Soma 1",
+				"language-id": "pt_BR"
+			}
+		]
+	}
+}

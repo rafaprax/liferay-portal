@@ -7,8 +7,10 @@ package com.liferay.portal.workflow.kaleo.definition.internal.parser.util;
 
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.security.xml.SecureXMLFactoryProviderUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.security.xml.SecureXMLFactoryProviderImpl;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Before;
@@ -27,7 +29,7 @@ public class WorkflowDefinitionParserTest {
 		LiferayUnitTestRule.INSTANCE;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		JSONFactory jsonFactory = new JSONFactoryImpl();
 
 		ReflectionTestUtil.setFieldValue(
@@ -35,12 +37,24 @@ public class WorkflowDefinitionParserTest {
 
 		ReflectionTestUtil.setFieldValue(
 			_XML_TO_JSON_DEFINITION_PARSER, "_jsonFactory", jsonFactory);
+
+		SecureXMLFactoryProviderUtil secureXMLFactoryProviderUtil =
+			new SecureXMLFactoryProviderUtil();
+
+		secureXMLFactoryProviderUtil.setSecureXMLFactoryProvider(
+			new SecureXMLFactoryProviderImpl());
 	}
 
 	@Test
 	public void testParseCDataContentToJSON() throws Exception {
 		System.out.println(
 			_XML_TO_JSON_DEFINITION_PARSER.parse(_read("cdata.xml")));
+	}
+
+	@Test
+	public void testParseCDataContentToXML() throws Exception {
+		System.out.println(
+			_JSON_TO_XML_DEFINITION_PARSER.parse(_read("cdata.json")));
 	}
 
 	@Test
@@ -61,6 +75,12 @@ public class WorkflowDefinitionParserTest {
 	public void testParseTagWithAttributesAndContentToJSON() throws Exception {
 		System.out.println(
 			_XML_TO_JSON_DEFINITION_PARSER.parse(_read("labels.xml")));
+	}
+
+	@Test
+	public void testParseTagWithAttributesAndContentToXML() throws Exception {
+		System.out.println(
+			_JSON_TO_XML_DEFINITION_PARSER.parse(_read("labels.json")));
 	}
 
 	private String _read(String fileName) throws Exception {
