@@ -1,10 +1,7 @@
 {
-	"task":
-	{
-		"metadata":
-		{
-			"#cdata-value":
-			[
+	"task": {
+		"metadata": {
+			"#cdata-value": [
 				"",
 				"        {",
 				"          \"xy\": [",
@@ -15,10 +12,8 @@
 				"      "
 			]
 		},
-		"script":
-		{
-			"#cdata-value":
-			[
+		"script": {
+			"#cdata-value": [
 				"",
 				"      import com.liferay.portal.kernel.model.Group;",
 				"      import com.liferay.portal.kernel.model.Role;",

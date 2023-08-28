@@ -1,8 +1,6 @@
 {
-	"labels":
-	{
-		"label":
-		[
+	"labels": {
+		"label": [
 			{
 				"#value": "Sum 1",
 				"language-id": "en_US"
