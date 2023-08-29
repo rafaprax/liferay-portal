@@ -5,6 +5,7 @@
 
 package com.liferay.portal.workflow.kaleo.definition.internal.parser;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -47,6 +48,7 @@ import com.liferay.portal.workflow.kaleo.definition.Transition;
 import com.liferay.portal.workflow.kaleo.definition.UpdateStatusAction;
 import com.liferay.portal.workflow.kaleo.definition.UserAssignment;
 import com.liferay.portal.workflow.kaleo.definition.UserRecipient;
+import com.liferay.portal.workflow.kaleo.definition.converter.util.WorkflowDefinitionContentConverterUtil;
 import com.liferay.portal.workflow.kaleo.definition.parser.WorkflowModelParser;
 
 import java.io.InputStream;
@@ -73,9 +75,7 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 	@Override
 	public Definition parse(InputStream inputStream) throws WorkflowException {
 		try {
-			Document document = SAXReaderUtil.read(inputStream, _validate);
-
-			return _parse(document);
+			return parse(StringUtil.read(inputStream));
 		}
 		catch (Exception exception) {
 			throw new WorkflowDefinitionFileException(
@@ -86,7 +86,8 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 	@Override
 	public Definition parse(String content) throws WorkflowException {
 		try {
-			Document document = SAXReaderUtil.read(content, _validate);
+			Document document = SAXReaderUtil.read(
+				_convert(content), _validate);
 
 			return _parse(document);
 		}
@@ -104,6 +105,16 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 	@Activate
 	protected void activate(Map<String, Object> properties) {
 		_validate = GetterUtil.getBoolean(properties.get("validating"), true);
+	}
+
+	private String _convert(String content) throws WorkflowException {
+		if (Validator.isNotNull(content) &&
+			content.startsWith(StringPool.OPEN_CURLY_BRACE)) {
+
+			return WorkflowDefinitionContentConverterUtil.toXML(content);
+		}
+
+		return content;
 	}
 
 	private Definition _parse(Document document) throws Exception {
