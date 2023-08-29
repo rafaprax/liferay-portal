@@ -52,6 +52,23 @@ public class WorkflowDefinitionManagerTest extends BaseWorkflowManagerTestCase {
 	}
 
 	@Test
+	public void testDeployWorkflowDefinitionWithJSONContent() throws Exception {
+		String content = workflowDefinitionContentConverter.convert(
+			StringUtil.read(
+				getResourceInputStream(
+					"single-approver-workflow-definition.xml")));
+
+		WorkflowDefinition workflowDefinition =
+			_workflowDefinitionManager.deployWorkflowDefinition(
+				TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+				StringPool.BLANK, "Single Approver", content.getBytes());
+
+		Assert.assertEquals(
+			workflowDefinition.getName(), workflowDefinition.getName());
+		Assert.assertTrue(workflowDefinition.isActive());
+	}
+
+	@Test
 	public void testDeployWorkflowDraftDefinition() throws Exception {
 		WorkflowDefinition workflowDefinition = _saveWorkflowDefinition();
 

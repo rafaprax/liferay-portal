@@ -19,6 +19,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.test.rule.SynchronousMailTestRule;
+import com.liferay.portal.workflow.kaleo.definition.converter.WorkflowDefinitionContentConverter;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -124,6 +125,10 @@ public abstract class BaseWorkflowManagerTestCase {
 
 		return registryWorkflowHandler(workflowDefinition.getName());
 	}
+
+	@Inject(filter = "content.converter.type=xml-to-json")
+	protected WorkflowDefinitionContentConverter
+		workflowDefinitionContentConverter;
 
 	@Inject
 	protected WorkflowDefinitionLinkLocalService

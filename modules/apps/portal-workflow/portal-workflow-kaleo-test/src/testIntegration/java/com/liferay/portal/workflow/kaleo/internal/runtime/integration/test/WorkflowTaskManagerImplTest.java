@@ -1581,7 +1581,8 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 				_log.debug(workflowException);
 			}
 
-			String content = _read("join-xor-workflow-definition.xml");
+			String content = _getContentFromFile(
+				"join-xor-workflow-definition.xml");
 
 			_workflowDefinitionManager.deployWorkflowDefinition(
 				_adminUser.getCompanyId(), _adminUser.getUserId(), _JOIN_XOR,
@@ -1615,7 +1616,7 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 				_log.debug(workflowException);
 			}
 
-			String content = _read(fileName);
+			String content = _getContentFromFile(fileName);
 
 			_workflowDefinitionManager.deployWorkflowDefinition(
 				_adminUser.getCompanyId(), _adminUser.getUserId(), name, name,
@@ -1633,7 +1634,7 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 				_log.debug(workflowException);
 			}
 
-			String content = _read(
+			String content = _getContentFromFile(
 				"single-approver-site-member-workflow-definition.xml");
 
 			_workflowDefinitionManager.deployWorkflowDefinition(
@@ -1710,6 +1711,13 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 	private DLFileEntryType _getBasicFileEntryType() throws Exception {
 		return _dlFileEntryTypeLocalService.getFileEntryType(
 			0, "BASIC-DOCUMENT");
+	}
+
+	private String _getContentFromFile(String fileName) throws Exception {
+		Class<?> clazz = getClass();
+
+		return workflowDefinitionContentConverter.convert(
+			StringUtil.read(clazz.getClassLoader(), _getBasePath() + fileName));
 	}
 
 	private WorkflowInstance _getWorkflowInstance(
@@ -1808,13 +1816,6 @@ public class WorkflowTaskManagerImplTest extends BaseWorkflowManagerTestCase {
 
 		return _workflowTaskManager.hasAssignableUsers(
 			workflowTask.getWorkflowTaskId());
-	}
-
-	private String _read(String fileName) throws Exception {
-		Class<?> clazz = getClass();
-
-		return StringUtil.read(
-			clazz.getClassLoader(), _getBasePath() + fileName);
 	}
 
 	private List<WorkflowTask> _searchByAssetTypesAndAssetPrimaryKeys(
