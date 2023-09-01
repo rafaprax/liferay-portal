@@ -74,7 +74,7 @@ public class AMImageRequestHandler
 		return adaptiveMedia;
 	}
 
-	public static class PathInterpreter {
+	public class PathInterpreter {
 
 		public Tuple<FileVersion, Map<String, String>> interpretPath(
 			String pathInfo) {
@@ -145,15 +145,6 @@ public class AMImageRequestHandler
 
 			return Long.valueOf(matcher.group(2));
 		}
-
-		private static final Pattern _pattern = Pattern.compile(
-			"/image/(\\d+)(?:/(\\d+))?/([^/]+)/(?:[^/]+)");
-
-		@Reference
-		private AMImageConfigurationHelper _amImageConfigurationHelper;
-
-		@Reference
-		private DLAppService _dlAppService;
 
 	}
 
@@ -364,6 +355,9 @@ public class AMImageRequestHandler
 	private static final Log _log = LogFactoryUtil.getLog(
 		AMImageRequestHandler.class);
 
+	private static final Pattern _pattern = Pattern.compile(
+		"/image/(\\d+)(?:/(\\d+))?/([^/]+)/(?:[^/]+)");
+
 	@Reference
 	private AMAsyncProcessorLocator _amAsyncProcessorLocator;
 
@@ -373,6 +367,10 @@ public class AMImageRequestHandler
 	@Reference
 	private AMImageFinder _amImageFinder;
 
-	private AMImageRequestHandler.PathInterpreter _pathInterpreter;
+	@Reference
+	private DLAppService _dlAppService;
+
+	private final AMImageRequestHandler.PathInterpreter _pathInterpreter =
+		new PathInterpreter();
 
 }
