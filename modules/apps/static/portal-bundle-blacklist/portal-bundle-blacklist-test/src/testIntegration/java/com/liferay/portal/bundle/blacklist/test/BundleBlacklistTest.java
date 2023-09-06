@@ -12,6 +12,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.bundle.blacklist.BundleBlacklistManager;
 import com.liferay.portal.kernel.module.util.BundleUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.lpkg.deployer.test.util.LPKGTestUtil;
@@ -43,6 +44,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.util.tracker.BundleTracker;
@@ -357,12 +359,13 @@ public class BundleBlacklistTest {
 					return;
 				}
 
-				Object service = _bundleContext.getService(
-					serviceEvent.getServiceReference());
+				ServiceReference<?> serviceReference =
+					serviceEvent.getServiceReference();
 
-				Class<?> clazz = service.getClass();
+				if (ArrayUtil.contains(
+						(String[])serviceReference.getProperty("objectClass"),
+						_CLASS_NAME)) {
 
-				if (_CLASS_NAME.equals(clazz.getName())) {
 					countDownLatch.countDown();
 				}
 			}
@@ -387,7 +390,8 @@ public class BundleBlacklistTest {
 	}
 
 	private static final String _CLASS_NAME =
-		"com.liferay.portal.bundle.blacklist.internal.BundleBlacklist";
+		"com.liferay.portal.bundle.blacklist.internal.BundleBlacklist$" +
+			"BundleBlacklistModified";
 
 	private static final String _CONFIG_NAME =
 		"com.liferay.portal.bundle.blacklist.internal.configuration." +

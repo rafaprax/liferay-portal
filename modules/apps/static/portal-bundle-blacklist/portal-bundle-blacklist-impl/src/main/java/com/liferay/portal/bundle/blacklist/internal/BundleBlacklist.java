@@ -12,6 +12,7 @@ import com.liferay.portal.bundle.blacklist.internal.configuration.BundleBlacklis
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -65,7 +66,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	configurationPid = "com.liferay.portal.bundle.blacklist.internal.configuration.BundleBlacklistConfiguration",
-	service = BundleBlacklist.class
+	service = {}
 )
 public class BundleBlacklist {
 
@@ -79,11 +80,18 @@ public class BundleBlacklist {
 		_serviceRegistration = bundleContext.registerService(
 			BundleBlacklistManager.class, new BundleBlacklistManagerImpl(),
 			null);
+
+		_bundleBlacklistRegisterServiceRegistration =
+			bundleContext.registerService(
+				BundleBlacklistRegister.class, new BundleBlacklistRegister(),
+				null);
 	}
 
 	@Deactivate
 	protected void deactivate() {
 		_serviceRegistration.unregister();
+
+		_bundleBlacklistRegisterServiceRegistration.unregister();
 	}
 
 	@Modified
@@ -150,6 +158,10 @@ public class BundleBlacklist {
 
 				_removeFromBlacklistFile(symbolicName);
 			}
+		}
+
+		if (_bundleBlacklistRegisterServiceRegistration != null) {
+			_bundleBlacklistRegisterServiceRegistration.setProperties(null);
 		}
 	}
 
@@ -282,6 +294,8 @@ public class BundleBlacklist {
 
 	private volatile Set<String> _blacklistBundleSymbolicNames;
 	private volatile File _blacklistFile;
+	private ServiceRegistration<BundleBlacklistRegister>
+		_bundleBlacklistRegisterServiceRegistration;
 
 	private final BundleListener _bundleListener =
 		new SynchronousBundleListener() {
@@ -380,17 +394,13 @@ public class BundleBlacklist {
 					ServiceReference<?> serviceReference =
 						serviceEvent.getServiceReference();
 
-					Object service = bundleContext.getService(serviceReference);
-
-					Class<?> serviceClass = service.getClass();
-
-					if (BundleBlacklist.class.getName() ==
-							serviceClass.getName()) {
+					if (ArrayUtil.contains(
+							(String[])serviceReference.getProperty(
+								"objectClass"),
+							BundleBlacklistRegister.class.getName())) {
 
 						countDownLatch.countDown();
 					}
-
-					bundleContext.ungetService(serviceReference);
 				}
 
 			};
@@ -463,6 +473,9 @@ public class BundleBlacklist {
 			_updateConfiguration(configuration, properties);
 		}
 
+	}
+
+	private class BundleBlacklistRegister {
 	}
 
 }
