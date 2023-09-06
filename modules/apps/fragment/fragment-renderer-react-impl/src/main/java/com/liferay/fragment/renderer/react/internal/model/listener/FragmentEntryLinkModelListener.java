@@ -14,7 +14,7 @@ import com.liferay.frontend.js.loader.modules.extender.npm.JSPackage;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMRegistry;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMRegistryUpdate;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
-import com.liferay.portal.kernel.cluster.ClusterExecutor;
+import com.liferay.portal.kernel.cluster.ClusterExecutorUtil;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.ModelListenerException;
@@ -22,8 +22,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
-import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
-import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiServiceUtil;
 import com.liferay.portal.kernel.util.MethodHandler;
 import com.liferay.portal.kernel.util.MethodKey;
 
@@ -36,15 +34,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Iván Zaera Avellón
  */
-@Component(service = {IdentifiableOSGiService.class, ModelListener.class})
+@Component(service = ModelListener.class)
 public class FragmentEntryLinkModelListener
-	extends BaseModelListener<FragmentEntryLink>
-	implements IdentifiableOSGiService {
-
-	@Override
-	public String getOSGiServiceIdentifier() {
-		return FragmentEntryLinkModelListener.class.getName();
-	}
+	extends BaseModelListener<FragmentEntryLink> {
 
 	@Override
 	public void onAfterCreate(FragmentEntryLink fragmentEntryLink) {
@@ -116,39 +108,25 @@ public class FragmentEntryLinkModelListener
 		npmRegistryUpdate.finish();
 	}
 
-	private static void _onNotify(
-		MethodType methodType, String osgiServiceIdentifier,
-		FragmentEntryLink oldFragmentEntryLink,
-		FragmentEntryLink newFragmentEntryLink) {
-
-		FragmentEntryLinkModelListener fragmentEntryLinkModelListener =
-			(FragmentEntryLinkModelListener)
-				IdentifiableOSGiServiceUtil.getIdentifiableOSGiService(
-					osgiServiceIdentifier);
-
-		fragmentEntryLinkModelListener._updateNPMRegistry(
-			methodType, oldFragmentEntryLink, newFragmentEntryLink);
-	}
-
-	private void _notifyCluster(
+	private static void _notifyCluster(
 		MethodType methodType, FragmentEntryLink oldFragmentEntryLink,
 		FragmentEntryLink newFragmentEntryLink) {
 
-		if (!_clusterExecutor.isEnabled()) {
+		if (!ClusterExecutorUtil.isEnabled()) {
 			return;
 		}
 
 		try {
 			MethodHandler methodHandler = new MethodHandler(
-				_onNotifyMethodKey, methodType, getOSGiServiceIdentifier(),
-				oldFragmentEntryLink, newFragmentEntryLink);
+				_notifyClusterMethodKey, methodType, oldFragmentEntryLink,
+				newFragmentEntryLink);
 
 			ClusterRequest clusterRequest =
 				ClusterRequest.createMulticastRequest(methodHandler, true);
 
 			clusterRequest.setFireAndForget(true);
 
-			_clusterExecutor.execute(clusterRequest);
+			ClusterExecutorUtil.execute(clusterRequest);
 		}
 		catch (Throwable throwable) {
 			_log.error(throwable);
@@ -191,12 +169,9 @@ public class FragmentEntryLinkModelListener
 	private static final Log _log = LogFactoryUtil.getLog(
 		FragmentEntryLinkModelListener.class);
 
-	private static final MethodKey _onNotifyMethodKey = new MethodKey(
-		FragmentEntryLinkModelListener.class, "_onNotify", MethodType.class,
-		String.class, FragmentEntryLink.class, FragmentEntryLink.class);
-
-	@Reference
-	private ClusterExecutor _clusterExecutor;
+	private static final MethodKey _notifyClusterMethodKey = new MethodKey(
+		FragmentEntryLinkModelListener.class, "_notifyCluster",
+		MethodType.class, FragmentEntryLink.class, FragmentEntryLink.class);
 
 	@Reference
 	private FragmentEntryLinkJSModuleInitializerHelper
