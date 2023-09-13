@@ -14,8 +14,11 @@ import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateManager;
 import com.liferay.portal.kernel.template.TemplateResource;
+import com.liferay.portal.kernel.template.TemplateResourceCache;
 import com.liferay.portal.kernel.template.TemplateResourceLoader;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.template.BaseTemplateResourceCache;
+import com.liferay.portal.template.BaseTemplateResourceLoader;
 import com.liferay.portal.template.engine.BaseTemplateManager;
 import com.liferay.portal.template.engine.TemplateContextHelper;
 import com.liferay.portal.template.velocity.configuration.VelocityEngineConfiguration;
@@ -26,8 +29,11 @@ import org.apache.commons.collections.ExtendedProperties;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
@@ -111,8 +117,9 @@ public class VelocityManager extends BaseTemplateManager {
 			extendedProperties.setProperty(
 				StringBundler.concat(
 					"liferay.", VelocityEngine.RESOURCE_LOADER, ".",
-					VelocityTemplateResourceLoader.class.getName()),
-				_templateResourceLoader);
+					VelocityManager.VelocityTemplateResourceLoader.class.
+						getName()),
+				_velocityTemplateResourceLoader);
 
 			boolean cacheEnabled = false;
 
@@ -143,8 +150,8 @@ public class VelocityManager extends BaseTemplateManager {
 				resourceModificationCheckInterval + "");
 
 			extendedProperties.setProperty(
-				VelocityTemplateResourceLoader.class.getName(),
-				_templateResourceLoader);
+				VelocityManager.VelocityTemplateResourceLoader.class.getName(),
+				_velocityTemplateResourceLoader);
 			extendedProperties.setProperty(
 				VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS,
 				_velocityEngineConfiguration.logger());
@@ -175,11 +182,77 @@ public class VelocityManager extends BaseTemplateManager {
 		}
 	}
 
+	public class VelocityTemplateResourceCache
+		extends BaseTemplateResourceCache {
+
+		public VelocityTemplateResourceCache() {
+			init(
+				_velocityEngineConfiguration.
+					resourceModificationCheckInterval(),
+				_portalCacheName,
+				StringBundler.concat(
+					TemplateResource.class.getName(), StringPool.POUND,
+					TemplateConstants.LANG_TYPE_VM));
+		}
+
+		public void destroy() {
+			super.destroy();
+		}
+
+		public void setModificationCheckInterval() {
+			setModificationCheckInterval(
+				_velocityEngineConfiguration.
+					resourceModificationCheckInterval());
+		}
+
+		private final String _portalCacheName =
+			VelocityManager.VelocityTemplateResourceCache.class.getName();
+
+	}
+
+	public class VelocityTemplateResourceLoader
+		extends BaseTemplateResourceLoader {
+
+		public VelocityTemplateResourceLoader(
+			BundleContext bundleContext,
+			TemplateResourceCache templateResourceCache) {
+
+			init(
+				bundleContext, TemplateConstants.LANG_TYPE_VM,
+				templateResourceCache);
+		}
+
+		public void destroy() {
+			super.destroy();
+		}
+
+	}
+
 	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
+	protected void activate(
+		BundleContext bundleContext, Map<String, Object> properties) {
+
 		_velocityEngineConfiguration = ConfigurableUtil.createConfigurable(
 			VelocityEngineConfiguration.class, properties);
+
+		_velocityTemplateResourceCache = new VelocityTemplateResourceCache();
+
+		_velocityTemplateResourceLoader = new VelocityTemplateResourceLoader(
+			bundleContext, _velocityTemplateResourceCache);
+
+		_templateResourceLoaderServiceRegistration =
+			bundleContext.registerService(
+				TemplateResourceLoader.class, _velocityTemplateResourceLoader,
+				null);
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_velocityTemplateResourceCache.destroy();
+
+		_velocityTemplateResourceLoader.destroy();
+
+		_templateResourceLoaderServiceRegistration.unregister();
 	}
 
 	@Override
@@ -195,6 +268,14 @@ public class VelocityManager extends BaseTemplateManager {
 	@Override
 	protected TemplateContextHelper getTemplateContextHelper() {
 		return _templateContextHelper;
+	}
+
+	@Modified
+	protected void modified(BundleContext bundleContext) {
+		_velocityTemplateResourceCache.setModificationCheckInterval();
+
+		_velocityTemplateResourceLoader = new VelocityTemplateResourceLoader(
+			bundleContext, _velocityTemplateResourceCache);
 	}
 
 	private String _getVelocimacroLibrary(Class<?> clazz) {
@@ -230,14 +311,11 @@ public class VelocityManager extends BaseTemplateManager {
 	)
 	private TemplateContextHelper _templateContextHelper;
 
-	@Reference(
-		target = "(component.name=com.liferay.portal.template.velocity.internal.VelocityTemplateResourceLoader)"
-	)
-	private TemplateResourceLoader _templateResourceLoader;
-
+	private ServiceRegistration<TemplateResourceLoader>
+		_templateResourceLoaderServiceRegistration;
 	private VelocityEngine _velocityEngine;
-
-	@Reference
 	private VelocityTemplateResourceCache _velocityTemplateResourceCache;
+	private volatile VelocityTemplateResourceLoader
+		_velocityTemplateResourceLoader;
 
 }

@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.template.TemplateResourceCache;
+import com.liferay.portal.kernel.template.TemplateResourceLoader;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -63,31 +64,34 @@ public class VelocityTemplateTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		_templateResourceCache = new VelocityTemplateResourceCache() {
-
-			@Override
-			public boolean isEnabled() {
-				return false;
-			}
-
-		};
-
-		_velocityTemplateResourceLoader = new VelocityTemplateResourceLoader();
+		VelocityManager velocityManager = new VelocityManager();
 
 		ReflectionTestUtil.setFieldValue(
-			_velocityTemplateResourceLoader, "_velocityTemplateResourceCache",
-			_templateResourceCache);
+			velocityManager, "_velocityEngineConfiguration",
+			ConfigurableUtil.createConfigurable(
+				VelocityEngineConfiguration.class, Collections.emptyMap()));
+
+		_templateResourceCache =
+			velocityManager.new VelocityTemplateResourceCache() {
+
+				@Override
+				public boolean isEnabled() {
+					return false;
+				}
+
+			};
 
 		BundleContext bundleContext = SystemBundleUtil.getBundleContext();
+
+		_templateResourceLoader =
+			velocityManager.new VelocityTemplateResourceLoader(
+				bundleContext, _templateResourceCache);
 
 		_templateResourceParserServiceRegistration =
 			bundleContext.registerService(
 				TemplateResourceParser.class, new ClassLoaderResourceParser(),
 				MapUtil.singletonDictionary(
 					"lang.type", TemplateConstants.LANG_TYPE_VM));
-
-		_velocityTemplateResourceLoader.activate(
-			bundleContext, Collections.emptyMap());
 	}
 
 	@AfterClass
@@ -96,8 +100,8 @@ public class VelocityTemplateTest {
 			_templateResourceParserServiceRegistration.unregister();
 		}
 
-		if (_velocityTemplateResourceLoader != null) {
-			_velocityTemplateResourceLoader.deactivate();
+		if (_templateResourceLoader != null) {
+			_templateResourceLoader.destroy();
 		}
 	}
 
@@ -149,8 +153,8 @@ public class VelocityTemplateTest {
 			velocityEngineConfiguration.resourceModificationCheckInterval() +
 				"");
 		extendedProperties.setProperty(
-			VelocityTemplateResourceLoader.class.getName(),
-			_velocityTemplateResourceLoader);
+			VelocityManager.VelocityTemplateResourceLoader.class.getName(),
+			_templateResourceLoader);
 		extendedProperties.setProperty(
 			VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS,
 			velocityEngineConfiguration.logger());
@@ -393,10 +397,9 @@ public class VelocityTemplateTest {
 	private static final String _WRONG_TEMPLATE_ID = "WRONG_TEMPLATE_ID";
 
 	private static TemplateResourceCache _templateResourceCache;
+	private static TemplateResourceLoader _templateResourceLoader;
 	private static ServiceRegistration<TemplateResourceParser>
 		_templateResourceParserServiceRegistration;
-	private static VelocityTemplateResourceLoader
-		_velocityTemplateResourceLoader;
 
 	private TemplateContextHelper _templateContextHelper;
 	private VelocityEngine _velocityEngine;
