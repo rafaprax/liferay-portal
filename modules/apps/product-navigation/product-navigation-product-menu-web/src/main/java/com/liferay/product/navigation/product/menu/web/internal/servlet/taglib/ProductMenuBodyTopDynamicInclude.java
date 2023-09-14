@@ -7,7 +7,7 @@ package com.liferay.product.navigation.product.menu.web.internal.servlet.taglib;
 
 import com.liferay.application.list.PanelAppRegistry;
 import com.liferay.application.list.PanelCategory;
-import com.liferay.application.list.PanelCategoryRegistry;
+import com.liferay.application.list.PanelCategoryRegistryUtil;
 import com.liferay.application.list.constants.PanelCategoryKeys;
 import com.liferay.application.list.display.context.logic.PanelCategoryHelper;
 import com.liferay.petra.reflect.ReflectionUtil;
@@ -143,7 +143,7 @@ public class ProductMenuBodyTopDynamicInclude extends BaseDynamicInclude {
 
 	private boolean _hasPanelCategories(ThemeDisplay themeDisplay) {
 		List<PanelCategory> childPanelCategories =
-			_panelCategoryRegistry.getChildPanelCategories(
+			PanelCategoryRegistryUtil.getChildPanelCategories(
 				PanelCategoryKeys.ROOT, themeDisplay.getPermissionChecker(),
 				themeDisplay.getScopeGroup());
 
@@ -153,7 +153,7 @@ public class ProductMenuBodyTopDynamicInclude extends BaseDynamicInclude {
 
 		if (!_isEnableApplicationsMenu(themeDisplay.getCompanyId())) {
 			childPanelCategories =
-				_panelCategoryRegistry.getChildPanelCategories(
+				PanelCategoryRegistryUtil.getChildPanelCategories(
 					PanelCategoryKeys.APPLICATIONS_MENU,
 					themeDisplay.getPermissionChecker(),
 					themeDisplay.getScopeGroup());
@@ -172,7 +172,7 @@ public class ProductMenuBodyTopDynamicInclude extends BaseDynamicInclude {
 		}
 
 		PanelCategoryHelper panelCategoryHelper = new PanelCategoryHelper(
-			_panelAppRegistry, _panelCategoryRegistry);
+			_panelAppRegistry);
 
 		if (!panelCategoryHelper.isApplicationsMenuApp(
 				themeDisplay.getPpid())) {
@@ -226,9 +226,6 @@ public class ProductMenuBodyTopDynamicInclude extends BaseDynamicInclude {
 
 	@Reference
 	private PanelAppRegistry _panelAppRegistry;
-
-	@Reference
-	private PanelCategoryRegistry _panelCategoryRegistry;
 
 	@Reference
 	private Portal _portal;

@@ -7,7 +7,7 @@ package com.liferay.product.navigation.product.menu.internal.helper;
 
 import com.liferay.application.list.PanelAppRegistry;
 import com.liferay.application.list.PanelCategory;
-import com.liferay.application.list.PanelCategoryRegistry;
+import com.liferay.application.list.PanelCategoryRegistryUtil;
 import com.liferay.application.list.constants.PanelCategoryKeys;
 import com.liferay.application.list.display.context.logic.PanelCategoryHelper;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
@@ -71,7 +71,7 @@ public class ProductNavigationProductMenuHelperImpl
 		}
 
 		List<PanelCategory> childPanelCategories =
-			_panelCategoryRegistry.getChildPanelCategories(
+			PanelCategoryRegistryUtil.getChildPanelCategories(
 				PanelCategoryKeys.ROOT, themeDisplay.getPermissionChecker(),
 				themeDisplay.getScopeGroup());
 
@@ -81,7 +81,7 @@ public class ProductNavigationProductMenuHelperImpl
 
 		if (!_isEnableApplicationsMenu(themeDisplay.getCompanyId())) {
 			childPanelCategories =
-				_panelCategoryRegistry.getChildPanelCategories(
+				PanelCategoryRegistryUtil.getChildPanelCategories(
 					PanelCategoryKeys.APPLICATIONS_MENU,
 					themeDisplay.getPermissionChecker(),
 					themeDisplay.getScopeGroup());
@@ -100,7 +100,7 @@ public class ProductNavigationProductMenuHelperImpl
 		}
 
 		PanelCategoryHelper panelCategoryHelper = new PanelCategoryHelper(
-			_panelAppRegistry, _panelCategoryRegistry);
+			_panelAppRegistry);
 
 		if (!panelCategoryHelper.isApplicationsMenuApp(
 				themeDisplay.getPpid())) {
@@ -149,9 +149,6 @@ public class ProductNavigationProductMenuHelperImpl
 
 	@Reference
 	private PanelAppRegistry _panelAppRegistry;
-
-	@Reference
-	private PanelCategoryRegistry _panelCategoryRegistry;
 
 	@Reference
 	private ProductNavigationControlMenuManager
