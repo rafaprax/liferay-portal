@@ -7,7 +7,6 @@ package com.liferay.portal.osgi.debug.missing.component.internal;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.bundle.blacklist.BundleBlacklistManager;
 import com.liferay.portal.kernel.module.util.BundleUtil;
 
 import org.osgi.framework.Bundle;
