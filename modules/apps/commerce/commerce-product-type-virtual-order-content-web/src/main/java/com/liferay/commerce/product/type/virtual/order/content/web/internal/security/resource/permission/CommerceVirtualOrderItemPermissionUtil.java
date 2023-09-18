@@ -10,28 +10,21 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Alessio Antonio Rendina
  */
-@Component(service = CommerceVirtualOrderItemPermission.class)
-public class CommerceVirtualOrderItemPermission {
+public class CommerceVirtualOrderItemPermissionUtil {
 
-	public boolean contains(
+	public static boolean contains(
 			PermissionChecker permissionChecker,
-			CommerceVirtualOrderItem commerceVirtualOrderItem, String actionId)
+			CommerceVirtualOrderItem commerceVirtualOrderItem,
+			ModelResourcePermission<CommerceVirtualOrderItem>
+				commerceVirtualOrderItemModelResourcePermission,
+			String actionId)
 		throws PortalException {
 
-		return _commerceVirtualOrderItemModelResourcePermission.contains(
+		return commerceVirtualOrderItemModelResourcePermission.contains(
 			permissionChecker, commerceVirtualOrderItem, actionId);
 	}
-
-	@Reference(
-		target = "(model.class.name=com.liferay.commerce.product.type.virtual.order.model.CommerceVirtualOrderItem)"
-	)
-	private ModelResourcePermission<CommerceVirtualOrderItem>
-		_commerceVirtualOrderItemModelResourcePermission;
 
 }
