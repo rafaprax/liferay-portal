@@ -57,7 +57,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -74,8 +73,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	configurationPid = "com.liferay.portal.cluster.multiple.configuration.ClusterExecutorConfiguration",
-	enabled = false,
-	service = {ClusterExecutor.class, ClusterExecutorImpl.class}
+	enabled = false, service = ClusterExecutor.class
 )
 public class ClusterExecutorImpl implements ClusterExecutor {
 
@@ -114,7 +112,7 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		}
 
 		if (clusterRequest.isMulticast()) {
-			_clusterChannel.sendMulticastMessage(clusterRequest);
+			ClusterChannelUtil.sendMulticastMessage(clusterRequest);
 		}
 		else {
 			for (String clusterNodeId : clusterNodeIds) {
@@ -132,7 +130,7 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 					continue;
 				}
 
-				_clusterChannel.sendUnicastMessage(
+				ClusterChannelUtil.sendUnicastMessage(
 					clusterRequest, clusterNodeStatus.getAddress());
 			}
 		}
@@ -209,11 +207,11 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 
 	@Deactivate
 	protected void deactivate() {
-		if (_clusterChannel != null) {
-			_clusterChannel.close();
+		if (ClusterChannelUtil.getClusterChannel() != null) {
+			ClusterChannelUtil.closeClusterChannel();
 		}
 
-		_clusterChannel = null;
+		ClusterChannelUtil.setClusterChannel(null);
 
 		if (_executorService != null) {
 			_executorService.shutdownNow();
@@ -280,29 +278,6 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		for (ClusterEventListener listener : _serviceTrackerList) {
 			listener.processClusterEvent(clusterEvent);
 		}
-	}
-
-	protected ClusterChannel getClusterChannel() {
-		return _clusterChannel;
-	}
-
-	protected String getClusterNodeId(Address address) {
-		CompletableFuture<String> completableFuture =
-			_clusterNodeIdCompletableFutures.computeIfAbsent(
-				address, key -> new CompletableFuture<>());
-
-		try {
-			return completableFuture.get(
-				clusterExecutorConfiguration.clusterNodeAddressTimeout(),
-				TimeUnit.MILLISECONDS);
-		}
-		catch (Exception exception) {
-			_log.error(
-				"Unable to get cluster node with address " + address,
-				exception);
-		}
-
-		return null;
 	}
 
 	protected ExecutorService getExecutorService() {
@@ -388,15 +363,18 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		ClusterRequestReceiver clusterReceiver = new ClusterRequestReceiver(
 			this);
 
-		_clusterChannel = _clusterChannelFactory.createClusterChannel(
-			_executorService, channelLogicName, channelPropertiesLocation,
-			channelName, clusterReceiver);
+		ClusterChannel clusterChannel =
+			_clusterChannelFactory.createClusterChannel(
+				_executorService, channelLogicName, channelPropertiesLocation,
+				channelName, clusterReceiver);
+
+		ClusterChannelUtil.setClusterChannel(clusterChannel);
 
 		ClusterNode localClusterNode = new ClusterNode(
-			_generateClusterNodeId(), _clusterChannel.getBindInetAddress());
+			_generateClusterNodeId(), ClusterChannelUtil.getBindInetAddress());
 
 		_localClusterNodeStatus = new ClusterNodeStatus(
-			localClusterNode, _clusterChannel.getLocalAddress());
+			localClusterNode, ClusterChannelUtil.getLocalAddress());
 
 		_memberJoined(_localClusterNodeStatus);
 
@@ -409,7 +387,7 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 
 	protected void memberRemoved(List<Address> departAddresses) {
 		for (Address address : departAddresses) {
-			_clusterNodeIdCompletableFutures.remove(address);
+			ClusterChannelUtil.removeClusterNodeIdCompletableFutures(address);
 		}
 
 		List<ClusterNode> departClusterNodes = new ArrayList<>();
@@ -449,7 +427,7 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		ClusterRequest clusterRequest = ClusterRequest.createMulticastRequest(
 			_localClusterNodeStatus, true);
 
-		_clusterChannel.sendMulticastMessage(clusterRequest);
+		ClusterChannelUtil.sendMulticastMessage(clusterRequest);
 	}
 
 	protected volatile ClusterExecutorConfiguration
@@ -527,9 +505,8 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 
 	private boolean _memberJoined(ClusterNodeStatus clusterNodeStatus) {
 		CompletableFuture<String> completableFuture =
-			_clusterNodeIdCompletableFutures.computeIfAbsent(
-				clusterNodeStatus.getAddress(),
-				key -> new CompletableFuture<>());
+			ClusterChannelUtil.getClusterNodeIdCompletableFutures(
+				clusterNodeStatus.getAddress());
 
 		completableFuture.complete(clusterNodeStatus.getClusterNodeId());
 
@@ -559,13 +536,9 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 	private static final Log _log = LogFactoryUtil.getLog(
 		ClusterExecutorImpl.class);
 
-	private ClusterChannel _clusterChannel;
-
 	@Reference
 	private ClusterChannelFactory _clusterChannelFactory;
 
-	private final Map<Address, CompletableFuture<String>>
-		_clusterNodeIdCompletableFutures = new ConcurrentHashMap<>();
 	private final Map<String, ClusterNodeStatus> _clusterNodeStatuses =
 		new ConcurrentHashMap<>();
 	private boolean _enabled;

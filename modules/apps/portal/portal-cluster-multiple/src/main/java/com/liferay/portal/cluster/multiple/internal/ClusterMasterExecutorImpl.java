@@ -10,6 +10,7 @@ import com.liferay.portal.kernel.cluster.Address;
 import com.liferay.portal.kernel.cluster.ClusterEvent;
 import com.liferay.portal.kernel.cluster.ClusterEventListener;
 import com.liferay.portal.kernel.cluster.ClusterEventType;
+import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterMasterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterMasterTokenTransitionListener;
 import com.liferay.portal.kernel.cluster.ClusterNode;
@@ -81,7 +82,7 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 
 		try {
 			return new NoticeableFutureConverter<T, ClusterNodeResponses>(
-				_clusterExecutorImpl.execute(clusterRequest)) {
+				_clusterExecutor.execute(clusterRequest)) {
 
 				@Override
 				protected T convert(ClusterNodeResponses clusterNodeResponses)
@@ -128,7 +129,7 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 
 	@Activate
 	protected synchronized void activate(BundleContext bundleContext) {
-		if (!_clusterExecutorImpl.isEnabled()) {
+		if (!_clusterExecutor.isEnabled()) {
 			return;
 		}
 
@@ -136,8 +137,7 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 			ClusterEventListener.class,
 			new ClusterMasterTokenClusterEventListener(), null);
 
-		ClusterNode localClusterNode =
-			_clusterExecutorImpl.getLocalClusterNode();
+		ClusterNode localClusterNode = _clusterExecutor.getLocalClusterNode();
 
 		_localClusterNodeId = localClusterNode.getClusterNodeId();
 
@@ -164,7 +164,7 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 
 		while (true) {
 			ClusterChannel clusterChannel =
-				_clusterExecutorImpl.getClusterChannel();
+				ClusterChannelUtil.getClusterChannel();
 
 			ClusterReceiver clusterReceiver =
 				clusterChannel.getClusterReceiver();
@@ -179,7 +179,7 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 				masterClusterNodeId = _localClusterNodeId;
 			}
 			else {
-				masterClusterNodeId = _clusterExecutorImpl.getClusterNodeId(
+				masterClusterNodeId = ClusterChannelUtil.getClusterNodeId(
 					coordinatorAddress);
 			}
 
@@ -238,8 +238,10 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 
 	private static volatile boolean _master;
 
-	@Reference
-	private ClusterExecutorImpl _clusterExecutorImpl;
+	@Reference(
+		target = "(component.name=com.liferay.portal.cluster.multiple.internal.ClusterExecutorImpl)"
+	)
+	private ClusterExecutor _clusterExecutor;
 
 	private final Set<ClusterMasterTokenTransitionListener>
 		_clusterMasterTokenTransitionListeners = new HashSet<>();
