@@ -9,12 +9,10 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.osgi.util.service.OSGiServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.bundle.blacklist.constants.BundleBlacklistConstants;
 import com.liferay.portal.kernel.module.util.BundleUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.lpkg.deployer.test.util.LPKGTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
@@ -43,8 +41,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
+import org.osgi.service.cm.ConfigurationListener;
 import org.osgi.util.tracker.BundleTracker;
 
 /**
@@ -307,12 +304,15 @@ public class BundleBlacklistTest {
 
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 
-		ServiceRegistration<EventHandler> eventHandlerServiceRegistration =
+		ServiceRegistration<?> serviceRegistration =
 			_bundleContext.registerService(
-				EventHandler.class, event -> countDownLatch.countDown(),
-				MapUtil.singletonDictionary(
-					EventConstants.EVENT_TOPIC,
-					BundleBlacklistConstants.TOPIC_BUNDLE_BLACKLIST_FINISHED));
+				ConfigurationListener.class,
+				configurationEvent -> {
+					if (_CONFIG_NAME.equals(configurationEvent.getPid())) {
+						countDownLatch.countDown();
+					}
+				},
+				null);
 
 		try {
 			if (dictionary == null) {
@@ -325,7 +325,7 @@ public class BundleBlacklistTest {
 			countDownLatch.await();
 		}
 		finally {
-			eventHandlerServiceRegistration.unregister();
+			serviceRegistration.unregister();
 		}
 	}
 
