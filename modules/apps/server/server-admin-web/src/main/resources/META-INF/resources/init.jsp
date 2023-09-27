@@ -70,7 +70,7 @@ page import="com.liferay.server.admin.web.internal.display.context.ServerDisplay
 page import="com.liferay.server.admin.web.internal.display.context.ViewPortalPropertiesDisplayContext" %><%@
 page import="com.liferay.server.admin.web.internal.display.context.ViewSystemPropertiesDisplayContext" %><%@
 page import="com.liferay.server.admin.web.internal.image.ImageMagickUtil" %><%@
-page import="com.liferay.server.admin.web.internal.scripting.util.ServerScriptingUtil" %><%@
+page import="com.liferay.server.admin.web.internal.scripting.ServerScripting" %><%@
 page import="com.liferay.taglib.servlet.PipingServletResponseFactory" %>
 
 <%@ page import="java.text.NumberFormat" %>

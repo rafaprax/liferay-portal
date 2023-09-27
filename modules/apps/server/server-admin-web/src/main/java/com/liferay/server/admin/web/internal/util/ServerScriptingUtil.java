@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.server.admin.web.internal.scripting;
+package com.liferay.server.admin.web.internal.util;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -13,7 +13,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.scripting.ScriptingException;
 import com.liferay.portal.kernel.scripting.UnsupportedLanguageException;
 import com.liferay.portal.kernel.util.AggregateClassLoader;
-import com.liferay.server.admin.web.internal.scripting.util.ServerScriptingUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -27,20 +27,16 @@ import java.util.Set;
 
 import org.apache.commons.lang.time.StopWatch;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Carolina Barbosa
  */
-@Component(service = ServerScripting.class)
-public class ServerScripting {
+public class ServerScriptingUtil {
 
-	public void execute(
+	public static void execute(
 			Map<String, Object> inputObjects, String language, String script)
 		throws ScriptingException {
 
-		Set<String> supportedLanguages =
-			ServerScriptingUtil.getSupportedLanguages();
+		Set<String> supportedLanguages = getSupportedLanguages();
 
 		if (!supportedLanguages.contains(language)) {
 			throw new UnsupportedLanguageException(language);
@@ -67,11 +63,15 @@ public class ServerScripting {
 		}
 	}
 
-	private void _executeGroovyScript(
+	public static Set<String> getSupportedLanguages() {
+		return SetUtil.fromArray(new String[] {"groovy"});
+	}
+
+	private static void _executeGroovyScript(
 			Map<String, Object> inputObjects, String script)
 		throws Exception {
 
-		Class<?> clazz = getClass();
+		Class<?> clazz = ServerScriptingUtil.class;
 
 		Thread currentThread = Thread.currentThread();
 
@@ -86,7 +86,9 @@ public class ServerScripting {
 		compiledScript.run();
 	}
 
-	private String _getErrorMessage(String exceptionMessage, String script) {
+	private static String _getErrorMessage(
+		String exceptionMessage, String script) {
+
 		String errorMessage = exceptionMessage.concat(StringPool.NEW_LINE);
 
 		try {
@@ -118,6 +120,6 @@ public class ServerScripting {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		ServerScripting.class);
+		ServerScriptingUtil.class);
 
 }
