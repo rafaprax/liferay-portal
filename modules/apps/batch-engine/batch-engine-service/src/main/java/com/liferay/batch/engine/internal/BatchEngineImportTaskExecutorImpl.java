@@ -12,6 +12,8 @@ import com.liferay.batch.engine.BatchEngineTaskItemDelegate;
 import com.liferay.batch.engine.BatchEngineTaskItemDelegateRegistry;
 import com.liferay.batch.engine.BatchEngineTaskOperation;
 import com.liferay.batch.engine.ItemClassRegistry;
+import com.liferay.batch.engine.action.ImportTaskPostAction;
+import com.liferay.batch.engine.action.ImportTaskPreAction;
 import com.liferay.batch.engine.action.ItemReaderPostAction;
 import com.liferay.batch.engine.configuration.BatchEngineTaskCompanyConfiguration;
 import com.liferay.batch.engine.constants.BatchEngineImportTaskConstants;
@@ -20,13 +22,15 @@ import com.liferay.batch.engine.internal.item.BatchEngineTaskItemDelegateExecuto
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReader;
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReaderBuilder;
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReaderUtil;
-import com.liferay.batch.engine.internal.strategy.BatchEngineImportStrategyFactory;
+import com.liferay.batch.engine.internal.strategy.OnErrorContinueBatchEngineImportStrategy;
+import com.liferay.batch.engine.internal.strategy.OnErrorFailBatchEngineImportStrategy;
 import com.liferay.batch.engine.internal.task.progress.BatchEngineTaskProgress;
 import com.liferay.batch.engine.internal.task.progress.BatchEngineTaskProgressFactory;
 import com.liferay.batch.engine.internal.util.ItemIndexThreadLocal;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.service.BatchEngineImportTaskErrorLocalService;
 import com.liferay.batch.engine.service.BatchEngineImportTaskLocalService;
+import com.liferay.batch.engine.strategy.BatchEngineImportStrategy;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
 import com.liferay.petra.lang.SafeCloseable;
@@ -138,12 +142,20 @@ public class BatchEngineImportTaskExecutorImpl
 			new BatchEngineTaskItemDelegateExecutorFactory(
 				_batchEngineTaskItemDelegateRegistry, null, null, null);
 
+		_importTaskPostActions = ServiceTrackerListFactory.open(
+			bundleContext, ImportTaskPostAction.class);
+
+		_importTaskPreActions = ServiceTrackerListFactory.open(
+			bundleContext, ImportTaskPreAction.class);
+
 		_itemReaderPostActions = ServiceTrackerListFactory.open(
 			bundleContext, ItemReaderPostAction.class);
 	}
 
 	@Deactivate
 	protected void deactivate() {
+		_importTaskPostActions.close();
+		_importTaskPreActions.close();
 		_itemReaderPostActions.close();
 	}
 
@@ -158,8 +170,7 @@ public class BatchEngineImportTaskExecutorImpl
 			_transactionConfig,
 			() -> {
 				batchEngineTaskItemDelegateExecutor.saveItems(
-					_batchEngineImportStrategyFactory.create(
-						batchEngineImportTask),
+					_create(batchEngineImportTask),
 					BatchEngineTaskOperation.valueOf(
 						batchEngineImportTask.getOperation()),
 					items);
@@ -172,6 +183,23 @@ public class BatchEngineImportTaskExecutorImpl
 
 				return null;
 			});
+	}
+
+	private BatchEngineImportStrategy _create(
+		BatchEngineImportTask batchEngineImportTask) {
+
+		if (batchEngineImportTask.getImportStrategy() ==
+				BatchEngineImportTaskConstants.
+					IMPORT_STRATEGY_ON_ERROR_CONTINUE) {
+
+			return new OnErrorContinueBatchEngineImportStrategy(
+				batchEngineImportTask, _importTaskPostActions.toList(),
+				_importTaskPreActions.toList());
+		}
+
+		return new OnErrorFailBatchEngineImportStrategy(
+			batchEngineImportTask, _importTaskPostActions.toList(),
+			_importTaskPreActions.toList());
 	}
 
 	private BatchEngineImportTaskItemReader _getBatchEngineImportTaskItemReader(
@@ -382,9 +410,6 @@ public class BatchEngineImportTaskExecutorImpl
 			Propagation.REQUIRES_NEW, new Class<?>[] {Exception.class});
 
 	@Reference
-	private BatchEngineImportStrategyFactory _batchEngineImportStrategyFactory;
-
-	@Reference
 	private BatchEngineImportTaskErrorLocalService
 		_batchEngineImportTaskErrorLocalService;
 
@@ -407,6 +432,9 @@ public class BatchEngineImportTaskExecutorImpl
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
+
+	private ServiceTrackerList<ImportTaskPostAction> _importTaskPostActions;
+	private ServiceTrackerList<ImportTaskPreAction> _importTaskPreActions;
 
 	@Reference
 	private ItemClassRegistry _itemClassRegistry;
