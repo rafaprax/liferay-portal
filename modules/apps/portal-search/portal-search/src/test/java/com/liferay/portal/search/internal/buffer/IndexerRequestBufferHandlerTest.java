@@ -9,6 +9,7 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.search.configuration.IndexerRegistryConfiguration;
+import com.liferay.portal.search.internal.util.IndexerRequestBufferExecutorUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.lang.reflect.Method;
@@ -88,7 +89,7 @@ public class IndexerRequestBufferHandlerTest {
 		ReflectionTestUtil.setFieldValue(
 			indexerRequestBufferOverflowHandler,
 			"_indexerRequestBufferExecutor",
-			new IndexerRequestBufferExecutor());
+			new IndexerRequestBufferExecutorUtil());
 
 		return indexerRequestBufferOverflowHandler;
 	}

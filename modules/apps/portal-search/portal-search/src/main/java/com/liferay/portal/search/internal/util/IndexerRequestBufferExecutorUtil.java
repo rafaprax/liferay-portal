@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.internal.buffer;
+package com.liferay.portal.search.internal.util;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
@@ -14,23 +14,24 @@ import com.liferay.portal.kernel.search.SearchException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.liferay.portal.search.internal.buffer.BufferOverflowThreadLocal;
+import com.liferay.portal.search.internal.buffer.IndexerRequest;
+import com.liferay.portal.search.internal.buffer.IndexerRequestBuffer;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Michael C. Han
  */
-@Component(service = IndexerRequestBufferExecutor.class)
-public class IndexerRequestBufferExecutor {
+public class IndexerRequestBufferExecutorUtil {
 
-	public void execute(IndexerRequestBuffer indexerRequestBuffer) {
+	public static void execute(IndexerRequestBuffer indexerRequestBuffer) {
 		execute(indexerRequestBuffer, indexerRequestBuffer.size());
 	}
 
-	public void execute(
+	public static void execute(
 		IndexerRequestBuffer indexerRequestBuffer, int numRequests) {
 
 		Collection<IndexerRequest> completedIndexerRequests = new ArrayList<>();
@@ -103,23 +104,20 @@ public class IndexerRequestBufferExecutor {
 		}
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
+	private static final Log _log = LogFactoryUtil.getLog(
+		IndexerRequestBufferExecutorUtil.class);
+
+	private static final ServiceTracker<IndexWriterHelper, IndexWriterHelper>
+		_indexWriterHelperServiceTracker;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(
+			IndexerRequestBufferExecutorUtil.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
 		_indexWriterHelperServiceTracker = new ServiceTracker<>(
 			bundleContext, IndexWriterHelper.class, null);
-
-		_indexWriterHelperServiceTracker.open();
 	}
-
-	@Deactivate
-	protected void deactivate() {
-		_indexWriterHelperServiceTracker.close();
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		IndexerRequestBufferExecutor.class);
-
-	private ServiceTracker<IndexWriterHelper, IndexWriterHelper>
-		_indexWriterHelperServiceTracker;
 
 }

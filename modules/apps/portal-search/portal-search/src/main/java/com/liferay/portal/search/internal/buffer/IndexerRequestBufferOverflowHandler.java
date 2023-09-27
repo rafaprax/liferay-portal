@@ -13,10 +13,10 @@ import com.liferay.portal.search.configuration.IndexerRegistryConfiguration;
 
 import java.util.Map;
 
+import com.liferay.portal.search.internal.util.IndexerRequestBufferExecutorUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Michael C. Han
@@ -49,7 +49,7 @@ public class IndexerRequestBufferOverflowHandler {
 			try {
 				BufferOverflowThreadLocal.setOverflowMode(true);
 
-				_indexerRequestBufferExecutor.execute(
+				IndexerRequestBufferExecutorUtil.execute(
 					indexerRequestBuffer, numRequests);
 			}
 			finally {
@@ -90,9 +90,6 @@ public class IndexerRequestBufferOverflowHandler {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		IndexerRequestBufferOverflowHandler.class);
-
-	@Reference
-	private IndexerRequestBufferExecutor _indexerRequestBufferExecutor;
 
 	private volatile float _minimumBufferAvailabilityPercentage;
 
