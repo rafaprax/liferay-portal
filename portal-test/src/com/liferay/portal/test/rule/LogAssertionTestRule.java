@@ -139,17 +139,9 @@ public class LogAssertionTestRule
 		List<LogCapture> logCaptures = new ArrayList<>(expectedLogsList.size());
 
 		for (ExpectedLogs expectedLogs : expectedLogsList) {
-			String loggerClassName = expectedLogs.loggerClassName();
-
-			if (loggerClassName.isEmpty()) {
-				Class<?> clazz = expectedLogs.loggerClass();
-
-				loggerClassName = clazz.getName();
-			}
-
 			logCaptures.add(
 				LoggerTestUtil.configureLog4JLogger(
-					loggerClassName, expectedLogs.level()));
+					expectedLogs.loggerClassName(), expectedLogs.level()));
 		}
 
 		installJdk14Handler();
