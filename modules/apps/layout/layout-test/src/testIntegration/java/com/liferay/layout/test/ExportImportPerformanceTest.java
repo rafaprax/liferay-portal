@@ -17,10 +17,10 @@ import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationSe
 import com.liferay.exportimport.kernel.configuration.constants.ExportImportConfigurationConstants;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
-import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.exportimport.kernel.service.StagingLocalService;
 import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
 import com.liferay.exportimport.kernel.staging.Staging;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelper;
 import com.liferay.fragment.constants.FragmentConstants;
 import com.liferay.fragment.contributor.FragmentCollectionContributorRegistry;
 import com.liferay.fragment.model.FragmentEntry;
@@ -194,7 +194,7 @@ public class ExportImportPerformanceTest {
 						ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT,
 						exportLayoutSettingsMap);
 
-			_exportImportLocalService.exportLayoutsAsFile(
+			_exportImportLayoutHelper.exportLayoutsAsFile(
 				_exportImportConfiguration);
 		}
 	}
@@ -214,7 +214,7 @@ public class ExportImportPerformanceTest {
 					ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT,
 					exportLayoutSettingsMap);
 
-		File file = _exportImportLocalService.exportLayoutsAsFile(
+		File file = _exportImportLayoutHelper.exportLayoutsAsFile(
 			_exportImportConfiguration);
 
 		try (Closeable closeable = _startTimer()) {
@@ -231,7 +231,7 @@ public class ExportImportPerformanceTest {
 						ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT,
 						importLayoutSettingsMap);
 
-			_exportImportLocalService.importLayouts(
+			_exportImportLayoutHelper.importLayouts(
 				_exportImportConfiguration, file);
 		}
 	}
@@ -586,7 +586,7 @@ public class ExportImportPerformanceTest {
 		_exportImportConfigurationSettingsMapFactory;
 
 	@Inject
-	private ExportImportLocalService _exportImportLocalService;
+	private ExportImportLayoutHelper _exportImportLayoutHelper;
 
 	@Inject
 	private FragmentCollectionContributorRegistry

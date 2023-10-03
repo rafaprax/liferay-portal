@@ -9,8 +9,8 @@ import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationSe
 import com.liferay.exportimport.kernel.configuration.constants.ExportImportConfigurationConstants;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
-import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelper;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
@@ -139,7 +139,7 @@ public class LayoutSetPrototypeMergeBackgroundTaskExecutor
 				}
 			}
 			else {
-				File larFile = _exportImportLocalService.exportLayoutsAsFile(
+				File larFile = _exportImportLayoutHelper.exportLayoutsAsFile(
 					exportImportConfiguration);
 
 				try {
@@ -251,7 +251,7 @@ public class LayoutSetPrototypeMergeBackgroundTaskExecutor
 		_exportImportConfigurationLocalService;
 
 	@Reference
-	private ExportImportLocalService _exportImportLocalService;
+	private ExportImportLayoutHelper _exportImportLayoutHelper;
 
 	@Reference
 	private LayoutSetLocalService _layoutSetLocalService;
@@ -283,10 +283,10 @@ public class LayoutSetPrototypeMergeBackgroundTaskExecutor
 
 				_sites.removeMergeFailFriendlyURLLayouts(_layoutSet);
 
-				_exportImportLocalService.importLayoutsDataDeletions(
+				_exportImportLayoutHelper.importLayoutsDataDeletions(
 					_exportImportConfiguration, _file);
 
-				_exportImportLocalService.importLayouts(
+				_exportImportLayoutHelper.importLayouts(
 					_exportImportConfiguration, _file);
 
 				return null;

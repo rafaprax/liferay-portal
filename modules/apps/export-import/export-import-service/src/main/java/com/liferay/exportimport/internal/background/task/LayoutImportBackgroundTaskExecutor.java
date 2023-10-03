@@ -7,7 +7,7 @@ package com.liferay.exportimport.internal.background.task;
 
 import com.liferay.exportimport.kernel.exception.ExportImportIOException;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
-import com.liferay.exportimport.kernel.service.ExportImportLocalService;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelper;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskResult;
@@ -110,7 +110,7 @@ public class LayoutImportBackgroundTaskExecutor
 	}
 
 	@Reference
-	private ExportImportLocalService _exportImportLocalService;
+	private ExportImportLayoutHelper _exportImportLayoutHelper;
 
 	private class LayoutImportCallable implements Callable<Void> {
 
@@ -123,10 +123,10 @@ public class LayoutImportBackgroundTaskExecutor
 
 		@Override
 		public Void call() throws PortalException {
-			_exportImportLocalService.importLayoutsDataDeletions(
+			_exportImportLayoutHelper.importLayoutsDataDeletions(
 				_exportImportConfiguration, _file);
 
-			_exportImportLocalService.importLayouts(
+			_exportImportLayoutHelper.importLayouts(
 				_exportImportConfiguration, _file);
 
 			return null;

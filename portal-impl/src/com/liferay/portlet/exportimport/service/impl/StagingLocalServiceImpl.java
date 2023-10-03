@@ -19,10 +19,10 @@ import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.lar.MissingReferences;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
-import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.exportimport.kernel.staging.StagingURLHelperUtil;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
 import com.liferay.exportimport.kernel.staging.constants.StagingConstants;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelperUtil;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -526,25 +526,25 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 					ExportImportConfigurationConstants.
 						TYPE_PUBLISH_PORTLET_REMOTE) {
 
-				_exportImportLocalService.importPortletDataDeletions(
+				ExportImportLayoutHelperUtil.importPortletDataDeletions(
 					exportImportConfiguration, file);
 
 				missingReferences =
-					_exportImportLocalService.validateImportPortletInfo(
+					ExportImportLayoutHelperUtil.validateImportPortletInfo(
 						exportImportConfiguration, file);
 
-				_exportImportLocalService.importPortletInfo(
+				ExportImportLayoutHelperUtil.importPortletInfo(
 					exportImportConfiguration, file);
 			}
 			else {
-				_exportImportLocalService.importLayoutsDataDeletions(
+				ExportImportLayoutHelperUtil.importLayoutsDataDeletions(
 					exportImportConfiguration, file);
 
 				missingReferences =
-					_exportImportLocalService.validateImportLayoutsFile(
+					ExportImportLayoutHelperUtil.validateImportLayoutsFile(
 						exportImportConfiguration, file);
 
-				_exportImportLocalService.importLayouts(
+				ExportImportLayoutHelperUtil.importLayouts(
 					exportImportConfiguration, file);
 			}
 
@@ -1267,9 +1267,6 @@ public class StagingLocalServiceImpl extends StagingLocalServiceBaseImpl {
 	@BeanReference(type = ExportImportConfigurationLocalService.class)
 	private ExportImportConfigurationLocalService
 		_exportImportConfigurationLocalService;
-
-	@BeanReference(type = ExportImportLocalService.class)
-	private ExportImportLocalService _exportImportLocalService;
 
 	@BeanReference(type = GroupLocalService.class)
 	private GroupLocalService _groupLocalService;

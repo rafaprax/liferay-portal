@@ -8,8 +8,8 @@ package com.liferay.exportimport.internal.background.task;
 import com.liferay.exportimport.kernel.background.task.BackgroundTaskExecutorNames;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
-import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.exportimport.kernel.staging.MergeLayoutPrototypesThreadLocal;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelper;
 import com.liferay.layout.set.prototype.configuration.LayoutSetPrototypeConfiguration;
 import com.liferay.layout.set.prototype.configuration.LayoutSetPrototypeSystemConfiguration;
 import com.liferay.petra.string.StringBundler;
@@ -254,7 +254,7 @@ public class LayoutSetPrototypeImportBackgroundTaskExecutor
 	private ConfigurationProvider _configurationProvider;
 
 	@Reference
-	private ExportImportLocalService _exportImportLocalService;
+	private ExportImportLayoutHelper _exportImportLayoutHelper;
 
 	@Reference
 	private com.liferay.portal.kernel.util.File _file;
@@ -281,10 +281,10 @@ public class LayoutSetPrototypeImportBackgroundTaskExecutor
 
 				MergeLayoutPrototypesThreadLocal.setInProgress(true);
 
-				_exportImportLocalService.importLayoutsDataDeletions(
+				_exportImportLayoutHelper.importLayoutsDataDeletions(
 					_exportImportConfiguration, _file);
 
-				_exportImportLocalService.importLayouts(
+				_exportImportLayoutHelper.importLayouts(
 					_exportImportConfiguration, _file);
 
 				return null;
