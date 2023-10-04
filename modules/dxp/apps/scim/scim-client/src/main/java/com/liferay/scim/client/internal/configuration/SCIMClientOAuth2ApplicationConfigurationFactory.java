@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.scim.configuration.SCIMClientOAuth2ApplicationConfiguration;
 
 import java.util.Collections;
 import java.util.Map;
@@ -43,7 +44,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Olivér Kecskeméty
  */
 @Component(
-	configurationPid = "com.liferay.scim.client.internal.configuration.SCIMClientOAuth2ApplicationConfiguration",
+	configurationPid = "com.liferay.scim.configuration.SCIMClientOAuth2ApplicationConfiguration",
 	configurationPolicy = ConfigurationPolicy.REQUIRE, service = {}
 )
 public class SCIMClientOAuth2ApplicationConfigurationFactory {
