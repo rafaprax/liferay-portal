@@ -37,7 +37,6 @@ import com.liferay.portal.search.solr8.internal.filter.TermsFilterTranslatorImpl
 import com.liferay.portal.search.solr8.internal.groupby.DefaultGroupByTranslator;
 import com.liferay.portal.search.solr8.internal.search.response.DefaultSearchSearchResponseAssemblerHelperImpl;
 import com.liferay.portal.search.solr8.internal.search.response.SearchSearchResponseAssemblerHelper;
-import com.liferay.portal.search.solr8.internal.sort.SolrSortFieldTranslator;
 import com.liferay.portal.search.solr8.internal.stats.DefaultStatsTranslator;
 import com.liferay.portal.search.solr8.internal.stats.StatsTranslator;
 
@@ -211,9 +210,6 @@ public class SearchRequestExecutorFixture {
 		ReflectionTestUtil.setFieldValue(
 			searchSolrQueryAssemblerImpl, "_groupByTranslator",
 			new DefaultGroupByTranslator());
-		ReflectionTestUtil.setFieldValue(
-			searchSolrQueryAssemblerImpl, "_sortFieldTranslator",
-			new SolrSortFieldTranslator());
 		ReflectionTestUtil.setFieldValue(
 			searchSolrQueryAssemblerImpl, "_statsRequestBuilderFactory",
 			new StatsRequestBuilderFactoryImpl());
