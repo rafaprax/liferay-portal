@@ -2215,11 +2215,11 @@ import com.liferay.portal.kernel.module.util.SystemBundleUtil;
 try {
 	def bundleContext = SystemBundleUtil.getBundleContext();
 
-	def serviceReference = bundleContext.getServiceReference("com.liferay.asset.publisher.web.internal.scheduler.helper.AssetEntriesCheckerHelper");
+	def serviceReference = bundleContext.getServiceReference("com.liferay.asset.publisher.web.internal.scheduler.CheckAssetEntrySchedulerJobConfiguration");
 
-	def assetEntriesCheckerHelper = bundleContext.getService(serviceReference);
+	def checkAssetEntrySchedulerJobConfiguration = bundleContext.getService(serviceReference);
 
-	def checkEntriesMethod = assetEntriesCheckerHelper.getClass().getMethod("checkAssetEntries");
+	def checkEntriesMethod = checkAssetEntrySchedulerJobConfiguration.getClass().getMethod("checkAssetEntries");
 
 	checkEntriesMethod.invoke(assetEntriesCheckerHelper);
 }
