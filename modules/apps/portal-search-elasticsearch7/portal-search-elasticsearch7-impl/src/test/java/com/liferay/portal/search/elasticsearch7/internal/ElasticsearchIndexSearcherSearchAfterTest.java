@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchConnectionFixture;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchFixture;
-import com.liferay.portal.search.elasticsearch7.internal.deep.pagination.configuration.DeepPaginationConfigurationWrapper;
 import com.liferay.portal.search.internal.sort.FieldSortImpl;
 import com.liferay.portal.search.internal.sort.ScoreSortImpl;
 import com.liferay.portal.search.sort.Sorts;
@@ -218,13 +217,13 @@ public class ElasticsearchIndexSearcherSearchAfterTest {
 	}
 
 	private static void _setUpDeepPagination(int pointInTimeKeepAliveSeconds) {
-		DeepPaginationConfigurationWrapper deepPaginationConfigurationWrapper =
-			Mockito.mock(DeepPaginationConfigurationWrapper.class);
+		ElasticsearchIndexSearcher elasticsearchIndexSearcher = Mockito.mock(
+			ElasticsearchIndexSearcher.class);
 
 		Mockito.doReturn(
 			true
 		).when(
-			deepPaginationConfigurationWrapper
+			elasticsearchIndexSearcher
 		).isEnableDeepPagination(
 			_indexingFixture.getCompanyId()
 		);
@@ -232,12 +231,8 @@ public class ElasticsearchIndexSearcherSearchAfterTest {
 		Mockito.doReturn(
 			pointInTimeKeepAliveSeconds
 		).when(
-			deepPaginationConfigurationWrapper
+			elasticsearchIndexSearcher
 		).getPointInTimeKeepAliveSeconds();
-
-		ReflectionTestUtil.setFieldValue(
-			_indexSearcher, "_deepPaginationConfigurationWrapper",
-			deepPaginationConfigurationWrapper);
 	}
 
 	private static void _setUpIndexingFixture() throws Exception {
