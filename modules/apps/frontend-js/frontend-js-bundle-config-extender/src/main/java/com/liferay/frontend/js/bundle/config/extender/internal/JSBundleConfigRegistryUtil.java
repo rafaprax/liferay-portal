@@ -5,7 +5,6 @@
 
 package com.liferay.frontend.js.bundle.config.extender.internal;
 
-import com.liferay.osgi.service.tracker.collections.EagerServiceTrackerCustomizer;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringPool;
@@ -14,8 +13,6 @@ import java.net.URL;
 
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.servlet.ServletContext;
 
@@ -23,6 +20,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * @author Carlos Sierra Andrés
@@ -30,7 +28,7 @@ import org.osgi.framework.ServiceReference;
 public class JSBundleConfigRegistryUtil {
 
 	public static Collection<JSConfig> getJSConfigs() {
-		return _jsConfigs.values();
+		return _serviceTrackerMap.values();
 	}
 
 	public static long getLastModified() {
@@ -57,15 +55,11 @@ public class JSBundleConfigRegistryUtil {
 
 	}
 
-	private static final Map<ServiceReference<ServletContext>, JSConfig>
-		_jsConfigs = new ConcurrentSkipListMap<>();
 	private static volatile long _lastModified = System.currentTimeMillis();
-	private static final ServiceTrackerMap
-		<String, ServiceReference<ServletContext>> _serviceTrackerMap;
+	private static final ServiceTrackerMap<String, JSConfig> _serviceTrackerMap;
 
 	private static class JSBundleConfigServiceTrackerCustomizer
-		implements EagerServiceTrackerCustomizer
-			<ServletContext, ServiceReference<ServletContext>> {
+		implements ServiceTrackerCustomizer<ServletContext, JSConfig> {
 
 		public JSBundleConfigServiceTrackerCustomizer(
 			BundleContext bundleContext) {
@@ -74,7 +68,7 @@ public class JSBundleConfigRegistryUtil {
 		}
 
 		@Override
-		public ServiceReference<ServletContext> addingService(
+		public JSConfig addingService(
 			ServiceReference<ServletContext> serviceReference) {
 
 			Bundle bundle = serviceReference.getBundle();
@@ -91,12 +85,9 @@ public class JSBundleConfigRegistryUtil {
 					ServletContext servletContext = _bundleContext.getService(
 						serviceReference);
 
-					_jsConfigs.put(
-						serviceReference, new JSConfig(servletContext, url));
-
 					_lastModified = System.currentTimeMillis();
 
-					return serviceReference;
+					return new JSConfig(servletContext, url);
 				}
 			}
 
@@ -106,9 +97,9 @@ public class JSBundleConfigRegistryUtil {
 		@Override
 		public void modifiedService(
 			ServiceReference<ServletContext> serviceReference,
-			ServiceReference<ServletContext> trackedServiceReference) {
+			JSConfig jsConfig) {
 
-			removedService(serviceReference, trackedServiceReference);
+			removedService(serviceReference, jsConfig);
 
 			addingService(serviceReference);
 		}
@@ -116,9 +107,7 @@ public class JSBundleConfigRegistryUtil {
 		@Override
 		public void removedService(
 			ServiceReference<ServletContext> serviceReference,
-			ServiceReference<ServletContext> trackedServiceReference) {
-
-			JSConfig jsConfig = _jsConfigs.remove(serviceReference);
+			JSConfig jsConfig) {
 
 			if (jsConfig != null) {
 				_bundleContext.ungetService(serviceReference);
