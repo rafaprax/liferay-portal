@@ -11,18 +11,15 @@ import com.liferay.portal.kernel.resource.bundle.AggregateResourceBundleLoader;
 import com.liferay.portal.kernel.resource.bundle.ResourceBundleLoader;
 import com.liferay.portal.kernel.resource.bundle.ResourceBundleLoaderUtil;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * @author Carlos Sierra Andrés
  */
-@Component(service = ResourceBundleLoaderProvider.class)
-public class ResourceBundleLoaderProvider {
+public class ResourceBundleLoaderProviderUtil {
 
-	public ResourceBundleLoader getResourceBundleLoader(
+	public static ResourceBundleLoader getResourceBundleLoader(
 		String bundleSymbolicName) {
 
 		ResourceBundleLoader resourceBundleLoader =
@@ -37,17 +34,16 @@ public class ResourceBundleLoaderProvider {
 			ResourceBundleLoaderUtil.getPortalResourceBundleLoader());
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
+	private static final ServiceTrackerMap<String, ResourceBundleLoader>
+		_serviceTrackerMap;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(
+			ResourceBundleLoaderProviderUtil.class);
+
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
-			bundleContext, ResourceBundleLoader.class, "bundle.symbolic.name");
+			bundle.getBundleContext(), ResourceBundleLoader.class,
+			"bundle.symbolic.name");
 	}
-
-	@Deactivate
-	protected void deactivate() {
-		_serviceTrackerMap.close();
-	}
-
-	private ServiceTrackerMap<String, ResourceBundleLoader> _serviceTrackerMap;
 
 }
