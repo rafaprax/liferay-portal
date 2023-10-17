@@ -18,8 +18,8 @@ import com.liferay.exportimport.kernel.lar.MissingReference;
 import com.liferay.exportimport.kernel.lar.MissingReferences;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
-import com.liferay.exportimport.kernel.service.ExportImportService;
 import com.liferay.exportimport.kernel.staging.Staging;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelper;
 import com.liferay.portal.kernel.exception.LayoutPrototypeException;
 import com.liferay.portal.kernel.exception.LocaleException;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -28,11 +28,16 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -181,8 +186,16 @@ public class ImportLayoutsMVCActionCommand extends BaseMVCActionCommand {
 					ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT,
 					importLayoutSettingsMap);
 
-		_exportImportService.importLayoutsInBackground(
-			exportImportConfiguration, inputStream);
+		long targetGroupId = MapUtil.getLong(
+			exportImportConfiguration.getSettingsMap(), "targetGroupId");
+
+		GroupPermissionUtil.check(
+			PermissionThreadLocal.getPermissionChecker(), targetGroupId,
+			ActionKeys.EXPORT_IMPORT_LAYOUTS);
+
+		_exportImportLayoutHelper.importLayoutsInBackground(
+			_portal.getUserId(actionRequest), exportImportConfiguration,
+			inputStream);
 	}
 
 	protected void validateFile(
@@ -254,7 +267,14 @@ public class ImportLayoutsMVCActionCommand extends BaseMVCActionCommand {
 					ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT,
 					importLayoutSettingsMap);
 
-		return _exportImportService.validateImportLayoutsFile(
+		long targetGroupId = MapUtil.getLong(
+			exportImportConfiguration.getSettingsMap(), "targetGroupId");
+
+		GroupPermissionUtil.check(
+			PermissionThreadLocal.getPermissionChecker(), targetGroupId,
+			ActionKeys.EXPORT_IMPORT_LAYOUTS);
+
+		return _exportImportLayoutHelper.validateImportLayoutsFile(
 			exportImportConfiguration, inputStream);
 	}
 
@@ -276,7 +296,10 @@ public class ImportLayoutsMVCActionCommand extends BaseMVCActionCommand {
 	private ExportImportHelper _exportImportHelper;
 
 	@Reference
-	private ExportImportService _exportImportService;
+	private ExportImportLayoutHelper _exportImportLayoutHelper;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private Staging _staging;

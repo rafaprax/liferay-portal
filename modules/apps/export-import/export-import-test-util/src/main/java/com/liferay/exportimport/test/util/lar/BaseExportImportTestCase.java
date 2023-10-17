@@ -16,7 +16,7 @@ import com.liferay.exportimport.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalServiceUtil;
-import com.liferay.exportimport.kernel.service.ExportImportServiceUtil;
+import com.liferay.exportimport.kernel.util.ExportImportLayoutHelperUtil;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -24,14 +24,18 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.DateTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.log.LogCapture;
 import com.liferay.portal.test.log.LoggerTestUtil;
@@ -79,7 +83,14 @@ public abstract class BaseExportImportTestCase {
 						importLayoutSettingsMap, WorkflowConstants.STATUS_DRAFT,
 						new ServiceContext());
 
-			ExportImportServiceUtil.importLayouts(
+			long targetGroupId = MapUtil.getLong(
+				exportImportConfiguration.getSettingsMap(), "targetGroupId");
+
+			GroupPermissionUtil.check(
+				PermissionThreadLocal.getPermissionChecker(), targetGroupId,
+				ActionKeys.EXPORT_IMPORT_LAYOUTS);
+
+			ExportImportLayoutHelperUtil.importLayouts(
 				exportImportConfiguration, larFile);
 		}
 	}
@@ -195,7 +206,14 @@ public abstract class BaseExportImportTestCase {
 						ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT,
 						exportLayoutSettingsMap);
 
-			larFile = ExportImportServiceUtil.exportLayoutsAsFile(
+			long sourceGroupId = MapUtil.getLong(
+				exportImportConfiguration.getSettingsMap(), "sourceGroupId");
+
+			GroupPermissionUtil.check(
+				PermissionThreadLocal.getPermissionChecker(), sourceGroupId,
+				ActionKeys.EXPORT_IMPORT_LAYOUTS);
+
+			larFile = ExportImportLayoutHelperUtil.exportLayoutsAsFile(
 				exportImportConfiguration);
 		}
 	}
