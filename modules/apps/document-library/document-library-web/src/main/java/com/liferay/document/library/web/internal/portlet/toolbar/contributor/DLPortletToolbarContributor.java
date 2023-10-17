@@ -7,8 +7,8 @@ package com.liferay.document.library.web.internal.portlet.toolbar.contributor;
 
 import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.portlet.toolbar.contributor.DLPortletToolbarContributorContext;
-import com.liferay.document.library.web.internal.portlet.toolbar.contributor.helper.DLPortletToolbarContributorHelper;
 import com.liferay.document.library.web.internal.portlet.toolbar.contributor.helper.MenuItemProvider;
+import com.liferay.document.library.web.internal.portlet.toolbar.contributor.util.DLPortletToolbarContributorUtil;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
 import com.liferay.portal.kernel.portlet.toolbar.contributor.BasePortletToolbarContributor;
@@ -67,13 +67,13 @@ public class DLPortletToolbarContributor extends BasePortletToolbarContributor {
 			WebKeys.THEME_DISPLAY);
 
 		if (_isDLPortlet(themeDisplay) &&
-			!_dlPortletToolbarContributorHelper.isShowActionsEnabled(
+			!DLPortletToolbarContributorUtil.isShowActionsEnabled(
 				themeDisplay, portletRequest)) {
 
 			return null;
 		}
 
-		Folder folder = _dlPortletToolbarContributorHelper.getFolder(
+		Folder folder = DLPortletToolbarContributorUtil.getFolder(
 			themeDisplay, portletRequest);
 
 		List<MenuItem> menuItems = new ArrayList<>();
@@ -167,10 +167,6 @@ public class DLPortletToolbarContributor extends BasePortletToolbarContributor {
 
 	private ServiceTrackerList<DLPortletToolbarContributorContext>
 		_dlPortletToolbarContributorContexts;
-
-	@Reference
-	private DLPortletToolbarContributorHelper
-		_dlPortletToolbarContributorHelper;
 
 	@Reference
 	private MenuItemProvider _menuItemProvider;
