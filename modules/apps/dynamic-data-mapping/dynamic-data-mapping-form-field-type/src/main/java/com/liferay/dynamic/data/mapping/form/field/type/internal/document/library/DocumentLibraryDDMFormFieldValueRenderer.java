@@ -6,6 +6,7 @@
 package com.liferay.dynamic.data.mapping.form.field.type.internal.document.library;
 
 import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueAccessor;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueRenderer;
 import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
@@ -35,7 +36,7 @@ public class DocumentLibraryDDMFormFieldValueRenderer
 	@Override
 	public String render(DDMFormFieldValue ddmFormFieldValue, Locale locale) {
 		JSONObject jsonObject =
-			documentLibraryDDMFormFieldValueAccessor.getValue(
+			_documentLibraryDDMFormFieldValueAccessor.getValue(
 				ddmFormFieldValue, locale);
 
 		String uuid = jsonObject.getString("uuid");
@@ -64,12 +65,14 @@ public class DocumentLibraryDDMFormFieldValueRenderer
 	@Reference
 	protected DLAppService dlAppService;
 
-	@Reference
-	protected DocumentLibraryDDMFormFieldValueAccessor
-		documentLibraryDDMFormFieldValueAccessor;
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		DocumentLibraryDDMFormFieldValueRenderer.class);
+
+	@Reference(
+		target = "(component.name=com.liferay.dynamic.data.mapping.form.field.type.internal.document.library.DocumentLibraryDDMFormFieldValueAccessor)"
+	)
+	private DDMFormFieldValueAccessor<JSONObject>
+		_documentLibraryDDMFormFieldValueAccessor;
 
 	@Reference
 	private Language _language;
