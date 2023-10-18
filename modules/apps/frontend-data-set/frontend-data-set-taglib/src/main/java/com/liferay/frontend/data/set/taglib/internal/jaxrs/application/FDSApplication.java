@@ -5,16 +5,24 @@
 
 package com.liferay.frontend.data.set.taglib.internal.jaxrs.application;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import com.liferay.frontend.data.set.model.FDSDataRow;
+import com.liferay.frontend.data.set.provider.FDSActionProvider;
+import com.liferay.frontend.data.set.provider.FDSActionProviderRegistry;
 import com.liferay.frontend.data.set.provider.FDSDataProvider;
 import com.liferay.frontend.data.set.provider.FDSDataProviderRegistry;
 import com.liferay.frontend.data.set.provider.search.FDSKeywordsFactory;
 import com.liferay.frontend.data.set.provider.search.FDSKeywordsFactoryRegistry;
 import com.liferay.frontend.data.set.provider.search.FDSPagination;
-import com.liferay.frontend.data.set.taglib.internal.factory.FDSDataJSONFactory;
 import com.liferay.frontend.data.set.taglib.internal.jaxrs.context.provider.PaginationContextProvider;
 import com.liferay.frontend.data.set.taglib.internal.jaxrs.context.provider.SortContextProvider;
 import com.liferay.frontend.data.set.taglib.internal.jaxrs.context.provider.ThemeDisplayContextProvider;
 import com.liferay.frontend.data.set.taglib.internal.servlet.ServletContextUtil;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
@@ -26,7 +34,9 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -132,7 +142,7 @@ public class FDSApplication extends Application {
 					fdsDataProviderKey);
 
 			return Response.ok(
-				_fdsDataJSONFactory.create(
+				_create(
 					groupId, tableName,
 					fdsDataProvider.getItems(
 						fdsKeywordsFactory.create(httpServletRequest),
@@ -309,10 +319,60 @@ public class FDSApplication extends Application {
 		).build();
 	}
 
+	private String _create(
+			long groupId, String tableName, List<Object> items, int itemsCount,
+			HttpServletRequest httpServletRequest)
+		throws Exception {
+
+		FDSResponse fdsResponse = new FDSResponse(
+			_getFDSTableRows(items, tableName, httpServletRequest, groupId),
+			itemsCount);
+
+		return _objectMapper.writeValueAsString(fdsResponse);
+	}
+
+	private List<FDSDataRow> _getFDSTableRows(
+			List<Object> items, String tableName,
+			HttpServletRequest httpServletRequest, long groupId)
+		throws Exception {
+
+		List<FDSDataRow> fdsDataRows = new ArrayList<>();
+
+		List<FDSActionProvider> fdsActionProviders =
+			_fdsActionProviderRegistry.getFDSActionProviders(tableName);
+
+		for (Object item : items) {
+			FDSDataRow fdsDataRow = new FDSDataRow(item);
+
+			if (fdsActionProviders != null) {
+				for (FDSActionProvider fdsActionProvider : fdsActionProviders) {
+					List<DropdownItem> actionDropdownItems =
+						fdsActionProvider.getDropdownItems(
+							groupId, httpServletRequest, item);
+
+					if (actionDropdownItems != null) {
+						fdsDataRow.addActionDropdownItems(actionDropdownItems);
+					}
+				}
+			}
+
+			fdsDataRows.add(fdsDataRow);
+		}
+
+		return fdsDataRows;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(FDSApplication.class);
 
+	private static final ObjectMapper _objectMapper = new ObjectMapper() {
+		{
+			configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+			disable(SerializationFeature.INDENT_OUTPUT);
+		}
+	};
+
 	@Reference
-	private FDSDataJSONFactory _fdsDataJSONFactory;
+	private FDSActionProviderRegistry _fdsActionProviderRegistry;
 
 	@Reference
 	private FDSDataProviderRegistry _fdsDataProviderRegistry;
@@ -328,5 +388,20 @@ public class FDSApplication extends Application {
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	private class FDSResponse {
+
+		public FDSResponse(List<FDSDataRow> fdsDataRows, int totalCount) {
+			_fdsDataRows = fdsDataRows;
+			_totalCount = totalCount;
+		}
+
+		@JsonProperty("items")
+		private final List<FDSDataRow> _fdsDataRows;
+
+		@JsonProperty("totalCount")
+		private final int _totalCount;
+
+	}
 
 }
