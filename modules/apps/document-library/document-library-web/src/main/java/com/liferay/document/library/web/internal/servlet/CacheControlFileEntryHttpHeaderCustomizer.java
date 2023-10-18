@@ -89,18 +89,12 @@ public class CacheControlFileEntryHttpHeaderCustomizer
 			CacheControlConfiguration.class, properties);
 	}
 
-	private CacheControlConfiguration _getCompanyCacheControlConfiguration(
-		long companyId) {
-
-		return _companyConfigurationBeans.getOrDefault(
-			companyId, _systemCacheControlConfiguration);
-	}
-
 	private String _getHttpHeaderValue(FileEntry fileEntry, String currentValue)
 		throws PortalException {
 
 		CacheControlConfiguration cacheControlConfiguration =
-			_getCompanyCacheControlConfiguration(fileEntry.getCompanyId());
+			_companyConfigurationBeans.getOrDefault(
+				fileEntry.getCompanyId(), _systemCacheControlConfiguration);
 
 		if (ArrayUtil.contains(
 				cacheControlConfiguration.notCacheableMimeTypes(),
@@ -133,7 +127,6 @@ public class CacheControlFileEntryHttpHeaderCustomizer
 
 	private final Map<Long, CacheControlConfiguration>
 		_companyConfigurationBeans = new ConcurrentHashMap<>();
-	private final Map<String, Long> _companyIds = new ConcurrentHashMap<>();
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
@@ -186,6 +179,8 @@ public class CacheControlFileEntryHttpHeaderCustomizer
 				_companyConfigurationBeans.remove(companyId);
 			}
 		}
+
+		private final Map<String, Long> _companyIds = new ConcurrentHashMap<>();
 
 	}
 
