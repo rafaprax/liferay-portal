@@ -19,7 +19,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Michael C. Han
  */
-@Component(service = CompositeKaleoTaskAssignmentSelector.class)
+@Component(service = KaleoTaskAssignmentSelector.class)
 public class CompositeKaleoTaskAssignmentSelector
 	implements KaleoTaskAssignmentSelector {
 
