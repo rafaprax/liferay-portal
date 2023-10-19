@@ -99,6 +99,8 @@ public class EditPageAttachmentMVCActionCommand extends BaseMVCActionCommand {
 	protected void activate(Map<String, Object> properties) {
 		_dlConfiguration = ConfigurableUtil.createConfigurable(
 			DLConfiguration.class, properties);
+
+		_wikiAttachmentsHelper = new WikiAttachmentsHelper(_wikiPageService);
 	}
 
 	@Override
@@ -426,8 +428,7 @@ public class EditPageAttachmentMVCActionCommand extends BaseMVCActionCommand {
 	@Reference(target = "(upload.response.handler=multiple)")
 	private UploadResponseHandler _uploadResponseHandler;
 
-	@Reference
-	private WikiAttachmentsHelper _wikiAttachmentsHelper;
+	private volatile WikiAttachmentsHelper _wikiAttachmentsHelper;
 
 	@Reference
 	private WikiPageService _wikiPageService;
