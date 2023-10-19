@@ -340,9 +340,6 @@ public class NPMRegistryImpl implements NPMRegistry {
 		_applyVersioning = details.applyVersioning();
 
 		_serviceTracker = _openServiceTracker();
-
-		_javaScriptAwarePortalWebResources = ServiceTrackerListFactory.open(
-			bundleContext, JavaScriptAwarePortalWebResources.class);
 	}
 
 	@Deactivate
@@ -350,8 +347,6 @@ public class NPMRegistryImpl implements NPMRegistry {
 		if (_npmRegistryUpdatesListeners != null) {
 			_npmRegistryUpdatesListeners.close();
 		}
-
-		_javaScriptAwarePortalWebResources.close();
 
 		_serviceTracker.close();
 
@@ -592,7 +587,9 @@ public class NPMRegistryImpl implements NPMRegistry {
 		new DCLSingleton<>();
 	private volatile Supplier<DataBag> _dataBagSupplier;
 	private final Map<String, String> _globalAliases = new HashMap<>();
-	private ServiceTrackerList<JavaScriptAwarePortalWebResources>
+
+	@Reference
+	private JavaScriptAwarePortalWebResources
 		_javaScriptAwarePortalWebResources;
 
 	@Reference
@@ -678,13 +675,8 @@ public class NPMRegistryImpl implements NPMRegistry {
 
 				_notifyNPMRegistryUpdatesListeners();
 
-				for (JavaScriptAwarePortalWebResources
-						javaScriptAwarePortalWebResources :
-							_javaScriptAwarePortalWebResources) {
-
-					javaScriptAwarePortalWebResources.updateLastModified(
-						bundle.getLastModified());
-				}
+				_javaScriptAwarePortalWebResources.updateLastModified(
+					bundle.getLastModified());
 			}
 
 			return jsBundle;
