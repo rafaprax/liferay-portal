@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.zip.ZipReaderFactory;
 import com.liferay.subscription.service.SubscriptionLocalService;
 import com.liferay.trash.TrashHelper;
 import com.liferay.trash.exception.RestoreEntryException;
@@ -55,6 +56,7 @@ import com.liferay.wiki.model.WikiPageDisplay;
 import com.liferay.wiki.service.WikiPageLocalService;
 import com.liferay.wiki.service.base.WikiNodeLocalServiceBaseImpl;
 import com.liferay.wiki.service.persistence.WikiPagePersistence;
+import com.liferay.wiki.validator.WikiPageTitleValidator;
 
 import java.io.InputStream;
 
@@ -546,6 +548,10 @@ public class WikiNodeLocalServiceImpl extends WikiNodeLocalServiceBaseImpl {
 		_wikiGroupServiceConfiguration = ConfigurableUtil.createConfigurable(
 			WikiGroupServiceConfiguration.class, properties);
 
+		_mediaWikiImporter = new MediaWikiImporter(
+			_wikiGroupServiceConfiguration, _wikiPageLocalService,
+			_wikiPageTitleValidator, _zipReaderFactory);
+
 		_portalCache = _multiVMPool.getPortalCache(
 			WikiPageDisplay.class.getName());
 	}
@@ -640,7 +646,6 @@ public class WikiNodeLocalServiceImpl extends WikiNodeLocalServiceBaseImpl {
 	@Reference
 	private IndexerRegistry _indexerRegistry;
 
-	@Reference
 	private MediaWikiImporter _mediaWikiImporter;
 
 	@Reference
@@ -673,5 +678,11 @@ public class WikiNodeLocalServiceImpl extends WikiNodeLocalServiceBaseImpl {
 
 	@Reference
 	private WikiPagePersistence _wikiPagePersistence;
+
+	@Reference
+	private WikiPageTitleValidator _wikiPageTitleValidator;
+
+	@Reference
+	private ZipReaderFactory _zipReaderFactory;
 
 }

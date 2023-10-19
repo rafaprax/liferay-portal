@@ -6,13 +6,12 @@
 package com.liferay.wiki.internal.importer;
 
 import com.liferay.asset.kernel.model.AssetTag;
-import com.liferay.asset.kernel.service.AssetTagLocalService;
+import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.document.library.kernel.util.DLValidatorUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
@@ -20,11 +19,11 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
+import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -66,19 +65,23 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Alvaro del Castillo
  * @author Jorge Ferrer
  */
-@Component(
-	configurationPid = "com.liferay.wiki.configuration.WikiGroupServiceConfiguration",
-	service = MediaWikiImporter.class
-)
 public class MediaWikiImporter {
+
+	public MediaWikiImporter(
+		WikiGroupServiceConfiguration wikiGroupServiceConfiguration,
+		WikiPageLocalService wikiPageLocalService,
+		WikiPageTitleValidator wikiPageTitleValidator,
+		ZipReaderFactory zipReaderFactory) {
+
+		_wikiGroupServiceConfiguration = wikiGroupServiceConfiguration;
+		_wikiPageLocalService = wikiPageLocalService;
+		_wikiPageTitleValidator = wikiPageTitleValidator;
+		_zipReaderFactory = zipReaderFactory;
+	}
 
 	public void importPages(
 			long userId, WikiNode node, InputStream[] inputStreams,
@@ -138,12 +141,6 @@ public class MediaWikiImporter {
 		}
 	}
 
-	@Activate
-	protected void activate(Map<String, Object> properties) {
-		_wikiGroupServiceConfiguration = ConfigurableUtil.createConfigurable(
-			WikiGroupServiceConfiguration.class, properties);
-	}
-
 	private String _getCreoleRedirectContent(String redirectTitle) {
 		return StringPool.DOUBLE_OPEN_BRACKET + redirectTitle +
 			StringPool.DOUBLE_CLOSE_BRACKET;
@@ -158,11 +155,11 @@ public class MediaWikiImporter {
 		String emailAddress = usersMap.get(author);
 
 		if (Validator.isNotNull(emailAddress)) {
-			user = _userLocalService.fetchUserByEmailAddress(
+			user = UserLocalServiceUtil.fetchUserByEmailAddress(
 				node.getCompanyId(), emailAddress);
 		}
 		else {
-			user = _userLocalService.fetchUserByScreenName(
+			user = UserLocalServiceUtil.fetchUserByScreenName(
 				node.getCompanyId(), StringUtil.toLowerCase(author));
 		}
 
@@ -555,7 +552,7 @@ public class MediaWikiImporter {
 
 			categoryName = _normalize(categoryName, 75);
 
-			_assetTagLocalService.checkTags(
+			AssetTagLocalServiceUtil.checkTags(
 				userId, node.getGroupId(), new String[] {categoryName});
 
 			if ((i % 5) == 0) {
@@ -577,7 +574,7 @@ public class MediaWikiImporter {
 
 			categoryName = _normalize(categoryName, 75);
 
-			List<AssetTag> assetTags = _assetTagLocalService.checkTags(
+			List<AssetTag> assetTags = AssetTagLocalServiceUtil.checkTags(
 				userId, node.getGroupId(), new String[] {categoryName});
 
 			assetTagNames.addAll(
@@ -715,7 +712,7 @@ public class MediaWikiImporter {
 			WikiPage sharedImagesPage = _wikiPageLocalService.getPage(
 				node.getNodeId(), WikiPageConstants.SHARED_IMAGES_TITLE);
 
-			Company company = _companyLocalService.getCompany(
+			Company company = CompanyLocalServiceUtil.getCompany(
 				node.getCompanyId());
 
 			String portalURL = company.getPortalURL(node.getGroupId());
@@ -726,7 +723,7 @@ public class MediaWikiImporter {
 				String fileName = matcher.group(2);
 
 				FileEntry fileEntry =
-					_portletFileRepository.fetchPortletFileEntry(
+					PortletFileRepositoryUtil.fetchPortletFileEntry(
 						node.getGroupId(),
 						sharedImagesPage.getAttachmentsFolderId(), fileName);
 
@@ -737,7 +734,7 @@ public class MediaWikiImporter {
 				}
 
 				String fileEntryURL =
-					_portletFileRepository.getPortletFileEntryURL(
+					PortletFileRepositoryUtil.getPortletFileEntryURL(
 						null, fileEntry, StringPool.BLANK);
 
 				String linkLabel = matcher.group(3);
@@ -791,30 +788,11 @@ public class MediaWikiImporter {
 	private static final Set<String> _specialMediaWikiDirs = SetUtil.fromArray(
 		"archive", "temp", "thumb");
 
-	@Reference
-	private AssetTagLocalService _assetTagLocalService;
-
-	@Reference
-	private CompanyLocalService _companyLocalService;
-
-	@Reference
-	private PortletFileRepository _portletFileRepository;
-
 	private final MediaWikiToCreoleTranslator _translator =
 		new MediaWikiToCreoleTranslator();
-
-	@Reference
-	private UserLocalService _userLocalService;
-
-	private WikiGroupServiceConfiguration _wikiGroupServiceConfiguration;
-
-	@Reference
-	private WikiPageLocalService _wikiPageLocalService;
-
-	@Reference
-	private WikiPageTitleValidator _wikiPageTitleValidator;
-
-	@Reference
-	private ZipReaderFactory _zipReaderFactory;
+	private final WikiGroupServiceConfiguration _wikiGroupServiceConfiguration;
+	private final WikiPageLocalService _wikiPageLocalService;
+	private final WikiPageTitleValidator _wikiPageTitleValidator;
+	private final ZipReaderFactory _zipReaderFactory;
 
 }
