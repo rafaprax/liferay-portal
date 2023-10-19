@@ -17,7 +17,7 @@ public class NPMJavaScriptAwarePortalWebResources
 	extends NPMPortalWebResources implements JavaScriptAwarePortalWebResources {
 
 	@Override
-	public void updateLastModifed(long lastModified) {
+	public void updateLastModified(long lastModified) {
 		this.lastModified.accumulateAndGet(lastModified, Math::max);
 	}
 

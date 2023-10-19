@@ -45,7 +45,7 @@ public class JavaScriptAwarePortalWebResourcesCleaner {
 			for (JavaScriptAwarePortalWebResources
 					javaScriptAwarePortalWebResources : _serviceTrackerList) {
 
-				javaScriptAwarePortalWebResources.updateLastModifed(
+				javaScriptAwarePortalWebResources.updateLastModified(
 					bundle.getLastModified());
 			}
 		};

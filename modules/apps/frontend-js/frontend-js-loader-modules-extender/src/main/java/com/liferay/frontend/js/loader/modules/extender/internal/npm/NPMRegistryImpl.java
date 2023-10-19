@@ -682,7 +682,7 @@ public class NPMRegistryImpl implements NPMRegistry {
 						javaScriptAwarePortalWebResources :
 							_javaScriptAwarePortalWebResources) {
 
-					javaScriptAwarePortalWebResources.updateLastModifed(
+					javaScriptAwarePortalWebResources.updateLastModified(
 						bundle.getLastModified());
 				}
 			}

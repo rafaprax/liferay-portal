@@ -16,6 +16,6 @@ import com.liferay.portal.kernel.servlet.PortalWebResources;
  */
 public interface JavaScriptAwarePortalWebResources extends PortalWebResources {
 
-	public void updateLastModifed(long lastModified);
+	public void updateLastModified(long lastModified);
 
 }
