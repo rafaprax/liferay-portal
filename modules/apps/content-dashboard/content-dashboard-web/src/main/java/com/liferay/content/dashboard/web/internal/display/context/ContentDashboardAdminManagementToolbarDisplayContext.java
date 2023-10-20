@@ -15,7 +15,7 @@ import com.liferay.content.dashboard.item.action.exception.ContentDashboardItemA
 import com.liferay.content.dashboard.item.filter.ContentDashboardItemFilter;
 import com.liferay.content.dashboard.item.filter.provider.ContentDashboardItemFilterProvider;
 import com.liferay.content.dashboard.item.type.ContentDashboardItemSubtype;
-import com.liferay.content.dashboard.web.internal.item.filter.ContentDashboardItemFilterProviderRegistry;
+import com.liferay.content.dashboard.web.internal.portlet.ContentDashboardAdminPortlet;
 import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchContainerManagementToolbarDisplayContext;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemBuilder;
@@ -74,8 +74,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 		AssetCategoryLocalService assetCategoryLocalService,
 		AssetVocabularyLocalService assetVocabularyLocalService,
 		ContentDashboardAdminDisplayContext contentDashboardAdminDisplayContext,
-		ContentDashboardItemFilterProviderRegistry
-			contentDashboardItemFilterProviderRegistry,
+		ContentDashboardAdminPortlet contentDashboardAdminPortlet,
 		GroupLocalService groupLocalService,
 		HttpServletRequest httpServletRequest, ItemSelector itemSelector,
 		Language language, LiferayPortletRequest liferayPortletRequest,
@@ -90,8 +89,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 		_assetVocabularyLocalService = assetVocabularyLocalService;
 		_contentDashboardAdminDisplayContext =
 			contentDashboardAdminDisplayContext;
-		_contentDashboardItemFilterProviderRegistry =
-			contentDashboardItemFilterProviderRegistry;
+		_contentDashboardAdminPortlet = contentDashboardAdminPortlet;
 		_groupLocalService = groupLocalService;
 		_itemSelector = itemSelector;
 		_language = language;
@@ -124,7 +122,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 
 		List<ContentDashboardItemFilterProvider>
 			contentDashboardItemFilterProviders =
-				_contentDashboardItemFilterProviderRegistry.
+				_contentDashboardAdminPortlet.
 					getContentDashboardItemFilterProviders();
 
 		try {
@@ -463,7 +461,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 
 		List<ContentDashboardItemFilterProvider>
 			contentDashboardItemFilterProviders =
-				_contentDashboardItemFilterProviderRegistry.
+				_contentDashboardAdminPortlet.
 					getContentDashboardItemFilterProviders();
 
 		for (ContentDashboardItemFilterProvider
@@ -573,7 +571,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 		_getContentDashboardItemFilterProviderDropdownItems() {
 
 		return TransformUtil.transform(
-			_contentDashboardItemFilterProviderRegistry.
+			_contentDashboardAdminPortlet.
 				getContentDashboardItemFilterProviders(),
 			contentDashboardItemFilterProvider -> {
 				try {
@@ -907,8 +905,7 @@ public class ContentDashboardAdminManagementToolbarDisplayContext
 	private final AssetVocabularyLocalService _assetVocabularyLocalService;
 	private final ContentDashboardAdminDisplayContext
 		_contentDashboardAdminDisplayContext;
-	private final ContentDashboardItemFilterProviderRegistry
-		_contentDashboardItemFilterProviderRegistry;
+	private final ContentDashboardAdminPortlet _contentDashboardAdminPortlet;
 	private final GroupLocalService _groupLocalService;
 	private final ItemSelector _itemSelector;
 	private final Language _language;
