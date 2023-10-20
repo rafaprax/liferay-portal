@@ -16,20 +16,18 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Objects;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * @author Feliphe Marinho
  */
-@Component(service = ObjectFieldFDSFilterFactoryRegistry.class)
-public class ObjectFieldFDSFilterFactoryRegistry {
+public class ObjectFieldFDSFilterFactoryRegistryUtil {
 
-	public ObjectFieldFDSFilterFactory getObjectFieldFDSFilterFactory(
+	public static ObjectFieldFDSFilterFactory getObjectFieldFDSFilterFactory(
 			long objectDefinitionId,
+			ObjectFieldLocalService objectFieldLocalService,
 			ObjectViewFilterColumn objectViewFilterColumn)
 		throws PortalException {
 
@@ -54,15 +52,24 @@ public class ObjectFieldFDSFilterFactoryRegistry {
 				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST);
 		}
 
-		ObjectField objectField = _objectFieldLocalService.getObjectField(
+		ObjectField objectField = objectFieldLocalService.getObjectField(
 			objectDefinitionId, objectViewFilterColumn.getObjectFieldName());
 
 		return _objectFieldBusinessTypeKeyServiceTrackerMap.getService(
 			objectField.getBusinessType());
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
+	private static final ServiceTrackerMap<String, ObjectFieldFDSFilterFactory>
+		_objectFieldBusinessTypeKeyServiceTrackerMap;
+	private static final ServiceTrackerMap<String, ObjectFieldFDSFilterFactory>
+		_objectFieldFilterTypeKeyServiceTrackerMap;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(
+			ObjectFieldFDSFilterFactoryRegistryUtil.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
 		_objectFieldBusinessTypeKeyServiceTrackerMap =
 			ServiceTrackerMapFactory.openSingleValueMap(
 				bundleContext, ObjectFieldFDSFilterFactory.class,
@@ -72,19 +79,5 @@ public class ObjectFieldFDSFilterFactoryRegistry {
 				bundleContext, ObjectFieldFDSFilterFactory.class,
 				"object.field.filter.type.key");
 	}
-
-	@Deactivate
-	protected void deactivate() {
-		_objectFieldBusinessTypeKeyServiceTrackerMap.close();
-		_objectFieldFilterTypeKeyServiceTrackerMap.close();
-	}
-
-	private ServiceTrackerMap<String, ObjectFieldFDSFilterFactory>
-		_objectFieldBusinessTypeKeyServiceTrackerMap;
-	private ServiceTrackerMap<String, ObjectFieldFDSFilterFactory>
-		_objectFieldFilterTypeKeyServiceTrackerMap;
-
-	@Reference
-	private ObjectFieldLocalService _objectFieldLocalService;
 
 }
