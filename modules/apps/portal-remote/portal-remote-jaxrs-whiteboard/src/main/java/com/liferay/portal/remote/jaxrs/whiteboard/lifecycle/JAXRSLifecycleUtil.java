@@ -10,17 +10,13 @@ import com.liferay.portal.kernel.util.MapUtil;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Stian Sigvartsen
  */
-@Component(service = JAXRSLifecycle.class)
-public class JAXRSLifecycle {
+public class JAXRSLifecycleUtil {
 
-	public void ensureReady() {
+	public static void ensureReady(BundleContext bundleContext) {
 		if (_jaxrsReady) {
 			return;
 		}
@@ -28,26 +24,14 @@ public class JAXRSLifecycle {
 		_jaxrsReady = true;
 
 		_serviceRegistrationDCLSingleton.getSingleton(
-			() -> _bundleContext.registerService(
+			() -> bundleContext.registerService(
 				Object.class, new Object(),
 				MapUtil.singletonDictionary(
 					"liferay.jaxrs.whiteboard.ready", true)));
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
-		_bundleContext = bundleContext;
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		_serviceRegistrationDCLSingleton.destroy(
-			ServiceRegistration::unregister);
-	}
-
-	private BundleContext _bundleContext;
-	private boolean _jaxrsReady;
-	private final DCLSingleton<ServiceRegistration<?>>
+	private static boolean _jaxrsReady;
+	private static final DCLSingleton<ServiceRegistration<?>>
 		_serviceRegistrationDCLSingleton = new DCLSingleton<>();
 
 }
