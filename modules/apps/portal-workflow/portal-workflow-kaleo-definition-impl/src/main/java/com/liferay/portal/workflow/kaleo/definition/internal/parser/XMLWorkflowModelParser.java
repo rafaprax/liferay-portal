@@ -86,7 +86,8 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 	@Override
 	public Definition parse(String content) throws WorkflowException {
 		try {
-			Document document = SAXReaderUtil.read(_toXML(content), _validate);
+			Document document = SAXReaderUtil.read(
+				WorkflowDefinitionContentUtil.toXML(content), _validate);
 
 			return _parse(document);
 		}
@@ -920,16 +921,6 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		for (Element taskElement : taskElements) {
 			_parseTransition(definition, taskElement);
 		}
-	}
-
-	private String _toXML(String content) throws WorkflowException {
-		if (Validator.isNotNull(content) &&
-			content.startsWith(StringPool.OPEN_CURLY_BRACE)) {
-
-			return WorkflowDefinitionContentUtil.toXML(content);
-		}
-
-		return content;
 	}
 
 	private boolean _validate;
