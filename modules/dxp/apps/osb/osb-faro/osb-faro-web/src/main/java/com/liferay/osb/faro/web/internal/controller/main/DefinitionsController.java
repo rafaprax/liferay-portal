@@ -30,7 +30,10 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Rachael Koestartyo
  */
-@Component(service = {DefinitionsController.class, FaroController.class})
+@Component(
+	property = "osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Osb.Faro.Web)",
+	service = FaroController.class
+)
 @Path("/{groupId}/definitions")
 @Produces(MediaType.APPLICATION_JSON)
 public class DefinitionsController extends BaseFaroController {

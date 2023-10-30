@@ -46,7 +46,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Matthew Kong
  */
-@Component(service = {FaroController.class, PreferencesController.class})
+@Component(
+	property = "osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Osb.Faro.Web)",
+	service = FaroController.class
+)
 @Path("/{groupId}/preferences")
 @Produces(MediaType.APPLICATION_JSON)
 public class PreferencesController extends BaseFaroController {

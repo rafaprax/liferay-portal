@@ -67,7 +67,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Marcellus Tavares
  */
-@Component(service = {FaroController.class, OAuth2Controller.class})
+@Component(
+	property = "osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Osb.Faro.Web)",
+	service = FaroController.class
+)
 @Path("/{groupId}/oauth2")
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2Controller extends BaseFaroController {
