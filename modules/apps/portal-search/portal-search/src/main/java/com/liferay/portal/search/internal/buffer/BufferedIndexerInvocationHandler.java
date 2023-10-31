@@ -161,14 +161,6 @@ public class BufferedIndexerInvocationHandler implements InvocationHandler {
 		_indexerRegistryConfiguration = indexerRegistryConfiguration;
 	}
 
-	public void setIndexerRequestBufferOverflowHandler(
-		IndexerRequestBufferOverflowHandler
-			indexerRequestBufferOverflowHandler) {
-
-		_indexerRequestBufferOverflowHandler =
-			indexerRequestBufferOverflowHandler;
-	}
-
 	protected void bufferRequest(
 			MethodKey methodKey, Object object,
 			IndexerRequestBuffer indexerRequestBuffer)
@@ -211,9 +203,7 @@ public class BufferedIndexerInvocationHandler implements InvocationHandler {
 		throws Exception {
 
 		IndexerRequestBufferHandler indexerRequestBufferHandler =
-			new IndexerRequestBufferHandler(
-				_indexerRequestBufferOverflowHandler,
-				_indexerRegistryConfiguration);
+			new IndexerRequestBufferHandler(_indexerRegistryConfiguration);
 
 		indexerRequestBufferHandler.bufferRequest(
 			indexerRequest, indexerRequestBuffer);
@@ -224,8 +214,6 @@ public class BufferedIndexerInvocationHandler implements InvocationHandler {
 
 	private final Indexer<?> _indexer;
 	private volatile IndexerRegistryConfiguration _indexerRegistryConfiguration;
-	private volatile IndexerRequestBufferOverflowHandler
-		_indexerRequestBufferOverflowHandler;
 	private final IndexStatusManager _indexStatusManager;
 
 }

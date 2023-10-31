@@ -6,6 +6,9 @@
 package com.liferay.portal.search.internal.buffer;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.search.internal.buffer.util.IndexerRequestBufferExecutorUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,14 +55,35 @@ public class IndexerRequestBuffer {
 	}
 
 	public void add(
-		IndexerRequest indexerRequest,
-		IndexerRequestBufferOverflowHandler indexerRequestBufferOverflowHandler,
+		IndexerRequest indexerRequest, float minimumBufferSize,
 		int maxBufferSize) {
 
 		_indexerRequests.put(indexerRequest, indexerRequest);
 
-		indexerRequestBufferOverflowHandler.bufferOverflowed(
-			this, maxBufferSize);
+		int currentBufferSize = size();
+
+		if (currentBufferSize < maxBufferSize) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Buffer size is less than maximum: " + maxBufferSize);
+			}
+
+			return;
+		}
+
+		int numRequests = Math.round(
+			currentBufferSize - Math.abs(maxBufferSize * minimumBufferSize));
+
+		if (numRequests > 0) {
+			try {
+				BufferOverflowThreadLocal.setOverflowMode(true);
+
+				IndexerRequestBufferExecutorUtil.execute(this, numRequests);
+			}
+			finally {
+				BufferOverflowThreadLocal.setOverflowMode(false);
+			}
+		}
 	}
 
 	public void clear() {
@@ -81,6 +105,9 @@ public class IndexerRequestBuffer {
 	public int size() {
 		return _indexerRequests.size();
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		IndexerRequestBuffer.class);
 
 	private static final ThreadLocal<List<IndexerRequestBuffer>>
 		_indexerRequestBuffersThreadLocal = new CentralizedThreadLocal<>(
