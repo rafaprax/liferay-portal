@@ -210,6 +210,10 @@ public class BufferedIndexerInvocationHandler implements InvocationHandler {
 			IndexerRequestBuffer indexerRequestBuffer)
 		throws Exception {
 
+		_indexerRequestBufferOverflowHandler =
+			new IndexerRequestBufferOverflowHandler(
+				new IndexerRequestBufferExecutor());
+
 		IndexerRequestBufferHandler indexerRequestBufferHandler =
 			new IndexerRequestBufferHandler(
 				_indexerRequestBufferOverflowHandler,
