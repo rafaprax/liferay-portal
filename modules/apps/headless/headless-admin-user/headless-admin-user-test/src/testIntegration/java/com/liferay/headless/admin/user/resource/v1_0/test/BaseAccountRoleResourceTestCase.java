@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -278,7 +277,7 @@ public abstract class BaseAccountRoleResourceTestCase {
 				getAccountByExternalReferenceCodeUserAccountByExternalReferenceCodeAccountRolesPage(
 					accountExternalReferenceCode, externalReferenceCode);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantAccountExternalReferenceCode != null) &&
 			(irrelevantExternalReferenceCode != null)) {
@@ -295,10 +294,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 						irrelevantAccountExternalReferenceCode,
 						irrelevantExternalReferenceCode);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAccountRole, (List<AccountRole>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantAccountRole),
+				(List<AccountRole>)page.getItems());
 			assertValid(
 				page,
 				testGetAccountByExternalReferenceCodeUserAccountByExternalReferenceCodeAccountRolesPage_getExpectedActions(
@@ -321,10 +321,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 				getAccountByExternalReferenceCodeUserAccountByExternalReferenceCodeAccountRolesPage(
 					accountExternalReferenceCode, externalReferenceCode);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(accountRole1, (List<AccountRole>)page.getItems());
-		assertContains(accountRole2, (List<AccountRole>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountRole1, accountRole2),
+			(List<AccountRole>)page.getItems());
 		assertValid(
 			page,
 			testGetAccountByExternalReferenceCodeUserAccountByExternalReferenceCodeAccountRolesPage_getExpectedActions(
@@ -397,7 +398,7 @@ public abstract class BaseAccountRoleResourceTestCase {
 					externalReferenceCode, RandomTestUtil.randomString(), null,
 					Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			AccountRole irrelevantAccountRole =
@@ -409,12 +410,13 @@ public abstract class BaseAccountRoleResourceTestCase {
 				accountRoleResource.
 					getAccountAccountRolesByExternalReferenceCodePage(
 						irrelevantExternalReferenceCode, null, null,
-						Pagination.of(1, (int)totalCount + 1), null);
+						Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAccountRole, (List<AccountRole>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantAccountRole),
+				(List<AccountRole>)page.getItems());
 			assertValid(
 				page,
 				testGetAccountAccountRolesByExternalReferenceCodePage_getExpectedActions(
@@ -435,10 +437,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 					externalReferenceCode, null, null, Pagination.of(1, 10),
 					null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(accountRole1, (List<AccountRole>)page.getItems());
-		assertContains(accountRole2, (List<AccountRole>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountRole1, accountRole2),
+			(List<AccountRole>)page.getItems());
 		assertValid(
 			page,
 			testGetAccountAccountRolesByExternalReferenceCodePage_getExpectedActions(
@@ -565,13 +568,6 @@ public abstract class BaseAccountRoleResourceTestCase {
 		String externalReferenceCode =
 			testGetAccountAccountRolesByExternalReferenceCodePage_getExternalReferenceCode();
 
-		Page<AccountRole> accountRolePage =
-			accountRoleResource.
-				getAccountAccountRolesByExternalReferenceCodePage(
-					externalReferenceCode, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(accountRolePage.getTotalCount());
-
 		AccountRole accountRole1 =
 			testGetAccountAccountRolesByExternalReferenceCodePage_addAccountRole(
 				externalReferenceCode, randomAccountRole());
@@ -587,21 +583,20 @@ public abstract class BaseAccountRoleResourceTestCase {
 		Page<AccountRole> page1 =
 			accountRoleResource.
 				getAccountAccountRolesByExternalReferenceCodePage(
-					externalReferenceCode, null, null,
-					Pagination.of(1, totalCount + 2), null);
+					externalReferenceCode, null, null, Pagination.of(1, 2),
+					null);
 
 		List<AccountRole> accountRoles1 = (List<AccountRole>)page1.getItems();
 
-		Assert.assertEquals(
-			accountRoles1.toString(), totalCount + 2, accountRoles1.size());
+		Assert.assertEquals(accountRoles1.toString(), 2, accountRoles1.size());
 
 		Page<AccountRole> page2 =
 			accountRoleResource.
 				getAccountAccountRolesByExternalReferenceCodePage(
-					externalReferenceCode, null, null,
-					Pagination.of(2, totalCount + 2), null);
+					externalReferenceCode, null, null, Pagination.of(2, 2),
+					null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<AccountRole> accountRoles2 = (List<AccountRole>)page2.getItems();
 
@@ -610,12 +605,12 @@ public abstract class BaseAccountRoleResourceTestCase {
 		Page<AccountRole> page3 =
 			accountRoleResource.
 				getAccountAccountRolesByExternalReferenceCodePage(
-					externalReferenceCode, null, null,
-					Pagination.of(1, (int)totalCount + 3), null);
+					externalReferenceCode, null, null, Pagination.of(1, 3),
+					null);
 
-		assertContains(accountRole1, (List<AccountRole>)page3.getItems());
-		assertContains(accountRole2, (List<AccountRole>)page3.getItems());
-		assertContains(accountRole3, (List<AccountRole>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountRole1, accountRole2, accountRole3),
+			(List<AccountRole>)page3.getItems());
 	}
 
 	@Test
@@ -744,33 +739,26 @@ public abstract class BaseAccountRoleResourceTestCase {
 			testGetAccountAccountRolesByExternalReferenceCodePage_addAccountRole(
 				externalReferenceCode, accountRole2);
 
-		Page<AccountRole> page =
-			accountRoleResource.
-				getAccountAccountRolesByExternalReferenceCodePage(
-					externalReferenceCode, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<AccountRole> ascPage =
 				accountRoleResource.
 					getAccountAccountRolesByExternalReferenceCodePage(
-						externalReferenceCode, null, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, null, Pagination.of(1, 2),
 						entityField.getName() + ":asc");
 
-			assertContains(accountRole1, (List<AccountRole>)ascPage.getItems());
-			assertContains(accountRole2, (List<AccountRole>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(accountRole1, accountRole2),
+				(List<AccountRole>)ascPage.getItems());
 
 			Page<AccountRole> descPage =
 				accountRoleResource.
 					getAccountAccountRolesByExternalReferenceCodePage(
-						externalReferenceCode, null, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, null, Pagination.of(1, 2),
 						entityField.getName() + ":desc");
 
-			assertContains(
-				accountRole2, (List<AccountRole>)descPage.getItems());
-			assertContains(
-				accountRole1, (List<AccountRole>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(accountRole2, accountRole1),
+				(List<AccountRole>)descPage.getItems());
 		}
 	}
 
@@ -909,7 +897,7 @@ public abstract class BaseAccountRoleResourceTestCase {
 				getAccountByExternalReferenceCodeUserAccountByEmailAddressAccountRolesPage(
 					externalReferenceCode, emailAddress);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantExternalReferenceCode != null) &&
 			(irrelevantEmailAddress != null)) {
@@ -925,10 +913,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 						irrelevantExternalReferenceCode,
 						irrelevantEmailAddress);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAccountRole, (List<AccountRole>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantAccountRole),
+				(List<AccountRole>)page.getItems());
 			assertValid(
 				page,
 				testGetAccountByExternalReferenceCodeUserAccountByEmailAddressAccountRolesPage_getExpectedActions(
@@ -948,10 +937,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 				getAccountByExternalReferenceCodeUserAccountByEmailAddressAccountRolesPage(
 					externalReferenceCode, emailAddress);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(accountRole1, (List<AccountRole>)page.getItems());
-		assertContains(accountRole2, (List<AccountRole>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountRole1, accountRole2),
+			(List<AccountRole>)page.getItems());
 		assertValid(
 			page,
 			testGetAccountByExternalReferenceCodeUserAccountByEmailAddressAccountRolesPage_getExpectedActions(
@@ -1018,7 +1008,7 @@ public abstract class BaseAccountRoleResourceTestCase {
 			accountId, RandomTestUtil.randomString(), null,
 			Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantAccountId != null) {
 			AccountRole irrelevantAccountRole =
@@ -1026,13 +1016,13 @@ public abstract class BaseAccountRoleResourceTestCase {
 					irrelevantAccountId, randomIrrelevantAccountRole());
 
 			page = accountRoleResource.getAccountAccountRolesPage(
-				irrelevantAccountId, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantAccountId, null, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAccountRole, (List<AccountRole>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantAccountRole),
+				(List<AccountRole>)page.getItems());
 			assertValid(
 				page,
 				testGetAccountAccountRolesPage_getExpectedActions(
@@ -1050,10 +1040,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 		page = accountRoleResource.getAccountAccountRolesPage(
 			accountId, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(accountRole1, (List<AccountRole>)page.getItems());
-		assertContains(accountRole2, (List<AccountRole>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountRole1, accountRole2),
+			(List<AccountRole>)page.getItems());
 		assertValid(
 			page, testGetAccountAccountRolesPage_getExpectedActions(accountId));
 	}
@@ -1177,12 +1168,6 @@ public abstract class BaseAccountRoleResourceTestCase {
 
 		Long accountId = testGetAccountAccountRolesPage_getAccountId();
 
-		Page<AccountRole> accountRolePage =
-			accountRoleResource.getAccountAccountRolesPage(
-				accountId, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(accountRolePage.getTotalCount());
-
 		AccountRole accountRole1 =
 			testGetAccountAccountRolesPage_addAccountRole(
 				accountId, randomAccountRole());
@@ -1197,18 +1182,17 @@ public abstract class BaseAccountRoleResourceTestCase {
 
 		Page<AccountRole> page1 =
 			accountRoleResource.getAccountAccountRolesPage(
-				accountId, null, null, Pagination.of(1, totalCount + 2), null);
+				accountId, null, null, Pagination.of(1, 2), null);
 
 		List<AccountRole> accountRoles1 = (List<AccountRole>)page1.getItems();
 
-		Assert.assertEquals(
-			accountRoles1.toString(), totalCount + 2, accountRoles1.size());
+		Assert.assertEquals(accountRoles1.toString(), 2, accountRoles1.size());
 
 		Page<AccountRole> page2 =
 			accountRoleResource.getAccountAccountRolesPage(
-				accountId, null, null, Pagination.of(2, totalCount + 2), null);
+				accountId, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<AccountRole> accountRoles2 = (List<AccountRole>)page2.getItems();
 
@@ -1216,12 +1200,11 @@ public abstract class BaseAccountRoleResourceTestCase {
 
 		Page<AccountRole> page3 =
 			accountRoleResource.getAccountAccountRolesPage(
-				accountId, null, null, Pagination.of(1, (int)totalCount + 3),
-				null);
+				accountId, null, null, Pagination.of(1, 3), null);
 
-		assertContains(accountRole1, (List<AccountRole>)page3.getItems());
-		assertContains(accountRole2, (List<AccountRole>)page3.getItems());
-		assertContains(accountRole3, (List<AccountRole>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountRole1, accountRole2, accountRole3),
+			(List<AccountRole>)page3.getItems());
 	}
 
 	@Test
@@ -1345,29 +1328,24 @@ public abstract class BaseAccountRoleResourceTestCase {
 		accountRole2 = testGetAccountAccountRolesPage_addAccountRole(
 			accountId, accountRole2);
 
-		Page<AccountRole> page = accountRoleResource.getAccountAccountRolesPage(
-			accountId, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<AccountRole> ascPage =
 				accountRoleResource.getAccountAccountRolesPage(
-					accountId, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					accountId, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(accountRole1, (List<AccountRole>)ascPage.getItems());
-			assertContains(accountRole2, (List<AccountRole>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(accountRole1, accountRole2),
+				(List<AccountRole>)ascPage.getItems());
 
 			Page<AccountRole> descPage =
 				accountRoleResource.getAccountAccountRolesPage(
-					accountId, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					accountId, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				accountRole2, (List<AccountRole>)descPage.getItems());
-			assertContains(
-				accountRole1, (List<AccountRole>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(accountRole2, accountRole1),
+				(List<AccountRole>)descPage.getItems());
 		}
 	}
 

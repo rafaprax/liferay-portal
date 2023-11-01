@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -201,7 +200,7 @@ public abstract class BaseAttachmentResourceTestCase {
 			attachmentResource.getChannelProductAttachmentsPage(
 				channelId, productId, null, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantChannelId != null) && (irrelevantProductId != null)) {
 			Attachment irrelevantAttachment =
@@ -211,12 +210,13 @@ public abstract class BaseAttachmentResourceTestCase {
 
 			page = attachmentResource.getChannelProductAttachmentsPage(
 				irrelevantChannelId, irrelevantProductId, null,
-				Pagination.of(1, (int)totalCount + 1));
+				Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAttachment, (List<Attachment>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantAttachment),
+				(List<Attachment>)page.getItems());
 			assertValid(
 				page,
 				testGetChannelProductAttachmentsPage_getExpectedActions(
@@ -234,10 +234,11 @@ public abstract class BaseAttachmentResourceTestCase {
 		page = attachmentResource.getChannelProductAttachmentsPage(
 			channelId, productId, null, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(attachment1, (List<Attachment>)page.getItems());
-		assertContains(attachment2, (List<Attachment>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(attachment1, attachment2),
+			(List<Attachment>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelProductAttachmentsPage_getExpectedActions(
@@ -261,12 +262,6 @@ public abstract class BaseAttachmentResourceTestCase {
 		Long channelId = testGetChannelProductAttachmentsPage_getChannelId();
 		Long productId = testGetChannelProductAttachmentsPage_getProductId();
 
-		Page<Attachment> attachmentPage =
-			attachmentResource.getChannelProductAttachmentsPage(
-				channelId, productId, null, null);
-
-		int totalCount = GetterUtil.getInteger(attachmentPage.getTotalCount());
-
 		Attachment attachment1 =
 			testGetChannelProductAttachmentsPage_addAttachment(
 				channelId, productId, randomAttachment());
@@ -281,18 +276,17 @@ public abstract class BaseAttachmentResourceTestCase {
 
 		Page<Attachment> page1 =
 			attachmentResource.getChannelProductAttachmentsPage(
-				channelId, productId, null, Pagination.of(1, totalCount + 2));
+				channelId, productId, null, Pagination.of(1, 2));
 
 		List<Attachment> attachments1 = (List<Attachment>)page1.getItems();
 
-		Assert.assertEquals(
-			attachments1.toString(), totalCount + 2, attachments1.size());
+		Assert.assertEquals(attachments1.toString(), 2, attachments1.size());
 
 		Page<Attachment> page2 =
 			attachmentResource.getChannelProductAttachmentsPage(
-				channelId, productId, null, Pagination.of(2, totalCount + 2));
+				channelId, productId, null, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Attachment> attachments2 = (List<Attachment>)page2.getItems();
 
@@ -300,12 +294,11 @@ public abstract class BaseAttachmentResourceTestCase {
 
 		Page<Attachment> page3 =
 			attachmentResource.getChannelProductAttachmentsPage(
-				channelId, productId, null,
-				Pagination.of(1, (int)totalCount + 3));
+				channelId, productId, null, Pagination.of(1, 3));
 
-		assertContains(attachment1, (List<Attachment>)page3.getItems());
-		assertContains(attachment2, (List<Attachment>)page3.getItems());
-		assertContains(attachment3, (List<Attachment>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(attachment1, attachment2, attachment3),
+			(List<Attachment>)page3.getItems());
 	}
 
 	protected Attachment testGetChannelProductAttachmentsPage_addAttachment(
@@ -354,7 +347,7 @@ public abstract class BaseAttachmentResourceTestCase {
 		Page<Attachment> page = attachmentResource.getChannelProductImagesPage(
 			channelId, productId, null, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantChannelId != null) && (irrelevantProductId != null)) {
 			Attachment irrelevantAttachment =
@@ -364,12 +357,13 @@ public abstract class BaseAttachmentResourceTestCase {
 
 			page = attachmentResource.getChannelProductImagesPage(
 				irrelevantChannelId, irrelevantProductId, null,
-				Pagination.of(1, (int)totalCount + 1));
+				Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAttachment, (List<Attachment>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantAttachment),
+				(List<Attachment>)page.getItems());
 			assertValid(
 				page,
 				testGetChannelProductImagesPage_getExpectedActions(
@@ -385,10 +379,11 @@ public abstract class BaseAttachmentResourceTestCase {
 		page = attachmentResource.getChannelProductImagesPage(
 			channelId, productId, null, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(attachment1, (List<Attachment>)page.getItems());
-		assertContains(attachment2, (List<Attachment>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(attachment1, attachment2),
+			(List<Attachment>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelProductImagesPage_getExpectedActions(
@@ -412,12 +407,6 @@ public abstract class BaseAttachmentResourceTestCase {
 		Long channelId = testGetChannelProductImagesPage_getChannelId();
 		Long productId = testGetChannelProductImagesPage_getProductId();
 
-		Page<Attachment> attachmentPage =
-			attachmentResource.getChannelProductImagesPage(
-				channelId, productId, null, null);
-
-		int totalCount = GetterUtil.getInteger(attachmentPage.getTotalCount());
-
 		Attachment attachment1 = testGetChannelProductImagesPage_addAttachment(
 			channelId, productId, randomAttachment());
 
@@ -428,28 +417,27 @@ public abstract class BaseAttachmentResourceTestCase {
 			channelId, productId, randomAttachment());
 
 		Page<Attachment> page1 = attachmentResource.getChannelProductImagesPage(
-			channelId, productId, null, Pagination.of(1, totalCount + 2));
+			channelId, productId, null, Pagination.of(1, 2));
 
 		List<Attachment> attachments1 = (List<Attachment>)page1.getItems();
 
-		Assert.assertEquals(
-			attachments1.toString(), totalCount + 2, attachments1.size());
+		Assert.assertEquals(attachments1.toString(), 2, attachments1.size());
 
 		Page<Attachment> page2 = attachmentResource.getChannelProductImagesPage(
-			channelId, productId, null, Pagination.of(2, totalCount + 2));
+			channelId, productId, null, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Attachment> attachments2 = (List<Attachment>)page2.getItems();
 
 		Assert.assertEquals(attachments2.toString(), 1, attachments2.size());
 
 		Page<Attachment> page3 = attachmentResource.getChannelProductImagesPage(
-			channelId, productId, null, Pagination.of(1, (int)totalCount + 3));
+			channelId, productId, null, Pagination.of(1, 3));
 
-		assertContains(attachment1, (List<Attachment>)page3.getItems());
-		assertContains(attachment2, (List<Attachment>)page3.getItems());
-		assertContains(attachment3, (List<Attachment>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(attachment1, attachment2, attachment3),
+			(List<Attachment>)page3.getItems());
 	}
 
 	protected Attachment testGetChannelProductImagesPage_addAttachment(

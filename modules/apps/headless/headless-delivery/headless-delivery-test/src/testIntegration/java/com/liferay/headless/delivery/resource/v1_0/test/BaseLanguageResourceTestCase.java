@@ -210,7 +210,7 @@ public abstract class BaseLanguageResourceTestCase {
 		Page<Language> page = languageResource.getAssetLibraryLanguagesPage(
 			assetLibraryId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantAssetLibraryId != null) {
 			Language irrelevantLanguage =
@@ -220,9 +220,11 @@ public abstract class BaseLanguageResourceTestCase {
 			page = languageResource.getAssetLibraryLanguagesPage(
 				irrelevantAssetLibraryId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantLanguage, (List<Language>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantLanguage),
+				(List<Language>)page.getItems());
 			assertValid(
 				page,
 				testGetAssetLibraryLanguagesPage_getExpectedActions(
@@ -237,10 +239,11 @@ public abstract class BaseLanguageResourceTestCase {
 
 		page = languageResource.getAssetLibraryLanguagesPage(assetLibraryId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(language1, (List<Language>)page.getItems());
-		assertContains(language2, (List<Language>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(language1, language2),
+			(List<Language>)page.getItems());
 		assertValid(
 			page,
 			testGetAssetLibraryLanguagesPage_getExpectedActions(
@@ -285,7 +288,7 @@ public abstract class BaseLanguageResourceTestCase {
 
 		Page<Language> page = languageResource.getSiteLanguagesPage(siteId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantSiteId != null) {
 			Language irrelevantLanguage = testGetSiteLanguagesPage_addLanguage(
@@ -293,9 +296,11 @@ public abstract class BaseLanguageResourceTestCase {
 
 			page = languageResource.getSiteLanguagesPage(irrelevantSiteId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantLanguage, (List<Language>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantLanguage),
+				(List<Language>)page.getItems());
 			assertValid(
 				page,
 				testGetSiteLanguagesPage_getExpectedActions(irrelevantSiteId));
@@ -309,10 +314,11 @@ public abstract class BaseLanguageResourceTestCase {
 
 		page = languageResource.getSiteLanguagesPage(siteId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(language1, (List<Language>)page.getItems());
-		assertContains(language2, (List<Language>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(language1, language2),
+			(List<Language>)page.getItems());
 		assertValid(page, testGetSiteLanguagesPage_getExpectedActions(siteId));
 	}
 
@@ -361,7 +367,7 @@ public abstract class BaseLanguageResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/languages");
 
-		long totalCount = languagesJSONObject.getLong("totalCount");
+		Assert.assertEquals(0, languagesJSONObject.get("totalCount"));
 
 		Language language1 = testGraphQLGetSiteLanguagesPage_addLanguage();
 		Language language2 = testGraphQLGetSiteLanguagesPage_addLanguage();
@@ -370,15 +376,10 @@ public abstract class BaseLanguageResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/languages");
 
-		Assert.assertEquals(
-			totalCount + 2, languagesJSONObject.getLong("totalCount"));
+		Assert.assertEquals(2, languagesJSONObject.getLong("totalCount"));
 
-		assertContains(
-			language1,
-			Arrays.asList(
-				LanguageSerDes.toDTOs(languagesJSONObject.getString("items"))));
-		assertContains(
-			language2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(language1, language2),
 			Arrays.asList(
 				LanguageSerDes.toDTOs(languagesJSONObject.getString("items"))));
 	}

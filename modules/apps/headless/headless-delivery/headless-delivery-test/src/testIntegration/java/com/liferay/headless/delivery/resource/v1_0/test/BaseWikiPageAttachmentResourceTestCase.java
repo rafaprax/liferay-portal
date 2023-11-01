@@ -550,7 +550,7 @@ public abstract class BaseWikiPageAttachmentResourceTestCase {
 			wikiPageAttachmentResource.getWikiPageWikiPageAttachmentsPage(
 				wikiPageId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantWikiPageId != null) {
 			WikiPageAttachment irrelevantWikiPageAttachment =
@@ -561,10 +561,10 @@ public abstract class BaseWikiPageAttachmentResourceTestCase {
 				wikiPageAttachmentResource.getWikiPageWikiPageAttachmentsPage(
 					irrelevantWikiPageId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantWikiPageAttachment,
+			assertEquals(
+				Arrays.asList(irrelevantWikiPageAttachment),
 				(List<WikiPageAttachment>)page.getItems());
 			assertValid(
 				page,
@@ -583,12 +583,11 @@ public abstract class BaseWikiPageAttachmentResourceTestCase {
 		page = wikiPageAttachmentResource.getWikiPageWikiPageAttachmentsPage(
 			wikiPageId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			wikiPageAttachment1, (List<WikiPageAttachment>)page.getItems());
-		assertContains(
-			wikiPageAttachment2, (List<WikiPageAttachment>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(wikiPageAttachment1, wikiPageAttachment2),
+			(List<WikiPageAttachment>)page.getItems());
 		assertValid(
 			page,
 			testGetWikiPageWikiPageAttachmentsPage_getExpectedActions(

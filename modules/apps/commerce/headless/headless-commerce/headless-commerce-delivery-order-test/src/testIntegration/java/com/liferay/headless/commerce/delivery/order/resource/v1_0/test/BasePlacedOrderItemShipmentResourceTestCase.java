@@ -216,7 +216,7 @@ public abstract class BasePlacedOrderItemShipmentResourceTestCase {
 				getPlacedOrderItemPlacedOrderItemShipmentsPage(
 					placedOrderItemId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantPlacedOrderItemId != null) {
 			PlacedOrderItemShipment irrelevantPlacedOrderItemShipment =
@@ -229,10 +229,10 @@ public abstract class BasePlacedOrderItemShipmentResourceTestCase {
 					getPlacedOrderItemPlacedOrderItemShipmentsPage(
 						irrelevantPlacedOrderItemId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantPlacedOrderItemShipment,
+			assertEquals(
+				Arrays.asList(irrelevantPlacedOrderItemShipment),
 				(List<PlacedOrderItemShipment>)page.getItems());
 			assertValid(
 				page,
@@ -253,13 +253,10 @@ public abstract class BasePlacedOrderItemShipmentResourceTestCase {
 				getPlacedOrderItemPlacedOrderItemShipmentsPage(
 					placedOrderItemId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			placedOrderItemShipment1,
-			(List<PlacedOrderItemShipment>)page.getItems());
-		assertContains(
-			placedOrderItemShipment2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(placedOrderItemShipment1, placedOrderItemShipment2),
 			(List<PlacedOrderItemShipment>)page.getItems());
 		assertValid(
 			page,

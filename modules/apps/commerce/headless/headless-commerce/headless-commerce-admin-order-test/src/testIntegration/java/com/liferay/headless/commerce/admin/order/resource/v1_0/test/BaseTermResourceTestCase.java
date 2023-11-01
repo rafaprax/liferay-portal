@@ -299,9 +299,10 @@ public abstract class BaseTermResourceTestCase {
 
 	@Test
 	public void testGetTermsPageWithPagination() throws Exception {
-		Page<Term> termPage = termResource.getTermsPage(null, null, null, null);
+		Page<Term> totalPage = termResource.getTermsPage(
+			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(termPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		Term term1 = testGetTermsPage_addTerm(randomTerm());
 
@@ -326,7 +327,7 @@ public abstract class BaseTermResourceTestCase {
 		Assert.assertEquals(terms2.toString(), 1, terms2.size());
 
 		Page<Term> page3 = termResource.getTermsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(term1, (List<Term>)page3.getItems());
 		assertContains(term2, (List<Term>)page3.getItems());
@@ -438,22 +439,20 @@ public abstract class BaseTermResourceTestCase {
 
 		term2 = testGetTermsPage_addTerm(term2);
 
-		Page<Term> page = termResource.getTermsPage(null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Term> ascPage = termResource.getTermsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(term1, (List<Term>)ascPage.getItems());
-			assertContains(term2, (List<Term>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(term1, term2), (List<Term>)ascPage.getItems());
 
 			Page<Term> descPage = termResource.getTermsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(term2, (List<Term>)descPage.getItems());
-			assertContains(term1, (List<Term>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(term2, term1), (List<Term>)descPage.getItems());
 		}
 	}
 

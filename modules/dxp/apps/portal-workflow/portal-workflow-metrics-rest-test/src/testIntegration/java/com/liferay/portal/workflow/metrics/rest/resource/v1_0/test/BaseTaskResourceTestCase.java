@@ -200,7 +200,7 @@ public abstract class BaseTaskResourceTestCase {
 
 		Page<Task> page = taskResource.getProcessTasksPage(processId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantProcessId != null) {
 			Task irrelevantTask = testGetProcessTasksPage_addTask(
@@ -208,9 +208,10 @@ public abstract class BaseTaskResourceTestCase {
 
 			page = taskResource.getProcessTasksPage(irrelevantProcessId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantTask, (List<Task>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantTask), (List<Task>)page.getItems());
 			assertValid(
 				page,
 				testGetProcessTasksPage_getExpectedActions(
@@ -223,10 +224,10 @@ public abstract class BaseTaskResourceTestCase {
 
 		page = taskResource.getProcessTasksPage(processId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(task1, (List<Task>)page.getItems());
-		assertContains(task2, (List<Task>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(task1, task2), (List<Task>)page.getItems());
 		assertValid(
 			page, testGetProcessTasksPage_getExpectedActions(processId));
 	}

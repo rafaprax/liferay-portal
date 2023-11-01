@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -199,7 +198,7 @@ public abstract class BaseTransitionResourceTestCase {
 			transitionResource.getWorkflowInstanceNextTransitionsPage(
 				workflowInstanceId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantWorkflowInstanceId != null) {
 			Transition irrelevantTransition =
@@ -207,13 +206,13 @@ public abstract class BaseTransitionResourceTestCase {
 					irrelevantWorkflowInstanceId, randomIrrelevantTransition());
 
 			page = transitionResource.getWorkflowInstanceNextTransitionsPage(
-				irrelevantWorkflowInstanceId,
-				Pagination.of(1, (int)totalCount + 1));
+				irrelevantWorkflowInstanceId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantTransition, (List<Transition>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantTransition),
+				(List<Transition>)page.getItems());
 			assertValid(
 				page,
 				testGetWorkflowInstanceNextTransitionsPage_getExpectedActions(
@@ -231,10 +230,11 @@ public abstract class BaseTransitionResourceTestCase {
 		page = transitionResource.getWorkflowInstanceNextTransitionsPage(
 			workflowInstanceId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(transition1, (List<Transition>)page.getItems());
-		assertContains(transition2, (List<Transition>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(transition1, transition2),
+			(List<Transition>)page.getItems());
 		assertValid(
 			page,
 			testGetWorkflowInstanceNextTransitionsPage_getExpectedActions(
@@ -258,12 +258,6 @@ public abstract class BaseTransitionResourceTestCase {
 		Long workflowInstanceId =
 			testGetWorkflowInstanceNextTransitionsPage_getWorkflowInstanceId();
 
-		Page<Transition> transitionPage =
-			transitionResource.getWorkflowInstanceNextTransitionsPage(
-				workflowInstanceId, null);
-
-		int totalCount = GetterUtil.getInteger(transitionPage.getTotalCount());
-
 		Transition transition1 =
 			testGetWorkflowInstanceNextTransitionsPage_addTransition(
 				workflowInstanceId, randomTransition());
@@ -278,18 +272,17 @@ public abstract class BaseTransitionResourceTestCase {
 
 		Page<Transition> page1 =
 			transitionResource.getWorkflowInstanceNextTransitionsPage(
-				workflowInstanceId, Pagination.of(1, totalCount + 2));
+				workflowInstanceId, Pagination.of(1, 2));
 
 		List<Transition> transitions1 = (List<Transition>)page1.getItems();
 
-		Assert.assertEquals(
-			transitions1.toString(), totalCount + 2, transitions1.size());
+		Assert.assertEquals(transitions1.toString(), 2, transitions1.size());
 
 		Page<Transition> page2 =
 			transitionResource.getWorkflowInstanceNextTransitionsPage(
-				workflowInstanceId, Pagination.of(2, totalCount + 2));
+				workflowInstanceId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Transition> transitions2 = (List<Transition>)page2.getItems();
 
@@ -297,11 +290,11 @@ public abstract class BaseTransitionResourceTestCase {
 
 		Page<Transition> page3 =
 			transitionResource.getWorkflowInstanceNextTransitionsPage(
-				workflowInstanceId, Pagination.of(1, (int)totalCount + 3));
+				workflowInstanceId, Pagination.of(1, 3));
 
-		assertContains(transition1, (List<Transition>)page3.getItems());
-		assertContains(transition2, (List<Transition>)page3.getItems());
-		assertContains(transition3, (List<Transition>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(transition1, transition2, transition3),
+			(List<Transition>)page3.getItems());
 	}
 
 	protected Transition
@@ -339,7 +332,7 @@ public abstract class BaseTransitionResourceTestCase {
 			transitionResource.getWorkflowTaskNextTransitionsPage(
 				workflowTaskId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantWorkflowTaskId != null) {
 			Transition irrelevantTransition =
@@ -347,13 +340,13 @@ public abstract class BaseTransitionResourceTestCase {
 					irrelevantWorkflowTaskId, randomIrrelevantTransition());
 
 			page = transitionResource.getWorkflowTaskNextTransitionsPage(
-				irrelevantWorkflowTaskId,
-				Pagination.of(1, (int)totalCount + 1));
+				irrelevantWorkflowTaskId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantTransition, (List<Transition>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantTransition),
+				(List<Transition>)page.getItems());
 			assertValid(
 				page,
 				testGetWorkflowTaskNextTransitionsPage_getExpectedActions(
@@ -371,10 +364,11 @@ public abstract class BaseTransitionResourceTestCase {
 		page = transitionResource.getWorkflowTaskNextTransitionsPage(
 			workflowTaskId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(transition1, (List<Transition>)page.getItems());
-		assertContains(transition2, (List<Transition>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(transition1, transition2),
+			(List<Transition>)page.getItems());
 		assertValid(
 			page,
 			testGetWorkflowTaskNextTransitionsPage_getExpectedActions(
@@ -398,12 +392,6 @@ public abstract class BaseTransitionResourceTestCase {
 		Long workflowTaskId =
 			testGetWorkflowTaskNextTransitionsPage_getWorkflowTaskId();
 
-		Page<Transition> transitionPage =
-			transitionResource.getWorkflowTaskNextTransitionsPage(
-				workflowTaskId, null);
-
-		int totalCount = GetterUtil.getInteger(transitionPage.getTotalCount());
-
 		Transition transition1 =
 			testGetWorkflowTaskNextTransitionsPage_addTransition(
 				workflowTaskId, randomTransition());
@@ -418,18 +406,17 @@ public abstract class BaseTransitionResourceTestCase {
 
 		Page<Transition> page1 =
 			transitionResource.getWorkflowTaskNextTransitionsPage(
-				workflowTaskId, Pagination.of(1, totalCount + 2));
+				workflowTaskId, Pagination.of(1, 2));
 
 		List<Transition> transitions1 = (List<Transition>)page1.getItems();
 
-		Assert.assertEquals(
-			transitions1.toString(), totalCount + 2, transitions1.size());
+		Assert.assertEquals(transitions1.toString(), 2, transitions1.size());
 
 		Page<Transition> page2 =
 			transitionResource.getWorkflowTaskNextTransitionsPage(
-				workflowTaskId, Pagination.of(2, totalCount + 2));
+				workflowTaskId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Transition> transitions2 = (List<Transition>)page2.getItems();
 
@@ -437,11 +424,11 @@ public abstract class BaseTransitionResourceTestCase {
 
 		Page<Transition> page3 =
 			transitionResource.getWorkflowTaskNextTransitionsPage(
-				workflowTaskId, Pagination.of(1, (int)totalCount + 3));
+				workflowTaskId, Pagination.of(1, 3));
 
-		assertContains(transition1, (List<Transition>)page3.getItems());
-		assertContains(transition2, (List<Transition>)page3.getItems());
-		assertContains(transition3, (List<Transition>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(transition1, transition2, transition3),
+			(List<Transition>)page3.getItems());
 	}
 
 	protected Transition testGetWorkflowTaskNextTransitionsPage_addTransition(

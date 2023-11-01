@@ -213,7 +213,7 @@ public abstract class BaseOrganizationResourceTestCase {
 					externalReferenceCode, null, null, Pagination.of(1, 10),
 					null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			Organization irrelevantOrganization =
@@ -225,12 +225,13 @@ public abstract class BaseOrganizationResourceTestCase {
 				organizationResource.
 					getAccountByExternalReferenceCodeOrganizationsPage(
 						irrelevantExternalReferenceCode, null, null,
-						Pagination.of(1, (int)totalCount + 1), null);
+						Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrganization, (List<Organization>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantOrganization),
+				(List<Organization>)page.getItems());
 			assertValid(
 				page,
 				testGetAccountByExternalReferenceCodeOrganizationsPage_getExpectedActions(
@@ -251,10 +252,11 @@ public abstract class BaseOrganizationResourceTestCase {
 					externalReferenceCode, null, null, Pagination.of(1, 10),
 					null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(organization1, (List<Organization>)page.getItems());
-		assertContains(organization2, (List<Organization>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2),
+			(List<Organization>)page.getItems());
 		assertValid(
 			page,
 			testGetAccountByExternalReferenceCodeOrganizationsPage_getExpectedActions(
@@ -385,14 +387,6 @@ public abstract class BaseOrganizationResourceTestCase {
 		String externalReferenceCode =
 			testGetAccountByExternalReferenceCodeOrganizationsPage_getExternalReferenceCode();
 
-		Page<Organization> organizationPage =
-			organizationResource.
-				getAccountByExternalReferenceCodeOrganizationsPage(
-					externalReferenceCode, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			organizationPage.getTotalCount());
-
 		Organization organization1 =
 			testGetAccountByExternalReferenceCodeOrganizationsPage_addOrganization(
 				externalReferenceCode, randomOrganization());
@@ -408,22 +402,22 @@ public abstract class BaseOrganizationResourceTestCase {
 		Page<Organization> page1 =
 			organizationResource.
 				getAccountByExternalReferenceCodeOrganizationsPage(
-					externalReferenceCode, null, null,
-					Pagination.of(1, totalCount + 2), null);
+					externalReferenceCode, null, null, Pagination.of(1, 2),
+					null);
 
 		List<Organization> organizations1 =
 			(List<Organization>)page1.getItems();
 
 		Assert.assertEquals(
-			organizations1.toString(), totalCount + 2, organizations1.size());
+			organizations1.toString(), 2, organizations1.size());
 
 		Page<Organization> page2 =
 			organizationResource.
 				getAccountByExternalReferenceCodeOrganizationsPage(
-					externalReferenceCode, null, null,
-					Pagination.of(2, totalCount + 2), null);
+					externalReferenceCode, null, null, Pagination.of(2, 2),
+					null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Organization> organizations2 =
 			(List<Organization>)page2.getItems();
@@ -434,12 +428,12 @@ public abstract class BaseOrganizationResourceTestCase {
 		Page<Organization> page3 =
 			organizationResource.
 				getAccountByExternalReferenceCodeOrganizationsPage(
-					externalReferenceCode, null, null,
-					Pagination.of(1, (int)totalCount + 3), null);
+					externalReferenceCode, null, null, Pagination.of(1, 3),
+					null);
 
-		assertContains(organization1, (List<Organization>)page3.getItems());
-		assertContains(organization2, (List<Organization>)page3.getItems());
-		assertContains(organization3, (List<Organization>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2, organization3),
+			(List<Organization>)page3.getItems());
 	}
 
 	@Test
@@ -568,35 +562,26 @@ public abstract class BaseOrganizationResourceTestCase {
 			testGetAccountByExternalReferenceCodeOrganizationsPage_addOrganization(
 				externalReferenceCode, organization2);
 
-		Page<Organization> page =
-			organizationResource.
-				getAccountByExternalReferenceCodeOrganizationsPage(
-					externalReferenceCode, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Organization> ascPage =
 				organizationResource.
 					getAccountByExternalReferenceCodeOrganizationsPage(
-						externalReferenceCode, null, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, null, Pagination.of(1, 2),
 						entityField.getName() + ":asc");
 
-			assertContains(
-				organization1, (List<Organization>)ascPage.getItems());
-			assertContains(
-				organization2, (List<Organization>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(organization1, organization2),
+				(List<Organization>)ascPage.getItems());
 
 			Page<Organization> descPage =
 				organizationResource.
 					getAccountByExternalReferenceCodeOrganizationsPage(
-						externalReferenceCode, null, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, null, Pagination.of(1, 2),
 						entityField.getName() + ":desc");
 
-			assertContains(
-				organization2, (List<Organization>)descPage.getItems());
-			assertContains(
-				organization1, (List<Organization>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(organization2, organization1),
+				(List<Organization>)descPage.getItems());
 		}
 	}
 
@@ -822,7 +807,7 @@ public abstract class BaseOrganizationResourceTestCase {
 			organizationResource.getAccountOrganizationsPage(
 				accountId, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantAccountId != null) {
 			Organization irrelevantOrganization =
@@ -830,13 +815,13 @@ public abstract class BaseOrganizationResourceTestCase {
 					irrelevantAccountId, randomIrrelevantOrganization());
 
 			page = organizationResource.getAccountOrganizationsPage(
-				irrelevantAccountId, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantAccountId, null, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrganization, (List<Organization>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantOrganization),
+				(List<Organization>)page.getItems());
 			assertValid(
 				page,
 				testGetAccountOrganizationsPage_getExpectedActions(
@@ -854,10 +839,11 @@ public abstract class BaseOrganizationResourceTestCase {
 		page = organizationResource.getAccountOrganizationsPage(
 			accountId, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(organization1, (List<Organization>)page.getItems());
-		assertContains(organization2, (List<Organization>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2),
+			(List<Organization>)page.getItems());
 		assertValid(
 			page,
 			testGetAccountOrganizationsPage_getExpectedActions(accountId));
@@ -979,13 +965,6 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Long accountId = testGetAccountOrganizationsPage_getAccountId();
 
-		Page<Organization> organizationPage =
-			organizationResource.getAccountOrganizationsPage(
-				accountId, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			organizationPage.getTotalCount());
-
 		Organization organization1 =
 			testGetAccountOrganizationsPage_addOrganization(
 				accountId, randomOrganization());
@@ -1000,19 +979,19 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Page<Organization> page1 =
 			organizationResource.getAccountOrganizationsPage(
-				accountId, null, null, Pagination.of(1, totalCount + 2), null);
+				accountId, null, null, Pagination.of(1, 2), null);
 
 		List<Organization> organizations1 =
 			(List<Organization>)page1.getItems();
 
 		Assert.assertEquals(
-			organizations1.toString(), totalCount + 2, organizations1.size());
+			organizations1.toString(), 2, organizations1.size());
 
 		Page<Organization> page2 =
 			organizationResource.getAccountOrganizationsPage(
-				accountId, null, null, Pagination.of(2, totalCount + 2), null);
+				accountId, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Organization> organizations2 =
 			(List<Organization>)page2.getItems();
@@ -1022,12 +1001,11 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Page<Organization> page3 =
 			organizationResource.getAccountOrganizationsPage(
-				accountId, null, null, Pagination.of(1, (int)totalCount + 3),
-				null);
+				accountId, null, null, Pagination.of(1, 3), null);
 
-		assertContains(organization1, (List<Organization>)page3.getItems());
-		assertContains(organization2, (List<Organization>)page3.getItems());
-		assertContains(organization3, (List<Organization>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2, organization3),
+			(List<Organization>)page3.getItems());
 	}
 
 	@Test
@@ -1152,32 +1130,24 @@ public abstract class BaseOrganizationResourceTestCase {
 		organization2 = testGetAccountOrganizationsPage_addOrganization(
 			accountId, organization2);
 
-		Page<Organization> page =
-			organizationResource.getAccountOrganizationsPage(
-				accountId, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Organization> ascPage =
 				organizationResource.getAccountOrganizationsPage(
-					accountId, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					accountId, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				organization1, (List<Organization>)ascPage.getItems());
-			assertContains(
-				organization2, (List<Organization>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(organization1, organization2),
+				(List<Organization>)ascPage.getItems());
 
 			Page<Organization> descPage =
 				organizationResource.getAccountOrganizationsPage(
-					accountId, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					accountId, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				organization2, (List<Organization>)descPage.getItems());
-			assertContains(
-				organization1, (List<Organization>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(organization2, organization1),
+				(List<Organization>)descPage.getItems());
 		}
 	}
 
@@ -1477,12 +1447,11 @@ public abstract class BaseOrganizationResourceTestCase {
 
 	@Test
 	public void testGetOrganizationsPageWithPagination() throws Exception {
-		Page<Organization> organizationPage =
+		Page<Organization> totalPage =
 			organizationResource.getOrganizationsPage(
 				null, null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			organizationPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		Organization organization1 = testGetOrganizationsPage_addOrganization(
 			randomOrganization());
@@ -1514,7 +1483,7 @@ public abstract class BaseOrganizationResourceTestCase {
 			organizations2.toString(), 1, organizations2.size());
 
 		Page<Organization> page3 = organizationResource.getOrganizationsPage(
-			null, null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(organization1, (List<Organization>)page3.getItems());
 		assertContains(organization2, (List<Organization>)page3.getItems());
@@ -1631,31 +1600,24 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		organization2 = testGetOrganizationsPage_addOrganization(organization2);
 
-		Page<Organization> page = organizationResource.getOrganizationsPage(
-			null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Organization> ascPage =
 				organizationResource.getOrganizationsPage(
-					null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				organization1, (List<Organization>)ascPage.getItems());
-			assertContains(
-				organization2, (List<Organization>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(organization1, organization2),
+				(List<Organization>)ascPage.getItems());
 
 			Page<Organization> descPage =
 				organizationResource.getOrganizationsPage(
-					null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				organization2, (List<Organization>)descPage.getItems());
-			assertContains(
-				organization1, (List<Organization>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(organization2, organization1),
+				(List<Organization>)descPage.getItems());
 		}
 	}
 
@@ -2149,7 +2111,7 @@ public abstract class BaseOrganizationResourceTestCase {
 			organizationResource.getOrganizationChildOrganizationsPage(
 				organizationId, null, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantOrganizationId != null) {
 			Organization irrelevantOrganization =
@@ -2157,13 +2119,14 @@ public abstract class BaseOrganizationResourceTestCase {
 					irrelevantOrganizationId, randomIrrelevantOrganization());
 
 			page = organizationResource.getOrganizationChildOrganizationsPage(
-				irrelevantOrganizationId, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantOrganizationId, null, null, null, Pagination.of(1, 2),
+				null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrganization, (List<Organization>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantOrganization),
+				(List<Organization>)page.getItems());
 			assertValid(
 				page,
 				testGetOrganizationChildOrganizationsPage_getExpectedActions(
@@ -2181,10 +2144,11 @@ public abstract class BaseOrganizationResourceTestCase {
 		page = organizationResource.getOrganizationChildOrganizationsPage(
 			organizationId, null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(organization1, (List<Organization>)page.getItems());
-		assertContains(organization2, (List<Organization>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2),
+			(List<Organization>)page.getItems());
 		assertValid(
 			page,
 			testGetOrganizationChildOrganizationsPage_getExpectedActions(
@@ -2312,13 +2276,6 @@ public abstract class BaseOrganizationResourceTestCase {
 		String organizationId =
 			testGetOrganizationChildOrganizationsPage_getOrganizationId();
 
-		Page<Organization> organizationPage =
-			organizationResource.getOrganizationChildOrganizationsPage(
-				organizationId, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			organizationPage.getTotalCount());
-
 		Organization organization1 =
 			testGetOrganizationChildOrganizationsPage_addOrganization(
 				organizationId, randomOrganization());
@@ -2333,21 +2290,19 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Page<Organization> page1 =
 			organizationResource.getOrganizationChildOrganizationsPage(
-				organizationId, null, null, null,
-				Pagination.of(1, totalCount + 2), null);
+				organizationId, null, null, null, Pagination.of(1, 2), null);
 
 		List<Organization> organizations1 =
 			(List<Organization>)page1.getItems();
 
 		Assert.assertEquals(
-			organizations1.toString(), totalCount + 2, organizations1.size());
+			organizations1.toString(), 2, organizations1.size());
 
 		Page<Organization> page2 =
 			organizationResource.getOrganizationChildOrganizationsPage(
-				organizationId, null, null, null,
-				Pagination.of(2, totalCount + 2), null);
+				organizationId, null, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Organization> organizations2 =
 			(List<Organization>)page2.getItems();
@@ -2357,12 +2312,11 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Page<Organization> page3 =
 			organizationResource.getOrganizationChildOrganizationsPage(
-				organizationId, null, null, null,
-				Pagination.of(1, (int)totalCount + 3), null);
+				organizationId, null, null, null, Pagination.of(1, 3), null);
 
-		assertContains(organization1, (List<Organization>)page3.getItems());
-		assertContains(organization2, (List<Organization>)page3.getItems());
-		assertContains(organization3, (List<Organization>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2, organization3),
+			(List<Organization>)page3.getItems());
 	}
 
 	@Test
@@ -2490,32 +2444,24 @@ public abstract class BaseOrganizationResourceTestCase {
 			testGetOrganizationChildOrganizationsPage_addOrganization(
 				organizationId, organization2);
 
-		Page<Organization> page =
-			organizationResource.getOrganizationChildOrganizationsPage(
-				organizationId, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Organization> ascPage =
 				organizationResource.getOrganizationChildOrganizationsPage(
-					organizationId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					organizationId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				organization1, (List<Organization>)ascPage.getItems());
-			assertContains(
-				organization2, (List<Organization>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(organization1, organization2),
+				(List<Organization>)ascPage.getItems());
 
 			Page<Organization> descPage =
 				organizationResource.getOrganizationChildOrganizationsPage(
-					organizationId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					organizationId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				organization2, (List<Organization>)descPage.getItems());
-			assertContains(
-				organization1, (List<Organization>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(organization2, organization1),
+				(List<Organization>)descPage.getItems());
 		}
 	}
 
@@ -2607,7 +2553,7 @@ public abstract class BaseOrganizationResourceTestCase {
 				parentOrganizationId, null, null, null, Pagination.of(1, 10),
 				null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantParentOrganizationId != null) {
 			Organization irrelevantOrganization =
@@ -2617,12 +2563,13 @@ public abstract class BaseOrganizationResourceTestCase {
 
 			page = organizationResource.getOrganizationOrganizationsPage(
 				irrelevantParentOrganizationId, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrganization, (List<Organization>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantOrganization),
+				(List<Organization>)page.getItems());
 			assertValid(
 				page,
 				testGetOrganizationOrganizationsPage_getExpectedActions(
@@ -2640,10 +2587,11 @@ public abstract class BaseOrganizationResourceTestCase {
 		page = organizationResource.getOrganizationOrganizationsPage(
 			parentOrganizationId, null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(organization1, (List<Organization>)page.getItems());
-		assertContains(organization2, (List<Organization>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2),
+			(List<Organization>)page.getItems());
 		assertValid(
 			page,
 			testGetOrganizationOrganizationsPage_getExpectedActions(
@@ -2770,13 +2718,6 @@ public abstract class BaseOrganizationResourceTestCase {
 		String parentOrganizationId =
 			testGetOrganizationOrganizationsPage_getParentOrganizationId();
 
-		Page<Organization> organizationPage =
-			organizationResource.getOrganizationOrganizationsPage(
-				parentOrganizationId, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			organizationPage.getTotalCount());
-
 		Organization organization1 =
 			testGetOrganizationOrganizationsPage_addOrganization(
 				parentOrganizationId, randomOrganization());
@@ -2791,21 +2732,21 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Page<Organization> page1 =
 			organizationResource.getOrganizationOrganizationsPage(
-				parentOrganizationId, null, null, null,
-				Pagination.of(1, totalCount + 2), null);
+				parentOrganizationId, null, null, null, Pagination.of(1, 2),
+				null);
 
 		List<Organization> organizations1 =
 			(List<Organization>)page1.getItems();
 
 		Assert.assertEquals(
-			organizations1.toString(), totalCount + 2, organizations1.size());
+			organizations1.toString(), 2, organizations1.size());
 
 		Page<Organization> page2 =
 			organizationResource.getOrganizationOrganizationsPage(
-				parentOrganizationId, null, null, null,
-				Pagination.of(2, totalCount + 2), null);
+				parentOrganizationId, null, null, null, Pagination.of(2, 2),
+				null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Organization> organizations2 =
 			(List<Organization>)page2.getItems();
@@ -2815,12 +2756,12 @@ public abstract class BaseOrganizationResourceTestCase {
 
 		Page<Organization> page3 =
 			organizationResource.getOrganizationOrganizationsPage(
-				parentOrganizationId, null, null, null,
-				Pagination.of(1, (int)totalCount + 3), null);
+				parentOrganizationId, null, null, null, Pagination.of(1, 3),
+				null);
 
-		assertContains(organization1, (List<Organization>)page3.getItems());
-		assertContains(organization2, (List<Organization>)page3.getItems());
-		assertContains(organization3, (List<Organization>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(organization1, organization2, organization3),
+			(List<Organization>)page3.getItems());
 	}
 
 	@Test
@@ -2946,32 +2887,24 @@ public abstract class BaseOrganizationResourceTestCase {
 		organization2 = testGetOrganizationOrganizationsPage_addOrganization(
 			parentOrganizationId, organization2);
 
-		Page<Organization> page =
-			organizationResource.getOrganizationOrganizationsPage(
-				parentOrganizationId, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Organization> ascPage =
 				organizationResource.getOrganizationOrganizationsPage(
-					parentOrganizationId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					parentOrganizationId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				organization1, (List<Organization>)ascPage.getItems());
-			assertContains(
-				organization2, (List<Organization>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(organization1, organization2),
+				(List<Organization>)ascPage.getItems());
 
 			Page<Organization> descPage =
 				organizationResource.getOrganizationOrganizationsPage(
-					parentOrganizationId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					parentOrganizationId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				organization2, (List<Organization>)descPage.getItems());
-			assertContains(
-				organization1, (List<Organization>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(organization2, organization1),
+				(List<Organization>)descPage.getItems());
 		}
 	}
 

@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -224,7 +223,7 @@ public abstract class BasePlacedOrderResourceTestCase {
 			placedOrderResource.getChannelAccountPlacedOrdersPage(
 				accountId, channelId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantAccountId != null) && (irrelevantChannelId != null)) {
 			PlacedOrder irrelevantPlacedOrder =
@@ -233,13 +232,13 @@ public abstract class BasePlacedOrderResourceTestCase {
 					randomIrrelevantPlacedOrder());
 
 			page = placedOrderResource.getChannelAccountPlacedOrdersPage(
-				irrelevantAccountId, irrelevantChannelId,
-				Pagination.of(1, (int)totalCount + 1));
+				irrelevantAccountId, irrelevantChannelId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantPlacedOrder, (List<PlacedOrder>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantPlacedOrder),
+				(List<PlacedOrder>)page.getItems());
 			assertValid(
 				page,
 				testGetChannelAccountPlacedOrdersPage_getExpectedActions(
@@ -257,10 +256,11 @@ public abstract class BasePlacedOrderResourceTestCase {
 		page = placedOrderResource.getChannelAccountPlacedOrdersPage(
 			accountId, channelId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(placedOrder1, (List<PlacedOrder>)page.getItems());
-		assertContains(placedOrder2, (List<PlacedOrder>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(placedOrder1, placedOrder2),
+			(List<PlacedOrder>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelAccountPlacedOrdersPage_getExpectedActions(
@@ -284,12 +284,6 @@ public abstract class BasePlacedOrderResourceTestCase {
 		Long accountId = testGetChannelAccountPlacedOrdersPage_getAccountId();
 		Long channelId = testGetChannelAccountPlacedOrdersPage_getChannelId();
 
-		Page<PlacedOrder> placedOrderPage =
-			placedOrderResource.getChannelAccountPlacedOrdersPage(
-				accountId, channelId, null);
-
-		int totalCount = GetterUtil.getInteger(placedOrderPage.getTotalCount());
-
 		PlacedOrder placedOrder1 =
 			testGetChannelAccountPlacedOrdersPage_addPlacedOrder(
 				accountId, channelId, randomPlacedOrder());
@@ -304,18 +298,17 @@ public abstract class BasePlacedOrderResourceTestCase {
 
 		Page<PlacedOrder> page1 =
 			placedOrderResource.getChannelAccountPlacedOrdersPage(
-				accountId, channelId, Pagination.of(1, totalCount + 2));
+				accountId, channelId, Pagination.of(1, 2));
 
 		List<PlacedOrder> placedOrders1 = (List<PlacedOrder>)page1.getItems();
 
-		Assert.assertEquals(
-			placedOrders1.toString(), totalCount + 2, placedOrders1.size());
+		Assert.assertEquals(placedOrders1.toString(), 2, placedOrders1.size());
 
 		Page<PlacedOrder> page2 =
 			placedOrderResource.getChannelAccountPlacedOrdersPage(
-				accountId, channelId, Pagination.of(2, totalCount + 2));
+				accountId, channelId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<PlacedOrder> placedOrders2 = (List<PlacedOrder>)page2.getItems();
 
@@ -323,11 +316,11 @@ public abstract class BasePlacedOrderResourceTestCase {
 
 		Page<PlacedOrder> page3 =
 			placedOrderResource.getChannelAccountPlacedOrdersPage(
-				accountId, channelId, Pagination.of(1, (int)totalCount + 3));
+				accountId, channelId, Pagination.of(1, 3));
 
-		assertContains(placedOrder1, (List<PlacedOrder>)page3.getItems());
-		assertContains(placedOrder2, (List<PlacedOrder>)page3.getItems());
-		assertContains(placedOrder3, (List<PlacedOrder>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(placedOrder1, placedOrder2, placedOrder3),
+			(List<PlacedOrder>)page3.getItems());
 	}
 
 	protected PlacedOrder testGetChannelAccountPlacedOrdersPage_addPlacedOrder(

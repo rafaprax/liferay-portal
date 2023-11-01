@@ -261,7 +261,7 @@ public abstract class BaseEmailAddressResourceTestCase {
 			emailAddressResource.getOrganizationEmailAddressesPage(
 				organizationId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantOrganizationId != null) {
 			EmailAddress irrelevantEmailAddress =
@@ -271,10 +271,11 @@ public abstract class BaseEmailAddressResourceTestCase {
 			page = emailAddressResource.getOrganizationEmailAddressesPage(
 				irrelevantOrganizationId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantEmailAddress, (List<EmailAddress>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantEmailAddress),
+				(List<EmailAddress>)page.getItems());
 			assertValid(
 				page,
 				testGetOrganizationEmailAddressesPage_getExpectedActions(
@@ -292,10 +293,11 @@ public abstract class BaseEmailAddressResourceTestCase {
 		page = emailAddressResource.getOrganizationEmailAddressesPage(
 			organizationId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(emailAddress1, (List<EmailAddress>)page.getItems());
-		assertContains(emailAddress2, (List<EmailAddress>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(emailAddress1, emailAddress2),
+			(List<EmailAddress>)page.getItems());
 		assertValid(
 			page,
 			testGetOrganizationEmailAddressesPage_getExpectedActions(
@@ -346,7 +348,7 @@ public abstract class BaseEmailAddressResourceTestCase {
 			emailAddressResource.getUserAccountEmailAddressesPage(
 				userAccountId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantUserAccountId != null) {
 			EmailAddress irrelevantEmailAddress =
@@ -356,10 +358,11 @@ public abstract class BaseEmailAddressResourceTestCase {
 			page = emailAddressResource.getUserAccountEmailAddressesPage(
 				irrelevantUserAccountId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantEmailAddress, (List<EmailAddress>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantEmailAddress),
+				(List<EmailAddress>)page.getItems());
 			assertValid(
 				page,
 				testGetUserAccountEmailAddressesPage_getExpectedActions(
@@ -377,10 +380,11 @@ public abstract class BaseEmailAddressResourceTestCase {
 		page = emailAddressResource.getUserAccountEmailAddressesPage(
 			userAccountId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(emailAddress1, (List<EmailAddress>)page.getItems());
-		assertContains(emailAddress2, (List<EmailAddress>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(emailAddress1, emailAddress2),
+			(List<EmailAddress>)page.getItems());
 		assertValid(
 			page,
 			testGetUserAccountEmailAddressesPage_getExpectedActions(

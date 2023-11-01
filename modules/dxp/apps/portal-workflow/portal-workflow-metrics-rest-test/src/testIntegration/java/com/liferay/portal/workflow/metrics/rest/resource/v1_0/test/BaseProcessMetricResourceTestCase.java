@@ -215,11 +215,10 @@ public abstract class BaseProcessMetricResourceTestCase {
 
 	@Test
 	public void testGetProcessMetricsPageWithPagination() throws Exception {
-		Page<ProcessMetric> processMetricPage =
+		Page<ProcessMetric> totalPage =
 			processMetricResource.getProcessMetricsPage(null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			processMetricPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		ProcessMetric processMetric1 =
 			testGetProcessMetricsPage_addProcessMetric(randomProcessMetric());
@@ -251,7 +250,7 @@ public abstract class BaseProcessMetricResourceTestCase {
 			processMetrics2.toString(), 1, processMetrics2.size());
 
 		Page<ProcessMetric> page3 = processMetricResource.getProcessMetricsPage(
-			null, Pagination.of(1, (int)totalCount + 3), null);
+			null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(processMetric1, (List<ProcessMetric>)page3.getItems());
 		assertContains(processMetric2, (List<ProcessMetric>)page3.getItems());
@@ -371,29 +370,22 @@ public abstract class BaseProcessMetricResourceTestCase {
 		processMetric2 = testGetProcessMetricsPage_addProcessMetric(
 			processMetric2);
 
-		Page<ProcessMetric> page = processMetricResource.getProcessMetricsPage(
-			null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<ProcessMetric> ascPage =
 				processMetricResource.getProcessMetricsPage(
-					null, Pagination.of(1, (int)page.getTotalCount() + 1),
-					entityField.getName() + ":asc");
+					null, Pagination.of(1, 2), entityField.getName() + ":asc");
 
-			assertContains(
-				processMetric1, (List<ProcessMetric>)ascPage.getItems());
-			assertContains(
-				processMetric2, (List<ProcessMetric>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(processMetric1, processMetric2),
+				(List<ProcessMetric>)ascPage.getItems());
 
 			Page<ProcessMetric> descPage =
 				processMetricResource.getProcessMetricsPage(
-					null, Pagination.of(1, (int)page.getTotalCount() + 1),
-					entityField.getName() + ":desc");
+					null, Pagination.of(1, 2), entityField.getName() + ":desc");
 
-			assertContains(
-				processMetric2, (List<ProcessMetric>)descPage.getItems());
-			assertContains(
-				processMetric1, (List<ProcessMetric>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(processMetric2, processMetric1),
+				(List<ProcessMetric>)descPage.getItems());
 		}
 	}
 

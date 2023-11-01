@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -193,7 +192,7 @@ public abstract class BaseShippingMethodResourceTestCase {
 			shippingMethodResource.getChannelShippingMethodsPage(
 				channelId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantChannelId != null) {
 			ShippingMethod irrelevantShippingMethod =
@@ -201,12 +200,12 @@ public abstract class BaseShippingMethodResourceTestCase {
 					irrelevantChannelId, randomIrrelevantShippingMethod());
 
 			page = shippingMethodResource.getChannelShippingMethodsPage(
-				irrelevantChannelId, Pagination.of(1, (int)totalCount + 1));
+				irrelevantChannelId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantShippingMethod,
+			assertEquals(
+				Arrays.asList(irrelevantShippingMethod),
 				(List<ShippingMethod>)page.getItems());
 			assertValid(
 				page,
@@ -225,10 +224,11 @@ public abstract class BaseShippingMethodResourceTestCase {
 		page = shippingMethodResource.getChannelShippingMethodsPage(
 			channelId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(shippingMethod1, (List<ShippingMethod>)page.getItems());
-		assertContains(shippingMethod2, (List<ShippingMethod>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shippingMethod1, shippingMethod2),
+			(List<ShippingMethod>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelShippingMethodsPage_getExpectedActions(channelId));
@@ -249,13 +249,6 @@ public abstract class BaseShippingMethodResourceTestCase {
 
 		Long channelId = testGetChannelShippingMethodsPage_getChannelId();
 
-		Page<ShippingMethod> shippingMethodPage =
-			shippingMethodResource.getChannelShippingMethodsPage(
-				channelId, null);
-
-		int totalCount = GetterUtil.getInteger(
-			shippingMethodPage.getTotalCount());
-
 		ShippingMethod shippingMethod1 =
 			testGetChannelShippingMethodsPage_addShippingMethod(
 				channelId, randomShippingMethod());
@@ -270,20 +263,19 @@ public abstract class BaseShippingMethodResourceTestCase {
 
 		Page<ShippingMethod> page1 =
 			shippingMethodResource.getChannelShippingMethodsPage(
-				channelId, Pagination.of(1, totalCount + 2));
+				channelId, Pagination.of(1, 2));
 
 		List<ShippingMethod> shippingMethods1 =
 			(List<ShippingMethod>)page1.getItems();
 
 		Assert.assertEquals(
-			shippingMethods1.toString(), totalCount + 2,
-			shippingMethods1.size());
+			shippingMethods1.toString(), 2, shippingMethods1.size());
 
 		Page<ShippingMethod> page2 =
 			shippingMethodResource.getChannelShippingMethodsPage(
-				channelId, Pagination.of(2, totalCount + 2));
+				channelId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ShippingMethod> shippingMethods2 =
 			(List<ShippingMethod>)page2.getItems();
@@ -293,11 +285,11 @@ public abstract class BaseShippingMethodResourceTestCase {
 
 		Page<ShippingMethod> page3 =
 			shippingMethodResource.getChannelShippingMethodsPage(
-				channelId, Pagination.of(1, (int)totalCount + 3));
+				channelId, Pagination.of(1, 3));
 
-		assertContains(shippingMethod1, (List<ShippingMethod>)page3.getItems());
-		assertContains(shippingMethod2, (List<ShippingMethod>)page3.getItems());
-		assertContains(shippingMethod3, (List<ShippingMethod>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shippingMethod1, shippingMethod2, shippingMethod3),
+			(List<ShippingMethod>)page3.getItems());
 	}
 
 	protected ShippingMethod

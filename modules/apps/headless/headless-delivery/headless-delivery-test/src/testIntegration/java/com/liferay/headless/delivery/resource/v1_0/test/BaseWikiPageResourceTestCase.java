@@ -39,7 +39,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -428,7 +427,7 @@ public abstract class BaseWikiPageResourceTestCase {
 		Page<WikiPage> page = wikiPageResource.getWikiNodeWikiPagesPage(
 			wikiNodeId, null, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantWikiNodeId != null) {
 			WikiPage irrelevantWikiPage =
@@ -436,12 +435,14 @@ public abstract class BaseWikiPageResourceTestCase {
 					irrelevantWikiNodeId, randomIrrelevantWikiPage());
 
 			page = wikiPageResource.getWikiNodeWikiPagesPage(
-				irrelevantWikiNodeId, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantWikiNodeId, null, null, null, Pagination.of(1, 2),
+				null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantWikiPage, (List<WikiPage>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantWikiPage),
+				(List<WikiPage>)page.getItems());
 			assertValid(
 				page,
 				testGetWikiNodeWikiPagesPage_getExpectedActions(
@@ -457,10 +458,11 @@ public abstract class BaseWikiPageResourceTestCase {
 		page = wikiPageResource.getWikiNodeWikiPagesPage(
 			wikiNodeId, null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(wikiPage1, (List<WikiPage>)page.getItems());
-		assertContains(wikiPage2, (List<WikiPage>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(wikiPage1, wikiPage2),
+			(List<WikiPage>)page.getItems());
 		assertValid(
 			page, testGetWikiNodeWikiPagesPage_getExpectedActions(wikiNodeId));
 
@@ -582,11 +584,6 @@ public abstract class BaseWikiPageResourceTestCase {
 	public void testGetWikiNodeWikiPagesPageWithPagination() throws Exception {
 		Long wikiNodeId = testGetWikiNodeWikiPagesPage_getWikiNodeId();
 
-		Page<WikiPage> wikiPagePage = wikiPageResource.getWikiNodeWikiPagesPage(
-			wikiNodeId, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(wikiPagePage.getTotalCount());
-
 		WikiPage wikiPage1 = testGetWikiNodeWikiPagesPage_addWikiPage(
 			wikiNodeId, randomWikiPage());
 
@@ -597,31 +594,27 @@ public abstract class BaseWikiPageResourceTestCase {
 			wikiNodeId, randomWikiPage());
 
 		Page<WikiPage> page1 = wikiPageResource.getWikiNodeWikiPagesPage(
-			wikiNodeId, null, null, null, Pagination.of(1, totalCount + 2),
-			null);
+			wikiNodeId, null, null, null, Pagination.of(1, 2), null);
 
 		List<WikiPage> wikiPages1 = (List<WikiPage>)page1.getItems();
 
-		Assert.assertEquals(
-			wikiPages1.toString(), totalCount + 2, wikiPages1.size());
+		Assert.assertEquals(wikiPages1.toString(), 2, wikiPages1.size());
 
 		Page<WikiPage> page2 = wikiPageResource.getWikiNodeWikiPagesPage(
-			wikiNodeId, null, null, null, Pagination.of(2, totalCount + 2),
-			null);
+			wikiNodeId, null, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<WikiPage> wikiPages2 = (List<WikiPage>)page2.getItems();
 
 		Assert.assertEquals(wikiPages2.toString(), 1, wikiPages2.size());
 
 		Page<WikiPage> page3 = wikiPageResource.getWikiNodeWikiPagesPage(
-			wikiNodeId, null, null, null, Pagination.of(1, (int)totalCount + 3),
-			null);
+			wikiNodeId, null, null, null, Pagination.of(1, 3), null);
 
-		assertContains(wikiPage1, (List<WikiPage>)page3.getItems());
-		assertContains(wikiPage2, (List<WikiPage>)page3.getItems());
-		assertContains(wikiPage3, (List<WikiPage>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(wikiPage1, wikiPage2, wikiPage3),
+			(List<WikiPage>)page3.getItems());
 	}
 
 	@Test
@@ -735,25 +728,22 @@ public abstract class BaseWikiPageResourceTestCase {
 		wikiPage2 = testGetWikiNodeWikiPagesPage_addWikiPage(
 			wikiNodeId, wikiPage2);
 
-		Page<WikiPage> page = wikiPageResource.getWikiNodeWikiPagesPage(
-			wikiNodeId, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<WikiPage> ascPage = wikiPageResource.getWikiNodeWikiPagesPage(
-				wikiNodeId, null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
+				wikiNodeId, null, null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(wikiPage1, (List<WikiPage>)ascPage.getItems());
-			assertContains(wikiPage2, (List<WikiPage>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(wikiPage1, wikiPage2),
+				(List<WikiPage>)ascPage.getItems());
 
 			Page<WikiPage> descPage = wikiPageResource.getWikiNodeWikiPagesPage(
-				wikiNodeId, null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
+				wikiNodeId, null, null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(wikiPage2, (List<WikiPage>)descPage.getItems());
-			assertContains(wikiPage1, (List<WikiPage>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(wikiPage2, wikiPage1),
+				(List<WikiPage>)descPage.getItems());
 		}
 	}
 
@@ -805,7 +795,7 @@ public abstract class BaseWikiPageResourceTestCase {
 		Page<WikiPage> page = wikiPageResource.getWikiPageWikiPagesPage(
 			parentWikiPageId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantParentWikiPageId != null) {
 			WikiPage irrelevantWikiPage =
@@ -815,9 +805,11 @@ public abstract class BaseWikiPageResourceTestCase {
 			page = wikiPageResource.getWikiPageWikiPagesPage(
 				irrelevantParentWikiPageId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantWikiPage, (List<WikiPage>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantWikiPage),
+				(List<WikiPage>)page.getItems());
 			assertValid(
 				page,
 				testGetWikiPageWikiPagesPage_getExpectedActions(
@@ -832,10 +824,11 @@ public abstract class BaseWikiPageResourceTestCase {
 
 		page = wikiPageResource.getWikiPageWikiPagesPage(parentWikiPageId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(wikiPage1, (List<WikiPage>)page.getItems());
-		assertContains(wikiPage2, (List<WikiPage>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(wikiPage1, wikiPage2),
+			(List<WikiPage>)page.getItems());
 		assertValid(
 			page,
 			testGetWikiPageWikiPagesPage_getExpectedActions(parentWikiPageId));

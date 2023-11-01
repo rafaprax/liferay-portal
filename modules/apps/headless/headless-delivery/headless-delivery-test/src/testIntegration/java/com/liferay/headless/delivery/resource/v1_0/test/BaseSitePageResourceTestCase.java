@@ -36,7 +36,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -202,19 +201,20 @@ public abstract class BaseSitePageResourceTestCase {
 		Page<SitePage> page = sitePageResource.getSiteSitePagesPage(
 			siteId, null, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantSiteId != null) {
 			SitePage irrelevantSitePage = testGetSiteSitePagesPage_addSitePage(
 				irrelevantSiteId, randomIrrelevantSitePage());
 
 			page = sitePageResource.getSiteSitePagesPage(
-				irrelevantSiteId, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantSiteId, null, null, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantSitePage, (List<SitePage>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantSitePage),
+				(List<SitePage>)page.getItems());
 			assertValid(
 				page,
 				testGetSiteSitePagesPage_getExpectedActions(irrelevantSiteId));
@@ -229,10 +229,11 @@ public abstract class BaseSitePageResourceTestCase {
 		page = sitePageResource.getSiteSitePagesPage(
 			siteId, null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(sitePage1, (List<SitePage>)page.getItems());
-		assertContains(sitePage2, (List<SitePage>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(sitePage1, sitePage2),
+			(List<SitePage>)page.getItems());
 		assertValid(page, testGetSiteSitePagesPage_getExpectedActions(siteId));
 	}
 
@@ -347,11 +348,6 @@ public abstract class BaseSitePageResourceTestCase {
 	public void testGetSiteSitePagesPageWithPagination() throws Exception {
 		Long siteId = testGetSiteSitePagesPage_getSiteId();
 
-		Page<SitePage> sitePagePage = sitePageResource.getSiteSitePagesPage(
-			siteId, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(sitePagePage.getTotalCount());
-
 		SitePage sitePage1 = testGetSiteSitePagesPage_addSitePage(
 			siteId, randomSitePage());
 
@@ -362,29 +358,27 @@ public abstract class BaseSitePageResourceTestCase {
 			siteId, randomSitePage());
 
 		Page<SitePage> page1 = sitePageResource.getSiteSitePagesPage(
-			siteId, null, null, null, Pagination.of(1, totalCount + 2), null);
+			siteId, null, null, null, Pagination.of(1, 2), null);
 
 		List<SitePage> sitePages1 = (List<SitePage>)page1.getItems();
 
-		Assert.assertEquals(
-			sitePages1.toString(), totalCount + 2, sitePages1.size());
+		Assert.assertEquals(sitePages1.toString(), 2, sitePages1.size());
 
 		Page<SitePage> page2 = sitePageResource.getSiteSitePagesPage(
-			siteId, null, null, null, Pagination.of(2, totalCount + 2), null);
+			siteId, null, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<SitePage> sitePages2 = (List<SitePage>)page2.getItems();
 
 		Assert.assertEquals(sitePages2.toString(), 1, sitePages2.size());
 
 		Page<SitePage> page3 = sitePageResource.getSiteSitePagesPage(
-			siteId, null, null, null, Pagination.of(1, (int)totalCount + 3),
-			null);
+			siteId, null, null, null, Pagination.of(1, 3), null);
 
-		assertContains(sitePage1, (List<SitePage>)page3.getItems());
-		assertContains(sitePage2, (List<SitePage>)page3.getItems());
-		assertContains(sitePage3, (List<SitePage>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(sitePage1, sitePage2, sitePage3),
+			(List<SitePage>)page3.getItems());
 	}
 
 	@Test
@@ -494,25 +488,22 @@ public abstract class BaseSitePageResourceTestCase {
 
 		sitePage2 = testGetSiteSitePagesPage_addSitePage(siteId, sitePage2);
 
-		Page<SitePage> page = sitePageResource.getSiteSitePagesPage(
-			siteId, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<SitePage> ascPage = sitePageResource.getSiteSitePagesPage(
-				siteId, null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
+				siteId, null, null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(sitePage1, (List<SitePage>)ascPage.getItems());
-			assertContains(sitePage2, (List<SitePage>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(sitePage1, sitePage2),
+				(List<SitePage>)ascPage.getItems());
 
 			Page<SitePage> descPage = sitePageResource.getSiteSitePagesPage(
-				siteId, null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
+				siteId, null, null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(sitePage2, (List<SitePage>)descPage.getItems());
-			assertContains(sitePage1, (List<SitePage>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(sitePage2, sitePage1),
+				(List<SitePage>)descPage.getItems());
 		}
 	}
 
@@ -554,7 +545,7 @@ public abstract class BaseSitePageResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/sitePages");
 
-		long totalCount = sitePagesJSONObject.getLong("totalCount");
+		Assert.assertEquals(0, sitePagesJSONObject.get("totalCount"));
 
 		SitePage sitePage1 = testGraphQLGetSiteSitePagesPage_addSitePage();
 		SitePage sitePage2 = testGraphQLGetSiteSitePagesPage_addSitePage();
@@ -563,15 +554,10 @@ public abstract class BaseSitePageResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/sitePages");
 
-		Assert.assertEquals(
-			totalCount + 2, sitePagesJSONObject.getLong("totalCount"));
+		Assert.assertEquals(2, sitePagesJSONObject.getLong("totalCount"));
 
-		assertContains(
-			sitePage1,
-			Arrays.asList(
-				SitePageSerDes.toDTOs(sitePagesJSONObject.getString("items"))));
-		assertContains(
-			sitePage2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(sitePage1, sitePage2),
 			Arrays.asList(
 				SitePageSerDes.toDTOs(sitePagesJSONObject.getString("items"))));
 	}
@@ -714,7 +700,7 @@ public abstract class BaseSitePageResourceTestCase {
 		Page<SitePage> page = sitePageResource.getSiteSitePagesExperiencesPage(
 			siteId, friendlyUrlPath);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantSiteId != null) && (irrelevantFriendlyUrlPath != null)) {
 			SitePage irrelevantSitePage =
@@ -725,9 +711,11 @@ public abstract class BaseSitePageResourceTestCase {
 			page = sitePageResource.getSiteSitePagesExperiencesPage(
 				irrelevantSiteId, irrelevantFriendlyUrlPath);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantSitePage, (List<SitePage>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantSitePage),
+				(List<SitePage>)page.getItems());
 			assertValid(
 				page,
 				testGetSiteSitePagesExperiencesPage_getExpectedActions(
@@ -743,10 +731,11 @@ public abstract class BaseSitePageResourceTestCase {
 		page = sitePageResource.getSiteSitePagesExperiencesPage(
 			siteId, friendlyUrlPath);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(sitePage1, (List<SitePage>)page.getItems());
-		assertContains(sitePage2, (List<SitePage>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(sitePage1, sitePage2),
+			(List<SitePage>)page.getItems());
 		assertValid(
 			page,
 			testGetSiteSitePagesExperiencesPage_getExpectedActions(

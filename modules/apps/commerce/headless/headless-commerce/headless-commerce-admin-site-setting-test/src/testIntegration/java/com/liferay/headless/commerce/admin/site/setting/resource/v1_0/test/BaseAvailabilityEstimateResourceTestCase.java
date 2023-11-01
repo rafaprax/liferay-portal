@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -341,7 +340,7 @@ public abstract class BaseAvailabilityEstimateResourceTestCase {
 				getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
 					groupId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantGroupId != null) {
 			AvailabilityEstimate irrelevantAvailabilityEstimate =
@@ -351,13 +350,12 @@ public abstract class BaseAvailabilityEstimateResourceTestCase {
 			page =
 				availabilityEstimateResource.
 					getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
-						irrelevantGroupId,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantGroupId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAvailabilityEstimate,
+			assertEquals(
+				Arrays.asList(irrelevantAvailabilityEstimate),
 				(List<AvailabilityEstimate>)page.getItems());
 			assertValid(
 				page,
@@ -378,12 +376,11 @@ public abstract class BaseAvailabilityEstimateResourceTestCase {
 				getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
 					groupId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			availabilityEstimate1, (List<AvailabilityEstimate>)page.getItems());
-		assertContains(
-			availabilityEstimate2, (List<AvailabilityEstimate>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(availabilityEstimate1, availabilityEstimate2),
+			(List<AvailabilityEstimate>)page.getItems());
 		assertValid(
 			page,
 			testGetCommerceAdminSiteSettingGroupAvailabilityEstimatePage_getExpectedActions(
@@ -413,14 +410,6 @@ public abstract class BaseAvailabilityEstimateResourceTestCase {
 		Long groupId =
 			testGetCommerceAdminSiteSettingGroupAvailabilityEstimatePage_getGroupId();
 
-		Page<AvailabilityEstimate> availabilityEstimatePage =
-			availabilityEstimateResource.
-				getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
-					groupId, null);
-
-		int totalCount = GetterUtil.getInteger(
-			availabilityEstimatePage.getTotalCount());
-
 		AvailabilityEstimate availabilityEstimate1 =
 			testGetCommerceAdminSiteSettingGroupAvailabilityEstimatePage_addAvailabilityEstimate(
 				groupId, randomAvailabilityEstimate());
@@ -436,21 +425,21 @@ public abstract class BaseAvailabilityEstimateResourceTestCase {
 		Page<AvailabilityEstimate> page1 =
 			availabilityEstimateResource.
 				getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
-					groupId, Pagination.of(1, totalCount + 2));
+					groupId, Pagination.of(1, 2));
 
 		List<AvailabilityEstimate> availabilityEstimates1 =
 			(List<AvailabilityEstimate>)page1.getItems();
 
 		Assert.assertEquals(
-			availabilityEstimates1.toString(), totalCount + 2,
+			availabilityEstimates1.toString(), 2,
 			availabilityEstimates1.size());
 
 		Page<AvailabilityEstimate> page2 =
 			availabilityEstimateResource.
 				getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
-					groupId, Pagination.of(2, totalCount + 2));
+					groupId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<AvailabilityEstimate> availabilityEstimates2 =
 			(List<AvailabilityEstimate>)page2.getItems();
@@ -462,16 +451,12 @@ public abstract class BaseAvailabilityEstimateResourceTestCase {
 		Page<AvailabilityEstimate> page3 =
 			availabilityEstimateResource.
 				getCommerceAdminSiteSettingGroupAvailabilityEstimatePage(
-					groupId, Pagination.of(1, (int)totalCount + 3));
+					groupId, Pagination.of(1, 3));
 
-		assertContains(
-			availabilityEstimate1,
-			(List<AvailabilityEstimate>)page3.getItems());
-		assertContains(
-			availabilityEstimate2,
-			(List<AvailabilityEstimate>)page3.getItems());
-		assertContains(
-			availabilityEstimate3,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				availabilityEstimate1, availabilityEstimate2,
+				availabilityEstimate3),
 			(List<AvailabilityEstimate>)page3.getItems());
 	}
 

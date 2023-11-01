@@ -192,7 +192,7 @@ public abstract class BaseShippingMethodResourceTestCase {
 		Page<ShippingMethod> page =
 			shippingMethodResource.getCartShippingMethodsPage(cartId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantCartId != null) {
 			ShippingMethod irrelevantShippingMethod =
@@ -202,10 +202,10 @@ public abstract class BaseShippingMethodResourceTestCase {
 			page = shippingMethodResource.getCartShippingMethodsPage(
 				irrelevantCartId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantShippingMethod,
+			assertEquals(
+				Arrays.asList(irrelevantShippingMethod),
 				(List<ShippingMethod>)page.getItems());
 			assertValid(
 				page,
@@ -223,10 +223,11 @@ public abstract class BaseShippingMethodResourceTestCase {
 
 		page = shippingMethodResource.getCartShippingMethodsPage(cartId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(shippingMethod1, (List<ShippingMethod>)page.getItems());
-		assertContains(shippingMethod2, (List<ShippingMethod>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shippingMethod1, shippingMethod2),
+			(List<ShippingMethod>)page.getItems());
 		assertValid(
 			page, testGetCartShippingMethodsPage_getExpectedActions(cartId));
 	}

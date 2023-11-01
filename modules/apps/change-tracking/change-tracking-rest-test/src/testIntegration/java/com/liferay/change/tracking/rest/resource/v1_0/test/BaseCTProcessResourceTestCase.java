@@ -306,10 +306,10 @@ public abstract class BaseCTProcessResourceTestCase {
 
 	@Test
 	public void testGetCTProcessesPageWithPagination() throws Exception {
-		Page<CTProcess> ctProcessPage = ctProcessResource.getCTProcessesPage(
+		Page<CTProcess> totalPage = ctProcessResource.getCTProcessesPage(
 			null, null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(ctProcessPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		CTProcess ctProcess1 = testGetCTProcessesPage_addCTProcess(
 			randomCTProcess());
@@ -338,7 +338,7 @@ public abstract class BaseCTProcessResourceTestCase {
 		Assert.assertEquals(ctProcesses2.toString(), 1, ctProcesses2.size());
 
 		Page<CTProcess> page3 = ctProcessResource.getCTProcessesPage(
-			null, null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(ctProcess1, (List<CTProcess>)page3.getItems());
 		assertContains(ctProcess2, (List<CTProcess>)page3.getItems());
@@ -452,25 +452,22 @@ public abstract class BaseCTProcessResourceTestCase {
 
 		ctProcess2 = testGetCTProcessesPage_addCTProcess(ctProcess2);
 
-		Page<CTProcess> page = ctProcessResource.getCTProcessesPage(
-			null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<CTProcess> ascPage = ctProcessResource.getCTProcessesPage(
-				null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(ctProcess1, (List<CTProcess>)ascPage.getItems());
-			assertContains(ctProcess2, (List<CTProcess>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(ctProcess1, ctProcess2),
+				(List<CTProcess>)ascPage.getItems());
 
 			Page<CTProcess> descPage = ctProcessResource.getCTProcessesPage(
-				null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(ctProcess2, (List<CTProcess>)descPage.getItems());
-			assertContains(ctProcess1, (List<CTProcess>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(ctProcess2, ctProcess1),
+				(List<CTProcess>)descPage.getItems());
 		}
 	}
 

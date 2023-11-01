@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -478,7 +477,7 @@ public abstract class BaseShipmentItemResourceTestCase {
 			shipmentItemResource.getShipmentByExternalReferenceCodeItemsPage(
 				externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			ShipmentItem irrelevantShipmentItem =
@@ -489,13 +488,13 @@ public abstract class BaseShipmentItemResourceTestCase {
 			page =
 				shipmentItemResource.
 					getShipmentByExternalReferenceCodeItemsPage(
-						irrelevantExternalReferenceCode,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantShipmentItem, (List<ShipmentItem>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantShipmentItem),
+				(List<ShipmentItem>)page.getItems());
 			assertValid(
 				page,
 				testGetShipmentByExternalReferenceCodeItemsPage_getExpectedActions(
@@ -513,10 +512,11 @@ public abstract class BaseShipmentItemResourceTestCase {
 		page = shipmentItemResource.getShipmentByExternalReferenceCodeItemsPage(
 			externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(shipmentItem1, (List<ShipmentItem>)page.getItems());
-		assertContains(shipmentItem2, (List<ShipmentItem>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shipmentItem1, shipmentItem2),
+			(List<ShipmentItem>)page.getItems());
 		assertValid(
 			page,
 			testGetShipmentByExternalReferenceCodeItemsPage_getExpectedActions(
@@ -544,13 +544,6 @@ public abstract class BaseShipmentItemResourceTestCase {
 		String externalReferenceCode =
 			testGetShipmentByExternalReferenceCodeItemsPage_getExternalReferenceCode();
 
-		Page<ShipmentItem> shipmentItemPage =
-			shipmentItemResource.getShipmentByExternalReferenceCodeItemsPage(
-				externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(
-			shipmentItemPage.getTotalCount());
-
 		ShipmentItem shipmentItem1 =
 			testGetShipmentByExternalReferenceCodeItemsPage_addShipmentItem(
 				externalReferenceCode, randomShipmentItem());
@@ -565,19 +558,19 @@ public abstract class BaseShipmentItemResourceTestCase {
 
 		Page<ShipmentItem> page1 =
 			shipmentItemResource.getShipmentByExternalReferenceCodeItemsPage(
-				externalReferenceCode, Pagination.of(1, totalCount + 2));
+				externalReferenceCode, Pagination.of(1, 2));
 
 		List<ShipmentItem> shipmentItems1 =
 			(List<ShipmentItem>)page1.getItems();
 
 		Assert.assertEquals(
-			shipmentItems1.toString(), totalCount + 2, shipmentItems1.size());
+			shipmentItems1.toString(), 2, shipmentItems1.size());
 
 		Page<ShipmentItem> page2 =
 			shipmentItemResource.getShipmentByExternalReferenceCodeItemsPage(
-				externalReferenceCode, Pagination.of(2, totalCount + 2));
+				externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ShipmentItem> shipmentItems2 =
 			(List<ShipmentItem>)page2.getItems();
@@ -587,11 +580,11 @@ public abstract class BaseShipmentItemResourceTestCase {
 
 		Page<ShipmentItem> page3 =
 			shipmentItemResource.getShipmentByExternalReferenceCodeItemsPage(
-				externalReferenceCode, Pagination.of(1, (int)totalCount + 3));
+				externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(shipmentItem1, (List<ShipmentItem>)page3.getItems());
-		assertContains(shipmentItem2, (List<ShipmentItem>)page3.getItems());
-		assertContains(shipmentItem3, (List<ShipmentItem>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shipmentItem1, shipmentItem2, shipmentItem3),
+			(List<ShipmentItem>)page3.getItems());
 	}
 
 	protected ShipmentItem
@@ -668,7 +661,7 @@ public abstract class BaseShipmentItemResourceTestCase {
 		Page<ShipmentItem> page = shipmentItemResource.getShipmentItemsPage(
 			shipmentId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantShipmentId != null) {
 			ShipmentItem irrelevantShipmentItem =
@@ -676,12 +669,13 @@ public abstract class BaseShipmentItemResourceTestCase {
 					irrelevantShipmentId, randomIrrelevantShipmentItem());
 
 			page = shipmentItemResource.getShipmentItemsPage(
-				irrelevantShipmentId, Pagination.of(1, (int)totalCount + 1));
+				irrelevantShipmentId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantShipmentItem, (List<ShipmentItem>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantShipmentItem),
+				(List<ShipmentItem>)page.getItems());
 			assertValid(
 				page,
 				testGetShipmentItemsPage_getExpectedActions(
@@ -697,10 +691,11 @@ public abstract class BaseShipmentItemResourceTestCase {
 		page = shipmentItemResource.getShipmentItemsPage(
 			shipmentId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(shipmentItem1, (List<ShipmentItem>)page.getItems());
-		assertContains(shipmentItem2, (List<ShipmentItem>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shipmentItem1, shipmentItem2),
+			(List<ShipmentItem>)page.getItems());
 		assertValid(
 			page, testGetShipmentItemsPage_getExpectedActions(shipmentId));
 
@@ -722,12 +717,6 @@ public abstract class BaseShipmentItemResourceTestCase {
 	public void testGetShipmentItemsPageWithPagination() throws Exception {
 		Long shipmentId = testGetShipmentItemsPage_getShipmentId();
 
-		Page<ShipmentItem> shipmentItemPage =
-			shipmentItemResource.getShipmentItemsPage(shipmentId, null);
-
-		int totalCount = GetterUtil.getInteger(
-			shipmentItemPage.getTotalCount());
-
 		ShipmentItem shipmentItem1 = testGetShipmentItemsPage_addShipmentItem(
 			shipmentId, randomShipmentItem());
 
@@ -738,18 +727,18 @@ public abstract class BaseShipmentItemResourceTestCase {
 			shipmentId, randomShipmentItem());
 
 		Page<ShipmentItem> page1 = shipmentItemResource.getShipmentItemsPage(
-			shipmentId, Pagination.of(1, totalCount + 2));
+			shipmentId, Pagination.of(1, 2));
 
 		List<ShipmentItem> shipmentItems1 =
 			(List<ShipmentItem>)page1.getItems();
 
 		Assert.assertEquals(
-			shipmentItems1.toString(), totalCount + 2, shipmentItems1.size());
+			shipmentItems1.toString(), 2, shipmentItems1.size());
 
 		Page<ShipmentItem> page2 = shipmentItemResource.getShipmentItemsPage(
-			shipmentId, Pagination.of(2, totalCount + 2));
+			shipmentId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ShipmentItem> shipmentItems2 =
 			(List<ShipmentItem>)page2.getItems();
@@ -758,11 +747,11 @@ public abstract class BaseShipmentItemResourceTestCase {
 			shipmentItems2.toString(), 1, shipmentItems2.size());
 
 		Page<ShipmentItem> page3 = shipmentItemResource.getShipmentItemsPage(
-			shipmentId, Pagination.of(1, (int)totalCount + 3));
+			shipmentId, Pagination.of(1, 3));
 
-		assertContains(shipmentItem1, (List<ShipmentItem>)page3.getItems());
-		assertContains(shipmentItem2, (List<ShipmentItem>)page3.getItems());
-		assertContains(shipmentItem3, (List<ShipmentItem>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shipmentItem1, shipmentItem2, shipmentItem3),
+			(List<ShipmentItem>)page3.getItems());
 	}
 
 	protected ShipmentItem testGetShipmentItemsPage_addShipmentItem(
@@ -805,7 +794,7 @@ public abstract class BaseShipmentItemResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/shipmentItems");
 
-		long totalCount = shipmentItemsJSONObject.getLong("totalCount");
+		Assert.assertEquals(0, shipmentItemsJSONObject.get("totalCount"));
 
 		ShipmentItem shipmentItem1 =
 			testGraphQLGetShipmentItemsPage_addShipmentItem();
@@ -816,16 +805,10 @@ public abstract class BaseShipmentItemResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/shipmentItems");
 
-		Assert.assertEquals(
-			totalCount + 2, shipmentItemsJSONObject.getLong("totalCount"));
+		Assert.assertEquals(2, shipmentItemsJSONObject.getLong("totalCount"));
 
-		assertContains(
-			shipmentItem1,
-			Arrays.asList(
-				ShipmentItemSerDes.toDTOs(
-					shipmentItemsJSONObject.getString("items"))));
-		assertContains(
-			shipmentItem2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(shipmentItem1, shipmentItem2),
 			Arrays.asList(
 				ShipmentItemSerDes.toDTOs(
 					shipmentItemsJSONObject.getString("items"))));
