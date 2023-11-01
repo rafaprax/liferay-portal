@@ -39,7 +39,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -224,7 +223,7 @@ public abstract class BaseContentTemplateResourceTestCase {
 			contentTemplateResource.getAssetLibraryContentTemplatesPage(
 				assetLibraryId, null, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantAssetLibraryId != null) {
 			ContentTemplate irrelevantContentTemplate =
@@ -233,13 +232,13 @@ public abstract class BaseContentTemplateResourceTestCase {
 					randomIrrelevantContentTemplate());
 
 			page = contentTemplateResource.getAssetLibraryContentTemplatesPage(
-				irrelevantAssetLibraryId, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantAssetLibraryId, null, null, null, Pagination.of(1, 2),
+				null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantContentTemplate,
+			assertEquals(
+				Arrays.asList(irrelevantContentTemplate),
 				(List<ContentTemplate>)page.getItems());
 			assertValid(
 				page,
@@ -258,12 +257,11 @@ public abstract class BaseContentTemplateResourceTestCase {
 		page = contentTemplateResource.getAssetLibraryContentTemplatesPage(
 			assetLibraryId, null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			contentTemplate1, (List<ContentTemplate>)page.getItems());
-		assertContains(
-			contentTemplate2, (List<ContentTemplate>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(contentTemplate1, contentTemplate2),
+			(List<ContentTemplate>)page.getItems());
 		assertValid(
 			page,
 			testGetAssetLibraryContentTemplatesPage_getExpectedActions(
@@ -387,13 +385,6 @@ public abstract class BaseContentTemplateResourceTestCase {
 		Long assetLibraryId =
 			testGetAssetLibraryContentTemplatesPage_getAssetLibraryId();
 
-		Page<ContentTemplate> contentTemplatePage =
-			contentTemplateResource.getAssetLibraryContentTemplatesPage(
-				assetLibraryId, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			contentTemplatePage.getTotalCount());
-
 		ContentTemplate contentTemplate1 =
 			testGetAssetLibraryContentTemplatesPage_addContentTemplate(
 				assetLibraryId, randomContentTemplate());
@@ -408,22 +399,19 @@ public abstract class BaseContentTemplateResourceTestCase {
 
 		Page<ContentTemplate> page1 =
 			contentTemplateResource.getAssetLibraryContentTemplatesPage(
-				assetLibraryId, null, null, null,
-				Pagination.of(1, totalCount + 2), null);
+				assetLibraryId, null, null, null, Pagination.of(1, 2), null);
 
 		List<ContentTemplate> contentTemplates1 =
 			(List<ContentTemplate>)page1.getItems();
 
 		Assert.assertEquals(
-			contentTemplates1.toString(), totalCount + 2,
-			contentTemplates1.size());
+			contentTemplates1.toString(), 2, contentTemplates1.size());
 
 		Page<ContentTemplate> page2 =
 			contentTemplateResource.getAssetLibraryContentTemplatesPage(
-				assetLibraryId, null, null, null,
-				Pagination.of(2, totalCount + 2), null);
+				assetLibraryId, null, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ContentTemplate> contentTemplates2 =
 			(List<ContentTemplate>)page2.getItems();
@@ -433,15 +421,11 @@ public abstract class BaseContentTemplateResourceTestCase {
 
 		Page<ContentTemplate> page3 =
 			contentTemplateResource.getAssetLibraryContentTemplatesPage(
-				assetLibraryId, null, null, null,
-				Pagination.of(1, (int)totalCount + 3), null);
+				assetLibraryId, null, null, null, Pagination.of(1, 3), null);
 
-		assertContains(
-			contentTemplate1, (List<ContentTemplate>)page3.getItems());
-		assertContains(
-			contentTemplate2, (List<ContentTemplate>)page3.getItems());
-		assertContains(
-			contentTemplate3, (List<ContentTemplate>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(contentTemplate1, contentTemplate2, contentTemplate3),
+			(List<ContentTemplate>)page3.getItems());
 	}
 
 	@Test
@@ -570,32 +554,24 @@ public abstract class BaseContentTemplateResourceTestCase {
 			testGetAssetLibraryContentTemplatesPage_addContentTemplate(
 				assetLibraryId, contentTemplate2);
 
-		Page<ContentTemplate> page =
-			contentTemplateResource.getAssetLibraryContentTemplatesPage(
-				assetLibraryId, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<ContentTemplate> ascPage =
 				contentTemplateResource.getAssetLibraryContentTemplatesPage(
-					assetLibraryId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					assetLibraryId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				contentTemplate1, (List<ContentTemplate>)ascPage.getItems());
-			assertContains(
-				contentTemplate2, (List<ContentTemplate>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(contentTemplate1, contentTemplate2),
+				(List<ContentTemplate>)ascPage.getItems());
 
 			Page<ContentTemplate> descPage =
 				contentTemplateResource.getAssetLibraryContentTemplatesPage(
-					assetLibraryId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					assetLibraryId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				contentTemplate2, (List<ContentTemplate>)descPage.getItems());
-			assertContains(
-				contentTemplate1, (List<ContentTemplate>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(contentTemplate2, contentTemplate1),
+				(List<ContentTemplate>)descPage.getItems());
 		}
 	}
 
@@ -631,7 +607,7 @@ public abstract class BaseContentTemplateResourceTestCase {
 			contentTemplateResource.getSiteContentTemplatesPage(
 				siteId, null, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantSiteId != null) {
 			ContentTemplate irrelevantContentTemplate =
@@ -639,13 +615,12 @@ public abstract class BaseContentTemplateResourceTestCase {
 					irrelevantSiteId, randomIrrelevantContentTemplate());
 
 			page = contentTemplateResource.getSiteContentTemplatesPage(
-				irrelevantSiteId, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantSiteId, null, null, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantContentTemplate,
+			assertEquals(
+				Arrays.asList(irrelevantContentTemplate),
 				(List<ContentTemplate>)page.getItems());
 			assertValid(
 				page,
@@ -664,12 +639,11 @@ public abstract class BaseContentTemplateResourceTestCase {
 		page = contentTemplateResource.getSiteContentTemplatesPage(
 			siteId, null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			contentTemplate1, (List<ContentTemplate>)page.getItems());
-		assertContains(
-			contentTemplate2, (List<ContentTemplate>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(contentTemplate1, contentTemplate2),
+			(List<ContentTemplate>)page.getItems());
 		assertValid(
 			page, testGetSiteContentTemplatesPage_getExpectedActions(siteId));
 	}
@@ -786,13 +760,6 @@ public abstract class BaseContentTemplateResourceTestCase {
 
 		Long siteId = testGetSiteContentTemplatesPage_getSiteId();
 
-		Page<ContentTemplate> contentTemplatePage =
-			contentTemplateResource.getSiteContentTemplatesPage(
-				siteId, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			contentTemplatePage.getTotalCount());
-
 		ContentTemplate contentTemplate1 =
 			testGetSiteContentTemplatesPage_addContentTemplate(
 				siteId, randomContentTemplate());
@@ -807,22 +774,19 @@ public abstract class BaseContentTemplateResourceTestCase {
 
 		Page<ContentTemplate> page1 =
 			contentTemplateResource.getSiteContentTemplatesPage(
-				siteId, null, null, null, Pagination.of(1, totalCount + 2),
-				null);
+				siteId, null, null, null, Pagination.of(1, 2), null);
 
 		List<ContentTemplate> contentTemplates1 =
 			(List<ContentTemplate>)page1.getItems();
 
 		Assert.assertEquals(
-			contentTemplates1.toString(), totalCount + 2,
-			contentTemplates1.size());
+			contentTemplates1.toString(), 2, contentTemplates1.size());
 
 		Page<ContentTemplate> page2 =
 			contentTemplateResource.getSiteContentTemplatesPage(
-				siteId, null, null, null, Pagination.of(2, totalCount + 2),
-				null);
+				siteId, null, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ContentTemplate> contentTemplates2 =
 			(List<ContentTemplate>)page2.getItems();
@@ -832,15 +796,11 @@ public abstract class BaseContentTemplateResourceTestCase {
 
 		Page<ContentTemplate> page3 =
 			contentTemplateResource.getSiteContentTemplatesPage(
-				siteId, null, null, null, Pagination.of(1, (int)totalCount + 3),
-				null);
+				siteId, null, null, null, Pagination.of(1, 3), null);
 
-		assertContains(
-			contentTemplate1, (List<ContentTemplate>)page3.getItems());
-		assertContains(
-			contentTemplate2, (List<ContentTemplate>)page3.getItems());
-		assertContains(
-			contentTemplate3, (List<ContentTemplate>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(contentTemplate1, contentTemplate2, contentTemplate3),
+			(List<ContentTemplate>)page3.getItems());
 	}
 
 	@Test
@@ -966,32 +926,24 @@ public abstract class BaseContentTemplateResourceTestCase {
 		contentTemplate2 = testGetSiteContentTemplatesPage_addContentTemplate(
 			siteId, contentTemplate2);
 
-		Page<ContentTemplate> page =
-			contentTemplateResource.getSiteContentTemplatesPage(
-				siteId, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<ContentTemplate> ascPage =
 				contentTemplateResource.getSiteContentTemplatesPage(
-					siteId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					siteId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				contentTemplate1, (List<ContentTemplate>)ascPage.getItems());
-			assertContains(
-				contentTemplate2, (List<ContentTemplate>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(contentTemplate1, contentTemplate2),
+				(List<ContentTemplate>)ascPage.getItems());
 
 			Page<ContentTemplate> descPage =
 				contentTemplateResource.getSiteContentTemplatesPage(
-					siteId, null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					siteId, null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				contentTemplate2, (List<ContentTemplate>)descPage.getItems());
-			assertContains(
-				contentTemplate1, (List<ContentTemplate>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(contentTemplate2, contentTemplate1),
+				(List<ContentTemplate>)descPage.getItems());
 		}
 	}
 
@@ -1037,7 +989,7 @@ public abstract class BaseContentTemplateResourceTestCase {
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
 			"JSONObject/contentTemplates");
 
-		long totalCount = contentTemplatesJSONObject.getLong("totalCount");
+		Assert.assertEquals(0, contentTemplatesJSONObject.get("totalCount"));
 
 		ContentTemplate contentTemplate1 =
 			testGraphQLGetSiteContentTemplatesPage_addContentTemplate();
@@ -1049,15 +1001,10 @@ public abstract class BaseContentTemplateResourceTestCase {
 			"JSONObject/contentTemplates");
 
 		Assert.assertEquals(
-			totalCount + 2, contentTemplatesJSONObject.getLong("totalCount"));
+			2, contentTemplatesJSONObject.getLong("totalCount"));
 
-		assertContains(
-			contentTemplate1,
-			Arrays.asList(
-				ContentTemplateSerDes.toDTOs(
-					contentTemplatesJSONObject.getString("items"))));
-		assertContains(
-			contentTemplate2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(contentTemplate1, contentTemplate2),
 			Arrays.asList(
 				ContentTemplateSerDes.toDTOs(
 					contentTemplatesJSONObject.getString("items"))));

@@ -196,7 +196,7 @@ public abstract class BaseStrategyResourceTestCase {
 			strategyResource.getPlanInternalClassNameKeyStrategiesPage(
 				internalClassNameKey);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantInternalClassNameKey != null) {
 			Strategy irrelevantStrategy =
@@ -206,9 +206,11 @@ public abstract class BaseStrategyResourceTestCase {
 			page = strategyResource.getPlanInternalClassNameKeyStrategiesPage(
 				irrelevantInternalClassNameKey);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantStrategy, (List<Strategy>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantStrategy),
+				(List<Strategy>)page.getItems());
 			assertValid(
 				page,
 				testGetPlanInternalClassNameKeyStrategiesPage_getExpectedActions(
@@ -226,10 +228,11 @@ public abstract class BaseStrategyResourceTestCase {
 		page = strategyResource.getPlanInternalClassNameKeyStrategiesPage(
 			internalClassNameKey);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(strategy1, (List<Strategy>)page.getItems());
-		assertContains(strategy2, (List<Strategy>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(strategy1, strategy2),
+			(List<Strategy>)page.getItems());
 		assertValid(
 			page,
 			testGetPlanInternalClassNameKeyStrategiesPage_getExpectedActions(

@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -210,7 +209,7 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 				getTermByExternalReferenceCodeTermOrderTypesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			TermOrderType irrelevantTermOrderType =
@@ -221,13 +220,13 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 			page =
 				termOrderTypeResource.
 					getTermByExternalReferenceCodeTermOrderTypesPage(
-						irrelevantExternalReferenceCode,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantTermOrderType, (List<TermOrderType>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantTermOrderType),
+				(List<TermOrderType>)page.getItems());
 			assertValid(
 				page,
 				testGetTermByExternalReferenceCodeTermOrderTypesPage_getExpectedActions(
@@ -247,10 +246,11 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 				getTermByExternalReferenceCodeTermOrderTypesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(termOrderType1, (List<TermOrderType>)page.getItems());
-		assertContains(termOrderType2, (List<TermOrderType>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(termOrderType1, termOrderType2),
+			(List<TermOrderType>)page.getItems());
 		assertValid(
 			page,
 			testGetTermByExternalReferenceCodeTermOrderTypesPage_getExpectedActions(
@@ -274,14 +274,6 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 		String externalReferenceCode =
 			testGetTermByExternalReferenceCodeTermOrderTypesPage_getExternalReferenceCode();
 
-		Page<TermOrderType> termOrderTypePage =
-			termOrderTypeResource.
-				getTermByExternalReferenceCodeTermOrderTypesPage(
-					externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(
-			termOrderTypePage.getTotalCount());
-
 		TermOrderType termOrderType1 =
 			testGetTermByExternalReferenceCodeTermOrderTypesPage_addTermOrderType(
 				externalReferenceCode, randomTermOrderType());
@@ -297,20 +289,20 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 		Page<TermOrderType> page1 =
 			termOrderTypeResource.
 				getTermByExternalReferenceCodeTermOrderTypesPage(
-					externalReferenceCode, Pagination.of(1, totalCount + 2));
+					externalReferenceCode, Pagination.of(1, 2));
 
 		List<TermOrderType> termOrderTypes1 =
 			(List<TermOrderType>)page1.getItems();
 
 		Assert.assertEquals(
-			termOrderTypes1.toString(), totalCount + 2, termOrderTypes1.size());
+			termOrderTypes1.toString(), 2, termOrderTypes1.size());
 
 		Page<TermOrderType> page2 =
 			termOrderTypeResource.
 				getTermByExternalReferenceCodeTermOrderTypesPage(
-					externalReferenceCode, Pagination.of(2, totalCount + 2));
+					externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<TermOrderType> termOrderTypes2 =
 			(List<TermOrderType>)page2.getItems();
@@ -321,12 +313,11 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 		Page<TermOrderType> page3 =
 			termOrderTypeResource.
 				getTermByExternalReferenceCodeTermOrderTypesPage(
-					externalReferenceCode,
-					Pagination.of(1, (int)totalCount + 3));
+					externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(termOrderType1, (List<TermOrderType>)page3.getItems());
-		assertContains(termOrderType2, (List<TermOrderType>)page3.getItems());
-		assertContains(termOrderType3, (List<TermOrderType>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(termOrderType1, termOrderType2, termOrderType3),
+			(List<TermOrderType>)page3.getItems());
 	}
 
 	protected TermOrderType
@@ -385,7 +376,7 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 			termOrderTypeResource.getTermIdTermOrderTypesPage(
 				id, null, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			TermOrderType irrelevantTermOrderType =
@@ -393,12 +384,13 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 					irrelevantId, randomIrrelevantTermOrderType());
 
 			page = termOrderTypeResource.getTermIdTermOrderTypesPage(
-				irrelevantId, null, Pagination.of(1, (int)totalCount + 1));
+				irrelevantId, null, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantTermOrderType, (List<TermOrderType>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantTermOrderType),
+				(List<TermOrderType>)page.getItems());
 			assertValid(
 				page,
 				testGetTermIdTermOrderTypesPage_getExpectedActions(
@@ -416,10 +408,11 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 		page = termOrderTypeResource.getTermIdTermOrderTypesPage(
 			id, null, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(termOrderType1, (List<TermOrderType>)page.getItems());
-		assertContains(termOrderType2, (List<TermOrderType>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(termOrderType1, termOrderType2),
+			(List<TermOrderType>)page.getItems());
 		assertValid(
 			page, testGetTermIdTermOrderTypesPage_getExpectedActions(id));
 	}
@@ -439,12 +432,6 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 
 		Long id = testGetTermIdTermOrderTypesPage_getId();
 
-		Page<TermOrderType> termOrderTypePage =
-			termOrderTypeResource.getTermIdTermOrderTypesPage(id, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			termOrderTypePage.getTotalCount());
-
 		TermOrderType termOrderType1 =
 			testGetTermIdTermOrderTypesPage_addTermOrderType(
 				id, randomTermOrderType());
@@ -459,19 +446,19 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 
 		Page<TermOrderType> page1 =
 			termOrderTypeResource.getTermIdTermOrderTypesPage(
-				id, null, Pagination.of(1, totalCount + 2));
+				id, null, Pagination.of(1, 2));
 
 		List<TermOrderType> termOrderTypes1 =
 			(List<TermOrderType>)page1.getItems();
 
 		Assert.assertEquals(
-			termOrderTypes1.toString(), totalCount + 2, termOrderTypes1.size());
+			termOrderTypes1.toString(), 2, termOrderTypes1.size());
 
 		Page<TermOrderType> page2 =
 			termOrderTypeResource.getTermIdTermOrderTypesPage(
-				id, null, Pagination.of(2, totalCount + 2));
+				id, null, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<TermOrderType> termOrderTypes2 =
 			(List<TermOrderType>)page2.getItems();
@@ -481,11 +468,11 @@ public abstract class BaseTermOrderTypeResourceTestCase {
 
 		Page<TermOrderType> page3 =
 			termOrderTypeResource.getTermIdTermOrderTypesPage(
-				id, null, Pagination.of(1, (int)totalCount + 3));
+				id, null, Pagination.of(1, 3));
 
-		assertContains(termOrderType1, (List<TermOrderType>)page3.getItems());
-		assertContains(termOrderType2, (List<TermOrderType>)page3.getItems());
-		assertContains(termOrderType3, (List<TermOrderType>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(termOrderType1, termOrderType2, termOrderType3),
+			(List<TermOrderType>)page3.getItems());
 	}
 
 	protected TermOrderType testGetTermIdTermOrderTypesPage_addTermOrderType(

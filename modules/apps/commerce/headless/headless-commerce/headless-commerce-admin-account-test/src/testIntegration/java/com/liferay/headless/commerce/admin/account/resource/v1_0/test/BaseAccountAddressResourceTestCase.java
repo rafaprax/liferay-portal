@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -539,7 +538,7 @@ public abstract class BaseAccountAddressResourceTestCase {
 				getAccountByExternalReferenceCodeAccountAddressesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			AccountAddress irrelevantAccountAddress =
@@ -550,13 +549,12 @@ public abstract class BaseAccountAddressResourceTestCase {
 			page =
 				accountAddressResource.
 					getAccountByExternalReferenceCodeAccountAddressesPage(
-						irrelevantExternalReferenceCode,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAccountAddress,
+			assertEquals(
+				Arrays.asList(irrelevantAccountAddress),
 				(List<AccountAddress>)page.getItems());
 			assertValid(
 				page,
@@ -577,10 +575,11 @@ public abstract class BaseAccountAddressResourceTestCase {
 				getAccountByExternalReferenceCodeAccountAddressesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(accountAddress1, (List<AccountAddress>)page.getItems());
-		assertContains(accountAddress2, (List<AccountAddress>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountAddress1, accountAddress2),
+			(List<AccountAddress>)page.getItems());
 		assertValid(
 			page,
 			testGetAccountByExternalReferenceCodeAccountAddressesPage_getExpectedActions(
@@ -608,14 +607,6 @@ public abstract class BaseAccountAddressResourceTestCase {
 		String externalReferenceCode =
 			testGetAccountByExternalReferenceCodeAccountAddressesPage_getExternalReferenceCode();
 
-		Page<AccountAddress> accountAddressPage =
-			accountAddressResource.
-				getAccountByExternalReferenceCodeAccountAddressesPage(
-					externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(
-			accountAddressPage.getTotalCount());
-
 		AccountAddress accountAddress1 =
 			testGetAccountByExternalReferenceCodeAccountAddressesPage_addAccountAddress(
 				externalReferenceCode, randomAccountAddress());
@@ -631,21 +622,20 @@ public abstract class BaseAccountAddressResourceTestCase {
 		Page<AccountAddress> page1 =
 			accountAddressResource.
 				getAccountByExternalReferenceCodeAccountAddressesPage(
-					externalReferenceCode, Pagination.of(1, totalCount + 2));
+					externalReferenceCode, Pagination.of(1, 2));
 
 		List<AccountAddress> accountAddresses1 =
 			(List<AccountAddress>)page1.getItems();
 
 		Assert.assertEquals(
-			accountAddresses1.toString(), totalCount + 2,
-			accountAddresses1.size());
+			accountAddresses1.toString(), 2, accountAddresses1.size());
 
 		Page<AccountAddress> page2 =
 			accountAddressResource.
 				getAccountByExternalReferenceCodeAccountAddressesPage(
-					externalReferenceCode, Pagination.of(2, totalCount + 2));
+					externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<AccountAddress> accountAddresses2 =
 			(List<AccountAddress>)page2.getItems();
@@ -656,12 +646,11 @@ public abstract class BaseAccountAddressResourceTestCase {
 		Page<AccountAddress> page3 =
 			accountAddressResource.
 				getAccountByExternalReferenceCodeAccountAddressesPage(
-					externalReferenceCode,
-					Pagination.of(1, (int)totalCount + 3));
+					externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(accountAddress1, (List<AccountAddress>)page3.getItems());
-		assertContains(accountAddress2, (List<AccountAddress>)page3.getItems());
-		assertContains(accountAddress3, (List<AccountAddress>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountAddress1, accountAddress2, accountAddress3),
+			(List<AccountAddress>)page3.getItems());
 	}
 
 	protected AccountAddress
@@ -721,7 +710,7 @@ public abstract class BaseAccountAddressResourceTestCase {
 			accountAddressResource.getAccountIdAccountAddressesPage(
 				id, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			AccountAddress irrelevantAccountAddress =
@@ -729,12 +718,12 @@ public abstract class BaseAccountAddressResourceTestCase {
 					irrelevantId, randomIrrelevantAccountAddress());
 
 			page = accountAddressResource.getAccountIdAccountAddressesPage(
-				irrelevantId, Pagination.of(1, (int)totalCount + 1));
+				irrelevantId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantAccountAddress,
+			assertEquals(
+				Arrays.asList(irrelevantAccountAddress),
 				(List<AccountAddress>)page.getItems());
 			assertValid(
 				page,
@@ -753,10 +742,11 @@ public abstract class BaseAccountAddressResourceTestCase {
 		page = accountAddressResource.getAccountIdAccountAddressesPage(
 			id, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(accountAddress1, (List<AccountAddress>)page.getItems());
-		assertContains(accountAddress2, (List<AccountAddress>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountAddress1, accountAddress2),
+			(List<AccountAddress>)page.getItems());
 		assertValid(
 			page, testGetAccountIdAccountAddressesPage_getExpectedActions(id));
 
@@ -780,12 +770,6 @@ public abstract class BaseAccountAddressResourceTestCase {
 
 		Long id = testGetAccountIdAccountAddressesPage_getId();
 
-		Page<AccountAddress> accountAddressPage =
-			accountAddressResource.getAccountIdAccountAddressesPage(id, null);
-
-		int totalCount = GetterUtil.getInteger(
-			accountAddressPage.getTotalCount());
-
 		AccountAddress accountAddress1 =
 			testGetAccountIdAccountAddressesPage_addAccountAddress(
 				id, randomAccountAddress());
@@ -800,20 +784,19 @@ public abstract class BaseAccountAddressResourceTestCase {
 
 		Page<AccountAddress> page1 =
 			accountAddressResource.getAccountIdAccountAddressesPage(
-				id, Pagination.of(1, totalCount + 2));
+				id, Pagination.of(1, 2));
 
 		List<AccountAddress> accountAddresses1 =
 			(List<AccountAddress>)page1.getItems();
 
 		Assert.assertEquals(
-			accountAddresses1.toString(), totalCount + 2,
-			accountAddresses1.size());
+			accountAddresses1.toString(), 2, accountAddresses1.size());
 
 		Page<AccountAddress> page2 =
 			accountAddressResource.getAccountIdAccountAddressesPage(
-				id, Pagination.of(2, totalCount + 2));
+				id, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<AccountAddress> accountAddresses2 =
 			(List<AccountAddress>)page2.getItems();
@@ -823,11 +806,11 @@ public abstract class BaseAccountAddressResourceTestCase {
 
 		Page<AccountAddress> page3 =
 			accountAddressResource.getAccountIdAccountAddressesPage(
-				id, Pagination.of(1, (int)totalCount + 3));
+				id, Pagination.of(1, 3));
 
-		assertContains(accountAddress1, (List<AccountAddress>)page3.getItems());
-		assertContains(accountAddress2, (List<AccountAddress>)page3.getItems());
-		assertContains(accountAddress3, (List<AccountAddress>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(accountAddress1, accountAddress2, accountAddress3),
+			(List<AccountAddress>)page3.getItems());
 	}
 
 	protected AccountAddress

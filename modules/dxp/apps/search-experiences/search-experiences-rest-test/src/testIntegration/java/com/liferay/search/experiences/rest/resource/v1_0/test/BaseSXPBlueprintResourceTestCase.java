@@ -319,11 +319,10 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 
 	@Test
 	public void testGetSXPBlueprintsPageWithPagination() throws Exception {
-		Page<SXPBlueprint> sxpBlueprintPage =
+		Page<SXPBlueprint> totalPage =
 			sxpBlueprintResource.getSXPBlueprintsPage(null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			sxpBlueprintPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		SXPBlueprint sxpBlueprint1 = testGetSXPBlueprintsPage_addSXPBlueprint(
 			randomSXPBlueprint());
@@ -355,7 +354,7 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 			sxpBlueprints2.toString(), 1, sxpBlueprints2.size());
 
 		Page<SXPBlueprint> page3 = sxpBlueprintResource.getSXPBlueprintsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(sxpBlueprint1, (List<SXPBlueprint>)page3.getItems());
 		assertContains(sxpBlueprint2, (List<SXPBlueprint>)page3.getItems());
@@ -472,29 +471,24 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 
 		sxpBlueprint2 = testGetSXPBlueprintsPage_addSXPBlueprint(sxpBlueprint2);
 
-		Page<SXPBlueprint> page = sxpBlueprintResource.getSXPBlueprintsPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<SXPBlueprint> ascPage =
 				sxpBlueprintResource.getSXPBlueprintsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				sxpBlueprint1, (List<SXPBlueprint>)ascPage.getItems());
-			assertContains(
-				sxpBlueprint2, (List<SXPBlueprint>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(sxpBlueprint1, sxpBlueprint2),
+				(List<SXPBlueprint>)ascPage.getItems());
 
 			Page<SXPBlueprint> descPage =
 				sxpBlueprintResource.getSXPBlueprintsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				sxpBlueprint2, (List<SXPBlueprint>)descPage.getItems());
-			assertContains(
-				sxpBlueprint1, (List<SXPBlueprint>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(sxpBlueprint2, sxpBlueprint1),
+				(List<SXPBlueprint>)descPage.getItems());
 		}
 	}
 

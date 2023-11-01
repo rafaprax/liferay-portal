@@ -245,13 +245,12 @@ public abstract class BaseAccountCategoryForecastResourceTestCase {
 	public void testGetAccountCategoryForecastsByMonthlyRevenuePageWithPagination()
 		throws Exception {
 
-		Page<AccountCategoryForecast> accountCategoryForecastPage =
+		Page<AccountCategoryForecast> totalPage =
 			accountCategoryForecastResource.
 				getAccountCategoryForecastsByMonthlyRevenuePage(
 					null, null, null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			accountCategoryForecastPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		AccountCategoryForecast accountCategoryForecast1 =
 			testGetAccountCategoryForecastsByMonthlyRevenuePage_addAccountCategoryForecast(
@@ -297,7 +296,7 @@ public abstract class BaseAccountCategoryForecastResourceTestCase {
 			accountCategoryForecastResource.
 				getAccountCategoryForecastsByMonthlyRevenuePage(
 					null, null, null, null, null,
-					Pagination.of(1, (int)totalCount + 3));
+					Pagination.of(1, totalCount + 3));
 
 		assertContains(
 			accountCategoryForecast1,

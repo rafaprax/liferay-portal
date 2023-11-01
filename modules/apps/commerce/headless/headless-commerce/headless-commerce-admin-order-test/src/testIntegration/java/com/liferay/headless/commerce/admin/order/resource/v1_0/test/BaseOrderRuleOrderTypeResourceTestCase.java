@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -212,7 +211,7 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 				getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			OrderRuleOrderType irrelevantOrderRuleOrderType =
@@ -223,13 +222,12 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 			page =
 				orderRuleOrderTypeResource.
 					getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
-						irrelevantExternalReferenceCode,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrderRuleOrderType,
+			assertEquals(
+				Arrays.asList(irrelevantOrderRuleOrderType),
 				(List<OrderRuleOrderType>)page.getItems());
 			assertValid(
 				page,
@@ -250,12 +248,11 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 				getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			orderRuleOrderType1, (List<OrderRuleOrderType>)page.getItems());
-		assertContains(
-			orderRuleOrderType2, (List<OrderRuleOrderType>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(orderRuleOrderType1, orderRuleOrderType2),
+			(List<OrderRuleOrderType>)page.getItems());
 		assertValid(
 			page,
 			testGetOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage_getExpectedActions(
@@ -279,14 +276,6 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 		String externalReferenceCode =
 			testGetOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage_getExternalReferenceCode();
 
-		Page<OrderRuleOrderType> orderRuleOrderTypePage =
-			orderRuleOrderTypeResource.
-				getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
-					externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(
-			orderRuleOrderTypePage.getTotalCount());
-
 		OrderRuleOrderType orderRuleOrderType1 =
 			testGetOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage_addOrderRuleOrderType(
 				externalReferenceCode, randomOrderRuleOrderType());
@@ -302,21 +291,20 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 		Page<OrderRuleOrderType> page1 =
 			orderRuleOrderTypeResource.
 				getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
-					externalReferenceCode, Pagination.of(1, totalCount + 2));
+					externalReferenceCode, Pagination.of(1, 2));
 
 		List<OrderRuleOrderType> orderRuleOrderTypes1 =
 			(List<OrderRuleOrderType>)page1.getItems();
 
 		Assert.assertEquals(
-			orderRuleOrderTypes1.toString(), totalCount + 2,
-			orderRuleOrderTypes1.size());
+			orderRuleOrderTypes1.toString(), 2, orderRuleOrderTypes1.size());
 
 		Page<OrderRuleOrderType> page2 =
 			orderRuleOrderTypeResource.
 				getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
-					externalReferenceCode, Pagination.of(2, totalCount + 2));
+					externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<OrderRuleOrderType> orderRuleOrderTypes2 =
 			(List<OrderRuleOrderType>)page2.getItems();
@@ -327,15 +315,12 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 		Page<OrderRuleOrderType> page3 =
 			orderRuleOrderTypeResource.
 				getOrderRuleByExternalReferenceCodeOrderRuleOrderTypesPage(
-					externalReferenceCode,
-					Pagination.of(1, (int)totalCount + 3));
+					externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(
-			orderRuleOrderType1, (List<OrderRuleOrderType>)page3.getItems());
-		assertContains(
-			orderRuleOrderType2, (List<OrderRuleOrderType>)page3.getItems());
-		assertContains(
-			orderRuleOrderType3, (List<OrderRuleOrderType>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				orderRuleOrderType1, orderRuleOrderType2, orderRuleOrderType3),
+			(List<OrderRuleOrderType>)page3.getItems());
 	}
 
 	protected OrderRuleOrderType
@@ -397,7 +382,7 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 			orderRuleOrderTypeResource.getOrderRuleIdOrderRuleOrderTypesPage(
 				id, null, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			OrderRuleOrderType irrelevantOrderRuleOrderType =
@@ -407,13 +392,12 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 			page =
 				orderRuleOrderTypeResource.
 					getOrderRuleIdOrderRuleOrderTypesPage(
-						irrelevantId, null,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantId, null, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrderRuleOrderType,
+			assertEquals(
+				Arrays.asList(irrelevantOrderRuleOrderType),
 				(List<OrderRuleOrderType>)page.getItems());
 			assertValid(
 				page,
@@ -432,12 +416,11 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 		page = orderRuleOrderTypeResource.getOrderRuleIdOrderRuleOrderTypesPage(
 			id, null, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			orderRuleOrderType1, (List<OrderRuleOrderType>)page.getItems());
-		assertContains(
-			orderRuleOrderType2, (List<OrderRuleOrderType>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(orderRuleOrderType1, orderRuleOrderType2),
+			(List<OrderRuleOrderType>)page.getItems());
 		assertValid(
 			page,
 			testGetOrderRuleIdOrderRuleOrderTypesPage_getExpectedActions(id));
@@ -459,13 +442,6 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 
 		Long id = testGetOrderRuleIdOrderRuleOrderTypesPage_getId();
 
-		Page<OrderRuleOrderType> orderRuleOrderTypePage =
-			orderRuleOrderTypeResource.getOrderRuleIdOrderRuleOrderTypesPage(
-				id, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			orderRuleOrderTypePage.getTotalCount());
-
 		OrderRuleOrderType orderRuleOrderType1 =
 			testGetOrderRuleIdOrderRuleOrderTypesPage_addOrderRuleOrderType(
 				id, randomOrderRuleOrderType());
@@ -480,20 +456,19 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 
 		Page<OrderRuleOrderType> page1 =
 			orderRuleOrderTypeResource.getOrderRuleIdOrderRuleOrderTypesPage(
-				id, null, Pagination.of(1, totalCount + 2));
+				id, null, Pagination.of(1, 2));
 
 		List<OrderRuleOrderType> orderRuleOrderTypes1 =
 			(List<OrderRuleOrderType>)page1.getItems();
 
 		Assert.assertEquals(
-			orderRuleOrderTypes1.toString(), totalCount + 2,
-			orderRuleOrderTypes1.size());
+			orderRuleOrderTypes1.toString(), 2, orderRuleOrderTypes1.size());
 
 		Page<OrderRuleOrderType> page2 =
 			orderRuleOrderTypeResource.getOrderRuleIdOrderRuleOrderTypesPage(
-				id, null, Pagination.of(2, totalCount + 2));
+				id, null, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<OrderRuleOrderType> orderRuleOrderTypes2 =
 			(List<OrderRuleOrderType>)page2.getItems();
@@ -503,14 +478,12 @@ public abstract class BaseOrderRuleOrderTypeResourceTestCase {
 
 		Page<OrderRuleOrderType> page3 =
 			orderRuleOrderTypeResource.getOrderRuleIdOrderRuleOrderTypesPage(
-				id, null, Pagination.of(1, (int)totalCount + 3));
+				id, null, Pagination.of(1, 3));
 
-		assertContains(
-			orderRuleOrderType1, (List<OrderRuleOrderType>)page3.getItems());
-		assertContains(
-			orderRuleOrderType2, (List<OrderRuleOrderType>)page3.getItems());
-		assertContains(
-			orderRuleOrderType3, (List<OrderRuleOrderType>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				orderRuleOrderType1, orderRuleOrderType2, orderRuleOrderType3),
+			(List<OrderRuleOrderType>)page3.getItems());
 	}
 
 	protected OrderRuleOrderType

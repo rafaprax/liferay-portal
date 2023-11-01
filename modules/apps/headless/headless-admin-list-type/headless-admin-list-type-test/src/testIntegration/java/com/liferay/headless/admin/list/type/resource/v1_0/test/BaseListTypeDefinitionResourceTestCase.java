@@ -332,12 +332,11 @@ public abstract class BaseListTypeDefinitionResourceTestCase {
 	public void testGetListTypeDefinitionsPageWithPagination()
 		throws Exception {
 
-		Page<ListTypeDefinition> listTypeDefinitionPage =
+		Page<ListTypeDefinition> totalPage =
 			listTypeDefinitionResource.getListTypeDefinitionsPage(
 				null, null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			listTypeDefinitionPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		ListTypeDefinition listTypeDefinition1 =
 			testGetListTypeDefinitionsPage_addListTypeDefinition(
@@ -376,7 +375,7 @@ public abstract class BaseListTypeDefinitionResourceTestCase {
 
 		Page<ListTypeDefinition> page3 =
 			listTypeDefinitionResource.getListTypeDefinitionsPage(
-				null, null, null, Pagination.of(1, (int)totalCount + 3), null);
+				null, null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(
 			listTypeDefinition1, (List<ListTypeDefinition>)page3.getItems());
@@ -509,35 +508,23 @@ public abstract class BaseListTypeDefinitionResourceTestCase {
 			testGetListTypeDefinitionsPage_addListTypeDefinition(
 				listTypeDefinition2);
 
-		Page<ListTypeDefinition> page =
-			listTypeDefinitionResource.getListTypeDefinitionsPage(
-				null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<ListTypeDefinition> ascPage =
 				listTypeDefinitionResource.getListTypeDefinitionsPage(
-					null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				listTypeDefinition1,
-				(List<ListTypeDefinition>)ascPage.getItems());
-			assertContains(
-				listTypeDefinition2,
+			assertEquals(
+				Arrays.asList(listTypeDefinition1, listTypeDefinition2),
 				(List<ListTypeDefinition>)ascPage.getItems());
 
 			Page<ListTypeDefinition> descPage =
 				listTypeDefinitionResource.getListTypeDefinitionsPage(
-					null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				listTypeDefinition2,
-				(List<ListTypeDefinition>)descPage.getItems());
-			assertContains(
-				listTypeDefinition1,
+			assertEquals(
+				Arrays.asList(listTypeDefinition2, listTypeDefinition1),
 				(List<ListTypeDefinition>)descPage.getItems());
 		}
 	}

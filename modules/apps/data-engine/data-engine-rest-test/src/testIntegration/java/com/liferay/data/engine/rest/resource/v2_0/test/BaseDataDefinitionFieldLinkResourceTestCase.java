@@ -198,7 +198,7 @@ public abstract class BaseDataDefinitionFieldLinkResourceTestCase {
 				getDataDefinitionDataDefinitionFieldLinksPage(
 					dataDefinitionId, RandomTestUtil.randomString());
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantDataDefinitionId != null) {
 			DataDefinitionFieldLink irrelevantDataDefinitionFieldLink =
@@ -211,10 +211,10 @@ public abstract class BaseDataDefinitionFieldLinkResourceTestCase {
 					getDataDefinitionDataDefinitionFieldLinksPage(
 						irrelevantDataDefinitionId, null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantDataDefinitionFieldLink,
+			assertEquals(
+				Arrays.asList(irrelevantDataDefinitionFieldLink),
 				(List<DataDefinitionFieldLink>)page.getItems());
 			assertValid(
 				page,
@@ -235,13 +235,10 @@ public abstract class BaseDataDefinitionFieldLinkResourceTestCase {
 				getDataDefinitionDataDefinitionFieldLinksPage(
 					dataDefinitionId, null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			dataDefinitionFieldLink1,
-			(List<DataDefinitionFieldLink>)page.getItems());
-		assertContains(
-			dataDefinitionFieldLink2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(dataDefinitionFieldLink1, dataDefinitionFieldLink2),
 			(List<DataDefinitionFieldLink>)page.getItems());
 		assertValid(
 			page,

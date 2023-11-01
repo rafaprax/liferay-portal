@@ -311,10 +311,10 @@ public abstract class BasePriceListResourceTestCase {
 
 	@Test
 	public void testGetPriceListsPageWithPagination() throws Exception {
-		Page<PriceList> priceListPage = priceListResource.getPriceListsPage(
+		Page<PriceList> totalPage = priceListResource.getPriceListsPage(
 			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(priceListPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		PriceList priceList1 = testGetPriceListsPage_addPriceList(
 			randomPriceList());
@@ -343,7 +343,7 @@ public abstract class BasePriceListResourceTestCase {
 		Assert.assertEquals(priceLists2.toString(), 1, priceLists2.size());
 
 		Page<PriceList> page3 = priceListResource.getPriceListsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(priceList1, (List<PriceList>)page3.getItems());
 		assertContains(priceList2, (List<PriceList>)page3.getItems());
@@ -457,23 +457,22 @@ public abstract class BasePriceListResourceTestCase {
 
 		priceList2 = testGetPriceListsPage_addPriceList(priceList2);
 
-		Page<PriceList> page = priceListResource.getPriceListsPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<PriceList> ascPage = priceListResource.getPriceListsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(priceList1, (List<PriceList>)ascPage.getItems());
-			assertContains(priceList2, (List<PriceList>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(priceList1, priceList2),
+				(List<PriceList>)ascPage.getItems());
 
 			Page<PriceList> descPage = priceListResource.getPriceListsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(priceList2, (List<PriceList>)descPage.getItems());
-			assertContains(priceList1, (List<PriceList>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(priceList2, priceList1),
+				(List<PriceList>)descPage.getItems());
 		}
 	}
 

@@ -196,7 +196,7 @@ public abstract class BaseNodeResourceTestCase {
 
 		Page<Node> page = nodeResource.getProcessNodesPage(processId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantProcessId != null) {
 			Node irrelevantNode = testGetProcessNodesPage_addNode(
@@ -204,9 +204,10 @@ public abstract class BaseNodeResourceTestCase {
 
 			page = nodeResource.getProcessNodesPage(irrelevantProcessId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantNode, (List<Node>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantNode), (List<Node>)page.getItems());
 			assertValid(
 				page,
 				testGetProcessNodesPage_getExpectedActions(
@@ -219,10 +220,10 @@ public abstract class BaseNodeResourceTestCase {
 
 		page = nodeResource.getProcessNodesPage(processId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(node1, (List<Node>)page.getItems());
-		assertContains(node2, (List<Node>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(node1, node2), (List<Node>)page.getItems());
 		assertValid(
 			page, testGetProcessNodesPage_getExpectedActions(processId));
 	}

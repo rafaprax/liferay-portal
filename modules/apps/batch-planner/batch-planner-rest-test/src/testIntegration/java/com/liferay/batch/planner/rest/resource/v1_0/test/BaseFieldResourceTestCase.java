@@ -194,7 +194,7 @@ public abstract class BaseFieldResourceTestCase {
 		Page<Field> page = fieldResource.getPlanInternalClassNameKeyFieldsPage(
 			internalClassNameKey, null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantInternalClassNameKey != null) {
 			Field irrelevantField =
@@ -204,9 +204,10 @@ public abstract class BaseFieldResourceTestCase {
 			page = fieldResource.getPlanInternalClassNameKeyFieldsPage(
 				irrelevantInternalClassNameKey, null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantField, (List<Field>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantField), (List<Field>)page.getItems());
 			assertValid(
 				page,
 				testGetPlanInternalClassNameKeyFieldsPage_getExpectedActions(
@@ -222,10 +223,10 @@ public abstract class BaseFieldResourceTestCase {
 		page = fieldResource.getPlanInternalClassNameKeyFieldsPage(
 			internalClassNameKey, null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(field1, (List<Field>)page.getItems());
-		assertContains(field2, (List<Field>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(field1, field2), (List<Field>)page.getItems());
 		assertValid(
 			page,
 			testGetPlanInternalClassNameKeyFieldsPage_getExpectedActions(
