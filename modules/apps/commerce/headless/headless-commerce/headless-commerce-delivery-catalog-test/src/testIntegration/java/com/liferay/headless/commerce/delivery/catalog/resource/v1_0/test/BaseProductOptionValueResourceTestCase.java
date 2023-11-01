@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -222,7 +221,7 @@ public abstract class BaseProductOptionValueResourceTestCase {
 					channelId, productId, productOptionId, null, null, null,
 					Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantChannelId != null) && (irrelevantProductId != null) &&
 			(irrelevantProductOptionId != null)) {
@@ -238,12 +237,12 @@ public abstract class BaseProductOptionValueResourceTestCase {
 					getChannelProductProductOptionProductOptionValuesPage(
 						irrelevantChannelId, irrelevantProductId,
 						irrelevantProductOptionId, null, null, null,
-						Pagination.of(1, (int)totalCount + 1));
+						Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantProductOptionValue,
+			assertEquals(
+				Arrays.asList(irrelevantProductOptionValue),
 				(List<ProductOptionValue>)page.getItems());
 			assertValid(
 				page,
@@ -268,12 +267,11 @@ public abstract class BaseProductOptionValueResourceTestCase {
 					channelId, productId, productOptionId, null, null, null,
 					Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			productOptionValue1, (List<ProductOptionValue>)page.getItems());
-		assertContains(
-			productOptionValue2, (List<ProductOptionValue>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(productOptionValue1, productOptionValue2),
+			(List<ProductOptionValue>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelProductProductOptionProductOptionValuesPage_getExpectedActions(
@@ -301,15 +299,6 @@ public abstract class BaseProductOptionValueResourceTestCase {
 		Long productOptionId =
 			testGetChannelProductProductOptionProductOptionValuesPage_getProductOptionId();
 
-		Page<ProductOptionValue> productOptionValuePage =
-			productOptionValueResource.
-				getChannelProductProductOptionProductOptionValuesPage(
-					channelId, productId, productOptionId, null, null, null,
-					null);
-
-		int totalCount = GetterUtil.getInteger(
-			productOptionValuePage.getTotalCount());
-
 		ProductOptionValue productOptionValue1 =
 			testGetChannelProductProductOptionProductOptionValuesPage_addProductOptionValue(
 				channelId, productId, productOptionId,
@@ -329,22 +318,21 @@ public abstract class BaseProductOptionValueResourceTestCase {
 			productOptionValueResource.
 				getChannelProductProductOptionProductOptionValuesPage(
 					channelId, productId, productOptionId, null, null, null,
-					Pagination.of(1, totalCount + 2));
+					Pagination.of(1, 2));
 
 		List<ProductOptionValue> productOptionValues1 =
 			(List<ProductOptionValue>)page1.getItems();
 
 		Assert.assertEquals(
-			productOptionValues1.toString(), totalCount + 2,
-			productOptionValues1.size());
+			productOptionValues1.toString(), 2, productOptionValues1.size());
 
 		Page<ProductOptionValue> page2 =
 			productOptionValueResource.
 				getChannelProductProductOptionProductOptionValuesPage(
 					channelId, productId, productOptionId, null, null, null,
-					Pagination.of(2, totalCount + 2));
+					Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ProductOptionValue> productOptionValues2 =
 			(List<ProductOptionValue>)page2.getItems();
@@ -356,14 +344,12 @@ public abstract class BaseProductOptionValueResourceTestCase {
 			productOptionValueResource.
 				getChannelProductProductOptionProductOptionValuesPage(
 					channelId, productId, productOptionId, null, null, null,
-					Pagination.of(1, (int)totalCount + 3));
+					Pagination.of(1, 3));
 
-		assertContains(
-			productOptionValue1, (List<ProductOptionValue>)page3.getItems());
-		assertContains(
-			productOptionValue2, (List<ProductOptionValue>)page3.getItems());
-		assertContains(
-			productOptionValue3, (List<ProductOptionValue>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				productOptionValue1, productOptionValue2, productOptionValue3),
+			(List<ProductOptionValue>)page3.getItems());
 	}
 
 	protected ProductOptionValue

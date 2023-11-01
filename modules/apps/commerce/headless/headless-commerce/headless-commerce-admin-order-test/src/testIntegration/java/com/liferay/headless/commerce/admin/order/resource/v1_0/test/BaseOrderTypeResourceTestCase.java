@@ -393,10 +393,10 @@ public abstract class BaseOrderTypeResourceTestCase {
 
 	@Test
 	public void testGetOrderTypesPageWithPagination() throws Exception {
-		Page<OrderType> orderTypePage = orderTypeResource.getOrderTypesPage(
+		Page<OrderType> totalPage = orderTypeResource.getOrderTypesPage(
 			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(orderTypePage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		OrderType orderType1 = testGetOrderTypesPage_addOrderType(
 			randomOrderType());
@@ -425,7 +425,7 @@ public abstract class BaseOrderTypeResourceTestCase {
 		Assert.assertEquals(orderTypes2.toString(), 1, orderTypes2.size());
 
 		Page<OrderType> page3 = orderTypeResource.getOrderTypesPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(orderType1, (List<OrderType>)page3.getItems());
 		assertContains(orderType2, (List<OrderType>)page3.getItems());
@@ -539,23 +539,22 @@ public abstract class BaseOrderTypeResourceTestCase {
 
 		orderType2 = testGetOrderTypesPage_addOrderType(orderType2);
 
-		Page<OrderType> page = orderTypeResource.getOrderTypesPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<OrderType> ascPage = orderTypeResource.getOrderTypesPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(orderType1, (List<OrderType>)ascPage.getItems());
-			assertContains(orderType2, (List<OrderType>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(orderType1, orderType2),
+				(List<OrderType>)ascPage.getItems());
 
 			Page<OrderType> descPage = orderTypeResource.getOrderTypesPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(orderType2, (List<OrderType>)descPage.getItems());
-			assertContains(orderType1, (List<OrderType>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(orderType2, orderType1),
+				(List<OrderType>)descPage.getItems());
 		}
 	}
 

@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -198,7 +197,7 @@ public abstract class BaseLinkedProductResourceTestCase {
 			linkedProductResource.getChannelProductLinkedProductsPage(
 				channelId, productId, null, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantChannelId != null) && (irrelevantProductId != null)) {
 			LinkedProduct irrelevantLinkedProduct =
@@ -208,12 +207,13 @@ public abstract class BaseLinkedProductResourceTestCase {
 
 			page = linkedProductResource.getChannelProductLinkedProductsPage(
 				irrelevantChannelId, irrelevantProductId, null,
-				Pagination.of(1, (int)totalCount + 1));
+				Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantLinkedProduct, (List<LinkedProduct>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantLinkedProduct),
+				(List<LinkedProduct>)page.getItems());
 			assertValid(
 				page,
 				testGetChannelProductLinkedProductsPage_getExpectedActions(
@@ -231,10 +231,11 @@ public abstract class BaseLinkedProductResourceTestCase {
 		page = linkedProductResource.getChannelProductLinkedProductsPage(
 			channelId, productId, null, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(linkedProduct1, (List<LinkedProduct>)page.getItems());
-		assertContains(linkedProduct2, (List<LinkedProduct>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(linkedProduct1, linkedProduct2),
+			(List<LinkedProduct>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelProductLinkedProductsPage_getExpectedActions(
@@ -258,13 +259,6 @@ public abstract class BaseLinkedProductResourceTestCase {
 		Long channelId = testGetChannelProductLinkedProductsPage_getChannelId();
 		Long productId = testGetChannelProductLinkedProductsPage_getProductId();
 
-		Page<LinkedProduct> linkedProductPage =
-			linkedProductResource.getChannelProductLinkedProductsPage(
-				channelId, productId, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			linkedProductPage.getTotalCount());
-
 		LinkedProduct linkedProduct1 =
 			testGetChannelProductLinkedProductsPage_addLinkedProduct(
 				channelId, productId, randomLinkedProduct());
@@ -279,19 +273,19 @@ public abstract class BaseLinkedProductResourceTestCase {
 
 		Page<LinkedProduct> page1 =
 			linkedProductResource.getChannelProductLinkedProductsPage(
-				channelId, productId, null, Pagination.of(1, totalCount + 2));
+				channelId, productId, null, Pagination.of(1, 2));
 
 		List<LinkedProduct> linkedProducts1 =
 			(List<LinkedProduct>)page1.getItems();
 
 		Assert.assertEquals(
-			linkedProducts1.toString(), totalCount + 2, linkedProducts1.size());
+			linkedProducts1.toString(), 2, linkedProducts1.size());
 
 		Page<LinkedProduct> page2 =
 			linkedProductResource.getChannelProductLinkedProductsPage(
-				channelId, productId, null, Pagination.of(2, totalCount + 2));
+				channelId, productId, null, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<LinkedProduct> linkedProducts2 =
 			(List<LinkedProduct>)page2.getItems();
@@ -301,12 +295,11 @@ public abstract class BaseLinkedProductResourceTestCase {
 
 		Page<LinkedProduct> page3 =
 			linkedProductResource.getChannelProductLinkedProductsPage(
-				channelId, productId, null,
-				Pagination.of(1, (int)totalCount + 3));
+				channelId, productId, null, Pagination.of(1, 3));
 
-		assertContains(linkedProduct1, (List<LinkedProduct>)page3.getItems());
-		assertContains(linkedProduct2, (List<LinkedProduct>)page3.getItems());
-		assertContains(linkedProduct3, (List<LinkedProduct>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(linkedProduct1, linkedProduct2, linkedProduct3),
+			(List<LinkedProduct>)page3.getItems());
 	}
 
 	protected LinkedProduct

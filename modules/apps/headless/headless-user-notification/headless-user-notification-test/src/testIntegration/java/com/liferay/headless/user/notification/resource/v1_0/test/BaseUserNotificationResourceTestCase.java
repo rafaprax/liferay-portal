@@ -319,12 +319,11 @@ public abstract class BaseUserNotificationResourceTestCase {
 	public void testGetMyUserNotificationsPageWithPagination()
 		throws Exception {
 
-		Page<UserNotification> userNotificationPage =
+		Page<UserNotification> totalPage =
 			userNotificationResource.getMyUserNotificationsPage(
 				null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			userNotificationPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		UserNotification userNotification1 =
 			testGetMyUserNotificationsPage_addUserNotification(
@@ -363,7 +362,7 @@ public abstract class BaseUserNotificationResourceTestCase {
 
 		Page<UserNotification> page3 =
 			userNotificationResource.getMyUserNotificationsPage(
-				null, null, Pagination.of(1, (int)totalCount + 3), null);
+				null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(
 			userNotification1, (List<UserNotification>)page3.getItems());
@@ -494,30 +493,24 @@ public abstract class BaseUserNotificationResourceTestCase {
 		userNotification2 = testGetMyUserNotificationsPage_addUserNotification(
 			userNotification2);
 
-		Page<UserNotification> page =
-			userNotificationResource.getMyUserNotificationsPage(
-				null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<UserNotification> ascPage =
 				userNotificationResource.getMyUserNotificationsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				userNotification1, (List<UserNotification>)ascPage.getItems());
-			assertContains(
-				userNotification2, (List<UserNotification>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(userNotification1, userNotification2),
+				(List<UserNotification>)ascPage.getItems());
 
 			Page<UserNotification> descPage =
 				userNotificationResource.getMyUserNotificationsPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				userNotification2, (List<UserNotification>)descPage.getItems());
-			assertContains(
-				userNotification1, (List<UserNotification>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(userNotification2, userNotification1),
+				(List<UserNotification>)descPage.getItems());
 		}
 	}
 
@@ -541,7 +534,7 @@ public abstract class BaseUserNotificationResourceTestCase {
 			userNotificationResource.getUserAccountUserNotificationsPage(
 				userAccountId, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantUserAccountId != null) {
 			UserNotification irrelevantUserNotification =
@@ -550,13 +543,12 @@ public abstract class BaseUserNotificationResourceTestCase {
 					randomIrrelevantUserNotification());
 
 			page = userNotificationResource.getUserAccountUserNotificationsPage(
-				irrelevantUserAccountId, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantUserAccountId, null, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantUserNotification,
+			assertEquals(
+				Arrays.asList(irrelevantUserNotification),
 				(List<UserNotification>)page.getItems());
 			assertValid(
 				page,
@@ -575,12 +567,11 @@ public abstract class BaseUserNotificationResourceTestCase {
 		page = userNotificationResource.getUserAccountUserNotificationsPage(
 			userAccountId, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			userNotification1, (List<UserNotification>)page.getItems());
-		assertContains(
-			userNotification2, (List<UserNotification>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(userNotification1, userNotification2),
+			(List<UserNotification>)page.getItems());
 		assertValid(
 			page,
 			testGetUserAccountUserNotificationsPage_getExpectedActions(
@@ -704,13 +695,6 @@ public abstract class BaseUserNotificationResourceTestCase {
 		Long userAccountId =
 			testGetUserAccountUserNotificationsPage_getUserAccountId();
 
-		Page<UserNotification> userNotificationPage =
-			userNotificationResource.getUserAccountUserNotificationsPage(
-				userAccountId, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			userNotificationPage.getTotalCount());
-
 		UserNotification userNotification1 =
 			testGetUserAccountUserNotificationsPage_addUserNotification(
 				userAccountId, randomUserNotification());
@@ -725,22 +709,19 @@ public abstract class BaseUserNotificationResourceTestCase {
 
 		Page<UserNotification> page1 =
 			userNotificationResource.getUserAccountUserNotificationsPage(
-				userAccountId, null, null, Pagination.of(1, totalCount + 2),
-				null);
+				userAccountId, null, null, Pagination.of(1, 2), null);
 
 		List<UserNotification> userNotifications1 =
 			(List<UserNotification>)page1.getItems();
 
 		Assert.assertEquals(
-			userNotifications1.toString(), totalCount + 2,
-			userNotifications1.size());
+			userNotifications1.toString(), 2, userNotifications1.size());
 
 		Page<UserNotification> page2 =
 			userNotificationResource.getUserAccountUserNotificationsPage(
-				userAccountId, null, null, Pagination.of(2, totalCount + 2),
-				null);
+				userAccountId, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<UserNotification> userNotifications2 =
 			(List<UserNotification>)page2.getItems();
@@ -750,15 +731,12 @@ public abstract class BaseUserNotificationResourceTestCase {
 
 		Page<UserNotification> page3 =
 			userNotificationResource.getUserAccountUserNotificationsPage(
-				userAccountId, null, null,
-				Pagination.of(1, (int)totalCount + 3), null);
+				userAccountId, null, null, Pagination.of(1, 3), null);
 
-		assertContains(
-			userNotification1, (List<UserNotification>)page3.getItems());
-		assertContains(
-			userNotification2, (List<UserNotification>)page3.getItems());
-		assertContains(
-			userNotification3, (List<UserNotification>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				userNotification1, userNotification2, userNotification3),
+			(List<UserNotification>)page3.getItems());
 	}
 
 	@Test
@@ -887,32 +865,24 @@ public abstract class BaseUserNotificationResourceTestCase {
 			testGetUserAccountUserNotificationsPage_addUserNotification(
 				userAccountId, userNotification2);
 
-		Page<UserNotification> page =
-			userNotificationResource.getUserAccountUserNotificationsPage(
-				userAccountId, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<UserNotification> ascPage =
 				userNotificationResource.getUserAccountUserNotificationsPage(
-					userAccountId, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					userAccountId, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				userNotification1, (List<UserNotification>)ascPage.getItems());
-			assertContains(
-				userNotification2, (List<UserNotification>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(userNotification1, userNotification2),
+				(List<UserNotification>)ascPage.getItems());
 
 			Page<UserNotification> descPage =
 				userNotificationResource.getUserAccountUserNotificationsPage(
-					userAccountId, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					userAccountId, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				userNotification2, (List<UserNotification>)descPage.getItems());
-			assertContains(
-				userNotification1, (List<UserNotification>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(userNotification2, userNotification1),
+				(List<UserNotification>)descPage.getItems());
 		}
 	}
 

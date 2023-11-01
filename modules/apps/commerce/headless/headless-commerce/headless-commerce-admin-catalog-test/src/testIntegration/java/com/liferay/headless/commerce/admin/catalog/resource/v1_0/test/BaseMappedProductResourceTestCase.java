@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -254,7 +253,7 @@ public abstract class BaseMappedProductResourceTestCase {
 				getProductByExternalReferenceCodeMappedProductsPage(
 					externalReferenceCode, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			MappedProduct irrelevantMappedProduct =
@@ -266,12 +265,13 @@ public abstract class BaseMappedProductResourceTestCase {
 				mappedProductResource.
 					getProductByExternalReferenceCodeMappedProductsPage(
 						irrelevantExternalReferenceCode, null,
-						Pagination.of(1, (int)totalCount + 1), null);
+						Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantMappedProduct, (List<MappedProduct>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantMappedProduct),
+				(List<MappedProduct>)page.getItems());
 			assertValid(
 				page,
 				testGetProductByExternalReferenceCodeMappedProductsPage_getExpectedActions(
@@ -291,10 +291,11 @@ public abstract class BaseMappedProductResourceTestCase {
 				getProductByExternalReferenceCodeMappedProductsPage(
 					externalReferenceCode, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(mappedProduct1, (List<MappedProduct>)page.getItems());
-		assertContains(mappedProduct2, (List<MappedProduct>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(mappedProduct1, mappedProduct2),
+			(List<MappedProduct>)page.getItems());
 		assertValid(
 			page,
 			testGetProductByExternalReferenceCodeMappedProductsPage_getExpectedActions(
@@ -322,14 +323,6 @@ public abstract class BaseMappedProductResourceTestCase {
 		String externalReferenceCode =
 			testGetProductByExternalReferenceCodeMappedProductsPage_getExternalReferenceCode();
 
-		Page<MappedProduct> mappedProductPage =
-			mappedProductResource.
-				getProductByExternalReferenceCodeMappedProductsPage(
-					externalReferenceCode, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			mappedProductPage.getTotalCount());
-
 		MappedProduct mappedProduct1 =
 			testGetProductByExternalReferenceCodeMappedProductsPage_addMappedProduct(
 				externalReferenceCode, randomMappedProduct());
@@ -345,22 +338,20 @@ public abstract class BaseMappedProductResourceTestCase {
 		Page<MappedProduct> page1 =
 			mappedProductResource.
 				getProductByExternalReferenceCodeMappedProductsPage(
-					externalReferenceCode, null,
-					Pagination.of(1, totalCount + 2), null);
+					externalReferenceCode, null, Pagination.of(1, 2), null);
 
 		List<MappedProduct> mappedProducts1 =
 			(List<MappedProduct>)page1.getItems();
 
 		Assert.assertEquals(
-			mappedProducts1.toString(), totalCount + 2, mappedProducts1.size());
+			mappedProducts1.toString(), 2, mappedProducts1.size());
 
 		Page<MappedProduct> page2 =
 			mappedProductResource.
 				getProductByExternalReferenceCodeMappedProductsPage(
-					externalReferenceCode, null,
-					Pagination.of(2, totalCount + 2), null);
+					externalReferenceCode, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<MappedProduct> mappedProducts2 =
 			(List<MappedProduct>)page2.getItems();
@@ -371,12 +362,11 @@ public abstract class BaseMappedProductResourceTestCase {
 		Page<MappedProduct> page3 =
 			mappedProductResource.
 				getProductByExternalReferenceCodeMappedProductsPage(
-					externalReferenceCode, null,
-					Pagination.of(1, (int)totalCount + 3), null);
+					externalReferenceCode, null, Pagination.of(1, 3), null);
 
-		assertContains(mappedProduct1, (List<MappedProduct>)page3.getItems());
-		assertContains(mappedProduct2, (List<MappedProduct>)page3.getItems());
-		assertContains(mappedProduct3, (List<MappedProduct>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(mappedProduct1, mappedProduct2, mappedProduct3),
+			(List<MappedProduct>)page3.getItems());
 	}
 
 	@Test
@@ -506,35 +496,26 @@ public abstract class BaseMappedProductResourceTestCase {
 			testGetProductByExternalReferenceCodeMappedProductsPage_addMappedProduct(
 				externalReferenceCode, mappedProduct2);
 
-		Page<MappedProduct> page =
-			mappedProductResource.
-				getProductByExternalReferenceCodeMappedProductsPage(
-					externalReferenceCode, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<MappedProduct> ascPage =
 				mappedProductResource.
 					getProductByExternalReferenceCodeMappedProductsPage(
-						externalReferenceCode, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, Pagination.of(1, 2),
 						entityField.getName() + ":asc");
 
-			assertContains(
-				mappedProduct1, (List<MappedProduct>)ascPage.getItems());
-			assertContains(
-				mappedProduct2, (List<MappedProduct>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(mappedProduct1, mappedProduct2),
+				(List<MappedProduct>)ascPage.getItems());
 
 			Page<MappedProduct> descPage =
 				mappedProductResource.
 					getProductByExternalReferenceCodeMappedProductsPage(
-						externalReferenceCode, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, Pagination.of(1, 2),
 						entityField.getName() + ":desc");
 
-			assertContains(
-				mappedProduct2, (List<MappedProduct>)descPage.getItems());
-			assertContains(
-				mappedProduct1, (List<MappedProduct>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(mappedProduct2, mappedProduct1),
+				(List<MappedProduct>)descPage.getItems());
 		}
 	}
 
@@ -704,7 +685,7 @@ public abstract class BaseMappedProductResourceTestCase {
 			mappedProductResource.getProductIdMappedProductsPage(
 				id, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			MappedProduct irrelevantMappedProduct =
@@ -712,13 +693,13 @@ public abstract class BaseMappedProductResourceTestCase {
 					irrelevantId, randomIrrelevantMappedProduct());
 
 			page = mappedProductResource.getProductIdMappedProductsPage(
-				irrelevantId, null, Pagination.of(1, (int)totalCount + 1),
-				null);
+				irrelevantId, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantMappedProduct, (List<MappedProduct>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantMappedProduct),
+				(List<MappedProduct>)page.getItems());
 			assertValid(
 				page,
 				testGetProductIdMappedProductsPage_getExpectedActions(
@@ -736,10 +717,11 @@ public abstract class BaseMappedProductResourceTestCase {
 		page = mappedProductResource.getProductIdMappedProductsPage(
 			id, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(mappedProduct1, (List<MappedProduct>)page.getItems());
-		assertContains(mappedProduct2, (List<MappedProduct>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(mappedProduct1, mappedProduct2),
+			(List<MappedProduct>)page.getItems());
 		assertValid(
 			page, testGetProductIdMappedProductsPage_getExpectedActions(id));
 
@@ -763,13 +745,6 @@ public abstract class BaseMappedProductResourceTestCase {
 
 		Long id = testGetProductIdMappedProductsPage_getId();
 
-		Page<MappedProduct> mappedProductPage =
-			mappedProductResource.getProductIdMappedProductsPage(
-				id, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			mappedProductPage.getTotalCount());
-
 		MappedProduct mappedProduct1 =
 			testGetProductIdMappedProductsPage_addMappedProduct(
 				id, randomMappedProduct());
@@ -784,19 +759,19 @@ public abstract class BaseMappedProductResourceTestCase {
 
 		Page<MappedProduct> page1 =
 			mappedProductResource.getProductIdMappedProductsPage(
-				id, null, Pagination.of(1, totalCount + 2), null);
+				id, null, Pagination.of(1, 2), null);
 
 		List<MappedProduct> mappedProducts1 =
 			(List<MappedProduct>)page1.getItems();
 
 		Assert.assertEquals(
-			mappedProducts1.toString(), totalCount + 2, mappedProducts1.size());
+			mappedProducts1.toString(), 2, mappedProducts1.size());
 
 		Page<MappedProduct> page2 =
 			mappedProductResource.getProductIdMappedProductsPage(
-				id, null, Pagination.of(2, totalCount + 2), null);
+				id, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<MappedProduct> mappedProducts2 =
 			(List<MappedProduct>)page2.getItems();
@@ -806,11 +781,11 @@ public abstract class BaseMappedProductResourceTestCase {
 
 		Page<MappedProduct> page3 =
 			mappedProductResource.getProductIdMappedProductsPage(
-				id, null, Pagination.of(1, (int)totalCount + 3), null);
+				id, null, Pagination.of(1, 3), null);
 
-		assertContains(mappedProduct1, (List<MappedProduct>)page3.getItems());
-		assertContains(mappedProduct2, (List<MappedProduct>)page3.getItems());
-		assertContains(mappedProduct3, (List<MappedProduct>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(mappedProduct1, mappedProduct2, mappedProduct3),
+			(List<MappedProduct>)page3.getItems());
 	}
 
 	@Test
@@ -936,30 +911,24 @@ public abstract class BaseMappedProductResourceTestCase {
 		mappedProduct2 = testGetProductIdMappedProductsPage_addMappedProduct(
 			id, mappedProduct2);
 
-		Page<MappedProduct> page =
-			mappedProductResource.getProductIdMappedProductsPage(
-				id, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<MappedProduct> ascPage =
 				mappedProductResource.getProductIdMappedProductsPage(
-					id, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					id, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				mappedProduct1, (List<MappedProduct>)ascPage.getItems());
-			assertContains(
-				mappedProduct2, (List<MappedProduct>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(mappedProduct1, mappedProduct2),
+				(List<MappedProduct>)ascPage.getItems());
 
 			Page<MappedProduct> descPage =
 				mappedProductResource.getProductIdMappedProductsPage(
-					id, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					id, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				mappedProduct2, (List<MappedProduct>)descPage.getItems());
-			assertContains(
-				mappedProduct1, (List<MappedProduct>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(mappedProduct2, mappedProduct1),
+				(List<MappedProduct>)descPage.getItems());
 		}
 	}
 

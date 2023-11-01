@@ -352,12 +352,11 @@ public abstract class BaseNotificationTemplateResourceTestCase {
 	public void testGetNotificationTemplatesPageWithPagination()
 		throws Exception {
 
-		Page<NotificationTemplate> notificationTemplatePage =
+		Page<NotificationTemplate> totalPage =
 			notificationTemplateResource.getNotificationTemplatesPage(
 				null, null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			notificationTemplatePage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		NotificationTemplate notificationTemplate1 =
 			testGetNotificationTemplatesPage_addNotificationTemplate(
@@ -397,7 +396,7 @@ public abstract class BaseNotificationTemplateResourceTestCase {
 
 		Page<NotificationTemplate> page3 =
 			notificationTemplateResource.getNotificationTemplatesPage(
-				null, null, null, Pagination.of(1, (int)totalCount + 3), null);
+				null, null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(
 			notificationTemplate1,
@@ -535,35 +534,23 @@ public abstract class BaseNotificationTemplateResourceTestCase {
 			testGetNotificationTemplatesPage_addNotificationTemplate(
 				notificationTemplate2);
 
-		Page<NotificationTemplate> page =
-			notificationTemplateResource.getNotificationTemplatesPage(
-				null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<NotificationTemplate> ascPage =
 				notificationTemplateResource.getNotificationTemplatesPage(
-					null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				notificationTemplate1,
-				(List<NotificationTemplate>)ascPage.getItems());
-			assertContains(
-				notificationTemplate2,
+			assertEquals(
+				Arrays.asList(notificationTemplate1, notificationTemplate2),
 				(List<NotificationTemplate>)ascPage.getItems());
 
 			Page<NotificationTemplate> descPage =
 				notificationTemplateResource.getNotificationTemplatesPage(
-					null, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				notificationTemplate2,
-				(List<NotificationTemplate>)descPage.getItems());
-			assertContains(
-				notificationTemplate1,
+			assertEquals(
+				Arrays.asList(notificationTemplate2, notificationTemplate1),
 				(List<NotificationTemplate>)descPage.getItems());
 		}
 	}

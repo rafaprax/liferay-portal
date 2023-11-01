@@ -35,7 +35,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -201,7 +200,7 @@ public abstract class BaseObjectLayoutResourceTestCase {
 				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
 					externalReferenceCode, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			ObjectLayout irrelevantObjectLayout =
@@ -213,12 +212,13 @@ public abstract class BaseObjectLayoutResourceTestCase {
 				objectLayoutResource.
 					getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
 						irrelevantExternalReferenceCode, null,
-						Pagination.of(1, (int)totalCount + 1), null);
+						Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantObjectLayout, (List<ObjectLayout>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantObjectLayout),
+				(List<ObjectLayout>)page.getItems());
 			assertValid(
 				page,
 				testGetObjectDefinitionByExternalReferenceCodeObjectLayoutsPage_getExpectedActions(
@@ -238,10 +238,11 @@ public abstract class BaseObjectLayoutResourceTestCase {
 				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
 					externalReferenceCode, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(objectLayout1, (List<ObjectLayout>)page.getItems());
-		assertContains(objectLayout2, (List<ObjectLayout>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(objectLayout1, objectLayout2),
+			(List<ObjectLayout>)page.getItems());
 		assertValid(
 			page,
 			testGetObjectDefinitionByExternalReferenceCodeObjectLayoutsPage_getExpectedActions(
@@ -269,14 +270,6 @@ public abstract class BaseObjectLayoutResourceTestCase {
 		String externalReferenceCode =
 			testGetObjectDefinitionByExternalReferenceCodeObjectLayoutsPage_getExternalReferenceCode();
 
-		Page<ObjectLayout> objectLayoutPage =
-			objectLayoutResource.
-				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-					externalReferenceCode, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			objectLayoutPage.getTotalCount());
-
 		ObjectLayout objectLayout1 =
 			testGetObjectDefinitionByExternalReferenceCodeObjectLayoutsPage_addObjectLayout(
 				externalReferenceCode, randomObjectLayout());
@@ -292,22 +285,20 @@ public abstract class BaseObjectLayoutResourceTestCase {
 		Page<ObjectLayout> page1 =
 			objectLayoutResource.
 				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-					externalReferenceCode, null,
-					Pagination.of(1, totalCount + 2), null);
+					externalReferenceCode, null, Pagination.of(1, 2), null);
 
 		List<ObjectLayout> objectLayouts1 =
 			(List<ObjectLayout>)page1.getItems();
 
 		Assert.assertEquals(
-			objectLayouts1.toString(), totalCount + 2, objectLayouts1.size());
+			objectLayouts1.toString(), 2, objectLayouts1.size());
 
 		Page<ObjectLayout> page2 =
 			objectLayoutResource.
 				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-					externalReferenceCode, null,
-					Pagination.of(2, totalCount + 2), null);
+					externalReferenceCode, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ObjectLayout> objectLayouts2 =
 			(List<ObjectLayout>)page2.getItems();
@@ -318,12 +309,11 @@ public abstract class BaseObjectLayoutResourceTestCase {
 		Page<ObjectLayout> page3 =
 			objectLayoutResource.
 				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-					externalReferenceCode, null,
-					Pagination.of(1, (int)totalCount + 3), null);
+					externalReferenceCode, null, Pagination.of(1, 3), null);
 
-		assertContains(objectLayout1, (List<ObjectLayout>)page3.getItems());
-		assertContains(objectLayout2, (List<ObjectLayout>)page3.getItems());
-		assertContains(objectLayout3, (List<ObjectLayout>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(objectLayout1, objectLayout2, objectLayout3),
+			(List<ObjectLayout>)page3.getItems());
 	}
 
 	@Test
@@ -452,35 +442,26 @@ public abstract class BaseObjectLayoutResourceTestCase {
 			testGetObjectDefinitionByExternalReferenceCodeObjectLayoutsPage_addObjectLayout(
 				externalReferenceCode, objectLayout2);
 
-		Page<ObjectLayout> page =
-			objectLayoutResource.
-				getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-					externalReferenceCode, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<ObjectLayout> ascPage =
 				objectLayoutResource.
 					getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-						externalReferenceCode, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, Pagination.of(1, 2),
 						entityField.getName() + ":asc");
 
-			assertContains(
-				objectLayout1, (List<ObjectLayout>)ascPage.getItems());
-			assertContains(
-				objectLayout2, (List<ObjectLayout>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(objectLayout1, objectLayout2),
+				(List<ObjectLayout>)ascPage.getItems());
 
 			Page<ObjectLayout> descPage =
 				objectLayoutResource.
 					getObjectDefinitionByExternalReferenceCodeObjectLayoutsPage(
-						externalReferenceCode, null,
-						Pagination.of(1, (int)page.getTotalCount() + 1),
+						externalReferenceCode, null, Pagination.of(1, 2),
 						entityField.getName() + ":desc");
 
-			assertContains(
-				objectLayout2, (List<ObjectLayout>)descPage.getItems());
-			assertContains(
-				objectLayout1, (List<ObjectLayout>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(objectLayout2, objectLayout1),
+				(List<ObjectLayout>)descPage.getItems());
 		}
 	}
 
@@ -542,7 +523,7 @@ public abstract class BaseObjectLayoutResourceTestCase {
 			objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
 				objectDefinitionId, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantObjectDefinitionId != null) {
 			ObjectLayout irrelevantObjectLayout =
@@ -551,13 +532,13 @@ public abstract class BaseObjectLayoutResourceTestCase {
 					randomIrrelevantObjectLayout());
 
 			page = objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-				irrelevantObjectDefinitionId, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				irrelevantObjectDefinitionId, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantObjectLayout, (List<ObjectLayout>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantObjectLayout),
+				(List<ObjectLayout>)page.getItems());
 			assertValid(
 				page,
 				testGetObjectDefinitionObjectLayoutsPage_getExpectedActions(
@@ -575,10 +556,11 @@ public abstract class BaseObjectLayoutResourceTestCase {
 		page = objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
 			objectDefinitionId, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(objectLayout1, (List<ObjectLayout>)page.getItems());
-		assertContains(objectLayout2, (List<ObjectLayout>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(objectLayout1, objectLayout2),
+			(List<ObjectLayout>)page.getItems());
 		assertValid(
 			page,
 			testGetObjectDefinitionObjectLayoutsPage_getExpectedActions(
@@ -617,13 +599,6 @@ public abstract class BaseObjectLayoutResourceTestCase {
 		Long objectDefinitionId =
 			testGetObjectDefinitionObjectLayoutsPage_getObjectDefinitionId();
 
-		Page<ObjectLayout> objectLayoutPage =
-			objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-				objectDefinitionId, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			objectLayoutPage.getTotalCount());
-
 		ObjectLayout objectLayout1 =
 			testGetObjectDefinitionObjectLayoutsPage_addObjectLayout(
 				objectDefinitionId, randomObjectLayout());
@@ -638,21 +613,19 @@ public abstract class BaseObjectLayoutResourceTestCase {
 
 		Page<ObjectLayout> page1 =
 			objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-				objectDefinitionId, null, Pagination.of(1, totalCount + 2),
-				null);
+				objectDefinitionId, null, Pagination.of(1, 2), null);
 
 		List<ObjectLayout> objectLayouts1 =
 			(List<ObjectLayout>)page1.getItems();
 
 		Assert.assertEquals(
-			objectLayouts1.toString(), totalCount + 2, objectLayouts1.size());
+			objectLayouts1.toString(), 2, objectLayouts1.size());
 
 		Page<ObjectLayout> page2 =
 			objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-				objectDefinitionId, null, Pagination.of(2, totalCount + 2),
-				null);
+				objectDefinitionId, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ObjectLayout> objectLayouts2 =
 			(List<ObjectLayout>)page2.getItems();
@@ -662,12 +635,11 @@ public abstract class BaseObjectLayoutResourceTestCase {
 
 		Page<ObjectLayout> page3 =
 			objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-				objectDefinitionId, null, Pagination.of(1, (int)totalCount + 3),
-				null);
+				objectDefinitionId, null, Pagination.of(1, 3), null);
 
-		assertContains(objectLayout1, (List<ObjectLayout>)page3.getItems());
-		assertContains(objectLayout2, (List<ObjectLayout>)page3.getItems());
-		assertContains(objectLayout3, (List<ObjectLayout>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(objectLayout1, objectLayout2, objectLayout3),
+			(List<ObjectLayout>)page3.getItems());
 	}
 
 	@Test
@@ -795,32 +767,24 @@ public abstract class BaseObjectLayoutResourceTestCase {
 			testGetObjectDefinitionObjectLayoutsPage_addObjectLayout(
 				objectDefinitionId, objectLayout2);
 
-		Page<ObjectLayout> page =
-			objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-				objectDefinitionId, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<ObjectLayout> ascPage =
 				objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-					objectDefinitionId, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					objectDefinitionId, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				objectLayout1, (List<ObjectLayout>)ascPage.getItems());
-			assertContains(
-				objectLayout2, (List<ObjectLayout>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(objectLayout1, objectLayout2),
+				(List<ObjectLayout>)ascPage.getItems());
 
 			Page<ObjectLayout> descPage =
 				objectLayoutResource.getObjectDefinitionObjectLayoutsPage(
-					objectDefinitionId, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					objectDefinitionId, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				objectLayout2, (List<ObjectLayout>)descPage.getItems());
-			assertContains(
-				objectLayout1, (List<ObjectLayout>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(objectLayout2, objectLayout1),
+				(List<ObjectLayout>)descPage.getItems());
 		}
 	}
 

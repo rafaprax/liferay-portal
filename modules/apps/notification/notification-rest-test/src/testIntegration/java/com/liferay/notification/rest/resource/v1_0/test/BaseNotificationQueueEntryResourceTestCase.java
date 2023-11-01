@@ -355,12 +355,11 @@ public abstract class BaseNotificationQueueEntryResourceTestCase {
 	public void testGetNotificationQueueEntriesPageWithPagination()
 		throws Exception {
 
-		Page<NotificationQueueEntry> notificationQueueEntryPage =
+		Page<NotificationQueueEntry> totalPage =
 			notificationQueueEntryResource.getNotificationQueueEntriesPage(
 				null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			notificationQueueEntryPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		NotificationQueueEntry notificationQueueEntry1 =
 			testGetNotificationQueueEntriesPage_addNotificationQueueEntry(
@@ -400,7 +399,7 @@ public abstract class BaseNotificationQueueEntryResourceTestCase {
 
 		Page<NotificationQueueEntry> page3 =
 			notificationQueueEntryResource.getNotificationQueueEntriesPage(
-				null, null, Pagination.of(1, (int)totalCount + 3), null);
+				null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(
 			notificationQueueEntry1,
@@ -538,33 +537,23 @@ public abstract class BaseNotificationQueueEntryResourceTestCase {
 			testGetNotificationQueueEntriesPage_addNotificationQueueEntry(
 				notificationQueueEntry2);
 
-		Page<NotificationQueueEntry> page =
-			notificationQueueEntryResource.getNotificationQueueEntriesPage(
-				null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<NotificationQueueEntry> ascPage =
 				notificationQueueEntryResource.getNotificationQueueEntriesPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				notificationQueueEntry1,
-				(List<NotificationQueueEntry>)ascPage.getItems());
-			assertContains(
-				notificationQueueEntry2,
+			assertEquals(
+				Arrays.asList(notificationQueueEntry1, notificationQueueEntry2),
 				(List<NotificationQueueEntry>)ascPage.getItems());
 
 			Page<NotificationQueueEntry> descPage =
 				notificationQueueEntryResource.getNotificationQueueEntriesPage(
-					null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+					null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				notificationQueueEntry2,
-				(List<NotificationQueueEntry>)descPage.getItems());
-			assertContains(
-				notificationQueueEntry1,
+			assertEquals(
+				Arrays.asList(notificationQueueEntry2, notificationQueueEntry1),
 				(List<NotificationQueueEntry>)descPage.getItems());
 		}
 	}

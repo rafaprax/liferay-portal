@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -445,7 +444,7 @@ public abstract class BaseOrderNoteResourceTestCase {
 			orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
 				externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			OrderNote irrelevantOrderNote =
@@ -455,13 +454,13 @@ public abstract class BaseOrderNoteResourceTestCase {
 
 			page =
 				orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
-					irrelevantExternalReferenceCode,
-					Pagination.of(1, (int)totalCount + 1));
+					irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrderNote, (List<OrderNote>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantOrderNote),
+				(List<OrderNote>)page.getItems());
 			assertValid(
 				page,
 				testGetOrderByExternalReferenceCodeOrderNotesPage_getExpectedActions(
@@ -479,10 +478,11 @@ public abstract class BaseOrderNoteResourceTestCase {
 		page = orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
 			externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(orderNote1, (List<OrderNote>)page.getItems());
-		assertContains(orderNote2, (List<OrderNote>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(orderNote1, orderNote2),
+			(List<OrderNote>)page.getItems());
 		assertValid(
 			page,
 			testGetOrderByExternalReferenceCodeOrderNotesPage_getExpectedActions(
@@ -510,12 +510,6 @@ public abstract class BaseOrderNoteResourceTestCase {
 		String externalReferenceCode =
 			testGetOrderByExternalReferenceCodeOrderNotesPage_getExternalReferenceCode();
 
-		Page<OrderNote> orderNotePage =
-			orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
-				externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(orderNotePage.getTotalCount());
-
 		OrderNote orderNote1 =
 			testGetOrderByExternalReferenceCodeOrderNotesPage_addOrderNote(
 				externalReferenceCode, randomOrderNote());
@@ -530,18 +524,17 @@ public abstract class BaseOrderNoteResourceTestCase {
 
 		Page<OrderNote> page1 =
 			orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
-				externalReferenceCode, Pagination.of(1, totalCount + 2));
+				externalReferenceCode, Pagination.of(1, 2));
 
 		List<OrderNote> orderNotes1 = (List<OrderNote>)page1.getItems();
 
-		Assert.assertEquals(
-			orderNotes1.toString(), totalCount + 2, orderNotes1.size());
+		Assert.assertEquals(orderNotes1.toString(), 2, orderNotes1.size());
 
 		Page<OrderNote> page2 =
 			orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
-				externalReferenceCode, Pagination.of(2, totalCount + 2));
+				externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<OrderNote> orderNotes2 = (List<OrderNote>)page2.getItems();
 
@@ -549,11 +542,11 @@ public abstract class BaseOrderNoteResourceTestCase {
 
 		Page<OrderNote> page3 =
 			orderNoteResource.getOrderByExternalReferenceCodeOrderNotesPage(
-				externalReferenceCode, Pagination.of(1, (int)totalCount + 3));
+				externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(orderNote1, (List<OrderNote>)page3.getItems());
-		assertContains(orderNote2, (List<OrderNote>)page3.getItems());
-		assertContains(orderNote3, (List<OrderNote>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(orderNote1, orderNote2, orderNote3),
+			(List<OrderNote>)page3.getItems());
 	}
 
 	protected OrderNote
@@ -611,7 +604,7 @@ public abstract class BaseOrderNoteResourceTestCase {
 		Page<OrderNote> page = orderNoteResource.getOrderIdOrderNotesPage(
 			id, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			OrderNote irrelevantOrderNote =
@@ -619,12 +612,13 @@ public abstract class BaseOrderNoteResourceTestCase {
 					irrelevantId, randomIrrelevantOrderNote());
 
 			page = orderNoteResource.getOrderIdOrderNotesPage(
-				irrelevantId, Pagination.of(1, (int)totalCount + 1));
+				irrelevantId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantOrderNote, (List<OrderNote>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantOrderNote),
+				(List<OrderNote>)page.getItems());
 			assertValid(
 				page,
 				testGetOrderIdOrderNotesPage_getExpectedActions(irrelevantId));
@@ -639,10 +633,11 @@ public abstract class BaseOrderNoteResourceTestCase {
 		page = orderNoteResource.getOrderIdOrderNotesPage(
 			id, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(orderNote1, (List<OrderNote>)page.getItems());
-		assertContains(orderNote2, (List<OrderNote>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(orderNote1, orderNote2),
+			(List<OrderNote>)page.getItems());
 		assertValid(page, testGetOrderIdOrderNotesPage_getExpectedActions(id));
 
 		orderNoteResource.deleteOrderNote(orderNote1.getId());
@@ -663,11 +658,6 @@ public abstract class BaseOrderNoteResourceTestCase {
 	public void testGetOrderIdOrderNotesPageWithPagination() throws Exception {
 		Long id = testGetOrderIdOrderNotesPage_getId();
 
-		Page<OrderNote> orderNotePage =
-			orderNoteResource.getOrderIdOrderNotesPage(id, null);
-
-		int totalCount = GetterUtil.getInteger(orderNotePage.getTotalCount());
-
 		OrderNote orderNote1 = testGetOrderIdOrderNotesPage_addOrderNote(
 			id, randomOrderNote());
 
@@ -678,28 +668,27 @@ public abstract class BaseOrderNoteResourceTestCase {
 			id, randomOrderNote());
 
 		Page<OrderNote> page1 = orderNoteResource.getOrderIdOrderNotesPage(
-			id, Pagination.of(1, totalCount + 2));
+			id, Pagination.of(1, 2));
 
 		List<OrderNote> orderNotes1 = (List<OrderNote>)page1.getItems();
 
-		Assert.assertEquals(
-			orderNotes1.toString(), totalCount + 2, orderNotes1.size());
+		Assert.assertEquals(orderNotes1.toString(), 2, orderNotes1.size());
 
 		Page<OrderNote> page2 = orderNoteResource.getOrderIdOrderNotesPage(
-			id, Pagination.of(2, totalCount + 2));
+			id, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<OrderNote> orderNotes2 = (List<OrderNote>)page2.getItems();
 
 		Assert.assertEquals(orderNotes2.toString(), 1, orderNotes2.size());
 
 		Page<OrderNote> page3 = orderNoteResource.getOrderIdOrderNotesPage(
-			id, Pagination.of(1, (int)totalCount + 3));
+			id, Pagination.of(1, 3));
 
-		assertContains(orderNote1, (List<OrderNote>)page3.getItems());
-		assertContains(orderNote2, (List<OrderNote>)page3.getItems());
-		assertContains(orderNote3, (List<OrderNote>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(orderNote1, orderNote2, orderNote3),
+			(List<OrderNote>)page3.getItems());
 	}
 
 	protected OrderNote testGetOrderIdOrderNotesPage_addOrderNote(

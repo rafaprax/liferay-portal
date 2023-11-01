@@ -28,7 +28,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -202,7 +201,7 @@ public abstract class BaseInstanceResourceTestCase {
 			RandomTestUtil.nextDate(), null, null, null, Pagination.of(1, 10),
 			null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantProcessId != null) {
 			Instance irrelevantInstance =
@@ -211,11 +210,13 @@ public abstract class BaseInstanceResourceTestCase {
 
 			page = instanceResource.getProcessInstancesPage(
 				irrelevantProcessId, null, null, null, null, null, null, null,
-				Pagination.of(1, (int)totalCount + 1), null);
+				Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantInstance, (List<Instance>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantInstance),
+				(List<Instance>)page.getItems());
 			assertValid(
 				page,
 				testGetProcessInstancesPage_getExpectedActions(
@@ -232,10 +233,11 @@ public abstract class BaseInstanceResourceTestCase {
 			processId, null, null, null, null, null, null, null,
 			Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(instance1, (List<Instance>)page.getItems());
-		assertContains(instance2, (List<Instance>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(instance1, instance2),
+			(List<Instance>)page.getItems());
 		assertValid(
 			page, testGetProcessInstancesPage_getExpectedActions(processId));
 	}
@@ -262,11 +264,6 @@ public abstract class BaseInstanceResourceTestCase {
 	public void testGetProcessInstancesPageWithPagination() throws Exception {
 		Long processId = testGetProcessInstancesPage_getProcessId();
 
-		Page<Instance> instancePage = instanceResource.getProcessInstancesPage(
-			processId, null, null, null, null, null, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(instancePage.getTotalCount());
-
 		Instance instance1 = testGetProcessInstancesPage_addInstance(
 			processId, randomInstance());
 
@@ -278,18 +275,17 @@ public abstract class BaseInstanceResourceTestCase {
 
 		Page<Instance> page1 = instanceResource.getProcessInstancesPage(
 			processId, null, null, null, null, null, null, null,
-			Pagination.of(1, totalCount + 2), null);
+			Pagination.of(1, 2), null);
 
 		List<Instance> instances1 = (List<Instance>)page1.getItems();
 
-		Assert.assertEquals(
-			instances1.toString(), totalCount + 2, instances1.size());
+		Assert.assertEquals(instances1.toString(), 2, instances1.size());
 
 		Page<Instance> page2 = instanceResource.getProcessInstancesPage(
 			processId, null, null, null, null, null, null, null,
-			Pagination.of(2, totalCount + 2), null);
+			Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Instance> instances2 = (List<Instance>)page2.getItems();
 
@@ -297,11 +293,11 @@ public abstract class BaseInstanceResourceTestCase {
 
 		Page<Instance> page3 = instanceResource.getProcessInstancesPage(
 			processId, null, null, null, null, null, null, null,
-			Pagination.of(1, (int)totalCount + 3), null);
+			Pagination.of(1, 3), null);
 
-		assertContains(instance1, (List<Instance>)page3.getItems());
-		assertContains(instance2, (List<Instance>)page3.getItems());
-		assertContains(instance3, (List<Instance>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(instance1, instance2, instance3),
+			(List<Instance>)page3.getItems());
 	}
 
 	@Test
@@ -413,25 +409,22 @@ public abstract class BaseInstanceResourceTestCase {
 		instance2 = testGetProcessInstancesPage_addInstance(
 			processId, instance2);
 
-		Page<Instance> page = instanceResource.getProcessInstancesPage(
-			processId, null, null, null, null, null, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Instance> ascPage = instanceResource.getProcessInstancesPage(
 				processId, null, null, null, null, null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
-				entityField.getName() + ":asc");
+				Pagination.of(1, 2), entityField.getName() + ":asc");
 
-			assertContains(instance1, (List<Instance>)ascPage.getItems());
-			assertContains(instance2, (List<Instance>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(instance1, instance2),
+				(List<Instance>)ascPage.getItems());
 
 			Page<Instance> descPage = instanceResource.getProcessInstancesPage(
 				processId, null, null, null, null, null, null, null,
-				Pagination.of(1, (int)page.getTotalCount() + 1),
-				entityField.getName() + ":desc");
+				Pagination.of(1, 2), entityField.getName() + ":desc");
 
-			assertContains(instance2, (List<Instance>)descPage.getItems());
-			assertContains(instance1, (List<Instance>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(instance2, instance1),
+				(List<Instance>)descPage.getItems());
 		}
 	}
 

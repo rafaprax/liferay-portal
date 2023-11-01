@@ -318,10 +318,10 @@ public abstract class BaseSXPElementResourceTestCase {
 
 	@Test
 	public void testGetSXPElementsPageWithPagination() throws Exception {
-		Page<SXPElement> sxpElementPage = sxpElementResource.getSXPElementsPage(
+		Page<SXPElement> totalPage = sxpElementResource.getSXPElementsPage(
 			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(sxpElementPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		SXPElement sxpElement1 = testGetSXPElementsPage_addSXPElement(
 			randomSXPElement());
@@ -350,7 +350,7 @@ public abstract class BaseSXPElementResourceTestCase {
 		Assert.assertEquals(sxpElements2.toString(), 1, sxpElements2.size());
 
 		Page<SXPElement> page3 = sxpElementResource.getSXPElementsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(sxpElement1, (List<SXPElement>)page3.getItems());
 		assertContains(sxpElement2, (List<SXPElement>)page3.getItems());
@@ -464,23 +464,22 @@ public abstract class BaseSXPElementResourceTestCase {
 
 		sxpElement2 = testGetSXPElementsPage_addSXPElement(sxpElement2);
 
-		Page<SXPElement> page = sxpElementResource.getSXPElementsPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<SXPElement> ascPage = sxpElementResource.getSXPElementsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(sxpElement1, (List<SXPElement>)ascPage.getItems());
-			assertContains(sxpElement2, (List<SXPElement>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(sxpElement1, sxpElement2),
+				(List<SXPElement>)ascPage.getItems());
 
 			Page<SXPElement> descPage = sxpElementResource.getSXPElementsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(sxpElement2, (List<SXPElement>)descPage.getItems());
-			assertContains(sxpElement1, (List<SXPElement>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(sxpElement2, sxpElement1),
+				(List<SXPElement>)descPage.getItems());
 		}
 	}
 

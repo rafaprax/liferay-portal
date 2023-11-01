@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -215,7 +214,7 @@ public abstract class BasePriceListChannelResourceTestCase {
 				getPriceListByExternalReferenceCodePriceListChannelsPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			PriceListChannel irrelevantPriceListChannel =
@@ -226,13 +225,12 @@ public abstract class BasePriceListChannelResourceTestCase {
 			page =
 				priceListChannelResource.
 					getPriceListByExternalReferenceCodePriceListChannelsPage(
-						irrelevantExternalReferenceCode,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantPriceListChannel,
+			assertEquals(
+				Arrays.asList(irrelevantPriceListChannel),
 				(List<PriceListChannel>)page.getItems());
 			assertValid(
 				page,
@@ -253,12 +251,11 @@ public abstract class BasePriceListChannelResourceTestCase {
 				getPriceListByExternalReferenceCodePriceListChannelsPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			priceListChannel1, (List<PriceListChannel>)page.getItems());
-		assertContains(
-			priceListChannel2, (List<PriceListChannel>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(priceListChannel1, priceListChannel2),
+			(List<PriceListChannel>)page.getItems());
 		assertValid(
 			page,
 			testGetPriceListByExternalReferenceCodePriceListChannelsPage_getExpectedActions(
@@ -282,14 +279,6 @@ public abstract class BasePriceListChannelResourceTestCase {
 		String externalReferenceCode =
 			testGetPriceListByExternalReferenceCodePriceListChannelsPage_getExternalReferenceCode();
 
-		Page<PriceListChannel> priceListChannelPage =
-			priceListChannelResource.
-				getPriceListByExternalReferenceCodePriceListChannelsPage(
-					externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(
-			priceListChannelPage.getTotalCount());
-
 		PriceListChannel priceListChannel1 =
 			testGetPriceListByExternalReferenceCodePriceListChannelsPage_addPriceListChannel(
 				externalReferenceCode, randomPriceListChannel());
@@ -305,21 +294,20 @@ public abstract class BasePriceListChannelResourceTestCase {
 		Page<PriceListChannel> page1 =
 			priceListChannelResource.
 				getPriceListByExternalReferenceCodePriceListChannelsPage(
-					externalReferenceCode, Pagination.of(1, totalCount + 2));
+					externalReferenceCode, Pagination.of(1, 2));
 
 		List<PriceListChannel> priceListChannels1 =
 			(List<PriceListChannel>)page1.getItems();
 
 		Assert.assertEquals(
-			priceListChannels1.toString(), totalCount + 2,
-			priceListChannels1.size());
+			priceListChannels1.toString(), 2, priceListChannels1.size());
 
 		Page<PriceListChannel> page2 =
 			priceListChannelResource.
 				getPriceListByExternalReferenceCodePriceListChannelsPage(
-					externalReferenceCode, Pagination.of(2, totalCount + 2));
+					externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<PriceListChannel> priceListChannels2 =
 			(List<PriceListChannel>)page2.getItems();
@@ -330,15 +318,12 @@ public abstract class BasePriceListChannelResourceTestCase {
 		Page<PriceListChannel> page3 =
 			priceListChannelResource.
 				getPriceListByExternalReferenceCodePriceListChannelsPage(
-					externalReferenceCode,
-					Pagination.of(1, (int)totalCount + 3));
+					externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(
-			priceListChannel1, (List<PriceListChannel>)page3.getItems());
-		assertContains(
-			priceListChannel2, (List<PriceListChannel>)page3.getItems());
-		assertContains(
-			priceListChannel3, (List<PriceListChannel>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				priceListChannel1, priceListChannel2, priceListChannel3),
+			(List<PriceListChannel>)page3.getItems());
 	}
 
 	protected PriceListChannel
@@ -398,7 +383,7 @@ public abstract class BasePriceListChannelResourceTestCase {
 			priceListChannelResource.getPriceListIdPriceListChannelsPage(
 				id, null, null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			PriceListChannel irrelevantPriceListChannel =
@@ -406,13 +391,12 @@ public abstract class BasePriceListChannelResourceTestCase {
 					irrelevantId, randomIrrelevantPriceListChannel());
 
 			page = priceListChannelResource.getPriceListIdPriceListChannelsPage(
-				irrelevantId, null, null, Pagination.of(1, (int)totalCount + 1),
-				null);
+				irrelevantId, null, null, Pagination.of(1, 2), null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantPriceListChannel,
+			assertEquals(
+				Arrays.asList(irrelevantPriceListChannel),
 				(List<PriceListChannel>)page.getItems());
 			assertValid(
 				page,
@@ -431,12 +415,11 @@ public abstract class BasePriceListChannelResourceTestCase {
 		page = priceListChannelResource.getPriceListIdPriceListChannelsPage(
 			id, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			priceListChannel1, (List<PriceListChannel>)page.getItems());
-		assertContains(
-			priceListChannel2, (List<PriceListChannel>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(priceListChannel1, priceListChannel2),
+			(List<PriceListChannel>)page.getItems());
 		assertValid(
 			page,
 			testGetPriceListIdPriceListChannelsPage_getExpectedActions(id));
@@ -555,13 +538,6 @@ public abstract class BasePriceListChannelResourceTestCase {
 
 		Long id = testGetPriceListIdPriceListChannelsPage_getId();
 
-		Page<PriceListChannel> priceListChannelPage =
-			priceListChannelResource.getPriceListIdPriceListChannelsPage(
-				id, null, null, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			priceListChannelPage.getTotalCount());
-
 		PriceListChannel priceListChannel1 =
 			testGetPriceListIdPriceListChannelsPage_addPriceListChannel(
 				id, randomPriceListChannel());
@@ -576,20 +552,19 @@ public abstract class BasePriceListChannelResourceTestCase {
 
 		Page<PriceListChannel> page1 =
 			priceListChannelResource.getPriceListIdPriceListChannelsPage(
-				id, null, null, Pagination.of(1, totalCount + 2), null);
+				id, null, null, Pagination.of(1, 2), null);
 
 		List<PriceListChannel> priceListChannels1 =
 			(List<PriceListChannel>)page1.getItems();
 
 		Assert.assertEquals(
-			priceListChannels1.toString(), totalCount + 2,
-			priceListChannels1.size());
+			priceListChannels1.toString(), 2, priceListChannels1.size());
 
 		Page<PriceListChannel> page2 =
 			priceListChannelResource.getPriceListIdPriceListChannelsPage(
-				id, null, null, Pagination.of(2, totalCount + 2), null);
+				id, null, null, Pagination.of(2, 2), null);
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<PriceListChannel> priceListChannels2 =
 			(List<PriceListChannel>)page2.getItems();
@@ -599,14 +574,12 @@ public abstract class BasePriceListChannelResourceTestCase {
 
 		Page<PriceListChannel> page3 =
 			priceListChannelResource.getPriceListIdPriceListChannelsPage(
-				id, null, null, Pagination.of(1, (int)totalCount + 3), null);
+				id, null, null, Pagination.of(1, 3), null);
 
-		assertContains(
-			priceListChannel1, (List<PriceListChannel>)page3.getItems());
-		assertContains(
-			priceListChannel2, (List<PriceListChannel>)page3.getItems());
-		assertContains(
-			priceListChannel3, (List<PriceListChannel>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				priceListChannel1, priceListChannel2, priceListChannel3),
+			(List<PriceListChannel>)page3.getItems());
 	}
 
 	@Test
@@ -734,32 +707,24 @@ public abstract class BasePriceListChannelResourceTestCase {
 			testGetPriceListIdPriceListChannelsPage_addPriceListChannel(
 				id, priceListChannel2);
 
-		Page<PriceListChannel> page =
-			priceListChannelResource.getPriceListIdPriceListChannelsPage(
-				id, null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<PriceListChannel> ascPage =
 				priceListChannelResource.getPriceListIdPriceListChannelsPage(
-					id, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					id, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":asc");
 
-			assertContains(
-				priceListChannel1, (List<PriceListChannel>)ascPage.getItems());
-			assertContains(
-				priceListChannel2, (List<PriceListChannel>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(priceListChannel1, priceListChannel2),
+				(List<PriceListChannel>)ascPage.getItems());
 
 			Page<PriceListChannel> descPage =
 				priceListChannelResource.getPriceListIdPriceListChannelsPage(
-					id, null, null,
-					Pagination.of(1, (int)page.getTotalCount() + 1),
+					id, null, null, Pagination.of(1, 2),
 					entityField.getName() + ":desc");
 
-			assertContains(
-				priceListChannel2, (List<PriceListChannel>)descPage.getItems());
-			assertContains(
-				priceListChannel1, (List<PriceListChannel>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(priceListChannel2, priceListChannel1),
+				(List<PriceListChannel>)descPage.getItems());
 		}
 	}
 

@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -373,7 +372,7 @@ public abstract class BaseProductSpecificationResourceTestCase {
 			productSpecificationResource.getProductIdProductSpecificationsPage(
 				id, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			ProductSpecification irrelevantProductSpecification =
@@ -383,12 +382,12 @@ public abstract class BaseProductSpecificationResourceTestCase {
 			page =
 				productSpecificationResource.
 					getProductIdProductSpecificationsPage(
-						irrelevantId, Pagination.of(1, (int)totalCount + 1));
+						irrelevantId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantProductSpecification,
+			assertEquals(
+				Arrays.asList(irrelevantProductSpecification),
 				(List<ProductSpecification>)page.getItems());
 			assertValid(
 				page,
@@ -408,12 +407,11 @@ public abstract class BaseProductSpecificationResourceTestCase {
 			productSpecificationResource.getProductIdProductSpecificationsPage(
 				id, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			productSpecification1, (List<ProductSpecification>)page.getItems());
-		assertContains(
-			productSpecification2, (List<ProductSpecification>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(productSpecification1, productSpecification2),
+			(List<ProductSpecification>)page.getItems());
 		assertValid(
 			page,
 			testGetProductIdProductSpecificationsPage_getExpectedActions(id));
@@ -441,13 +439,6 @@ public abstract class BaseProductSpecificationResourceTestCase {
 
 		Long id = testGetProductIdProductSpecificationsPage_getId();
 
-		Page<ProductSpecification> productSpecificationPage =
-			productSpecificationResource.getProductIdProductSpecificationsPage(
-				id, null);
-
-		int totalCount = GetterUtil.getInteger(
-			productSpecificationPage.getTotalCount());
-
 		ProductSpecification productSpecification1 =
 			testGetProductIdProductSpecificationsPage_addProductSpecification(
 				id, randomProductSpecification());
@@ -462,20 +453,20 @@ public abstract class BaseProductSpecificationResourceTestCase {
 
 		Page<ProductSpecification> page1 =
 			productSpecificationResource.getProductIdProductSpecificationsPage(
-				id, Pagination.of(1, totalCount + 2));
+				id, Pagination.of(1, 2));
 
 		List<ProductSpecification> productSpecifications1 =
 			(List<ProductSpecification>)page1.getItems();
 
 		Assert.assertEquals(
-			productSpecifications1.toString(), totalCount + 2,
+			productSpecifications1.toString(), 2,
 			productSpecifications1.size());
 
 		Page<ProductSpecification> page2 =
 			productSpecificationResource.getProductIdProductSpecificationsPage(
-				id, Pagination.of(2, totalCount + 2));
+				id, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<ProductSpecification> productSpecifications2 =
 			(List<ProductSpecification>)page2.getItems();
@@ -486,16 +477,12 @@ public abstract class BaseProductSpecificationResourceTestCase {
 
 		Page<ProductSpecification> page3 =
 			productSpecificationResource.getProductIdProductSpecificationsPage(
-				id, Pagination.of(1, (int)totalCount + 3));
+				id, Pagination.of(1, 3));
 
-		assertContains(
-			productSpecification1,
-			(List<ProductSpecification>)page3.getItems());
-		assertContains(
-			productSpecification2,
-			(List<ProductSpecification>)page3.getItems());
-		assertContains(
-			productSpecification3,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				productSpecification1, productSpecification2,
+				productSpecification3),
 			(List<ProductSpecification>)page3.getItems());
 	}
 

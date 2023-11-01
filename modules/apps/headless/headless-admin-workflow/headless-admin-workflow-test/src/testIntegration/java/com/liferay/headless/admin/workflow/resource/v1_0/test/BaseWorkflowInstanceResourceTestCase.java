@@ -236,12 +236,11 @@ public abstract class BaseWorkflowInstanceResourceTestCase {
 
 	@Test
 	public void testGetWorkflowInstancesPageWithPagination() throws Exception {
-		Page<WorkflowInstance> workflowInstancePage =
+		Page<WorkflowInstance> totalPage =
 			workflowInstanceResource.getWorkflowInstancesPage(
 				null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(
-			workflowInstancePage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		WorkflowInstance workflowInstance1 =
 			testGetWorkflowInstancesPage_addWorkflowInstance(
@@ -280,7 +279,7 @@ public abstract class BaseWorkflowInstanceResourceTestCase {
 
 		Page<WorkflowInstance> page3 =
 			workflowInstanceResource.getWorkflowInstancesPage(
-				null, null, null, Pagination.of(1, (int)totalCount + 3));
+				null, null, null, Pagination.of(1, totalCount + 3));
 
 		assertContains(
 			workflowInstance1, (List<WorkflowInstance>)page3.getItems());

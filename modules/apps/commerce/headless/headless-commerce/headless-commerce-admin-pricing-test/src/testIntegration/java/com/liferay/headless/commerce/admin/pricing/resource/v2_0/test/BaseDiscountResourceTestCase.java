@@ -311,10 +311,10 @@ public abstract class BaseDiscountResourceTestCase {
 
 	@Test
 	public void testGetDiscountsPageWithPagination() throws Exception {
-		Page<Discount> discountPage = discountResource.getDiscountsPage(
+		Page<Discount> totalPage = discountResource.getDiscountsPage(
 			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(discountPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		Discount discount1 = testGetDiscountsPage_addDiscount(randomDiscount());
 
@@ -340,7 +340,7 @@ public abstract class BaseDiscountResourceTestCase {
 		Assert.assertEquals(discounts2.toString(), 1, discounts2.size());
 
 		Page<Discount> page3 = discountResource.getDiscountsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(discount1, (List<Discount>)page3.getItems());
 		assertContains(discount2, (List<Discount>)page3.getItems());
@@ -452,23 +452,22 @@ public abstract class BaseDiscountResourceTestCase {
 
 		discount2 = testGetDiscountsPage_addDiscount(discount2);
 
-		Page<Discount> page = discountResource.getDiscountsPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Discount> ascPage = discountResource.getDiscountsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(discount1, (List<Discount>)ascPage.getItems());
-			assertContains(discount2, (List<Discount>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(discount1, discount2),
+				(List<Discount>)ascPage.getItems());
 
 			Page<Discount> descPage = discountResource.getDiscountsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(discount2, (List<Discount>)descPage.getItems());
-			assertContains(discount1, (List<Discount>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(discount2, discount1),
+				(List<Discount>)descPage.getItems());
 		}
 	}
 

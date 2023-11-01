@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -196,7 +195,7 @@ public abstract class BaseCategoryResourceTestCase {
 		Page<Category> page = categoryResource.getChannelProductCategoriesPage(
 			channelId, productId, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if ((irrelevantChannelId != null) && (irrelevantProductId != null)) {
 			Category irrelevantCategory =
@@ -205,12 +204,13 @@ public abstract class BaseCategoryResourceTestCase {
 					randomIrrelevantCategory());
 
 			page = categoryResource.getChannelProductCategoriesPage(
-				irrelevantChannelId, irrelevantProductId,
-				Pagination.of(1, (int)totalCount + 1));
+				irrelevantChannelId, irrelevantProductId, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantCategory, (List<Category>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantCategory),
+				(List<Category>)page.getItems());
 			assertValid(
 				page,
 				testGetChannelProductCategoriesPage_getExpectedActions(
@@ -226,10 +226,11 @@ public abstract class BaseCategoryResourceTestCase {
 		page = categoryResource.getChannelProductCategoriesPage(
 			channelId, productId, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(category1, (List<Category>)page.getItems());
-		assertContains(category2, (List<Category>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(category1, category2),
+			(List<Category>)page.getItems());
 		assertValid(
 			page,
 			testGetChannelProductCategoriesPage_getExpectedActions(
@@ -253,12 +254,6 @@ public abstract class BaseCategoryResourceTestCase {
 		Long channelId = testGetChannelProductCategoriesPage_getChannelId();
 		Long productId = testGetChannelProductCategoriesPage_getProductId();
 
-		Page<Category> categoryPage =
-			categoryResource.getChannelProductCategoriesPage(
-				channelId, productId, null);
-
-		int totalCount = GetterUtil.getInteger(categoryPage.getTotalCount());
-
 		Category category1 = testGetChannelProductCategoriesPage_addCategory(
 			channelId, productId, randomCategory());
 
@@ -269,28 +264,27 @@ public abstract class BaseCategoryResourceTestCase {
 			channelId, productId, randomCategory());
 
 		Page<Category> page1 = categoryResource.getChannelProductCategoriesPage(
-			channelId, productId, Pagination.of(1, totalCount + 2));
+			channelId, productId, Pagination.of(1, 2));
 
 		List<Category> categories1 = (List<Category>)page1.getItems();
 
-		Assert.assertEquals(
-			categories1.toString(), totalCount + 2, categories1.size());
+		Assert.assertEquals(categories1.toString(), 2, categories1.size());
 
 		Page<Category> page2 = categoryResource.getChannelProductCategoriesPage(
-			channelId, productId, Pagination.of(2, totalCount + 2));
+			channelId, productId, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<Category> categories2 = (List<Category>)page2.getItems();
 
 		Assert.assertEquals(categories2.toString(), 1, categories2.size());
 
 		Page<Category> page3 = categoryResource.getChannelProductCategoriesPage(
-			channelId, productId, Pagination.of(1, (int)totalCount + 3));
+			channelId, productId, Pagination.of(1, 3));
 
-		assertContains(category1, (List<Category>)page3.getItems());
-		assertContains(category2, (List<Category>)page3.getItems());
-		assertContains(category3, (List<Category>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(category1, category2, category3),
+			(List<Category>)page3.getItems());
 	}
 
 	protected Category testGetChannelProductCategoriesPage_addCategory(

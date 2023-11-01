@@ -205,7 +205,7 @@ public abstract class BaseSearchableAssetNameDisplayResourceTestCase {
 			searchableAssetNameDisplayResource.
 				getSearchableAssetNameLanguagePage(languageId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantLanguageId != null) {
 			SearchableAssetNameDisplay irrelevantSearchableAssetNameDisplay =
@@ -217,10 +217,10 @@ public abstract class BaseSearchableAssetNameDisplayResourceTestCase {
 				searchableAssetNameDisplayResource.
 					getSearchableAssetNameLanguagePage(irrelevantLanguageId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantSearchableAssetNameDisplay,
+			assertEquals(
+				Arrays.asList(irrelevantSearchableAssetNameDisplay),
 				(List<SearchableAssetNameDisplay>)page.getItems());
 			assertValid(
 				page,
@@ -240,13 +240,11 @@ public abstract class BaseSearchableAssetNameDisplayResourceTestCase {
 			searchableAssetNameDisplayResource.
 				getSearchableAssetNameLanguagePage(languageId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			searchableAssetNameDisplay1,
-			(List<SearchableAssetNameDisplay>)page.getItems());
-		assertContains(
-			searchableAssetNameDisplay2,
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				searchableAssetNameDisplay1, searchableAssetNameDisplay2),
 			(List<SearchableAssetNameDisplay>)page.getItems());
 		assertValid(
 			page,

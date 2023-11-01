@@ -194,7 +194,7 @@ public abstract class BasePhoneResourceTestCase {
 		Page<Phone> page = phoneResource.getOrganizationPhonesPage(
 			organizationId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantOrganizationId != null) {
 			Phone irrelevantPhone = testGetOrganizationPhonesPage_addPhone(
@@ -203,9 +203,10 @@ public abstract class BasePhoneResourceTestCase {
 			page = phoneResource.getOrganizationPhonesPage(
 				irrelevantOrganizationId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantPhone, (List<Phone>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantPhone), (List<Phone>)page.getItems());
 			assertValid(
 				page,
 				testGetOrganizationPhonesPage_getExpectedActions(
@@ -220,10 +221,10 @@ public abstract class BasePhoneResourceTestCase {
 
 		page = phoneResource.getOrganizationPhonesPage(organizationId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(phone1, (List<Phone>)page.getItems());
-		assertContains(phone2, (List<Phone>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(phone1, phone2), (List<Phone>)page.getItems());
 		assertValid(
 			page,
 			testGetOrganizationPhonesPage_getExpectedActions(organizationId));
@@ -329,7 +330,7 @@ public abstract class BasePhoneResourceTestCase {
 		Page<Phone> page = phoneResource.getUserAccountPhonesPage(
 			userAccountId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantUserAccountId != null) {
 			Phone irrelevantPhone = testGetUserAccountPhonesPage_addPhone(
@@ -338,9 +339,10 @@ public abstract class BasePhoneResourceTestCase {
 			page = phoneResource.getUserAccountPhonesPage(
 				irrelevantUserAccountId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantPhone, (List<Phone>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantPhone), (List<Phone>)page.getItems());
 			assertValid(
 				page,
 				testGetUserAccountPhonesPage_getExpectedActions(
@@ -355,10 +357,10 @@ public abstract class BasePhoneResourceTestCase {
 
 		page = phoneResource.getUserAccountPhonesPage(userAccountId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(phone1, (List<Phone>)page.getItems());
-		assertContains(phone2, (List<Phone>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(phone1, phone2), (List<Phone>)page.getItems());
 		assertValid(
 			page,
 			testGetUserAccountPhonesPage_getExpectedActions(userAccountId));

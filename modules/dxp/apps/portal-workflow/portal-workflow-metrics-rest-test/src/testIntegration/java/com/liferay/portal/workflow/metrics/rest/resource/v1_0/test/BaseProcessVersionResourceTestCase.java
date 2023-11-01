@@ -190,7 +190,7 @@ public abstract class BaseProcessVersionResourceTestCase {
 		Page<ProcessVersion> page =
 			processVersionResource.getProcessProcessVersionsPage(processId);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantProcessId != null) {
 			ProcessVersion irrelevantProcessVersion =
@@ -200,10 +200,10 @@ public abstract class BaseProcessVersionResourceTestCase {
 			page = processVersionResource.getProcessProcessVersionsPage(
 				irrelevantProcessId);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantProcessVersion,
+			assertEquals(
+				Arrays.asList(irrelevantProcessVersion),
 				(List<ProcessVersion>)page.getItems());
 			assertValid(
 				page,
@@ -221,10 +221,11 @@ public abstract class BaseProcessVersionResourceTestCase {
 
 		page = processVersionResource.getProcessProcessVersionsPage(processId);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(processVersion1, (List<ProcessVersion>)page.getItems());
-		assertContains(processVersion2, (List<ProcessVersion>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(processVersion1, processVersion2),
+			(List<ProcessVersion>)page.getItems());
 		assertValid(
 			page,
 			testGetProcessProcessVersionsPage_getExpectedActions(processId));

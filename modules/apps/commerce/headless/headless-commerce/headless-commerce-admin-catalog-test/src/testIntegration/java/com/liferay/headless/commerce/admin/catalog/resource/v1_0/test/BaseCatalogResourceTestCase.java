@@ -533,10 +533,10 @@ public abstract class BaseCatalogResourceTestCase {
 
 	@Test
 	public void testGetCatalogsPageWithPagination() throws Exception {
-		Page<Catalog> catalogPage = catalogResource.getCatalogsPage(
+		Page<Catalog> totalPage = catalogResource.getCatalogsPage(
 			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(catalogPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		Catalog catalog1 = testGetCatalogsPage_addCatalog(randomCatalog());
 
@@ -562,7 +562,7 @@ public abstract class BaseCatalogResourceTestCase {
 		Assert.assertEquals(catalogs2.toString(), 1, catalogs2.size());
 
 		Page<Catalog> page3 = catalogResource.getCatalogsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(catalog1, (List<Catalog>)page3.getItems());
 		assertContains(catalog2, (List<Catalog>)page3.getItems());
@@ -674,23 +674,22 @@ public abstract class BaseCatalogResourceTestCase {
 
 		catalog2 = testGetCatalogsPage_addCatalog(catalog2);
 
-		Page<Catalog> page = catalogResource.getCatalogsPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Catalog> ascPage = catalogResource.getCatalogsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(catalog1, (List<Catalog>)ascPage.getItems());
-			assertContains(catalog2, (List<Catalog>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(catalog1, catalog2),
+				(List<Catalog>)ascPage.getItems());
 
 			Page<Catalog> descPage = catalogResource.getCatalogsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(catalog2, (List<Catalog>)descPage.getItems());
-			assertContains(catalog1, (List<Catalog>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(catalog2, catalog1),
+				(List<Catalog>)descPage.getItems());
 		}
 	}
 

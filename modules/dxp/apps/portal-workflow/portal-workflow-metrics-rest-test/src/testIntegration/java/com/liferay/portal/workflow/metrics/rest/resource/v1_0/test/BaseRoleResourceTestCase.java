@@ -188,7 +188,7 @@ public abstract class BaseRoleResourceTestCase {
 
 		Page<Role> page = roleResource.getProcessRolesPage(processId, null);
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantProcessId != null) {
 			Role irrelevantRole = testGetProcessRolesPage_addRole(
@@ -196,9 +196,10 @@ public abstract class BaseRoleResourceTestCase {
 
 			page = roleResource.getProcessRolesPage(irrelevantProcessId, null);
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(irrelevantRole, (List<Role>)page.getItems());
+			assertEquals(
+				Arrays.asList(irrelevantRole), (List<Role>)page.getItems());
 			assertValid(
 				page,
 				testGetProcessRolesPage_getExpectedActions(
@@ -211,10 +212,10 @@ public abstract class BaseRoleResourceTestCase {
 
 		page = roleResource.getProcessRolesPage(processId, null);
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(role1, (List<Role>)page.getItems());
-		assertContains(role2, (List<Role>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(role1, role2), (List<Role>)page.getItems());
 		assertValid(
 			page, testGetProcessRolesPage_getExpectedActions(processId));
 	}

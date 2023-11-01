@@ -340,10 +340,10 @@ public abstract class BaseAccountResourceTestCase {
 
 	@Test
 	public void testGetAccountsPageWithPagination() throws Exception {
-		Page<Account> accountPage = accountResource.getAccountsPage(
+		Page<Account> totalPage = accountResource.getAccountsPage(
 			null, null, null, null);
 
-		int totalCount = GetterUtil.getInteger(accountPage.getTotalCount());
+		int totalCount = GetterUtil.getInteger(totalPage.getTotalCount());
 
 		Account account1 = testGetAccountsPage_addAccount(randomAccount());
 
@@ -369,7 +369,7 @@ public abstract class BaseAccountResourceTestCase {
 		Assert.assertEquals(accounts2.toString(), 1, accounts2.size());
 
 		Page<Account> page3 = accountResource.getAccountsPage(
-			null, null, Pagination.of(1, (int)totalCount + 3), null);
+			null, null, Pagination.of(1, totalCount + 3), null);
 
 		assertContains(account1, (List<Account>)page3.getItems());
 		assertContains(account2, (List<Account>)page3.getItems());
@@ -481,23 +481,22 @@ public abstract class BaseAccountResourceTestCase {
 
 		account2 = testGetAccountsPage_addAccount(account2);
 
-		Page<Account> page = accountResource.getAccountsPage(
-			null, null, null, null);
-
 		for (EntityField entityField : entityFields) {
 			Page<Account> ascPage = accountResource.getAccountsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":asc");
 
-			assertContains(account1, (List<Account>)ascPage.getItems());
-			assertContains(account2, (List<Account>)ascPage.getItems());
+			assertEquals(
+				Arrays.asList(account1, account2),
+				(List<Account>)ascPage.getItems());
 
 			Page<Account> descPage = accountResource.getAccountsPage(
-				null, null, Pagination.of(1, (int)page.getTotalCount() + 1),
+				null, null, Pagination.of(1, 2),
 				entityField.getName() + ":desc");
 
-			assertContains(account2, (List<Account>)descPage.getItems());
-			assertContains(account1, (List<Account>)descPage.getItems());
+			assertEquals(
+				Arrays.asList(account2, account1),
+				(List<Account>)descPage.getItems());
 		}
 	}
 

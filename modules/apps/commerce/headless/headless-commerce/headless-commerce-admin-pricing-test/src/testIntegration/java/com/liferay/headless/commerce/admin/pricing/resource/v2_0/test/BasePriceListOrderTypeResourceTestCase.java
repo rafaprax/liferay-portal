@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
@@ -212,7 +211,7 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 				getPriceListByExternalReferenceCodePriceListOrderTypesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantExternalReferenceCode != null) {
 			PriceListOrderType irrelevantPriceListOrderType =
@@ -223,13 +222,12 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 			page =
 				priceListOrderTypeResource.
 					getPriceListByExternalReferenceCodePriceListOrderTypesPage(
-						irrelevantExternalReferenceCode,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantExternalReferenceCode, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantPriceListOrderType,
+			assertEquals(
+				Arrays.asList(irrelevantPriceListOrderType),
 				(List<PriceListOrderType>)page.getItems());
 			assertValid(
 				page,
@@ -250,12 +248,11 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 				getPriceListByExternalReferenceCodePriceListOrderTypesPage(
 					externalReferenceCode, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			priceListOrderType1, (List<PriceListOrderType>)page.getItems());
-		assertContains(
-			priceListOrderType2, (List<PriceListOrderType>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(priceListOrderType1, priceListOrderType2),
+			(List<PriceListOrderType>)page.getItems());
 		assertValid(
 			page,
 			testGetPriceListByExternalReferenceCodePriceListOrderTypesPage_getExpectedActions(
@@ -279,14 +276,6 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 		String externalReferenceCode =
 			testGetPriceListByExternalReferenceCodePriceListOrderTypesPage_getExternalReferenceCode();
 
-		Page<PriceListOrderType> priceListOrderTypePage =
-			priceListOrderTypeResource.
-				getPriceListByExternalReferenceCodePriceListOrderTypesPage(
-					externalReferenceCode, null);
-
-		int totalCount = GetterUtil.getInteger(
-			priceListOrderTypePage.getTotalCount());
-
 		PriceListOrderType priceListOrderType1 =
 			testGetPriceListByExternalReferenceCodePriceListOrderTypesPage_addPriceListOrderType(
 				externalReferenceCode, randomPriceListOrderType());
@@ -302,21 +291,20 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 		Page<PriceListOrderType> page1 =
 			priceListOrderTypeResource.
 				getPriceListByExternalReferenceCodePriceListOrderTypesPage(
-					externalReferenceCode, Pagination.of(1, totalCount + 2));
+					externalReferenceCode, Pagination.of(1, 2));
 
 		List<PriceListOrderType> priceListOrderTypes1 =
 			(List<PriceListOrderType>)page1.getItems();
 
 		Assert.assertEquals(
-			priceListOrderTypes1.toString(), totalCount + 2,
-			priceListOrderTypes1.size());
+			priceListOrderTypes1.toString(), 2, priceListOrderTypes1.size());
 
 		Page<PriceListOrderType> page2 =
 			priceListOrderTypeResource.
 				getPriceListByExternalReferenceCodePriceListOrderTypesPage(
-					externalReferenceCode, Pagination.of(2, totalCount + 2));
+					externalReferenceCode, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<PriceListOrderType> priceListOrderTypes2 =
 			(List<PriceListOrderType>)page2.getItems();
@@ -327,15 +315,12 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 		Page<PriceListOrderType> page3 =
 			priceListOrderTypeResource.
 				getPriceListByExternalReferenceCodePriceListOrderTypesPage(
-					externalReferenceCode,
-					Pagination.of(1, (int)totalCount + 3));
+					externalReferenceCode, Pagination.of(1, 3));
 
-		assertContains(
-			priceListOrderType1, (List<PriceListOrderType>)page3.getItems());
-		assertContains(
-			priceListOrderType2, (List<PriceListOrderType>)page3.getItems());
-		assertContains(
-			priceListOrderType3, (List<PriceListOrderType>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				priceListOrderType1, priceListOrderType2, priceListOrderType3),
+			(List<PriceListOrderType>)page3.getItems());
 	}
 
 	protected PriceListOrderType
@@ -397,7 +382,7 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 			priceListOrderTypeResource.getPriceListIdPriceListOrderTypesPage(
 				id, null, Pagination.of(1, 10));
 
-		long totalCount = page.getTotalCount();
+		Assert.assertEquals(0, page.getTotalCount());
 
 		if (irrelevantId != null) {
 			PriceListOrderType irrelevantPriceListOrderType =
@@ -407,13 +392,12 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 			page =
 				priceListOrderTypeResource.
 					getPriceListIdPriceListOrderTypesPage(
-						irrelevantId, null,
-						Pagination.of(1, (int)totalCount + 1));
+						irrelevantId, null, Pagination.of(1, 2));
 
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
+			Assert.assertEquals(1, page.getTotalCount());
 
-			assertContains(
-				irrelevantPriceListOrderType,
+			assertEquals(
+				Arrays.asList(irrelevantPriceListOrderType),
 				(List<PriceListOrderType>)page.getItems());
 			assertValid(
 				page,
@@ -432,12 +416,11 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 		page = priceListOrderTypeResource.getPriceListIdPriceListOrderTypesPage(
 			id, null, Pagination.of(1, 10));
 
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+		Assert.assertEquals(2, page.getTotalCount());
 
-		assertContains(
-			priceListOrderType1, (List<PriceListOrderType>)page.getItems());
-		assertContains(
-			priceListOrderType2, (List<PriceListOrderType>)page.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(priceListOrderType1, priceListOrderType2),
+			(List<PriceListOrderType>)page.getItems());
 		assertValid(
 			page,
 			testGetPriceListIdPriceListOrderTypesPage_getExpectedActions(id));
@@ -459,13 +442,6 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 
 		Long id = testGetPriceListIdPriceListOrderTypesPage_getId();
 
-		Page<PriceListOrderType> priceListOrderTypePage =
-			priceListOrderTypeResource.getPriceListIdPriceListOrderTypesPage(
-				id, null, null);
-
-		int totalCount = GetterUtil.getInteger(
-			priceListOrderTypePage.getTotalCount());
-
 		PriceListOrderType priceListOrderType1 =
 			testGetPriceListIdPriceListOrderTypesPage_addPriceListOrderType(
 				id, randomPriceListOrderType());
@@ -480,20 +456,19 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 
 		Page<PriceListOrderType> page1 =
 			priceListOrderTypeResource.getPriceListIdPriceListOrderTypesPage(
-				id, null, Pagination.of(1, totalCount + 2));
+				id, null, Pagination.of(1, 2));
 
 		List<PriceListOrderType> priceListOrderTypes1 =
 			(List<PriceListOrderType>)page1.getItems();
 
 		Assert.assertEquals(
-			priceListOrderTypes1.toString(), totalCount + 2,
-			priceListOrderTypes1.size());
+			priceListOrderTypes1.toString(), 2, priceListOrderTypes1.size());
 
 		Page<PriceListOrderType> page2 =
 			priceListOrderTypeResource.getPriceListIdPriceListOrderTypesPage(
-				id, null, Pagination.of(2, totalCount + 2));
+				id, null, Pagination.of(2, 2));
 
-		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
+		Assert.assertEquals(3, page2.getTotalCount());
 
 		List<PriceListOrderType> priceListOrderTypes2 =
 			(List<PriceListOrderType>)page2.getItems();
@@ -503,14 +478,12 @@ public abstract class BasePriceListOrderTypeResourceTestCase {
 
 		Page<PriceListOrderType> page3 =
 			priceListOrderTypeResource.getPriceListIdPriceListOrderTypesPage(
-				id, null, Pagination.of(1, (int)totalCount + 3));
+				id, null, Pagination.of(1, 3));
 
-		assertContains(
-			priceListOrderType1, (List<PriceListOrderType>)page3.getItems());
-		assertContains(
-			priceListOrderType2, (List<PriceListOrderType>)page3.getItems());
-		assertContains(
-			priceListOrderType3, (List<PriceListOrderType>)page3.getItems());
+		assertEqualsIgnoringOrder(
+			Arrays.asList(
+				priceListOrderType1, priceListOrderType2, priceListOrderType3),
+			(List<PriceListOrderType>)page3.getItems());
 	}
 
 	protected PriceListOrderType
