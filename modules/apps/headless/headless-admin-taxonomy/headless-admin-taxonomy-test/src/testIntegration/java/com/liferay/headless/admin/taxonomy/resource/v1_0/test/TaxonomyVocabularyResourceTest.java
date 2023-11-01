@@ -73,24 +73,17 @@ public class TaxonomyVocabularyResourceTest
 	public void testGetAssetLibraryTaxonomyVocabulariesPage() throws Exception {
 		super.testGetAssetLibraryTaxonomyVocabulariesPage();
 
-		Page<TaxonomyVocabulary> page =
-			taxonomyVocabularyResource.getAssetLibraryTaxonomyVocabulariesPage(
-				testGetAssetLibraryTaxonomyVocabulariesPage_getAssetLibraryId(),
-				null, null, null, Pagination.of(1, 10), null);
-
-		long totalCount = page.getTotalCount();
-
 		TaxonomyVocabulary taxonomyVocabulary =
 			testGetAssetLibraryTaxonomyVocabulariesPage_addTaxonomyVocabulary(
 				testGetAssetLibraryTaxonomyVocabulariesPage_getAssetLibraryId(),
 				randomTaxonomyVocabulary());
 
-		page =
+		Page<TaxonomyVocabulary> page =
 			taxonomyVocabularyResource.getAssetLibraryTaxonomyVocabulariesPage(
 				testGetAssetLibraryTaxonomyVocabulariesPage_getAssetLibraryId(),
 				null, null, null, Pagination.of(1, 10), null);
 
-		Assert.assertEquals(totalCount + 1, page.getTotalCount());
+		Assert.assertEquals(1, page.getTotalCount());
 
 		assertValid(
 			page,
@@ -204,22 +197,16 @@ public class TaxonomyVocabularyResourceTest
 	public void testGetSiteTaxonomyVocabulariesPage() throws Exception {
 		super.testGetSiteTaxonomyVocabulariesPage();
 
+		testGetSiteTaxonomyVocabulariesPage_addTaxonomyVocabulary(
+			testGetSiteTaxonomyVocabulariesPage_getSiteId(),
+			randomTaxonomyVocabulary());
+
 		Page<TaxonomyVocabulary> page =
 			taxonomyVocabularyResource.getSiteTaxonomyVocabulariesPage(
 				testGetSiteTaxonomyVocabulariesPage_getSiteId(), null, null,
 				null, Pagination.of(1, 10), null);
 
-		long totalCount = page.getTotalCount();
-
-		testGetSiteTaxonomyVocabulariesPage_addTaxonomyVocabulary(
-			testGetSiteTaxonomyVocabulariesPage_getSiteId(),
-			randomTaxonomyVocabulary());
-
-		page = taxonomyVocabularyResource.getSiteTaxonomyVocabulariesPage(
-			testGetSiteTaxonomyVocabulariesPage_getSiteId(), null, null, null,
-			Pagination.of(1, 10), null);
-
-		Assert.assertEquals(totalCount + 1, page.getTotalCount());
+		Assert.assertEquals(1, page.getTotalCount());
 
 		assertValid(
 			page,
