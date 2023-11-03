@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
+import com.liferay.portal.workflow.kaleo.definition.util.WorkflowDefinitionContentUtil;
 import com.liferay.portal.workflow.kaleo.forms.model.KaleoProcess;
 import com.liferay.portal.workflow.kaleo.forms.model.KaleoProcessLink;
 import com.liferay.portal.workflow.kaleo.forms.model.KaleoTaskFormPair;
@@ -510,7 +511,9 @@ public class KaleoFormsUtil {
 			WorkflowDefinitionManagerUtil.getWorkflowDefinition(
 				companyId, workflowDefinitionName, workflowDefinitionVersion);
 
-		return SAXReaderUtil.read(workflowDefinition.getContent());
+		return SAXReaderUtil.read(
+			WorkflowDefinitionContentUtil.toXML(
+				workflowDefinition.getContent()));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(KaleoFormsUtil.class);
