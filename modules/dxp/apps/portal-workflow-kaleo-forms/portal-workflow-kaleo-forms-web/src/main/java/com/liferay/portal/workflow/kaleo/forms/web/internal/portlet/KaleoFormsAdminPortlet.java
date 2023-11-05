@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
+import com.liferay.portal.workflow.kaleo.definition.util.WorkflowDefinitionContentUtil;
 import com.liferay.portal.workflow.kaleo.forms.constants.KaleoFormsPortletKeys;
 import com.liferay.portal.workflow.kaleo.forms.constants.KaleoFormsWebKeys;
 import com.liferay.portal.workflow.kaleo.forms.exception.NoSuchKaleoProcessException;
@@ -331,7 +332,7 @@ public class KaleoFormsAdminPortlet extends MVCPortlet {
 					serviceContext.getCompanyId(), name, version);
 
 			jsonObject.put(
-				"content", kaleoDefinitionVersion.getContent()
+				"content", kaleoDefinitionVersion.getXmlContent()
 			).put(
 				"name", kaleoDefinitionVersion.getName()
 			).put(

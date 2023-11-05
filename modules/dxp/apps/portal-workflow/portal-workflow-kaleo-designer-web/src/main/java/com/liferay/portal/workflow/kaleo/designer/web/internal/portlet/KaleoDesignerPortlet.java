@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.util.comparator.RoleNameComparator;
 import com.liferay.portal.kernel.util.comparator.UserFirstNameComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.workflow.kaleo.definition.util.WorkflowDefinitionContentUtil;
 import com.liferay.portal.workflow.kaleo.designer.web.constants.KaleoDesignerPortletKeys;
 import com.liferay.portal.workflow.kaleo.designer.web.internal.constants.KaleoDesignerWebKeys;
 import com.liferay.portal.workflow.kaleo.designer.web.internal.portlet.display.context.KaleoDesignerDisplayContext;
@@ -288,7 +289,7 @@ public class KaleoDesignerPortlet extends MVCPortlet {
 			}
 
 			jsonObject.put(
-				"content", kaleoDefinitionVersion.getContent()
+				"content", kaleoDefinitionVersion.getXmlContent()
 			).put(
 				"draftVersion", kaleoDefinitionVersion.getVersion()
 			).put(
