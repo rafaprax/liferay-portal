@@ -14,7 +14,6 @@ import com.liferay.osb.faro.engine.client.util.OrderByField;
 import com.liferay.osb.faro.model.FaroProject;
 import com.liferay.osb.faro.web.internal.controller.BaseFaroController;
 import com.liferay.osb.faro.web.internal.controller.FaroController;
-import com.liferay.osb.faro.web.internal.exception.FaroException;
 import com.liferay.osb.faro.web.internal.model.display.FaroResultsDisplay;
 import com.liferay.osb.faro.web.internal.model.display.contacts.FieldMappingDisplay;
 import com.liferay.osb.faro.web.internal.model.display.contacts.FieldMappingValuesDisplay;
@@ -28,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -93,7 +90,7 @@ public class FieldMappingController extends BaseFaroController {
 			@FormParam("type") String type)
 		throws Exception {
 
-		validateCreate(name);
+		FieldMappingUtil.validateCreate(name);
 
 		return new FieldMappingDisplay(
 			contactsEngineClient.addFieldMapping(
@@ -201,16 +198,5 @@ public class FieldMappingController extends BaseFaroController {
 		return new FaroResultsDisplay(
 			fieldMappingValuesDisplays, results.getTotal());
 	}
-
-	protected void validateCreate(String name) {
-		Matcher matcher = _pattern.matcher(name);
-
-		if (!matcher.find()) {
-			throw new FaroException("Invalid field mapping name: " + name);
-		}
-	}
-
-	private static final Pattern _pattern = Pattern.compile(
-		"^[A-Za-z_][\\w]{0,126}[A-Za-z0-9]$");
 
 }

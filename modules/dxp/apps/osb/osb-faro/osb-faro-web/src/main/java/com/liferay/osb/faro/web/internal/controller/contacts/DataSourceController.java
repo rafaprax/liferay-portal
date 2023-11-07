@@ -1507,7 +1507,7 @@ public class DataSourceController extends BaseFaroController {
 		}
 
 		for (FieldMappingMap fieldMappingMap : fieldMappingMaps) {
-			_fieldMappingController.validateCreate(fieldMappingMap.getName());
+			FieldMappingUtil.validateCreate(fieldMappingMap.getName());
 		}
 	}
 
@@ -1579,9 +1579,6 @@ public class DataSourceController extends BaseFaroController {
 
 	@Reference
 	private DLFileEntryLocalService _dlFileEntryLocalService;
-
-	@Reference
-	private FieldMappingController _fieldMappingController;
 
 	@Reference
 	private JSONFactory _jsonFactory;

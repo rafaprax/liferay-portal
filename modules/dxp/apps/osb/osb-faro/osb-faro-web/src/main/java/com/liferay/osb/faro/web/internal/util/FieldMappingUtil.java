@@ -10,12 +10,15 @@ import com.liferay.osb.faro.engine.client.model.FieldMapping;
 import com.liferay.osb.faro.engine.client.model.FieldMappingMap;
 import com.liferay.osb.faro.engine.client.model.Results;
 import com.liferay.osb.faro.model.FaroProject;
+import com.liferay.osb.faro.web.internal.exception.FaroException;
 import com.liferay.petra.function.transform.TransformUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Matthew Kong
@@ -57,5 +60,16 @@ public class FieldMappingUtil {
 
 		return newFieldMappingMaps;
 	}
+
+	public static void validateCreate(String name) {
+		Matcher matcher = _pattern.matcher(name);
+
+		if (!matcher.find()) {
+			throw new FaroException("Invalid field mapping name: " + name);
+		}
+	}
+
+	private static final Pattern _pattern = Pattern.compile(
+		"^[A-Za-z_][\\w]{0,126}[A-Za-z0-9]$");
 
 }
