@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.vulcan.internal.jaxrs.serializer.JSONArrayStdSerializer;
 import com.liferay.portal.vulcan.internal.jaxrs.serializer.JSONObjectStdSerializer;
+import com.liferay.portal.vulcan.jackson.databind.ser.JSONStringWrapper;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -47,6 +48,9 @@ public class ObjectMapperContextResolver
 						addSerializer(
 							JSONObject.class,
 							new JSONObjectStdSerializer(JSONObject.class));
+						addSerializer(
+							JSONStringWrapper.class,
+							new JSONStringSerializer());
 					}
 				});
 			setDateFormat(new ISO8601DateFormat());

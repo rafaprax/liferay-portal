@@ -11,30 +11,33 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
+import com.liferay.portal.vulcan.jackson.databind.ser.JSONStringWrapper;
+
 import java.io.IOException;
 
 /**
  * @author Sergio Jiménez del Coso
  */
-public class JSONStringStdDeserializer extends StdDeserializer<String> {
+public class JSONStringStdDeserializer
+	extends StdDeserializer<JSONStringWrapper> {
 
 	public JSONStringStdDeserializer() {
 		super(String.class);
 	}
 
 	@Override
-	public String deserialize(
+	public JSONStringWrapper deserialize(
 			JsonParser jsonParser,
 			DeserializationContext deserializationContext)
 		throws IOException {
 
 		if (jsonParser.hasToken(JsonToken.VALUE_STRING)) {
-			return jsonParser.getText();
+			return new JSONStringWrapper(jsonParser.getText());
 		}
 
 		TreeNode treeNode = jsonParser.readValueAsTree();
 
-		return treeNode.toString();
+		return new JSONStringWrapper(treeNode.toString());
 	}
 
 }
