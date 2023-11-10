@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.jackson.databind.deser.JSONStringStdDeserializer;
+import com.liferay.portal.vulcan.jackson.databind.ser.JSONStringWrapper;
 import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -197,11 +198,17 @@ public class ${schemaName} <#if dtoParentClassName?has_content>extends ${dtoPare
 			<#assign capitalizedPropertyName = propertyType />
 		</#if>
 
-		public ${propertyType} get${capitalizedPropertyName}() {
+		<#assign customPropertyType = propertyType />
+
+		<#if freeMarkerTool.isVersionCompatible(configYAML, 3) && propertySchema.jsonString>
+			<#assign customPropertyType = "JSONStringWrapper" />
+		</#if>
+
+		public ${customPropertyType} get${capitalizedPropertyName}() {
 			return ${propertyName};
 		}
 
-		<#if enumSchemas?keys?seq_contains(propertyType)>
+		<#if enumSchemas?keys?seq_contains(propertyType) || (freeMarkerTool.isVersionCompatible(configYAML, 3) && propertySchema.jsonString)>
 			@JsonIgnore
 			public String get${capitalizedPropertyName}AsString() {
 				if (${propertyName} == null) {
@@ -212,12 +219,12 @@ public class ${schemaName} <#if dtoParentClassName?has_content>extends ${dtoPare
 			}
 		</#if>
 
-		public void set${capitalizedPropertyName}(${propertyType} ${propertyName}) {
+		public void set${capitalizedPropertyName}(${customPropertyType} ${propertyName}) {
 			this.${propertyName} = ${propertyName};
 		}
 
 		@JsonIgnore
-		public void set${capitalizedPropertyName}(UnsafeSupplier<${propertyType}, Exception> ${propertyName}UnsafeSupplier) {
+		public void set${capitalizedPropertyName}(UnsafeSupplier<${customPropertyType}, Exception> ${propertyName}UnsafeSupplier) {
 			try {
 				${propertyName} = ${propertyName}UnsafeSupplier.get();
 			}
@@ -266,7 +273,7 @@ public class ${schemaName} <#if dtoParentClassName?has_content>extends ${dtoPare
 				@NotNull
 			</#if>
 		</#if>
-		protected ${propertyType} ${propertyName}<#if propertySchema.jsonMap> = new HashMap<>()</#if>;
+		protected ${customPropertyType} ${propertyName}<#if propertySchema.jsonMap> = new HashMap<>()</#if>;
 	</#list>
 
 	@Override
