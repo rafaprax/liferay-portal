@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.jackson.databind.deser.JSONStringStdDeserializer;
+import com.liferay.portal.vulcan.jackson.databind.ser.JSONStringWrapper;
 import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -114,17 +115,26 @@ public class WorkflowDefinition implements Serializable {
 	protected Boolean active;
 
 	@Schema
-	public String getContent() {
+	public JSONStringWrapper getContent() {
 		return content;
 	}
 
-	public void setContent(String content) {
+	@JsonIgnore
+	public String getContentAsString() {
+		if (content == null) {
+			return null;
+		}
+
+		return content.toString();
+	}
+
+	public void setContent(JSONStringWrapper content) {
 		this.content = content;
 	}
 
 	@JsonIgnore
 	public void setContent(
-		UnsafeSupplier<String, Exception> contentUnsafeSupplier) {
+		UnsafeSupplier<JSONStringWrapper, Exception> contentUnsafeSupplier) {
 
 		try {
 			content = contentUnsafeSupplier.get();
@@ -140,7 +150,7 @@ public class WorkflowDefinition implements Serializable {
 	@GraphQLField
 	@JsonDeserialize(using = JSONStringStdDeserializer.class)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected String content;
+	protected JSONStringWrapper content;
 
 	@Schema
 	public Date getDateCreated() {

@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.vulcan.jackson.databind.ser.JSONStringWrapper;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
@@ -208,7 +209,7 @@ public class WorkflowDefinitionResourceImpl
 			WorkflowDefinition workflowDefinition)
 		throws Exception {
 
-		String content = workflowDefinition.getContent();
+		String content = workflowDefinition.getContentAsString();
 
 		return _toWorkflowDefinition(
 			_workflowDefinitionManager.deployWorkflowDefinition(
@@ -222,7 +223,7 @@ public class WorkflowDefinitionResourceImpl
 			WorkflowDefinition workflowDefinition)
 		throws Exception {
 
-		String content = workflowDefinition.getContent();
+		String content = workflowDefinition.getContentAsString();
 
 		return _toWorkflowDefinition(
 			_workflowDefinitionManager.saveWorkflowDefinition(
@@ -353,10 +354,12 @@ public class WorkflowDefinitionResourceImpl
 				setContent(
 					() -> {
 						if (StringUtil.equalsIgnoreCase(contentFormat, "xml")) {
-							return workflowDefinition.getContentAsXML();
+							return new JSONStringWrapper(
+								workflowDefinition.getContentAsXML());
 						}
 
-						return workflowDefinition.getContent();
+						return new JSONStringWrapper(
+							workflowDefinition.getContent());
 					});
 				setTitle_i18n(
 					() -> {
