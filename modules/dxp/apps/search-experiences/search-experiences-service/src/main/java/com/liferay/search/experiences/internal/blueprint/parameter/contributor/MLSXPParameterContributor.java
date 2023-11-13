@@ -19,6 +19,7 @@ import com.liferay.search.experiences.internal.blueprint.parameter.DoubleArraySX
 import com.liferay.search.experiences.internal.blueprint.parameter.IntegerSXPParameter;
 import com.liferay.search.experiences.internal.web.cache.TextEmbeddingProviderWebCacheItem;
 import com.liferay.search.experiences.ml.embedding.text.TextEmbeddingRetriever;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.rest.dto.v1_0.EmbeddingProviderConfiguration;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
 

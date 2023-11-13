@@ -33,10 +33,10 @@ import com.liferay.search.experiences.internal.blueprint.parameter.contributor.C
 import com.liferay.search.experiences.internal.blueprint.parameter.contributor.IpstackSXPParameterContributor;
 import com.liferay.search.experiences.internal.blueprint.parameter.contributor.MLSXPParameterContributor;
 import com.liferay.search.experiences.internal.blueprint.parameter.contributor.OpenWeatherMapSXPParameterContributor;
-import com.liferay.search.experiences.internal.blueprint.parameter.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.internal.blueprint.parameter.contributor.TimeSXPParameterContributor;
 import com.liferay.search.experiences.internal.blueprint.parameter.contributor.UserSXPParameterContributor;
 import com.liferay.search.experiences.ml.embedding.text.TextEmbeddingRetriever;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.rest.dto.v1_0.Configuration;
 import com.liferay.search.experiences.rest.dto.v1_0.Parameter;
 import com.liferay.search.experiences.rest.dto.v1_0.ParameterConfiguration;

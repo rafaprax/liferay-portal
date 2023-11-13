@@ -11,6 +11,7 @@ import com.liferay.search.experiences.blueprint.parameter.contributor.SXPParamet
 import com.liferay.search.experiences.internal.blueprint.parameter.DateSXPParameter;
 import com.liferay.search.experiences.internal.blueprint.parameter.IntegerSXPParameter;
 import com.liferay.search.experiences.internal.blueprint.parameter.StringSXPParameter;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
 
 import java.beans.ExceptionListener;

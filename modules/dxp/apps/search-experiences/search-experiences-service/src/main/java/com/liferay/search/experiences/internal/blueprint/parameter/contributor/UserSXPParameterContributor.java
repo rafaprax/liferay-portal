@@ -59,6 +59,7 @@ import com.liferay.search.experiences.internal.blueprint.parameter.LongArraySXPP
 import com.liferay.search.experiences.internal.blueprint.parameter.LongSXPParameter;
 import com.liferay.search.experiences.internal.blueprint.parameter.StringArraySXPParameter;
 import com.liferay.search.experiences.internal.blueprint.parameter.StringSXPParameter;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
 import com.liferay.segments.SegmentsEntryRetriever;
 import com.liferay.segments.context.Context;

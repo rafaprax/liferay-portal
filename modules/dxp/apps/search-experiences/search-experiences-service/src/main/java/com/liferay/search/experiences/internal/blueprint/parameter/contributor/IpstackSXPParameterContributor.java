@@ -17,6 +17,7 @@ import com.liferay.search.experiences.internal.blueprint.parameter.DoubleSXPPara
 import com.liferay.search.experiences.internal.blueprint.parameter.StringSXPParameter;
 import com.liferay.search.experiences.internal.configuration.IpstackConfiguration;
 import com.liferay.search.experiences.internal.web.cache.IpstackWebCacheItem;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
 
 import java.beans.ExceptionListener;

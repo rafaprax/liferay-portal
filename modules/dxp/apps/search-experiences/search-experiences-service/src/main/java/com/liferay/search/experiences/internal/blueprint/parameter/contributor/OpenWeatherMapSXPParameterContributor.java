@@ -21,6 +21,7 @@ import com.liferay.search.experiences.internal.configuration.IpstackConfiguratio
 import com.liferay.search.experiences.internal.configuration.OpenWeatherMapConfiguration;
 import com.liferay.search.experiences.internal.web.cache.IpstackWebCacheItem;
 import com.liferay.search.experiences.internal.web.cache.OpenWeatherMapWebCacheItem;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributor;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
 
 import java.beans.ExceptionListener;
