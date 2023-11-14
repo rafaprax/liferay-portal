@@ -37,7 +37,7 @@ import com.liferay.search.experiences.blueprint.parameter.SXPParameter;
 import com.liferay.search.experiences.blueprint.search.request.enhancer.SXPBlueprintSearchRequestEnhancer;
 import com.liferay.search.experiences.internal.blueprint.highlight.HighlightConverter;
 import com.liferay.search.experiences.internal.blueprint.parameter.SXPParameterData;
-import com.liferay.search.experiences.internal.blueprint.parameter.SXPParameterDataCreator;
+import com.liferay.search.experiences.internal.blueprint.parameter.SXPParameterDataCreatorUtil;
 import com.liferay.search.experiences.internal.blueprint.property.PropertyExpander;
 import com.liferay.search.experiences.internal.blueprint.property.PropertyResolver;
 import com.liferay.search.experiences.internal.blueprint.query.QueryConverter;
@@ -51,6 +51,7 @@ import com.liferay.search.experiences.internal.blueprint.search.request.body.con
 import com.liferay.search.experiences.internal.blueprint.search.request.body.contributor.SortSXPSearchRequestBodyContributor;
 import com.liferay.search.experiences.internal.blueprint.search.request.body.contributor.SuggestSXPSearchRequestBodyContributor;
 import com.liferay.search.experiences.internal.blueprint.sort.SortConverter;
+import com.liferay.search.experiences.rest.contributor.SXPParameterContributorRegistry;
 import com.liferay.search.experiences.rest.dto.v1_0.Configuration;
 import com.liferay.search.experiences.rest.dto.v1_0.ElementDefinition;
 import com.liferay.search.experiences.rest.dto.v1_0.ElementInstance;
@@ -200,11 +201,12 @@ public class SXPBlueprintSearchRequestEnhancerImpl
 
 		RuntimeException runtimeException = new RuntimeException();
 
-		SXPParameterData sxpParameterData = _sxpParameterDataCreator.create(
+		SXPParameterData sxpParameterData = SXPParameterDataCreatorUtil.create(
 			runtimeException::addSuppressed,
 			searchRequestBuilder.withSearchContextGet(
 				searchContext -> searchContext),
-			sxpBlueprint);
+			sxpBlueprint,
+			_sxpParameterContributorRegistry.getSxpParameterContributors());
 
 		if (configuration != null) {
 			_contributeSXPSearchRequestBodyContributors(
@@ -527,7 +529,7 @@ public class SXPBlueprintSearchRequestEnhancerImpl
 	private Sorts _sorts;
 
 	@Reference
-	private SXPParameterDataCreator _sxpParameterDataCreator;
+	private SXPParameterContributorRegistry _sxpParameterContributorRegistry;
 
 	private List<SXPSearchRequestBodyContributor>
 		_sxpSearchRequestBodyContributors;
