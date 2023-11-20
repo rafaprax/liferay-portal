@@ -32,11 +32,12 @@ import org.osgi.service.component.annotations.Reference;
  * @author Stian Sigvartsen
  */
 @Component(
+	enabled = false,
 	property = {
 		"display.index:Integer=200", "prefix=membership",
 		"processing.index:Integer=200"
 	},
-	service = MembershipsUserFieldExpressionHandler.class
+	service = UserFieldExpressionHandler.class
 )
 public class MembershipsUserFieldExpressionHandler
 	implements UserFieldExpressionHandler {
