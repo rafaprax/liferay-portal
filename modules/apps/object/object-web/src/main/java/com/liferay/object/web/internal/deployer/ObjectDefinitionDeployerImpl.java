@@ -48,12 +48,14 @@ import com.liferay.layout.page.template.info.item.provider.DisplayPageInfoItemFi
 import com.liferay.list.type.service.ListTypeEntryLocalService;
 import com.liferay.object.constants.ObjectActionKeys;
 import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.definition.security.permission.resource.ObjectDefinitionPortletResourcePermissionRegistryUtil;
 import com.liferay.object.deployer.ObjectDefinitionDeployer;
 import com.liferay.object.field.attachment.AttachmentManager;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectField;
+import com.liferay.object.model.ObjectViewFilterColumn;
 import com.liferay.object.related.models.ObjectRelatedModelsProviderRegistry;
 import com.liferay.object.rest.context.path.RESTContextPathResolverRegistry;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManagerRegistry;
@@ -92,13 +94,15 @@ import com.liferay.object.web.internal.notifications.ObjectUserNotificationsHand
 import com.liferay.object.web.internal.object.definitions.portlet.ObjectDefinitionsControlPanelEntry;
 import com.liferay.object.web.internal.object.entries.application.list.ObjectEntriesPanelApp;
 import com.liferay.object.web.internal.object.entries.display.context.ObjectEntryDisplayContextFactory;
-import com.liferay.object.web.internal.object.entries.frontend.data.set.filter.factory.ObjectFieldFDSFilterFactoryRegistry;
+import com.liferay.object.web.internal.object.entries.frontend.data.set.filter.factory.ObjectFieldFDSFilterFactory;
 import com.liferay.object.web.internal.object.entries.frontend.data.set.view.table.ObjectEntriesTableFDSView;
 import com.liferay.object.web.internal.object.entries.portlet.ObjectEntriesPortlet;
 import com.liferay.object.web.internal.object.entries.portlet.action.EditObjectEntryMVCActionCommand;
 import com.liferay.object.web.internal.object.entries.portlet.action.EditObjectEntryMVCRenderCommand;
 import com.liferay.object.web.internal.object.entries.portlet.action.EditObjectEntryRelatedModelMVCActionCommand;
 import com.liferay.object.web.internal.object.entries.portlet.action.UploadAttachmentMVCActionCommand;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -127,6 +131,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.template.info.item.capability.TemplateInfoItemCapability;
 import com.liferay.template.info.item.provider.TemplateInfoItemFieldSetProvider;
@@ -152,6 +157,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -433,8 +439,7 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 				new ObjectEntriesPortlet(
 					_objectActionLocalService,
 					objectDefinition.getObjectDefinitionId(),
-					_objectDefinitionLocalService,
-					_objectFieldFDSFilterFactoryRegistry,
+					_objectDefinitionLocalService, this,
 					_objectFieldLocalService, _objectScopeProviderRegistry,
 					_objectViewLocalService, _portal,
 					portletResourcePermission),
@@ -551,9 +556,56 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 		return serviceRegistrations;
 	}
 
+	public ObjectFieldFDSFilterFactory getObjectFieldFDSFilterFactory(
+			long objectDefinitionId,
+			ObjectViewFilterColumn objectViewFilterColumn)
+		throws PortalException {
+
+		if (Validator.isNotNull(objectViewFilterColumn.getFilterType())) {
+			return _objectFieldFilterTypeKeyServiceTrackerMap.getService(
+				objectViewFilterColumn.getFilterType());
+		}
+
+		if (Objects.equals(
+				objectViewFilterColumn.getObjectFieldName(), "dateCreated") ||
+			Objects.equals(
+				objectViewFilterColumn.getObjectFieldName(), "dateModified")) {
+
+			return _objectFieldBusinessTypeKeyServiceTrackerMap.getService(
+				ObjectFieldConstants.BUSINESS_TYPE_DATE);
+		}
+
+		if (Objects.equals(
+				objectViewFilterColumn.getObjectFieldName(), "status")) {
+
+			return _objectFieldBusinessTypeKeyServiceTrackerMap.getService(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST);
+		}
+
+		ObjectField objectField = _objectFieldLocalService.getObjectField(
+			objectDefinitionId, objectViewFilterColumn.getObjectFieldName());
+
+		return _objectFieldBusinessTypeKeyServiceTrackerMap.getService(
+			objectField.getBusinessType());
+	}
+
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_bundleContext = bundleContext;
+		_objectFieldBusinessTypeKeyServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ObjectFieldFDSFilterFactory.class,
+				"object.field.business.type.key");
+		_objectFieldFilterTypeKeyServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ObjectFieldFDSFilterFactory.class,
+				"object.field.filter.type.key");
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_objectFieldBusinessTypeKeyServiceTrackerMap.close();
+		_objectFieldFilterTypeKeyServiceTrackerMap.close();
 	}
 
 	private PortletResourcePermission _getPortletResourcePermission(
@@ -677,9 +729,10 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 	@Reference
 	private ObjectEntryService _objectEntryService;
 
-	@Reference
-	private ObjectFieldFDSFilterFactoryRegistry
-		_objectFieldFDSFilterFactoryRegistry;
+	private ServiceTrackerMap<String, ObjectFieldFDSFilterFactory>
+		_objectFieldBusinessTypeKeyServiceTrackerMap;
+	private ServiceTrackerMap<String, ObjectFieldFDSFilterFactory>
+		_objectFieldFilterTypeKeyServiceTrackerMap;
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;

@@ -12,8 +12,8 @@ import com.liferay.object.service.ObjectActionLocalService;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectViewLocalService;
+import com.liferay.object.web.internal.deployer.ObjectDefinitionDeployerImpl;
 import com.liferay.object.web.internal.object.entries.display.context.ViewObjectEntriesDisplayContext;
-import com.liferay.object.web.internal.object.entries.frontend.data.set.filter.factory.ObjectFieldFDSFilterFactoryRegistry;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.Portal;
@@ -35,7 +35,7 @@ public class ObjectEntriesPortlet extends MVCPortlet {
 		ObjectActionLocalService objectActionLocalService,
 		long objectDefinitionId,
 		ObjectDefinitionLocalService objectDefinitionLocalService,
-		ObjectFieldFDSFilterFactoryRegistry objectFieldFDSFilterFactoryRegistry,
+		ObjectDefinitionDeployerImpl objectDefinitionDeployerImpl,
 		ObjectFieldLocalService objectFieldLocalService,
 		ObjectScopeProviderRegistry objectScopeProviderRegistry,
 		ObjectViewLocalService objectViewLocalService, Portal portal,
@@ -44,8 +44,7 @@ public class ObjectEntriesPortlet extends MVCPortlet {
 		_objectActionLocalService = objectActionLocalService;
 		_objectDefinitionId = objectDefinitionId;
 		_objectDefinitionLocalService = objectDefinitionLocalService;
-		_objectFieldFDSFilterFactoryRegistry =
-			objectFieldFDSFilterFactoryRegistry;
+		_objectDefinitionDeployerImpl = objectDefinitionDeployerImpl;
 		_objectFieldLocalService = objectFieldLocalService;
 		_objectScopeProviderRegistry = objectScopeProviderRegistry;
 		_objectViewLocalService = objectViewLocalService;
@@ -68,7 +67,7 @@ public class ObjectEntriesPortlet extends MVCPortlet {
 			WebKeys.PORTLET_DISPLAY_CONTEXT,
 			new ViewObjectEntriesDisplayContext(
 				_portal.getHttpServletRequest(renderRequest),
-				_objectActionLocalService, _objectFieldFDSFilterFactoryRegistry,
+				_objectActionLocalService, _objectDefinitionDeployerImpl,
 				_objectFieldLocalService,
 				_objectScopeProviderRegistry.getObjectScopeProvider(
 					objectDefinition.getScope()),
@@ -79,10 +78,9 @@ public class ObjectEntriesPortlet extends MVCPortlet {
 	}
 
 	private final ObjectActionLocalService _objectActionLocalService;
+	private final ObjectDefinitionDeployerImpl _objectDefinitionDeployerImpl;
 	private final long _objectDefinitionId;
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
-	private final ObjectFieldFDSFilterFactoryRegistry
-		_objectFieldFDSFilterFactoryRegistry;
 	private final ObjectFieldLocalService _objectFieldLocalService;
 	private final ObjectScopeProviderRegistry _objectScopeProviderRegistry;
 	private final ObjectViewLocalService _objectViewLocalService;
