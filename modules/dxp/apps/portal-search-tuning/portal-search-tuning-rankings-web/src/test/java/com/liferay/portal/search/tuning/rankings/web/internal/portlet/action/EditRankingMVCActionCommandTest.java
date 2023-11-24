@@ -16,6 +16,8 @@ import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
+import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexWriter;
+import com.liferay.portal.search.tuning.rankings.web.internal.storage.helper.RankingJSONStorageHelper;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import javax.portlet.ActionRequest;
@@ -59,8 +61,11 @@ public class EditRankingMVCActionCommandTest
 			_editRankingMVCActionCommand, "rankingIndexReader",
 			rankingIndexReader);
 		ReflectionTestUtil.setFieldValue(
-			_editRankingMVCActionCommand, "rankingStorageAdapter",
-			rankingStorageAdapter);
+			_editRankingMVCActionCommand, "rankingIndexWriter",
+			_rankingIndexWriter);
+		ReflectionTestUtil.setFieldValue(
+			_editRankingMVCActionCommand, "rankingJSONStorageHelper",
+			_rankingJSONStorageHelper);
 	}
 
 	@Test
@@ -282,5 +287,9 @@ public class EditRankingMVCActionCommandTest
 	private final ActionResponse _actionResponse = Mockito.mock(
 		ActionResponse.class);
 	private EditRankingMVCActionCommand _editRankingMVCActionCommand;
+	private final RankingIndexWriter _rankingIndexWriter = Mockito.mock(
+		RankingIndexWriter.class);
+	private final RankingJSONStorageHelper _rankingJSONStorageHelper =
+		Mockito.mock(RankingJSONStorageHelper.class);
 
 }
