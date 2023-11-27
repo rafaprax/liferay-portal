@@ -340,6 +340,32 @@ public class ResourceOpenAPIParser {
 		return null;
 	}
 
+	public static Set<String> getResponseBodyMediaTypes(Operation operation) {
+		Map<ResponseCode, Response> responses = operation.getResponses();
+
+		if ((responses == null) || responses.isEmpty()) {
+			return null;
+		}
+
+		Set<String> mediaTypes = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+
+		for (Response response : responses.values()) {
+			if (response == null) {
+				continue;
+			}
+
+			Map<String, Content> contents = response.getContent();
+
+			if ((contents == null) || contents.isEmpty()) {
+				continue;
+			}
+
+			mediaTypes.addAll(new ArrayList<>(contents.keySet()));
+		}
+
+		return mediaTypes;
+	}
+
 	public static Set<String> getVulcanBatchImplementationCreateStrategies(
 		List<JavaMethodSignature> javaMethodSignatures,
 		Map<String, String> properties) {
@@ -875,27 +901,7 @@ public class ResourceOpenAPIParser {
 	}
 
 	private static String _getMethodAnnotationProduces(Operation operation) {
-		Map<ResponseCode, Response> responses = operation.getResponses();
-
-		if ((responses == null) || responses.isEmpty()) {
-			return null;
-		}
-
-		Set<String> mediaTypes = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-
-		for (Response response : responses.values()) {
-			if (response == null) {
-				continue;
-			}
-
-			Map<String, Content> contents = response.getContent();
-
-			if ((contents == null) || contents.isEmpty()) {
-				continue;
-			}
-
-			mediaTypes.addAll(new ArrayList<>(contents.keySet()));
-		}
+		Set<String> mediaTypes = getResponseBodyMediaTypes(operation);
 
 		if (mediaTypes.isEmpty()) {
 			return null;

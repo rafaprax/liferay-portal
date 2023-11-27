@@ -780,6 +780,13 @@ public class FreeMarkerTool {
 			configYAML, javaMethodParameters, operation, schemas, annotation);
 	}
 
+	public Set<String> getResponseBodyMediaTypes(
+		JavaMethodSignature javaMethodSignature) {
+
+		return ResourceOpenAPIParser.getResponseBodyMediaTypes(
+			javaMethodSignature.getOperation());
+	}
+
 	public String getRESTMethodJavadoc(
 		ConfigYAML configYAML, JavaMethodSignature javaMethodSignature,
 		OpenAPIYAML openAPIYAML) {
