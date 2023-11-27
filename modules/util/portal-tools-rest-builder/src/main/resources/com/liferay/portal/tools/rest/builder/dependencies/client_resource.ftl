@@ -266,6 +266,7 @@ public interface ${schemaName}Resource {
 					<#else>
 						<#assign
 							bodyJavaMethodParameters = freeMarkerTool.getBodyJavaMethodParameters(javaMethodSignature)
+							responseBodyMediaTypes = freeMarkerTool.getResponseBodyMediaTypes(javaMethodSignature)
 						/>
 
 						<#if bodyJavaMethodParameters?has_content>
@@ -286,14 +287,14 @@ public interface ${schemaName}Resource {
 												);
 											}
 
-											httpInvoker.body(values.toString(), "application/json");
+											httpInvoker.body(values.toString(), "${responseBodyMediaTypes[0]}");
 										<#else>
-											httpInvoker.body(${javaMethodParameter.parameterName}.toString(), "application/json");
+											httpInvoker.body(${javaMethodParameter.parameterName}.toString(), "${responseBodyMediaTypes[0]}");
 										</#if>
 									</#if>
 								</#list>
 						<#elseif freeMarkerTool.hasHTTPMethod(javaMethodSignature, "patch", "post", "put")>
-							httpInvoker.body("[]", "application/json");
+							httpInvoker.body("[]", "${responseBodyMediaTypes[0]}");
 						</#if>
 					</#if>
 				</#if>
