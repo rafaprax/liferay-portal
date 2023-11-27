@@ -31,7 +31,7 @@ import org.osgi.framework.FrameworkUtil;
 /**
  * @author André de Oliveira
  */
-public class ElasticsearchConnectionManagerTest {
+public class ElasticsearchConnectionManagerImplTest {
 
 	@ClassRule
 	@Rule
@@ -65,7 +65,7 @@ public class ElasticsearchConnectionManagerTest {
 
 	@Test
 	public void testActivateRemoteModeDisabled() {
-		ElasticsearchConnectionManager elasticsearchConnectionManager =
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
 			Mockito.spy(_elasticsearchConnectionManager);
 
 		elasticsearchConnectionManager.activate(
@@ -98,7 +98,7 @@ public class ElasticsearchConnectionManagerTest {
 			"test"
 		);
 
-		ElasticsearchConnectionManager elasticsearchConnectionManager =
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
 			Mockito.spy(_elasticsearchConnectionManager);
 
 		elasticsearchConnectionManager.activate(
@@ -137,7 +137,7 @@ public class ElasticsearchConnectionManagerTest {
 			new String[] {"http://localhost:9200"}
 		);
 
-		ElasticsearchConnectionManager elasticsearchConnectionManager =
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
 			Mockito.spy(_elasticsearchConnectionManager);
 
 		elasticsearchConnectionManager.activate(
@@ -573,15 +573,15 @@ public class ElasticsearchConnectionManagerTest {
 		_elasticsearchConnectionManager.removeElasticsearchConnection(null);
 	}
 
-	private ElasticsearchConnectionManager
+	private ElasticsearchConnectionManagerImpl
 		_createElasticsearchConnectionManager(
 			ElasticsearchConnection remoteElasticsearchConnection1,
 			ElasticsearchConnection remoteElasticsearchConnection2,
 			ElasticsearchConnection remoteElasticsearchConnection3,
 			ElasticsearchConnection sidecarElasticsearchConnection) {
 
-		ElasticsearchConnectionManager elasticsearchConnectionManager =
-			new ElasticsearchConnectionManager() {
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
+			new ElasticsearchConnectionManagerImpl() {
 				{
 					elasticsearchConfigurationWrapper =
 						_elasticsearchConfigurationWrapper;
@@ -772,7 +772,7 @@ public class ElasticsearchConnectionManagerTest {
 	private final ElasticsearchConfigurationWrapper
 		_elasticsearchConfigurationWrapper = Mockito.mock(
 			ElasticsearchConfigurationWrapper.class);
-	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
+	private ElasticsearchConnectionManagerImpl _elasticsearchConnectionManager;
 	private final Http _http = Mockito.mock(Http.class);
 	private final ElasticsearchConnection _remoteElasticsearchConnection1 =
 		Mockito.mock(ElasticsearchConnection.class);
