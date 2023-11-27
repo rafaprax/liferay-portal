@@ -45,7 +45,7 @@ public class ElasticsearchSearchEngineFixture implements SearchEngineFixture {
 		_elasticsearchConnectionFixture = elasticsearchConnectionFixture;
 	}
 
-	public ElasticsearchConnectionManagerImpl getElasticsearchConnectionManager() {
+	public ElasticsearchConnectionManager getElasticsearchConnectionManager() {
 		return _elasticsearchConnectionManager;
 	}
 
@@ -72,7 +72,7 @@ public class ElasticsearchSearchEngineFixture implements SearchEngineFixture {
 
 		_frameworkUtilMockedStatic = _createFrameworkUtil();
 
-		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
+		ElasticsearchConnectionManager elasticsearchConnectionManager =
 			_createElasticsearchConnectionManager(
 				elasticsearchConnectionFixture);
 
@@ -163,7 +163,7 @@ public class ElasticsearchSearchEngineFixture implements SearchEngineFixture {
 		return _companyIndexFactory;
 	}
 
-	private ElasticsearchConnectionManagerImpl
+	private ElasticsearchConnectionManager
 		_createElasticsearchConnectionManager(
 			ElasticsearchConnectionFixture elasticsearchConnectionFixture) {
 
@@ -188,7 +188,7 @@ public class ElasticsearchSearchEngineFixture implements SearchEngineFixture {
 
 	private ElasticsearchSearchEngine _createElasticsearchSearchEngine(
 		ElasticsearchConnectionManager elasticsearchClientResolver,
-		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager,
+		ElasticsearchConnectionManager elasticsearchConnectionManager,
 		IndexConfigurationDynamicUpdatesExecutor
 			indexConfigurationDynamicUpdatesExecutor,
 		IndexNameBuilder indexNameBuilder, Map<String, Object> properites) {
@@ -259,7 +259,7 @@ public class ElasticsearchSearchEngineFixture implements SearchEngineFixture {
 	private CompanyIndexFactoryHelper _companyIndexFactoryHelper;
 	private final ElasticsearchConnectionFixture
 		_elasticsearchConnectionFixture;
-	private ElasticsearchConnectionManagerImpl _elasticsearchConnectionManager;
+	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
 	private ElasticsearchEngineAdapterFixture
 		_elasticsearchEngineAdapterFixture;
 	private ElasticsearchSearchEngine _elasticsearchSearchEngine;

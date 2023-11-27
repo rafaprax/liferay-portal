@@ -65,10 +65,13 @@ public class ElasticsearchConnectionManagerImplTest {
 
 	@Test
 	public void testActivateRemoteModeDisabled() {
-		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
+		ElasticsearchConnectionManager elasticsearchConnectionManager =
 			Mockito.spy(_elasticsearchConnectionManager);
 
-		elasticsearchConnectionManager.activate(
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManagerImpl =
+			(ElasticsearchConnectionManagerImpl)elasticsearchConnectionManager;
+
+		elasticsearchConnectionManagerImpl.activate(
 			SystemBundleUtil.getBundleContext());
 
 		Mockito.verify(
@@ -98,11 +101,14 @@ public class ElasticsearchConnectionManagerImplTest {
 			"test"
 		);
 
-		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
+		ElasticsearchConnectionManager elasticsearchConnectionManager =
 			Mockito.spy(_elasticsearchConnectionManager);
 
-		elasticsearchConnectionManager.activate(
-			SystemBundleUtil.getBundleContext());
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManagerImpl =
+			(ElasticsearchConnectionManagerImpl)elasticsearchConnectionManager;
+
+		elasticsearchConnectionManagerImpl.activate(
+			SystemBundleUtil.getBundleContext();
 
 		Mockito.verify(
 			elasticsearchConnectionManager, Mockito.never()
@@ -137,10 +143,13 @@ public class ElasticsearchConnectionManagerImplTest {
 			new String[] {"http://localhost:9200"}
 		);
 
-		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
+		ElasticsearchConnectionManager elasticsearchConnectionManager =
 			Mockito.spy(_elasticsearchConnectionManager);
 
-		elasticsearchConnectionManager.activate(
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManagerImpl =
+			(ElasticsearchConnectionManagerImpl)elasticsearchConnectionManager;
+
+		elasticsearchConnectionManagerImpl.activate(
 			SystemBundleUtil.getBundleContext());
 
 		Mockito.verify(
@@ -573,14 +582,14 @@ public class ElasticsearchConnectionManagerImplTest {
 		_elasticsearchConnectionManager.removeElasticsearchConnection(null);
 	}
 
-	private ElasticsearchConnectionManagerImpl
+	private ElasticsearchConnectionManager
 		_createElasticsearchConnectionManager(
 			ElasticsearchConnection remoteElasticsearchConnection1,
 			ElasticsearchConnection remoteElasticsearchConnection2,
 			ElasticsearchConnection remoteElasticsearchConnection3,
 			ElasticsearchConnection sidecarElasticsearchConnection) {
 
-		ElasticsearchConnectionManagerImpl elasticsearchConnectionManager =
+		ElasticsearchConnectionManagerImpl elasticsearchConnectionManagerImpl =
 			new ElasticsearchConnectionManagerImpl() {
 				{
 					elasticsearchConfigurationWrapper =
@@ -589,19 +598,19 @@ public class ElasticsearchConnectionManagerImplTest {
 				}
 			};
 
-		elasticsearchConnectionManager.addElasticsearchConnection(
+		elasticsearchConnectionManagerImpl.addElasticsearchConnection(
 			remoteElasticsearchConnection1);
-		elasticsearchConnectionManager.addElasticsearchConnection(
+		elasticsearchConnectionManagerImpl.addElasticsearchConnection(
 			remoteElasticsearchConnection2);
-		elasticsearchConnectionManager.addElasticsearchConnection(
+		elasticsearchConnectionManagerImpl.addElasticsearchConnection(
 			remoteElasticsearchConnection3);
-		elasticsearchConnectionManager.addElasticsearchConnection(
+		elasticsearchConnectionManagerImpl.addElasticsearchConnection(
 			sidecarElasticsearchConnection);
 
-		elasticsearchConnectionManager.activate(
+		elasticsearchConnectionManagerImpl.activate(
 			SystemBundleUtil.getBundleContext());
 
-		return elasticsearchConnectionManager;
+		return elasticsearchConnectionManagerImpl;
 	}
 
 	private void _enableRemoteMode() {
@@ -772,7 +781,7 @@ public class ElasticsearchConnectionManagerImplTest {
 	private final ElasticsearchConfigurationWrapper
 		_elasticsearchConfigurationWrapper = Mockito.mock(
 			ElasticsearchConfigurationWrapper.class);
-	private ElasticsearchConnectionManagerImpl _elasticsearchConnectionManager;
+	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
 	private final Http _http = Mockito.mock(Http.class);
 	private final ElasticsearchConnection _remoteElasticsearchConnection1 =
 		Mockito.mock(ElasticsearchConnection.class);
