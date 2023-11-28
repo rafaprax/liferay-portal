@@ -33,13 +33,14 @@ public class SynonymSetStorageAdapterTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_synonymSetStorageAdapter = new SynonymSetStorageAdapter();
+		_synonymSetStorageAdapter = SynonymSetStorageAdapter.getInstance(
+			_synonymSetIndexWriter, _synonymSetJSONStorageHelper);
 
 		ReflectionTestUtil.setFieldValue(
-			_synonymSetStorageAdapter, "synonymSetIndexWriter",
+			_synonymSetStorageAdapter, "_synonymSetIndexWriter",
 			_synonymSetIndexWriter);
 		ReflectionTestUtil.setFieldValue(
-			_synonymSetStorageAdapter, "synonymSetJSONStorageHelper",
+			_synonymSetStorageAdapter, "_synonymSetJSONStorageHelper",
 			_synonymSetJSONStorageHelper);
 	}
 

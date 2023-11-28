@@ -15,20 +15,28 @@ import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSet;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexWriter;
 import com.liferay.portal.search.tuning.synonyms.web.internal.storage.helper.SynonymSetJSONStorageHelper;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Bryan Engler
  */
-@Component(service = SynonymSetStorageAdapter.class)
 public class SynonymSetStorageAdapter {
+
+	public static SynonymSetStorageAdapter getInstance(
+		SynonymSetIndexWriter synonymSetIndexWriter,
+		SynonymSetJSONStorageHelper synonymSetJSONStorageHelper) {
+
+		if (_synonymSetStorageAdapter == null) {
+			_synonymSetStorageAdapter = new SynonymSetStorageAdapter(
+				synonymSetIndexWriter, synonymSetJSONStorageHelper);
+		}
+
+		return _synonymSetStorageAdapter;
+	}
 
 	public String create(
 		SynonymSetIndexName synonymSetIndexName, SynonymSet synonymSet) {
 
 		String synonymSetDocumentId =
-			synonymSetJSONStorageHelper.addJSONStorageEntry(
+			_synonymSetJSONStorageHelper.addJSONStorageEntry(
 				synonymSetIndexName.getIndexName(), synonymSet.getSynonyms());
 
 		SynonymSet.SynonymSetBuilder synonymSetBuilder =
@@ -36,7 +44,7 @@ public class SynonymSetStorageAdapter {
 
 		synonymSetBuilder.synonymSetDocumentId(synonymSetDocumentId);
 
-		synonymSetIndexWriter.create(
+		_synonymSetIndexWriter.create(
 			synonymSetIndexName, synonymSetBuilder.build());
 
 		return synonymSetDocumentId;
@@ -47,28 +55,31 @@ public class SynonymSetStorageAdapter {
 			String synonymSetDocumentId)
 		throws PortalException {
 
-		synonymSetJSONStorageHelper.deleteJSONStorageEntry(
+		_synonymSetJSONStorageHelper.deleteJSONStorageEntry(
 			_getClassPK(synonymSetDocumentId));
 
-		synonymSetIndexWriter.remove(synonymSetIndexName, synonymSetDocumentId);
+		_synonymSetIndexWriter.remove(
+			synonymSetIndexName, synonymSetDocumentId);
 	}
 
 	public void update(
 			SynonymSetIndexName synonymSetIndexName, SynonymSet synonymSet)
 		throws PortalException {
 
-		synonymSetJSONStorageHelper.updateJSONStorageEntry(
+		_synonymSetJSONStorageHelper.updateJSONStorageEntry(
 			_getClassPK(synonymSet.getSynonymSetDocumentId()),
 			synonymSet.getSynonyms());
 
-		synonymSetIndexWriter.update(synonymSetIndexName, synonymSet);
+		_synonymSetIndexWriter.update(synonymSetIndexName, synonymSet);
 	}
 
-	@Reference
-	protected SynonymSetIndexWriter synonymSetIndexWriter;
+	private SynonymSetStorageAdapter(
+		SynonymSetIndexWriter synonymSetIndexWriter,
+		SynonymSetJSONStorageHelper synonymSetJSONStorageHelper) {
 
-	@Reference
-	protected SynonymSetJSONStorageHelper synonymSetJSONStorageHelper;
+		_synonymSetIndexWriter = synonymSetIndexWriter;
+		_synonymSetJSONStorageHelper = synonymSetJSONStorageHelper;
+	}
 
 	private long _getClassPK(String synonymSetDocumentId)
 		throws PortalException {
@@ -92,5 +103,10 @@ public class SynonymSetStorageAdapter {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		SynonymSetStorageAdapter.class);
+
+	private static SynonymSetStorageAdapter _synonymSetStorageAdapter;
+
+	private final SynonymSetIndexWriter _synonymSetIndexWriter;
+	private final SynonymSetJSONStorageHelper _synonymSetJSONStorageHelper;
 
 }
