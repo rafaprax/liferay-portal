@@ -16,12 +16,15 @@ import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexNameB
 import com.liferay.portal.search.tuning.synonyms.web.internal.constants.SynonymsPortletKeys;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSet;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexReader;
+import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexWriter;
 import com.liferay.portal.search.tuning.synonyms.web.internal.storage.SynonymSetStorageAdapter;
+import com.liferay.portal.search.tuning.synonyms.web.internal.storage.helper.SynonymSetJSONStorageHelper;
 import com.liferay.portal.search.tuning.synonyms.web.internal.synchronizer.IndexToFilterSynchronizer;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -36,6 +39,12 @@ import org.osgi.service.component.annotations.Reference;
 	service = MVCActionCommand.class
 )
 public class EditSynonymSetsMVCActionCommand extends BaseMVCActionCommand {
+
+	@Activate
+	protected void activate() {
+		_synonymSetStorageAdapter = new SynonymSetStorageAdapter(
+			_synonymSetIndexWriter, _synonymSetJSONStorageHelper);
+	}
 
 	@Override
 	protected void doProcessAction(
@@ -117,6 +126,11 @@ public class EditSynonymSetsMVCActionCommand extends BaseMVCActionCommand {
 	private SynonymSetIndexReader _synonymSetIndexReader;
 
 	@Reference
+	private SynonymSetIndexWriter _synonymSetIndexWriter;
+
+	@Reference
+	private SynonymSetJSONStorageHelper _synonymSetJSONStorageHelper;
+
 	private SynonymSetStorageAdapter _synonymSetStorageAdapter;
 
 }

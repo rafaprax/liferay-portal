@@ -6,7 +6,6 @@
 package com.liferay.portal.search.tuning.synonyms.web.internal.storage;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSet;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexWriter;
@@ -14,7 +13,6 @@ import com.liferay.portal.search.tuning.synonyms.web.internal.storage.helper.Syn
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,18 +28,6 @@ public class SynonymSetStorageAdapterTest {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
-
-	@Before
-	public void setUp() throws Exception {
-		_synonymSetStorageAdapter = new SynonymSetStorageAdapter();
-
-		ReflectionTestUtil.setFieldValue(
-			_synonymSetStorageAdapter, "synonymSetIndexWriter",
-			_synonymSetIndexWriter);
-		ReflectionTestUtil.setFieldValue(
-			_synonymSetStorageAdapter, "synonymSetJSONStorageHelper",
-			_synonymSetJSONStorageHelper);
-	}
 
 	@Test
 	public void testCreate() {
@@ -124,6 +110,8 @@ public class SynonymSetStorageAdapterTest {
 		SynonymSetIndexWriter.class);
 	private final SynonymSetJSONStorageHelper _synonymSetJSONStorageHelper =
 		Mockito.mock(SynonymSetJSONStorageHelper.class);
-	private SynonymSetStorageAdapter _synonymSetStorageAdapter;
+	private final SynonymSetStorageAdapter _synonymSetStorageAdapter =
+		new SynonymSetStorageAdapter(
+			_synonymSetIndexWriter, _synonymSetJSONStorageHelper);
 
 }

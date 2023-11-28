@@ -9,11 +9,14 @@ import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 import com.liferay.portal.search.tuning.synonyms.web.internal.filter.SynonymSetFilterReader;
 import com.liferay.portal.search.tuning.synonyms.web.internal.filter.name.SynonymSetFilterNameHolder;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSet;
+import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexWriter;
 import com.liferay.portal.search.tuning.synonyms.web.internal.storage.SynonymSetStorageAdapter;
+import com.liferay.portal.search.tuning.synonyms.web.internal.storage.helper.SynonymSetJSONStorageHelper;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -31,6 +34,12 @@ public class FilterToIndexSynchronizerImpl
 		for (String synonyms : _getSynonymsFromFilters(companyIndexName)) {
 			_addSynonymSetToIndex(synonymSetIndexName, synonyms);
 		}
+	}
+
+	@Activate
+	protected void activate() {
+		_synonymSetStorageAdapter = new SynonymSetStorageAdapter(
+			_synonymSetIndexWriter, _synonymSetJSONStorageHelper);
 	}
 
 	private void _addSynonymSetToIndex(
@@ -65,6 +74,11 @@ public class FilterToIndexSynchronizerImpl
 	private SynonymSetFilterReader _synonymSetFilterReader;
 
 	@Reference
+	private SynonymSetIndexWriter _synonymSetIndexWriter;
+
+	@Reference
+	private SynonymSetJSONStorageHelper _synonymSetJSONStorageHelper;
+
 	private SynonymSetStorageAdapter _synonymSetStorageAdapter;
 
 }
