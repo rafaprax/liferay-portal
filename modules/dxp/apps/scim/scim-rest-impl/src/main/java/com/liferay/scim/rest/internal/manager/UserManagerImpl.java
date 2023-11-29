@@ -371,7 +371,7 @@ public class UserManagerImpl implements UserManager {
 				scimUser.getEmailAddress(), scimUser.getLocale(),
 				scimUser.getFirstName(), scimUser.getMiddleName(),
 				scimUser.getLastName(), 0, 0, scimUser.isMale(), birthdayMonth,
-				birthdayDay, birthdayYear, StringPool.BLANK,
+				birthdayDay, birthdayYear, scimUser.getJobTitle(),
 				UserConstants.TYPE_REGULAR, scimUser.getGroupIds(),
 				scimUser.getOrganizationIds(), scimUser.getRoleIds(),
 				scimUser.getUserGroupIds(), scimUser.isSendEmail(),
