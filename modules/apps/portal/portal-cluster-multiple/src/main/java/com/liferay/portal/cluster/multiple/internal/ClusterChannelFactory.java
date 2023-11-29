@@ -5,6 +5,9 @@
 
 package com.liferay.portal.cluster.multiple.internal;
 
+import com.liferay.portal.kernel.cluster.ClusterChannel;
+import com.liferay.portal.kernel.cluster.ClusterReceiver;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 

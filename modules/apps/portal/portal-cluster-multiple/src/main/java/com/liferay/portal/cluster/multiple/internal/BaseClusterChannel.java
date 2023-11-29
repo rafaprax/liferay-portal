@@ -7,6 +7,7 @@ package com.liferay.portal.cluster.multiple.internal;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 

@@ -7,14 +7,17 @@ package com.liferay.portal.cluster.multiple.internal;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
 import com.liferay.portal.kernel.cluster.ClusterEvent;
 import com.liferay.portal.kernel.cluster.ClusterEventListener;
 import com.liferay.portal.kernel.cluster.ClusterEventType;
+import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterMasterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterMasterTokenTransitionListener;
 import com.liferay.portal.kernel.cluster.ClusterNode;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponse;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponses;
+import com.liferay.portal.kernel.cluster.ClusterReceiver;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.concurrent.DefaultNoticeableFuture;
 import com.liferay.portal.kernel.concurrent.NoticeableFuture;
@@ -239,7 +242,7 @@ public class ClusterMasterExecutorImpl implements ClusterMasterExecutor {
 	private static volatile boolean _master;
 
 	@Reference
-	private ClusterExecutorImpl _clusterExecutorImpl;
+	private ClusterExecutor _clusterExecutorImpl;
 
 	private final Set<ClusterMasterTokenTransitionListener>
 		_clusterMasterTokenTransitionListeners = new HashSet<>();

@@ -10,11 +10,13 @@ import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.cluster.multiple.configuration.ClusterExecutorConfiguration;
 import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
 import com.liferay.portal.kernel.cluster.ClusterEvent;
 import com.liferay.portal.kernel.cluster.ClusterEventListener;
 import com.liferay.portal.kernel.cluster.ClusterEventType;
 import com.liferay.portal.kernel.cluster.ClusterMasterTokenTransitionListener;
 import com.liferay.portal.kernel.cluster.ClusterNode;
+import com.liferay.portal.kernel.cluster.ClusterReceiver;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.cluster.FutureClusterResponses;
 import com.liferay.portal.kernel.concurrent.NoticeableFuture;
@@ -819,6 +821,17 @@ public class ClusterMasterExecutorImplTest extends BaseClusterTestCase {
 		}
 
 		@Override
+		public String getClusterNodeId(Address address) {
+			ClusterNode clusterNode = _clusterNodes.get(address);
+
+			if (clusterNode == null) {
+				return null;
+			}
+
+			return clusterNode.getClusterNodeId();
+		}
+
+		@Override
 		public List<ClusterNode> getClusterNodes() {
 			if (!isEnabled()) {
 				return Collections.emptyList();
@@ -887,17 +900,6 @@ public class ClusterMasterExecutorImplTest extends BaseClusterTestCase {
 				BaseClusterReceiver.class, "_coordinatorAddress");
 
 			field.set(clusterReceiver, address);
-		}
-
-		@Override
-		protected String getClusterNodeId(Address address) {
-			ClusterNode clusterNode = _clusterNodes.get(address);
-
-			if (clusterNode == null) {
-				return null;
-			}
-
-			return clusterNode.getClusterNodeId();
 		}
 
 		private MockClusterExecutor(boolean enabled) {

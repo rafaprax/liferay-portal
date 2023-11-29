@@ -9,8 +9,10 @@ import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.portal.kernel.cache.thread.local.Lifecycle;
 import com.liferay.portal.kernel.cache.thread.local.ThreadLocalCacheManager;
 import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
 import com.liferay.portal.kernel.cluster.ClusterEvent;
 import com.liferay.portal.kernel.cluster.ClusterEventType;
+import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponse;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.log.Log;
@@ -116,6 +118,6 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 	private static final Log _log = LogFactoryUtil.getLog(
 		ClusterRequestReceiver.class);
 
-	private final ClusterExecutorImpl _clusterExecutorImpl;
+	private final ClusterExecutor _clusterExecutorImpl;
 
 }

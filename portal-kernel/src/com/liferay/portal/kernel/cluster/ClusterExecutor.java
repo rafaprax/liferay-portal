@@ -5,6 +5,7 @@
 
 package com.liferay.portal.kernel.cluster;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 
@@ -31,4 +32,17 @@ public interface ClusterExecutor {
 
 	public boolean isEnabled();
 
+	void handleReceivedClusterNodeResponse(ClusterNodeResponse messagePayload);
+
+	void sendNotifyRequest();
+
+	void memberRemoved(List<Address> removedAddresses);
+
+	ClusterChannel getClusterChannel();
+
+	Serializable handleReceivedClusterRequest(ClusterRequest clusterRequest);
+
+	void fireClusterEvent(ClusterEvent clusterEvent);
+
+	String getClusterNodeId(Address coordinatorAddress);
 }
