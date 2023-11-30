@@ -211,7 +211,7 @@ public interface PageDefinitionResource {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
 
-			httpInvoker.body(pageDefinition.toString(), "application/json");
+			httpInvoker.body(pageDefinition.toString(), "text/html");
 
 			if (_builder._locale != null) {
 				httpInvoker.header(
