@@ -13,8 +13,6 @@ import com.liferay.sharing.display.context.util.SharingDropdownItemFactory;
 import com.liferay.sharing.interpreter.SharingEntryInterpreterProvider;
 import com.liferay.sharing.security.permission.SharingPermission;
 import com.liferay.sharing.service.SharingEntryLocalService;
-import com.liferay.sharing.web.internal.filter.SharedAssetsFilterItemRegistry;
-import com.liferay.sharing.web.internal.servlet.taglib.ui.SharingEntryDropdownItemContributorRegistry;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -33,9 +31,7 @@ public abstract class ViewSharedAssetsDisplayContextFactory {
 			groupLocalService, itemSelector,
 			portal.getLiferayPortletRequest(renderRequest),
 			portal.getLiferayPortletResponse(renderResponse),
-			sharedAssetsFilterItemRegistry, sharingConfigurationFactory,
-			sharingDropdownItemFactory,
-			sharingEntryDropdownItemContributorRegistry,
+			sharingConfigurationFactory, sharingDropdownItemFactory,
 			sharingEntryInterpreterProvider::getSharingEntryInterpreter,
 			sharingEntryLocalService, sharingPermission);
 	}
@@ -50,17 +46,10 @@ public abstract class ViewSharedAssetsDisplayContextFactory {
 	protected Portal portal;
 
 	@Reference
-	protected SharedAssetsFilterItemRegistry sharedAssetsFilterItemRegistry;
-
-	@Reference
 	protected SharingConfigurationFactory sharingConfigurationFactory;
 
 	@Reference
 	protected SharingDropdownItemFactory sharingDropdownItemFactory;
-
-	@Reference
-	protected SharingEntryDropdownItemContributorRegistry
-		sharingEntryDropdownItemContributorRegistry;
 
 	@Reference
 	protected SharingEntryInterpreterProvider sharingEntryInterpreterProvider;
