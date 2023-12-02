@@ -16,11 +16,13 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"jaxrs.application=true",
 		"osgi.http.whiteboard.filter.dispatcher=FORWARD",
 		"osgi.http.whiteboard.filter.dispatcher=REQUEST",
-		"osgi.jaxrs.application.base=/" + FaroConstants.APPLICATION_MAIN,
-		"osgi.jaxrs.name=Liferay.Osb.Faro.Web.Main"
+		"osgi.jaxrs.application.base=/faro/" + FaroConstants.APPLICATION_MAIN,
+		"osgi.jaxrs.name=Liferay.Osb.Faro.Web.Main",
+		"auth.verifier.BasicAuthHeaderAuthVerifier.urls.includes=*",
+		"auth.verifier.PortalSessionAuthVerifier.check.csrf.token=false",
+		"auth.verifier.PortalSessionAuthVerifier.urls.includes=*"
 	},
 	service = Application.class
 )

@@ -16,9 +16,11 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"jaxrs.application=true",
-		"osgi.jaxrs.application.base=/" + FaroConstants.APPLICATION_ASAH,
-		"osgi.jaxrs.name=Liferay.Osb.Faro.Web.Asah"
+		"osgi.jaxrs.application.base=/faro/" + FaroConstants.APPLICATION_ASAH,
+		"osgi.jaxrs.name=Liferay.Osb.Faro.Web.Asah",
+		"auth.verifier.BasicAuthHeaderAuthVerifier.urls.includes=*",
+		"auth.verifier.PortalSessionAuthVerifier.check.csrf.token=false",
+		"auth.verifier.PortalSessionAuthVerifier.urls.includes=*"
 	},
 	service = Application.class
 )
