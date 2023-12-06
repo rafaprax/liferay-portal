@@ -92,7 +92,6 @@ import com.liferay.object.web.internal.notifications.ObjectUserNotificationsHand
 import com.liferay.object.web.internal.object.definitions.portlet.ObjectDefinitionsControlPanelEntry;
 import com.liferay.object.web.internal.object.entries.application.list.ObjectEntriesPanelApp;
 import com.liferay.object.web.internal.object.entries.display.context.ObjectEntryDisplayContextFactory;
-import com.liferay.object.web.internal.object.entries.frontend.data.set.filter.factory.ObjectFieldFDSFilterFactoryRegistry;
 import com.liferay.object.web.internal.object.entries.frontend.data.set.view.table.ObjectEntriesTableFDSView;
 import com.liferay.object.web.internal.object.entries.portlet.ObjectEntriesPortlet;
 import com.liferay.object.web.internal.object.entries.portlet.action.EditObjectEntryMVCActionCommand;
@@ -433,11 +432,9 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 				new ObjectEntriesPortlet(
 					_objectActionLocalService,
 					objectDefinition.getObjectDefinitionId(),
-					_objectDefinitionLocalService,
-					_objectFieldFDSFilterFactoryRegistry,
-					_objectFieldLocalService, _objectScopeProviderRegistry,
-					_objectViewLocalService, _portal,
-					portletResourcePermission),
+					_objectDefinitionLocalService, _objectFieldLocalService,
+					_objectScopeProviderRegistry, _objectViewLocalService,
+					_portal, portletResourcePermission),
 				HashMapDictionaryBuilder.<String, Object>put(
 					"com.liferay.portlet.company",
 					objectDefinition.getCompanyId()
@@ -676,10 +673,6 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 
 	@Reference
 	private ObjectEntryService _objectEntryService;
-
-	@Reference
-	private ObjectFieldFDSFilterFactoryRegistry
-		_objectFieldFDSFilterFactoryRegistry;
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;
