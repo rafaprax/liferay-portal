@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -49,6 +50,8 @@ import javax.portlet.RenderRequest;
 
 import org.apache.commons.lang.time.StopWatch;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -59,7 +62,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Raymond Augé
  * @author Michael Young
  */
-@Component(service = {IdentifiableOSGiService.class, JournalContent.class})
+@Component(service = JournalContent.class)
 public class JournalContentImpl
 	implements IdentifiableOSGiService, JournalContent {
 
@@ -371,7 +374,7 @@ public class JournalContentImpl
 	}
 
 	@Activate
-	protected void activate() {
+	protected void activate(BundleContext bundleContext) {
 		portalCache =
 			(PortalCache<JournalContentKey, JournalArticleDisplay>)
 				_multiVMPool.getPortalCache(CACHE_NAME);
@@ -380,11 +383,19 @@ public class JournalContentImpl
 			new JournalContentArticleKeyIndexEncoder(), portalCache);
 		_journalTemplatePortalCacheIndexer = new PortalCacheIndexer<>(
 			new JournalContentTemplateKeyIndexEncoder(), portalCache);
+
+		_serviceRegistration = bundleContext.registerService(
+			IdentifiableOSGiService.class, this,
+			new HashMapDictionary<String, Object>());
 	}
 
 	@Deactivate
 	protected void deactivate() {
 		_multiVMPool.removePortalCache(CACHE_NAME);
+
+		if (_serviceRegistration != null) {
+			_serviceRegistration.unregister();
+		}
 	}
 
 	protected JournalArticleDisplay getArticleDisplay(
@@ -507,6 +518,8 @@ public class JournalContentImpl
 
 	@Reference
 	private MultiVMPool _multiVMPool;
+
+	private ServiceRegistration<IdentifiableOSGiService> _serviceRegistration;
 
 	private static class JournalContentArticleKeyIndexEncoder
 		implements IndexEncoder<String, JournalContentKey> {
