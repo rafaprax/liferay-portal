@@ -5,7 +5,7 @@
 
 package com.liferay.osb.faro.web.internal.controller.main;
 
-import com.liferay.osb.faro.web.internal.controller.BaseFaroController;
+import com.liferay.osb.faro.engine.client.ContactsEngineClient;
 import com.liferay.osb.faro.web.internal.controller.FaroControllerRegistry;
 import com.liferay.osb.faro.web.internal.model.display.FaroResultsDisplay;
 import com.liferay.osb.faro.web.internal.param.FaroParam;
@@ -29,14 +29,16 @@ import javax.ws.rs.core.MediaType;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Matthew Kong
  */
-@Component(service = MainController.class)
+@Component(service = Object.class)
 @Path("/{groupId}")
 @Produces(MediaType.APPLICATION_JSON)
-public class MainController extends BaseFaroController {
+public class MainController {
 
 	@GET
 	@Path("/entities")
@@ -70,9 +72,15 @@ public class MainController extends BaseFaroController {
 		@FormParam("contactsEngineURL") String contactsEngineURL) {
 
 		if (Validator.isNotNull(contactsEngineURL)) {
-			contactsEngineClient.setEngineURL(contactsEngineURL);
+			_contactsEngineClient.setEngineURL(contactsEngineURL);
 		}
 	}
+
+	@Reference(
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY
+	)
+	private volatile ContactsEngineClient _contactsEngineClient;
 
 	@Reference
 	private FaroControllerRegistry _faroControllerRegistry;

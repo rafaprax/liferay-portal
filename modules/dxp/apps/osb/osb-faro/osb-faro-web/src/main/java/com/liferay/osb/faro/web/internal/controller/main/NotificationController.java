@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Geyson Silva
  */
-@Component(service = {FaroController.class, NotificationController.class})
+@Component(service = FaroController.class)
 @Path("/{groupId}/notification")
 @Produces(MediaType.APPLICATION_JSON)
 public class NotificationController extends BaseFaroController {

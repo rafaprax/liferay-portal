@@ -6,17 +6,7 @@
 package com.liferay.osb.faro.web.internal.application;
 
 import com.liferay.osb.faro.web.internal.constants.FaroConstants;
-import com.liferay.osb.faro.web.internal.controller.main.BlockedKeywordsController;
-import com.liferay.osb.faro.web.internal.controller.main.ChannelController;
-import com.liferay.osb.faro.web.internal.controller.main.DefinitionsController;
-import com.liferay.osb.faro.web.internal.controller.main.IssueController;
-import com.liferay.osb.faro.web.internal.controller.main.MainController;
-import com.liferay.osb.faro.web.internal.controller.main.NotificationController;
-import com.liferay.osb.faro.web.internal.controller.main.OAuth2Controller;
-import com.liferay.osb.faro.web.internal.controller.main.PreferencesController;
-import com.liferay.osb.faro.web.internal.controller.main.ProjectController;
-import com.liferay.osb.faro.web.internal.controller.main.ReportController;
-import com.liferay.osb.faro.web.internal.controller.main.UserController;
+import com.liferay.osb.faro.web.internal.controller.FaroController;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,37 +50,59 @@ public class MainApplication extends BaseApplication {
 		return controllers;
 	}
 
-	@Reference
-	private BlockedKeywordsController _blockedKeywordsController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.BlockedKeywordsController)"
+	)
+	private FaroController _blockedKeywordsController;
 
-	@Reference
-	private ChannelController _channelController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.ChannelController)"
+	)
+	private FaroController _channelController;
 
-	@Reference
-	private DefinitionsController _definitionsController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.DefinitionsController)"
+	)
+	private FaroController _definitionsController;
 
-	@Reference
-	private IssueController _issueController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.IssueController)"
+	)
+	private FaroController _issueController;
 
-	@Reference
-	private MainController _mainController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.MainController)"
+	)
+	private Object _mainController;
 
-	@Reference
-	private NotificationController _notificationController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.NotificationController)"
+	)
+	private FaroController _notificationController;
 
-	@Reference
-	private OAuth2Controller _oAuth2Controller;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.OAuth2Controller)"
+	)
+	private FaroController _oAuth2Controller;
 
-	@Reference
-	private PreferencesController _preferencesController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.PreferencesController)"
+	)
+	private FaroController _preferencesController;
 
-	@Reference
-	private ProjectController _projectController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.ProjectController)"
+	)
+	private FaroController _projectController;
 
-	@Reference
-	private ReportController _reportController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.ReportController)"
+	)
+	private FaroController _reportController;
 
-	@Reference
-	private UserController _userController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.main.UserController)"
+	)
+	private FaroController _userController;
 
 }
