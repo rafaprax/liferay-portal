@@ -59,11 +59,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Raymond Augé
  * @author Michael Young
  */
-@Component(
-	service = {
-		IdentifiableOSGiService.class, JournalContent.class
-	}
-)
+@Component(service = {IdentifiableOSGiService.class, JournalContent.class})
 public class JournalContentImpl
 	implements IdentifiableOSGiService, JournalContent {
 
@@ -461,6 +457,9 @@ public class JournalContentImpl
 
 	protected static final String CACHE_NAME = JournalContent.class.getName();
 
+	protected static PortalCache<JournalContentKey, JournalArticleDisplay>
+		portalCache;
+
 	private ThemeDisplay _getDefaultThemeDisplay() {
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
@@ -483,8 +482,6 @@ public class JournalContentImpl
 	private static PortalCacheIndexer
 		<String, JournalContentKey, JournalArticleDisplay>
 			_journalTemplatePortalCacheIndexer;
-	protected static PortalCache<JournalContentKey, JournalArticleDisplay>
-		portalCache;
 
 	static {
 		try {
