@@ -5,7 +5,6 @@
 
 package com.liferay.journal.internal.util;
 
-import com.liferay.change.tracking.spi.listener.CTEventListener;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleDisplay;
@@ -62,12 +61,11 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	service = {
-		CTEventListener.class, IdentifiableOSGiService.class,
-		JournalContent.class
+		IdentifiableOSGiService.class, JournalContent.class
 	}
 )
 public class JournalContentImpl
-	implements CTEventListener, IdentifiableOSGiService, JournalContent {
+	implements IdentifiableOSGiService, JournalContent {
 
 	@Override
 	public void clearCache() {
@@ -75,7 +73,7 @@ public class JournalContentImpl
 			return;
 		}
 
-		_portalCache.removeAll();
+		portalCache.removeAll();
 	}
 
 	@Override
@@ -245,7 +243,7 @@ public class JournalContentImpl
 		boolean productionMode = CTCollectionThreadLocal.isProductionMode();
 
 		if (productionMode) {
-			articleDisplay = _portalCache.get(journalContentKey);
+			articleDisplay = portalCache.get(journalContentKey);
 		}
 
 		if ((articleDisplay == null) || !lifecycleRender) {
@@ -258,7 +256,7 @@ public class JournalContentImpl
 
 				try {
 					if (productionMode) {
-						_portalCache.put(journalContentKey, articleDisplay);
+						portalCache.put(journalContentKey, articleDisplay);
 					}
 				}
 				catch (ClassCastException classCastException) {
@@ -376,21 +374,16 @@ public class JournalContentImpl
 		return JournalContent.class.getName();
 	}
 
-	@Override
-	public void onAfterPublish(long ctCollectionId) {
-		_portalCache.removeAll();
-	}
-
 	@Activate
 	protected void activate() {
-		_portalCache =
+		portalCache =
 			(PortalCache<JournalContentKey, JournalArticleDisplay>)
 				_multiVMPool.getPortalCache(CACHE_NAME);
 
 		_journalArticlePortalCacheIndexer = new PortalCacheIndexer<>(
-			new JournalContentArticleKeyIndexEncoder(), _portalCache);
+			new JournalContentArticleKeyIndexEncoder(), portalCache);
 		_journalTemplatePortalCacheIndexer = new PortalCacheIndexer<>(
-			new JournalContentTemplateKeyIndexEncoder(), _portalCache);
+			new JournalContentTemplateKeyIndexEncoder(), portalCache);
 	}
 
 	@Deactivate
@@ -490,8 +483,8 @@ public class JournalContentImpl
 	private static PortalCacheIndexer
 		<String, JournalContentKey, JournalArticleDisplay>
 			_journalTemplatePortalCacheIndexer;
-	private static PortalCache<JournalContentKey, JournalArticleDisplay>
-		_portalCache;
+	protected static PortalCache<JournalContentKey, JournalArticleDisplay>
+		portalCache;
 
 	static {
 		try {
