@@ -12,6 +12,7 @@ import com.liferay.portal.kernel.cluster.Address;
 import com.liferay.portal.kernel.cluster.ClusterChannel;
 import com.liferay.portal.kernel.cluster.ClusterEvent;
 import com.liferay.portal.kernel.cluster.ClusterEventType;
+import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterNodeResponse;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.log.Log;
@@ -28,10 +29,10 @@ import java.util.List;
  */
 public class ClusterRequestReceiver extends BaseClusterReceiver {
 
-	public ClusterRequestReceiver(ClusterExecutorImpl clusterExecutorImpl) {
-		super(clusterExecutorImpl.getExecutorService());
+	public ClusterRequestReceiver(ClusterExecutor clusterExecutor) {
+		super(clusterExecutor.getExecutorService());
 
-		_clusterExecutorImpl = clusterExecutorImpl;
+		_clusterExecutor = clusterExecutor;
 	}
 
 	@Override
@@ -43,7 +44,7 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 		addedAddresses.removeAll(oldAddresses);
 
 		if (!addedAddresses.isEmpty()) {
-			_clusterExecutorImpl.sendNotifyRequest();
+			_clusterExecutor.sendNotifyRequest();
 		}
 
 		List<Address> removedAddresses = new ArrayList<>(oldAddresses);
@@ -51,7 +52,7 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 		removedAddresses.removeAll(newAddresses);
 
 		if (!removedAddresses.isEmpty()) {
-			_clusterExecutorImpl.memberRemoved(removedAddresses);
+			_clusterExecutor.memberRemoved(removedAddresses);
 		}
 	}
 
@@ -63,14 +64,13 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 			return;
 		}
 
-		_clusterExecutorImpl.fireClusterEvent(
+		_clusterExecutor.fireClusterEvent(
 			new ClusterEvent(ClusterEventType.COORDINATOR_ADDRESS_UPDATE));
 	}
 
 	@Override
 	protected void doReceive(Object messagePayload, Address srcAddress) {
-		ClusterChannel clusterChannel =
-			_clusterExecutorImpl.getClusterChannel();
+		ClusterChannel clusterChannel = _clusterExecutor.getClusterChannel();
 
 		if (srcAddress.equals(clusterChannel.getLocalAddress())) {
 			return;
@@ -81,7 +81,7 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 				ClusterRequest clusterRequest = (ClusterRequest)messagePayload;
 
 				Serializable responsePayload =
-					_clusterExecutorImpl.handleReceivedClusterRequest(
+					_clusterExecutor.handleReceivedClusterRequest(
 						clusterRequest);
 
 				if (clusterRequest.isFireAndForget()) {
@@ -98,7 +98,7 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 				}
 			}
 			else if (messagePayload instanceof ClusterNodeResponse) {
-				_clusterExecutorImpl.handleReceivedClusterNodeResponse(
+				_clusterExecutor.handleReceivedClusterNodeResponse(
 					(ClusterNodeResponse)messagePayload);
 			}
 			else if (_log.isWarnEnabled()) {
@@ -117,6 +117,6 @@ public class ClusterRequestReceiver extends BaseClusterReceiver {
 	private static final Log _log = LogFactoryUtil.getLog(
 		ClusterRequestReceiver.class);
 
-	private final ClusterExecutorImpl _clusterExecutorImpl;
+	private final ClusterExecutor _clusterExecutor;
 
 }
