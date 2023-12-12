@@ -8,7 +8,6 @@ package com.liferay.osb.faro.web.internal.controller.contacts;
 import com.liferay.osb.faro.engine.client.constants.FieldMappingConstants;
 import com.liferay.osb.faro.engine.client.model.Field;
 import com.liferay.osb.faro.engine.client.model.FieldMapping;
-import com.liferay.osb.faro.engine.client.model.FieldMappingMap;
 import com.liferay.osb.faro.engine.client.model.Results;
 import com.liferay.osb.faro.engine.client.util.OrderByField;
 import com.liferay.osb.faro.model.FaroProject;
@@ -44,7 +43,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Matthew Kong
  */
-@Component(service = {FaroController.class, FieldMappingController.class})
+@Component(service = FaroController.class)
 @Path("/{groupId}/field_mapping")
 @Produces(MediaType.APPLICATION_JSON)
 public class FieldMappingController extends BaseFaroController {
@@ -55,32 +54,9 @@ public class FieldMappingController extends BaseFaroController {
 	public void addDefaultFieldMappings(@PathParam("groupId") long groupId)
 		throws Exception {
 
-		FaroProject faroProject =
-			faroProjectLocalService.getFaroProjectByGroupId(groupId);
-
-		contactsEngineClient.addFieldMappings(
-			faroProject, null, FieldMappingConstants.CONTEXT_ORGANIZATION,
-			FieldMappingConstants.OWNER_TYPE_ACCOUNT,
-			FieldMappingUtil.getNewFieldMappingMaps(
-				contactsEngineClient, faroProject,
-				FieldMappingConstants.CONTEXT_ORGANIZATION,
-				FieldMappingConstants.getSalesforceAccountFieldMappingMaps()));
-
-		List<FieldMappingMap> fieldMappingMaps = new ArrayList<>();
-
-		fieldMappingMaps.addAll(
-			FieldMappingConstants.getDefaultFieldMappingMaps());
-		fieldMappingMaps.addAll(
-			FieldMappingConstants.getLiferayFieldMappingMaps());
-		fieldMappingMaps.addAll(
-			FieldMappingConstants.getSalesforceIndividualFieldMappingMaps());
-
-		contactsEngineClient.addFieldMappings(
-			faroProject, null, FieldMappingConstants.CONTEXT_DEMOGRAPHICS,
-			FieldMappingConstants.OWNER_TYPE_INDIVIDUAL,
-			FieldMappingUtil.getNewFieldMappingMaps(
-				contactsEngineClient, faroProject,
-				FieldMappingConstants.CONTEXT_DEMOGRAPHICS, fieldMappingMaps));
+		FieldMappingUtil.addDefaultFieldMappings(
+			contactsEngineClient,
+			faroProjectLocalService.getFaroProjectByGroupId(groupId));
 	}
 
 	@POST

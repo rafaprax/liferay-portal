@@ -7,7 +7,6 @@ package com.liferay.osb.faro.web.internal.application;
 
 import com.liferay.osb.faro.web.internal.constants.FaroConstants;
 import com.liferay.osb.faro.web.internal.controller.FaroController;
-import com.liferay.osb.faro.web.internal.controller.contacts.FieldMappingController;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -93,8 +92,10 @@ public class ContactsApplication extends BaseApplication {
 	)
 	private FaroController _fieldController;
 
-	@Reference
-	private FieldMappingController _fieldMappingController;
+	@Reference(
+		target = "(component.name=com.liferay.osb.faro.web.internal.controller.contacts.FieldMappingController)"
+	)
+	private FaroController _fieldMappingController;
 
 	@Reference(
 		target = "(component.name=com.liferay.osb.faro.web.internal.controller.contacts.IndividualController)"

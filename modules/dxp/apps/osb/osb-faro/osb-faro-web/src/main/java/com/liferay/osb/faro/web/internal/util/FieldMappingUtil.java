@@ -6,6 +6,7 @@
 package com.liferay.osb.faro.web.internal.util;
 
 import com.liferay.osb.faro.engine.client.ContactsEngineClient;
+import com.liferay.osb.faro.engine.client.constants.FieldMappingConstants;
 import com.liferay.osb.faro.engine.client.model.FieldMapping;
 import com.liferay.osb.faro.engine.client.model.FieldMappingMap;
 import com.liferay.osb.faro.engine.client.model.Results;
@@ -24,6 +25,34 @@ import java.util.regex.Pattern;
  * @author Matthew Kong
  */
 public class FieldMappingUtil {
+
+	public static void addDefaultFieldMappings(
+		ContactsEngineClient contactsEngineClient, FaroProject faroProject) {
+
+		contactsEngineClient.addFieldMappings(
+			faroProject, null, FieldMappingConstants.CONTEXT_ORGANIZATION,
+			FieldMappingConstants.OWNER_TYPE_ACCOUNT,
+			getNewFieldMappingMaps(
+				contactsEngineClient, faroProject,
+				FieldMappingConstants.CONTEXT_ORGANIZATION,
+				FieldMappingConstants.getSalesforceAccountFieldMappingMaps()));
+
+		List<FieldMappingMap> fieldMappingMaps = new ArrayList<>();
+
+		fieldMappingMaps.addAll(
+			FieldMappingConstants.getDefaultFieldMappingMaps());
+		fieldMappingMaps.addAll(
+			FieldMappingConstants.getLiferayFieldMappingMaps());
+		fieldMappingMaps.addAll(
+			FieldMappingConstants.getSalesforceIndividualFieldMappingMaps());
+
+		contactsEngineClient.addFieldMappings(
+			faroProject, null, FieldMappingConstants.CONTEXT_DEMOGRAPHICS,
+			FieldMappingConstants.OWNER_TYPE_INDIVIDUAL,
+			getNewFieldMappingMaps(
+				contactsEngineClient, faroProject,
+				FieldMappingConstants.CONTEXT_DEMOGRAPHICS, fieldMappingMaps));
+	}
 
 	public static List<FieldMappingMap> getNewFieldMappingMaps(
 		ContactsEngineClient contactsEngineClient, FaroProject faroProject,
