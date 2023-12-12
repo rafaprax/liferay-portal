@@ -1234,6 +1234,17 @@ public class ClusterSchedulerEngineTest {
 		}
 
 		@Override
+		public ClusterNodeResponse executeClusterRequest(
+			ClusterRequest clusterRequest) {
+
+			return null;
+		}
+
+		@Override
+		public void fireClusterEvent(ClusterEvent clusterEvent) {
+		}
+
+		@Override
 		public InetAddress getBindInetAddress() {
 			return null;
 		}
@@ -1244,7 +1255,17 @@ public class ClusterSchedulerEngineTest {
 		}
 
 		@Override
+		public ClusterChannel getClusterChannel() {
+			return null;
+		}
+
+		@Override
 		public List<ClusterEventListener> getClusterEventListeners() {
+			return null;
+		}
+
+		@Override
+		public String getClusterNodeId(Address address) {
 			return null;
 		}
 
@@ -1258,7 +1279,24 @@ public class ClusterSchedulerEngineTest {
 		}
 
 		@Override
+		public ExecutorService getExecutorService() {
+			return null;
+		}
+
+		@Override
 		public ClusterNode getLocalClusterNode() {
+			return null;
+		}
+
+		@Override
+		public void handleReceivedClusterNodeResponse(
+			ClusterNodeResponse clusterNodeResponse) {
+		}
+
+		@Override
+		public Serializable handleReceivedClusterRequest(
+			ClusterRequest clusterRequest) {
+
 			return null;
 		}
 
@@ -1273,51 +1311,11 @@ public class ClusterSchedulerEngineTest {
 		}
 
 		@Override
-		public ClusterNodeResponse executeClusterRequest(
-			ClusterRequest clusterRequest) {
-			return null;
-		}
-
-		@Override
-		public void fireClusterEvent(ClusterEvent clusterEvent) {
-
-		}
-
-		@Override
-		public ClusterChannel getClusterChannel() {
-			return null;
-		}
-
-		@Override
-		public String getClusterNodeId(Address address) {
-			return null;
-		}
-
-		@Override
-		public ExecutorService getExecutorService() {
-			return null;
-		}
-
-		@Override
-		public void handleReceivedClusterNodeResponse(
-			ClusterNodeResponse clusterNodeResponse) {
-
-		}
-
-		@Override
-		public Serializable handleReceivedClusterRequest(
-			ClusterRequest clusterRequest) {
-			return null;
-		}
-
-		@Override
 		public void memberRemoved(List<Address> departAddresses) {
-
 		}
 
 		@Override
 		public void sendNotifyRequest() {
-
 		}
 
 		private ClusterRequest _clusterRequest;

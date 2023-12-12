@@ -142,98 +142,6 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 	}
 
 	@Override
-	public InetAddress getBindInetAddress() {
-		return _clusterChannelFactory.getBindInetAddress();
-	}
-
-	@Override
-	public NetworkInterface getBindNetworkInterface() {
-		return _clusterChannelFactory.getBindNetworkInterface();
-	}
-
-	@Override
-	public List<ClusterEventListener> getClusterEventListeners() {
-		return _serviceTrackerList.toList();
-	}
-
-	@Override
-	public List<ClusterNode> getClusterNodes() {
-		List<ClusterNode> clusterNodes = new ArrayList<>();
-
-		for (ClusterNodeStatus clusterNodeStatus :
-				_clusterNodeStatuses.values()) {
-
-			clusterNodes.add(clusterNodeStatus.getClusterNode());
-		}
-
-		return clusterNodes;
-	}
-
-	@Override
-	public ClusterNode getLocalClusterNode() {
-		return _localClusterNodeStatus.getClusterNode();
-	}
-
-	@Override
-	public boolean isClusterNodeAlive(String clusterNodeId) {
-		return _clusterNodeStatuses.containsKey(clusterNodeId);
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return _enabled;
-	}
-
-	@Activate
-	protected void activate(ComponentContext componentContext) {
-		_enabled = true;
-
-		clusterExecutorConfiguration = ConfigurableUtil.createConfigurable(
-			ClusterExecutorConfiguration.class,
-			componentContext.getProperties());
-
-		BundleContext bundleContext = componentContext.getBundleContext();
-
-		_serviceTrackerList = ServiceTrackerListFactory.open(
-			bundleContext, ClusterEventListener.class);
-
-		initialize(
-			_props.get(PropsKeys.CLUSTER_LINK_CHANNEL_LOGIC_NAME_CONTROL),
-			_props.get(PropsKeys.CLUSTER_LINK_CHANNEL_PROPERTIES_CONTROL),
-			_props.get(PropsKeys.CLUSTER_LINK_CHANNEL_NAME_CONTROL));
-
-		_serviceRegistration = bundleContext.registerService(
-			PortalInetSocketAddressEventListener.class,
-			new ClusterExecutorPortalInetSocketAddressEventListener(),
-			new HashMapDictionary<String, Object>());
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		if (_clusterChannel != null) {
-			_clusterChannel.close();
-		}
-
-		_clusterChannel = null;
-
-		if (_executorService != null) {
-			_executorService.shutdownNow();
-		}
-
-		_executorService = null;
-
-		_serviceTrackerList.close();
-
-		_clusterNodeStatuses.clear();
-		_futureClusterResponses.clear();
-		_localClusterNodeStatus = null;
-
-		if (_serviceRegistration != null) {
-			_serviceRegistration.unregister();
-		}
-	}
-
-	@Override
 	public ClusterNodeResponse executeClusterRequest(
 		ClusterRequest clusterRequest) {
 
@@ -286,8 +194,23 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 	}
 
 	@Override
+	public InetAddress getBindInetAddress() {
+		return _clusterChannelFactory.getBindInetAddress();
+	}
+
+	@Override
+	public NetworkInterface getBindNetworkInterface() {
+		return _clusterChannelFactory.getBindNetworkInterface();
+	}
+
+	@Override
 	public ClusterChannel getClusterChannel() {
 		return _clusterChannel;
+	}
+
+	@Override
+	public List<ClusterEventListener> getClusterEventListeners() {
+		return _serviceTrackerList.toList();
 	}
 
 	@Override
@@ -311,8 +234,26 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 	}
 
 	@Override
+	public List<ClusterNode> getClusterNodes() {
+		List<ClusterNode> clusterNodes = new ArrayList<>();
+
+		for (ClusterNodeStatus clusterNodeStatus :
+				_clusterNodeStatuses.values()) {
+
+			clusterNodes.add(clusterNodeStatus.getClusterNode());
+		}
+
+		return clusterNodes;
+	}
+
+	@Override
 	public ExecutorService getExecutorService() {
 		return _executorService;
+	}
+
+	@Override
+	public ClusterNode getLocalClusterNode() {
+		return _localClusterNodeStatus.getClusterNode();
 	}
 
 	@Override
@@ -375,6 +316,106 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		return executeClusterRequest(clusterRequest);
 	}
 
+	@Override
+	public boolean isClusterNodeAlive(String clusterNodeId) {
+		return _clusterNodeStatuses.containsKey(clusterNodeId);
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return _enabled;
+	}
+
+	@Override
+	public void memberRemoved(List<Address> departAddresses) {
+		for (Address address : departAddresses) {
+			_clusterNodeIdCompletableFutures.remove(address);
+		}
+
+		List<ClusterNode> departClusterNodes = new ArrayList<>();
+
+		Collection<ClusterNodeStatus> clusterNodeStatusCollection =
+			_clusterNodeStatuses.values();
+
+		Iterator<ClusterNodeStatus> iterator =
+			clusterNodeStatusCollection.iterator();
+
+		while (iterator.hasNext()) {
+			ClusterNodeStatus clusterNodeStatus = iterator.next();
+
+			if (departAddresses.contains(clusterNodeStatus.getAddress())) {
+				departClusterNodes.add(clusterNodeStatus.getClusterNode());
+
+				iterator.remove();
+			}
+		}
+
+		if (departClusterNodes.isEmpty()) {
+			return;
+		}
+
+		ClusterEvent clusterEvent = ClusterEvent.depart(departClusterNodes);
+
+		fireClusterEvent(clusterEvent);
+	}
+
+	@Override
+	public void sendNotifyRequest() {
+		ClusterRequest clusterRequest = ClusterRequest.createMulticastRequest(
+			_localClusterNodeStatus, true);
+
+		_clusterChannel.sendMulticastMessage(clusterRequest);
+	}
+
+	@Activate
+	protected void activate(ComponentContext componentContext) {
+		_enabled = true;
+
+		clusterExecutorConfiguration = ConfigurableUtil.createConfigurable(
+			ClusterExecutorConfiguration.class,
+			componentContext.getProperties());
+
+		BundleContext bundleContext = componentContext.getBundleContext();
+
+		_serviceTrackerList = ServiceTrackerListFactory.open(
+			bundleContext, ClusterEventListener.class);
+
+		initialize(
+			_props.get(PropsKeys.CLUSTER_LINK_CHANNEL_LOGIC_NAME_CONTROL),
+			_props.get(PropsKeys.CLUSTER_LINK_CHANNEL_PROPERTIES_CONTROL),
+			_props.get(PropsKeys.CLUSTER_LINK_CHANNEL_NAME_CONTROL));
+
+		_serviceRegistration = bundleContext.registerService(
+			PortalInetSocketAddressEventListener.class,
+			new ClusterExecutorPortalInetSocketAddressEventListener(),
+			new HashMapDictionary<String, Object>());
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		if (_clusterChannel != null) {
+			_clusterChannel.close();
+		}
+
+		_clusterChannel = null;
+
+		if (_executorService != null) {
+			_executorService.shutdownNow();
+		}
+
+		_executorService = null;
+
+		_serviceTrackerList.close();
+
+		_clusterNodeStatuses.clear();
+		_futureClusterResponses.clear();
+		_localClusterNodeStatus = null;
+
+		if (_serviceRegistration != null) {
+			_serviceRegistration.unregister();
+		}
+	}
+
 	protected void initialize(
 		String channelLogicName, String channelPropertiesLocation,
 		String channelName) {
@@ -415,51 +456,10 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		_configurePortalInstanceCommunications();
 	}
 
-	@Override
-	public void memberRemoved(List<Address> departAddresses) {
-		for (Address address : departAddresses) {
-			_clusterNodeIdCompletableFutures.remove(address);
-		}
-
-		List<ClusterNode> departClusterNodes = new ArrayList<>();
-
-		Collection<ClusterNodeStatus> clusterNodeStatusCollection =
-			_clusterNodeStatuses.values();
-
-		Iterator<ClusterNodeStatus> iterator =
-			clusterNodeStatusCollection.iterator();
-
-		while (iterator.hasNext()) {
-			ClusterNodeStatus clusterNodeStatus = iterator.next();
-
-			if (departAddresses.contains(clusterNodeStatus.getAddress())) {
-				departClusterNodes.add(clusterNodeStatus.getClusterNode());
-
-				iterator.remove();
-			}
-		}
-
-		if (departClusterNodes.isEmpty()) {
-			return;
-		}
-
-		ClusterEvent clusterEvent = ClusterEvent.depart(departClusterNodes);
-
-		fireClusterEvent(clusterEvent);
-	}
-
 	@Modified
 	protected synchronized void modified(Map<String, Object> properties) {
 		clusterExecutorConfiguration = ConfigurableUtil.createConfigurable(
 			ClusterExecutorConfiguration.class, properties);
-	}
-
-	@Override
-	public void sendNotifyRequest() {
-		ClusterRequest clusterRequest = ClusterRequest.createMulticastRequest(
-			_localClusterNodeStatus, true);
-
-		_clusterChannel.sendMulticastMessage(clusterRequest);
 	}
 
 	protected volatile ClusterExecutorConfiguration

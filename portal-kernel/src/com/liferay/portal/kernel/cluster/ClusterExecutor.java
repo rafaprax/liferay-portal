@@ -6,6 +6,7 @@
 package com.liferay.portal.kernel.cluster;
 
 import java.io.Serializable;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 
@@ -19,30 +20,26 @@ public interface ClusterExecutor {
 
 	public FutureClusterResponses execute(ClusterRequest clusterRequest);
 
-	public InetAddress getBindInetAddress();
-
-	public NetworkInterface getBindNetworkInterface();
-
-	public List<ClusterEventListener> getClusterEventListeners();
-
-	public List<ClusterNode> getClusterNodes();
-
-	public ClusterNode getLocalClusterNode();
-
-	public boolean isClusterNodeAlive(String clusterNodeId);
-
-	public boolean isEnabled();
-
 	public ClusterNodeResponse executeClusterRequest(
 		ClusterRequest clusterRequest);
 
 	public void fireClusterEvent(ClusterEvent clusterEvent);
 
+	public InetAddress getBindInetAddress();
+
+	public NetworkInterface getBindNetworkInterface();
+
 	public ClusterChannel getClusterChannel();
+
+	public List<ClusterEventListener> getClusterEventListeners();
 
 	public String getClusterNodeId(Address address);
 
+	public List<ClusterNode> getClusterNodes();
+
 	public ExecutorService getExecutorService();
+
+	public ClusterNode getLocalClusterNode();
 
 	public void handleReceivedClusterNodeResponse(
 		ClusterNodeResponse clusterNodeResponse);
@@ -50,7 +47,12 @@ public interface ClusterExecutor {
 	public Serializable handleReceivedClusterRequest(
 		ClusterRequest clusterRequest);
 
+	public boolean isClusterNodeAlive(String clusterNodeId);
+
+	public boolean isEnabled();
+
 	public void memberRemoved(List<Address> departAddresses);
 
 	public void sendNotifyRequest();
+
 }

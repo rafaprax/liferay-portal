@@ -821,6 +821,17 @@ public class ClusterMasterExecutorImplTest extends BaseClusterTestCase {
 		}
 
 		@Override
+		public String getClusterNodeId(Address address) {
+			ClusterNode clusterNode = _clusterNodes.get(address);
+
+			if (clusterNode == null) {
+				return null;
+			}
+
+			return clusterNode.getClusterNodeId();
+		}
+
+		@Override
 		public List<ClusterNode> getClusterNodes() {
 			if (!isEnabled()) {
 				return Collections.emptyList();
@@ -889,17 +900,6 @@ public class ClusterMasterExecutorImplTest extends BaseClusterTestCase {
 				BaseClusterReceiver.class, "_coordinatorAddress");
 
 			field.set(clusterReceiver, address);
-		}
-
-		@Override
-		public String getClusterNodeId(Address address) {
-			ClusterNode clusterNode = _clusterNodes.get(address);
-
-			if (clusterNode == null) {
-				return null;
-			}
-
-			return clusterNode.getClusterNodeId();
 		}
 
 		private MockClusterExecutor(boolean enabled) {
