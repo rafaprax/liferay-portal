@@ -124,7 +124,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Matthew Kong
  */
-@Component(service = {DataSourceController.class, FaroController.class})
+@Component(service = FaroController.class)
 @Path("/{groupId}/data_source")
 @Produces(MediaType.APPLICATION_JSON)
 public class DataSourceController extends BaseFaroController {

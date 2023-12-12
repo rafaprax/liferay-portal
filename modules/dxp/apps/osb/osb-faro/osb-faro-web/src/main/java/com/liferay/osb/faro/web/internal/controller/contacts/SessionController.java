@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Matthew Kong
  */
-@Component(service = {FaroController.class, SessionController.class})
+@Component(service = FaroController.class)
 @Path("/{groupId}/session")
 @Produces(MediaType.APPLICATION_JSON)
 public class SessionController extends BaseFaroController {
