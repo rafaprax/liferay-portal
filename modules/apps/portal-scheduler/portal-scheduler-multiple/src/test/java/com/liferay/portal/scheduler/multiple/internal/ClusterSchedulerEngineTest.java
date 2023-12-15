@@ -7,6 +7,9 @@ package com.liferay.portal.scheduler.multiple.internal;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
+import com.liferay.portal.kernel.cluster.ClusterEvent;
 import com.liferay.portal.kernel.cluster.ClusterEventListener;
 import com.liferay.portal.kernel.cluster.ClusterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterInvokeAcceptor;
@@ -14,6 +17,7 @@ import com.liferay.portal.kernel.cluster.ClusterInvokeThreadLocal;
 import com.liferay.portal.kernel.cluster.ClusterMasterExecutor;
 import com.liferay.portal.kernel.cluster.ClusterMasterTokenTransitionListener;
 import com.liferay.portal.kernel.cluster.ClusterNode;
+import com.liferay.portal.kernel.cluster.ClusterNodeResponse;
 import com.liferay.portal.kernel.cluster.ClusterRequest;
 import com.liferay.portal.kernel.cluster.ClusterableContextThreadLocal;
 import com.liferay.portal.kernel.cluster.FutureClusterResponses;
@@ -62,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
 import org.junit.After;
@@ -1265,6 +1270,54 @@ public class ClusterSchedulerEngineTest {
 		@Override
 		public boolean isEnabled() {
 			return true;
+		}
+
+		@Override
+		public ClusterNodeResponse executeClusterRequest(
+			ClusterRequest clusterRequest) {
+			return null;
+		}
+
+		@Override
+		public void fireClusterEvent(ClusterEvent clusterEvent) {
+
+		}
+
+		@Override
+		public ClusterChannel getClusterChannel() {
+			return null;
+		}
+
+		@Override
+		public String getClusterNodeId(Address address) {
+			return null;
+		}
+
+		@Override
+		public ExecutorService getExecutorService() {
+			return null;
+		}
+
+		@Override
+		public void handleReceivedClusterNodeResponse(
+			ClusterNodeResponse clusterNodeResponse) {
+
+		}
+
+		@Override
+		public Serializable handleReceivedClusterRequest(
+			ClusterRequest clusterRequest) {
+			return null;
+		}
+
+		@Override
+		public void memberRemoved(List<Address> departAddresses) {
+
+		}
+
+		@Override
+		public void sendNotifyRequest() {
+
 		}
 
 		private ClusterRequest _clusterRequest;

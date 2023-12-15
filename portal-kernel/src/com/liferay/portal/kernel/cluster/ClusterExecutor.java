@@ -5,10 +5,12 @@
 
 package com.liferay.portal.kernel.cluster;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author Shuyang Zhou
@@ -31,4 +33,24 @@ public interface ClusterExecutor {
 
 	public boolean isEnabled();
 
+	public ClusterNodeResponse executeClusterRequest(
+		ClusterRequest clusterRequest);
+
+	public void fireClusterEvent(ClusterEvent clusterEvent);
+
+	public ClusterChannel getClusterChannel();
+
+	public String getClusterNodeId(Address address);
+
+	public ExecutorService getExecutorService();
+
+	public void handleReceivedClusterNodeResponse(
+		ClusterNodeResponse clusterNodeResponse);
+
+	public Serializable handleReceivedClusterRequest(
+		ClusterRequest clusterRequest);
+
+	public void memberRemoved(List<Address> departAddresses);
+
+	public void sendNotifyRequest();
 }

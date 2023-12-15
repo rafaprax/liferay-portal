@@ -233,7 +233,8 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		}
 	}
 
-	protected ClusterNodeResponse executeClusterRequest(
+	@Override
+	public ClusterNodeResponse executeClusterRequest(
 		ClusterRequest clusterRequest) {
 
 		Serializable payload = clusterRequest.getPayload();
@@ -277,17 +278,20 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		}
 	}
 
-	protected void fireClusterEvent(ClusterEvent clusterEvent) {
+	@Override
+	public void fireClusterEvent(ClusterEvent clusterEvent) {
 		for (ClusterEventListener listener : _serviceTrackerList) {
 			listener.processClusterEvent(clusterEvent);
 		}
 	}
 
-	protected ClusterChannel getClusterChannel() {
+	@Override
+	public ClusterChannel getClusterChannel() {
 		return _clusterChannel;
 	}
 
-	protected String getClusterNodeId(Address address) {
+	@Override
+	public String getClusterNodeId(Address address) {
 		CompletableFuture<String> completableFuture =
 			_clusterNodeIdCompletableFutures.computeIfAbsent(
 				address, key -> new CompletableFuture<>());
@@ -306,11 +310,13 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		return null;
 	}
 
-	protected ExecutorService getExecutorService() {
+	@Override
+	public ExecutorService getExecutorService() {
 		return _executorService;
 	}
 
-	protected void handleReceivedClusterNodeResponse(
+	@Override
+	public void handleReceivedClusterNodeResponse(
 		ClusterNodeResponse clusterNodeResponse) {
 
 		Exception exception = clusterNodeResponse.getException();
@@ -352,7 +358,8 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		}
 	}
 
-	protected Serializable handleReceivedClusterRequest(
+	@Override
+	public Serializable handleReceivedClusterRequest(
 		ClusterRequest clusterRequest) {
 
 		Serializable payload = clusterRequest.getPayload();
@@ -408,7 +415,8 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 		_configurePortalInstanceCommunications();
 	}
 
-	protected void memberRemoved(List<Address> departAddresses) {
+	@Override
+	public void memberRemoved(List<Address> departAddresses) {
 		for (Address address : departAddresses) {
 			_clusterNodeIdCompletableFutures.remove(address);
 		}
@@ -446,7 +454,8 @@ public class ClusterExecutorImpl implements ClusterExecutor {
 			ClusterExecutorConfiguration.class, properties);
 	}
 
-	protected void sendNotifyRequest() {
+	@Override
+	public void sendNotifyRequest() {
 		ClusterRequest clusterRequest = ClusterRequest.createMulticastRequest(
 			_localClusterNodeStatus, true);
 

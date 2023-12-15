@@ -892,7 +892,7 @@ public class ClusterMasterExecutorImplTest extends BaseClusterTestCase {
 		}
 
 		@Override
-		protected String getClusterNodeId(Address address) {
+		public String getClusterNodeId(Address address) {
 			ClusterNode clusterNode = _clusterNodes.get(address);
 
 			if (clusterNode == null) {
