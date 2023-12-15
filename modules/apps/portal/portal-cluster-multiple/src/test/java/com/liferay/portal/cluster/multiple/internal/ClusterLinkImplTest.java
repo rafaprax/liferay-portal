@@ -7,6 +7,7 @@ package com.liferay.portal.cluster.multiple.internal;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
 import com.liferay.portal.kernel.cluster.Priority;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;

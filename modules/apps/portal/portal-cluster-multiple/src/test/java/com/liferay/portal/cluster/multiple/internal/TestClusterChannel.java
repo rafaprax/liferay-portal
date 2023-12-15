@@ -6,6 +6,8 @@
 package com.liferay.portal.cluster.multiple.internal;
 
 import com.liferay.portal.kernel.cluster.Address;
+import com.liferay.portal.kernel.cluster.ClusterChannel;
+import com.liferay.portal.kernel.cluster.ClusterReceiver;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 
 import java.io.Serializable;
