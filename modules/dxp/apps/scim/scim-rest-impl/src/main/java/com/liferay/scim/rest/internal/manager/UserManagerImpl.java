@@ -57,6 +57,7 @@ import com.liferay.scim.rest.util.ScimClientUtil;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -181,10 +182,16 @@ public class UserManagerImpl implements UserManager {
 		String groupId, Map<String, Boolean> requiredAttributes) {
 
 		try {
+			UserGroup userGroup = _getUserGroup(
+				CompanyThreadLocal.getCompanyId(), GetterUtil.getLong(groupId));
+
 			return ScimGroupUtil.toGroup(
-				_getUserGroup(
-					CompanyThreadLocal.getCompanyId(),
-					GetterUtil.getLong(groupId)));
+				_getScimUsers(
+					userGroup.getUserGroupId(),
+					_getScimClientId(
+						UserGroup.class.getName(), userGroup.getPrimaryKey(),
+						userGroup.getCompanyId())),
+				userGroup);
 		}
 		catch (AbstractCharonException abstractCharonException) {
 			return ReflectionUtil.throwException(abstractCharonException);
@@ -214,7 +221,10 @@ public class UserManagerImpl implements UserManager {
 					"No user found with user ID " + userId);
 			}
 
-			return ScimUserUtil.toUser(scimUser);
+			return ScimUserUtil.toUser(
+				scimUser,
+				_userGroupLocalService.getUserUserGroups(
+					GetterUtil.getLong(scimUser.getId())));
 		}
 		catch (AbstractCharonException abstractCharonException) {
 			return ReflectionUtil.throwException(abstractCharonException);
@@ -282,10 +292,17 @@ public class UserManagerImpl implements UserManager {
 				searchHit -> {
 					Document document = searchHit.getDocument();
 
-					long userGroupId = document.getLong(Field.ENTRY_CLASS_PK);
+					UserGroup userGroup = _userGroupService.getUserGroup(
+						document.getLong(Field.ENTRY_CLASS_PK));
 
 					return ScimGroupUtil.toGroup(
-						_userGroupService.getUserGroup(userGroupId));
+						_getScimUsers(
+							userGroup.getUserGroupId(),
+							_getScimClientId(
+								UserGroup.class.getName(),
+								userGroup.getPrimaryKey(),
+								userGroup.getCompanyId())),
+						userGroup);
 				}));
 	}
 
@@ -358,10 +375,11 @@ public class UserManagerImpl implements UserManager {
 				searchHit -> {
 					Document document = searchHit.getDocument();
 
+					long userId = document.getLong(Field.ENTRY_CLASS_PK);
+
 					return ScimUserUtil.toUser(
-						_toScimUser(
-							_userService.getUserById(
-								document.getLong(Field.ENTRY_CLASS_PK))));
+						_toScimUser(_userService.getUserById(userId)),
+						_userGroupLocalService.getUserUserGroups(userId));
 				}));
 	}
 
@@ -407,7 +425,13 @@ public class UserManagerImpl implements UserManager {
 				_transactionConfig,
 				() -> _addOrUpdateUserGroup(company, group));
 
-			return ScimGroupUtil.toGroup(userGroup);
+			return ScimGroupUtil.toGroup(
+				_getScimUsers(
+					userGroup.getUserGroupId(),
+					_getScimClientId(
+						UserGroup.class.getName(), userGroup.getPrimaryKey(),
+						userGroup.getCompanyId())),
+				userGroup);
 		}
 		catch (AbstractCharonException abstractCharonException) {
 			return ReflectionUtil.throwException(abstractCharonException);
@@ -465,7 +489,10 @@ public class UserManagerImpl implements UserManager {
 					ScimUserUtil.toScimUser(
 						company.getCompanyId(), company.getLocale(), user)));
 
-			return ScimUserUtil.toUser(scimUser);
+			return ScimUserUtil.toUser(
+				scimUser,
+				_userGroupLocalService.getUserUserGroups(
+					GetterUtil.getLong(scimUser.getId())));
 		}
 		catch (AbstractCharonException abstractCharonException) {
 			return ReflectionUtil.throwException(abstractCharonException);
@@ -726,6 +753,24 @@ public class UserManagerImpl implements UserManager {
 		}
 
 		return _toScimUser(portalUser);
+	}
+
+	private List<ScimUser> _getScimUsers(
+		long userGroupId, String userGroupScimClientId) {
+
+		return TransformUtil.transform(
+			_userLocalService.getUserGroupUsers(userGroupId),
+			user -> {
+				String userScimClient = _getScimClientId(
+					com.liferay.portal.kernel.model.User.class.getName(),
+					user.getUserId(), user.getCompanyId());
+
+				if (!Objects.equals(userGroupScimClientId, userScimClient)) {
+					return null;
+				}
+
+				return _toScimUser(user);
+			});
 	}
 
 	private UserGroup _getUserGroup(long companyId, long userGroupId)

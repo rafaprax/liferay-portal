@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.ContactConstants;
+import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -89,7 +90,9 @@ public class ScimUserUtil {
 		return scimUser;
 	}
 
-	public static User toUser(ScimUser scimUser) throws Exception {
+	public static User toUser(ScimUser scimUser, List<UserGroup> userGroups)
+		throws Exception {
+
 		User user = new User();
 
 		user.replaceActive(scimUser.isActive());
@@ -120,6 +123,13 @@ public class ScimUserUtil {
 		user.setCreatedInstant(createDate.toInstant());
 
 		user.setExternalId(scimUser.getExternalReferenceCode());
+
+		for (UserGroup userGroup : userGroups) {
+			user.setGroup(
+				"direct",
+				ScimGroupUtil.toGroup(Collections.emptyList(), userGroup));
+		}
+
 		user.setId(scimUser.getId());
 
 		Date modifiedDate = scimUser.getModifiedDate();
