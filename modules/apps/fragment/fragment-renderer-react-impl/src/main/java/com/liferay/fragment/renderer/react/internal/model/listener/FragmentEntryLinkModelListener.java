@@ -24,11 +24,15 @@ import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiServiceUtil;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.MethodHandler;
 import com.liferay.portal.kernel.util.MethodKey;
 
 import java.util.List;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
@@ -36,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Iván Zaera Avellón
  */
-@Component(service = {IdentifiableOSGiService.class, ModelListener.class})
+@Component(service = ModelListener.class)
 public class FragmentEntryLinkModelListener
 	extends BaseModelListener<FragmentEntryLink>
 	implements IdentifiableOSGiService {
@@ -95,6 +99,13 @@ public class FragmentEntryLinkModelListener
 		_fragmentEntryLinkJSModuleInitializerHelper.ensureInitialized();
 	}
 
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_serviceRegistration = bundleContext.registerService(
+			IdentifiableOSGiService.class, this,
+			new HashMapDictionary<String, Object>());
+	}
+
 	@Deactivate
 	protected void deactivate() {
 		JSPackage jsPackage = _npmResolver.getJSPackage();
@@ -114,6 +125,10 @@ public class FragmentEntryLinkModelListener
 		}
 
 		npmRegistryUpdate.finish();
+
+		if (_serviceRegistration != null) {
+			_serviceRegistration.unregister();
+		}
 	}
 
 	private static void _onNotify(
@@ -210,6 +225,8 @@ public class FragmentEntryLinkModelListener
 
 	@Reference
 	private NPMResolver _npmResolver;
+
+	private ServiceRegistration<IdentifiableOSGiService> _serviceRegistration;
 
 	private enum MethodType {
 
