@@ -13,17 +13,22 @@ import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiServiceUtil;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.MethodHandler;
 import com.liferay.portal.kernel.util.MethodKey;
 import com.liferay.portal.language.override.model.PLOEntry;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Drew Brokke
  */
-@Component(service = {ModelListener.class, IdentifiableOSGiService.class})
+@Component(service = ModelListener.class)
 public class PLOEntryModelListener
 	extends BaseModelListener<PLOEntry> implements IdentifiableOSGiService {
 
@@ -51,6 +56,20 @@ public class PLOEntryModelListener
 		_updatePLOLanguageOverrideProvider(MethodType.UPDATE, ploEntry);
 
 		_notifyCluster(MethodType.UPDATE, ploEntry);
+	}
+
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_serviceRegistration = bundleContext.registerService(
+			IdentifiableOSGiService.class, this,
+			new HashMapDictionary<String, Object>());
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		if (_serviceRegistration != null) {
+			_serviceRegistration.unregister();
+		}
 	}
 
 	private static void _onNotify(
@@ -114,6 +133,8 @@ public class PLOEntryModelListener
 
 	@Reference
 	private PLOOverrideResourceBundleManager _ploOverrideResourceBundleManager;
+
+	private ServiceRegistration<IdentifiableOSGiService> _serviceRegistration;
 
 	private enum MethodType {
 
