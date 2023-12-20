@@ -5,10 +5,9 @@
 
 package com.liferay.portal.workflow.metrics.internal.search.index.creation.instance.lifecycle;
 
-import com.liferay.portal.instance.lifecycle.InitialRequestPortalInstanceLifecycleListener;
+import com.liferay.portal.instance.lifecycle.BasePortalInstanceLifecycleListener;
 import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
 import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.workflow.metrics.internal.search.index.creation.helper.WorkflowMetricsIndexCreator;
 
 import org.osgi.service.component.annotations.Component;
@@ -18,8 +17,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Rafael Praxedes
  */
 @Component(service = PortalInstanceLifecycleListener.class)
-public class WorkflowMetricsIndexInitialRequestPortalInstanceLifecycleListener
-	extends InitialRequestPortalInstanceLifecycleListener {
+public class WorkflowMetricsIndexPortalInstanceLifecycleListener
+	extends BasePortalInstanceLifecycleListener {
 
 	@Override
 	public void portalInstancePreregistered(Company company) throws Exception {
@@ -27,18 +26,14 @@ public class WorkflowMetricsIndexInitialRequestPortalInstanceLifecycleListener
 	}
 
 	@Override
-	public void portalInstanceUnregistered(Company company) throws Exception {
-		_workflowMetricsIndexCreator.removeIndex(company);
+	public void portalInstanceRegistered(Company company) throws Exception {
+		_workflowMetricsIndexCreator.reindex(company);
 	}
 
 	@Override
-	protected void doPortalInstanceRegistered(long companyId) throws Exception {
-		_workflowMetricsIndexCreator.reindex(
-			_companyLocalService.getCompany(companyId));
+	public void portalInstanceUnregistered(Company company) throws Exception {
+		_workflowMetricsIndexCreator.removeIndex(company);
 	}
-
-	@Reference
-	private CompanyLocalService _companyLocalService;
 
 	@Reference
 	private WorkflowMetricsIndexCreator _workflowMetricsIndexCreator;
