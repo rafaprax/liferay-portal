@@ -6,13 +6,13 @@
 package com.liferay.commerce.address.web.internal.display.context;
 
 import com.liferay.commerce.address.web.internal.constants.CommerceCountryScreenNavigationConstants;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.util.CommerceUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Region;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.util.ParamUtil;
 
@@ -27,13 +27,13 @@ public class CommerceRegionsDisplayContext
 	extends BaseCommerceCountriesDisplayContext<Region> {
 
 	public CommerceRegionsDisplayContext(
-		ActionHelper actionHelper,
+		CountryService countryService,
 		PortletResourcePermission portletResourcePermission,
 		RegionService regionService, RenderRequest renderRequest,
 		RenderResponse renderResponse) {
 
 		super(
-			actionHelper, portletResourcePermission, renderRequest,
+			countryService, portletResourcePermission, renderRequest,
 			renderResponse);
 
 		_regionService = regionService;
@@ -66,7 +66,7 @@ public class CommerceRegionsDisplayContext
 			return _region;
 		}
 
-		_region = actionHelper.getRegion(renderRequest);
+		_region = _getRegion(renderRequest);
 
 		return _region;
 	}
@@ -142,6 +142,18 @@ public class CommerceRegionsDisplayContext
 		searchContainer.setRowChecker(getRowChecker());
 
 		return searchContainer;
+	}
+
+	private Region _getRegion(RenderRequest renderRequest)
+		throws PortalException {
+
+		long regionId = ParamUtil.getLong(renderRequest, "regionId");
+
+		if (regionId > 0) {
+			return _regionService.getRegion(regionId);
+		}
+
+		return null;
 	}
 
 	private Region _region;

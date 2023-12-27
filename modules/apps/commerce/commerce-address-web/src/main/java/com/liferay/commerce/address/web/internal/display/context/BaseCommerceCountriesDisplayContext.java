@@ -6,13 +6,13 @@
 package com.liferay.commerce.address.web.internal.display.context;
 
 import com.liferay.commerce.address.web.internal.constants.CommerceCountryScreenNavigationConstants;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -29,14 +29,14 @@ import javax.portlet.RenderResponse;
 public abstract class BaseCommerceCountriesDisplayContext<T> {
 
 	public BaseCommerceCountriesDisplayContext(
-		ActionHelper actionHelper,
+		CountryService countryService,
 		PortletResourcePermission portletResourcePermission,
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		this.actionHelper = actionHelper;
 		this.renderRequest = renderRequest;
 		this.renderResponse = renderResponse;
 
+		_countryService = countryService;
 		_portletResourcePermission = portletResourcePermission;
 
 		_defaultOrderByCol = "priority";
@@ -48,7 +48,7 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 			return _country;
 		}
 
-		_country = actionHelper.getCountry(renderRequest);
+		_country = _getCountry(renderRequest);
 
 		return _country;
 	}
@@ -73,27 +73,6 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 		return ParamUtil.getString(
 			renderRequest, SearchContainer.DEFAULT_ORDER_BY_TYPE_PARAM,
 			_defaultOrderByType);
-	}
-
-	public PortletURL getPortletURL() throws PortalException {
-		PortletURL portletURL = renderResponse.createRenderURL();
-
-		if (getCountryId() > 0) {
-			portletURL.setParameter(
-				"countryId", String.valueOf(getCountryId()));
-		}
-
-		String delta = ParamUtil.getString(renderRequest, "delta");
-
-		if (Validator.isNotNull(delta)) {
-			portletURL.setParameter("delta", delta);
-		}
-
-		portletURL.setParameter("navigation", getNavigation());
-		portletURL.setParameter("orderByCol", getOrderByCol());
-		portletURL.setParameter("orderByType", getOrderByType());
-
-		return portletURL;
 	}
 
 	public RowChecker getRowChecker() {
@@ -138,12 +117,45 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 		return ParamUtil.getString(renderRequest, "navigation", "all");
 	}
 
-	protected final ActionHelper actionHelper;
+	protected PortletURL getPortletURL() throws PortalException {
+		PortletURL portletURL = renderResponse.createRenderURL();
+
+		if (getCountryId() > 0) {
+			portletURL.setParameter(
+				"countryId", String.valueOf(getCountryId()));
+		}
+
+		String delta = ParamUtil.getString(renderRequest, "delta");
+
+		if (Validator.isNotNull(delta)) {
+			portletURL.setParameter("delta", delta);
+		}
+
+		portletURL.setParameter("navigation", getNavigation());
+		portletURL.setParameter("orderByCol", getOrderByCol());
+		portletURL.setParameter("orderByType", getOrderByType());
+
+		return portletURL;
+	}
+
 	protected final RenderRequest renderRequest;
 	protected final RenderResponse renderResponse;
 	protected SearchContainer<T> searchContainer;
 
+	private Country _getCountry(RenderRequest renderRequest)
+		throws PortalException {
+
+		long countryId = ParamUtil.getLong(renderRequest, "countryId");
+
+		if (countryId > 0) {
+			return _countryService.getCountry(countryId);
+		}
+
+		return null;
+	}
+
 	private Country _country;
+	private final CountryService _countryService;
 	private String _defaultOrderByCol;
 	private String _defaultOrderByType;
 	private final PortletResourcePermission _portletResourcePermission;
