@@ -11,7 +11,6 @@ import com.liferay.commerce.product.constants.CPWebKeys;
 import com.liferay.commerce.product.exception.NoSuchCPOptionCategoryException;
 import com.liferay.commerce.product.model.CPOptionCategory;
 import com.liferay.commerce.product.options.web.internal.display.context.CPOptionCategoryDisplayContext;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.product.service.CPOptionCategoryService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
@@ -53,7 +52,7 @@ public class EditCPOptionCategoryMVCRenderCommand implements MVCRenderCommand {
 		try {
 			CPOptionCategoryDisplayContext cpOptionCategoryDisplayContext =
 				new CPOptionCategoryDisplayContext(
-					_actionHelper, _portal.getHttpServletRequest(renderRequest),
+					_portal.getHttpServletRequest(renderRequest),
 					_cpOptionCategoryService, _portletResourcePermission);
 
 			renderRequest.setAttribute(
@@ -114,9 +113,6 @@ public class EditCPOptionCategoryMVCRenderCommand implements MVCRenderCommand {
 				"toolbarItem", "specification-groups"
 			).buildString());
 	}
-
-	@Reference
-	private ActionHelper _actionHelper;
 
 	@Reference
 	private CPOptionCategoryService _cpOptionCategoryService;

@@ -7,7 +7,6 @@ package com.liferay.commerce.product.options.web.internal.display.context;
 
 import com.liferay.commerce.product.model.CPOptionCategory;
 import com.liferay.commerce.product.model.CPSpecificationOption;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.product.options.web.internal.util.CPOptionsPortletUtil;
 import com.liferay.commerce.product.service.CPOptionCategoryService;
 import com.liferay.commerce.product.service.CPSpecificationOptionService;
@@ -35,15 +34,14 @@ public class CPSpecificationOptionDisplayContext
 	extends BaseCPOptionsDisplayContext<CPSpecificationOption> {
 
 	public CPSpecificationOptionDisplayContext(
-			ActionHelper actionHelper, HttpServletRequest httpServletRequest,
+			HttpServletRequest httpServletRequest,
 			CPOptionCategoryService cpOptionCategoryService,
 			CPSpecificationOptionService cpSpecificationOptionService,
 			PortletResourcePermission portletResourcePermission)
 		throws PortalException {
 
 		super(
-			actionHelper, httpServletRequest,
-			CPSpecificationOption.class.getSimpleName(),
+			httpServletRequest, CPSpecificationOption.class.getSimpleName(),
 			portletResourcePermission);
 
 		_cpOptionCategoryService = cpOptionCategoryService;
@@ -52,9 +50,7 @@ public class CPSpecificationOptionDisplayContext
 		setDefaultOrderByCol("label");
 	}
 
-	public List<CPOptionCategory> getCPOptionCategories()
-		throws PortalException {
-
+	public List<CPOptionCategory> getCPOptionCategories() throws Exception {
 		BaseModelSearchResult<CPOptionCategory>
 			cpOptionCategoryBaseModelSearchResult =
 				_cpOptionCategoryService.searchCPOptionCategories(
