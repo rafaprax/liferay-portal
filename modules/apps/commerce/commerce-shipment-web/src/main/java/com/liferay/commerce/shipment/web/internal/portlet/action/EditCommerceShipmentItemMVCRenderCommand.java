@@ -10,7 +10,6 @@ import com.liferay.commerce.constants.CommercePortletKeys;
 import com.liferay.commerce.service.CommerceOrderItemService;
 import com.liferay.commerce.service.CommerceShipmentItemService;
 import com.liferay.commerce.shipment.web.internal.display.context.CommerceShipmentItemDisplayContext;
-import com.liferay.commerce.shipment.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.util.CommerceQuantityFormatter;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
@@ -44,7 +43,7 @@ public class EditCommerceShipmentItemMVCRenderCommand
 
 		CommerceShipmentItemDisplayContext commerceShipmentItemDisplayContext =
 			new CommerceShipmentItemDisplayContext(
-				_actionHelper, _portal.getHttpServletRequest(renderRequest),
+				_portal.getHttpServletRequest(renderRequest),
 				_commerceOrderItemService, _commerceQuantityFormatter,
 				_commerceShipmentItemService, _portletResourcePermission);
 
@@ -54,9 +53,6 @@ public class EditCommerceShipmentItemMVCRenderCommand
 
 		return "/commerce_shipment_item/edit_commerce_shipment_item.jsp";
 	}
-
-	@Reference
-	private ActionHelper _actionHelper;
 
 	@Reference
 	private CommerceOrderItemService _commerceOrderItemService;

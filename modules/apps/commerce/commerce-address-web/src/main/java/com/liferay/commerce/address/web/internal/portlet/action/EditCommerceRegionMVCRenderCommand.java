@@ -13,7 +13,6 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
-import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.PortletDisplay;
@@ -22,7 +21,6 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -44,14 +42,13 @@ public class EditCommerceRegionMVCRenderCommand implements MVCRenderCommand {
 
 	@Override
 	public String render(
-			RenderRequest renderRequest, RenderResponse renderResponse)
-		throws PortletException {
+		RenderRequest renderRequest, RenderResponse renderResponse) {
 
 		try {
 			CommerceRegionsDisplayContext commerceRegionsDisplayContext =
 				new CommerceRegionsDisplayContext(
-					_countryService, _portletResourcePermission, _regionService,
-					renderRequest, renderResponse);
+					_portletResourcePermission, _regionService, renderRequest,
+					renderResponse);
 
 			renderRequest.setAttribute(
 				WebKeys.PORTLET_DISPLAY_CONTEXT, commerceRegionsDisplayContext);
@@ -91,9 +88,6 @@ public class EditCommerceRegionMVCRenderCommand implements MVCRenderCommand {
 				"screenNavigationCategoryKey", "regions"
 			).buildString());
 	}
-
-	@Reference
-	private CountryService _countryService;
 
 	@Reference
 	private Portal _portal;

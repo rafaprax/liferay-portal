@@ -12,7 +12,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Region;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
-import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.util.ParamUtil;
 
@@ -27,14 +26,11 @@ public class CommerceRegionsDisplayContext
 	extends BaseCommerceCountriesDisplayContext<Region> {
 
 	public CommerceRegionsDisplayContext(
-		CountryService countryService,
 		PortletResourcePermission portletResourcePermission,
 		RegionService regionService, RenderRequest renderRequest,
 		RenderResponse renderResponse) {
 
-		super(
-			countryService, portletResourcePermission, renderRequest,
-			renderResponse);
+		super(portletResourcePermission, renderRequest, renderResponse);
 
 		_regionService = regionService;
 	}

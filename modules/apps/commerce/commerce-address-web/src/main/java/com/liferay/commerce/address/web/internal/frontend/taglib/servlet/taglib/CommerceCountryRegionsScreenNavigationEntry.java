@@ -12,7 +12,6 @@ import com.liferay.frontend.taglib.servlet.taglib.util.JSPRenderer;
 import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
-import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -69,8 +68,8 @@ public class CommerceCountryRegionsScreenNavigationEntry
 
 		CommerceRegionsDisplayContext commerceRegionsDisplayContext =
 			new CommerceRegionsDisplayContext(
-				_countryService, _portletResourcePermission, _regionService,
-				renderRequest, renderResponse);
+				_portletResourcePermission, _regionService, renderRequest,
+				renderResponse);
 
 		renderRequest.setAttribute(
 			WebKeys.PORTLET_DISPLAY_CONTEXT, commerceRegionsDisplayContext);
@@ -79,9 +78,6 @@ public class CommerceCountryRegionsScreenNavigationEntry
 			_servletContext, httpServletRequest, httpServletResponse,
 			"/commerce_country/commerce_regions.jsp");
 	}
-
-	@Reference
-	private CountryService _countryService;
 
 	@Reference
 	private JSPRenderer _jspRenderer;

@@ -10,9 +10,7 @@ import com.liferay.commerce.model.CommerceShipment;
 import com.liferay.commerce.model.CommerceShipmentItem;
 import com.liferay.commerce.service.CommerceOrderItemService;
 import com.liferay.commerce.service.CommerceShipmentItemService;
-import com.liferay.commerce.shipment.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.util.CommerceQuantityFormatter;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 
@@ -29,20 +27,20 @@ public class CommerceShipmentItemDisplayContext
 	extends BaseCommerceShipmentDisplayContext<CommerceShipmentItem> {
 
 	public CommerceShipmentItemDisplayContext(
-		ActionHelper actionHelper, HttpServletRequest httpServletRequest,
+		HttpServletRequest httpServletRequest,
 		CommerceOrderItemService commerceOrderItemService,
 		CommerceQuantityFormatter commerceQuantityFormatter,
 		CommerceShipmentItemService commerceShipmentItemService,
 		PortletResourcePermission portletResourcePermission) {
 
-		super(actionHelper, httpServletRequest, portletResourcePermission);
+		super(httpServletRequest, portletResourcePermission);
 
 		_commerceOrderItemService = commerceOrderItemService;
 		_commerceQuantityFormatter = commerceQuantityFormatter;
 		_commerceShipmentItemService = commerceShipmentItemService;
 	}
 
-	public CommerceOrderItem getCommerceOrderItem() throws PortalException {
+	public CommerceOrderItem getCommerceOrderItem() throws Exception {
 		CommerceShipmentItem commerceShipmentItem = getCommerceShipmentItem();
 
 		if (commerceShipmentItem == null) {
@@ -54,7 +52,7 @@ public class CommerceShipmentItemDisplayContext
 	}
 
 	@Override
-	public CommerceShipment getCommerceShipment() throws PortalException {
+	public CommerceShipment getCommerceShipment() throws Exception {
 		CommerceShipmentItem commerceShipmentItem = getCommerceShipmentItem();
 
 		if (commerceShipmentItem == null) {
@@ -64,20 +62,18 @@ public class CommerceShipmentItemDisplayContext
 		return commerceShipmentItem.getCommerceShipment();
 	}
 
-	public CommerceShipmentItem getCommerceShipmentItem()
-		throws PortalException {
-
+	public CommerceShipmentItem getCommerceShipmentItem() throws Exception {
 		if (_commerceShipmentItem != null) {
 			return _commerceShipmentItem;
 		}
 
-		_commerceShipmentItem = actionHelper.getCommerceShipmentItem(
+		_commerceShipmentItem = getCommerceShipmentItem(
 			cpRequestHelper.getRenderRequest());
 
 		return _commerceShipmentItem;
 	}
 
-	public String getOutstandingQuantity() throws PortalException {
+	public String getOutstandingQuantity() throws Exception {
 		CommerceOrderItem commerceOrderItem = getCommerceOrderItem();
 
 		BigDecimal quantity = commerceOrderItem.getQuantity();
@@ -91,7 +87,7 @@ public class CommerceShipmentItemDisplayContext
 	}
 
 	@Override
-	public PortletURL getPortletURL() throws PortalException {
+	public PortletURL getPortletURL() throws Exception {
 		return PortletURLBuilder.create(
 			super.getPortletURL()
 		).setMVCRenderCommandName(
@@ -99,7 +95,7 @@ public class CommerceShipmentItemDisplayContext
 		).buildPortletURL();
 	}
 
-	public String getToSendQuantity() throws PortalException {
+	public String getToSendQuantity() throws Exception {
 		CommerceOrderItem commerceOrderItem = getCommerceOrderItem();
 
 		BigDecimal commerceShipmentOrderItemsQuantity =

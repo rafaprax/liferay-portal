@@ -6,10 +6,12 @@
 package com.liferay.commerce.shipment.web.internal.display.context;
 
 import com.liferay.commerce.constants.CommerceActionKeys;
+import com.liferay.commerce.constants.CommerceWebKeys;
 import com.liferay.commerce.model.CommerceShipment;
+import com.liferay.commerce.model.CommerceShipmentItem;
 import com.liferay.commerce.product.display.context.helper.CPRequestHelper;
-import com.liferay.commerce.shipment.web.internal.portlet.action.helper.ActionHelper;
-import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.commerce.service.CommerceShipmentItemLocalServiceUtil;
+import com.liferay.commerce.service.CommerceShipmentLocalServiceUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
@@ -17,6 +19,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,10 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 public class BaseCommerceShipmentDisplayContext<T> {
 
 	public BaseCommerceShipmentDisplayContext(
-		ActionHelper actionHelper, HttpServletRequest httpServletRequest,
+		HttpServletRequest httpServletRequest,
 		PortletResourcePermission portletResourcePermission) {
 
-		this.actionHelper = actionHelper;
 		this.httpServletRequest = httpServletRequest;
 
 		_portletResourcePermission = portletResourcePermission;
@@ -40,18 +42,18 @@ public class BaseCommerceShipmentDisplayContext<T> {
 		liferayPortletResponse = cpRequestHelper.getLiferayPortletResponse();
 	}
 
-	public CommerceShipment getCommerceShipment() throws PortalException {
+	public CommerceShipment getCommerceShipment() throws Exception {
 		if (_commerceShipment != null) {
 			return _commerceShipment;
 		}
 
-		_commerceShipment = actionHelper.getCommerceShipment(
+		_commerceShipment = _getCommerceShipment(
 			cpRequestHelper.getRenderRequest());
 
 		return _commerceShipment;
 	}
 
-	public long getCommerceShipmentId() throws PortalException {
+	public long getCommerceShipmentId() throws Exception {
 		CommerceShipment commerceShipment = getCommerceShipment();
 
 		if (commerceShipment == null) {
@@ -61,11 +63,40 @@ public class BaseCommerceShipmentDisplayContext<T> {
 		return commerceShipment.getCommerceShipmentId();
 	}
 
+	public CommerceShipmentItem getCommerceShipmentItem(
+			RenderRequest renderRequest)
+		throws Exception {
+
+		CommerceShipmentItem commerceShipmentItem =
+			(CommerceShipmentItem)renderRequest.getAttribute(
+				CommerceWebKeys.COMMERCE_SHIPMENT_ITEM);
+
+		if (commerceShipmentItem != null) {
+			return commerceShipmentItem;
+		}
+
+		long commerceShipmentItemId = ParamUtil.getLong(
+			renderRequest, "commerceShipmentItemId");
+
+		if (commerceShipmentItemId > 0) {
+			commerceShipmentItem =
+				CommerceShipmentItemLocalServiceUtil.fetchCommerceShipmentItem(
+					commerceShipmentItemId);
+		}
+
+		if (commerceShipmentItem != null) {
+			renderRequest.setAttribute(
+				CommerceWebKeys.COMMERCE_SHIPMENT_ITEM, commerceShipmentItem);
+		}
+
+		return commerceShipmentItem;
+	}
+
 	public String getKeywords() {
 		return ParamUtil.getString(httpServletRequest, "keywords");
 	}
 
-	public PortletURL getPortletURL() throws PortalException {
+	public PortletURL getPortletURL() throws Exception {
 		PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
 		String redirect = ParamUtil.getString(httpServletRequest, "redirect");
@@ -109,11 +140,38 @@ public class BaseCommerceShipmentDisplayContext<T> {
 			CommerceActionKeys.MANAGE_COMMERCE_SHIPMENTS);
 	}
 
-	protected final ActionHelper actionHelper;
 	protected final CPRequestHelper cpRequestHelper;
 	protected final HttpServletRequest httpServletRequest;
 	protected final LiferayPortletRequest liferayPortletRequest;
 	protected final LiferayPortletResponse liferayPortletResponse;
+
+	private CommerceShipment _getCommerceShipment(RenderRequest renderRequest)
+		throws Exception {
+
+		CommerceShipment commerceShipment =
+			(CommerceShipment)renderRequest.getAttribute(
+				CommerceWebKeys.COMMERCE_SHIPMENT);
+
+		if (commerceShipment != null) {
+			return commerceShipment;
+		}
+
+		long commerceShipmentId = ParamUtil.getLong(
+			renderRequest, "commerceShipmentId");
+
+		if (commerceShipmentId > 0) {
+			commerceShipment =
+				CommerceShipmentLocalServiceUtil.fetchCommerceShipment(
+					commerceShipmentId);
+		}
+
+		if (commerceShipment != null) {
+			renderRequest.setAttribute(
+				CommerceWebKeys.COMMERCE_SHIPMENT, commerceShipment);
+		}
+
+		return commerceShipment;
+	}
 
 	private CommerceShipment _commerceShipment;
 	private final PortletResourcePermission _portletResourcePermission;

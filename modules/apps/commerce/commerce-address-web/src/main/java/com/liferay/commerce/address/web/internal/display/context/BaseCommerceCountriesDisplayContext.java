@@ -12,7 +12,7 @@ import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
-import com.liferay.portal.kernel.service.CountryService;
+import com.liferay.portal.kernel.service.CountryServiceUtil;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -29,14 +29,12 @@ import javax.portlet.RenderResponse;
 public abstract class BaseCommerceCountriesDisplayContext<T> {
 
 	public BaseCommerceCountriesDisplayContext(
-		CountryService countryService,
 		PortletResourcePermission portletResourcePermission,
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
 		this.renderRequest = renderRequest;
 		this.renderResponse = renderResponse;
 
-		_countryService = countryService;
 		_portletResourcePermission = portletResourcePermission;
 
 		_defaultOrderByCol = "priority";
@@ -148,14 +146,13 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 		long countryId = ParamUtil.getLong(renderRequest, "countryId");
 
 		if (countryId > 0) {
-			return _countryService.getCountry(countryId);
+			return CountryServiceUtil.getCountry(countryId);
 		}
 
 		return null;
 	}
 
 	private Country _country;
-	private final CountryService _countryService;
 	private String _defaultOrderByCol;
 	private String _defaultOrderByType;
 	private final PortletResourcePermission _portletResourcePermission;

@@ -15,7 +15,6 @@ import com.liferay.commerce.service.CommerceOrderLocalService;
 import com.liferay.commerce.service.CommerceShipmentItemService;
 import com.liferay.commerce.service.CommerceShippingMethodService;
 import com.liferay.commerce.shipment.web.internal.display.context.CommerceShipmentDisplayContext;
-import com.liferay.commerce.shipment.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.service.CountryService;
@@ -50,11 +49,11 @@ public class AddCommerceShipmentItemsMVCRenderCommand
 
 		CommerceShipmentDisplayContext commerceShipmentDisplayContext =
 			new CommerceShipmentDisplayContext(
-				_actionHelper, _commerceAddressFormatter,
-				_commerceAddressLocalService, _commerceChannelService,
-				_commerceOrderItemService, _commerceOrderLocalService,
-				_commerceShipmentItemService, _commerceShippingMethodService,
-				_countryService, _portal.getHttpServletRequest(renderRequest),
+				_commerceAddressFormatter, _commerceAddressLocalService,
+				_commerceChannelService, _commerceOrderItemService,
+				_commerceOrderLocalService, _commerceShipmentItemService,
+				_commerceShippingMethodService, _countryService,
+				_portal.getHttpServletRequest(renderRequest),
 				_portletResourcePermission, _regionService);
 
 		renderRequest.setAttribute(
@@ -62,9 +61,6 @@ public class AddCommerceShipmentItemsMVCRenderCommand
 
 		return "/commerce_shipment_item/add_commerce_shipment_items.jsp";
 	}
-
-	@Reference
-	private ActionHelper _actionHelper;
 
 	@Reference
 	private CommerceAddressFormatter _commerceAddressFormatter;
