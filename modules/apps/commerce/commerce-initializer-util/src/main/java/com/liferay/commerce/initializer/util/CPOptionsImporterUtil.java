@@ -8,14 +8,14 @@ package com.liferay.commerce.initializer.util;
 import com.liferay.commerce.initializer.util.internal.CommerceInitializerUtil;
 import com.liferay.commerce.product.model.CPOption;
 import com.liferay.commerce.product.model.CPOptionValue;
-import com.liferay.commerce.product.service.CPOptionLocalService;
-import com.liferay.commerce.product.service.CPOptionValueLocalService;
+import com.liferay.commerce.product.service.CPOptionLocalServiceUtil;
+import com.liferay.commerce.product.service.CPOptionValueLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 
@@ -25,20 +25,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = CPOptionsImporter.class)
-public class CPOptionsImporter {
+public class CPOptionsImporterUtil {
 
-	public List<CPOption> importCPOptions(
+	public static List<CPOption> importCPOptions(
 			JSONArray jsonArray, long scopeGroupId, long userId)
 		throws PortalException {
 
-		User user = _userLocalService.getUser(userId);
+		User user = UserLocalServiceUtil.getUser(userId);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -58,7 +54,7 @@ public class CPOptionsImporter {
 		return cpOptions;
 	}
 
-	private CPOptionValue _addCPOptionValue(
+	private static CPOptionValue _addCPOptionValue(
 			CPOption cpOption, double priority, String key,
 			ServiceContext serviceContext)
 		throws PortalException {
@@ -67,11 +63,11 @@ public class CPOptionsImporter {
 			LocaleUtil.getSiteDefault(),
 			TextFormatter.format(key, TextFormatter.J));
 
-		return _cpOptionValueLocalService.addCPOptionValue(
+		return CPOptionValueLocalServiceUtil.addCPOptionValue(
 			cpOption.getCPOptionId(), nameMap, priority, key, serviceContext);
 	}
 
-	private CPOption _importCPOption(
+	private static CPOption _importCPOption(
 			JSONObject jsonObject, ServiceContext serviceContext)
 		throws PortalException {
 
@@ -79,7 +75,7 @@ public class CPOptionsImporter {
 
 		String key = jsonObject.getString("key");
 
-		CPOption cpOption = _cpOptionLocalService.fetchCPOption(
+		CPOption cpOption = CPOptionLocalServiceUtil.fetchCPOption(
 			serviceContext.getCompanyId(), key);
 
 		if (cpOption != null) {
@@ -100,7 +96,7 @@ public class CPOptionsImporter {
 		boolean required = jsonObject.getBoolean("required");
 		boolean skuContributor = jsonObject.getBoolean("skuContributor");
 
-		cpOption = _cpOptionLocalService.addCPOption(
+		cpOption = CPOptionLocalServiceUtil.addCPOption(
 			null, serviceContext.getUserId(), nameMap, descriptionMap,
 			commerceOptionTypeKey, facetable, required, skuContributor, key,
 			serviceContext);
@@ -129,7 +125,7 @@ public class CPOptionsImporter {
 		return cpOption;
 	}
 
-	private CPOptionValue _importCPOptionValue(
+	private static CPOptionValue _importCPOptionValue(
 			JSONObject jsonObject, CPOption cpOption, double defaultPriority,
 			ServiceContext serviceContext)
 		throws PortalException {
@@ -142,17 +138,8 @@ public class CPOptionsImporter {
 
 		double priority = jsonObject.getDouble("priority", defaultPriority);
 
-		return _cpOptionValueLocalService.addCPOptionValue(
+		return CPOptionValueLocalServiceUtil.addCPOptionValue(
 			cpOption.getCPOptionId(), nameMap, priority, key, serviceContext);
 	}
-
-	@Reference
-	private CPOptionLocalService _cpOptionLocalService;
-
-	@Reference
-	private CPOptionValueLocalService _cpOptionValueLocalService;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }

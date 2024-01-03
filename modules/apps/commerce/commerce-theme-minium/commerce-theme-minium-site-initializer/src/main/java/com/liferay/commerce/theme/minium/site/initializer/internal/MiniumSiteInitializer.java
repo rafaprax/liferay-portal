@@ -15,7 +15,7 @@ import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CPOptionCategoriesImporterUtil;
-import com.liferay.commerce.initializer.util.CPOptionsImporter;
+import com.liferay.commerce.initializer.util.CPOptionsImporterUtil;
 import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporterUtil;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
@@ -729,7 +729,7 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			long catalogGroupId, ServiceContext serviceContext)
 		throws Exception {
 
-		return _cpOptionsImporter.importCPOptions(
+		return CPOptionsImporterUtil.importCPOptions(
 			_getJSONArray("options.json"), catalogGroupId,
 			serviceContext.getUserId());
 	}
@@ -1145,9 +1145,6 @@ public class MiniumSiteInitializer implements SiteInitializer {
 
 	@Reference
 	private CPMeasurementUnitLocalService _cpMeasurementUnitLocalService;
-
-	@Reference
-	private CPOptionsImporter _cpOptionsImporter;
 
 	@Reference
 	private DDMFormImporter _ddmFormImporter;
