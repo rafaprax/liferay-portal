@@ -8,14 +8,14 @@ package com.liferay.commerce.initializer.util;
 import com.liferay.commerce.initializer.util.internal.CommerceInitializerUtil;
 import com.liferay.commerce.product.model.CPOptionCategory;
 import com.liferay.commerce.product.model.CPSpecificationOption;
-import com.liferay.commerce.product.service.CPOptionCategoryLocalService;
-import com.liferay.commerce.product.service.CPSpecificationOptionLocalService;
+import com.liferay.commerce.product.service.CPOptionCategoryLocalServiceUtil;
+import com.liferay.commerce.product.service.CPSpecificationOptionLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -25,20 +25,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = CPSpecificationOptionsImporter.class)
-public class CPSpecificationOptionsImporter {
+public class CPSpecificationOptionsImporterUtil {
 
-	public List<CPSpecificationOption> importCPSpecificationOptions(
+	public static List<CPSpecificationOption> importCPSpecificationOptions(
 			JSONArray jsonArray, long scopeGroupId, long userId)
 		throws PortalException {
 
-		User user = _userLocalService.getUser(userId);
+		User user = UserLocalServiceUtil.getUser(userId);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -60,7 +56,7 @@ public class CPSpecificationOptionsImporter {
 		return cpSpecificationOptions;
 	}
 
-	private CPSpecificationOption _importCPSpecificationOption(
+	private static CPSpecificationOption _importCPSpecificationOption(
 			JSONObject jsonObject, ServiceContext serviceContext)
 		throws PortalException {
 
@@ -70,7 +66,7 @@ public class CPSpecificationOptionsImporter {
 
 		if (Validator.isNotNull(categoryKey)) {
 			CPOptionCategory cpOptionCategory =
-				_cpOptionCategoryLocalService.getCPOptionCategory(
+				CPOptionCategoryLocalServiceUtil.getCPOptionCategory(
 					serviceContext.getCompanyId(), categoryKey);
 
 			cpOptionCategoryId = cpOptionCategory.getCPOptionCategoryId();
@@ -89,30 +85,20 @@ public class CPSpecificationOptionsImporter {
 		boolean facetable = jsonObject.getBoolean("facetable");
 
 		CPSpecificationOption cpSpecificationOption =
-			_cpSpecificationOptionLocalService.fetchCPSpecificationOption(
+			CPSpecificationOptionLocalServiceUtil.fetchCPSpecificationOption(
 				serviceContext.getCompanyId(), key);
 
 		if (cpSpecificationOption != null) {
-			return _cpSpecificationOptionLocalService.
+			return CPSpecificationOptionLocalServiceUtil.
 				updateCPSpecificationOption(
 					cpSpecificationOption.getCPSpecificationOptionId(),
 					cpOptionCategoryId, titleMap, descriptionMap, facetable,
 					key, serviceContext);
 		}
 
-		return _cpSpecificationOptionLocalService.addCPSpecificationOption(
+		return CPSpecificationOptionLocalServiceUtil.addCPSpecificationOption(
 			serviceContext.getUserId(), cpOptionCategoryId, titleMap,
 			descriptionMap, facetable, key, serviceContext);
 	}
-
-	@Reference
-	private CPOptionCategoryLocalService _cpOptionCategoryLocalService;
-
-	@Reference
-	private CPSpecificationOptionLocalService
-		_cpSpecificationOptionLocalService;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }

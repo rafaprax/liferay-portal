@@ -16,7 +16,7 @@ import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CPOptionCategoriesImporterUtil;
 import com.liferay.commerce.initializer.util.CPOptionsImporter;
-import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
+import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporterUtil;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
 import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
@@ -742,7 +742,7 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing commerce product specification options...");
 		}
 
-		_cpSpecificationOptionsImporter.importCPSpecificationOptions(
+		CPSpecificationOptionsImporterUtil.importCPSpecificationOptions(
 			_getJSONArray("specification-options.json"), catalogGroupId,
 			serviceContext.getUserId());
 
@@ -1148,9 +1148,6 @@ public class MiniumSiteInitializer implements SiteInitializer {
 
 	@Reference
 	private CPOptionsImporter _cpOptionsImporter;
-
-	@Reference
-	private CPSpecificationOptionsImporter _cpSpecificationOptionsImporter;
 
 	@Reference
 	private DDMFormImporter _ddmFormImporter;
