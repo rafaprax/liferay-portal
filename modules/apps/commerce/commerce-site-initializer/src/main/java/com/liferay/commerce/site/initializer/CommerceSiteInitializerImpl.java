@@ -10,7 +10,7 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionCategoriesImporter;
+import com.liferay.commerce.initializer.util.CPOptionCategoriesImporterUtil;
 import com.liferay.commerce.initializer.util.CPOptionsImporter;
 import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
 import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
@@ -912,7 +912,7 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray(json);
 
-		_cpOptionCategoriesImporter.importCPOptionCategories(
+		CPOptionCategoriesImporterUtil.importCPOptionCategories(
 			jsonArray, serviceContext.getScopeGroupId(),
 			serviceContext.getUserId());
 	}
@@ -1056,9 +1056,6 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 
 	@Reference
 	private CPMeasurementUnitLocalService _cpMeasurementUnitLocalService;
-
-	@Reference
-	private CPOptionCategoriesImporter _cpOptionCategoriesImporter;
 
 	@Reference
 	private CPOptionLocalService _cpOptionLocalService;

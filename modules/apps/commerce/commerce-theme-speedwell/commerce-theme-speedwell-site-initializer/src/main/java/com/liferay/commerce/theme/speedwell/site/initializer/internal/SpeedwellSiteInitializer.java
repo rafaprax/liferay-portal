@@ -14,7 +14,7 @@ import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionCategoriesImporter;
+import com.liferay.commerce.initializer.util.CPOptionCategoriesImporterUtil;
 import com.liferay.commerce.initializer.util.CPOptionsImporter;
 import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
@@ -667,7 +667,7 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Product Option Categories...");
 		}
 
-		_cpOptionCategoriesImporter.importCPOptionCategories(
+		CPOptionCategoriesImporterUtil.importCPOptionCategories(
 			_getJSONArray("option-categories.json"), catalogGroupId,
 			serviceContext.getUserId());
 
@@ -1081,9 +1081,6 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 
 	@Reference
 	private CPMeasurementUnitLocalService _cpMeasurementUnitLocalService;
-
-	@Reference
-	private CPOptionCategoriesImporter _cpOptionCategoriesImporter;
 
 	@Reference
 	private CPOptionsImporter _cpOptionsImporter;

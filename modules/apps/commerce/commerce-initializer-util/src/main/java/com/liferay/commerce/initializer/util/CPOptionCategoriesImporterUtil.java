@@ -7,13 +7,13 @@ package com.liferay.commerce.initializer.util;
 
 import com.liferay.commerce.initializer.util.internal.CommerceInitializerUtil;
 import com.liferay.commerce.product.model.CPOptionCategory;
-import com.liferay.commerce.product.service.CPOptionCategoryLocalService;
+import com.liferay.commerce.product.service.CPOptionCategoryLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.util.ObjectMapperUtil;
@@ -25,20 +25,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = CPOptionCategoriesImporter.class)
-public class CPOptionCategoriesImporter {
+public class CPOptionCategoriesImporterUtil {
 
-	public List<CPOptionCategory> importCPOptionCategories(
+	public static List<CPOptionCategory> importCPOptionCategories(
 			JSONArray jsonArray, long scopeGroupId, long userId)
 		throws PortalException {
 
-		User user = _userLocalService.getUser(userId);
+		User user = UserLocalServiceUtil.getUser(userId);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -59,7 +55,7 @@ public class CPOptionCategoriesImporter {
 		return cpOptionCategories;
 	}
 
-	private CPOptionCategory _importCPOptionCategory(
+	private static CPOptionCategory _importCPOptionCategory(
 			JSONObject jsonObject, double defaultPriority,
 			ServiceContext serviceContext)
 		throws PortalException {
@@ -67,25 +63,25 @@ public class CPOptionCategoriesImporter {
 		String key = jsonObject.getString("key");
 
 		CPOptionCategory cpOptionCategory =
-			_cpOptionCategoryLocalService.fetchCPOptionCategory(
+			CPOptionCategoryLocalServiceUtil.fetchCPOptionCategory(
 				serviceContext.getCompanyId(), key);
 
 		if (cpOptionCategory != null) {
-			return _cpOptionCategoryLocalService.updateCPOptionCategory(
+			return CPOptionCategoryLocalServiceUtil.updateCPOptionCategory(
 				cpOptionCategory.getCPOptionCategoryId(),
 				_toMap(key, jsonObject, "title"),
 				_toMap(null, jsonObject, "description"),
 				jsonObject.getDouble("priority", defaultPriority), key);
 		}
 
-		return _cpOptionCategoryLocalService.addCPOptionCategory(
+		return CPOptionCategoryLocalServiceUtil.addCPOptionCategory(
 			serviceContext.getUserId(), _toMap(key, jsonObject, "title"),
 			_toMap(null, jsonObject, "description"),
 			jsonObject.getDouble("priority", defaultPriority), key,
 			serviceContext);
 	}
 
-	private Map<Locale, String> _toMap(
+	private static Map<Locale, String> _toMap(
 		String defaultValue, JSONObject jsonObject, String nodeName) {
 
 		String value = jsonObject.getString(nodeName);
@@ -113,11 +109,5 @@ public class CPOptionCategoriesImporter {
 
 		return map;
 	}
-
-	@Reference
-	private CPOptionCategoryLocalService _cpOptionCategoryLocalService;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }
