@@ -14,26 +14,22 @@ import com.liferay.portal.kernel.model.ListTypeConstants;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.OrganizationConstants;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.service.CountryService;
-import com.liferay.portal.kernel.service.ListTypeLocalService;
-import com.liferay.portal.kernel.service.OrganizationLocalService;
+import com.liferay.portal.kernel.service.CountryServiceUtil;
+import com.liferay.portal.kernel.service.ListTypeLocalServiceUtil;
+import com.liferay.portal.kernel.service.OrganizationLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalService;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 
 /**
  * @author Alec Sloan
  */
-@Component(service = OrganizationImporter.class)
-public class OrganizationImporter {
+public class OrganizationImporterUtil {
 
-	public void importOrganizations(
+	public static void importOrganizations(
 			JSONArray jsonArray, long scopeGroupId, long userId)
 		throws PortalException {
 
-		User user = _userLocalService.getUser(userId);
+		User user = UserLocalServiceUtil.getUser(userId);
 
 		ServiceContext serviceContext = new ServiceContext();
 
@@ -46,15 +42,16 @@ public class OrganizationImporter {
 		}
 	}
 
-	private void _importOrganization(
+	private static void _importOrganization(
 			JSONObject jsonObject, long parentOrganizationId,
 			ServiceContext serviceContext)
 		throws PortalException {
 
 		String name = jsonObject.getString("name");
 
-		Organization organization = _organizationLocalService.fetchOrganization(
-			serviceContext.getCompanyId(), name);
+		Organization organization =
+			OrganizationLocalServiceUtil.fetchOrganization(
+				serviceContext.getCompanyId(), name);
 
 		if (organization != null) {
 			return;
@@ -62,13 +59,13 @@ public class OrganizationImporter {
 
 		String twoLetterISOCode = jsonObject.getString("twoLetterISOCode");
 
-		Country country = _countryService.getCountryByA2(
+		Country country = CountryServiceUtil.getCountryByA2(
 			serviceContext.getCompanyId(), twoLetterISOCode);
 
-		organization = _organizationLocalService.addOrganization(
+		organization = OrganizationLocalServiceUtil.addOrganization(
 			null, serviceContext.getUserId(), parentOrganizationId, name,
 			OrganizationConstants.TYPE_ORGANIZATION, 0, country.getCountryId(),
-			_listTypeLocalService.getListTypeId(
+			ListTypeLocalServiceUtil.getListTypeId(
 				serviceContext.getCompanyId(),
 				ListTypeConstants.ORGANIZATION_STATUS_DEFAULT,
 				ListTypeConstants.ORGANIZATION_STATUS),
@@ -85,17 +82,5 @@ public class OrganizationImporter {
 			}
 		}
 	}
-
-	@Reference
-	private CountryService _countryService;
-
-	@Reference
-	private ListTypeLocalService _listTypeLocalService;
-
-	@Reference
-	private OrganizationLocalService _organizationLocalService;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }

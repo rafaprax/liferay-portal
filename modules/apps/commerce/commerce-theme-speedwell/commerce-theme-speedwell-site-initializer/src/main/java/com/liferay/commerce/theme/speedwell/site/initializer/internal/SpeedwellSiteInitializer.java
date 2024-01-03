@@ -27,7 +27,7 @@ import com.liferay.commerce.initializer.util.DDMFormImporter;
 import com.liferay.commerce.initializer.util.DLImporter;
 import com.liferay.commerce.initializer.util.JournalArticleImporter;
 import com.liferay.commerce.initializer.util.KBArticleImporter;
-import com.liferay.commerce.initializer.util.OrganizationImporter;
+import com.liferay.commerce.initializer.util.OrganizationImporterUtil;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.media.CommerceCatalogDefaultImage;
@@ -575,7 +575,7 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Organizations...");
 		}
 
-		_organizationImporter.importOrganizations(
+		OrganizationImporterUtil.importOrganizations(
 			_getJSONArray("organizations.json"),
 			serviceContext.getScopeGroupId(), serviceContext.getUserId());
 
@@ -1117,9 +1117,6 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 
 	@Reference
 	private Language _language;
-
-	@Reference
-	private OrganizationImporter _organizationImporter;
 
 	@Reference
 	private PortletSettingsImporter _portletSettingsImporter;
