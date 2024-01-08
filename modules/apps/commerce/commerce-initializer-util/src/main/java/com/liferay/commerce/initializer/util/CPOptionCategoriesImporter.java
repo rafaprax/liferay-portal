@@ -31,11 +31,14 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = CPOptionCategoriesImporter.class)
-public class CPOptionCategoriesImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CPOptionCategoriesImporter
+	implements SiteInitializerModelImporter<List<CPOptionCategory>> {
 
-	public List<CPOptionCategory> importCPOptionCategories(
-			JSONArray jsonArray, long scopeGroupId, long userId)
+	@Override
+	public List<CPOptionCategory> importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws PortalException {
 
 		User user = _userLocalService.getUser(userId);

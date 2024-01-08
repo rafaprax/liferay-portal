@@ -14,7 +14,6 @@ import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionCategoriesImporter;
 import com.liferay.commerce.initializer.util.CPOptionsImporter;
 import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
@@ -29,6 +28,7 @@ import com.liferay.commerce.initializer.util.JournalArticleImporter;
 import com.liferay.commerce.initializer.util.KBArticleImporter;
 import com.liferay.commerce.initializer.util.OrganizationImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
+import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.media.CommerceCatalogDefaultImage;
 import com.liferay.commerce.model.CommerceShippingEngine;
@@ -667,8 +667,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Product Option Categories...");
 		}
 
-		_cpOptionCategoriesImporter.importCPOptionCategories(
-			_getJSONArray("option-categories.json"), catalogGroupId,
+		_cpOptionCategoriesImporter.importModels(
+			_getJSONArray("option-categories.json"), catalogGroupId, null,
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -1082,8 +1082,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private CPMeasurementUnitLocalService _cpMeasurementUnitLocalService;
 
-	@Reference
-	private CPOptionCategoriesImporter _cpOptionCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionCategoriesImporter;
 
 	@Reference
 	private CPOptionsImporter _cpOptionsImporter;
