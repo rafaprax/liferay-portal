@@ -112,6 +112,8 @@ public class JournalContentImpl
 				ReflectionUtil.throwException(throwable);
 			}
 		}
+
+		System.out.println("test");
 	}
 
 	@Override
