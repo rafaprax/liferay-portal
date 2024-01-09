@@ -15,7 +15,6 @@ import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CPOptionsImporter;
-import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
 import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
@@ -694,8 +693,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Product Specification Options...");
 		}
 
-		_cpSpecificationOptionsImporter.importCPSpecificationOptions(
-			_getJSONArray("specification-options.json"), catalogGroupId,
+		_cpSpecificationOptionsImporter.importModels(
+			_getJSONArray("specification-options.json"), catalogGroupId, null,
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -1090,8 +1089,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private CPOptionsImporter _cpOptionsImporter;
 
-	@Reference
-	private CPSpecificationOptionsImporter _cpSpecificationOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpSpecificationOptionsImporter;
 
 	@Reference
 	private DDMFormImporter _ddmFormImporter;
