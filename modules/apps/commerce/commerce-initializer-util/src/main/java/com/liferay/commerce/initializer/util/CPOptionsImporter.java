@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.TextFormatter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -31,11 +32,14 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = CPOptionsImporter.class)
-public class CPOptionsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CPOptionsImporter
+	implements SiteInitializerModelImporter<List<CPOption>> {
 
-	public List<CPOption> importCPOptions(
-			JSONArray jsonArray, long scopeGroupId, long userId)
+	@Override
+	public List<CPOption> importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws PortalException {
 
 		User user = _userLocalService.getUser(userId);

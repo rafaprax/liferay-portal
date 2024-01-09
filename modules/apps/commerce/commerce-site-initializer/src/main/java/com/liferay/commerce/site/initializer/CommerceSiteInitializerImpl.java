@@ -10,7 +10,6 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionsImporter;
 import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
@@ -564,9 +563,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			_commerceCatalogLocalService.getCommerceCatalogGroup(
 				catalog.getId());
 
-		_cpOptionsImporter.importCPOptions(
+		_cpOptionsImporter.importModels(
 			_jsonFactory.createJSONArray(json),
-			commerceCatalogGroup.getGroupId(), serviceContext.getUserId());
+			commerceCatalogGroup.getGroupId(), null,
+			serviceContext.getUserId());
 	}
 
 	private void _addDefaultCPDisplayLayout(
@@ -1060,8 +1060,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private CPOptionLocalService _cpOptionLocalService;
 
-	@Reference
-	private CPOptionsImporter _cpOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionsImporter;
 
 	@Reference(
 		target = "(component.name=com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter)"

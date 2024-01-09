@@ -14,7 +14,6 @@ import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
 import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
@@ -680,8 +679,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			long catalogGroupId, ServiceContext serviceContext)
 		throws Exception {
 
-		return _cpOptionsImporter.importCPOptions(
-			_getJSONArray("options.json"), catalogGroupId,
+		return (List<CPOption>)_cpOptionsImporter.importModels(
+			_getJSONArray("options.json"), catalogGroupId, null,
 			serviceContext.getUserId());
 	}
 
@@ -1086,8 +1085,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	)
 	private SiteInitializerModelImporter _cpOptionCategoriesImporter;
 
-	@Reference
-	private CPOptionsImporter _cpOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionsImporter;
 
 	@Reference(
 		target = "(component.name=com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter)"
