@@ -10,7 +10,6 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
@@ -245,13 +244,14 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			ServiceContext serviceContext, ServletContext servletContext)
 		throws Exception {
 
-		return _commerceInventoryWarehousesImporter.
-			importCommerceInventoryWarehouses(
+		return (List<CommerceInventoryWarehouse>)
+			_commerceInventoryWarehousesImporter.importModels(
 				_jsonFactory.createJSONArray(
 					SiteInitializerUtil.read(
 						"/site-initializer/commerce-inventory-warehouses.json",
 						servletContext)),
-				serviceContext.getScopeGroupId(), serviceContext.getUserId());
+				serviceContext.getScopeGroupId(), null,
+				serviceContext.getUserId());
 	}
 
 	private void _addCommerceNotificationTemplate(
@@ -1020,9 +1020,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private CommerceCurrencyLocalService _commerceCurrencyLocalService;
 
-	@Reference
-	private CommerceInventoryWarehousesImporter
-		_commerceInventoryWarehousesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter)"
+	)
+	private SiteInitializerModelImporter _commerceInventoryWarehousesImporter;
 
 	@Reference
 	private CommerceNotificationTemplateLocalService

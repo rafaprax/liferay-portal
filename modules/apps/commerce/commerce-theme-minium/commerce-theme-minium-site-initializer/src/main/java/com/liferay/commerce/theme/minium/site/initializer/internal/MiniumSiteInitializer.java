@@ -16,7 +16,6 @@ import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
-import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
@@ -560,10 +559,11 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			ServiceContext serviceContext)
 		throws Exception {
 
-		return _commerceInventoryWarehousesImporter.
-			importCommerceInventoryWarehouses(
+		return (List<CommerceInventoryWarehouse>)
+			_commerceInventoryWarehousesImporter.importModels(
 				_getJSONArray("warehouses.json"),
-				serviceContext.getScopeGroupId(), serviceContext.getUserId());
+				serviceContext.getScopeGroupId(), null,
+				serviceContext.getUserId());
 	}
 
 	private void _importCommerceOrganizations(ServiceContext serviceContext)
@@ -1097,9 +1097,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	@Reference
 	private CommerceDiscountsImporter _commerceDiscountsImporter;
 
-	@Reference
-	private CommerceInventoryWarehousesImporter
-		_commerceInventoryWarehousesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter)"
+	)
+	private SiteInitializerModelImporter _commerceInventoryWarehousesImporter;
 
 	@Reference
 	private CommercePriceEntriesImporter _commercePriceEntriesImporter;
