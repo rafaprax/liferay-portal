@@ -22,7 +22,6 @@ import com.liferay.commerce.initializer.util.CommerceUsersImporter;
 import com.liferay.commerce.initializer.util.DDMFormImporter;
 import com.liferay.commerce.initializer.util.DLImporter;
 import com.liferay.commerce.initializer.util.JournalArticleImporter;
-import com.liferay.commerce.initializer.util.KBArticleImporter;
 import com.liferay.commerce.initializer.util.OrganizationImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
@@ -762,9 +761,9 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing KB Articles...");
 		}
 
-		_kbArticleImporter.importKBArticles(
+		_kbArticleImporter.importModels(
 			_getJSONArray("kb-articles.json"), serviceContext.getScopeGroupId(),
-			serviceContext.getUserId());
+			null, serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("KB Articles successfully imported");
@@ -1117,8 +1116,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private JSONFactory _jsonFactory;
 
-	@Reference
-	private KBArticleImporter _kbArticleImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.KBArticleImporter)"
+	)
+	private SiteInitializerModelImporter _kbArticleImporter;
 
 	@Reference
 	private Language _language;
