@@ -51,6 +51,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -61,11 +62,13 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Steven Smith
  */
-@Component(service = DDMFormImporter.class)
-public class DDMFormImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class DDMFormImporter implements SiteInitializerModelImporter<Void> {
 
-	public void importDDMForms(
-			JSONArray jsonArray, long scopeGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.fetchUser(userId);
@@ -81,6 +84,8 @@ public class DDMFormImporter {
 				jsonArray.getJSONObject(i), userId, scopeGroupId,
 				serviceContext);
 		}
+
+		return null;
 	}
 
 	protected void updatePermissions(

@@ -18,7 +18,6 @@ import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
-import com.liferay.commerce.initializer.util.DDMFormImporter;
 import com.liferay.commerce.initializer.util.DLImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
@@ -754,8 +753,8 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing DDM Forms...");
 		}
 
-		_ddmFormImporter.importDDMForms(
-			_getJSONArray("forms.json"), serviceContext.getScopeGroupId(),
+		_ddmFormImporter.importModels(
+			_getJSONArray("forms.json"), serviceContext.getScopeGroupId(), null,
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -1159,8 +1158,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	)
 	private SiteInitializerModelImporter _cpSpecificationOptionsImporter;
 
-	@Reference
-	private DDMFormImporter _ddmFormImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.DDMFormImporter)"
+	)
+	private SiteInitializerModelImporter _ddmFormImporter;
 
 	@Reference(
 		target = "(site.initializer.key=" + MiniumSiteInitializer.KEY + ")"
