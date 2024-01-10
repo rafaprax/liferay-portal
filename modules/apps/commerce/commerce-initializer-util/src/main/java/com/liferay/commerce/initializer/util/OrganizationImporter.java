@@ -20,17 +20,22 @@ import com.liferay.portal.kernel.service.OrganizationLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 
+import java.util.HashMap;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alec Sloan
  */
-@Component(service = OrganizationImporter.class)
-public class OrganizationImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class OrganizationImporter
+	implements SiteInitializerModelImporter<Void> {
 
-	public void importOrganizations(
-			JSONArray jsonArray, long scopeGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws PortalException {
 
 		User user = _userLocalService.getUser(userId);
@@ -44,6 +49,8 @@ public class OrganizationImporter {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_importOrganization(jsonArray.getJSONObject(i), 0, serviceContext);
 		}
+
+		return null;
 	}
 
 	private void _importOrganization(

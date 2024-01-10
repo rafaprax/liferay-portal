@@ -21,7 +21,6 @@ import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
 import com.liferay.commerce.initializer.util.DDMFormImporter;
 import com.liferay.commerce.initializer.util.DLImporter;
-import com.liferay.commerce.initializer.util.OrganizationImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
@@ -572,9 +571,9 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing organizations...");
 		}
 
-		_organizationImporter.importOrganizations(
+		_organizationImporter.importModels(
 			_getJSONArray("organizations.json"),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			serviceContext.getScopeGroupId(), null, serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Organizations successfully imported");
@@ -1188,8 +1187,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	@Reference
 	private Language _language;
 
-	@Reference
-	private OrganizationImporter _organizationImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.OrganizationImporter)"
+	)
+	private SiteInitializerModelImporter _organizationImporter;
 
 	@Reference
 	private PortletSettingsImporter _portletSettingsImporter;
