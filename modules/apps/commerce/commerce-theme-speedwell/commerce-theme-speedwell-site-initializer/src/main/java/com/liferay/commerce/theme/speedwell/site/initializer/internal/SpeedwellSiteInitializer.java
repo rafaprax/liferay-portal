@@ -15,7 +15,6 @@ import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
-import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
@@ -544,9 +543,9 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Discounts...");
 		}
 
-		_commerceDiscountsImporter.importCommerceDiscounts(
+		_commerceDiscountsImporter.importModels(
 			_getJSONArray("discounts.json"), serviceContext.getScopeGroupId(),
-			serviceContext.getUserId());
+			null, serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Discounts successfully imported");
@@ -1028,8 +1027,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private CommerceCurrencyLocalService _commerceCurrencyLocalService;
 
-	@Reference
-	private CommerceDiscountsImporter _commerceDiscountsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceDiscountsImporter)"
+	)
+	private SiteInitializerModelImporter _commerceDiscountsImporter;
 
 	@Reference(
 		target = "(component.name=com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter)"
