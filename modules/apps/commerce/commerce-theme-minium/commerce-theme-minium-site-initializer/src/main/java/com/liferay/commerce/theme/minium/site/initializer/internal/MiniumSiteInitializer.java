@@ -17,7 +17,6 @@ import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
-import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.media.CommerceCatalogDefaultImage;
@@ -836,15 +835,23 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing portlet settings...");
 		}
 
-		Company company = _companyLocalService.getCompany(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
+		_portletSettingsImporter.importModels(
 			_getJSONArray("portlet-settings.json"),
-			_siteInitializerDependencyResolver.getDisplayTemplatesClassLoader(),
-			_siteInitializerDependencyResolver.
-				getDisplayTemplatesDependencyPath(),
-			serviceContext.getScopeGroupId(), company.getGroupId(),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_companyLocalService.getCompany(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader",
+				_siteInitializerDependencyResolver.
+					getDisplayTemplatesClassLoader()
+			).put(
+				"displayTemplateDependenciesPath",
+				_siteInitializerDependencyResolver.
+					getDisplayTemplatesDependencyPath()
+			).build(),
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -901,15 +908,23 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	private void _importThemePortletSettings(ServiceContext serviceContext)
 		throws Exception {
 
-		Company company = _companyLocalService.getCompany(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
+		_portletSettingsImporter.importModels(
 			_getJSONArray("theme-portlet-settings.json"),
-			_siteInitializerDependencyResolver.getDisplayTemplatesClassLoader(),
-			_siteInitializerDependencyResolver.
-				getDisplayTemplatesDependencyPath(),
-			serviceContext.getScopeGroupId(), company.getGroupId(),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_companyLocalService.getCompany(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader",
+				_siteInitializerDependencyResolver.
+					getDisplayTemplatesClassLoader()
+			).put(
+				"displayTemplateDependenciesPath",
+				_siteInitializerDependencyResolver.
+					getDisplayTemplatesDependencyPath()
+			).build(),
 			serviceContext.getUserId());
 	}
 
@@ -1212,8 +1227,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	)
 	private SiteInitializerModelImporter _organizationImporter;
 
-	@Reference
-	private PortletSettingsImporter _portletSettingsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.PortletSettingsImporter)"
+	)
+	private SiteInitializerModelImporter _portletSettingsImporter;
 
 	@Reference
 	private ResourcePermissionLocalService _resourcePermissionLocalService;

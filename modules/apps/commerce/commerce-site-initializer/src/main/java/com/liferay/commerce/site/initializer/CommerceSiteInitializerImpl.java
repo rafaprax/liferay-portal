@@ -10,7 +10,6 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.model.CommerceOrder;
@@ -178,13 +177,20 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			return;
 		}
 
-		Group group = _groupLocalService.getCompanyGroup(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
-			_jsonFactory.createJSONArray(json), classLoader,
-			"/site-initializer/portlet-settings/",
-			serviceContext.getScopeGroupId(), group.getGroupId(),
+		_portletSettingsImporter.importModels(
+			_jsonFactory.createJSONArray(json),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_groupLocalService.getCompanyGroup(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader", classLoader
+			).put(
+				"displayTemplateDependenciesPath",
+				"/site-initializer/portlet-settings/"
+			).build(),
 			serviceContext.getUserId());
 	}
 
@@ -1083,8 +1089,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private OrderTypeResource.Factory _orderTypeResourceFactory;
 
-	@Reference
-	private PortletSettingsImporter _portletSettingsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.PortletSettingsImporter)"
+	)
+	private SiteInitializerModelImporter _portletSettingsImporter;
 
 	@Reference
 	private ProductOptionResource.Factory _productOptionResourceFactory;

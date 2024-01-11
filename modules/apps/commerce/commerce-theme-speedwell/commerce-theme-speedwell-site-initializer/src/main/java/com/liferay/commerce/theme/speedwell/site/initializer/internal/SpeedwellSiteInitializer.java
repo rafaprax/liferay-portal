@@ -18,7 +18,6 @@ import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
 import com.liferay.commerce.initializer.util.JournalArticleImporter;
-import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.media.CommerceCatalogDefaultImage;
@@ -789,16 +788,22 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing portlet settings...");
 		}
 
-		JSONArray jsonArray = _getJSONArray("portlet-settings.json");
-
-		Company company = _companyLocalService.getCompany(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
-			jsonArray,
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader(),
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesDependencyPath(),
-			serviceContext.getScopeGroupId(), company.getGroupId(),
+		_portletSettingsImporter.importModels(
+			_getJSONArray("portlet-settings.json"),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_companyLocalService.getCompany(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader()
+			).put(
+				"displayTemplateDependenciesPath",
+				SpeedwellDependencyResolverUtil.
+					getDisplayTemplatesDependencyPath()
+			).build(),
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -855,16 +860,22 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	private void _importThemePortletSettings(ServiceContext serviceContext)
 		throws Exception {
 
-		JSONArray jsonArray = _getJSONArray("theme-portlet-settings.json");
-
-		Company company = _companyLocalService.getCompany(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
-			jsonArray,
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader(),
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesDependencyPath(),
-			serviceContext.getScopeGroupId(), company.getGroupId(),
+		_portletSettingsImporter.importModels(
+			_getJSONArray("theme-portlet-settings.json"),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_companyLocalService.getCompany(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader()
+			).put(
+				"displayTemplateDependenciesPath",
+				SpeedwellDependencyResolverUtil.
+					getDisplayTemplatesDependencyPath()
+			).build(),
 			serviceContext.getUserId());
 	}
 
@@ -1149,8 +1160,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	)
 	private SiteInitializerModelImporter _organizationImporter;
 
-	@Reference
-	private PortletSettingsImporter _portletSettingsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.PortletSettingsImporter)"
+	)
+	private SiteInitializerModelImporter _portletSettingsImporter;
 
 	@Reference
 	private ResourcePermissionLocalService _resourcePermissionLocalService;

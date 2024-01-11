@@ -41,6 +41,7 @@ import com.liferay.portlet.display.template.PortletDisplayTemplate;
 import java.io.File;
 import java.io.InputStream;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,13 +53,14 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = PortletSettingsImporter.class)
-public class PortletSettingsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class PortletSettingsImporter
+	implements SiteInitializerModelImporter<Void> {
 
-	public void importPortletSettings(
-			JSONArray jsonArray, ClassLoader classLoader,
-			String displayTemplateDependenciesPath, long scopeGroupId,
-			long assetVocabularyGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
@@ -87,18 +89,26 @@ public class PortletSettingsImporter {
 						"layoutFriendlyURL", layoutFriendlyURLJSONArray.get(j));
 
 					_importPortletSettings(
-						jsonObject, portletName, classLoader,
-						displayTemplateDependenciesPath, assetVocabularyGroupId,
+						jsonObject, portletName,
+						(ClassLoader)parameterMap.get("classLoader"),
+						parameterMap.get(
+							"displayTemplateDependenciesPath"
+						).toString(),
+						(Long)parameterMap.get("assetVocabularyGroupId"),
 						serviceContext);
 				}
 			}
 			else {
 				_importPortletSettings(
-					jsonObject, portletName, classLoader,
-					displayTemplateDependenciesPath, assetVocabularyGroupId,
+					jsonObject, portletName,
+					(ClassLoader)parameterMap.get("classLoader"),
+					(String)parameterMap.get("displayTemplateDependenciesPath"),
+					(Long)parameterMap.get("assetVocabularyGroupId"),
 					serviceContext);
 			}
 		}
+
+		return null;
 	}
 
 	private String _importDisplayTemplate(
