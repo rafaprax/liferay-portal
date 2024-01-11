@@ -50,6 +50,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
@@ -58,12 +59,14 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alec Sloan
  */
-@Component(service = CommerceAccountsImporter.class)
-public class CommerceAccountsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CommerceAccountsImporter
+	implements SiteInitializerModelImporter<Void> {
 
-	public void importCommerceAccounts(
-			JSONArray jsonArray, ClassLoader classLoader,
-			String dependenciesPath, long scopeGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
@@ -76,9 +79,15 @@ public class CommerceAccountsImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_importCommerceAccount(
-				jsonArray.getJSONObject(i), classLoader, dependenciesPath,
+				jsonArray.getJSONObject(i),
+				(ClassLoader)parameterMap.get("classLoader"),
+				parameterMap.get(
+					"dependenciesPath"
+				).toString(),
 				serviceContext);
 		}
+
+		return null;
 	}
 
 	protected Country getCountry(String twoLetterISOCode)

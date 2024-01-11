@@ -11,7 +11,6 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
-import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
@@ -533,11 +532,16 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Accounts...");
 		}
 
-		_commerceAccountsImporter.importCommerceAccounts(
-			_getJSONArray("accounts.json"),
-			_siteInitializerDependencyResolver.getImageClassLoader(),
-			_siteInitializerDependencyResolver.getDependenciesPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_commerceAccountsImporter.importModels(
+			_getJSONArray("accounts.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				_siteInitializerDependencyResolver.getImageClassLoader()
+			).put(
+				"dependenciesPath",
+				_siteInitializerDependencyResolver.getDependenciesPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Accounts successfully imported");
@@ -1127,8 +1131,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	@Reference
 	private CommerceAccountRoleHelper _commerceAccountRoleHelper;
 
-	@Reference
-	private CommerceAccountsImporter _commerceAccountsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceAccountsImporter)"
+	)
+	private SiteInitializerModelImporter _commerceAccountsImporter;
 
 	@Reference
 	private CommerceCatalogDefaultImage _commerceCatalogDefaultImage;
