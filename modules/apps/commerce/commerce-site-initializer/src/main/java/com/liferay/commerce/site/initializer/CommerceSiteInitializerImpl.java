@@ -9,7 +9,6 @@ import com.liferay.account.settings.AccountEntryGroupSettings;
 import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfiguration;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
-import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.model.CommerceOrder;
@@ -425,19 +424,32 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			return;
 		}
 
-		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-
 		List<CPDefinition> cpDefinitions =
-			_cpDefinitionsImporter.importCPDefinitions(
-				_jsonFactory.createJSONArray(json), assetVocabularyName,
-				commerceCatalogGroup.getGroupId(), channel.getId(),
-				ListUtil.toLongArray(
-					commerceInventoryWarehouses,
-					CommerceInventoryWarehouse.
-						COMMERCE_INVENTORY_WAREHOUSE_ID_ACCESSOR),
-				bundleWiring.getClassLoader(),
-				StringUtil.replace(resourcePath, ".json", "/"),
-				serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			(List<CPDefinition>)_cpDefinitionsImporter.importModels(
+				_jsonFactory.createJSONArray(json),
+				serviceContext.getScopeGroupId(),
+				HashMapBuilder.<String, Object>put(
+					"assetVocabularyName", assetVocabularyName
+				).put(
+					"catalogGroupId", commerceCatalogGroup.getGroupId()
+				).put(
+					"classLoader",
+					bundle.adapt(
+						BundleWiring.class
+					).getClassLoader()
+				).put(
+					"commerceChannelId", channel.getId()
+				).put(
+					"commerceInventoryWarehouseIds",
+					ListUtil.toLongArray(
+						commerceInventoryWarehouses,
+						CommerceInventoryWarehouse.
+							COMMERCE_INVENTORY_WAREHOUSE_ID_ACCESSOR)
+				).put(
+					"imageDependenciesPath",
+					StringUtil.replace(resourcePath, ".json", "/")
+				).build(),
+				serviceContext.getUserId());
 
 		if (ListUtil.isEmpty(cpDefinitions)) {
 			return;
@@ -1050,8 +1062,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private CPDefinitionLocalService _cpDefinitionLocalService;
 
-	@Reference
-	private CPDefinitionsImporter _cpDefinitionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPDefinitionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpDefinitionsImporter;
 
 	@Reference
 	private CPInstanceLocalService _cpInstanceLocalService;

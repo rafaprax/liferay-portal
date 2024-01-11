@@ -84,6 +84,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,8 +96,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andrea Di Giorgi
  * @author Alessio Antonio Rendina
  */
-@Component(service = CPDefinitionsImporter.class)
-public class CPDefinitionsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CPDefinitionsImporter
+	implements SiteInitializerModelImporter<List<CPDefinition>> {
 
 	public void importCPDefinitions(
 			File cpDefinitionsFile, String assetVocabularyName,
@@ -145,11 +147,9 @@ public class CPDefinitionsImporter {
 		jsonFactoryParser.close();
 	}
 
-	public List<CPDefinition> importCPDefinitions(
-			JSONArray jsonArray, String assetVocabularyName,
-			long catalogGroupId, long commerceChannelId,
-			long[] commerceInventoryWarehouseIds, ClassLoader classLoader,
-			String imageDependenciesPath, long scopeGroupId, long userId)
+	public List<CPDefinition> importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		ServiceContext serviceContext = getServiceContext(scopeGroupId, userId);
@@ -158,9 +158,18 @@ public class CPDefinitionsImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			CPDefinition cpDefinition = _importCPDefinition(
-				jsonArray.getJSONObject(i), assetVocabularyName, catalogGroupId,
-				commerceChannelId, commerceInventoryWarehouseIds, classLoader,
-				imageDependenciesPath, serviceContext);
+				jsonArray.getJSONObject(i),
+				parameterMap.get(
+					"assetVocabularyName"
+				).toString(),
+				(Long)parameterMap.get("catalogGroupId"),
+				(Long)parameterMap.get("commerceChannelId"),
+				(long[])parameterMap.get("commerceInventoryWarehouseIds"),
+				(ClassLoader)parameterMap.get("classLoader"),
+				parameterMap.get(
+					"imageDependenciesPath"
+				).toString(),
+				serviceContext);
 
 			cpDefinitions.add(cpDefinition);
 		}

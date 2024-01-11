@@ -11,7 +11,6 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
-import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
@@ -657,12 +656,24 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			CommerceInventoryWarehouse.
 				COMMERCE_INVENTORY_WAREHOUSE_ID_ACCESSOR);
 
-		return _cpDefinitionsImporter.importCPDefinitions(
-			jsonArray, group.getName(serviceContext.getLocale()),
-			catalogGroupId, commerceChannelId, commerceInventoryWarehouseIds,
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		return (List<CPDefinition>)_cpDefinitionsImporter.importModels(
+			jsonArray, serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyName", group.getName(serviceContext.getLocale())
+			).put(
+				"catalogGroupId", catalogGroupId
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"commerceChannelId", commerceChannelId
+			).put(
+				"commerceInventoryWarehouseIds", commerceInventoryWarehouseIds
+			).put(
+				"imageDependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 	}
 
 	private void _importCPOptionCategories(
@@ -1104,8 +1115,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 
 	private Map<String, CPDefinition> _cpDefinitions;
 
-	@Reference
-	private CPDefinitionsImporter _cpDefinitionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPDefinitionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpDefinitionsImporter;
 
 	@Reference
 	private CPFileImporter _cpFileImporter;
