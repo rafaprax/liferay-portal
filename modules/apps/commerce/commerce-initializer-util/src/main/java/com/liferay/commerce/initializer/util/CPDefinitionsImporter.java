@@ -69,6 +69,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -376,10 +377,19 @@ public class CPDefinitionsImporter {
 		JSONArray categoriesJSONArray = jsonObject.getJSONArray("categories");
 
 		if (categoriesJSONArray != null) {
-			assetCategories = _assetCategoriesImporter.importAssetCategories(
-				categoriesJSONArray, assetVocabularyName, classLoader,
-				imageDependenciesPath, company.getGroupId(),
-				serviceContext.getUserId());
+			assetCategories =
+				(List<AssetCategory>)_assetCategoriesImporter.importModels(
+					categoriesJSONArray, company.getGroupId(),
+					HashMapBuilder.<String, Object>put(
+						"addGuestPermissions", false
+					).put(
+						"assetVocabularyName", assetVocabularyName
+					).put(
+						"classLoader", classLoader
+					).put(
+						"imageDependenciesPath", imageDependenciesPath
+					).build(),
+					serviceContext.getUserId());
 		}
 
 		// Tags
@@ -1000,8 +1010,10 @@ public class CPDefinitionsImporter {
 	@Reference
 	private AccountGroupRelLocalService _accountGroupRelLocalService;
 
-	@Reference
-	private AssetCategoriesImporter _assetCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.AssetCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _assetCategoriesImporter;
 
 	@Reference
 	private AssetTagLocalService _assetTagLocalService;

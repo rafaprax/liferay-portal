@@ -11,7 +11,6 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
-import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
 import com.liferay.commerce.initializer.util.BlogsImporter;
 import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
@@ -462,17 +461,27 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Asset Categories...");
 		}
 
-		Group group = serviceContext.getScopeGroup();
-
 		Company company = _companyLocalService.getCompany(
 			serviceContext.getCompanyId());
 
-		_assetCategoriesImporter.importAssetCategories(
-			_getJSONArray("categories.json"),
-			group.getName(serviceContext.getLocale()),
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			company.getGroupId(), serviceContext.getUserId(), true);
+		_assetCategoriesImporter.importModels(
+			_getJSONArray("categories.json"), company.getGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"addGuestPermissions", true
+			).put(
+				"assetVocabularyName",
+				serviceContext.getScopeGroup(
+				).getName(
+					serviceContext.getLocale()
+				)
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"imageDependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Asset Categories successfully imported");
@@ -1008,8 +1017,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private AccountEntryGroupSettings _accountEntryGroupSettings;
 
-	@Reference
-	private AssetCategoriesImporter _assetCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.AssetCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _assetCategoriesImporter;
 
 	@Reference
 	private BlogsImporter _blogsImporter;
