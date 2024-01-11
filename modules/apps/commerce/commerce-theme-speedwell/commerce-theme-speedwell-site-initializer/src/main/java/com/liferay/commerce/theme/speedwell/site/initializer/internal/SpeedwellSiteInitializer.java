@@ -14,7 +14,6 @@ import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
-import com.liferay.commerce.initializer.util.CommerceUsersImporter;
 import com.liferay.commerce.initializer.util.JournalArticleImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
@@ -630,11 +629,16 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Users...");
 		}
 
-		_commerceUsersImporter.importCommerceUsers(
-			_getJSONArray("users.json"),
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_commerceUsersImporter.importModels(
+			_getJSONArray("users.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"dependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Users successfully imported");
@@ -1098,8 +1102,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	private CommerceShippingMethodLocalService
 		_commerceShippingMethodLocalService;
 
-	@Reference
-	private CommerceUsersImporter _commerceUsersImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceUsersImporter)"
+	)
+	private SiteInitializerModelImporter _commerceUsersImporter;
 
 	@Reference
 	private CompanyLocalService _companyLocalService;

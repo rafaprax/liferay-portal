@@ -45,7 +45,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.URI;
@@ -53,6 +52,7 @@ import java.net.URLEncoder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -63,8 +63,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alec Sloan
  */
-@Component(service = CommerceUsersImporter.class)
-public class CommerceUsersImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CommerceUsersImporter
+	implements SiteInitializerModelImporter<Void> {
 
 	public void importCommerceUsers(
 			File commerceUsersFile, ClassLoader classLoader,
@@ -109,10 +110,11 @@ public class CommerceUsersImporter {
 		jsonFactoryParser.close();
 	}
 
-	public void importCommerceUsers(
-			JSONArray jsonArray, ClassLoader classLoader,
-			String dependenciesPath, long scopeGroupId, long userId)
-		throws IOException, PortalException {
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
+		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
 
@@ -124,9 +126,15 @@ public class CommerceUsersImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_importCommerceUser(
-				jsonArray.getJSONObject(i), classLoader, dependenciesPath,
+				jsonArray.getJSONObject(i),
+				(ClassLoader)parameterMap.get("classLoader"),
+				parameterMap.get(
+					"dependenciesPath"
+				).toString(),
 				serviceContext);
 		}
+
+		return null;
 	}
 
 	protected User addOrUpdateUser(
@@ -212,7 +220,7 @@ public class CommerceUsersImporter {
 	private void _importCommerceUser(
 			JSONObject jsonObject, ClassLoader classLoader,
 			String dependenciesPath, ServiceContext serviceContext)
-		throws IOException, PortalException {
+		throws Exception {
 
 		String password = jsonObject.getString("password");
 
