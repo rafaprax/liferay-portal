@@ -15,7 +15,6 @@ import com.liferay.commerce.price.list.model.CommercePriceList;
 import com.liferay.commerce.price.list.model.CommercePriceListCommerceAccountGroupRel;
 import com.liferay.commerce.price.list.service.CommercePriceListCommerceAccountGroupRelLocalService;
 import com.liferay.commerce.price.list.service.CommercePriceListLocalService;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -28,6 +27,7 @@ import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -35,13 +35,15 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alec Sloan
  */
-@Component(service = CommercePriceListsImporter.class)
-public class CommercePriceListsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CommercePriceListsImporter
+	implements SiteInitializerModelImporter<Void> {
 
-	public void importCommercePriceLists(
-			long catalogGroupId, JSONArray jsonArray, long scopeGroupId,
-			long userId)
-		throws PortalException {
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
+		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
 
@@ -53,14 +55,17 @@ public class CommercePriceListsImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_importCommercePriceList(
-				catalogGroupId, jsonArray.getJSONObject(i), serviceContext);
+				(Long)parameterMap.get("catalogGroupId"),
+				jsonArray.getJSONObject(i), serviceContext);
 		}
+
+		return null;
 	}
 
 	private void _importCommercePriceList(
 			long catalogGroupId, JSONObject jsonObject,
 			ServiceContext serviceContext)
-		throws PortalException {
+		throws Exception {
 
 		String currencyCode = jsonObject.getString("currencyCode");
 

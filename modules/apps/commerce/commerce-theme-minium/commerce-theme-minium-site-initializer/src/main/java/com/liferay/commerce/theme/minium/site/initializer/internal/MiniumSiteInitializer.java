@@ -12,7 +12,6 @@ import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
-import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.media.CommerceCatalogDefaultImage;
@@ -628,9 +627,12 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing commerce price lists...");
 		}
 
-		_commercePriceListsImporter.importCommercePriceLists(
-			catalogGroupId, _getJSONArray("price-lists.json"),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_commercePriceListsImporter.importModels(
+			_getJSONArray("price-lists.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"catalogGroupId", catalogGroupId
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce price lists successfully imported");
@@ -1161,8 +1163,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	@Reference
 	private CommercePriceEntriesImporter _commercePriceEntriesImporter;
 
-	@Reference
-	private CommercePriceListsImporter _commercePriceListsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommercePriceListsImporter)"
+	)
+	private SiteInitializerModelImporter _commercePriceListsImporter;
 
 	@Reference
 	private CommerceShippingEngineRegistry _commerceShippingEngineRegistry;
