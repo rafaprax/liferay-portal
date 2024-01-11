@@ -18,7 +18,6 @@ import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
-import com.liferay.commerce.initializer.util.DLImporter;
 import com.liferay.commerce.initializer.util.JournalArticleImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
@@ -80,6 +79,7 @@ import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
 import com.liferay.portal.kernel.settings.ModifiableSettings;
 import com.liferay.portal.kernel.settings.Settings;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
@@ -721,11 +721,17 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing DL File Entries...");
 		}
 
-		_dlImporter.importDocuments(
+		_dlImporter.importModels(
 			_getJSONArray("dl-file-entries.json"),
-			SpeedwellDependencyResolverUtil.getDocumentsClassLoader(),
-			SpeedwellDependencyResolverUtil.getDocumentsDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getDocumentsClassLoader()
+			).put(
+				"documentsDependenciesPath",
+				SpeedwellDependencyResolverUtil.getDocumentsDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("DL File Entries successfully imported");
@@ -1102,8 +1108,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private DLFileEntryLocalService _dlFileEntryLocalService;
 
-	@Reference
-	private DLImporter _dlImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.DLImporter)"
+	)
+	private SiteInitializerModelImporter _dlImporter;
 
 	@Reference
 	private com.liferay.portal.kernel.util.File _file;

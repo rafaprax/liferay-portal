@@ -18,7 +18,6 @@ import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
 import com.liferay.commerce.initializer.util.CommerceUsersImporter;
-import com.liferay.commerce.initializer.util.DLImporter;
 import com.liferay.commerce.initializer.util.PortletSettingsImporter;
 import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
@@ -769,11 +768,17 @@ public class MiniumSiteInitializer implements SiteInitializer {
 			_log.info("Importing DL File Entries...");
 		}
 
-		_dlImporter.importDocuments(
+		_dlImporter.importModels(
 			_getJSONArray("dl-file-entries.json"),
-			_siteInitializerDependencyResolver.getDocumentsClassLoader(),
-			_siteInitializerDependencyResolver.getDocumentsDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				_siteInitializerDependencyResolver.getDocumentsClassLoader()
+			).put(
+				"documentsDependenciesPath",
+				_siteInitializerDependencyResolver.getDocumentsDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("DL File Entries successfully imported");
@@ -1169,8 +1174,10 @@ public class MiniumSiteInitializer implements SiteInitializer {
 	private SiteInitializerDependencyResolver
 		_defaultSiteInitializerDependencyResolver;
 
-	@Reference
-	private DLImporter _dlImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.DLImporter)"
+	)
+	private SiteInitializerModelImporter _dlImporter;
 
 	@Reference
 	private com.liferay.portal.kernel.util.File _file;

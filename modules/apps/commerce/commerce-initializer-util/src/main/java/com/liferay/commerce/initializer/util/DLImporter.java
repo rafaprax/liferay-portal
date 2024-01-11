@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.util.Validator;
 import java.io.File;
 import java.io.InputStream;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
@@ -40,12 +41,13 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Steven Smith
  */
-@Component(service = DLImporter.class)
-public class DLImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class DLImporter implements SiteInitializerModelImporter<Void> {
 
-	public void importDocuments(
-			JSONArray jsonArray, ClassLoader classLoader,
-			String documentsDependenciesPath, long scopeGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.fetchUser(userId);
@@ -58,10 +60,13 @@ public class DLImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_addDLFileEntries(
-				jsonArray.getJSONObject(i), classLoader,
-				documentsDependenciesPath, userId, scopeGroupId,
-				serviceContext);
+				jsonArray.getJSONObject(i),
+				(ClassLoader)parameterMap.get("classLoader"),
+				(String)parameterMap.get("documentsDependenciesPath"), userId,
+				scopeGroupId, serviceContext);
 		}
+
+		return null;
 	}
 
 	protected void updatePermissions(
