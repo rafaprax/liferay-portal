@@ -6,7 +6,6 @@
 package com.liferay.commerce.address.web.internal.display.context;
 
 import com.liferay.commerce.address.web.internal.display.context.helper.CommerceCountryRequestHelper;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.model.CommerceChannelRel;
 import com.liferay.commerce.product.service.CommerceChannelRelService;
@@ -39,7 +38,6 @@ public class CommerceCountriesDisplayContext
 	extends BaseCommerceCountriesDisplayContext<Country> {
 
 	public CommerceCountriesDisplayContext(
-		ActionHelper actionHelper,
 		CommerceChannelRelService commerceChannelRelService,
 		CommerceChannelService commerceChannelService,
 		CommerceRegionsStarterRegistry commerceRegionsStarterRegistry,
@@ -48,7 +46,7 @@ public class CommerceCountriesDisplayContext
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
 		super(
-			actionHelper, portletResourcePermission, renderRequest,
+			countryService, portletResourcePermission, renderRequest,
 			renderResponse);
 
 		_commerceChannelRelService = commerceChannelRelService;
@@ -60,9 +58,7 @@ public class CommerceCountriesDisplayContext
 			portal.getHttpServletRequest(renderRequest));
 	}
 
-	public long[] getCommerceChannelRelCommerceChannelIds()
-		throws PortalException {
-
+	public long[] getCommerceChannelRelCommerceChannelIds() throws Exception {
 		return TransformUtil.transformToLongArray(
 			_commerceChannelRelService.getCommerceChannelRels(
 				Country.class.getName(), getCountryId(), null,
@@ -75,9 +71,7 @@ public class CommerceCountriesDisplayContext
 			_commerceCountryRequestHelper.getCompanyId());
 	}
 
-	public CommerceRegionsStarter getCommerceRegionsStarter()
-		throws PortalException {
-
+	public CommerceRegionsStarter getCommerceRegionsStarter() throws Exception {
 		Country country = getCountry();
 
 		if (country == null) {
@@ -89,9 +83,7 @@ public class CommerceCountriesDisplayContext
 	}
 
 	@Override
-	public SearchContainer<Country> getSearchContainer()
-		throws PortalException {
-
+	public SearchContainer<Country> getSearchContainer() throws Exception {
 		if (searchContainer != null) {
 			return searchContainer;
 		}

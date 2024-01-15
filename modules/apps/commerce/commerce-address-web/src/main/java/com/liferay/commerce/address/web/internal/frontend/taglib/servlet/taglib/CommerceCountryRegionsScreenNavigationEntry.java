@@ -6,13 +6,13 @@
 package com.liferay.commerce.address.web.internal.frontend.taglib.servlet.taglib;
 
 import com.liferay.commerce.address.web.internal.display.context.CommerceRegionsDisplayContext;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationEntry;
 import com.liferay.frontend.taglib.servlet.taglib.util.JSPRenderer;
 import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -69,7 +69,7 @@ public class CommerceCountryRegionsScreenNavigationEntry
 
 		CommerceRegionsDisplayContext commerceRegionsDisplayContext =
 			new CommerceRegionsDisplayContext(
-				_actionHelper, _portletResourcePermission, _regionService,
+				_countryService, _portletResourcePermission, _regionService,
 				renderRequest, renderResponse);
 
 		renderRequest.setAttribute(
@@ -81,7 +81,7 @@ public class CommerceCountryRegionsScreenNavigationEntry
 	}
 
 	@Reference
-	private ActionHelper _actionHelper;
+	private CountryService _countryService;
 
 	@Reference
 	private JSPRenderer _jspRenderer;

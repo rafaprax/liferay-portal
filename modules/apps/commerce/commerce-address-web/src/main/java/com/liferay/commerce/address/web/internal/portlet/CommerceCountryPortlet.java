@@ -6,7 +6,6 @@
 package com.liferay.commerce.address.web.internal.portlet;
 
 import com.liferay.commerce.address.web.internal.display.context.CommerceCountriesDisplayContext;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.constants.CommercePortletKeys;
 import com.liferay.commerce.product.service.CommerceChannelRelService;
@@ -63,19 +62,15 @@ public class CommerceCountryPortlet extends MVCPortlet {
 
 		CommerceCountriesDisplayContext commerceCountriesDisplayContext =
 			new CommerceCountriesDisplayContext(
-				_actionHelper, _commerceChannelRelService,
-				_commerceChannelService, _commerceRegionsStarterRegistry,
-				_countryService, _portal, _portletResourcePermission,
-				renderRequest, renderResponse);
+				_commerceChannelRelService, _commerceChannelService,
+				_commerceRegionsStarterRegistry, _countryService, _portal,
+				_portletResourcePermission, renderRequest, renderResponse);
 
 		renderRequest.setAttribute(
 			WebKeys.PORTLET_DISPLAY_CONTEXT, commerceCountriesDisplayContext);
 
 		super.render(renderRequest, renderResponse);
 	}
-
-	@Reference
-	private ActionHelper _actionHelper;
 
 	@Reference
 	private CommerceChannelRelService _commerceChannelRelService;

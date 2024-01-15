@@ -6,7 +6,6 @@
 package com.liferay.commerce.address.web.internal.portlet.action;
 
 import com.liferay.commerce.address.web.internal.display.context.CommerceRegionsDisplayContext;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.constants.CommercePortletKeys;
 import com.liferay.commerce.exception.NoSuchRegionException;
@@ -14,6 +13,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.PortletDisplay;
@@ -50,7 +50,7 @@ public class EditCommerceRegionMVCRenderCommand implements MVCRenderCommand {
 		try {
 			CommerceRegionsDisplayContext commerceRegionsDisplayContext =
 				new CommerceRegionsDisplayContext(
-					_actionHelper, _portletResourcePermission, _regionService,
+					_countryService, _portletResourcePermission, _regionService,
 					renderRequest, renderResponse);
 
 			renderRequest.setAttribute(
@@ -93,7 +93,7 @@ public class EditCommerceRegionMVCRenderCommand implements MVCRenderCommand {
 	}
 
 	@Reference
-	private ActionHelper _actionHelper;
+	private CountryService _countryService;
 
 	@Reference
 	private Portal _portal;

@@ -6,13 +6,12 @@
 package com.liferay.commerce.address.web.internal.display.context;
 
 import com.liferay.commerce.address.web.internal.constants.CommerceCountryScreenNavigationConstants;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.util.CommerceUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Region;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.RegionService;
 import com.liferay.portal.kernel.util.ParamUtil;
 
@@ -27,20 +26,21 @@ public class CommerceRegionsDisplayContext
 	extends BaseCommerceCountriesDisplayContext<Region> {
 
 	public CommerceRegionsDisplayContext(
-		ActionHelper actionHelper,
+		CountryService countryService,
 		PortletResourcePermission portletResourcePermission,
 		RegionService regionService, RenderRequest renderRequest,
 		RenderResponse renderResponse) {
 
 		super(
-			actionHelper, portletResourcePermission, renderRequest,
+			countryService, portletResourcePermission, renderRequest,
 			renderResponse);
 
+		_countryService = countryService;
 		_regionService = regionService;
 	}
 
 	@Override
-	public PortletURL getPortletURL() throws PortalException {
+	public PortletURL getPortletURL() throws Exception {
 		return PortletURLBuilder.create(
 			super.getPortletURL()
 		).setMVCRenderCommandName(
@@ -61,17 +61,21 @@ public class CommerceRegionsDisplayContext
 		).buildPortletURL();
 	}
 
-	public Region getRegion() throws PortalException {
+	public Region getRegion() throws Exception {
 		if (_region != null) {
 			return _region;
 		}
 
-		_region = actionHelper.getRegion(renderRequest);
+		long regionId = ParamUtil.getLong(renderRequest, "regionId");
+
+		if (regionId > 0) {
+			_region = _regionService.fetchRegion(regionId);
+		}
 
 		return _region;
 	}
 
-	public long getRegionId() throws PortalException {
+	public long getRegionId() throws Exception {
 		Region region = getRegion();
 
 		if (region == null) {
@@ -90,7 +94,7 @@ public class CommerceRegionsDisplayContext
 	}
 
 	@Override
-	public SearchContainer<Region> getSearchContainer() throws PortalException {
+	public SearchContainer<Region> getSearchContainer() throws Exception {
 		if (searchContainer != null) {
 			return searchContainer;
 		}
@@ -144,6 +148,7 @@ public class CommerceRegionsDisplayContext
 		return searchContainer;
 	}
 
+	private final CountryService _countryService;
 	private Region _region;
 	private final RegionService _regionService;
 

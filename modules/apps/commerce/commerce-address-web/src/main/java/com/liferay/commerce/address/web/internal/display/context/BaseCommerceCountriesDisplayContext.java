@@ -6,13 +6,13 @@
 package com.liferay.commerce.address.web.internal.display.context;
 
 import com.liferay.commerce.address.web.internal.constants.CommerceCountryScreenNavigationConstants;
-import com.liferay.commerce.address.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CountryService;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -29,11 +29,11 @@ import javax.portlet.RenderResponse;
 public abstract class BaseCommerceCountriesDisplayContext<T> {
 
 	public BaseCommerceCountriesDisplayContext(
-		ActionHelper actionHelper,
+		CountryService countryService,
 		PortletResourcePermission portletResourcePermission,
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		this.actionHelper = actionHelper;
+		this.countryService = countryService;
 		this.renderRequest = renderRequest;
 		this.renderResponse = renderResponse;
 
@@ -43,17 +43,21 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 		_defaultOrderByType = "asc";
 	}
 
-	public Country getCountry() throws PortalException {
+	public Country getCountry() throws Exception {
 		if (_country != null) {
 			return _country;
 		}
 
-		_country = actionHelper.getCountry(renderRequest);
+		long countryId = ParamUtil.getLong(renderRequest, "countryId");
+
+		if (countryId > 0) {
+			_country = countryService.fetchCountry(countryId);
+		}
 
 		return _country;
 	}
 
-	public long getCountryId() throws PortalException {
+	public long getCountryId() throws Exception {
 		Country country = getCountry();
 
 		if (country == null) {
@@ -75,7 +79,7 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 			_defaultOrderByType);
 	}
 
-	public PortletURL getPortletURL() throws PortalException {
+	public PortletURL getPortletURL() throws Exception {
 		PortletURL portletURL = renderResponse.createRenderURL();
 
 		if (getCountryId() > 0) {
@@ -110,7 +114,7 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 	}
 
 	public abstract SearchContainer<T> getSearchContainer()
-		throws PortalException;
+		throws Exception, PortalException;
 
 	public String getSelectedScreenNavigationCategoryKey() {
 		return ParamUtil.getString(
@@ -138,7 +142,7 @@ public abstract class BaseCommerceCountriesDisplayContext<T> {
 		return ParamUtil.getString(renderRequest, "navigation", "all");
 	}
 
-	protected final ActionHelper actionHelper;
+	protected final CountryService countryService;
 	protected final RenderRequest renderRequest;
 	protected final RenderResponse renderResponse;
 	protected SearchContainer<T> searchContainer;
