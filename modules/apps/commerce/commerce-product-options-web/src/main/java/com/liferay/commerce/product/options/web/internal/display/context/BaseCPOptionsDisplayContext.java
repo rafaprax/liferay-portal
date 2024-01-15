@@ -6,7 +6,6 @@
 package com.liferay.commerce.product.options.web.internal.display.context;
 
 import com.liferay.commerce.product.display.context.helper.CPRequestHelper;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -33,11 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class BaseCPOptionsDisplayContext<T> {
 
 	public BaseCPOptionsDisplayContext(
-		ActionHelper actionHelper, HttpServletRequest httpServletRequest,
-		String portalPreferenceNamespace,
+		HttpServletRequest httpServletRequest, String portalPreferenceNamespace,
 		PortletResourcePermission portletResourcePermission) {
 
-		this.actionHelper = actionHelper;
 		this.httpServletRequest = httpServletRequest;
 		_portalPreferenceNamespace = portalPreferenceNamespace;
 		_portletResourcePermission = portletResourcePermission;
@@ -176,7 +173,6 @@ public abstract class BaseCPOptionsDisplayContext<T> {
 		_defaultOrderByCol = defaultOrderByCol;
 	}
 
-	protected final ActionHelper actionHelper;
 	protected final CPRequestHelper cpRequestHelper;
 	protected final HttpServletRequest httpServletRequest;
 	protected final LiferayPortletRequest liferayPortletRequest;

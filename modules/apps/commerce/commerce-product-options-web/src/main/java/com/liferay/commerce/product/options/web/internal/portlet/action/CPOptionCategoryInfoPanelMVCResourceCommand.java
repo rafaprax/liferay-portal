@@ -7,9 +7,14 @@ package com.liferay.commerce.product.options.web.internal.portlet.action;
 
 import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.constants.CPWebKeys;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
+import com.liferay.commerce.product.model.CPOptionCategory;
+import com.liferay.commerce.product.service.CPOptionCategoryService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.util.ParamUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -37,14 +42,32 @@ public class CPOptionCategoryInfoPanelMVCResourceCommand
 
 		resourceRequest.setAttribute(
 			CPWebKeys.CP_OPTION_CATEGORIES,
-			_actionHelper.getCPOptionCategories(resourceRequest));
+			_getCPOptionCategories(resourceRequest));
 
 		include(
 			resourceRequest, resourceResponse,
 			"/cp_option_category_info_panel.jsp");
 	}
 
+	private List<CPOptionCategory> _getCPOptionCategories(
+			ResourceRequest resourceRequest)
+		throws Exception {
+
+		List<CPOptionCategory> cpOptionCategories = new ArrayList<>();
+
+		long[] cpOptionCategoryIds = ParamUtil.getLongValues(
+			resourceRequest, "rowIds");
+
+		for (long cpOptionCategoryId : cpOptionCategoryIds) {
+			cpOptionCategories.add(
+				_cpOptionCategoryService.getCPOptionCategory(
+					cpOptionCategoryId));
+		}
+
+		return cpOptionCategories;
+	}
+
 	@Reference
-	private ActionHelper _actionHelper;
+	private CPOptionCategoryService _cpOptionCategoryService;
 
 }

@@ -6,7 +6,6 @@
 package com.liferay.commerce.product.options.web.internal.display.context;
 
 import com.liferay.commerce.product.model.CPOptionCategory;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.product.options.web.internal.util.CPOptionsPortletUtil;
 import com.liferay.commerce.product.service.CPOptionCategoryService;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -25,14 +24,14 @@ public class CPOptionCategoryDisplayContext
 	extends BaseCPOptionsDisplayContext<CPOptionCategory> {
 
 	public CPOptionCategoryDisplayContext(
-			ActionHelper actionHelper, HttpServletRequest httpServletRequest,
+			HttpServletRequest httpServletRequest,
 			CPOptionCategoryService cpOptionCategoryService,
 			PortletResourcePermission portletResourcePermission)
 		throws PortalException {
 
 		super(
-			actionHelper, httpServletRequest,
-			CPOptionCategory.class.getSimpleName(), portletResourcePermission);
+			httpServletRequest, CPOptionCategory.class.getSimpleName(),
+			portletResourcePermission);
 
 		_cpOptionCategoryService = cpOptionCategoryService;
 

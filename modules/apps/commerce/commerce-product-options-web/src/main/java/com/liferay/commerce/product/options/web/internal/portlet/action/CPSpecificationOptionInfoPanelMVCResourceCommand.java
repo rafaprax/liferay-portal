@@ -7,9 +7,14 @@ package com.liferay.commerce.product.options.web.internal.portlet.action;
 
 import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.constants.CPWebKeys;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
+import com.liferay.commerce.product.model.CPSpecificationOption;
+import com.liferay.commerce.product.service.CPSpecificationOptionService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.util.ParamUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -37,14 +42,32 @@ public class CPSpecificationOptionInfoPanelMVCResourceCommand
 
 		resourceRequest.setAttribute(
 			CPWebKeys.CP_SPECIFICATION_OPTIONS,
-			_actionHelper.getCPSpecificationOptions(resourceRequest));
+			_getCPSpecificationOptions(resourceRequest));
 
 		include(
 			resourceRequest, resourceResponse,
 			"/cp_specification_option_info_panel.jsp");
 	}
 
+	private List<CPSpecificationOption> _getCPSpecificationOptions(
+			ResourceRequest resourceRequest)
+		throws Exception {
+
+		List<CPSpecificationOption> cpSpecificationOptions = new ArrayList<>();
+
+		long[] cpSpecificationOptionIds = ParamUtil.getLongValues(
+			resourceRequest, "rowIds");
+
+		for (long cpSpecificationOptionId : cpSpecificationOptionIds) {
+			cpSpecificationOptions.add(
+				_cpSpecificationOptionService.getCPSpecificationOption(
+					cpSpecificationOptionId));
+		}
+
+		return cpSpecificationOptions;
+	}
+
 	@Reference
-	private ActionHelper _actionHelper;
+	private CPSpecificationOptionService _cpSpecificationOptionService;
 
 }

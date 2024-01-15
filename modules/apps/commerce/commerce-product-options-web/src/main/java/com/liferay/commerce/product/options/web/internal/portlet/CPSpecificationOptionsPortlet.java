@@ -8,7 +8,6 @@ package com.liferay.commerce.product.options.web.internal.portlet;
 import com.liferay.commerce.product.constants.CPConstants;
 import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.options.web.internal.display.context.CPSpecificationOptionDisplayContext;
-import com.liferay.commerce.product.options.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.product.service.CPOptionCategoryService;
 import com.liferay.commerce.product.service.CPSpecificationOptionService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -65,7 +64,6 @@ public class CPSpecificationOptionsPortlet extends MVCPortlet {
 			CPSpecificationOptionDisplayContext
 				cpSpecificationOptionDisplayContext =
 					new CPSpecificationOptionDisplayContext(
-						_actionHelper,
 						_portal.getHttpServletRequest(renderRequest),
 						_cpOptionCategoryService, _cpSpecificationOptionService,
 						_portletResourcePermission);
@@ -80,9 +78,6 @@ public class CPSpecificationOptionsPortlet extends MVCPortlet {
 
 		super.render(renderRequest, renderResponse);
 	}
-
-	@Reference
-	private ActionHelper _actionHelper;
 
 	@Reference
 	private CPOptionCategoryService _cpOptionCategoryService;
