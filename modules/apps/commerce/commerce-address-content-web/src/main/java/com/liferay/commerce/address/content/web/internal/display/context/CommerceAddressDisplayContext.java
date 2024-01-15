@@ -6,7 +6,7 @@
 package com.liferay.commerce.address.content.web.internal.display.context;
 
 import com.liferay.account.model.AccountEntry;
-import com.liferay.commerce.address.content.web.internal.portlet.action.helper.ActionHelper;
+import com.liferay.commerce.address.content.web.internal.portlet.action.helper.CommercerAddressUtil;
 import com.liferay.commerce.address.content.web.internal.portlet.configuration.CommerceAddressContentPortletInstanceConfiguration;
 import com.liferay.commerce.constants.CommerceWebKeys;
 import com.liferay.commerce.context.CommerceContext;
@@ -43,14 +43,12 @@ import javax.servlet.http.HttpServletRequest;
 public class CommerceAddressDisplayContext {
 
 	public CommerceAddressDisplayContext(
-			ActionHelper actionHelper,
 			CommerceAccountHelper commerceAccountHelper,
 			CommerceAddressService commerceAddressService,
 			CountryService countryService,
 			HttpServletRequest httpServletRequest, RegionService regionService)
 		throws PortalException {
 
-		_actionHelper = actionHelper;
 		_commerceAccountHelper = commerceAccountHelper;
 		_commerceAddressService = commerceAddressService;
 		_countryService = countryService;
@@ -95,8 +93,8 @@ public class CommerceAddressDisplayContext {
 			return _commerceAddress;
 		}
 
-		_commerceAddress = _actionHelper.getCommerceAddress(
-			_cpRequestHelper.getRenderRequest());
+		_commerceAddress = CommercerAddressUtil.getCommerceAddress(
+			_commerceAddressService, _cpRequestHelper.getRenderRequest());
 
 		return _commerceAddress;
 	}
@@ -279,7 +277,6 @@ public class CommerceAddressDisplayContext {
 		return false;
 	}
 
-	private final ActionHelper _actionHelper;
 	private final CommerceAccountHelper _commerceAccountHelper;
 	private CommerceAddress _commerceAddress;
 	private final CommerceAddressContentPortletInstanceConfiguration

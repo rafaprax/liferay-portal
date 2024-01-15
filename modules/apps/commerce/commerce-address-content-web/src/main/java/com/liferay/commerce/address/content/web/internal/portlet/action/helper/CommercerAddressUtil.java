@@ -13,16 +13,14 @@ import com.liferay.portal.kernel.util.ParamUtil;
 
 import javax.portlet.RenderRequest;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Alessio Antonio Rendina
  */
-@Component(service = ActionHelper.class)
-public class ActionHelper {
+public class CommercerAddressUtil {
 
-	public CommerceAddress getCommerceAddress(RenderRequest renderRequest)
+	public static CommerceAddress getCommerceAddress(
+			CommerceAddressService commerceAddressService,
+			RenderRequest renderRequest)
 		throws PortalException {
 
 		CommerceAddress commerceAddress =
@@ -37,7 +35,7 @@ public class ActionHelper {
 			renderRequest, "commerceAddressId");
 
 		if (commerceAddressId > 0) {
-			commerceAddress = _commerceAddressService.fetchCommerceAddress(
+			commerceAddress = commerceAddressService.fetchCommerceAddress(
 				commerceAddressId);
 		}
 
@@ -48,8 +46,5 @@ public class ActionHelper {
 
 		return commerceAddress;
 	}
-
-	@Reference
-	private CommerceAddressService _commerceAddressService;
 
 }

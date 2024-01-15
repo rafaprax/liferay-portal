@@ -6,7 +6,6 @@
 package com.liferay.commerce.address.content.web.internal.portlet.action;
 
 import com.liferay.commerce.address.content.web.internal.display.context.CommerceAddressDisplayContext;
-import com.liferay.commerce.address.content.web.internal.portlet.action.helper.ActionHelper;
 import com.liferay.commerce.constants.CommercePortletKeys;
 import com.liferay.commerce.service.CommerceAddressService;
 import com.liferay.commerce.util.CommerceAccountHelper;
@@ -50,9 +49,8 @@ public class CommerceAddressContentConfigurationAction
 		try {
 			CommerceAddressDisplayContext commerceAddressDisplayContext =
 				new CommerceAddressDisplayContext(
-					_actionHelper, _commerceAccountHelper,
-					_commerceAddressService, _countryService,
-					httpServletRequest, _regionService);
+					_commerceAccountHelper, _commerceAddressService,
+					_countryService, httpServletRequest, _regionService);
 
 			httpServletRequest.setAttribute(
 				WebKeys.PORTLET_DISPLAY_CONTEXT, commerceAddressDisplayContext);
@@ -66,9 +64,6 @@ public class CommerceAddressContentConfigurationAction
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CommerceAddressContentConfigurationAction.class);
-
-	@Reference
-	private ActionHelper _actionHelper;
 
 	@Reference
 	private CommerceAccountHelper _commerceAccountHelper;
