@@ -22,14 +22,12 @@ import com.liferay.portal.kernel.util.PortletKeys;
 
 import javax.servlet.http.HttpSession;
 
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Drew Brokke
  */
-@Component(service = CurrentAccountEntryManagerStore.class)
-public class CurrentAccountEntryManagerStore {
+public abstract class BaseCurrentAccountEntryManagerStore {
 
 	public AccountEntry getAccountEntryFromHttpSession(long groupId) {
 		HttpSession httpSession = PortalSessionThreadLocal.getHttpSession();
@@ -41,7 +39,7 @@ public class CurrentAccountEntryManagerStore {
 		long currentAccountEntryId = GetterUtil.getLong(
 			httpSession.getAttribute(_getKey(groupId)));
 
-		return _accountEntryLocalService.fetchAccountEntry(
+		return accountEntryLocalService.fetchAccountEntry(
 			currentAccountEntryId);
 	}
 
@@ -50,7 +48,7 @@ public class CurrentAccountEntryManagerStore {
 
 		com.liferay.portal.kernel.model.PortalPreferences
 			modelPortalPreferences =
-				_portalPreferencesLocalService.fetchPortalPreferences(
+				portalPreferencesLocalService.fetchPortalPreferences(
 					userId, PortletKeys.PREFS_OWNER_TYPE_USER);
 
 		if (modelPortalPreferences == null) {
@@ -58,7 +56,7 @@ public class CurrentAccountEntryManagerStore {
 		}
 
 		PortalPreferences portalPreferences =
-			_portalPreferenceValueLocalService.getPortalPreferences(
+			portalPreferenceValueLocalService.getPortalPreferences(
 				modelPortalPreferences, false);
 
 		long accountEntryId = GetterUtil.getLong(
@@ -66,7 +64,7 @@ public class CurrentAccountEntryManagerStore {
 				AccountEntry.class.getName(), _getKey(groupId)));
 
 		if (accountEntryId > 0) {
-			return _accountEntryLocalService.fetchAccountEntry(accountEntryId);
+			return accountEntryLocalService.fetchAccountEntry(accountEntryId);
 		}
 
 		return null;
@@ -114,16 +112,29 @@ public class CurrentAccountEntryManagerStore {
 		portalPreferences.setValue(
 			AccountEntry.class.getName(), key, String.valueOf(accountEntryId));
 
-		_portalPreferencesLocalService.updatePreferences(
+		portalPreferencesLocalService.updatePreferences(
 			userId, PortletKeys.PREFS_OWNER_TYPE_USER, portalPreferences);
 	}
 
-	public void setCurrentAccountEntry(
+	public void setCurrentAccountEntryManagerStore(
 		long accountEntryId, long groupId, long userId) {
 
 		saveInHttpSession(accountEntryId, groupId);
 		saveInPortalPreferences(accountEntryId, groupId, userId);
 	}
+
+	@Reference
+	protected AccountEntryLocalService accountEntryLocalService;
+
+	@Reference
+	protected PortalPreferencesLocalService portalPreferencesLocalService;
+
+	@Reference
+	protected PortalPreferenceValueLocalService
+		portalPreferenceValueLocalService;
+
+	@Reference
+	protected PortletPreferencesFactory portletPreferencesFactory;
 
 	private String _getKey(long groupId) {
 		return AccountWebKeys.CURRENT_ACCOUNT_ENTRY_ID + groupId;
@@ -134,8 +145,7 @@ public class CurrentAccountEntryManagerStore {
 		// LPS-156201
 
 		try {
-			return _portletPreferencesFactory.getPortalPreferences(
-				userId, true);
+			return portletPreferencesFactory.getPortalPreferences(userId, true);
 		}
 		catch (Exception exception) {
 			if (_log.isDebugEnabled()) {
@@ -147,19 +157,6 @@ public class CurrentAccountEntryManagerStore {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		CurrentAccountEntryManagerStore.class);
-
-	@Reference
-	private AccountEntryLocalService _accountEntryLocalService;
-
-	@Reference
-	private PortalPreferencesLocalService _portalPreferencesLocalService;
-
-	@Reference
-	private PortalPreferenceValueLocalService
-		_portalPreferenceValueLocalService;
-
-	@Reference
-	private PortletPreferencesFactory _portletPreferencesFactory;
+		BaseCurrentAccountEntryManagerStore.class);
 
 }

@@ -6,7 +6,7 @@
 package com.liferay.account.internal.security.permission.contributor;
 
 import com.liferay.account.constants.AccountRoleConstants;
-import com.liferay.account.internal.manager.CurrentAccountEntryManagerStore;
+import com.liferay.account.internal.manager.BaseCurrentAccountEntryManagerStore;
 import com.liferay.account.model.AccountEntry;
 import com.liferay.account.model.AccountRole;
 import com.liferay.account.service.AccountEntryUserRelLocalService;
@@ -32,7 +32,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Pei-Jung Lan
  */
 @Component(service = RoleContributor.class)
-public class AccountRoleContributor implements RoleContributor {
+public class AccountRoleContributor
+	extends BaseCurrentAccountEntryManagerStore implements RoleContributor {
 
 	@Override
 	public void contribute(RoleCollection roleCollection) {
@@ -53,9 +54,8 @@ public class AccountRoleContributor implements RoleContributor {
 			if (!Objects.equals(
 					AccountEntry.class.getName(), group.getClassName())) {
 
-				AccountEntry currentAccountEntry =
-					_currentAccountEntryManagerStore.getCurrentAccountEntry(
-						roleCollection.getGroupId(), user.getUserId());
+				AccountEntry currentAccountEntry = getCurrentAccountEntry(
+					roleCollection.getGroupId(), user.getUserId());
 
 				if ((currentAccountEntry != null) &&
 					(currentAccountEntry.getAccountEntryId() > 0)) {
@@ -102,9 +102,6 @@ public class AccountRoleContributor implements RoleContributor {
 
 	@Reference
 	private AccountRoleLocalService _accountRoleLocalService;
-
-	@Reference
-	private CurrentAccountEntryManagerStore _currentAccountEntryManagerStore;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

@@ -40,6 +40,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  */
 @Component(service = CurrentAccountEntryManager.class)
 public class CurrentAccountEntryManagerImpl
+	extends BaseCurrentAccountEntryManagerStore
 	implements CurrentAccountEntryManager {
 
 	@Override
@@ -63,9 +64,7 @@ public class CurrentAccountEntryManagerImpl
 		PermissionChecker permissionChecker = _permissionCheckerFactory.create(
 			user);
 
-		AccountEntry accountEntry =
-			_currentAccountEntryManagerStore.getAccountEntryFromHttpSession(
-				groupId);
+		AccountEntry accountEntry = getAccountEntryFromHttpSession(groupId);
 
 		String[] allowedTypes = _getAllowedTypes(groupId);
 
@@ -73,13 +72,10 @@ public class CurrentAccountEntryManagerImpl
 			return accountEntry;
 		}
 
-		accountEntry =
-			_currentAccountEntryManagerStore.
-				getAccountEntryFromPortalPreferences(groupId, userId);
+		accountEntry = getAccountEntryFromPortalPreferences(groupId, userId);
 
 		if (_isValid(accountEntry, allowedTypes, permissionChecker)) {
-			_currentAccountEntryManagerStore.saveInHttpSession(
-				accountEntry.getAccountEntryId(), groupId);
+			saveInHttpSession(accountEntry.getAccountEntryId(), groupId);
 
 			return accountEntry;
 		}
@@ -117,8 +113,7 @@ public class CurrentAccountEntryManagerImpl
 						"type: " + accountEntry.getType());
 			}
 
-			_currentAccountEntryManagerStore.setCurrentAccountEntry(
-				accountEntryId, groupId, userId);
+			setCurrentAccountEntryManagerStore(accountEntryId, groupId, userId);
 		}
 		catch (PortalException portalException) {
 			if (_log.isWarnEnabled()) {
@@ -197,9 +192,6 @@ public class CurrentAccountEntryManagerImpl
 	)
 	private volatile ModelResourcePermission<AccountEntry>
 		_accountEntryModelResourcePermission;
-
-	@Reference
-	private CurrentAccountEntryManagerStore _currentAccountEntryManagerStore;
 
 	@Reference
 	private PermissionCheckerFactory _permissionCheckerFactory;
