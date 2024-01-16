@@ -19,12 +19,15 @@ import com.liferay.batch.engine.unit.BatchEngineUnitMetaInfo;
 import com.liferay.batch.engine.unit.BatchEngineUnitProcessor;
 import com.liferay.batch.engine.unit.BatchEngineUnitThreadLocal;
 import com.liferay.batch.engine.unit.BundleBatchEngineUnit;
+import com.liferay.petra.executor.PortalExecutorManager;
+import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.io.StreamUtil;
 import com.liferay.petra.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagListener;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -32,26 +35,35 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.File;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -77,20 +89,19 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 				String featureFlag = batchEngineUnitMetaInfo.getFeatureFlag();
 
 				if (_isFeatureFlagDisabled(featureFlag)) {
-					_featureFlagBatchEngineUnitProcessor.
-						registerBatchEngineUnit(
-							batchEngineUnitMetaInfo.getCompanyId(), featureFlag,
-							() -> {
-								CompletableFuture<Void> localCompletableFuture =
-									new CompletableFuture<>();
+					_registerBatchEngineUnit(
+						batchEngineUnitMetaInfo.getCompanyId(), featureFlag,
+						() -> {
+							CompletableFuture<Void> localCompletableFuture =
+								new CompletableFuture<>();
 
-								Runnable runnable = _processBatchEngineUnit(
-									batchEngineUnit, localCompletableFuture);
+							Runnable runnable = _processBatchEngineUnit(
+								batchEngineUnit, localCompletableFuture);
 
-								runnable.run();
+							runnable.run();
 
-								return localCompletableFuture;
-							});
+							return localCompletableFuture;
+						});
 
 					continue;
 				}
@@ -128,6 +139,14 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_bundleContext = bundleContext;
+		_serviceRegistration = bundleContext.registerService(
+			FeatureFlagListener.class, new FeatureFlagListenerImpl(),
+			MapUtil.singletonDictionary("featureFlagKey", "*"));
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_serviceRegistration.unregister();
 	}
 
 	private Runnable _execute(
@@ -263,6 +282,10 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 		return className;
 	}
 
+	private Tuple _getTuple(long companyId, String featureFlagKey) {
+		return new Tuple(companyId, featureFlagKey);
+	}
+
 	private boolean _isFeatureFlagDisabled(String featureFlagKey) {
 		if (Validator.isNotNull(featureFlagKey) &&
 			!FeatureFlagManagerUtil.isEnabled(featureFlagKey)) {
@@ -371,6 +394,23 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 			completableFuture);
 	}
 
+	private void _registerBatchEngineUnit(
+		long companyId, String featureFlagKey,
+		UnsafeSupplier<CompletableFuture<Void>, Exception> unsafeSupplier) {
+
+		_unsafeSuppliers.compute(
+			_getTuple(companyId, featureFlagKey),
+			(key, unsafeSuppliers) -> {
+				if (unsafeSuppliers == null) {
+					unsafeSuppliers = new ArrayList<>();
+				}
+
+				unsafeSuppliers.add(unsafeSupplier);
+
+				return unsafeSuppliers;
+			});
+	}
+
 	private BatchEngineUnitConfiguration _updateBatchEngineUnitConfiguration(
 		BatchEngineUnitConfiguration batchEngineUnitConfiguration) {
 
@@ -437,13 +477,62 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 	private CompanyLocalService _companyLocalService;
 
 	@Reference
-	private FeatureFlagBatchEngineUnitProcessor
-		_featureFlagBatchEngineUnitProcessor;
-
-	@Reference
 	private File _file;
 
 	@Reference
+	private PortalExecutorManager _portalExecutorManager;
+
+	private ServiceRegistration<FeatureFlagListener> _serviceRegistration;
+	private final Map
+		<Tuple, List<UnsafeSupplier<CompletableFuture<Void>, Exception>>>
+			_unsafeSuppliers = new ConcurrentHashMap<>();
+
+	@Reference
 	private UserLocalService _userLocalService;
+
+	private class FeatureFlagListenerImpl implements FeatureFlagListener {
+
+		@Override
+		public void onValue(
+			long companyId, String featureFlagKey, boolean enabled) {
+
+			if (!enabled) {
+				return;
+			}
+
+			Tuple tuple = _getTuple(companyId, featureFlagKey);
+
+			if (!_unsafeSuppliers.containsKey(tuple)) {
+				return;
+			}
+
+			synchronized (_unsafeSuppliers) {
+				List<UnsafeSupplier<CompletableFuture<Void>, Exception>>
+					unsafeSuppliers = _unsafeSuppliers.remove(tuple);
+
+				ExecutorService executorService =
+					_portalExecutorManager.getPortalExecutor(
+						FeatureFlagListenerImpl.class.getName());
+
+				executorService.submit(
+					() -> {
+						for (UnsafeSupplier<CompletableFuture<Void>, Exception>
+								unsafeSupplier : unsafeSuppliers) {
+
+							try {
+								CompletableFuture<Void> completableFuture =
+									unsafeSupplier.get();
+
+								completableFuture.get();
+							}
+							catch (Exception exception) {
+								throw new RuntimeException(exception);
+							}
+						}
+					});
+			}
+		}
+
+	}
 
 }
