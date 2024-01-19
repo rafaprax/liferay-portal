@@ -5,14 +5,18 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.portlet.action;
 
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.json.storage.service.JSONStorageEntryLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.JavaConstants;
@@ -30,9 +34,10 @@ import com.liferay.portal.search.tuning.rankings.web.internal.exception.NotAppli
 import com.liferay.portal.search.tuning.rankings.web.internal.index.DuplicateQueryStringsDetector;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexReader;
+import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexWriter;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.RankingStorageAdapter;
+import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingStorageAdapterUtil;
 import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingUtil;
 
 import java.io.IOException;
@@ -105,10 +110,22 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	}
 
 	@Reference
+	protected ClassNameLocalService classNameLocalService;
+
+	@Reference
+	protected CounterLocalService counterLocalService;
+
+	@Reference
 	protected DuplicateQueryStringsDetector duplicateQueryStringsDetector;
 
 	@Reference
 	protected IndexNameBuilder indexNameBuilder;
+
+	@Reference
+	protected JSONFactory jsonFactory;
+
+	@Reference
+	protected JSONStorageEntryLocalService jsonStorageEntryLocalService;
 
 	@Reference
 	protected Portal portal;
@@ -120,7 +137,7 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	protected RankingIndexReader rankingIndexReader;
 
 	@Reference
-	protected RankingStorageAdapter rankingStorageAdapter;
+	protected RankingIndexWriter rankingIndexWriter;
 
 	private void _add(
 			ActionRequest actionRequest, ActionResponse actionResponse,
@@ -197,7 +214,10 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 
 		RankingIndexName rankingIndexName = getRankingIndexName();
 
-		String id = rankingStorageAdapter.create(ranking, rankingIndexName);
+		String id = RankingStorageAdapterUtil.create(
+			classNameLocalService, counterLocalService, jsonFactory,
+			jsonStorageEntryLocalService, ranking, rankingIndexName,
+			rankingIndexWriter);
 
 		return rankingIndexReader.fetch(id, rankingIndexName);
 	}
@@ -237,8 +257,9 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest, editRankingMVCActionRequest);
 
 		for (String rankingDocumentId : rankingDocumentIds) {
-			rankingStorageAdapter.delete(
-				rankingDocumentId, getRankingIndexName());
+			RankingStorageAdapterUtil.delete(
+				classNameLocalService, jsonStorageEntryLocalService,
+				rankingDocumentId, getRankingIndexName(), rankingIndexWriter);
 		}
 	}
 
@@ -513,8 +534,9 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			rankingBuilder.pins(null);
 		}
 
-		rankingStorageAdapter.update(
-			rankingBuilder.build(), getRankingIndexName());
+		RankingStorageAdapterUtil.update(
+			classNameLocalService, jsonFactory, jsonStorageEntryLocalService,
+			rankingBuilder.build(), getRankingIndexName(), rankingIndexWriter);
 	}
 
 	private List<String> _updateHiddenIds(
@@ -629,8 +651,10 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 				rankingBuilder.status(ResultRankingsConstants.STATUS_INACTIVE);
 			}
 
-			rankingStorageAdapter.update(
-				rankingBuilder.build(), getRankingIndexName());
+			RankingStorageAdapterUtil.update(
+				classNameLocalService, jsonFactory,
+				jsonStorageEntryLocalService, rankingBuilder.build(),
+				getRankingIndexName(), rankingIndexWriter);
 		}
 
 		return excludedNames;

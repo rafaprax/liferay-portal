@@ -1,9 +1,9 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2024 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.tuning.rankings.web.internal.storage;
+package com.liferay.portal.search.tuning.rankings.web.internal.util;
 
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.json.storage.service.JSONStorageEntryLocalService;
@@ -13,18 +13,19 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexWriter;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
-import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingJSONStorageUtil;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Bryan Engler
  */
-@Component(service = RankingStorageAdapter.class)
-public class RankingStorageAdapter {
+public class RankingStorageAdapterUtil {
 
-	public String create(Ranking ranking, RankingIndexName rankingIndexName) {
+	public static String create(
+		ClassNameLocalService classNameLocalService,
+		CounterLocalService counterLocalService, JSONFactory jsonFactory,
+		JSONStorageEntryLocalService jsonStorageEntryLocalService,
+		Ranking ranking, RankingIndexName rankingIndexName,
+		RankingIndexWriter rankingIndexWriter) {
+
 		String rankingDocumentId = RankingJSONStorageUtil.addJSONStorageEntry(
 			classNameLocalService, counterLocalService, jsonFactory,
 			jsonStorageEntryLocalService, ranking);
@@ -39,8 +40,11 @@ public class RankingStorageAdapter {
 		return rankingDocumentId;
 	}
 
-	public void delete(
-			String rankingDocumentId, RankingIndexName rankingIndexName)
+	public static void delete(
+			ClassNameLocalService classNameLocalService,
+			JSONStorageEntryLocalService jsonStorageEntryLocalService,
+			String rankingDocumentId, RankingIndexName rankingIndexName,
+			RankingIndexWriter rankingIndexWriter)
 		throws PortalException {
 
 		RankingJSONStorageUtil.deleteJSONStorageEntry(
@@ -50,7 +54,12 @@ public class RankingStorageAdapter {
 		rankingIndexWriter.remove(rankingIndexName, rankingDocumentId);
 	}
 
-	public void update(Ranking ranking, RankingIndexName rankingIndexName)
+	public static void update(
+			ClassNameLocalService classNameLocalService,
+			JSONFactory jsonFactory,
+			JSONStorageEntryLocalService jsonStorageEntryLocalService,
+			Ranking ranking, RankingIndexName rankingIndexName,
+			RankingIndexWriter rankingIndexWriter)
 		throws PortalException {
 
 		RankingJSONStorageUtil.updateJSONStorageEntry(
@@ -59,20 +68,5 @@ public class RankingStorageAdapter {
 
 		rankingIndexWriter.update(rankingIndexName, ranking);
 	}
-
-	@Reference
-	protected ClassNameLocalService classNameLocalService;
-
-	@Reference
-	protected CounterLocalService counterLocalService;
-
-	@Reference
-	protected JSONFactory jsonFactory;
-
-	@Reference
-	protected JSONStorageEntryLocalService jsonStorageEntryLocalService;
-
-	@Reference
-	protected RankingIndexWriter rankingIndexWriter;
 
 }
