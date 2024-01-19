@@ -5,9 +5,13 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.storage;
 
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.json.storage.service.JSONStorageEntryLocalService;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
@@ -21,7 +25,7 @@ import com.liferay.portal.search.tuning.rankings.web.internal.index.DocumentToRa
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.helper.RankingJSONStorageHelper;
+import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingJSONStorageUtil;
 
 import java.util.List;
 
@@ -53,7 +57,19 @@ public class RankingsDatabaseImporterImpl implements RankingsDatabaseImporter {
 	}
 
 	@Reference
+	protected ClassNameLocalService classNameLocalService;
+
+	@Reference
+	protected CounterLocalService counterLocalService;
+
+	@Reference
 	protected DocumentToRankingTranslator documentToRankingTranslator;
+
+	@Reference
+	protected JSONFactory jsonFactory;
+
+	@Reference
+	protected JSONStorageEntryLocalService jsonStorageEntryLocalService;
 
 	@Reference
 	protected Queries queries;
@@ -65,9 +81,6 @@ public class RankingsDatabaseImporterImpl implements RankingsDatabaseImporter {
 		target = "(component.name=com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexReindexer)"
 	)
 	protected IndexReindexer rankingIndexReindexer;
-
-	@Reference
-	protected RankingJSONStorageHelper rankingJSONStorageHelper;
 
 	@Reference
 	protected SearchEngineAdapter searchEngineAdapter;
@@ -119,7 +132,9 @@ public class RankingsDatabaseImporterImpl implements RankingsDatabaseImporter {
 						ranking.getRankingDocumentId());
 			}
 
-			rankingJSONStorageHelper.addJSONStorageEntry(ranking);
+			RankingJSONStorageUtil.addJSONStorageEntry(
+				classNameLocalService, counterLocalService, jsonFactory,
+				jsonStorageEntryLocalService, ranking);
 		}
 
 		if (_log.isInfoEnabled()) {
