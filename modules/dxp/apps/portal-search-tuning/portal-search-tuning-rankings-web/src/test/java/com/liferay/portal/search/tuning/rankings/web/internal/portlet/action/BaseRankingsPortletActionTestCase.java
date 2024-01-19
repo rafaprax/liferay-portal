@@ -11,7 +11,6 @@ import com.liferay.portal.search.tuning.rankings.web.internal.BaseRankingsWebTes
 import com.liferay.portal.search.tuning.rankings.web.internal.index.DuplicateQueryStringsDetector;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexReader;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.RankingStorageAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,7 +173,5 @@ public abstract class BaseRankingsPortletActionTestCase
 		IndexNameBuilder.class);
 	protected RankingIndexReader rankingIndexReader = Mockito.mock(
 		RankingIndexReader.class);
-	protected RankingStorageAdapter rankingStorageAdapter = Mockito.mock(
-		RankingStorageAdapter.class);
 
 }

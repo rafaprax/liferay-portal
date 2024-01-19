@@ -5,15 +5,19 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.model.listener;
 
+import com.liferay.json.storage.service.JSONStorageEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexReader;
+import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexWriter;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.RankingStorageAdapter;
+import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingStorageAdapterUtil;
 import com.liferay.search.experiences.model.SXPBlueprint;
 
 import java.util.List;
@@ -49,8 +53,10 @@ public class SXPBlueprintModelListener extends BaseModelListener<SXPBlueprint> {
 				rankingBuilder.status(
 					ResultRankingsConstants.STATUS_NOT_APPLICABLE);
 
-				_rankingStorageAdapter.update(
-					rankingBuilder.build(), rankingIndexName);
+				RankingStorageAdapterUtil.update(
+					_classNameLocalService, _jsonFactory,
+					_jsonStorageEntryLocalService, rankingBuilder.build(),
+					rankingIndexName, _rankingIndexWriter);
 			}
 		}
 		catch (PortalException portalException) {
@@ -59,12 +65,21 @@ public class SXPBlueprintModelListener extends BaseModelListener<SXPBlueprint> {
 	}
 
 	@Reference
+	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private JSONFactory _jsonFactory;
+
+	@Reference
+	private JSONStorageEntryLocalService _jsonStorageEntryLocalService;
+
+	@Reference
 	private RankingIndexNameBuilder _rankingIndexNameBuilder;
 
 	@Reference
 	private RankingIndexReader _rankingIndexReader;
 
 	@Reference
-	private RankingStorageAdapter _rankingStorageAdapter;
+	private RankingIndexWriter _rankingIndexWriter;
 
 }
