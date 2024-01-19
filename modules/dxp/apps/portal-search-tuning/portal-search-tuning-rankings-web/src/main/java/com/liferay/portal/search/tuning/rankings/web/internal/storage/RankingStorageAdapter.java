@@ -5,11 +5,15 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.storage;
 
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.json.storage.service.JSONStorageEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndexWriter;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.helper.RankingJSONStorageHelper;
+import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingJSONStorageUtil;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -21,8 +25,9 @@ import org.osgi.service.component.annotations.Reference;
 public class RankingStorageAdapter {
 
 	public String create(Ranking ranking, RankingIndexName rankingIndexName) {
-		String rankingDocumentId = rankingJSONStorageHelper.addJSONStorageEntry(
-			ranking);
+		String rankingDocumentId = RankingJSONStorageUtil.addJSONStorageEntry(
+			classNameLocalService, counterLocalService, jsonFactory,
+			jsonStorageEntryLocalService, ranking);
 
 		Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder(
 			ranking);
@@ -38,7 +43,9 @@ public class RankingStorageAdapter {
 			String rankingDocumentId, RankingIndexName rankingIndexName)
 		throws PortalException {
 
-		rankingJSONStorageHelper.deleteJSONStorageEntry(rankingDocumentId);
+		RankingJSONStorageUtil.deleteJSONStorageEntry(
+			classNameLocalService, jsonStorageEntryLocalService,
+			rankingDocumentId);
 
 		rankingIndexWriter.remove(rankingIndexName, rankingDocumentId);
 	}
@@ -46,15 +53,26 @@ public class RankingStorageAdapter {
 	public void update(Ranking ranking, RankingIndexName rankingIndexName)
 		throws PortalException {
 
-		rankingJSONStorageHelper.updateJSONStorageEntry(ranking);
+		RankingJSONStorageUtil.updateJSONStorageEntry(
+			classNameLocalService, jsonFactory, jsonStorageEntryLocalService,
+			ranking);
 
 		rankingIndexWriter.update(rankingIndexName, ranking);
 	}
 
 	@Reference
-	protected RankingIndexWriter rankingIndexWriter;
+	protected ClassNameLocalService classNameLocalService;
 
 	@Reference
-	protected RankingJSONStorageHelper rankingJSONStorageHelper;
+	protected CounterLocalService counterLocalService;
+
+	@Reference
+	protected JSONFactory jsonFactory;
+
+	@Reference
+	protected JSONStorageEntryLocalService jsonStorageEntryLocalService;
+
+	@Reference
+	protected RankingIndexWriter rankingIndexWriter;
 
 }
