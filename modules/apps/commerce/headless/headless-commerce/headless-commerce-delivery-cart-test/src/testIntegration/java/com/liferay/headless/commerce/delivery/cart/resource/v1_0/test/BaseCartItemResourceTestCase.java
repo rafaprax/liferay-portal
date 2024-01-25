@@ -41,6 +41,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.text.DateFormat;
@@ -1151,7 +1152,7 @@ public abstract class BaseCartItemResourceTestCase {
 		throws Exception {
 
 		return TransformUtil.transform(
-			ReflectionUtil.getDeclaredFields(clazz),
+			clazz.getDeclaredFields(),
 			field -> {
 				if (field.isSynthetic()) {
 					return null;
