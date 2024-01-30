@@ -562,6 +562,8 @@ gradle.beforeProject {
 						languageVersion = JavaLanguageVersion.of(project.properties["junit.jvm.override.version"])
 					}
 				}
+
+				systemProperty "net.bytebuddy.experimental", "true"
 			}
 
 			testIntegration {
