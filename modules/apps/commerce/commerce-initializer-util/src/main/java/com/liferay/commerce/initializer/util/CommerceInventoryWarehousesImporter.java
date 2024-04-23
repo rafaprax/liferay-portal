@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,11 +38,14 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andrea Di Giorgi
  * @author Alessio Antonio Rendina
  */
-@Component(service = CommerceInventoryWarehousesImporter.class)
-public class CommerceInventoryWarehousesImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CommerceInventoryWarehousesImporter
+	implements SiteInitializerModelImporter<List<CommerceInventoryWarehouse>> {
 
-	public List<CommerceInventoryWarehouse> importCommerceInventoryWarehouses(
-			JSONArray jsonArray, long scopeGroupId, long userId)
+	@Override
+	public List<CommerceInventoryWarehouse> importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		if ((jsonArray == null) || (jsonArray.length() <= 0)) {

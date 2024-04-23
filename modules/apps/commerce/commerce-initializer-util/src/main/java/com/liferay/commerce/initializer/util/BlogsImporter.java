@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.util.MimeTypesUtil;
 import java.io.InputStream;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,12 +34,13 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Steven Smith
  */
-@Component(service = BlogsImporter.class)
-public class BlogsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class BlogsImporter implements SiteInitializerModelImporter<Void> {
 
-	public void importBlogsEntries(
-			JSONArray jsonArray, ClassLoader classLoader,
-			String imageDependenciesPath, long scopeGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
@@ -53,9 +55,15 @@ public class BlogsImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_addBlogsEntry(
-				jsonArray.getJSONObject(i), classLoader, imageDependenciesPath,
+				jsonArray.getJSONObject(i),
+				(ClassLoader)parameterMap.get("classLoader"),
+				parameterMap.get(
+					"imageDependenciesPath"
+				).toString(),
 				userId, date, serviceContext);
 		}
+
+		return null;
 	}
 
 	protected void updatePermissions(

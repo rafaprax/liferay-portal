@@ -11,24 +11,9 @@ import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfigurati
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
-import com.liferay.commerce.initializer.util.AssetCategoriesImporter;
-import com.liferay.commerce.initializer.util.BlogsImporter;
-import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionCategoriesImporter;
-import com.liferay.commerce.initializer.util.CPOptionsImporter;
-import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
-import com.liferay.commerce.initializer.util.CommerceAccountsImporter;
-import com.liferay.commerce.initializer.util.CommerceDiscountsImporter;
-import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
 import com.liferay.commerce.initializer.util.CommercePriceEntriesImporter;
-import com.liferay.commerce.initializer.util.CommercePriceListsImporter;
-import com.liferay.commerce.initializer.util.CommerceUsersImporter;
-import com.liferay.commerce.initializer.util.DDMFormImporter;
-import com.liferay.commerce.initializer.util.DLImporter;
 import com.liferay.commerce.initializer.util.JournalArticleImporter;
-import com.liferay.commerce.initializer.util.KBArticleImporter;
-import com.liferay.commerce.initializer.util.OrganizationImporter;
-import com.liferay.commerce.initializer.util.PortletSettingsImporter;
+import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.media.CommerceCatalogDefaultImage;
 import com.liferay.commerce.model.CommerceShippingEngine;
@@ -87,6 +72,7 @@ import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
 import com.liferay.portal.kernel.settings.ModifiableSettings;
 import com.liferay.portal.kernel.settings.Settings;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
@@ -469,17 +455,27 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Asset Categories...");
 		}
 
-		Group group = serviceContext.getScopeGroup();
-
 		Company company = _companyLocalService.getCompany(
 			serviceContext.getCompanyId());
 
-		_assetCategoriesImporter.importAssetCategories(
-			_getJSONArray("categories.json"),
-			group.getName(serviceContext.getLocale()),
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			company.getGroupId(), serviceContext.getUserId(), true);
+		_assetCategoriesImporter.importModels(
+			_getJSONArray("categories.json"), company.getGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"addGuestPermissions", true
+			).put(
+				"assetVocabularyName",
+				serviceContext.getScopeGroup(
+				).getName(
+					serviceContext.getLocale()
+				)
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"imageDependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Asset Categories successfully imported");
@@ -513,11 +509,16 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Blogs Entries...");
 		}
 
-		_blogsImporter.importBlogsEntries(
-			_getJSONArray("blogs.json"),
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_blogsImporter.importModels(
+			_getJSONArray("blogs.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"imageDependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Blogs Entries successfully imported");
@@ -531,11 +532,16 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Accounts...");
 		}
 
-		_commerceAccountsImporter.importCommerceAccounts(
-			_getJSONArray("accounts.json"),
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getDependenciesPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_commerceAccountsImporter.importModels(
+			_getJSONArray("accounts.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"dependenciesPath",
+				SpeedwellDependencyResolverUtil.getDependenciesPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Accounts successfully imported");
@@ -549,9 +555,9 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Discounts...");
 		}
 
-		_commerceDiscountsImporter.importCommerceDiscounts(
+		_commerceDiscountsImporter.importModels(
 			_getJSONArray("discounts.json"), serviceContext.getScopeGroupId(),
-			serviceContext.getUserId());
+			null, serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Discounts successfully imported");
@@ -562,10 +568,11 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			ServiceContext serviceContext)
 		throws Exception {
 
-		return _commerceInventoryWarehousesImporter.
-			importCommerceInventoryWarehouses(
+		return (List<CommerceInventoryWarehouse>)
+			_commerceInventoryWarehousesImporter.importModels(
 				_getJSONArray("warehouses.json"),
-				serviceContext.getScopeGroupId(), serviceContext.getUserId());
+				serviceContext.getScopeGroupId(), null,
+				serviceContext.getUserId());
 	}
 
 	private void _importCommerceOrganizations(ServiceContext serviceContext)
@@ -575,9 +582,9 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Organizations...");
 		}
 
-		_organizationImporter.importOrganizations(
+		_organizationImporter.importModels(
 			_getJSONArray("organizations.json"),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			serviceContext.getScopeGroupId(), null, serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Organizations successfully imported");
@@ -609,9 +616,12 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Price Lists...");
 		}
 
-		_commercePriceListsImporter.importCommercePriceLists(
-			catalogGroupId, _getJSONArray("price-lists.json"),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_commercePriceListsImporter.importModels(
+			_getJSONArray("price-lists.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"catalogGroupId", catalogGroupId
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Price Lists successfully imported");
@@ -625,11 +635,16 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Users...");
 		}
 
-		_commerceUsersImporter.importCommerceUsers(
-			_getJSONArray("users.json"),
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		_commerceUsersImporter.importModels(
+			_getJSONArray("users.json"), serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"dependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Commerce Users successfully imported");
@@ -651,12 +666,24 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			CommerceInventoryWarehouse.
 				COMMERCE_INVENTORY_WAREHOUSE_ID_ACCESSOR);
 
-		return _cpDefinitionsImporter.importCPDefinitions(
-			jsonArray, group.getName(serviceContext.getLocale()),
-			catalogGroupId, commerceChannelId, commerceInventoryWarehouseIds,
-			SpeedwellDependencyResolverUtil.getImageClassLoader(),
-			SpeedwellDependencyResolverUtil.getImageDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+		return (List<CPDefinition>)_cpDefinitionsImporter.importModels(
+			jsonArray, serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyName", group.getName(serviceContext.getLocale())
+			).put(
+				"catalogGroupId", catalogGroupId
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getImageClassLoader()
+			).put(
+				"commerceChannelId", commerceChannelId
+			).put(
+				"commerceInventoryWarehouseIds", commerceInventoryWarehouseIds
+			).put(
+				"imageDependenciesPath",
+				SpeedwellDependencyResolverUtil.getImageDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 	}
 
 	private void _importCPOptionCategories(
@@ -667,8 +694,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Product Option Categories...");
 		}
 
-		_cpOptionCategoriesImporter.importCPOptionCategories(
-			_getJSONArray("option-categories.json"), catalogGroupId,
+		_cpOptionCategoriesImporter.importModels(
+			_getJSONArray("option-categories.json"), catalogGroupId, null,
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -681,8 +708,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			long catalogGroupId, ServiceContext serviceContext)
 		throws Exception {
 
-		return _cpOptionsImporter.importCPOptions(
-			_getJSONArray("options.json"), catalogGroupId,
+		return (List<CPOption>)_cpOptionsImporter.importModels(
+			_getJSONArray("options.json"), catalogGroupId, null,
 			serviceContext.getUserId());
 	}
 
@@ -694,8 +721,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing Commerce Product Specification Options...");
 		}
 
-		_cpSpecificationOptionsImporter.importCPSpecificationOptions(
-			_getJSONArray("specification-options.json"), catalogGroupId,
+		_cpSpecificationOptionsImporter.importModels(
+			_getJSONArray("specification-options.json"), catalogGroupId, null,
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -711,8 +738,8 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing DDM Forms...");
 		}
 
-		_ddmFormImporter.importDDMForms(
-			_getJSONArray("forms.json"), serviceContext.getScopeGroupId(),
+		_ddmFormImporter.importModels(
+			_getJSONArray("forms.json"), serviceContext.getScopeGroupId(), null,
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -727,11 +754,17 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing DL File Entries...");
 		}
 
-		_dlImporter.importDocuments(
+		_dlImporter.importModels(
 			_getJSONArray("dl-file-entries.json"),
-			SpeedwellDependencyResolverUtil.getDocumentsClassLoader(),
-			SpeedwellDependencyResolverUtil.getDocumentsDependencyPath(),
-			serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getDocumentsClassLoader()
+			).put(
+				"documentsDependenciesPath",
+				SpeedwellDependencyResolverUtil.getDocumentsDependencyPath()
+			).build(),
+			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("DL File Entries successfully imported");
@@ -764,9 +797,9 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing KB Articles...");
 		}
 
-		_kbArticleImporter.importKBArticles(
+		_kbArticleImporter.importModels(
 			_getJSONArray("kb-articles.json"), serviceContext.getScopeGroupId(),
-			serviceContext.getUserId());
+			null, serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
 			_log.info("KB Articles successfully imported");
@@ -780,16 +813,22 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 			_log.info("Importing portlet settings...");
 		}
 
-		JSONArray jsonArray = _getJSONArray("portlet-settings.json");
-
-		Company company = _companyLocalService.getCompany(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
-			jsonArray,
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader(),
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesDependencyPath(),
-			serviceContext.getScopeGroupId(), company.getGroupId(),
+		_portletSettingsImporter.importModels(
+			_getJSONArray("portlet-settings.json"),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_companyLocalService.getCompany(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader()
+			).put(
+				"displayTemplateDependenciesPath",
+				SpeedwellDependencyResolverUtil.
+					getDisplayTemplatesDependencyPath()
+			).build(),
 			serviceContext.getUserId());
 
 		if (_log.isInfoEnabled()) {
@@ -846,16 +885,22 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	private void _importThemePortletSettings(ServiceContext serviceContext)
 		throws Exception {
 
-		JSONArray jsonArray = _getJSONArray("theme-portlet-settings.json");
-
-		Company company = _companyLocalService.getCompany(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
-			jsonArray,
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader(),
-			SpeedwellDependencyResolverUtil.getDisplayTemplatesDependencyPath(),
-			serviceContext.getScopeGroupId(), company.getGroupId(),
+		_portletSettingsImporter.importModels(
+			_getJSONArray("theme-portlet-settings.json"),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_companyLocalService.getCompany(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader",
+				SpeedwellDependencyResolverUtil.getDisplayTemplatesClassLoader()
+			).put(
+				"displayTemplateDependenciesPath",
+				SpeedwellDependencyResolverUtil.
+					getDisplayTemplatesDependencyPath()
+			).build(),
 			serviceContext.getUserId());
 	}
 
@@ -1008,17 +1053,23 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private AccountEntryGroupSettings _accountEntryGroupSettings;
 
-	@Reference
-	private AssetCategoriesImporter _assetCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.AssetCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _assetCategoriesImporter;
 
-	@Reference
-	private BlogsImporter _blogsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.BlogsImporter)"
+	)
+	private SiteInitializerModelImporter _blogsImporter;
 
 	@Reference
 	private CommerceAccountRoleHelper _commerceAccountRoleHelper;
 
-	@Reference
-	private CommerceAccountsImporter _commerceAccountsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceAccountsImporter)"
+	)
+	private SiteInitializerModelImporter _commerceAccountsImporter;
 
 	@Reference
 	private CommerceCatalogDefaultImage _commerceCatalogDefaultImage;
@@ -1032,18 +1083,23 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private CommerceCurrencyLocalService _commerceCurrencyLocalService;
 
-	@Reference
-	private CommerceDiscountsImporter _commerceDiscountsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceDiscountsImporter)"
+	)
+	private SiteInitializerModelImporter _commerceDiscountsImporter;
 
-	@Reference
-	private CommerceInventoryWarehousesImporter
-		_commerceInventoryWarehousesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter)"
+	)
+	private SiteInitializerModelImporter _commerceInventoryWarehousesImporter;
 
 	@Reference
 	private CommercePriceEntriesImporter _commercePriceEntriesImporter;
 
-	@Reference
-	private CommercePriceListsImporter _commercePriceListsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommercePriceListsImporter)"
+	)
+	private SiteInitializerModelImporter _commercePriceListsImporter;
 
 	@Reference
 	private CommerceShippingEngineRegistry _commerceShippingEngineRegistry;
@@ -1056,8 +1112,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	private CommerceShippingMethodLocalService
 		_commerceShippingMethodLocalService;
 
-	@Reference
-	private CommerceUsersImporter _commerceUsersImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceUsersImporter)"
+	)
+	private SiteInitializerModelImporter _commerceUsersImporter;
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
@@ -1073,8 +1131,10 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 
 	private Map<String, CPDefinition> _cpDefinitions;
 
-	@Reference
-	private CPDefinitionsImporter _cpDefinitionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPDefinitionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpDefinitionsImporter;
 
 	@Reference
 	private CPFileImporter _cpFileImporter;
@@ -1082,23 +1142,33 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private CPMeasurementUnitLocalService _cpMeasurementUnitLocalService;
 
-	@Reference
-	private CPOptionCategoriesImporter _cpOptionCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionCategoriesImporter;
 
-	@Reference
-	private CPOptionsImporter _cpOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionsImporter;
 
-	@Reference
-	private CPSpecificationOptionsImporter _cpSpecificationOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpSpecificationOptionsImporter;
 
-	@Reference
-	private DDMFormImporter _ddmFormImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.DDMFormImporter)"
+	)
+	private SiteInitializerModelImporter _ddmFormImporter;
 
 	@Reference
 	private DLFileEntryLocalService _dlFileEntryLocalService;
 
-	@Reference
-	private DLImporter _dlImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.DLImporter)"
+	)
+	private SiteInitializerModelImporter _dlImporter;
 
 	@Reference
 	private com.liferay.portal.kernel.util.File _file;
@@ -1112,17 +1182,23 @@ public class SpeedwellSiteInitializer implements SiteInitializer {
 	@Reference
 	private JSONFactory _jsonFactory;
 
-	@Reference
-	private KBArticleImporter _kbArticleImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.KBArticleImporter)"
+	)
+	private SiteInitializerModelImporter _kbArticleImporter;
 
 	@Reference
 	private Language _language;
 
-	@Reference
-	private OrganizationImporter _organizationImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.OrganizationImporter)"
+	)
+	private SiteInitializerModelImporter _organizationImporter;
 
-	@Reference
-	private PortletSettingsImporter _portletSettingsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.PortletSettingsImporter)"
+	)
+	private SiteInitializerModelImporter _portletSettingsImporter;
 
 	@Reference
 	private ResourcePermissionLocalService _resourcePermissionLocalService;

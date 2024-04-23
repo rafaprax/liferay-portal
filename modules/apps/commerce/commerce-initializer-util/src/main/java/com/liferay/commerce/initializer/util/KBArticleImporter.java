@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,11 +31,13 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Steven Smith
  */
-@Component(service = KBArticleImporter.class)
-public class KBArticleImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class KBArticleImporter implements SiteInitializerModelImporter<Void> {
 
-	public void importKBArticles(
-			JSONArray jsonArray, long scopeGroupId, long userId)
+	@Override
+	public Void importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
@@ -48,6 +51,8 @@ public class KBArticleImporter {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			_addKBArticle(jsonArray.getJSONObject(i), userId, serviceContext);
 		}
+
+		return null;
 	}
 
 	protected void updatePermissions(

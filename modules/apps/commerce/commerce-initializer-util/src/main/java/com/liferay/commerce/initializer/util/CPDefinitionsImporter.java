@@ -14,6 +14,8 @@ import com.liferay.account.model.AccountGroup;
 import com.liferay.account.service.AccountGroupLocalService;
 import com.liferay.account.service.AccountGroupRelLocalService;
 import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetTag;
+import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.commerce.constants.CPDefinitionInventoryConstants;
 import com.liferay.commerce.inventory.service.CommerceInventoryWarehouseItemLocalService;
 import com.liferay.commerce.model.CPDAvailabilityEstimate;
@@ -67,6 +69,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -81,6 +84,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -92,8 +96,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andrea Di Giorgi
  * @author Alessio Antonio Rendina
  */
-@Component(service = CPDefinitionsImporter.class)
-public class CPDefinitionsImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class CPDefinitionsImporter
+	implements SiteInitializerModelImporter<List<CPDefinition>> {
 
 	public void importCPDefinitions(
 			File cpDefinitionsFile, String assetVocabularyName,
@@ -142,11 +147,9 @@ public class CPDefinitionsImporter {
 		jsonFactoryParser.close();
 	}
 
-	public List<CPDefinition> importCPDefinitions(
-			JSONArray jsonArray, String assetVocabularyName,
-			long catalogGroupId, long commerceChannelId,
-			long[] commerceInventoryWarehouseIds, ClassLoader classLoader,
-			String imageDependenciesPath, long scopeGroupId, long userId)
+	public List<CPDefinition> importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		ServiceContext serviceContext = getServiceContext(scopeGroupId, userId);
@@ -155,9 +158,18 @@ public class CPDefinitionsImporter {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			CPDefinition cpDefinition = _importCPDefinition(
-				jsonArray.getJSONObject(i), assetVocabularyName, catalogGroupId,
-				commerceChannelId, commerceInventoryWarehouseIds, classLoader,
-				imageDependenciesPath, serviceContext);
+				jsonArray.getJSONObject(i),
+				parameterMap.get(
+					"assetVocabularyName"
+				).toString(),
+				(Long)parameterMap.get("catalogGroupId"),
+				(Long)parameterMap.get("commerceChannelId"),
+				(long[])parameterMap.get("commerceInventoryWarehouseIds"),
+				(ClassLoader)parameterMap.get("classLoader"),
+				parameterMap.get(
+					"imageDependenciesPath"
+				).toString(),
+				serviceContext);
 
 			cpDefinitions.add(cpDefinition);
 		}
@@ -326,6 +338,37 @@ public class CPDefinitionsImporter {
 		).build();
 	}
 
+	private List<AssetTag> _importAssetTags(
+			JSONArray jsonArray, long scopeGroupId, long userId)
+		throws Exception {
+
+		User user = _userLocalService.getUser(userId);
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setCompanyId(user.getCompanyId());
+		serviceContext.setScopeGroupId(scopeGroupId);
+		serviceContext.setUserId(userId);
+
+		List<AssetTag> assetTags = new ArrayList<>(jsonArray.length());
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			String tagName = jsonArray.getString(i);
+
+			AssetTag assetTag = _assetTagLocalService.fetchTag(
+				scopeGroupId, tagName);
+
+			if (assetTag == null) {
+				assetTag = _assetTagLocalService.addTag(
+					userId, scopeGroupId, tagName, serviceContext);
+			}
+
+			assetTags.add(assetTag);
+		}
+
+		return assetTags;
+	}
+
 	private CPDefinition _importCPDefinition(
 			JSONObject jsonObject, String assetVocabularyName,
 			long catalogGroupId, long commerceChannelId,
@@ -343,10 +386,19 @@ public class CPDefinitionsImporter {
 		JSONArray categoriesJSONArray = jsonObject.getJSONArray("categories");
 
 		if (categoriesJSONArray != null) {
-			assetCategories = _assetCategoriesImporter.importAssetCategories(
-				categoriesJSONArray, assetVocabularyName, classLoader,
-				imageDependenciesPath, company.getGroupId(),
-				serviceContext.getUserId());
+			assetCategories =
+				(List<AssetCategory>)_assetCategoriesImporter.importModels(
+					categoriesJSONArray, company.getGroupId(),
+					HashMapBuilder.<String, Object>put(
+						"addGuestPermissions", false
+					).put(
+						"assetVocabularyName", assetVocabularyName
+					).put(
+						"classLoader", classLoader
+					).put(
+						"imageDependenciesPath", imageDependenciesPath
+					).build(),
+					serviceContext.getUserId());
 		}
 
 		// Tags
@@ -354,7 +406,7 @@ public class CPDefinitionsImporter {
 		JSONArray tagsJSONArray = jsonObject.getJSONArray("tags");
 
 		if (tagsJSONArray != null) {
-			_assetTagsImporter.importAssetTags(
+			_importAssetTags(
 				tagsJSONArray, company.getGroupId(),
 				serviceContext.getUserId());
 		}
@@ -967,11 +1019,13 @@ public class CPDefinitionsImporter {
 	@Reference
 	private AccountGroupRelLocalService _accountGroupRelLocalService;
 
-	@Reference
-	private AssetCategoriesImporter _assetCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.AssetCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _assetCategoriesImporter;
 
 	@Reference
-	private AssetTagsImporter _assetTagsImporter;
+	private AssetTagLocalService _assetTagLocalService;
 
 	@Reference
 	private CommerceAvailabilityEstimateLocalService

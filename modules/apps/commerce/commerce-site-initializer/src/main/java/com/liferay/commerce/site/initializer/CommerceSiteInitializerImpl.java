@@ -9,12 +9,7 @@ import com.liferay.account.settings.AccountEntryGroupSettings;
 import com.liferay.commerce.configuration.CommerceAccountGroupServiceConfiguration;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
-import com.liferay.commerce.initializer.util.CPDefinitionsImporter;
-import com.liferay.commerce.initializer.util.CPOptionCategoriesImporter;
-import com.liferay.commerce.initializer.util.CPOptionsImporter;
-import com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter;
-import com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter;
-import com.liferay.commerce.initializer.util.PortletSettingsImporter;
+import com.liferay.commerce.initializer.util.SiteInitializerModelImporter;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
 import com.liferay.commerce.model.CommerceOrder;
 import com.liferay.commerce.model.CommerceOrderType;
@@ -182,13 +177,20 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			return;
 		}
 
-		Group group = _groupLocalService.getCompanyGroup(
-			serviceContext.getCompanyId());
-
-		_portletSettingsImporter.importPortletSettings(
-			_jsonFactory.createJSONArray(json), classLoader,
-			"/site-initializer/portlet-settings/",
-			serviceContext.getScopeGroupId(), group.getGroupId(),
+		_portletSettingsImporter.importModels(
+			_jsonFactory.createJSONArray(json),
+			serviceContext.getScopeGroupId(),
+			HashMapBuilder.<String, Object>put(
+				"assetVocabularyGroupId",
+				_groupLocalService.getCompanyGroup(
+					serviceContext.getCompanyId()
+				).getGroupId()
+			).put(
+				"classLoader", classLoader
+			).put(
+				"displayTemplateDependenciesPath",
+				"/site-initializer/portlet-settings/"
+			).build(),
 			serviceContext.getUserId());
 	}
 
@@ -248,13 +250,14 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			ServiceContext serviceContext, ServletContext servletContext)
 		throws Exception {
 
-		return _commerceInventoryWarehousesImporter.
-			importCommerceInventoryWarehouses(
+		return (List<CommerceInventoryWarehouse>)
+			_commerceInventoryWarehousesImporter.importModels(
 				_jsonFactory.createJSONArray(
 					SiteInitializerUtil.read(
 						"/site-initializer/commerce-inventory-warehouses.json",
 						servletContext)),
-				serviceContext.getScopeGroupId(), serviceContext.getUserId());
+				serviceContext.getScopeGroupId(), null,
+				serviceContext.getUserId());
 	}
 
 	private void _addCommerceNotificationTemplate(
@@ -356,8 +359,8 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray(json);
 
-		_cpSpecificationOptionsImporter.importCPSpecificationOptions(
-			jsonArray, serviceContext.getScopeGroupId(),
+		_cpSpecificationOptionsImporter.importModels(
+			jsonArray, serviceContext.getScopeGroupId(), null,
 			serviceContext.getUserId());
 
 		for (int i = 0; i < jsonArray.length(); i++) {
@@ -423,19 +426,32 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			return;
 		}
 
-		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-
 		List<CPDefinition> cpDefinitions =
-			_cpDefinitionsImporter.importCPDefinitions(
-				_jsonFactory.createJSONArray(json), assetVocabularyName,
-				commerceCatalogGroup.getGroupId(), channel.getId(),
-				ListUtil.toLongArray(
-					commerceInventoryWarehouses,
-					CommerceInventoryWarehouse.
-						COMMERCE_INVENTORY_WAREHOUSE_ID_ACCESSOR),
-				bundleWiring.getClassLoader(),
-				StringUtil.replace(resourcePath, ".json", "/"),
-				serviceContext.getScopeGroupId(), serviceContext.getUserId());
+			(List<CPDefinition>)_cpDefinitionsImporter.importModels(
+				_jsonFactory.createJSONArray(json),
+				serviceContext.getScopeGroupId(),
+				HashMapBuilder.<String, Object>put(
+					"assetVocabularyName", assetVocabularyName
+				).put(
+					"catalogGroupId", commerceCatalogGroup.getGroupId()
+				).put(
+					"classLoader",
+					bundle.adapt(
+						BundleWiring.class
+					).getClassLoader()
+				).put(
+					"commerceChannelId", channel.getId()
+				).put(
+					"commerceInventoryWarehouseIds",
+					ListUtil.toLongArray(
+						commerceInventoryWarehouses,
+						CommerceInventoryWarehouse.
+							COMMERCE_INVENTORY_WAREHOUSE_ID_ACCESSOR)
+				).put(
+					"imageDependenciesPath",
+					StringUtil.replace(resourcePath, ".json", "/")
+				).build(),
+				serviceContext.getUserId());
 
 		if (ListUtil.isEmpty(cpDefinitions)) {
 			return;
@@ -568,9 +584,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 			_commerceCatalogLocalService.getCommerceCatalogGroup(
 				catalog.getId());
 
-		_cpOptionsImporter.importCPOptions(
+		_cpOptionsImporter.importModels(
 			_jsonFactory.createJSONArray(json),
-			commerceCatalogGroup.getGroupId(), serviceContext.getUserId());
+			commerceCatalogGroup.getGroupId(), null,
+			serviceContext.getUserId());
 	}
 
 	private void _addDefaultCPDisplayLayout(
@@ -914,8 +931,8 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray(json);
 
-		_cpOptionCategoriesImporter.importCPOptionCategories(
-			jsonArray, serviceContext.getScopeGroupId(),
+		_cpOptionCategoriesImporter.importModels(
+			jsonArray, serviceContext.getScopeGroupId(), null,
 			serviceContext.getUserId());
 	}
 
@@ -1024,9 +1041,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private CommerceCurrencyLocalService _commerceCurrencyLocalService;
 
-	@Reference
-	private CommerceInventoryWarehousesImporter
-		_commerceInventoryWarehousesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CommerceInventoryWarehousesImporter)"
+	)
+	private SiteInitializerModelImporter _commerceInventoryWarehousesImporter;
 
 	@Reference
 	private CommerceNotificationTemplateLocalService
@@ -1047,8 +1065,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private CPDefinitionLocalService _cpDefinitionLocalService;
 
-	@Reference
-	private CPDefinitionsImporter _cpDefinitionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPDefinitionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpDefinitionsImporter;
 
 	@Reference
 	private CPInstanceLocalService _cpInstanceLocalService;
@@ -1056,17 +1076,23 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private CPMeasurementUnitLocalService _cpMeasurementUnitLocalService;
 
-	@Reference
-	private CPOptionCategoriesImporter _cpOptionCategoriesImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionCategoriesImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionCategoriesImporter;
 
 	@Reference
 	private CPOptionLocalService _cpOptionLocalService;
 
-	@Reference
-	private CPOptionsImporter _cpOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpOptionsImporter;
 
-	@Reference
-	private CPSpecificationOptionsImporter _cpSpecificationOptionsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.CPSpecificationOptionsImporter)"
+	)
+	private SiteInitializerModelImporter _cpSpecificationOptionsImporter;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
@@ -1080,8 +1106,10 @@ public class CommerceSiteInitializerImpl implements CommerceSiteInitializer {
 	@Reference
 	private OrderTypeResource.Factory _orderTypeResourceFactory;
 
-	@Reference
-	private PortletSettingsImporter _portletSettingsImporter;
+	@Reference(
+		target = "(component.name=com.liferay.commerce.initializer.util.PortletSettingsImporter)"
+	)
+	private SiteInitializerModelImporter _portletSettingsImporter;
 
 	@Reference
 	private ProductOptionResource.Factory _productOptionResourceFactory;

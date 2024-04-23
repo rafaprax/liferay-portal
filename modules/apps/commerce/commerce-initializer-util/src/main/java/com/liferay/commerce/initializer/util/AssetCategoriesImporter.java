@@ -47,31 +47,22 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Andrea Di Giorgi
  */
-@Component(service = AssetCategoriesImporter.class)
-public class AssetCategoriesImporter {
+@Component(service = SiteInitializerModelImporter.class)
+public class AssetCategoriesImporter
+	implements SiteInitializerModelImporter<List<AssetCategory>> {
 
-	public List<AssetCategory> importAssetCategories(
-			JSONArray jsonArray, String assetVocabularyName,
-			ClassLoader classLoader, String imageDependenciesPath,
-			long scopeGroupId, long userId)
-		throws Exception {
-
-		return importAssetCategories(
-			jsonArray, assetVocabularyName, classLoader, imageDependenciesPath,
-			scopeGroupId, userId, false);
-	}
-
-	public List<AssetCategory> importAssetCategories(
-			JSONArray jsonArray, String assetVocabularyName,
-			ClassLoader classLoader, String imageDependenciesPath,
-			long scopeGroupId, long userId, boolean addGuestPermissions)
+	@Override
+	public List<AssetCategory> importModels(
+			JSONArray jsonArray, long scopeGroupId,
+			HashMap<String, Object> parameterMap, long userId)
 		throws Exception {
 
 		User user = _userLocalService.getUser(userId);
 
 		ServiceContext serviceContext = new ServiceContext();
 
-		serviceContext.setAddGuestPermissions(addGuestPermissions);
+		serviceContext.setAddGuestPermissions(
+			(Boolean)parameterMap.get("addGuestPermissions"));
 		serviceContext.setCompanyId(user.getCompanyId());
 		serviceContext.setScopeGroupId(scopeGroupId);
 		serviceContext.setUserId(userId);
@@ -80,7 +71,10 @@ public class AssetCategoriesImporter {
 			jsonArray.length());
 
 		AssetVocabulary assetVocabulary = _addAssetVocabulary(
-			assetVocabularyName, serviceContext);
+			parameterMap.get(
+				"assetVocabularyName"
+			).toString(),
+			serviceContext);
 
 		updateAssetVocabularyPermissions(assetVocabulary);
 
@@ -102,8 +96,12 @@ public class AssetCategoriesImporter {
 			}
 
 			AssetCategory assetCategory = _addAssetCategory(
-				assetVocabulary.getVocabularyId(), title, classLoader,
-				imageDependenciesPath, imageFileName, serviceContext);
+				assetVocabulary.getVocabularyId(), title,
+				(ClassLoader)parameterMap.get("classLoader"),
+				parameterMap.get(
+					"imageDependenciesPath"
+				).toString(),
+				imageFileName, serviceContext);
 
 			assetCategories.add(assetCategory);
 
