@@ -15,6 +15,7 @@ import com.liferay.layout.utility.page.kernel.StatusLayoutUtilityPageEntryReques
 import com.liferay.layout.utility.page.kernel.request.contributor.StatusLayoutUtilityPageEntryRequestContributor;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -80,6 +81,7 @@ import com.liferay.portal.kernel.model.VirtualHost;
 import com.liferay.portal.kernel.model.VirtualLayoutConstants;
 import com.liferay.portal.kernel.model.impl.VirtualLayout;
 import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.module.util.SystemBundleUtil;
 import com.liferay.portal.kernel.portlet.FriendlyURLMapper;
 import com.liferay.portal.kernel.portlet.FriendlyURLMapperThreadLocal;
@@ -213,6 +215,7 @@ import java.awt.image.RenderedImage;
 
 import java.io.IOException;
 
+import java.lang.reflect.Method;
 import java.net.IDN;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -6878,6 +6881,18 @@ public class PortalImpl implements Portal {
 			boolean alwaysAllowDoAsUser)
 		throws Exception {
 
+		Object doAsUserIdMethodHolder = _getDoAsUserIdMethodHolder.get();
+
+		if (_getDoAsUserIdMethodHolder != null) {
+			Method getDoAsUserIdMethod = ReflectionUtil.getDeclaredMethod(
+				doAsUserIdMethodHolder.getClass(), "getDoAsUserId",
+				HttpServletRequest.class, String.class, boolean.class);
+
+			return (long)getDoAsUserIdMethod.invoke(
+				doAsUserIdMethodHolder, httpServletRequest, doAsUserIdString,
+				alwaysAllowDoAsUser);
+		}
+
 		if (Validator.isNull(doAsUserIdString)) {
 			return 0;
 		}
@@ -8111,6 +8126,11 @@ public class PortalImpl implements Portal {
 	private final String[] _sortedSystemRoles;
 	private final String[] _sortedSystemSiteRoles;
 	private final boolean _validPortalDomainCheckDisabled;
+
+	private final Snapshot<Object> _getDoAsUserIdMethodHolder =
+		new Snapshot<>(
+			PortalImpl.class, Object.class,
+			"(portal.impl.get.do.as.user.id=true)", true);
 
 	private static class NullLocaleHolder {
 
