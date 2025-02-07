@@ -5,14 +5,14 @@
 
 import {test} from '@playwright/test';
 
-import { TimeBasedOneTimePasswordConfigurationPage } from '../pages/multi-factor-authentication/TimeBasedOneTimePasswordConfigurationPage';
+import {TimeBasedOneTimePasswordConfigurationPage} from '../pages/multi-factor-authentication/TimeBasedOneTimePasswordConfigurationPage';
 
 const timeBasedOneTimePasswordConfigurationPageTest = test.extend<{
-    timeBasedOneTimePasswordConfigurationPage: TimeBasedOneTimePasswordConfigurationPage;
+	timeBasedOneTimePasswordConfigurationPage: TimeBasedOneTimePasswordConfigurationPage;
 }>({
-    timeBasedOneTimePasswordConfigurationPage: async ({page}, use) => {
-        await use(new TimeBasedOneTimePasswordConfigurationPage(page));
-    },
+	timeBasedOneTimePasswordConfigurationPage: async ({page}, use) => {
+		await use(new TimeBasedOneTimePasswordConfigurationPage(page));
+	},
 });
 
 export {timeBasedOneTimePasswordConfigurationPageTest};

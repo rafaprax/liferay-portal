@@ -5,14 +5,14 @@
 
 import {test} from '@playwright/test';
 
-import { MultiFactorAuthenticationConfigurationPage } from '../pages/multi-factor-authentication/MultiFactorAuthenticationConfigurationPage';
+import {MultiFactorAuthenticationConfigurationPage} from '../pages/multi-factor-authentication/MultiFactorAuthenticationConfigurationPage';
 
 const multiFactorAuthenticationConfigurationPageTest = test.extend<{
-    multiFactorAuthenticationConfigurationPage: MultiFactorAuthenticationConfigurationPage;
+	multiFactorAuthenticationConfigurationPage: MultiFactorAuthenticationConfigurationPage;
 }>({
-    multiFactorAuthenticationConfigurationPage: async ({page}, use) => {
-        await use(new MultiFactorAuthenticationConfigurationPage(page));
-    },
+	multiFactorAuthenticationConfigurationPage: async ({page}, use) => {
+		await use(new MultiFactorAuthenticationConfigurationPage(page));
+	},
 });
 
 export {multiFactorAuthenticationConfigurationPageTest};

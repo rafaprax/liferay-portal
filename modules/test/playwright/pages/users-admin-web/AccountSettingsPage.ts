@@ -28,9 +28,12 @@ export class AccountSettingsPage {
 			name: 'Display Settings',
 		});
 		this.languageSelect = page.getByLabel('Language');
-		this.multiFactorAuthentitacionNavigationItem = page.locator('.nav-link', {
-			hasText: 'Multi-Factor Authentication',
-		});
+		this.multiFactorAuthentitacionNavigationItem = page.locator(
+			'.nav-link',
+			{
+				hasText: 'Multi-Factor Authentication',
+			}
+		);
 		this.page = page;
 		this.preferencesNavigationItem = page.locator('.nav-link', {
 			hasText: 'Preferences',
