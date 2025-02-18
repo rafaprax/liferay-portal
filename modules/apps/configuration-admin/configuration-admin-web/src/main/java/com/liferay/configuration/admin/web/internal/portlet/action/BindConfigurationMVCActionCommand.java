@@ -171,11 +171,7 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 				configurationScopeDisplayContext.getScope(),
 				configurationScopeDisplayContext.getScopePK());
 
-			String redirect = ParamUtil.getString(actionRequest, "redirect");
-
-			if (Validator.isNotNull(redirect)) {
-				actionResponse.sendRedirect(redirect);
-			}
+			_sendRedirect(actionRequest, actionResponse);
 		}
 		catch (ConfigurationModelListenerException
 					configurationModelListenerException) {
@@ -184,12 +180,7 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 				actionRequest, ConfigurationModelListenerException.class,
 				configurationModelListenerException);
 
-			actionResponse.setRenderParameter(
-				"mvcRenderCommandName",
-				"/configuration_admin/edit_configuration");
-		}
-		catch (IOException ioException) {
-			throw new PortletException(ioException);
+			_sendRedirect(actionRequest, actionResponse);
 		}
 
 		return true;
@@ -334,6 +325,22 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 
 		return configurationFormRenderer.getRequestParameters(
 			_portal.getHttpServletRequest(actionRequest));
+	}
+
+	private void _sendRedirect(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws PortletException {
+
+		try {
+			String redirect = ParamUtil.getString(actionRequest, "redirect");
+
+			if (Validator.isNotNull(redirect)) {
+				actionResponse.sendRedirect(redirect);
+			}
+		}
+		catch (IOException ioException) {
+			throw new PortletException(ioException);
+		}
 	}
 
 	private Dictionary<String, Object> _toDictionary(
