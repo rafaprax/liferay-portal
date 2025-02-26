@@ -137,6 +137,7 @@ components:
                         A multi-valued list of complex objects containing the requested resources.
                     oneOf:
                         - $ref: "#/components/schemas/Group"
+                        - $ref: "#/components/schemas/SCIMSchema"
                         - $ref: "#/components/schemas/User"
                     type: object
                 itemsPerPage:
@@ -151,6 +152,131 @@ components:
                     description:
                         The total number of results returned by the list or query operation.
                     type: integer
+            type: object
+        SCIMSchema:
+            properties:
+                description:
+                    type: string
+                    description:
+                        "A description of the schema."
+                    example: "Represents a User resource."
+                id:
+                    description:
+                        "The unique identifier of the schema."
+                    example: "urn:ietf:params:scim:schemas:core:2.0:User"
+                    type: string
+                meta:
+                    $ref: "#/components/schemas/Meta"
+                    description:
+                        "Complex attribute containing resource metadata."
+                name:
+                    description:
+                        "The schema's human-readable name."
+                    example: "User"
+                    type: string
+                schemaAttributes:
+                    description:
+                        "A complex attribute that contains the schema's attributes."
+                    items:
+                        $ref: "#/components/schemas/SchemaAttribute"
+                    type: array
+                schemas:
+                    description:
+                        "A list of strings that MUST contain the value 'urn:ietf:params:scim:schemas:core:2.0:Schema'."
+                    example: ["urn:ietf:params:scim:schemas:core:2.0:Schema"]
+                    items:
+                        type: string
+                    type: array
+            type: object
+        SchemaAttribute:
+            properties:
+                canonicalValues:
+                    description:
+                        "A list of canonical values."
+                    example: ["work", "home"]
+                    items:
+                        type: string
+                    type: array
+                caseExact:
+                    description:
+                        "A boolean value indicating whether the attribute is case-sensitive."
+                    example: true
+                    type: boolean
+                description:
+                    type: string
+                    description:
+                        "A description of the attribute."
+                    example: "Unique identifier for the User, typically used by the user to directly authenticate to the service provider."
+                multiValued:
+                    description:
+                        "A boolean value indicating whether the attribute is multi-valued."
+                    example: false
+                    type: boolean
+                mutability:
+                    description:
+                        "The attribute's mutability."
+                    enum:
+                        - "readOnly"
+                        - "readWrite"
+                        - "immutable"
+                        - "writeOnly"
+                    example: "readWrite"
+                    type: string
+                name:
+                    description:
+                        "The attribute's name."
+                    example: "userName"
+                    type: string
+                referenceTypes:
+                    description:
+                        "A list of reference types."
+                    example: ["User", "Group"]
+                    items:
+                        type: string
+                    type: array
+                required:
+                    description:
+                        "A boolean value indicating whether the attribute is required."
+                    example: true
+                    type: boolean
+                returned:
+                    description:
+                        "The attribute's returned characteristics."
+                    enum:
+                        - "always"
+                        - "never"
+                        - "default"
+                        - "request"
+                    example: "default"
+                    type: string
+                schemaAttributes:
+                    description:
+                        "A complex attribute that contains the attribute's sub-attributes."
+                    items:
+                        $ref: "#/components/schemas/SchemaAttribute"
+                    type: array
+                type:
+                    description:
+                        "The attribute's data type."
+                    enum:
+                        - "string"
+                        - "boolean"
+                        - "decimal"
+                        - "integer"
+                        - "dateTime"
+                        - "reference"
+                        - "complex"
+                    example: "string"
+                    type: string
+                uniqueness:
+                    description:
+                        "The attribute's uniqueness."
+                    enum:
+                        - "none"
+                        - "server"
+                        - "global"
+                    example: "server"
+                    type: string
             type: object
         User:
             allOf:
@@ -480,6 +606,49 @@ paths:
                     description:
                         The Group was successfully updated.
             tags: ["Group"]
+    /v2/Schemas:
+        get:
+            description:
+                Lists users.
+            operationId: getV2Schemas
+            responses:
+                200:
+                    content:
+                        application/scim+json:
+                            schema:
+                                oneOf:
+                                    - format: binary
+                                      type: string
+                                    - $ref: "#/components/schemas/QueryResponse"
+                    description:
+                        The list of supported schemas.
+            tags: ["SCIMSchema"]
+    /v2/Schemas/{id}:
+        get:
+            parameters:
+                - in: path
+                  description:
+                      The schema's unique identifier.
+                  example: "urn:ietf:params:scim:schemas:core:2.0:User"
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/scim+json:
+                            schema:
+                                oneOf:
+                                    - format: binary
+                                      type: string
+                                    - $ref: "#/components/schemas/SCIMSchema"
+                    description:
+                        The requested schema.
+                404:
+                    description:
+                        Schema not found.
+            tags: ["SCIMSchema"]
     /v2/Users:
         get:
             description:
