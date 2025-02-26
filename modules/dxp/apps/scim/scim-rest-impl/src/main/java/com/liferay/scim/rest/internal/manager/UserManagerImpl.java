@@ -41,6 +41,7 @@ import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -55,6 +56,7 @@ import com.liferay.scim.rest.internal.model.ScimUser;
 import com.liferay.scim.rest.internal.util.ScimUtil;
 import com.liferay.scim.rest.util.ScimClientUtil;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +66,13 @@ import java.util.Objects;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import org.wso2.charon3.core.attributes.AbstractAttribute;
+import org.wso2.charon3.core.attributes.Attribute;
+import org.wso2.charon3.core.attributes.ComplexAttribute;
+import org.wso2.charon3.core.attributes.DefaultAttributeFactory;
+import org.wso2.charon3.core.attributes.MultiValuedAttribute;
 import org.wso2.charon3.core.exceptions.AbstractCharonException;
+import org.wso2.charon3.core.exceptions.BadRequestException;
 import org.wso2.charon3.core.exceptions.CharonException;
 import org.wso2.charon3.core.exceptions.ConflictException;
 import org.wso2.charon3.core.exceptions.NotFoundException;
@@ -74,6 +82,8 @@ import org.wso2.charon3.core.objects.Group;
 import org.wso2.charon3.core.objects.User;
 import org.wso2.charon3.core.objects.plainobjects.GroupsGetResponse;
 import org.wso2.charon3.core.objects.plainobjects.UsersGetResponse;
+import org.wso2.charon3.core.schema.AttributeSchema;
+import org.wso2.charon3.core.schema.SCIMSchemaDefinitions;
 import org.wso2.charon3.core.utils.codeutils.ExpressionNode;
 import org.wso2.charon3.core.utils.codeutils.Node;
 import org.wso2.charon3.core.utils.codeutils.SearchRequest;
@@ -193,6 +203,27 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	@Override
+	public List<Attribute> getCoreSchema()
+		throws BadRequestException, CharonException, NotImplementedException {
+
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<Attribute> getCustomUserSchemaAttributes()
+		throws BadRequestException, CharonException, NotImplementedException {
+
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<Attribute> getEnterpriseUserSchema()
+		throws BadRequestException, CharonException, NotImplementedException {
+
+		return Collections.emptyList();
+	}
+
+	@Override
 	public Group getGroup(
 		String groupId, Map<String, Boolean> requiredAttributes) {
 
@@ -246,6 +277,23 @@ public class UserManagerImpl implements UserManager {
 		catch (Exception exception) {
 			return ReflectionUtil.throwException(exception);
 		}
+	}
+
+	@Override
+	public List<Attribute> getUserSchema()
+		throws BadRequestException, CharonException, NotImplementedException {
+
+		List<Attribute> attributes = new ArrayList<>();
+
+		for (AttributeSchema attributeSchema :
+				SCIMSchemaDefinitions.SCIM_USER_SCHEMA.getAttributesList()) {
+
+			attributes.add(
+				DefaultAttributeFactory.createAttribute(
+					attributeSchema, createAbstractAttribute(attributeSchema)));
+		}
+
+		return attributes;
 	}
 
 	@Override
@@ -1023,6 +1071,32 @@ public class UserManagerImpl implements UserManager {
 
 					return GetterUtil.getLong(userId);
 				}));
+	}
+
+	private AbstractAttribute createAbstractAttribute(
+			AttributeSchema attributeSchema)
+		throws BadRequestException, CharonException {
+
+		if (attributeSchema.getMultiValued()) {
+			return new MultiValuedAttribute(attributeSchema.getName());
+		}
+
+		ComplexAttribute complexAttribute = new ComplexAttribute();
+
+		complexAttribute.setName(attributeSchema.getName());
+
+		if (ListUtil.isNotEmpty(attributeSchema.getSubAttributeSchemas())) {
+			for (AttributeSchema subAttributeSchema :
+					attributeSchema.getSubAttributeSchemas()) {
+
+				complexAttribute.setSubAttribute(
+					DefaultAttributeFactory.createAttribute(
+						subAttributeSchema,
+						createAbstractAttribute(subAttributeSchema)));
+			}
+		}
+
+		return complexAttribute;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
