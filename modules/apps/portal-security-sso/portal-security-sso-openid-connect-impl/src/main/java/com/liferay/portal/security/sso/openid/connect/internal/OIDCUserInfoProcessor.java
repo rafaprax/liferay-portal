@@ -218,9 +218,15 @@ public class OIDCUserInfoProcessor {
 			"lastName", userMapperJSONObject, userInfoJSONObject);
 		String screenName = _getClaimString(
 			"screenName", userMapperJSONObject, userInfoJSONObject);
+		String subject = "OIDC_" + userInfoJSONObject.getString("sub");
 
-		User user = _userLocalService.fetchUserByEmailAddress(
-			companyId, emailAddress);
+		User user = _userLocalService.fetchUserByExternalReferenceCode(
+			subject, companyId);
+
+		if (user == null) {
+			user = _userLocalService.fetchUserByEmailAddress(
+				companyId, emailAddress);
+		}
 
 		_validate(companyId, emailAddress, firstName, lastName, user);
 
@@ -263,6 +269,8 @@ public class OIDCUserInfoProcessor {
 					null,
 				false, serviceContext);
 
+			user = _updateExternalReferenceCode(subject, user);
+
 			ExpandoColumn expandoColumn = _getOrAddExpandoColumn(
 				User.class.getName(), companyId);
 
@@ -285,7 +293,7 @@ public class OIDCUserInfoProcessor {
 		_addOrUpdateUserCustomClaims(
 			customClaimsJSON, user, userInfoJSONObject);
 
-		return _userLocalService.updateUser(
+		user = _userLocalService.updateUser(
 			user.getUserId(), StringPool.BLANK, StringPool.BLANK,
 			StringPool.BLANK, false, user.getReminderQueryQuestion(),
 			user.getReminderQueryAnswer(),
@@ -309,6 +317,8 @@ public class OIDCUserInfoProcessor {
 			user.getUserGroupRoles(),
 			_getUserGroupIds(companyId, oAuthClientEntryId, user, userGroupIds),
 			serviceContext);
+
+		return _updateExternalReferenceCode(subject, user);
 	}
 
 	private void _addOrUpdateUserCustomClaims(
@@ -715,6 +725,17 @@ public class OIDCUserInfoProcessor {
 		}
 
 		return false;
+	}
+
+	private User _updateExternalReferenceCode(String subject, User user)
+		throws PortalException {
+
+		if (subject.equals(user.getExternalReferenceCode())) {
+			return user;
+		}
+
+		return _userLocalService.updateExternalReferenceCode(
+			user.getUserId(), subject);
 	}
 
 	private void _validate(
