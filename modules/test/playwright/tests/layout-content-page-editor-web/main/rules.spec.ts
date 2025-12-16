@@ -145,25 +145,38 @@ test(
 			page.getByText('IfUserIs the UsertestHideButton')
 		).toBeVisible();
 
-		// Rename rule inline
-
-		const nextRuleName = getRandomString();
-
-		const name = page.locator('.page-editor__rule').getByText(ruleName);
-
-		const input = page.locator('.page-editor__rule input');
+		// Rename rule inline, put empty name and check it's not saved
 
 		await expect(async () => {
+			const name = page.locator('.page-editor__rule').getByText(ruleName);
+
+			const input = page.locator('.page-editor__rule input');
+
 			await name.dblclick({timeout: 1000});
 
 			await expect(input).toBeVisible({timeout: 1000});
 
-			await input.fill(nextRuleName);
+			await input.fill('', {timeout: 1000});
 
-			await input.press('Enter');
+			await input.press('Enter', {timeout: 1000});
 
-			await pageEditorPage.waitForChangesSaved({timeout: 2000});
+			await page
+				.locator('.alert-info', {
+					hasText: 'Rule name cannot be empty.',
+				})
+				.waitFor({timeout: 2000});
 		}).toPass();
+
+		await expect(page.getByText('Rule name cannot be empty')).toBeVisible();
+
+		// Rename rule properly
+
+		const nextRuleName = getRandomString();
+
+		await pageEditorPage.renameRuleInline({
+			currentName: ruleName,
+			newName: nextRuleName,
+		});
 
 		// Edit rule
 

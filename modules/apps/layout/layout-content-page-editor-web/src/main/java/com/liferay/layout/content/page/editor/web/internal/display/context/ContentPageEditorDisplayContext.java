@@ -84,6 +84,7 @@ import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletURLFactory;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
@@ -487,6 +488,16 @@ public class ContentPageEditorDisplayContext {
 					"/layout_content_page_editor" +
 						"/get_fragment_entry_input_field_types")
 			).put(
+				"getFragmentEntryInputURL",
+				PortletURLBuilder.createRenderURL(
+					portal.getLiferayPortletResponse(renderResponse),
+					FragmentPortletKeys.FRAGMENT
+				).setMVCRenderCommandName(
+					"/fragment/select_input_fragment_entry"
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildString()
+			).put(
 				"getIframeContentCssURL",
 				portal.getStaticResourceURL(
 					httpServletRequest,
@@ -734,6 +745,10 @@ public class ContentPageEditorDisplayContext {
 			).put(
 				"styleBooks", _getStyleBooks()
 			).put(
+				"swapFragmentEntryLinkURL",
+				getFragmentEntryActionURL(
+					"/layout_content_page_editor/swap_fragment_entry_link")
+			).put(
 				"themeColorsCssClasses", _getThemeColorsCssClasses()
 			).put(
 				"themeName",
@@ -788,6 +803,10 @@ public class ContentPageEditorDisplayContext {
 				"updateRowColumnsURL",
 				getFragmentEntryActionURL(
 					"/layout_content_page_editor/update_row_columns")
+			).put(
+				"updateRulesURL",
+				getFragmentEntryActionURL(
+					"/layout_content_page_editor/update_rules")
 			).put(
 				"updateRuleURL",
 				getFragmentEntryActionURL(

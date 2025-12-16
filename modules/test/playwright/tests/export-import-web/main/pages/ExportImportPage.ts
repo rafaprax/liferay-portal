@@ -4,12 +4,15 @@
  */
 
 import {Locator, Page, expect} from '@playwright/test';
+import path from 'path';
 
 import {ProductMenuPage} from '../../../../pages/product-navigation-control-menu-web/ProductMenuPage';
 import {clickAndExpectToBeHidden} from '../../../../utils/clickAndExpectToBeHidden';
 import {clickAndExpectToBeVisible} from '../../../../utils/clickAndExpectToBeVisible';
 import {PORTLET_URLS} from '../../../../utils/portletUrls';
 import {getTempDir} from '../../../../utils/temp';
+
+export type taskStatus = 'success' | 'completedWithErrors';
 
 export class ExportImportPage {
 	readonly cancelButton: Locator;
@@ -37,7 +40,10 @@ export class ExportImportPage {
 	readonly productMenuPage: ProductMenuPage;
 	readonly taskActionsMenu: (taskName: string) => Locator;
 	readonly taskRow: (taskName: string) => Locator;
-	readonly taskSuccessLabel: (taskName: string) => Locator;
+	readonly taskStatusLabel: (
+		taskName: string,
+		taskStatus?: taskStatus
+	) => Locator;
 	readonly title: Locator;
 	readonly updateDataAlert: Locator;
 	readonly updateDataMirrorWarningLabel: Locator;
@@ -90,14 +96,22 @@ export class ExportImportPage {
 			'[id="_com_liferay_exportimport_web_portlet_ImportPortlet_contentLink_com_liferay_layout_admin_web_portlet_GroupPagesPortlet"]'
 		);
 		this.productMenuPage = new ProductMenuPage(page);
-		this.taskActionsMenu = (taskName: string) =>
+		this.taskActionsMenu = (taskName) =>
 			this.taskRow(taskName).getByRole('button');
-		this.taskRow = (taskName: string) =>
+		this.taskRow = (taskName) =>
 			this.page.locator('[data-qa-id="row"]', {
 				hasText: taskName,
 			});
-		this.taskSuccessLabel = (taskName: string) =>
-			this.taskRow(taskName).getByText('Successful');
+		this.taskStatusLabel = (taskName, taskStatus = 'success') => {
+			const taskStatusTexts: Record<taskStatus, string> = {
+				completedWithErrors: 'Completed with errors',
+				success: 'Successful',
+			};
+
+			return this.taskRow(taskName).getByText(
+				taskStatusTexts[taskStatus]
+			);
+		};
 		this.title = page.getByPlaceholder('Enter the name of the process');
 		this.updateDataAlert = page.locator('[role="alert"]', {
 			hasText:
@@ -188,7 +202,15 @@ export class ExportImportPage {
 		expect(wikiLabelCount).toBe(0);
 	}
 
-	async import(filePath: string, expectedUploadErrorMessage?: string) {
+	async import({
+		expectedUploadErrorMessage,
+		filePath,
+		taskStatus = 'success',
+	}: {
+		expectedUploadErrorMessage?: string;
+		filePath: string;
+		taskStatus?: 'success' | 'completedWithErrors';
+	}) {
 		await this.newImportButton.click();
 
 		const fileChooserPromise = this.page.waitForEvent('filechooser');
@@ -245,6 +267,9 @@ export class ExportImportPage {
 			.click();
 
 		await this.importButton.click();
+
+		const fileName = path.basename(filePath);
+		await expect(this.taskStatusLabel(fileName, taskStatus)).toBeVisible();
 	}
 
 	async getExportableItems() {
@@ -311,8 +336,6 @@ export class ExportImportPage {
 	}
 
 	async goToImportDetails(exportName: string) {
-		await expect(this.taskSuccessLabel(exportName)).toBeVisible();
-
 		await this.clickTaskAction(exportName, 'View Details');
 	}
 
@@ -355,8 +378,6 @@ export class ExportImportPage {
 	}
 
 	async openExportReportEntriesModal(exportName) {
-		await this.taskSuccessLabel(exportName).waitFor();
-
 		await this.clickTaskAction(exportName, 'Export Report Entries');
 
 		await this.exportReportEntriesModal.waitFor();

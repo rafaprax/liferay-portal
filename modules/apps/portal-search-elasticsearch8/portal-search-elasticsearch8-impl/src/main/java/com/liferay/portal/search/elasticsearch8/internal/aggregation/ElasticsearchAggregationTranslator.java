@@ -5,11 +5,13 @@
 
 package com.liferay.portal.search.elasticsearch8.internal.aggregation;
 
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.AggregationTranslator;
 import com.liferay.portal.search.aggregation.AggregationVisitor;
 import com.liferay.portal.search.aggregation.FieldAggregation;
 import com.liferay.portal.search.aggregation.bucket.ChildrenAggregation;
+import com.liferay.portal.search.aggregation.bucket.CollectionMode;
 import com.liferay.portal.search.aggregation.bucket.DateHistogramAggregation;
 import com.liferay.portal.search.aggregation.bucket.DateRangeAggregation;
 import com.liferay.portal.search.aggregation.bucket.DiversifiedSamplerAggregation;
@@ -21,6 +23,7 @@ import com.liferay.portal.search.aggregation.bucket.GlobalAggregation;
 import com.liferay.portal.search.aggregation.bucket.HistogramAggregation;
 import com.liferay.portal.search.aggregation.bucket.MissingAggregation;
 import com.liferay.portal.search.aggregation.bucket.NestedAggregation;
+import com.liferay.portal.search.aggregation.bucket.Range;
 import com.liferay.portal.search.aggregation.bucket.RangeAggregation;
 import com.liferay.portal.search.aggregation.bucket.ReverseNestedAggregation;
 import com.liferay.portal.search.aggregation.bucket.SamplerAggregation;
@@ -43,35 +46,65 @@ import com.liferay.portal.search.aggregation.metrics.SumAggregation;
 import com.liferay.portal.search.aggregation.metrics.TopHitsAggregation;
 import com.liferay.portal.search.aggregation.metrics.ValueCountAggregation;
 import com.liferay.portal.search.aggregation.metrics.WeightedAvgAggregation;
+import com.liferay.portal.search.aggregation.pipeline.PipelineAggregation;
 import com.liferay.portal.search.aggregation.pipeline.PipelineAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.DateHistogramAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.DateRangeAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.FilterAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.FiltersAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.GeoDistanceAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.HistogramAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.RangeAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.SignificantTermsAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.SignificantTextAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.bucket.TermsAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.metrics.ScriptedMetricAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.metrics.TopHitsAggregationTranslator;
-import com.liferay.portal.search.elasticsearch8.internal.aggregation.metrics.WeightedAvgAggregationTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.geolocation.DistanceUnitTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.geolocation.GeoDistanceTypeTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.geolocation.GeoLocationPointTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.highlight.HighlightTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.query.ElasticsearchQueryTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.script.ScriptTranslator;
+import com.liferay.portal.search.elasticsearch8.internal.sort.ElasticsearchSortFieldTranslator;
+import com.liferay.portal.search.query.QueryTranslator;
+import com.liferay.portal.search.script.ScriptField;
+import com.liferay.portal.search.sort.Sort;
+import com.liferay.portal.search.sort.SortFieldTranslator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.elasticsearch.common.geo.GeoDistance;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.join.aggregations.ChildrenAggregationBuilder;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregator;
+import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.PipelineAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
 import org.elasticsearch.search.aggregations.bucket.geogrid.GeoGridAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.histogram.HistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.LongBounds;
 import org.elasticsearch.search.aggregations.bucket.nested.ReverseNestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.AbstractRangeBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.DateRangeAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.GeoDistanceAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.RangeAggregator;
 import org.elasticsearch.search.aggregations.bucket.sampler.DiversifiedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.sampler.SamplerAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.SignificantTermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.SignificantTextAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.CardinalityAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.ExtendedStatsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.GeoBoundsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.PercentileRanksAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.PercentilesAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.ScriptedMetricAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.TopHitsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.WeightedAvgAggregationBuilder;
+import org.elasticsearch.search.aggregations.support.MultiValuesSourceFieldConfig;
 import org.elasticsearch.search.aggregations.support.ValuesSourceAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -115,7 +148,7 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(ChildrenAggregation childrenAggregation) {
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> new ChildrenAggregationBuilder(
 				baseMetricsAggregation.getName(),
 				childrenAggregation.getChildType()),
@@ -126,16 +159,63 @@ public class ElasticsearchAggregationTranslator
 	public AggregationBuilder visit(
 		DateHistogramAggregation dateHistogramAggregation) {
 
+		DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
+			AggregationBuilders.dateHistogram(
+				dateHistogramAggregation.getName());
+
+		if (ListUtil.isNotEmpty(dateHistogramAggregation.getOrders())) {
+			List<BucketOrder> bucketOrders = _orderTranslator.translate(
+				dateHistogramAggregation.getOrders());
+
+			dateHistogramAggregationBuilder.order(bucketOrders);
+		}
+
+		if ((dateHistogramAggregation.getMaxBound() != null) &&
+			(dateHistogramAggregation.getMinBound() != null)) {
+
+			LongBounds longBounds = new LongBounds(
+				dateHistogramAggregation.getMinBound(),
+				dateHistogramAggregation.getMaxBound());
+
+			dateHistogramAggregationBuilder.extendedBounds(longBounds);
+		}
+
+		if (dateHistogramAggregation.getMinDocCount() != null) {
+			dateHistogramAggregationBuilder.minDocCount(
+				dateHistogramAggregation.getMinDocCount());
+		}
+
+		if (dateHistogramAggregation.getDateHistogramInterval() != null) {
+			dateHistogramAggregationBuilder.dateHistogramInterval(
+				new DateHistogramInterval(
+					dateHistogramAggregation.getDateHistogramInterval()));
+		}
+
+		if (dateHistogramAggregation.getInterval() != null) {
+			dateHistogramAggregationBuilder.interval(
+				dateHistogramAggregation.getInterval());
+		}
+
+		if (dateHistogramAggregation.getOffset() != null) {
+			dateHistogramAggregationBuilder.offset(
+				dateHistogramAggregation.getOffset());
+		}
+
 		return _assemble(
-			_dateHistogramAggregationTranslator.translate(
-				dateHistogramAggregation),
-			dateHistogramAggregation);
+			dateHistogramAggregationBuilder, dateHistogramAggregation);
 	}
 
 	@Override
 	public AggregationBuilder visit(DateRangeAggregation dateRangeAggregation) {
-		return _dateRangeAggregationTranslator.translate(
+		DateRangeAggregationBuilder dateRangeAggregationBuilder = _translate(
+			baseMetricsAggregation -> AggregationBuilders.dateRange(
+				baseMetricsAggregation.getName()),
 			dateRangeAggregation, this, _pipelineAggregationTranslator);
+
+		populateRangeAggregationBuilder(
+			dateRangeAggregation, dateRangeAggregationBuilder);
+
+		return dateRangeAggregationBuilder;
 	}
 
 	@Override
@@ -143,7 +223,7 @@ public class ElasticsearchAggregationTranslator
 		DiversifiedSamplerAggregation diversifiedSamplerAggregation) {
 
 		DiversifiedAggregationBuilder diversifiedAggregationBuilder =
-			_baseFieldAggregationTranslator.translate(
+			_translate(
 				baseMetricsAggregation ->
 					AggregationBuilders.diversifiedSampler(
 						diversifiedSamplerAggregation.getName()),
@@ -173,7 +253,7 @@ public class ElasticsearchAggregationTranslator
 		ExtendedStatsAggregation extendedStatsAggregation) {
 
 		ExtendedStatsAggregationBuilder extendedStatsAggregationBuilder =
-			_baseFieldAggregationTranslator.translate(
+			_translate(
 				baseMetricsAggregation -> AggregationBuilders.extendedStats(
 					baseMetricsAggregation.getName()),
 				extendedStatsAggregation, this, _pipelineAggregationTranslator);
@@ -188,23 +268,67 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(FilterAggregation filterAggregation) {
-		return _filterAggregationTranslator.translate(
-			filterAggregation, this, _pipelineAggregationTranslator);
+		QueryBuilder filterQueryBuilder = _queryTranslator.translate(
+			filterAggregation.getFilterQuery());
+
+		FilterAggregationBuilder filterAggregationBuilder =
+			AggregationBuilders.filter(
+				filterAggregation.getName(), filterQueryBuilder);
+
+		_translate(
+			filterAggregationBuilder, filterAggregation, this,
+			_pipelineAggregationTranslator);
+
+		return filterAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(FiltersAggregation filtersAggregation) {
-		return _filtersAggregationTranslator.translate(
-			filtersAggregation, this, _pipelineAggregationTranslator);
+		List<FiltersAggregation.KeyedQuery> keyedQueries =
+			filtersAggregation.getKeyedQueries();
+
+		List<FiltersAggregator.KeyedFilter> keyedFilters = new ArrayList<>(
+			keyedQueries.size());
+
+		keyedQueries.forEach(
+			keyedQuery -> {
+				QueryBuilder filterQueryBuilder = _queryTranslator.translate(
+					keyedQuery.getQuery());
+
+				keyedFilters.add(
+					new FiltersAggregator.KeyedFilter(
+						keyedQuery.getKey(), filterQueryBuilder));
+			});
+
+		FiltersAggregationBuilder filtersAggregationBuilder =
+			AggregationBuilders.filters(
+				filtersAggregation.getName(),
+				keyedFilters.toArray(
+					new FiltersAggregator.KeyedFilter[keyedQueries.size()]));
+
+		if (filtersAggregation.getOtherBucket() != null) {
+			filtersAggregationBuilder.otherBucket(
+				filtersAggregation.getOtherBucket());
+		}
+
+		if (filtersAggregation.getOtherBucketKey() != null) {
+			filtersAggregationBuilder.otherBucketKey(
+				filtersAggregation.getOtherBucketKey());
+		}
+
+		_translate(
+			filtersAggregationBuilder, filtersAggregation, this,
+			_pipelineAggregationTranslator);
+
+		return filtersAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(GeoBoundsAggregation geoBoundsAggregation) {
-		GeoBoundsAggregationBuilder geoBoundsAggregationBuilder =
-			_baseFieldAggregationTranslator.translate(
-				baseMetricsAggregation -> AggregationBuilders.geoBounds(
-					geoBoundsAggregation.getName()),
-				geoBoundsAggregation, this, _pipelineAggregationTranslator);
+		GeoBoundsAggregationBuilder geoBoundsAggregationBuilder = _translate(
+			baseMetricsAggregation -> AggregationBuilders.geoBounds(
+				geoBoundsAggregation.getName()),
+			geoBoundsAggregation, this, _pipelineAggregationTranslator);
 
 		if (geoBoundsAggregation.getWrapLongitude() != null) {
 			geoBoundsAggregationBuilder.wrapLongitude(
@@ -218,7 +342,7 @@ public class ElasticsearchAggregationTranslator
 	public AggregationBuilder visit(
 		GeoCentroidAggregation geoCentroidAggregation) {
 
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.geoCentroid(
 				geoCentroidAggregation.getName()),
 			geoCentroidAggregation, this, _pipelineAggregationTranslator);
@@ -228,19 +352,57 @@ public class ElasticsearchAggregationTranslator
 	public AggregationBuilder visit(
 		GeoDistanceAggregation geoDistanceAggregation) {
 
-		return _geoDistanceAggregationTranslator.translate(
-			geoDistanceAggregation, this, _pipelineAggregationTranslator);
+		GeoPoint geoPoint = GeoLocationPointTranslator.translate(
+			geoDistanceAggregation.getGeoLocationPoint());
+
+		GeoDistanceAggregationBuilder geoDistanceAggregationBuilder =
+			_translate(
+				baseMetricsAggregation -> AggregationBuilders.geoDistance(
+					baseMetricsAggregation.getName(), geoPoint),
+				geoDistanceAggregation, this, _pipelineAggregationTranslator);
+
+		if (geoDistanceAggregation.getDistanceUnit() != null) {
+			geoDistanceAggregationBuilder.unit(
+				_distanceUnitTranslator.translate(
+					geoDistanceAggregation.getDistanceUnit()));
+		}
+
+		if (geoDistanceAggregation.getGeoDistanceType() != null) {
+			GeoDistance geoDistance = _geoDistanceTypeTranslator.translate(
+				geoDistanceAggregation.getGeoDistanceType());
+
+			geoDistanceAggregationBuilder.distanceType(geoDistance);
+		}
+
+		if (geoDistanceAggregation.getKeyed() != null) {
+			geoDistanceAggregationBuilder.keyed(
+				geoDistanceAggregation.getKeyed());
+		}
+
+		List<Range> rangeAggregationRanges = geoDistanceAggregation.getRanges();
+
+		rangeAggregationRanges.forEach(
+			rangeAggregationRange -> {
+				GeoDistanceAggregationBuilder.Range range =
+					new GeoDistanceAggregationBuilder.Range(
+						rangeAggregationRange.getKey(),
+						rangeAggregationRange.getFrom(),
+						rangeAggregationRange.getTo());
+
+				geoDistanceAggregationBuilder.addRange(range);
+			});
+
+		return geoDistanceAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(
 		GeoHashGridAggregation geoHashGridAggregation) {
 
-		GeoGridAggregationBuilder geoGridAggregationBuilder =
-			_baseFieldAggregationTranslator.translate(
-				baseMetricsAggregation -> AggregationBuilders.geohashGrid(
-					geoHashGridAggregation.getName()),
-				geoHashGridAggregation, this, _pipelineAggregationTranslator);
+		GeoGridAggregationBuilder geoGridAggregationBuilder = _translate(
+			baseMetricsAggregation -> AggregationBuilders.geohashGrid(
+				geoHashGridAggregation.getName()),
+			geoHashGridAggregation, this, _pipelineAggregationTranslator);
 
 		if (geoHashGridAggregation.getPrecision() != null) {
 			geoGridAggregationBuilder.precision(
@@ -268,13 +430,47 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(HistogramAggregation histogramAggregation) {
-		return _histogramAggregationTranslator.translate(
+		HistogramAggregationBuilder histogramAggregationBuilder = _translate(
+			baseMetricsAggregation -> AggregationBuilders.histogram(
+				baseMetricsAggregation.getName()),
 			histogramAggregation, this, _pipelineAggregationTranslator);
+
+		if (ListUtil.isNotEmpty(histogramAggregation.getOrders())) {
+			List<BucketOrder> bucketOrders = _orderTranslator.translate(
+				histogramAggregation.getOrders());
+
+			histogramAggregationBuilder.order(bucketOrders);
+		}
+
+		if ((histogramAggregation.getMaxBound() != null) &&
+			(histogramAggregation.getMinBound() != null)) {
+
+			histogramAggregationBuilder.extendedBounds(
+				histogramAggregation.getMinBound(),
+				histogramAggregation.getMaxBound());
+		}
+
+		if (histogramAggregation.getMinDocCount() != null) {
+			histogramAggregationBuilder.minDocCount(
+				histogramAggregation.getMinDocCount());
+		}
+
+		if (histogramAggregation.getInterval() != null) {
+			histogramAggregationBuilder.interval(
+				histogramAggregation.getInterval());
+		}
+
+		if (histogramAggregation.getOffset() != null) {
+			histogramAggregationBuilder.offset(
+				histogramAggregation.getOffset());
+		}
+
+		return histogramAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(MaxAggregation maxAggregation) {
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.max(
 				baseMetricsAggregation.getName()),
 			maxAggregation, this, _pipelineAggregationTranslator);
@@ -282,7 +478,7 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(MinAggregation minAggregation) {
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.min(
 				baseMetricsAggregation.getName()),
 			minAggregation, this, _pipelineAggregationTranslator);
@@ -290,7 +486,7 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(MissingAggregation missingAggregation) {
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.missing(
 				baseMetricsAggregation.getName()),
 			missingAggregation, this, _pipelineAggregationTranslator);
@@ -309,7 +505,7 @@ public class ElasticsearchAggregationTranslator
 		PercentileRanksAggregation percentileRanksAggregation) {
 
 		PercentileRanksAggregationBuilder percentileRanksAggregationBuilder =
-			_baseFieldAggregationTranslator.translate(
+			_translate(
 				baseMetricsAggregation -> AggregationBuilders.percentileRanks(
 					baseMetricsAggregation.getName(),
 					percentileRanksAggregation.getValues()),
@@ -348,7 +544,7 @@ public class ElasticsearchAggregationTranslator
 		PercentilesAggregation percentilesAggregation) {
 
 		PercentilesAggregationBuilder percentilesAggregationBuilder =
-			_baseFieldAggregationTranslator.translate(
+			_translate(
 				baseMetricsAggregation -> AggregationBuilders.percentiles(
 					baseMetricsAggregation.getName()),
 				percentilesAggregation, this, _pipelineAggregationTranslator);
@@ -388,8 +584,15 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(RangeAggregation rangeAggregation) {
-		return _rangeAggregationTranslator.translate(
+		RangeAggregationBuilder rangeAggregationBuilder = _translate(
+			baseMetricsAggregation -> AggregationBuilders.range(
+				baseMetricsAggregation.getName()),
 			rangeAggregation, this, _pipelineAggregationTranslator);
+
+		populateRangeAggregationBuilder(
+			rangeAggregation, rangeAggregationBuilder);
+
+		return rangeAggregationBuilder;
 	}
 
 	@Override
@@ -426,31 +629,178 @@ public class ElasticsearchAggregationTranslator
 	public AggregationBuilder visit(
 		ScriptedMetricAggregation scriptedMetricAggregation) {
 
-		return _scriptedMetricAggregationTranslator.translate(
-			scriptedMetricAggregation, this, _pipelineAggregationTranslator);
+		ScriptedMetricAggregationBuilder scriptedMetricAggregationBuilder =
+			AggregationBuilders.scriptedMetric(
+				scriptedMetricAggregation.getName());
+
+		if (scriptedMetricAggregation.getCombineScript() != null) {
+			Script elasticsearchCombineScript = _scriptTranslator.translate(
+				scriptedMetricAggregation.getCombineScript());
+
+			scriptedMetricAggregationBuilder.combineScript(
+				elasticsearchCombineScript);
+		}
+
+		if (scriptedMetricAggregation.getInitScript() != null) {
+			Script elasticsearchInitScript = _scriptTranslator.translate(
+				scriptedMetricAggregation.getInitScript());
+
+			scriptedMetricAggregationBuilder.initScript(
+				elasticsearchInitScript);
+		}
+
+		if (scriptedMetricAggregation.getMapScript() != null) {
+			Script elasticsearchMapScript = _scriptTranslator.translate(
+				scriptedMetricAggregation.getMapScript());
+
+			scriptedMetricAggregationBuilder.mapScript(elasticsearchMapScript);
+		}
+
+		if (scriptedMetricAggregation.getReduceScript() != null) {
+			Script elasticsearchReduceScript = _scriptTranslator.translate(
+				scriptedMetricAggregation.getReduceScript());
+
+			scriptedMetricAggregationBuilder.reduceScript(
+				elasticsearchReduceScript);
+		}
+
+		scriptedMetricAggregationBuilder.params(
+			scriptedMetricAggregation.getParameters());
+
+		_translate(
+			scriptedMetricAggregationBuilder, scriptedMetricAggregation, this,
+			_pipelineAggregationTranslator);
+
+		return scriptedMetricAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(
 		SignificantTermsAggregation significantTermsAggregation) {
 
+		SignificantTermsAggregationBuilder significantTermsAggregationBuilder =
+			AggregationBuilders.significantTerms(
+				significantTermsAggregation.getName());
+
+		significantTermsAggregationBuilder.field(
+			significantTermsAggregation.getField());
+
+		if (significantTermsAggregation.getBackgroundFilterQuery() != null) {
+			significantTermsAggregationBuilder.backgroundFilter(
+				_queryTranslator.translate(
+					significantTermsAggregation.getBackgroundFilterQuery()));
+		}
+
+		if (significantTermsAggregation.getExecutionHint() != null) {
+			significantTermsAggregationBuilder.executionHint(
+				significantTermsAggregation.getExecutionHint());
+		}
+
+		if (significantTermsAggregation.getIncludeExcludeClause() != null) {
+			significantTermsAggregationBuilder.includeExclude(
+				_includeExcludeTranslator.translate(
+					significantTermsAggregation.getIncludeExcludeClause()));
+		}
+
+		if (significantTermsAggregation.getMinDocCount() != null) {
+			significantTermsAggregationBuilder.minDocCount(
+				significantTermsAggregation.getMinDocCount());
+		}
+
+		if (significantTermsAggregation.getShardMinDocCount() != null) {
+			significantTermsAggregationBuilder.shardMinDocCount(
+				significantTermsAggregation.getShardMinDocCount());
+		}
+
+		if (significantTermsAggregation.getShardSize() != null) {
+			significantTermsAggregationBuilder.shardSize(
+				significantTermsAggregation.getShardSize());
+		}
+
+		if (significantTermsAggregation.getSize() != null) {
+			significantTermsAggregationBuilder.size(
+				significantTermsAggregation.getSize());
+		}
+
+		if (significantTermsAggregation.getSignificanceHeuristic() != null) {
+			significantTermsAggregationBuilder.significanceHeuristic(
+				_significanceHeuristicTranslator.translate(
+					significantTermsAggregation.getSignificanceHeuristic()));
+		}
+
 		return _assemble(
-			_significantTermsAggregationTranslator.translate(
-				significantTermsAggregation),
-			significantTermsAggregation);
+			significantTermsAggregationBuilder, significantTermsAggregation);
 	}
 
 	@Override
 	public AggregationBuilder visit(
 		SignificantTextAggregation significantTextAggregation) {
 
-		return _significantTextAggregationTranslator.translate(
-			significantTextAggregation, this, _pipelineAggregationTranslator);
+		SignificantTextAggregationBuilder significantTextAggregationBuilder =
+			AggregationBuilders.significantText(
+				significantTextAggregation.getName(),
+				significantTextAggregation.getField());
+
+		significantTextAggregationBuilder.bucketCountThresholds();
+
+		if (significantTextAggregation.getBackgroundFilterQuery() != null) {
+			significantTextAggregationBuilder.backgroundFilter(
+				_queryTranslator.translate(
+					significantTextAggregation.getBackgroundFilterQuery()));
+		}
+
+		if (significantTextAggregation.getFilterDuplicateText() != null) {
+			significantTextAggregationBuilder.filterDuplicateText(
+				significantTextAggregation.getFilterDuplicateText());
+		}
+
+		if (significantTextAggregation.getIncludeExcludeClause() != null) {
+			significantTextAggregationBuilder.includeExclude(
+				_includeExcludeTranslator.translate(
+					significantTextAggregation.getIncludeExcludeClause()));
+		}
+
+		if (significantTextAggregation.getMinDocCount() != null) {
+			significantTextAggregationBuilder.minDocCount(
+				significantTextAggregation.getMinDocCount());
+		}
+
+		if (significantTextAggregation.getShardMinDocCount() != null) {
+			significantTextAggregationBuilder.shardMinDocCount(
+				significantTextAggregation.getShardMinDocCount());
+		}
+
+		if (significantTextAggregation.getShardSize() != null) {
+			significantTextAggregationBuilder.shardSize(
+				significantTextAggregation.getShardSize());
+		}
+
+		if (significantTextAggregation.getSize() != null) {
+			significantTextAggregationBuilder.size(
+				significantTextAggregation.getSize());
+		}
+
+		if (significantTextAggregation.getSignificanceHeuristic() != null) {
+			significantTextAggregationBuilder.significanceHeuristic(
+				_significanceHeuristicTranslator.translate(
+					significantTextAggregation.getSignificanceHeuristic()));
+		}
+
+		if (ListUtil.isNotEmpty(significantTextAggregation.getSourceFields())) {
+			significantTextAggregationBuilder.sourceFieldNames(
+				significantTextAggregation.getSourceFields());
+		}
+
+		_translate(
+			significantTextAggregationBuilder, significantTextAggregation, this,
+			_pipelineAggregationTranslator);
+
+		return significantTextAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(StatsAggregation statsAggregation) {
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.stats(
 				baseMetricsAggregation.getName()),
 			statsAggregation, this, _pipelineAggregationTranslator);
@@ -458,7 +808,7 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(SumAggregation sumAggregation) {
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.sum(
 				baseMetricsAggregation.getName()),
 			sumAggregation, this, _pipelineAggregationTranslator);
@@ -466,22 +816,167 @@ public class ElasticsearchAggregationTranslator
 
 	@Override
 	public AggregationBuilder visit(TermsAggregation termsAggregation) {
-		return _assemble(
-			_termsAggregationTranslator.translate(termsAggregation),
-			termsAggregation);
+		TermsAggregationBuilder termsAggregationBuilder =
+			AggregationBuilders.terms(termsAggregation.getName());
+
+		if (termsAggregation.getCollectionMode() != null) {
+			CollectionMode collectionMode =
+				termsAggregation.getCollectionMode();
+
+			if (collectionMode == CollectionMode.BREADTH_FIRST) {
+				termsAggregationBuilder.collectMode(
+					Aggregator.SubAggCollectionMode.BREADTH_FIRST);
+			}
+			else if (collectionMode == CollectionMode.DEPTH_FIRST) {
+				termsAggregationBuilder.collectMode(
+					Aggregator.SubAggCollectionMode.DEPTH_FIRST);
+			}
+		}
+
+		if (termsAggregation.getExecutionHint() != null) {
+			termsAggregationBuilder.executionHint(
+				termsAggregation.getExecutionHint());
+		}
+
+		if (termsAggregation.getIncludeExcludeClause() != null) {
+			termsAggregationBuilder.includeExclude(
+				_includeExcludeTranslator.translate(
+					termsAggregation.getIncludeExcludeClause()));
+		}
+
+		if (termsAggregation.getMinDocCount() != null) {
+			termsAggregationBuilder.minDocCount(
+				termsAggregation.getMinDocCount());
+		}
+
+		if (ListUtil.isNotEmpty(termsAggregation.getOrders())) {
+			List<BucketOrder> bucketOrders = _orderTranslator.translate(
+				termsAggregation.getOrders());
+
+			termsAggregationBuilder.order(bucketOrders);
+		}
+
+		if (termsAggregation.getShardMinDocCount() != null) {
+			termsAggregationBuilder.shardMinDocCount(
+				termsAggregation.getShardMinDocCount());
+		}
+
+		if (termsAggregation.getShardSize() != null) {
+			termsAggregationBuilder.shardSize(termsAggregation.getShardSize());
+		}
+
+		if (termsAggregation.getShowTermDocCountError() != null) {
+			termsAggregationBuilder.showTermDocCountError(
+				termsAggregation.getShowTermDocCountError());
+		}
+
+		if (termsAggregation.getSize() != null) {
+			termsAggregationBuilder.size(termsAggregation.getSize());
+		}
+
+		return _assemble(termsAggregationBuilder, termsAggregation);
 	}
 
 	@Override
 	public AggregationBuilder visit(TopHitsAggregation topHitsAggregation) {
-		return _topHitsAggregationTranslator.translate(
-			topHitsAggregation, this, _pipelineAggregationTranslator);
+		TopHitsAggregationBuilder topHitsAggregationBuilder =
+			AggregationBuilders.topHits(topHitsAggregation.getName());
+
+		if (topHitsAggregation.getExplain() != null) {
+			topHitsAggregationBuilder.explain(topHitsAggregation.getExplain());
+		}
+
+		if (ListUtil.isNotEmpty(topHitsAggregation.getSelectedFields())) {
+			List<String> selectedFields =
+				topHitsAggregation.getSelectedFields();
+
+			selectedFields.forEach(topHitsAggregationBuilder::docValueField);
+		}
+
+		if (topHitsAggregation.getFetchSource() != null) {
+			topHitsAggregationBuilder.fetchSource(
+				topHitsAggregation.getFetchSource());
+
+			if (topHitsAggregation.getFetchSource() &&
+				((topHitsAggregation.getFetchSourceInclude() != null) ||
+				 (topHitsAggregation.getFetchSourceExclude() != null))) {
+
+				topHitsAggregationBuilder.fetchSource(
+					topHitsAggregation.getFetchSourceInclude(),
+					topHitsAggregation.getFetchSourceExclude());
+			}
+		}
+
+		if (topHitsAggregation.getFrom() != null) {
+			topHitsAggregationBuilder.from(topHitsAggregation.getFrom());
+		}
+
+		if (topHitsAggregation.getHighlight() != null) {
+			HighlightBuilder highlightBuilder = _highlightTranslator.translate(
+				topHitsAggregation.getHighlight(), _queryTranslator);
+
+			topHitsAggregationBuilder.highlighter(highlightBuilder);
+		}
+
+		if (topHitsAggregation.getScriptFields() != null) {
+			List<ScriptField> scriptFields =
+				topHitsAggregation.getScriptFields();
+
+			List<SearchSourceBuilder.ScriptField>
+				searchSourceBuilderScriptFields = new ArrayList<>(
+					scriptFields.size());
+
+			scriptFields.forEach(
+				scriptField -> {
+					Script script = _scriptTranslator.translate(
+						scriptField.getScript());
+
+					SearchSourceBuilder.ScriptField
+						searchSourceBuilderScriptField =
+							new SearchSourceBuilder.ScriptField(
+								scriptField.getField(), script,
+								scriptField.isIgnoreFailure());
+
+					searchSourceBuilderScriptFields.add(
+						searchSourceBuilderScriptField);
+				});
+
+			topHitsAggregationBuilder.scriptFields(
+				searchSourceBuilderScriptFields);
+		}
+
+		if (topHitsAggregation.getSize() != null) {
+			topHitsAggregationBuilder.size(topHitsAggregation.getSize());
+		}
+
+		if (ListUtil.isNotEmpty(topHitsAggregation.getSortFields())) {
+			List<Sort> sorts = topHitsAggregation.getSortFields();
+
+			List<SortBuilder<?>> sortBuilders = new ArrayList<>(sorts.size());
+
+			sorts.forEach(
+				sort -> sortBuilders.add(_sortFieldTranslator.translate(sort)));
+
+			topHitsAggregationBuilder.sorts(sortBuilders);
+		}
+
+		if (topHitsAggregation.getTrackScores() != null) {
+			topHitsAggregationBuilder.trackScores(
+				topHitsAggregation.getTrackScores());
+		}
+
+		if (topHitsAggregation.getVersion() != null) {
+			topHitsAggregationBuilder.version(topHitsAggregation.getVersion());
+		}
+
+		return topHitsAggregationBuilder;
 	}
 
 	@Override
 	public AggregationBuilder visit(
 		ValueCountAggregation valueCountAggregation) {
 
-		return _baseFieldAggregationTranslator.translate(
+		return _translate(
 			baseMetricsAggregation -> AggregationBuilders.count(
 				baseMetricsAggregation.getName()),
 			valueCountAggregation, this, _pipelineAggregationTranslator);
@@ -491,85 +986,221 @@ public class ElasticsearchAggregationTranslator
 	public AggregationBuilder visit(
 		WeightedAvgAggregation weightedAvgAggregation) {
 
-		return _weightedAvgAggregationTranslator.translate(
-			weightedAvgAggregation, this, _pipelineAggregationTranslator);
+		WeightedAvgAggregationBuilder weightedAvgAggregationBuilder =
+			AggregationBuilders.weightedAvg(weightedAvgAggregation.getName());
+
+		MultiValuesSourceFieldConfig valueMultiValuesSourceFieldConfig =
+			_getMultiValuesSourceFieldConfig(
+				weightedAvgAggregation.getValueField(),
+				weightedAvgAggregation.getValueMissing(),
+				weightedAvgAggregation.getValueScript());
+
+		weightedAvgAggregationBuilder.value(valueMultiValuesSourceFieldConfig);
+
+		MultiValuesSourceFieldConfig weightMultiValuesSourceFieldConfig =
+			_getMultiValuesSourceFieldConfig(
+				weightedAvgAggregation.getWeightField(),
+				weightedAvgAggregation.getWeightMissing(),
+				weightedAvgAggregation.getWeightScript());
+
+		weightedAvgAggregationBuilder.weight(
+			weightMultiValuesSourceFieldConfig);
+
+		if (weightedAvgAggregation.getFormat() != null) {
+			weightedAvgAggregationBuilder.format(
+				weightedAvgAggregation.getFormat());
+		}
+
+		if (weightedAvgAggregation.getValueType() != null) {
+			weightedAvgAggregationBuilder.userValueTypeHint(
+				_valueTypeTranslator.translate(
+					weightedAvgAggregation.getValueType()));
+		}
+
+		_translate(
+			weightedAvgAggregationBuilder, weightedAvgAggregation, this,
+			_pipelineAggregationTranslator);
+
+		return weightedAvgAggregationBuilder;
+	}
+
+	protected void populateRangeAggregationBuilder(
+		RangeAggregation rangeAggregation,
+		AbstractRangeBuilder abstractRangeBuilder) {
+
+		if (rangeAggregation.getFormat() != null) {
+			abstractRangeBuilder.format(rangeAggregation.getFormat());
+		}
+
+		if (rangeAggregation.getKeyed() != null) {
+			abstractRangeBuilder.keyed(rangeAggregation.getKeyed());
+		}
+
+		List<Range> rangeAggregationRanges = rangeAggregation.getRanges();
+
+		rangeAggregationRanges.forEach(
+			rangeAggregationRange -> {
+				RangeAggregator.Range range = new RangeAggregator.Range(
+					rangeAggregationRange.getKey(),
+					rangeAggregationRange.getFrom(),
+					rangeAggregationRange.getFromAsString(),
+					rangeAggregationRange.getTo(),
+					rangeAggregationRange.getToAsString());
+
+				abstractRangeBuilder.addRange(range);
+			});
 	}
 
 	private <AB extends AggregationBuilder> AB _assemble(
 		AB aggregationBuilder, Aggregation aggregation) {
 
-		AggregationBuilderAssemblerImpl aggregationBuilderAssemblerImpl =
-			_aggregationBuilderAssemblerFactory.getAggregationBuilderAssembler(
-				this);
+		_translate(
+			aggregationBuilder, aggregation, this,
+			_pipelineAggregationTranslator);
 
-		return aggregationBuilderAssemblerImpl.assembleAggregation(
-			aggregationBuilder, aggregation);
+		return aggregationBuilder;
 	}
 
 	private <VSAB extends ValuesSourceAggregationBuilder> VSAB _assemble(
 		VSAB valuesSourceAggregationBuilder,
 		FieldAggregation fieldAggregation) {
 
-		AggregationBuilderAssemblerImpl aggregationBuilderAssemblerImpl =
-			_aggregationBuilderAssemblerFactory.getAggregationBuilderAssembler(
-				this);
+		_translate(
+			baseMetricsAggregation -> valuesSourceAggregationBuilder,
+			fieldAggregation, this, _pipelineAggregationTranslator);
 
-		return aggregationBuilderAssemblerImpl.assembleFieldAggregation(
-			valuesSourceAggregationBuilder, fieldAggregation);
+		return valuesSourceAggregationBuilder;
 	}
 
-	@Reference
-	private AggregationBuilderAssemblerFactory
-		_aggregationBuilderAssemblerFactory;
+	private MultiValuesSourceFieldConfig _getMultiValuesSourceFieldConfig(
+		String field, Object missing,
+		com.liferay.portal.search.script.Script script) {
 
-	private final BaseFieldAggregationTranslator
-		_baseFieldAggregationTranslator = new BaseFieldAggregationTranslator();
+		MultiValuesSourceFieldConfig.Builder
+			multiValuesSourceFieldConfigBuilder =
+				new MultiValuesSourceFieldConfig.Builder();
 
-	@Reference
-	private DateHistogramAggregationTranslator
-		_dateHistogramAggregationTranslator;
+		multiValuesSourceFieldConfigBuilder.setFieldName(field);
 
-	@Reference
-	private DateRangeAggregationTranslator _dateRangeAggregationTranslator;
+		if (missing != null) {
+			multiValuesSourceFieldConfigBuilder.setMissing(missing);
+		}
 
-	@Reference
-	private FilterAggregationTranslator _filterAggregationTranslator;
+		if (script != null) {
+			multiValuesSourceFieldConfigBuilder.setScript(
+				_scriptTranslator.translate(script));
+		}
 
-	@Reference
-	private FiltersAggregationTranslator _filtersAggregationTranslator;
+		return multiValuesSourceFieldConfigBuilder.build();
+	}
 
-	@Reference
-	private GeoDistanceAggregationTranslator _geoDistanceAggregationTranslator;
+	private <T extends ValuesSourceAggregationBuilder> void _setField(
+		T valuesSourceAggregationBuilder,
+		FieldAggregation baseFieldAggregation) {
 
-	@Reference
-	private HistogramAggregationTranslator _histogramAggregationTranslator;
+		if (baseFieldAggregation.getField() != null) {
+			valuesSourceAggregationBuilder.field(
+				baseFieldAggregation.getField());
+		}
+	}
+
+	private <T extends ValuesSourceAggregationBuilder> void _setMissing(
+		T valuesSourceAggregationBuilder,
+		FieldAggregation baseFieldAggregation) {
+
+		if (baseFieldAggregation.getMissing() != null) {
+			valuesSourceAggregationBuilder.missing(
+				baseFieldAggregation.getMissing());
+		}
+	}
+
+	private <T extends ValuesSourceAggregationBuilder> void _setScript(
+		T valuesSourceAggregationBuilder,
+		FieldAggregation baseFieldAggregation) {
+
+		if (baseFieldAggregation.getScript() != null) {
+			Script elasticsearchScript = _scriptTranslator.translate(
+				baseFieldAggregation.getScript());
+
+			valuesSourceAggregationBuilder.script(elasticsearchScript);
+		}
+	}
+
+	private AggregationBuilder _translate(
+		AggregationBuilder aggregationBuilder, Aggregation aggregation,
+		AggregationTranslator<AggregationBuilder> aggregationTranslator,
+		PipelineAggregationTranslator<PipelineAggregationBuilder>
+			pipelineAggregationTranslator) {
+
+		for (Aggregation childAggregation :
+				aggregation.getChildrenAggregations()) {
+
+			aggregationBuilder.subAggregation(
+				aggregationTranslator.translate(childAggregation));
+		}
+
+		for (PipelineAggregation pipelineAggregation :
+				aggregation.getPipelineAggregations()) {
+
+			aggregationBuilder.subAggregation(
+				pipelineAggregationTranslator.translate(pipelineAggregation));
+		}
+
+		return aggregationBuilder;
+	}
+
+	private <T extends ValuesSourceAggregationBuilder> T _translate(
+		ValuesSourceAggregationBuilderFactory<T>
+			valuesSourceAggregationBuilderFactory,
+		FieldAggregation baseFieldAggregation,
+		AggregationTranslator<AggregationBuilder> aggregationTranslator,
+		PipelineAggregationTranslator<PipelineAggregationBuilder>
+			pipelineAggregationTranslator) {
+
+		T valuesSourceAggregationBuilder =
+			valuesSourceAggregationBuilderFactory.create(baseFieldAggregation);
+
+		_setField(valuesSourceAggregationBuilder, baseFieldAggregation);
+		_setMissing(valuesSourceAggregationBuilder, baseFieldAggregation);
+		_setScript(valuesSourceAggregationBuilder, baseFieldAggregation);
+
+		_translate(
+			valuesSourceAggregationBuilder, baseFieldAggregation,
+			aggregationTranslator, pipelineAggregationTranslator);
+
+		return valuesSourceAggregationBuilder;
+	}
+
+	private final DistanceUnitTranslator _distanceUnitTranslator =
+		new DistanceUnitTranslator();
+	private final GeoDistanceTypeTranslator _geoDistanceTypeTranslator =
+		new GeoDistanceTypeTranslator();
+	private final HighlightTranslator _highlightTranslator =
+		new HighlightTranslator();
+	private final IncludeExcludeTranslator _includeExcludeTranslator =
+		new IncludeExcludeTranslator();
+	private final OrderTranslator _orderTranslator = new OrderTranslator();
 
 	@Reference(target = "(search.engine.impl=Elasticsearch)")
 	private PipelineAggregationTranslator<PipelineAggregationBuilder>
 		_pipelineAggregationTranslator;
 
-	@Reference
-	private RangeAggregationTranslator _rangeAggregationTranslator;
+	private final QueryTranslator<QueryBuilder> _queryTranslator =
+		new ElasticsearchQueryTranslator();
+	private final ScriptTranslator _scriptTranslator = new ScriptTranslator();
+	private final SignificanceHeuristicTranslator
+		_significanceHeuristicTranslator =
+			new SignificanceHeuristicTranslator();
+	private final SortFieldTranslator<SortBuilder<?>> _sortFieldTranslator =
+		new ElasticsearchSortFieldTranslator();
+	private final ValueTypeTranslator _valueTypeTranslator =
+		new ValueTypeTranslator();
 
-	@Reference
-	private ScriptedMetricAggregationTranslator
-		_scriptedMetricAggregationTranslator;
+	private interface ValuesSourceAggregationBuilderFactory
+		<T extends ValuesSourceAggregationBuilder> {
 
-	@Reference
-	private SignificantTermsAggregationTranslator
-		_significantTermsAggregationTranslator;
+		public T create(FieldAggregation baseFieldAggregation);
 
-	@Reference
-	private SignificantTextAggregationTranslator
-		_significantTextAggregationTranslator;
-
-	@Reference
-	private TermsAggregationTranslator _termsAggregationTranslator;
-
-	@Reference
-	private TopHitsAggregationTranslator _topHitsAggregationTranslator;
-
-	@Reference
-	private WeightedAvgAggregationTranslator _weightedAvgAggregationTranslator;
+	}
 
 }

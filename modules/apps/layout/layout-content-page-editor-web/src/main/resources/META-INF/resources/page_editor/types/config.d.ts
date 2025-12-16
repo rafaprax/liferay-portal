@@ -144,6 +144,7 @@ export interface Config {
 	getFormConfigURL: string;
 	getFormFieldsURL: string;
 	getFragmentEntryInputFieldTypesURL: string;
+	getFragmentEntryInputURL: string;
 	getIframeContentCssURL: string;
 	getIframeContentURL: string;
 	getInfoItemActionErrorMessageURL: string;
@@ -216,6 +217,7 @@ export interface Config {
 		name: string;
 		styleBookEntryERC: string;
 	}>;
+	swapFragmentEntryLinkURL: string;
 	themeColorsCssClasses: string[];
 	toolbarId: string;
 
@@ -231,6 +233,7 @@ export interface Config {
 	updatePortletsHighlightedConfigurationURL: string;
 	updateRowColumnsURL: string;
 	updateRuleURL: string;
+	updateRulesURL: string;
 	updateSegmentsExperiencePriorityURL: string;
 	updateSegmentsExperienceURL: string;
 	videoItemSelectorURL: string;

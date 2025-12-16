@@ -24,12 +24,15 @@
 		"prop-types": "15.7.2",
 		"qs": "^6.9.6",
 		"react": "18.2.0",
-		"react-router-dom": "^5.0.1"
+		"react-router": "7.9.6"
 	},
 	"description": "",
 	"jest": {
 		"collectCoverageFrom": [
 			"src/main/resources/META-INF/resources/js/**/*.js"
+		],
+		"setupFilesAfterEnv": [
+			"<rootDir>/jest-setup.config.js"
 		],
 		"testPathIgnorePatterns": [
 			"<rootDir>/test/js/[^/]+\\.js"

@@ -201,8 +201,32 @@ long usedMemory = totalMemory - runtime.freeMemory();
 			</ul>
 		</aui:fieldset>
 
-		<aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" label="clean-up-actions">
+		<aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" label="system-cleanup-actions">
 			<ul class="list-group system-action-group">
+
+				<%
+				for (DataCleanup systemDataCleanup : DataCleanupUtil.getSystemDataCleanups()) {
+					if (ReleaseLocalServiceUtil.fetchRelease(systemDataCleanup.getServletContextName()) == null) {
+						continue;
+					}
+				%>
+
+					<li class="list-group-item list-group-item-flex">
+						<div class="autofit-col autofit-col-expand">
+							<p class="list-group-title text-truncate">
+								<liferay-ui:message key="<%= systemDataCleanup.getLabel() %>" />
+							</p>
+						</div>
+
+						<div class="autofit-col">
+							<aui:button cssClass="save-server-button" data-cmd="<%= systemDataCleanup.getLabel() %>" value="execute" />
+						</div>
+					</li>
+
+				<%
+				}
+				%>
+
 				<li class="list-group-item list-group-item-flex">
 					<div class="autofit-col autofit-col-expand">
 						<p class="list-group-title text-truncate">
@@ -273,6 +297,41 @@ long usedMemory = totalMemory - runtime.freeMemory();
 				</li>
 			</ul>
 		</aui:fieldset>
+
+		<%
+		List<DataCleanup> moduleDataCleanups = DataCleanupUtil.getModuleDataCleanups();
+		%>
+
+		<c:if test="<%= ListUtil.isNotEmpty(moduleDataCleanups) %>">
+			<aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" label="module-cleanup-actions">
+				<ul class="list-group system-action-group">
+
+					<%
+					for (DataCleanup moduleDataCleanup : moduleDataCleanups) {
+						if (ReleaseLocalServiceUtil.fetchRelease(moduleDataCleanup.getServletContextName()) == null) {
+							continue;
+						}
+					%>
+
+						<li class="list-group-item list-group-item-flex">
+							<div class="autofit-col autofit-col-expand">
+								<p class="list-group-title text-truncate">
+									<liferay-ui:message key="<%= moduleDataCleanup.getLabel() %>" />
+								</p>
+							</div>
+
+							<div class="autofit-col">
+								<aui:button cssClass="save-server-button" data-cmd="<%= moduleDataCleanup.getLabel() %>" value="execute" />
+							</div>
+						</li>
+
+					<%
+					}
+					%>
+
+				</ul>
+			</aui:fieldset>
+		</c:if>
 
 		<aui:fieldset collapsed="<%= false %>" collapsible="<%= true %>" label="regeneration-actions">
 			<ul class="list-group system-action-group">

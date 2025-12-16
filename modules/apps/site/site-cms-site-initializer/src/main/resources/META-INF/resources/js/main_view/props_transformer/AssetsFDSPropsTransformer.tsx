@@ -24,14 +24,12 @@ import DefaultPermissionModalContent from '../default_permission/DefaultPermissi
 import openResetAssetPermissionModal from '../default_permission/ResetPermissionModalContent';
 import AssetTypeInfoPanel from '../info_panel/AssetTypeInfoPanelContent';
 import AssetNavigationModalContent from '../modal/asset_navigation_view/AssetNavigationModalContent';
-import createAssetAction from './actions/createAssetAction';
-import createFolderAction from './actions/createFolderAction';
+import ACTIONS from './actions/creationMenuActions';
 import deleteAssetEntriesBulkAction, {
 	executeBulkDeleteAction,
 } from './actions/deleteAssetEntriesBulkAction';
 import deleteItemAction from './actions/deleteItemAction';
 import executeResetPermissionBulkAction from './actions/executeResetPermissionBulkAction';
-import multipleFilesUploadAction from './actions/multipleFilesUploadAction';
 import openFolderItemSelectorAction from './actions/openFolderItemSelectorAction';
 import shareAction from './actions/shareAction';
 import {triggerAssetDownloadBulkAction} from './actions/triggerAssetDownloadBulkAction';
@@ -42,12 +40,6 @@ import TypeRenderer from './cell_renderers/TypeRenderer';
 import addOnClickToCreationMenuItems from './utils/addOnClickToCreationMenuItems';
 import transformViewsItemsProps from './utils/transformViewsItemProps';
 import GalleryView from './views/GalleryView';
-
-const ACTIONS = {
-	createAsset: createAssetAction,
-	createFolder: createFolderAction,
-	uploadMultipleFiles: multipleFilesUploadAction,
-};
 
 export type AdditionalProps = {
 	assetLibraries: AssetLibrary[];
@@ -441,6 +433,21 @@ export default function AssetsFDSPropsTransformer({
 					apiURL: otherProps.apiURL,
 					selectedData,
 					type: 'DownloadBulkAction',
+				});
+			}
+			else if (
+				action?.data?.id === 'edit-default-permissions-by-role'
+			) {
+				defaultPermissionsBulkAction({
+					apiURL: otherProps.apiURL,
+					className: OBJECT_ENTRY_FOLDER_CLASS_NAME,
+					defaultPermissionAdditionalProps:
+						additionalProps.defaultPermissionAdditionalProps || {},
+					section:
+						additionalProps.rootObjectEntryFolderExternalReferenceCode ||
+						additionalProps.parentObjectEntryFolderExternalReferenceCode,
+					selectedData,
+					singleRoleMode: true,
 				});
 			}
 			else if (action?.data?.id === 'edit-permissions-by-role') {

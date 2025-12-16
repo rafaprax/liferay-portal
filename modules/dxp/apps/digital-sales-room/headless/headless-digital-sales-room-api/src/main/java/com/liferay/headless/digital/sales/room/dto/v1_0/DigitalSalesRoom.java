@@ -136,6 +136,49 @@ public class DigitalSalesRoom implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema
 	@Valid
+	public Map<String, Map<String, String>> getActions() {
+		if (_actionsSupplier != null) {
+			actions = _actionsSupplier.get();
+
+			_actionsSupplier = null;
+		}
+
+		return actions;
+	}
+
+	public void setActions(Map<String, Map<String, String>> actions) {
+		this.actions = actions;
+
+		_actionsSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setActions(
+		UnsafeSupplier<Map<String, Map<String, String>>, Exception>
+			actionsUnsafeSupplier) {
+
+		_actionsSupplier = () -> {
+			try {
+				return actionsUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	protected Map<String, Map<String, String>> actions;
+
+	@JsonIgnore
+	private Supplier<Map<String, Map<String, String>>> _actionsSupplier;
+
+	@io.swagger.v3.oas.annotations.media.Schema
+	@Valid
 	public FileEntry getBanner() {
 		if (_bannerSupplier != null) {
 			banner = _bannerSupplier.get();
@@ -788,6 +831,49 @@ public class DigitalSalesRoom implements Serializable {
 	@JsonIgnore
 	private Supplier<String> _secondaryColorSupplier;
 
+	@io.swagger.v3.oas.annotations.media.Schema
+	@Valid
+	public UserAccountBrief[] getUserAccountBriefs() {
+		if (_userAccountBriefsSupplier != null) {
+			userAccountBriefs = _userAccountBriefsSupplier.get();
+
+			_userAccountBriefsSupplier = null;
+		}
+
+		return userAccountBriefs;
+	}
+
+	public void setUserAccountBriefs(UserAccountBrief[] userAccountBriefs) {
+		this.userAccountBriefs = userAccountBriefs;
+
+		_userAccountBriefsSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setUserAccountBriefs(
+		UnsafeSupplier<UserAccountBrief[], Exception>
+			userAccountBriefsUnsafeSupplier) {
+
+		_userAccountBriefsSupplier = () -> {
+			try {
+				return userAccountBriefsUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected UserAccountBrief[] userAccountBriefs;
+
+	@JsonIgnore
+	private Supplier<UserAccountBrief[]> _userAccountBriefsSupplier;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -844,6 +930,18 @@ public class DigitalSalesRoom implements Serializable {
 			sb.append(_escape(accountName));
 
 			sb.append("\"");
+		}
+
+		Map<String, Map<String, String>> actions = getActions();
+
+		if (actions != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"actions\": ");
+
+			sb.append(_toJSON(actions));
 		}
 
 		FileEntry banner = getBanner();
@@ -1080,6 +1178,28 @@ public class DigitalSalesRoom implements Serializable {
 			sb.append(_escape(secondaryColor));
 
 			sb.append("\"");
+		}
+
+		UserAccountBrief[] userAccountBriefs = getUserAccountBriefs();
+
+		if (userAccountBriefs != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"userAccountBriefs\": ");
+
+			sb.append("[");
+
+			for (int i = 0; i < userAccountBriefs.length; i++) {
+				sb.append(String.valueOf(userAccountBriefs[i]));
+
+				if ((i + 1) < userAccountBriefs.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		sb.append("}");

@@ -121,6 +121,20 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 
 			GradleUtil.applyPlugin(project, LiferayOSGiPlugin.class);
 
+			LiferayOSGiExtension liferayOSGiExtension = GradleUtil.getExtension(
+				project, LiferayOSGiExtension.class);
+
+			String javaeePackage = "javax";
+
+			if (JakartaCompatibilityUtil.isUseJakarta(project)) {
+				javaeePackage = "jakarta";
+			}
+
+			liferayOSGiExtension.bundleDefaultInstructions(
+				Collections.singletonMap(
+					"-antbnd.jspanalyzer.fallback-javaee-package",
+					javaeePackage));
+
 			if (!JakartaCompatibilityUtil.isUseJakarta(project)) {
 				GradleUtil.applyPlugin(
 					project, LiferayJspCompatibilityPlugin.class);

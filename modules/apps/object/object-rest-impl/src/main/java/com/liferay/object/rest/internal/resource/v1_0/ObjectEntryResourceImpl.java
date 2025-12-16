@@ -37,6 +37,7 @@ import com.liferay.object.tree.Node;
 import com.liferay.object.tree.ObjectDefinitionTreeFactory;
 import com.liferay.object.tree.Tree;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.comment.CommentManager;
@@ -68,13 +69,16 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.NestedFieldsContextResource;
 import com.liferay.portal.vulcan.util.NestedFieldsContextUtil;
+import com.liferay.translation.manager.TranslationManager;
 
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
+import java.io.File;
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -108,6 +112,7 @@ public class ObjectEntryResourceImpl
 		ObjectScopeProviderRegistry objectScopeProviderRegistry,
 		SystemObjectDefinitionManagerRegistry
 			systemObjectDefinitionManagerRegistry,
+		TranslationManager translationManager,
 		UserLocalService userLocalService) {
 
 		_commentManager = commentManager;
@@ -125,6 +130,7 @@ public class ObjectEntryResourceImpl
 		_objectScopeProviderRegistry = objectScopeProviderRegistry;
 		_systemObjectDefinitionManagerRegistry =
 			systemObjectDefinitionManagerRegistry;
+		_translationManager = translationManager;
 		_userLocalService = userLocalService;
 	}
 
@@ -692,6 +698,61 @@ public class ObjectEntryResourceImpl
 	}
 
 	@Override
+	public Response getObjectEntryTranslation(
+			Long objectEntryId, String sourceLanguageId,
+			String targetLanguageIds, String version)
+		throws Exception {
+
+		_checkFeatureFlag();
+
+		String className = _objectDefinition.getClassName();
+
+		String xliffMimeType = null;
+
+		if (version != null) {
+			xliffMimeType = _xliffMimeTypes.get(version);
+		}
+
+		if (xliffMimeType == null) {
+			xliffMimeType = "application/xliff+xml";
+		}
+
+		File xliffZipFile = _translationManager.getXLIFFZipFile(
+			className, new long[] {objectEntryId}, xliffMimeType,
+			contextAcceptLanguage.getPreferredLocale(), sourceLanguageId,
+			StringUtil.split(targetLanguageIds, CharPool.COMMA));
+
+		return Response.ok(
+			xliffZipFile
+		).header(
+			"content-disposition",
+			"attachment; filename=\"" + xliffZipFile.getName() + "\""
+		).build();
+	}
+
+	@Override
+	public Response getObjectEntryTranslationLanguage(
+			Long objectEntryId, String languageId, String targetLanguageId)
+		throws Exception {
+
+		_checkFeatureFlag();
+
+		File xliffFile = _translationManager.getXLIFFFile(
+			_objectDefinition.getClassName(), objectEntryId,
+			_getXLIFFMimeType(
+				contextHttpServletRequest.getHeader(HttpHeaders.ACCEPT)),
+			contextAcceptLanguage.getPreferredLocale(), languageId,
+			targetLanguageId);
+
+		return Response.ok(
+			xliffFile
+		).header(
+			"content-disposition",
+			"attachment; filename=\"" + xliffFile.getName() + "\""
+		).build();
+	}
+
+	@Override
 	public String getResourceName() {
 		return _objectDefinition.getShortName();
 	}
@@ -763,6 +824,36 @@ public class ObjectEntryResourceImpl
 		return defaultObjectEntryManager.getObjectEntryByVersion(
 			_getDTOConverterContext(null), externalReferenceCode,
 			_objectDefinition, scopeKey, version);
+	}
+
+	@Override
+	public Response getScopeScopeKeyByExternalReferenceCodeTranslation(
+			String scopeKey, String externalReferenceCode,
+			String sourceLanguageId, String targetLanguageIds, String version)
+		throws Exception {
+
+		_checkFeatureFlag();
+
+		ObjectEntry objectEntry = getScopeScopeKeyByExternalReferenceCode(
+			scopeKey, externalReferenceCode);
+
+		return getObjectEntryTranslation(
+			objectEntry.getId(), sourceLanguageId, targetLanguageIds, version);
+	}
+
+	@Override
+	public Response getScopeScopeKeyByExternalReferenceCodeTranslationLanguage(
+			String scopeKey, String externalReferenceCode, String languageId,
+			String targetLanguageId)
+		throws Exception {
+
+		_checkFeatureFlag();
+
+		ObjectEntry objectEntry = getScopeScopeKeyByExternalReferenceCode(
+			scopeKey, externalReferenceCode);
+
+		return getObjectEntryTranslationLanguage(
+			objectEntry.getId(), languageId, targetLanguageId);
 	}
 
 	@Override
@@ -944,9 +1035,7 @@ public class ObjectEntryResourceImpl
 			String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
-			throw new UnsupportedOperationException();
-		}
+		_checkFeatureFlag();
 
 		DefaultObjectEntryManager defaultObjectEntryManager =
 			DefaultObjectEntryManagerProvider.provide(
@@ -963,9 +1052,7 @@ public class ObjectEntryResourceImpl
 			String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
-			throw new UnsupportedOperationException();
-		}
+		_checkFeatureFlag();
 
 		DefaultObjectEntryManager defaultObjectEntryManager =
 			DefaultObjectEntryManagerProvider.provide(
@@ -1256,9 +1343,7 @@ public class ObjectEntryResourceImpl
 			String scopeKey, String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
-			throw new UnsupportedOperationException();
-		}
+		_checkFeatureFlag();
 
 		DefaultObjectEntryManager defaultObjectEntryManager =
 			DefaultObjectEntryManagerProvider.provide(
@@ -1275,9 +1360,7 @@ public class ObjectEntryResourceImpl
 			String scopeKey, String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
-			throw new UnsupportedOperationException();
-		}
+		_checkFeatureFlag();
 
 		DefaultObjectEntryManager defaultObjectEntryManager =
 			DefaultObjectEntryManagerProvider.provide(
@@ -1391,9 +1474,7 @@ public class ObjectEntryResourceImpl
 			String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
-			throw new UnsupportedOperationException();
-		}
+		_checkFeatureFlag();
 
 		DefaultObjectEntryManager defaultObjectEntryManager =
 			DefaultObjectEntryManagerProvider.provide(
@@ -1558,9 +1639,7 @@ public class ObjectEntryResourceImpl
 			String scopeKey, String externalReferenceCode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled("LPD-17564")) {
-			throw new UnsupportedOperationException();
-		}
+		_checkFeatureFlag();
 
 		DefaultObjectEntryManager defaultObjectEntryManager =
 			DefaultObjectEntryManagerProvider.provide(
@@ -1668,6 +1747,14 @@ public class ObjectEntryResourceImpl
 					StringBundler.concat("<p>", text, "</p>"),
 					_createServiceContextFunction())),
 			_commentManager, PortalUtil.getPortal());
+	}
+
+	private void _checkFeatureFlag() {
+		if (!FeatureFlagManagerUtil.isEnabled(
+				_objectDefinition.getCompanyId(), "LPD-17564")) {
+
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	private Function<String, ServiceContext> _createServiceContextFunction() {
@@ -1809,6 +1896,20 @@ public class ObjectEntryResourceImpl
 		return null;
 	}
 
+	private String _getXLIFFMimeType(String accept) {
+		if (Validator.isBlank(accept)) {
+			return null;
+		}
+
+		for (Map.Entry<String, String> entry : _xliffMimeTypes.entrySet()) {
+			if (accept.contains(entry.getValue())) {
+				return entry.getValue();
+			}
+		}
+
+		return null;
+	}
+
 	private Comment _updateComment(
 			Comment comment,
 			com.liferay.portal.kernel.comment.Comment serviceBuilderComment)
@@ -1878,6 +1979,9 @@ public class ObjectEntryResourceImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		ObjectEntryResourceImpl.class);
 
+	private static final Map<String, String> _xliffMimeTypes = Map.of(
+		"1.2", "application/x-xliff+xml", "2.0", "application/xliff+xml");
+
 	private final CommentManager _commentManager;
 	private final DiscussionPermission _discussionPermission;
 	private final DTOConverterRegistry _dtoConverterRegistry;
@@ -1897,6 +2001,7 @@ public class ObjectEntryResourceImpl
 	private final ObjectScopeProviderRegistry _objectScopeProviderRegistry;
 	private final SystemObjectDefinitionManagerRegistry
 		_systemObjectDefinitionManagerRegistry;
+	private final TranslationManager _translationManager;
 	private final UserLocalService _userLocalService;
 
 }

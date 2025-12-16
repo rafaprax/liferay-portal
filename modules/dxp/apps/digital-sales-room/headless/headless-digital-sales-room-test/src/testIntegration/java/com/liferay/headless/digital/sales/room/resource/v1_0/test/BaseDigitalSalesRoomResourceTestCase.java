@@ -23,7 +23,6 @@ import com.liferay.oauth2.provider.scope.ScopeChecker;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.json.JSONDeserializer;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -39,7 +38,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -83,7 +81,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -223,6 +220,32 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 		Assert.assertEquals(regex, digitalSalesRoom.getOwnerName());
 		Assert.assertEquals(regex, digitalSalesRoom.getPrimaryColor());
 		Assert.assertEquals(regex, digitalSalesRoom.getSecondaryColor());
+	}
+
+	@Test
+	public void testDeleteDigitalSalesRoom() throws Exception {
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		DigitalSalesRoom digitalSalesRoom =
+			testDeleteDigitalSalesRoom_addDigitalSalesRoom();
+
+		assertHttpResponseStatusCode(
+			204,
+			digitalSalesRoomResource.deleteDigitalSalesRoomHttpResponse(
+				digitalSalesRoom.getId()));
+
+		assertHttpResponseStatusCode(
+			404,
+			digitalSalesRoomResource.getDigitalSalesRoomHttpResponse(
+				digitalSalesRoom.getId()));
+		assertHttpResponseStatusCode(
+			404, digitalSalesRoomResource.getDigitalSalesRoomHttpResponse(0L));
+	}
+
+	protected DigitalSalesRoom testDeleteDigitalSalesRoom_addDigitalSalesRoom()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -438,108 +461,6 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetDigitalSalesRoom() throws Exception {
-		DigitalSalesRoom digitalSalesRoom =
-			testGraphQLGetDigitalSalesRoom_addDigitalSalesRoom();
-
-		// No namespace
-
-		Assert.assertTrue(
-			equals(
-				digitalSalesRoom,
-				DigitalSalesRoomSerDes.toDTO(
-					JSONUtil.getValueAsString(
-						invokeGraphQLQuery(
-							new GraphQLField(
-								"digitalSalesRoom",
-								new HashMap<String, Object>() {
-									{
-										put(
-											"digitalSalesRoomId",
-											digitalSalesRoom.getId());
-									}
-								},
-								getGraphQLFields())),
-						"JSONObject/data", "Object/digitalSalesRoom"))));
-
-		// Using the namespace headlessDigitalSalesRoom_v1_0
-
-		Assert.assertTrue(
-			equals(
-				digitalSalesRoom,
-				DigitalSalesRoomSerDes.toDTO(
-					JSONUtil.getValueAsString(
-						invokeGraphQLQuery(
-							new GraphQLField(
-								"headlessDigitalSalesRoom_v1_0",
-								new GraphQLField(
-									"digitalSalesRoom",
-									new HashMap<String, Object>() {
-										{
-											put(
-												"digitalSalesRoomId",
-												digitalSalesRoom.getId());
-										}
-									},
-									getGraphQLFields()))),
-						"JSONObject/data",
-						"JSONObject/headlessDigitalSalesRoom_v1_0",
-						"Object/digitalSalesRoom"))));
-	}
-
-	@Test
-	public void testGraphQLGetDigitalSalesRoomNotFound() throws Exception {
-		Long irrelevantDigitalSalesRoomId = RandomTestUtil.randomLong();
-
-		// No namespace
-
-		Assert.assertEquals(
-			"Not Found",
-			JSONUtil.getValueAsString(
-				invokeGraphQLQuery(
-					new GraphQLField(
-						"digitalSalesRoom",
-						new HashMap<String, Object>() {
-							{
-								put(
-									"digitalSalesRoomId",
-									irrelevantDigitalSalesRoomId);
-							}
-						},
-						getGraphQLFields())),
-				"JSONArray/errors", "Object/0", "JSONObject/extensions",
-				"Object/code"));
-
-		// Using the namespace headlessDigitalSalesRoom_v1_0
-
-		Assert.assertEquals(
-			"Not Found",
-			JSONUtil.getValueAsString(
-				invokeGraphQLQuery(
-					new GraphQLField(
-						"headlessDigitalSalesRoom_v1_0",
-						new GraphQLField(
-							"digitalSalesRoom",
-							new HashMap<String, Object>() {
-								{
-									put(
-										"digitalSalesRoomId",
-										irrelevantDigitalSalesRoomId);
-								}
-							},
-							getGraphQLFields()))),
-				"JSONArray/errors", "Object/0", "JSONObject/extensions",
-				"Object/code"));
-	}
-
-	protected DigitalSalesRoom
-			testGraphQLGetDigitalSalesRoom_addDigitalSalesRoom()
-		throws Exception {
-
-		return testGraphQLDigitalSalesRoom_addDigitalSalesRoom();
-	}
-
-	@Test
 	public void testGetDigitalSalesRoomsPage() throws Exception {
 		Page<DigitalSalesRoom> page =
 			digitalSalesRoomResource.getDigitalSalesRoomsPage(
@@ -565,6 +486,12 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 		assertContains(
 			digitalSalesRoom2, (List<DigitalSalesRoom>)page.getItems());
 		assertValid(page, testGetDigitalSalesRoomsPage_getExpectedActions());
+
+		digitalSalesRoomResource.deleteDigitalSalesRoom(
+			digitalSalesRoom1.getId());
+
+		digitalSalesRoomResource.deleteDigitalSalesRoom(
+			digitalSalesRoom2.getId());
 	}
 
 	protected Map<String, Map<String, String>>
@@ -679,75 +606,37 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetDigitalSalesRoomsPage() throws Exception {
-		GraphQLField graphQLField = new GraphQLField(
-			"digitalSalesRooms",
-			new HashMap<String, Object>() {
-				{
-					put("search", null);
-					put("page", 1);
-					put("pageSize", 10);
-				}
-			},
-			new GraphQLField("items", getGraphQLFields()),
-			new GraphQLField("page"), new GraphQLField("totalCount"));
+	public void testPatchDigitalSalesRoom() throws Exception {
+		DigitalSalesRoom postDigitalSalesRoom =
+			testPatchDigitalSalesRoom_addDigitalSalesRoom();
 
-		// No namespace
+		DigitalSalesRoom randomPatchDigitalSalesRoom =
+			randomPatchDigitalSalesRoom();
 
-		JSONObject digitalSalesRoomsJSONObject = JSONUtil.getValueAsJSONObject(
-			invokeGraphQLQuery(graphQLField), "JSONObject/data",
-			"JSONObject/digitalSalesRooms");
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		DigitalSalesRoom patchDigitalSalesRoom =
+			digitalSalesRoomResource.patchDigitalSalesRoom(
+				postDigitalSalesRoom.getId(), randomPatchDigitalSalesRoom);
 
-		long totalCount = digitalSalesRoomsJSONObject.getLong("totalCount");
+		DigitalSalesRoom expectedPatchDigitalSalesRoom =
+			postDigitalSalesRoom.clone();
 
-		DigitalSalesRoom digitalSalesRoom1 =
-			testGraphQLDigitalSalesRoom_addDigitalSalesRoom(
-				randomDigitalSalesRoom());
+		BeanTestUtil.copyProperties(
+			randomPatchDigitalSalesRoom, expectedPatchDigitalSalesRoom);
 
-		DigitalSalesRoom digitalSalesRoom2 =
-			testGraphQLDigitalSalesRoom_addDigitalSalesRoom(
-				randomDigitalSalesRoom());
+		DigitalSalesRoom getDigitalSalesRoom =
+			digitalSalesRoomResource.getDigitalSalesRoom(
+				patchDigitalSalesRoom.getId());
 
-		digitalSalesRoomsJSONObject = JSONUtil.getValueAsJSONObject(
-			invokeGraphQLQuery(graphQLField), "JSONObject/data",
-			"JSONObject/digitalSalesRooms");
+		assertEquals(expectedPatchDigitalSalesRoom, getDigitalSalesRoom);
+		assertValid(getDigitalSalesRoom);
+	}
 
-		Assert.assertEquals(
-			totalCount + 2, digitalSalesRoomsJSONObject.getLong("totalCount"));
+	protected DigitalSalesRoom testPatchDigitalSalesRoom_addDigitalSalesRoom()
+		throws Exception {
 
-		assertContains(
-			digitalSalesRoom1,
-			Arrays.asList(
-				DigitalSalesRoomSerDes.toDTOs(
-					digitalSalesRoomsJSONObject.getString("items"))));
-		assertContains(
-			digitalSalesRoom2,
-			Arrays.asList(
-				DigitalSalesRoomSerDes.toDTOs(
-					digitalSalesRoomsJSONObject.getString("items"))));
-
-		// Using the namespace headlessDigitalSalesRoom_v1_0
-
-		digitalSalesRoomsJSONObject = JSONUtil.getValueAsJSONObject(
-			invokeGraphQLQuery(
-				new GraphQLField(
-					"headlessDigitalSalesRoom_v1_0", graphQLField)),
-			"JSONObject/data", "JSONObject/headlessDigitalSalesRoom_v1_0",
-			"JSONObject/digitalSalesRooms");
-
-		Assert.assertEquals(
-			totalCount + 2, digitalSalesRoomsJSONObject.getLong("totalCount"));
-
-		assertContains(
-			digitalSalesRoom1,
-			Arrays.asList(
-				DigitalSalesRoomSerDes.toDTOs(
-					digitalSalesRoomsJSONObject.getString("items"))));
-		assertContains(
-			digitalSalesRoom2,
-			Arrays.asList(
-				DigitalSalesRoomSerDes.toDTOs(
-					digitalSalesRoomsJSONObject.getString("items"))));
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -768,133 +657,6 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
-	}
-
-	@Test
-	public void testGraphQLPostDigitalSalesRoom() throws Exception {
-		DigitalSalesRoom randomDigitalSalesRoom = randomDigitalSalesRoom();
-
-		DigitalSalesRoom digitalSalesRoom =
-			testGraphQLDigitalSalesRoom_addDigitalSalesRoom(
-				randomDigitalSalesRoom);
-
-		Assert.assertTrue(equals(randomDigitalSalesRoom, digitalSalesRoom));
-	}
-
-	protected DigitalSalesRoom testGraphQLDigitalSalesRoom_addDigitalSalesRoom()
-		throws Exception {
-
-		return testGraphQLDigitalSalesRoom_addDigitalSalesRoom(
-			randomDigitalSalesRoom());
-	}
-
-	protected DigitalSalesRoom testGraphQLDigitalSalesRoom_addDigitalSalesRoom(
-			DigitalSalesRoom digitalSalesRoom)
-		throws Exception {
-
-		JSONDeserializer<DigitalSalesRoom> jsonDeserializer =
-			JSONFactoryUtil.createJSONDeserializer();
-
-		StringBuilder sb = new StringBuilder("{");
-
-		for (java.lang.reflect.Field field :
-				getDeclaredFields(DigitalSalesRoom.class)) {
-
-			if (getGraphQLValue(field.get(digitalSalesRoom)) != null) {
-				if (sb.length() > 1) {
-					sb.append(", ");
-				}
-
-				sb.append(field.getName());
-				sb.append(": ");
-				sb.append(getGraphQLValue(field.get(digitalSalesRoom)));
-			}
-		}
-
-		sb.append("}");
-
-		List<GraphQLField> graphQLFields = getGraphQLFields();
-
-		return jsonDeserializer.deserialize(
-			JSONUtil.getValueAsString(
-				invokeGraphQLMutation(
-					new GraphQLField(
-						"createDigitalSalesRoom",
-						new HashMap<String, Object>() {
-							{
-								put("digitalSalesRoom", sb.toString());
-							}
-						},
-						graphQLFields)),
-				"JSONObject/data", "JSONObject/createDigitalSalesRoom"),
-			DigitalSalesRoom.class);
-	}
-
-	protected String getGraphQLValue(Object value) throws Exception {
-		if (value == null) {
-			return null;
-		}
-		else if (value instanceof Boolean || value instanceof Number) {
-			return value.toString();
-		}
-		else if (value instanceof Date date) {
-			return "\"" +
-				DateUtil.getDate(
-					date, "yyyy-MM-dd'T'HH:mm:ss'Z'", LocaleUtil.getDefault(),
-					TimeZone.getTimeZone("UTC")) + "\"";
-		}
-		else if (value instanceof Enum<?> enm) {
-			return enm.name();
-		}
-		else if (value instanceof Map<?, ?> map) {
-			List<String> entries = new ArrayList<>();
-
-			for (Map.Entry<?, ?> entry : map.entrySet()) {
-				String graphQLValue = getGraphQLValue(entry.getValue());
-
-				if (graphQLValue != null) {
-					entries.add(entry.getKey() + ": " + graphQLValue);
-				}
-			}
-
-			return "{" + String.join(", ", entries) + "}";
-		}
-		else if (value instanceof Object[] array) {
-			List<String> entries = new ArrayList<>();
-
-			for (Object entry : array) {
-				String graphQLValue = getGraphQLValue(entry);
-
-				if (graphQLValue != null) {
-					entries.add(graphQLValue);
-				}
-			}
-
-			return "[" + String.join(", ", entries) + "]";
-		}
-		else if (value instanceof String) {
-			return "\"" + value + "\"";
-		}
-		else {
-			List<String> entries = new ArrayList<>();
-
-			Class<?> clazz = value.getClass();
-			java.lang.reflect.Field[] declaredFields = getDeclaredFields(clazz);
-
-			if (declaredFields.length == 0) {
-				declaredFields = getDeclaredFields(clazz.getSuperclass());
-			}
-
-			for (java.lang.reflect.Field field : declaredFields) {
-				String graphQLValue = getGraphQLValue(field.get(value));
-
-				if (graphQLValue != null) {
-					entries.add(field.getName() + ": " + graphQLValue);
-				}
-			}
-
-			return "{" + String.join(", ", entries) + "}";
-		}
 	}
 
 	protected void assertContains(
@@ -994,6 +756,14 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 
 			if (Objects.equals("accountName", additionalAssertFieldName)) {
 				if (digitalSalesRoom.getAccountName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("actions", additionalAssertFieldName)) {
+				if (digitalSalesRoom.getActions() == null) {
 					valid = false;
 				}
 
@@ -1116,6 +886,16 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 
 			if (Objects.equals("secondaryColor", additionalAssertFieldName)) {
 				if (digitalSalesRoom.getSecondaryColor() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"userAccountBriefs", additionalAssertFieldName)) {
+
+				if (digitalSalesRoom.getUserAccountBriefs() == null) {
 					valid = false;
 				}
 
@@ -1262,6 +1042,17 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 				if (!Objects.deepEquals(
 						digitalSalesRoom1.getAccountName(),
 						digitalSalesRoom2.getAccountName())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("actions", additionalAssertFieldName)) {
+				if (!equals(
+						(Map)digitalSalesRoom1.getActions(),
+						(Map)digitalSalesRoom2.getActions())) {
 
 					return false;
 				}
@@ -1446,6 +1237,19 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals(
+					"userAccountBriefs", additionalAssertFieldName)) {
+
+				if (!Objects.deepEquals(
+						digitalSalesRoom1.getUserAccountBriefs(),
+						digitalSalesRoom2.getUserAccountBriefs())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
 					additionalAssertFieldName);
@@ -1603,6 +1407,11 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 			}
 
 			return sb.toString();
+		}
+
+		if (entityFieldName.equals("actions")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
 		}
 
 		if (entityFieldName.equals("banner")) {
@@ -2100,6 +1909,11 @@ public abstract class BaseDigitalSalesRoomResourceTestCase {
 			}
 
 			return sb.toString();
+		}
+
+		if (entityFieldName.equals("userAccountBriefs")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
 		}
 
 		throw new IllegalArgumentException(

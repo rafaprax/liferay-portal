@@ -42,10 +42,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import reactor.util.retry.Retry;
@@ -57,39 +57,6 @@ import reactor.util.retry.Retry;
 @RequestMapping("/analytics")
 @RestController
 public class AnalyticsRestController extends BaseRestController {
-
-	@GetMapping("pages")
-	public String getPages(
-			@RequestParam(defaultValue = "", required = false) String channelId,
-			@RequestParam(defaultValue = "", required = false) String keywords,
-			@RequestParam(defaultValue = "", required = false) String page,
-			@RequestParam(defaultValue = "", required = false) String rangeKey,
-			@RequestParam(defaultValue = "", required = false) String
-				sortMetric,
-			@RequestParam(defaultValue = "", required = false) String sortOrder)
-		throws Exception {
-
-		return get(
-			"Bearer " + _analyticsAuthToken,
-			UriComponentsBuilder.fromUriString(
-				_analyticsAuthUrl
-			).path(
-				"/api/reports/pages"
-			).queryParam(
-				"channelId", channelId
-			).queryParam(
-				"keywords", keywords
-			).queryParam(
-				"page", page
-			).queryParam(
-				"rangeKey", rangeKey
-			).queryParam(
-				"sortMetric", sortMetric
-			).queryParam(
-				"sortOrder", sortOrder
-			).build(
-			).toUri());
-	}
 
 	@GetMapping("plan/{accountKey}")
 	public ResponseEntity<?> getPlan(@PathVariable String accountKey)
@@ -201,20 +168,6 @@ public class AnalyticsRestController extends BaseRestController {
 			).toUri());
 	}
 
-	@GetMapping("project/{projectId}/email-address-domains")
-	public String getProjectEmailAddressDomains(@PathVariable String projectId)
-		throws Exception {
-
-		return get(
-			"Basic " + _analyticsAuthBasic,
-			UriComponentsBuilder.fromUriString(
-				_analyticsAuthUrl
-			).path(
-				"/o/faro/main/project/" + projectId + "/email_address_domains"
-			).build(
-			).toUri());
-	}
-
 	@PostMapping("provisioning")
 	public void postProvisioning(@RequestBody String json) throws Exception {
 		JSONObject commerceOrderJSONObject = new JSONObject(
@@ -235,54 +188,51 @@ public class AnalyticsRestController extends BaseRestController {
 		JSONObject analyticsFormJSONObject =
 			orderMetadataJSONObject.optJSONObject("analyticsForm");
 
-		JSONObject analyticsProjectJSONObject = new JSONObject(
-			post(
-				BodyInserters.fromFormData(
-					"corpProjectName",
-					analyticsFormJSONObject.getString("corpProjectName")
-				).with(
-					"corpProjectUuid",
-					analyticsFormJSONObject.getString("corpProjectUuid")
-				).with(
-					"emailAddressDomains",
-					analyticsFormJSONObject.getJSONArray(
-						"emailAddressDomains"
-					).toString()
-				).with(
-					"friendlyURL",
-					analyticsFormJSONObject.getString("friendlyURL")
-				).with(
-					"incidentReportEmailAddresses",
-					analyticsFormJSONObject.getJSONArray(
-						"incidentReportEmailAddresses"
-					).toString()
-				).with(
-					"name", analyticsFormJSONObject.getString("name")
-				).with(
-					"serverLocation", "us-west1-ac-uat-c1"
-				).with(
-					"sharedCluster", "false"
-				).with(
-					"timeZoneId",
-					analyticsFormJSONObject.optString("timeZoneId")
-				).with(
-					"trial", "true"
-				).with(
-					"ownerEmailAddress",
-					analyticsFormJSONObject.getString("ownerEmailAddress")
-				).toString(),
-				HashMapBuilder.put(
-					HttpHeaders.AUTHORIZATION, "Basic " + _analyticsAuthBasic
-				).put(
-					HttpHeaders.CONTENT_TYPE,
-					MediaType.APPLICATION_FORM_URLENCODED_VALUE
-				).build(),
-				UriComponentsBuilder.fromUriString(
-					_analyticsAuthUrl
-				).path(
-					"/o/faro/main/project/unprovisioned"
-				).build(
-				).toUri()));
+		String response = WebClient.builder(
+		).baseUrl(
+			_analyticsAuthUrl
+		).defaultHeader(
+			HttpHeaders.AUTHORIZATION, "Basic " + _analyticsAuthBasic
+		).build(
+		).post(
+		).uri(
+			"/o/faro/main/project/unprovisioned"
+		).contentType(
+			MediaType.APPLICATION_FORM_URLENCODED
+		).body(
+			BodyInserters.fromFormData(
+				"corpProjectName",
+				analyticsFormJSONObject.getString("corpProjectName")
+			).with(
+				"corpProjectUuid",
+				analyticsFormJSONObject.getString("corpProjectUuid")
+			).with(
+				"incidentReportEmailAddresses",
+				analyticsFormJSONObject.getJSONArray(
+					"incidentReportEmailAddresses"
+				).toString()
+			).with(
+				"name", analyticsFormJSONObject.getString("name")
+			).with(
+				"serverLocation",
+				analyticsFormJSONObject.optString(
+					"serverLocation", "us-west1-ac-uat-c1")
+			).with(
+				"sharedCluster", "false"
+			).with(
+				"trial", "true"
+			).with(
+				"ownerEmailAddress",
+				analyticsFormJSONObject.getString("ownerEmailAddress")
+			)
+		).retrieve(
+		).bodyToMono(
+			String.class
+		).block();
+
+		if (response == null) {
+			return;
+		}
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Analytics project created for order " + order.getId());
@@ -292,7 +242,7 @@ public class AnalyticsRestController extends BaseRestController {
 			HashMapBuilder.put(
 				"order-metadata",
 				orderMetadataJSONObject.put(
-					"analyticsProject", analyticsProjectJSONObject
+					"analyticsProject", new JSONObject(response)
 				).toString()
 			).build(),
 			order.getId(), MarketplaceConstants.ORDER_STATUS_COMPLETED);

@@ -11,15 +11,22 @@ import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.util.DLURLHelperUtil;
 import com.liferay.headless.digital.sales.room.dto.v1_0.DigitalSalesRoom;
 import com.liferay.headless.digital.sales.room.dto.v1_0.FileEntry;
+import com.liferay.headless.digital.sales.room.dto.v1_0.UserAccountBrief;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserGroupRole;
+import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.File;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -29,6 +36,7 @@ import com.liferay.portal.vulcan.fields.NestedFieldsSupplier;
 
 import java.io.Serializable;
 
+import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
@@ -58,14 +66,27 @@ public class DigitalSalesRoomDTOConverter
 			DTOConverterContext dtoConverterContext, Group group)
 		throws Exception {
 
-		ObjectDefinition objectDefinition =
-			_objectDefinitionLocalService.
-				getObjectDefinitionByExternalReferenceCode(
-					"L_DSR_ROOM", group.getCompanyId());
+		ObjectEntry objectEntry;
 
-		ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
-			group.getExternalReferenceCode(), group.getGroupId(),
-			objectDefinition.getObjectDefinitionId());
+		if (dtoConverterContext instanceof
+				DigitalSalesRoomDTOConverterContext) {
+
+			DigitalSalesRoomDTOConverterContext
+				digitalSalesRoomDTOConverterContext =
+					(DigitalSalesRoomDTOConverterContext)dtoConverterContext;
+
+			objectEntry = digitalSalesRoomDTOConverterContext.getObjectEntry();
+		}
+		else {
+			ObjectDefinition objectDefinition =
+				_objectDefinitionLocalService.
+					getObjectDefinitionByExternalReferenceCode(
+						"L_DSR_ROOM", group.getCompanyId());
+
+			objectEntry = _objectEntryLocalService.fetchObjectEntry(
+				group.getExternalReferenceCode(), group.getGroupId(),
+				objectDefinition.getObjectDefinitionId());
+		}
 
 		if (objectEntry == null) {
 			return null;
@@ -95,6 +116,7 @@ public class DigitalSalesRoomDTOConverter
 
 						return accountEntry.getName();
 					});
+				setActions(dtoConverterContext::getActions);
 				setBanner(() -> _getFileEntry("banner", values));
 				setChannelId(() -> GetterUtil.getLong(values.get("channelId")));
 				setChannelName(
@@ -117,6 +139,12 @@ public class DigitalSalesRoomDTOConverter
 					() -> GetterUtil.getString(values.get("primaryColor")));
 				setSecondaryColor(
 					() -> GetterUtil.getString(values.get("secondaryColor")));
+				setUserAccountBriefs(
+					() -> TransformUtil.transform(
+						_userLocalService.getGroupUserIds(group.getGroupId()),
+						groupUserId -> _toUserAccountBrief(
+							group.getGroupId(), groupUserId),
+						UserAccountBrief.class));
 			}
 		};
 	}
@@ -167,6 +195,40 @@ public class DigitalSalesRoomDTOConverter
 		}
 	}
 
+	private UserAccountBrief _toUserAccountBrief(long groupId, long userId) {
+		User user = _userLocalService.fetchUser(userId);
+
+		if (user == null) {
+			return null;
+		}
+
+		return new UserAccountBrief() {
+			{
+				setAlternateName(user::getScreenName);
+				setEmailAddress(user::getEmailAddress);
+				setExternalReferenceCode(user::getExternalReferenceCode);
+				setId(user::getUserId);
+				setName(user::getFullName);
+				setRoleKey(
+					() -> {
+						List<UserGroupRole> userGroupRoles =
+							_userGroupRoleLocalService.getUserGroupRoles(
+								user.getUserId(), groupId);
+
+						if (userGroupRoles.isEmpty()) {
+							return null;
+						}
+
+						UserGroupRole userGroupRole = userGroupRoles.get(0);
+
+						Role role = userGroupRole.getRole();
+
+						return role.getName();
+					});
+			}
+		};
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		DigitalSalesRoomDTOConverter.class);
 
@@ -184,5 +246,11 @@ public class DigitalSalesRoomDTOConverter
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private UserGroupRoleLocalService _userGroupRoleLocalService;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

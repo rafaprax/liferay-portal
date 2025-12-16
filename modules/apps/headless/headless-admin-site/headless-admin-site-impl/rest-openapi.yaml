@@ -211,11 +211,6 @@ components:
                             type: boolean
                         emptyCollectionConfig:
                             $ref: "#/components/schemas/EmptyCollectionConfig"
-                        hidden:
-                            # @review
-                            description:
-                                Specifies if the collection display is hidden to the user.
-                            type: boolean
                         name:
                             # @review
                             description:
@@ -270,13 +265,14 @@ components:
                                 numberOfColumns:
                                     # @review
                                     description:
-                                        The number of columns of the collection viewport.
+                                        The number of columns of the collection viewport if a grid list style is
+                                        selected.
                                     type: integer
                     description:
                         The definition of the collection display viewport.
                     type: object
                 id:
-                    enum: [LandscapeMobile, PortraitMobile, Tablet]
+                    enum: [Desktop, LandscapeMobile, PortraitMobile, Tablet]
                     type: string
             required:
                 -   collectionDisplayViewportDefinition
@@ -396,6 +392,11 @@ components:
             allOf:
                 -   $ref: "#/components/schemas/PageElementDefinition"
                 -   properties:
+                        backgroundFragmentImage:
+                            $ref: "#/components/schemas/FragmentImage"
+                            # @review
+                            description:
+                                The fragment's background image.
                         contentVisibility:
                             # @review
                             description:
@@ -409,21 +410,11 @@ components:
                             items:
                                 type: string
                             type: array
-                        customCSS:
-                            # @review
-                            description:
-                                Custom CSS that is applied on the container page element.
-                            type: string
                         fragmentLink:
                             $ref: "#/components/schemas/FragmentLink"
                             # @review
                             description:
                                 The fragment link of the container page element.
-                        fragmentStyle:
-                            $ref: "#/components/schemas/FragmentStyle"
-                            # @review
-                            description:
-                                The fragment style of the container page element.
                         fragmentViewports:
                             # @review
                             description:
@@ -513,25 +504,6 @@ components:
                     required:
                         -   contextualMenuType
                     type: object
-        CustomCSSViewport:
-            # @review
-            description:
-                A custom CSS viewport.
-            properties:
-                customCSS:
-                    # @review
-                    description:
-                        The definition of the custom CSS viewport.
-                    type: string
-                id:
-                    # @review
-                    description:
-                        The custom CSS viewport's ID.
-                    type: string
-            required:
-                -   id
-                -   customCSS
-            type: object
         CustomMetaTag:
             # @review
             description:
@@ -994,6 +966,11 @@ components:
             allOf:
                 -   $ref: "#/components/schemas/PageElementDefinition"
                 -   properties:
+                        backgroundFragmentImage:
+                            $ref: "#/components/schemas/FragmentImage"
+                            # @review
+                            description:
+                                The fragment's background image.
                         cssClasses:
                             # @review
                             description:
@@ -1001,18 +978,8 @@ components:
                             items:
                                 type: string
                             type: array
-                        customCSS:
-                            # @review
-                            description:
-                                Custom CSS that is applied on the form container page element.
-                            type: string
                         formContainerConfig:
                             $ref: "#/components/schemas/FormContainerConfig"
-                        fragmentStyle:
-                            $ref: "#/components/schemas/FragmentStyle"
-                            # @review
-                            description:
-                                The fragment style of a form container page element.
                         fragmentViewports:
                             # @review
                             description:
@@ -1060,6 +1027,11 @@ components:
             allOf:
                 -   $ref: "#/components/schemas/PageElementDefinition"
                 -   properties:
+                        backgroundFragmentImage:
+                            $ref: "#/components/schemas/FragmentImage"
+                            # @review
+                            description:
+                                The fragment's background image.
                         cssClasses:
                             # @review
                             description:
@@ -1067,16 +1039,6 @@ components:
                             items:
                                 type: string
                             type: array
-                        customCSS:
-                            # @review
-                            description:
-                                Custom CSS that is applied on the form step container page element.
-                            type: string
-                        fragmentStyle:
-                            $ref: "#/components/schemas/FragmentStyle"
-                            # @review
-                            description:
-                                The fragment style of a form step container page element.
                         fragmentViewports:
                             # @review
                             description:
@@ -1357,6 +1319,11 @@ components:
             allOf:
                 -   $ref: "#/components/schemas/PageElementDefinition"
                 -   properties:
+                        backgroundFragmentImage:
+                            $ref: "#/components/schemas/FragmentImage"
+                            # @review
+                            description:
+                                The fragment's background image.
                         configuration:
                             # @review
                             description:
@@ -1373,18 +1340,6 @@ components:
                                 A list of CSS classes that are applied to the fragment instance.
                             items:
                                 type: string
-                            type: array
-                        customCSS:
-                            # @review
-                            description:
-                                Custom CSS that is applied on the fragment instance.
-                            type: string
-                        customCSSViewports:
-                            # @review
-                            description:
-                                The custom CSS viewports of the fragment instance.
-                            items:
-                                $ref: "#/components/schemas/CustomCSSViewport"
                             type: array
                         datePropagated:
                             description:
@@ -1422,12 +1377,6 @@ components:
                             description:
                                 The fragment reference of the fragment instance.
                             type: object
-                        fragmentStyle:
-                            $ref: "#/components/schemas/FragmentStyle"
-                            # @review
-                            description:
-                                The fragment style of the fragment instance page element.
-                            type: string
                         fragmentType:
                             # @review
                             description:
@@ -1610,152 +1559,6 @@ components:
                     enum: [DefaultFragmentReference, FragmentItemExternalReference]
                     type: string
             type: object
-        FragmentStyle:
-            # @review
-            description:
-                A fragment style.
-            properties:
-                backgroundColor:
-                    # @review
-                    description:
-                        The fragment's background color.
-                    type: string
-                backgroundFragmentImage:
-                    $ref: "#/components/schemas/FragmentImage"
-                    # @review
-                    description:
-                        The fragment's background image.
-                borderColor:
-                    # @review
-                    description:
-                        The fragment's border color.
-                    type: string
-                borderRadius:
-                    # @review
-                    description:
-                        The fragment's background radius.
-                    type: string
-                borderWidth:
-                    # @review
-                    description:
-                        The fragment's border width.
-                    type: string
-                fontFamily:
-                    # @review
-                    description:
-                        The fragment's font family.
-                    type: string
-                fontSize:
-                    # @review
-                    description:
-                        The fragment's font size.
-                    type: string
-                fontWeight:
-                    # @review
-                    description:
-                        The fragment's font weight.
-                    type: string
-                height:
-                    # @review
-                    description:
-                        The fragment's height.
-                    type: string
-                hidden:
-                    # @review
-                    description:
-                        Specifies if the fragment is hidden to the user.
-                    type: boolean
-                marginBottom:
-                    # @review
-                    description:
-                        The fragment's margin bottom.
-                    type: string
-                marginLeft:
-                    # @review
-                    description:
-                        The fragment's margin left.
-                    type: string
-                marginRight:
-                    # @review
-                    description:
-                        The fragment's margin right.
-                    type: string
-                marginTop:
-                    # @review
-                    description:
-                        The fragment's margin top.
-                    type: string
-                maxHeight:
-                    # @review
-                    description:
-                        The fragment's max height.
-                    type: string
-                maxWidth:
-                    # @review
-                    description:
-                        The fragment's max width.
-                    type: string
-                minHeight:
-                    # @review
-                    description:
-                        The fragment's min height.
-                    type: string
-                minWidth:
-                    # @review
-                    description:
-                        The fragment's min width.
-                    type: string
-                opacity:
-                    # @review
-                    description:
-                        The fragment's opacity.
-                    type: string
-                overflow:
-                    # @review
-                    description:
-                        The fragment's overflow behavior.
-                    type: string
-                paddingBottom:
-                    # @review
-                    description:
-                        The fragment's padding bottom.
-                    type: string
-                paddingLeft:
-                    # @review
-                    description:
-                        The fragment's padding left.
-                    type: string
-                paddingRight:
-                    # @review
-                    description:
-                        The fragment's padding right.
-                    type: string
-                paddingTop:
-                    # @review
-                    description:
-                        The fragment's padding top.
-                    type: string
-                shadow:
-                    # @review
-                    description:
-                        The fragment's shadow effect.
-                    type: string
-                textAlign:
-                    # @review
-                    description:
-                        The fragment's text align.
-                    type: string
-                textColor:
-                    # @review
-                    description:
-                        The fragment's text color.
-                    type: string
-                width:
-                    # @review
-                    description:
-                        The fragment's width.
-                    type: string
-            type: object
         FragmentViewport:
             # @review
             description:
@@ -1774,6 +1577,7 @@ components:
                     # @review
                     description:
                         The fragment viewport's ID.
+                    enum: [Desktop, LandscapeMobile, PortraitMobile, Tablet]
                     type: string
             required:
                 -   id
@@ -1939,6 +1743,11 @@ components:
             allOf:
                 -   $ref: "#/components/schemas/PageElementDefinition"
                 -   properties:
+                        backgroundFragmentImage:
+                            $ref: "#/components/schemas/FragmentImage"
+                            # @review
+                            description:
+                                The fragment's background image.
                         cssClasses:
                             # @review
                             description:
@@ -1946,16 +1755,6 @@ components:
                             items:
                                 type: string
                             type: array
-                        customCSS:
-                            # @review
-                            description:
-                                Custom CSS that is applied on the row page element.
-                            type: string
-                        fragmentStyle:
-                            $ref: "#/components/schemas/FragmentStyle"
-                            # @review
-                            description:
-                                The fragment style of the row page element.
                         gridViewports:
                             # @review
                             description:
@@ -1973,11 +1772,6 @@ components:
                             description:
                                 A flag that indicates whether the row page element is indexed or not.
                             type: boolean
-                        modulesPerRow:
-                            # @review
-                            description:
-                                The row page element's modules per row.
-                            type: integer
                         name:
                             # @review
                             description:
@@ -1993,11 +1787,6 @@ components:
                             description:
                                 A flag that indicates whether the row page element has reverse order.
                             type: boolean
-                        verticalAlignment:
-                            description:
-                                The vertical alignment property of the row page element.
-                            enum: [Bottom, Middle, Top]
-                            type: string
             # @review
             description:
                 The page element definition of a row.
@@ -2037,7 +1826,7 @@ components:
                     # @review
                     description:
                         The grid viewport's ID.
-                    enum: [LandscapeMobile, PortraitMobile, Tablet]
+                    enum: [Desktop, LandscapeMobile, PortraitMobile, Tablet]
                     type: string
             required:
                 -   gridViewportDefinition
@@ -2240,27 +2029,20 @@ components:
                 -   $ref: "#/components/schemas/CollectionDisplayListStyle"
                 -   properties:
                         listStyleDefinition:
-                            allOf:
-                                -   $ref: "#/components/schemas/BasicLayout"
-                                -   properties:
-                                        gutters:
-                                            # @review
-                                            description:
-                                                A flag that indicates whether the collection display page element has
-                                                gutters if a grid list style is selected.
-                                            type: boolean
-                                        numberOfColumns:
-                                            # @review
-                                            description:
-                                                The number of columns in the collection display page element.
-                                            type: integer
-                                        verticalAlignment:
-                                            # @review
-                                            description:
-                                                The vertical alignment property of the collection display page element
-                                                if a grid list style is selected..
-                                            enum: [Bottom, Middle, Top]
-                                            type: string
+                            properties:
+                                gutters:
+                                    # @review
+                                    description:
+                                        A flag that indicates whether the collection display page element has gutters if
+                                        a grid list style is selected.
+                                    type: boolean
+                                verticalAlignment:
+                                    # @review
+                                    description:
+                                        The vertical alignment property of the collection display page element if a grid
+                                        list style is selected.
+                                    enum: [Bottom, Middle, Top]
+                                    type: string
                             type: object
                         listStyleType:
                             enum: [Grid, FlexColumn, FlexRow]
@@ -2374,12 +2156,6 @@ components:
                             items:
                                 $ref: "#/components/schemas/ModuleViewport"
                             type: array
-                        size:
-                            description:
-                                The module's size.
-                            maximum: 12
-                            minimum: 1
-                            type: integer
             # @review
             description:
                 The page element definition of a Column.
@@ -2390,7 +2166,7 @@ components:
                 A module in a viewport.
             properties:
                 id:
-                    enum: [LandscapeMobile, PortraitMobile, Tablet]
+                    enum: [Desktop, LandscapeMobile, PortraitMobile, Tablet]
                     type: string
                 moduleViewportDefinition:
                     properties:
@@ -4076,6 +3852,11 @@ components:
             allOf:
                 -   $ref: "#/components/schemas/PageElementDefinition"
                 -   properties:
+                        backgroundFragmentImage:
+                            $ref: "#/components/schemas/FragmentImage"
+                            # @review
+                            description:
+                                The fragment's background image.
                         cssClasses:
                             # @review
                             description:
@@ -4083,21 +3864,11 @@ components:
                             items:
                                 type: string
                             type: array
-                        customCSS:
-                            # @review
-                            description:
-                                Custom CSS that is applied on the widget instance page element.
-                            type: string
                         draftWidgetInstanceExternalReferenceCode:
                             # @review
                             description:
                                 The draft widget instance external reference code.
                             type: string
-                        fragmentStyle:
-                            $ref: "#/components/schemas/FragmentStyle"
-                            # @review
-                            description:
-                                The fragment style of the widget instance page element.
                         fragmentViewports:
                             # @review
                             description:
@@ -4583,7 +4354,7 @@ components:
 info:
     description:
         "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.headless.admin.site.client', and version '1.0.20'."
+        'com.liferay.headless.admin.site.client', and version '1.0.21'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

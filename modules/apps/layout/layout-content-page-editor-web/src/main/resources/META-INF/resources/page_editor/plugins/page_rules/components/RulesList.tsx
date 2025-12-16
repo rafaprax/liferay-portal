@@ -161,7 +161,18 @@ function RuleItem({
 		}
 	}, [editing]);
 
-	const onSave = useCallback(() => {
+	const onFinishEditing = useCallback(() => {
+		if (!name) {
+			setName(rule.name);
+
+			openToast({
+				message: Liferay.Language.get('rule-name-cannot-be-empty'),
+				type: 'info',
+			});
+
+			return;
+		}
+
 		dispatch(
 			updateRule({
 				...rule,
@@ -245,7 +256,7 @@ function RuleItem({
 							onBlur={() => {
 								setEditing(false);
 
-								onSave();
+								onFinishEditing();
 							}}
 							onChange={(event) => {
 								setName(event.target.value);
@@ -268,7 +279,7 @@ function RuleItem({
 								) {
 									setEditing(false);
 
-									onSave();
+									onFinishEditing();
 								}
 
 								if (!event.key.match(/[a-z0-9-_ ]/gi)) {

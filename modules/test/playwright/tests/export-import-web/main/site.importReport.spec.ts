@@ -56,7 +56,7 @@ test('Can see error report and details', async ({
 
 	await exportImportPage.export(exportName, 'Tests 1 Items');
 
-	await expect(exportImportPage.taskSuccessLabel(exportName)).toBeVisible();
+	await expect(exportImportPage.taskStatusLabel(exportName)).toBeVisible();
 
 	const exportFilePath =
 		await exportImportPage.downloadExportProcess(exportName);
@@ -77,7 +77,10 @@ test('Can see error report and details', async ({
 
 	await exportImportPage.goToImport();
 
-	await exportImportPage.import(exportFilePath);
+	await exportImportPage.import({
+		filePath: exportFilePath,
+		taskStatus: 'completedWithErrors',
+	});
 
 	await exportImportPage.goToImportDetails(exportName);
 
@@ -138,7 +141,7 @@ test(
 			await exportImportPage.export(exportName, 'Tests 1 Items');
 
 			await expect(
-				exportImportPage.taskSuccessLabel(exportName)
+				exportImportPage.taskStatusLabel(exportName)
 			).toBeVisible();
 
 			const exportFilePath =
@@ -162,7 +165,10 @@ test(
 
 			await exportImportPage.goToImport();
 
-			await exportImportPage.import(exportFilePath);
+			await exportImportPage.import({
+				filePath: exportFilePath,
+				taskStatus: 'completedWithErrors',
+			});
 		});
 
 		await test.step('Open Export Report Entries modal', async () => {

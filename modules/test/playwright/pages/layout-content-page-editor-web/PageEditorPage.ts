@@ -1341,6 +1341,35 @@ export class PageEditorPage {
 		await fragment.waitFor({state: 'hidden'});
 	}
 
+	async renameRuleInline({
+		currentName,
+		newName,
+		nth,
+	}: {
+		currentName: string;
+		newName: string;
+		nth?: number;
+	}) {
+		const name = this.page
+			.locator('.page-editor__rule')
+			.getByText(currentName)
+			.nth(nth || 0);
+
+		const input = this.page.locator('.page-editor__rule input');
+
+		await expect(async () => {
+			await name.dblclick({timeout: 1000});
+
+			await expect(input).toBeVisible({timeout: 1000});
+
+			await input.fill(newName, {timeout: 2000});
+
+			await input.press('Enter', {timeout: 2000});
+
+			await this.waitForChangesSaved({timeout: 2000});
+		}).toPass();
+	}
+
 	async resetSpacing(fragmentId: string, spacingType: SpacingType) {
 		await this.openSpacingSelector(fragmentId, spacingType);
 
@@ -1679,6 +1708,53 @@ export class PageEditorPage {
 		// If source is content, select the item and the field
 
 		await this.setMappedItem(mappingConfiguration.mapping);
+	}
+
+	async swapFragment({
+		folder,
+		fragmentId,
+		fragmentName,
+	}: {
+		folder: string;
+		fragmentId: string;
+		fragmentName: string;
+	}) {
+		await this.selectFragment(fragmentId);
+
+		await clickAndExpectToBeVisible({
+			target: this.page.locator('.modal-title', {
+				hasText: 'Swap Fragment',
+			}),
+			trigger: this.page.getByLabel('Swap Fragment'),
+		});
+
+		const iframe = this.page.frameLocator('iframe[title="Swap Fragment"]');
+
+		await clickAndExpectToBeVisible({
+			target: iframe.locator('.card', {
+				hasText: fragmentName,
+			}),
+			trigger: iframe.locator('.card', {
+				hasText: folder,
+			}),
+		});
+
+		await clickAndExpectToBeHidden({
+			target: this.page.locator('.modal-title', {
+				hasText: 'Swap Fragment',
+			}),
+			trigger: iframe.locator('.card', {
+				hasText: fragmentName,
+			}),
+		});
+
+		await this.waitForChangesSaved();
+
+		await expect(
+			this.page
+				.getByLabel('Configuration Panel')
+				.locator('header', {hasText: fragmentName})
+		).toBeVisible();
 	}
 
 	async switchExperience(experience: string) {

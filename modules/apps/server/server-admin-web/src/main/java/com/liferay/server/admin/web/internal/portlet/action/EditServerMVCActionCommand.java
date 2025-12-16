@@ -10,6 +10,8 @@ import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.model.CTCollectionModel;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
+import com.liferay.data.cleanup.DataCleanup;
+import com.liferay.data.cleanup.util.DataCleanupUtil;
 import com.liferay.document.library.kernel.document.conversion.DocumentConversion;
 import com.liferay.document.library.kernel.model.DLProcessorConstants;
 import com.liferay.document.library.kernel.processor.AudioProcessor;
@@ -282,6 +284,10 @@ public class EditServerMVCActionCommand extends BaseMVCActionCommand {
 		}
 		else if (cmd.equals("verifyMembershipPolicies")) {
 			_verifyMembershipPolicies();
+		}
+		else {
+			_executeCleanup(cmd, DataCleanupUtil.getModuleDataCleanups());
+			_executeCleanup(cmd, DataCleanupUtil.getSystemDataCleanups());
 		}
 
 		sendRedirect(actionRequest, actionResponse, redirect);
@@ -606,6 +612,18 @@ public class EditServerMVCActionCommand extends BaseMVCActionCommand {
 					companyId, BasePreviewableDLProcessor.REPOSITORY_ID,
 					BasePreviewableDLProcessor.THUMBNAIL_PATH);
 			});
+	}
+
+	private void _executeCleanup(String cmd, List<DataCleanup> dataCleanups)
+		throws Exception {
+
+		for (DataCleanup dataCleanup : dataCleanups) {
+			if (cmd.equals(dataCleanup.getLabel())) {
+				dataCleanup.cleanup();
+
+				CacheRegistryUtil.clear();
+			}
+		}
 	}
 
 	private void _gc() throws Exception {

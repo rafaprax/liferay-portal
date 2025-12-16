@@ -43,11 +43,18 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface DigitalSalesRoomResource {
 
+	public void deleteDigitalSalesRoom(Long digitalSalesRoomId)
+		throws Exception;
+
 	public DigitalSalesRoom getDigitalSalesRoom(Long digitalSalesRoomId)
 		throws Exception;
 
 	public Page<DigitalSalesRoom> getDigitalSalesRoomsPage(
 			String search, Pagination pagination)
+		throws Exception;
+
+	public DigitalSalesRoom patchDigitalSalesRoom(
+			Long digitalSalesRoomId, DigitalSalesRoom digitalSalesRoom)
 		throws Exception;
 
 	public DigitalSalesRoom postDigitalSalesRoom(

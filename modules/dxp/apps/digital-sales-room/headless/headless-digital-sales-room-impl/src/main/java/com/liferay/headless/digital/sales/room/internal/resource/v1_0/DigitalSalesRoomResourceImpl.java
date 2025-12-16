@@ -9,28 +9,49 @@ import com.liferay.account.model.AccountEntry;
 import com.liferay.account.service.AccountEntryService;
 import com.liferay.headless.digital.sales.room.dto.v1_0.DigitalSalesRoom;
 import com.liferay.headless.digital.sales.room.dto.v1_0.FileEntry;
+import com.liferay.headless.digital.sales.room.dto.v1_0.UserAccountBrief;
+import com.liferay.headless.digital.sales.room.internal.dto.v1_0.converter.DigitalSalesRoomDTOConverterContext;
 import com.liferay.headless.digital.sales.room.resource.v1_0.DigitalSalesRoomResource;
 import com.liferay.layout.util.LayoutServiceContextHelper;
+import com.liferay.object.constants.ObjectActionKeys;
+import com.liferay.object.definition.security.permission.resource.ObjectDefinitionPortletResourcePermissionRegistryUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManagerRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.ObjectEntryService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.events.ServicePreAction;
 import com.liferay.portal.events.ThemeServicePreAction;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.RoleAssignmentException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionRegistryUtil;
+import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.GroupService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.servlet.DummyHttpServletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
@@ -52,7 +73,12 @@ import com.liferay.site.initializer.SiteInitializerRegistry;
 import com.liferay.style.book.model.StyleBookEntry;
 import com.liferay.style.book.service.StyleBookEntryLocalService;
 
+import java.io.Serializable;
+
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -69,6 +95,31 @@ public class DigitalSalesRoomResourceImpl
 	extends BaseDigitalSalesRoomResourceImpl {
 
 	@Override
+	public void deleteDigitalSalesRoom(Long digitalSalesRoomId)
+		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-66359")) {
+
+			throw new UnsupportedOperationException();
+		}
+
+		Group group = _groupService.getGroup(digitalSalesRoomId);
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
+			group.getExternalReferenceCode(), group.getGroupId(),
+			objectDefinition.getObjectDefinitionId());
+
+		_checkPermission(ActionKeys.DELETE, objectEntry);
+
+		_objectEntryLocalService.deleteObjectEntry(
+			objectEntry.getObjectEntryId());
+
+		_groupLocalService.deleteGroup(group.getGroupId());
+	}
+
+	@Override
 	public DigitalSalesRoom getDigitalSalesRoom(Long digitalSalesRoomId)
 		throws Exception {
 
@@ -78,7 +129,14 @@ public class DigitalSalesRoomResourceImpl
 			throw new UnsupportedOperationException();
 		}
 
-		return _toDigitalSalesRoom(_groupService.getGroup(digitalSalesRoomId));
+		Group group = _groupService.getGroup(digitalSalesRoomId);
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		return _toDigitalSalesRoom(
+			group,
+			_objectEntryLocalService.getObjectEntry(
+				group.getExternalReferenceCode(), group.getGroupId(),
+				objectDefinition.getObjectDefinitionId()));
 	}
 
 	@Override
@@ -92,7 +150,12 @@ public class DigitalSalesRoomResourceImpl
 			throw new UnsupportedOperationException();
 		}
 
-		long[] classNameIds = {_portal.getClassNameId(Group.class.getName())};
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		long[] classNameIds = {
+			_portal.getClassNameId(objectDefinition.getClassName())
+		};
+
 		LinkedHashMap<String, Object> params =
 			LinkedHashMapBuilder.<String, Object>put(
 				"active", true
@@ -101,16 +164,76 @@ public class DigitalSalesRoomResourceImpl
 			).build();
 
 		return Page.of(
-			null,
+			HashMapBuilder.<String, Map<String, String>>put(
+				"create",
+				() -> addAction(
+					ObjectActionKeys.ADD_OBJECT_ENTRY, "postDigitalSalesRoom",
+					objectDefinition.getResourceName(),
+					contextCompany.getCompanyId())
+			).build(),
 			transform(
 				_groupService.search(
 					contextCompany.getCompanyId(), classNameIds, search, null,
 					params, true, pagination.getStartPosition(),
 					pagination.getEndPosition(), new GroupNameComparator()),
-				this::_toDigitalSalesRoom),
+				group -> _toDigitalSalesRoom(
+					group,
+					_objectEntryLocalService.getObjectEntry(
+						group.getExternalReferenceCode(), group.getGroupId(),
+						objectDefinition.getObjectDefinitionId()))),
 			pagination,
 			_groupService.searchCount(
 				contextCompany.getCompanyId(), classNameIds, search, params));
+	}
+
+	@Override
+	public DigitalSalesRoom patchDigitalSalesRoom(
+			Long digitalSalesRoomId, DigitalSalesRoom digitalSalesRoom)
+		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-66359")) {
+
+			throw new UnsupportedOperationException();
+		}
+
+		Group group = _groupService.getGroup(digitalSalesRoomId);
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		ObjectEntry objectEntry = _objectEntryLocalService.getObjectEntry(
+			group.getExternalReferenceCode(), group.getGroupId(),
+			objectDefinition.getObjectDefinitionId());
+
+		_checkPermission(ActionKeys.UPDATE, objectEntry);
+
+		ServiceContext serviceContext = _getServiceContext();
+
+		group = _groupLocalService.updateGroup(
+			group.getGroupId(), group.getParentGroupId(),
+			_getNameMap(group, digitalSalesRoom),
+			_getDescriptionMap(group, digitalSalesRoom), group.getType(),
+			group.getTypeSettings(), group.isManualMembership(),
+			group.getMembershipRestriction(),
+			GetterUtil.get(
+				digitalSalesRoom.getFriendlyUrlPath(), group.getFriendlyURL()),
+			group.isInheritContent(), group.isActive(), serviceContext);
+
+		if (digitalSalesRoom.getAccountId() == 0) {
+			Map<String, Serializable> values = objectEntry.getValues();
+
+			digitalSalesRoom.setAccountId(
+				() -> GetterUtil.getLong(values.get("accountId")));
+		}
+
+		_objectEntryLocalService.partialUpdateObjectEntry(
+			objectEntry.getUserId(), objectEntry.getObjectEntryId(),
+			objectEntry.getObjectEntryFolderId(),
+			_getProperties(digitalSalesRoom, group), serviceContext);
+
+		_updateFrontendTokensValues(digitalSalesRoom, group);
+		_updateNestedResources(digitalSalesRoom, group);
+
+		return _toDigitalSalesRoom(group, objectEntry);
 	}
 
 	@Override
@@ -124,6 +247,16 @@ public class DigitalSalesRoomResourceImpl
 			throw new UnsupportedOperationException();
 		}
 
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		PortletResourcePermission portletResourcePermission =
+			ObjectDefinitionPortletResourcePermissionRegistryUtil.getService(
+				objectDefinition.getResourceName());
+
+		portletResourcePermission.check(
+			PermissionThreadLocal.getPermissionChecker(), 0L,
+			ObjectActionKeys.ADD_OBJECT_ENTRY);
+
 		Group group = _addGroup(
 			digitalSalesRoom.getExternalReferenceCode(),
 			digitalSalesRoom.getDescription(),
@@ -131,10 +264,7 @@ public class DigitalSalesRoomResourceImpl
 			"com.liferay.digital.sales.room.site.initializer",
 			digitalSalesRoom.getName());
 
-		ObjectDefinition objectDefinition =
-			_objectDefinitionLocalService.
-				getObjectDefinitionByExternalReferenceCode(
-					"L_DSR_ROOM", contextCompany.getCompanyId());
+		group.setClassName(objectDefinition.getClassName());
 
 		ObjectEntryManager objectEntryManager =
 			_objectEntryManagerRegistry.getObjectEntryManager(
@@ -150,28 +280,41 @@ public class DigitalSalesRoomResourceImpl
 
 		defaultDTOConverterContext.setAttribute("addActions", Boolean.FALSE);
 
-		objectEntryManager.addObjectEntry(
-			defaultDTOConverterContext, objectDefinition,
-			_toObjectEntry(digitalSalesRoom, group), group.getGroupKey());
+		com.liferay.object.rest.dto.v1_0.ObjectEntry objectEntry =
+			objectEntryManager.addObjectEntry(
+				defaultDTOConverterContext, objectDefinition,
+				_toObjectEntry(digitalSalesRoom, group), group.getGroupKey());
 
-		StyleBookEntry styleBookEntry =
-			_styleBookEntryLocalService.fetchStyleBookEntry(
-				group.getGroupId(), "dsr-classic");
+		group.setClassPK(objectEntry.getId());
 
-		if (styleBookEntry.isHead()) {
-			styleBookEntry = _styleBookEntryLocalService.getDraft(
-				styleBookEntry.getStyleBookEntryId());
+		group = _groupLocalService.updateGroup(group);
+
+		_updateFrontendTokensValues(digitalSalesRoom, group);
+		_updateNestedResources(digitalSalesRoom, group);
+
+		return _toDigitalSalesRoom(
+			group,
+			_objectEntryLocalService.getObjectEntry(objectEntry.getId()));
+	}
+
+	private Map<String, String> _addAction(
+		String actionName, long groupId, String methodName,
+		ModelResourcePermission<ObjectEntry> modelResourcePermission,
+		long objectEntryId) {
+
+		Map<String, String> action = addAction(
+			actionName, objectEntryId, methodName, modelResourcePermission);
+
+		if (action == null) {
+			return null;
 		}
 
-		styleBookEntry = _styleBookEntryLocalService.updateFrontendTokensValues(
-			styleBookEntry.getStyleBookEntryId(),
-			_getFrontendTokensValues(
-				digitalSalesRoom.getPrimaryColor(),
-				digitalSalesRoom.getSecondaryColor()));
+		action.compute(
+			"href",
+			(key, value) -> StringUtil.replace(
+				value, String.valueOf(objectEntryId), String.valueOf(groupId)));
 
-		_styleBookEntryLocalService.publishDraft(styleBookEntry);
-
-		return _toDigitalSalesRoom(group);
+		return action;
 	}
 
 	private Group _addGroup(
@@ -194,8 +337,9 @@ public class DigitalSalesRoomResourceImpl
 				_layoutServiceContextHelper.getServiceContextAutoCloseable(
 					contextCompany, contextUser)) {
 
-			Group group = _groupService.addGroup(
-				externalReferenceCode, GroupConstants.DEFAULT_PARENT_GROUP_ID,
+			Group group = _groupLocalService.addGroup(
+				externalReferenceCode, contextUser.getUserId(),
+				GroupConstants.DEFAULT_PARENT_GROUP_ID, null, 0,
 				GroupConstants.DEFAULT_LIVE_GROUP_ID,
 				HashMapBuilder.put(
 					LocaleUtil.getDefault(), name
@@ -228,10 +372,37 @@ public class DigitalSalesRoomResourceImpl
 		}
 	}
 
-	private String _getFrontendTokensValues(
-		String primaryColor, String secondaryColor) {
+	private void _checkPermission(String actionId, ObjectEntry objectEntry)
+		throws Exception {
 
-		JSONObject jsonObject = _jsonFactory.createJSONObject();
+		ModelResourcePermission<ObjectEntry> modelResourcePermission =
+			_objectEntryService.getModelResourcePermission(
+				objectEntry.getObjectDefinitionId());
+
+		modelResourcePermission.check(
+			PermissionThreadLocal.getPermissionChecker(),
+			objectEntry.getObjectEntryId(), actionId);
+	}
+
+	private Map<Locale, String> _getDescriptionMap(
+		Group group, DigitalSalesRoom digitalSalesRoom) {
+
+		if (Validator.isNull(digitalSalesRoom.getDescription())) {
+			return group.getDescriptionMap();
+		}
+
+		return HashMapBuilder.put(
+			LocaleUtil.getDefault(), digitalSalesRoom.getDescription()
+		).build();
+	}
+
+	private String _getFrontendTokensValues(
+			String frontendTokensValues, String primaryColor,
+			String secondaryColor)
+		throws Exception {
+
+		JSONObject jsonObject = _jsonFactory.createJSONObject(
+			GetterUtil.get(frontendTokensValues, "{}"));
 
 		if (!Validator.isBlank(primaryColor)) {
 			jsonObject = jsonObject.put(
@@ -330,6 +501,93 @@ public class DigitalSalesRoomResourceImpl
 		return jsonObject.toString();
 	}
 
+	private Map<Locale, String> _getNameMap(
+		Group group, DigitalSalesRoom digitalSalesRoom) {
+
+		if (Validator.isNull(digitalSalesRoom.getName())) {
+			return group.getNameMap();
+		}
+
+		return HashMapBuilder.put(
+			LocaleUtil.getDefault(), digitalSalesRoom.getName()
+		).build();
+	}
+
+	private ObjectDefinition _getObjectDefinition() throws Exception {
+		return _objectDefinitionLocalService.
+			getObjectDefinitionByExternalReferenceCode(
+				"L_DSR_ROOM", contextCompany.getCompanyId());
+	}
+
+	private Map<String, Serializable> _getProperties(
+		DigitalSalesRoom digitalSalesRoom, Group group) {
+
+		return HashMapBuilder.<String, Serializable>put(
+			"accountId",
+			() -> {
+				if (digitalSalesRoom.getAccountId() == 0) {
+					return null;
+				}
+
+				AccountEntry accountEntry =
+					_accountEntryService.getAccountEntry(
+						digitalSalesRoom.getAccountId());
+
+				return accountEntry.getAccountEntryId();
+			}
+		).put(
+			"banner",
+			() -> {
+				FileEntry fileEntry = digitalSalesRoom.getBanner();
+
+				if ((fileEntry == null) ||
+					Validator.isBlank(fileEntry.getFileBase64())) {
+
+					return null;
+				}
+
+				return HashMapBuilder.put(
+					"fileBase64", fileEntry.getFileBase64()
+				).put(
+					"name",
+					GetterUtil.getString(
+						fileEntry.getFileName(), StringUtil.randomString())
+				).build();
+			}
+		).put(
+			"channelId", digitalSalesRoom.getChannelId()
+		).put(
+			"channelName", digitalSalesRoom.getChannelName()
+		).put(
+			"clientLogo",
+			() -> {
+				FileEntry fileEntry = digitalSalesRoom.getClientLogo();
+
+				if ((fileEntry == null) ||
+					Validator.isBlank(fileEntry.getFileBase64())) {
+
+					return null;
+				}
+
+				return HashMapBuilder.put(
+					"fileBase64", fileEntry.getFileBase64()
+				).put(
+					"name",
+					GetterUtil.getString(
+						fileEntry.getFileName(), StringUtil.randomString())
+				).build();
+			}
+		).put(
+			"clientName", digitalSalesRoom.getClientName()
+		).put(
+			"externalReferenceCode", group.getExternalReferenceCode()
+		).put(
+			"primaryColor", digitalSalesRoom.getPrimaryColor()
+		).put(
+			"secondaryColor", digitalSalesRoom.getSecondaryColor()
+		).build();
+	}
+
 	private ServiceContext _getServiceContext() throws PortalException {
 		ServiceContext serviceContext = null;
 
@@ -380,12 +638,33 @@ public class DigitalSalesRoomResourceImpl
 		themeDisplay.setResponse(new DummyHttpServletResponse());
 	}
 
-	private DigitalSalesRoom _toDigitalSalesRoom(Group group) throws Exception {
+	private DigitalSalesRoom _toDigitalSalesRoom(
+			Group group, ObjectEntry objectEntry)
+		throws Exception {
+
+		ModelResourcePermission<ObjectEntry> modelResourcePermission =
+			ModelResourcePermissionRegistryUtil.getModelResourcePermission(
+				objectEntry.getModelClassName());
+
 		return _digitalSalesRoomDTOConverter.toDTO(
-			new DefaultDTOConverterContext(
-				true, null, _dtoConverterRegistry, group.getGroupId(),
-				contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
-				contextUser),
+			new DigitalSalesRoomDTOConverterContext(
+				true,
+				HashMapBuilder.<String, Map<String, String>>put(
+					"delete",
+					_addAction(
+						ActionKeys.DELETE, group.getGroupId(),
+						"deleteDigitalSalesRoom", modelResourcePermission,
+						objectEntry.getObjectEntryId())
+				).put(
+					"update",
+					_addAction(
+						ActionKeys.UPDATE, group.getGroupId(),
+						"patchDigitalSalesRoom", modelResourcePermission,
+						objectEntry.getObjectEntryId())
+				).build(),
+				_dtoConverterRegistry, group.getGroupId(),
+				contextAcceptLanguage.getPreferredLocale(), objectEntry,
+				contextUriInfo, contextUser),
 			group);
 	}
 
@@ -395,76 +674,87 @@ public class DigitalSalesRoomResourceImpl
 		return new com.liferay.object.rest.dto.v1_0.ObjectEntry() {
 			{
 				setProperties(
-					() -> HashMapBuilder.<String, Object>put(
-						"accountId",
-						() -> {
-							if (digitalSalesRoom.getAccountId() == 0) {
-								return null;
-							}
-
-							AccountEntry accountEntry =
-								_accountEntryService.getAccountEntry(
-									digitalSalesRoom.getAccountId());
-
-							return accountEntry.getAccountEntryId();
-						}
-					).put(
-						"banner",
-						() -> {
-							FileEntry fileEntry = digitalSalesRoom.getBanner();
-
-							if ((fileEntry == null) ||
-								Validator.isBlank(fileEntry.getFileBase64())) {
-
-								return null;
-							}
-
-							return HashMapBuilder.put(
-								"fileBase64", fileEntry.getFileBase64()
-							).put(
-								"name",
-								GetterUtil.getString(
-									fileEntry.getFileName(),
-									StringUtil.randomString())
-							).build();
-						}
-					).put(
-						"channelId", digitalSalesRoom.getChannelId()
-					).put(
-						"channelName", digitalSalesRoom.getChannelName()
-					).put(
-						"clientLogo",
-						() -> {
-							FileEntry fileEntry =
-								digitalSalesRoom.getClientLogo();
-
-							if ((fileEntry == null) ||
-								Validator.isBlank(fileEntry.getFileBase64())) {
-
-								return null;
-							}
-
-							return HashMapBuilder.put(
-								"fileBase64", fileEntry.getFileBase64()
-							).put(
-								"name",
-								GetterUtil.getString(
-									fileEntry.getFileName(),
-									StringUtil.randomString())
-							).build();
-						}
-					).put(
-						"clientName", digitalSalesRoom.getClientName()
-					).put(
-						"externalReferenceCode",
-						group.getExternalReferenceCode()
-					).put(
-						"primaryColor", digitalSalesRoom.getPrimaryColor()
-					).put(
-						"secondaryColor", digitalSalesRoom.getSecondaryColor()
-					).build());
+					() -> Collections.unmodifiableMap(
+						_getProperties(digitalSalesRoom, group)));
 			}
 		};
+	}
+
+	private void _updateFrontendTokensValues(
+			DigitalSalesRoom digitalSalesRoom, Group group)
+		throws Exception {
+
+		StyleBookEntry styleBookEntry =
+			_styleBookEntryLocalService.fetchStyleBookEntry(
+				group.getGroupId(), "dsr-classic");
+
+		if (styleBookEntry.isHead()) {
+			styleBookEntry = _styleBookEntryLocalService.getDraft(
+				styleBookEntry.getStyleBookEntryId());
+		}
+
+		styleBookEntry = _styleBookEntryLocalService.updateFrontendTokensValues(
+			styleBookEntry.getStyleBookEntryId(),
+			_getFrontendTokensValues(
+				styleBookEntry.getFrontendTokensValues(),
+				digitalSalesRoom.getPrimaryColor(),
+				digitalSalesRoom.getSecondaryColor()));
+
+		_styleBookEntryLocalService.publishDraft(styleBookEntry);
+	}
+
+	private void _updateNestedResources(
+			DigitalSalesRoom digitalSalesRoom, Group group)
+		throws Exception {
+
+		UserAccountBrief[] userAccountBriefs =
+			digitalSalesRoom.getUserAccountBriefs();
+
+		if ((userAccountBriefs == null) ||
+			ArrayUtil.isEmpty(userAccountBriefs)) {
+
+			return;
+		}
+
+		for (UserAccountBrief userAccountBrief :
+				digitalSalesRoom.getUserAccountBriefs()) {
+
+			if (Validator.isNull(userAccountBrief.getEmailAddress())) {
+				continue;
+			}
+
+			User user = _userLocalService.fetchUserByEmailAddress(
+				group.getCompanyId(), userAccountBrief.getEmailAddress());
+
+			if (user == null) {
+				continue;
+			}
+
+			_userLocalService.addGroupUser(
+				group.getGroupId(), user.getUserId());
+
+			if (Validator.isNotNull(userAccountBrief.getRoleKey())) {
+				Role role = _roleLocalService.fetchRole(
+					group.getCompanyId(), userAccountBrief.getRoleKey());
+
+				if (role.getType() != RoleConstants.TYPE_SITE) {
+					throw new RoleAssignmentException(
+						StringBundler.concat(
+							"Role type ",
+							RoleConstants.getTypeLabel(role.getType()),
+							" is not role type ",
+							RoleConstants.getTypeLabel(
+								RoleConstants.TYPE_SITE)));
+				}
+
+				_userGroupRoleLocalService.addUserGroupRoles(
+					user.getUserId(), group.getGroupId(),
+					new long[] {role.getRoleId()});
+			}
+
+			LiveUsers.joinGroup(
+				group.getCompanyId(), group.getGroupId(), user.getUserId());
+		}
 	}
 
 	@Reference
@@ -479,6 +769,9 @@ public class DigitalSalesRoomResourceImpl
 	private DTOConverterRegistry _dtoConverterRegistry;
 
 	@Reference
+	private GroupLocalService _groupLocalService;
+
+	@Reference
 	private GroupService _groupService;
 
 	@Reference
@@ -491,15 +784,30 @@ public class DigitalSalesRoomResourceImpl
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
 	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
 	private ObjectEntryManagerRegistry _objectEntryManagerRegistry;
 
 	@Reference
+	private ObjectEntryService _objectEntryService;
+
+	@Reference
 	private Portal _portal;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 	@Reference
 	private SiteInitializerRegistry _siteInitializerRegistry;
 
 	@Reference
 	private StyleBookEntryLocalService _styleBookEntryLocalService;
+
+	@Reference
+	private UserGroupRoleLocalService _userGroupRoleLocalService;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }

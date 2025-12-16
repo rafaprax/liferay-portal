@@ -13,10 +13,14 @@ import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -49,6 +53,11 @@ public class PreupgradeVerifyDatabaseCharacterSet
 		tableNames.addAll(DBResourceUtil.getModuleTableNames(connection));
 		tableNames.addAll(DBResourceUtil.getPortalTableNames(connection));
 
+		DBInspector dbInspector = new DBInspector(connection);
+
+		tableNames.addAll(_getObjectDefinitionDBTableNames(dbInspector));
+		tableNames.addAll(_getObjectRelationshipDBTableNames(dbInspector));
+
 		String sql = StringBundler.concat(
 			"select distinct character_set_name, collation_name, table_name, ",
 			"default_character_set_name, default_collation_name from ",
@@ -68,8 +77,6 @@ public class PreupgradeVerifyDatabaseCharacterSet
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				DBInspector dbInspector = new DBInspector(connection);
-
 				String tableName = resultSet.getString("table_name");
 
 				if (!tableNames.contains(
@@ -106,6 +113,91 @@ public class PreupgradeVerifyDatabaseCharacterSet
 		}
 
 		return false;
+	}
+
+	private List<String> _getObjectDefinitionDBTableNames(
+			DBInspector dbInspector)
+		throws Exception {
+
+		if (!dbInspector.hasTable("ObjectDefinition")) {
+			return Collections.emptyList();
+		}
+
+		boolean hasModifiableColumn = dbInspector.hasColumn(
+			"ObjectDefinition", "modifiable");
+		boolean hasSystemColumn = dbInspector.hasColumn(
+			"ObjectDefinition", "system_");
+
+		List<String> objectDefinitionDBTableNames = new ArrayList<>();
+
+		try (PreparedStatement preparedStatement = connection.prepareStatement(
+				StringBundler.concat(
+					"select companyId, dbTableName",
+					hasModifiableColumn ? ", modifiable" : "",
+					hasSystemColumn ? ", system_" : "",
+					" from ObjectDefinition where status = ?"))) {
+
+			preparedStatement.setInt(1, WorkflowConstants.STATUS_APPROVED);
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					String dbTableName = resultSet.getString("dbTableName");
+
+					objectDefinitionDBTableNames.add(
+						dbInspector.normalizeName(dbTableName));
+					objectDefinitionDBTableNames.add(
+						dbInspector.normalizeName(dbTableName + "_l"));
+
+					String extensionDBTableName = dbTableName + "_x";
+
+					if ((!hasModifiableColumn ||
+						 !resultSet.getBoolean("modifiable")) &&
+						hasSystemColumn && resultSet.getBoolean("system_")) {
+
+						if (dbTableName.endsWith("_")) {
+							extensionDBTableName = dbTableName + "x_";
+						}
+						else {
+							extensionDBTableName = dbTableName + "_x_";
+						}
+
+						extensionDBTableName += resultSet.getLong("companyId");
+					}
+
+					objectDefinitionDBTableNames.add(
+						dbInspector.normalizeName(extensionDBTableName));
+				}
+			}
+		}
+
+		return objectDefinitionDBTableNames;
+	}
+
+	private List<String> _getObjectRelationshipDBTableNames(
+			DBInspector dbInspector)
+		throws Exception {
+
+		if (!dbInspector.hasTable("ObjectRelationship")) {
+			return Collections.emptyList();
+		}
+
+		List<String> objectRelationshipDBTableNames = new ArrayList<>();
+
+		try (PreparedStatement preparedStatement = connection.prepareStatement(
+				"select dbTableName from ObjectRelationship where type_ = ?")) {
+
+			preparedStatement.setString(1, "manyToMany");
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					objectRelationshipDBTableNames.add(
+						dbInspector.normalizeName(
+							resultSet.getString("dbTableName")));
+				}
+			}
+		}
+
+		return objectRelationshipDBTableNames;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

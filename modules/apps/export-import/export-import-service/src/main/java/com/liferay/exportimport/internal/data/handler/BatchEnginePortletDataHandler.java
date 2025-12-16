@@ -26,6 +26,7 @@ import com.liferay.exportimport.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerControl;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
+import com.liferay.object.constants.ObjectPortletKeys;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.io.StreamUtil;
 import com.liferay.petra.io.unsync.UnsyncByteArrayOutputStream;
@@ -41,6 +42,7 @@ import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.staging.StagingGroupHelper;
 
 import jakarta.portlet.PortletPreferences;
@@ -140,6 +142,26 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		return true;
 	}
 
+	@Override
+	public boolean isHidden() {
+		if (_registrations.size() != 1) {
+			return false;
+		}
+
+		Registration registration = _registrations.get(0);
+
+		ExportImportVulcanBatchEngineTaskItemDelegate.ExportImportDescriptor
+			exportImportDescriptor = registration.getExportImportDescriptor();
+
+		return exportImportDescriptor.isHidden();
+	}
+
+	@Override
+	public boolean isStaged() {
+		return !StringUtil.startsWith(
+			getPortletId(), ObjectPortletKeys.OBJECT_DEFINITIONS);
+	}
+
 	public void registerExportImportVulcanBatchEngineTaskItemDelegate(
 		String batchEngineClassName,
 		ExportImportVulcanBatchEngineTaskItemDelegate.ExportImportDescriptor
@@ -197,6 +219,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 			setDataLevel(DataLevel.SITE);
 		}
 
+		setPublishToLiveByDefault(true);
 		_updateDeletionSystemEventStagedModelTypes();
 		_updateExportControls();
 	}
@@ -308,6 +331,13 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 					continue;
 				}
 
+				BatchEngineExportTask batchEngineExportTask =
+					result.getBatchEngineExportTask();
+
+				if (batchEngineExportTask.getTotalItemsCount() == 0) {
+					continue;
+				}
+
 				portletDataContext.addZipEntry(
 					_normalize(
 						registration.getFileName(),
@@ -316,9 +346,6 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 
 				ManifestSummary manifestSummary =
 					portletDataContext.getManifestSummary();
-
-				BatchEngineExportTask batchEngineExportTask =
-					result.getBatchEngineExportTask();
 
 				manifestSummary.addModelAdditionCount(
 					new StagedModelType(

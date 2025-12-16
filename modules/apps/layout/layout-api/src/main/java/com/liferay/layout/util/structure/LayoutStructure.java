@@ -704,6 +704,11 @@ public class LayoutStructure {
 		return layoutStructureRule;
 	}
 
+	public void deleteLayoutStructureRules() {
+		_layoutStructureRules.clear();
+		_layoutStructureRulesMap.clear();
+	}
+
 	public Map<String, List<LayoutStructureItem>> duplicateLayoutStructureItem(
 		List<String> itemIds) {
 
@@ -1075,7 +1080,7 @@ public class LayoutStructure {
 
 	public LayoutStructureRule updateLayoutStructureRule(
 		JSONArray actionsJSONArray, JSONArray conditionsJSONArray,
-		String conditionType, String name, String ruleId) {
+		String conditionType, String name, String ruleId, String script) {
 
 		LayoutStructureRule layoutStructureRule = _layoutStructureRulesMap.get(
 			ruleId);
@@ -1085,6 +1090,7 @@ public class LayoutStructure {
 			layoutStructureRule.setConditionsJSONArray(conditionsJSONArray);
 			layoutStructureRule.setConditionType(conditionType);
 			layoutStructureRule.setName(name);
+			layoutStructureRule.setScript(script);
 		}
 
 		return layoutStructureRule;

@@ -16,12 +16,29 @@ import java.util.Map;
 public class ConfigurationTestUtil {
 
 	public static final String TEST_CONFIGURATION_PID =
-		"com.liferay.headless.admin.configuration.sample.configuration." +
+		"com.liferay.headless.admin.configuration.test.configuration." +
 			"TestConfiguration";
 
 	public static final String TEST_FACTORY_CONFIGURATION_PID =
-		"com.liferay.headless.admin.configuration.sample.configuration." +
+		"com.liferay.headless.admin.configuration.test.configuration." +
 			"TestFactoryConfiguration";
+
+	public static Map<String, Object> getRandomConfigurationScreenProperties(
+		String scopeKey, String scopeValue) {
+
+		return HashMapBuilder.<String, Object>put(
+			scopeKey,
+			() -> {
+				if (scopeKey != null) {
+					return scopeValue;
+				}
+
+				return scopeValue;
+			}
+		).put(
+			RandomTestUtil.randomString(), RandomTestUtil.randomString()
+		).build();
+	}
 
 	public static Map<String, Object> getRandomTestConfigurationProperties(
 		String scopeKey, String scopeValue) {

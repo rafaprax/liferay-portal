@@ -1,6 +1,7 @@
 import React from 'react';
 import WizardPage, {Step} from 'settings/components/base-page/WizardPage';
-import {AssignIndividualsDatatoPropertiesStep} from 'settings/components/salesforce/steps/AssignIndividualsDataToChannelsStep';
+import {Alert} from 'shared/types';
+import {AssignIndividualsDataToPropertiesStep} from 'settings/components/salesforce/steps/AssignIndividualsDataToChannelsStep';
 import {ConnectLiferayDXPStep} from 'settings/components/liferay/steps/ConnectLiferayDXPStep';
 import {ReviewSyncedDataStep} from 'settings/components/liferay/steps/ReviewSyncedDataStep';
 import {updateLiferay} from 'shared/api/data-source';
@@ -22,8 +23,28 @@ const steps: Step[] = [
 	},
 	{
 		content: props => (
-			<AssignIndividualsDatatoPropertiesStep
+			<AssignIndividualsDataToPropertiesStep
 				{...props}
+				onSubmit={dataSource => {
+					if (
+						dataSource?.sitesSelected ||
+						dataSource?.contactsSelected
+					) {
+						props.addAlert({
+							alertType: Alert.Types.Success,
+							message: Liferay.Language.get(
+								'the-data-source-setup-is-now-complete,-and-you-will-begin-to-see-data-as-activities-occur-on-your-sites'
+							)
+						});
+					} else {
+						props.addAlert({
+							alertType: Alert.Types.Success,
+							message: Liferay.Language.get(
+								'the-data-source-setup-has-finished'
+							)
+						});
+					}
+				}}
 				updateDataSourceFn={updateLiferay}
 			/>
 		),

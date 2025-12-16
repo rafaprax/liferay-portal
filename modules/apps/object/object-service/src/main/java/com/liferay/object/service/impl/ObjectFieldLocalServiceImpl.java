@@ -262,8 +262,13 @@ public class ObjectFieldLocalServiceImpl
 				objectFieldSettings);
 		}
 
+		validateExternalReferenceCode(
+			externalReferenceCode, existingObjectField.getObjectFieldId(),
+			existingObjectField.getCompanyId(),
+			existingObjectField.getObjectDefinitionId());
 		_validateLabel(labelMap, existingObjectField);
 
+		existingObjectField.setExternalReferenceCode(externalReferenceCode);
 		existingObjectField.setLabelMap(labelMap, LocaleUtil.getSiteDefault());
 
 		return objectFieldPersistence.update(existingObjectField);
@@ -432,7 +437,7 @@ public class ObjectFieldLocalServiceImpl
 
 				objectField.setObjectFieldSettings(
 					_objectFieldSettingLocalService.
-						getObjectFieldObjectFieldSettings(objectFieldId));
+						getObjectFieldObjectFieldSettings(objectField));
 
 				if (Validator.isNull(objectField.getRelationshipType())) {
 					return objectField;
@@ -1210,7 +1215,7 @@ public class ObjectFieldLocalServiceImpl
 
 		newObjectField.setObjectFieldSettings(
 			_objectFieldSettingLocalService.getObjectFieldObjectFieldSettings(
-				newObjectField.getObjectFieldId()));
+				newObjectField));
 	}
 
 	private void _alterTableDropColumn(String tableName, String columnName) {

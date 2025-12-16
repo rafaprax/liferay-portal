@@ -52,13 +52,11 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
-import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -154,53 +152,44 @@ public class SitePageResourceImpl
 				return HashMapBuilder.<String, Serializable>put(
 					"filter",
 					() -> {
-						if ((portletDataContext.getLayoutIds() == null) ||
-							(portletDataContext.getLayoutIds().length == 0) ||
-							((portletDataContext.getLayoutIds().length == 1) &&
-							 (portletDataContext.getLayoutIds()[0] == 0))) {
-
+						if (portletDataContext.getLayoutIds() == null) {
 							return null;
 						}
 
-						Set<String> layoutExternalReferenceCodes =
-							new HashSet<>();
+						Set<String> externalReferenceCodes = new HashSet<>();
+
+						externalReferenceCodes.add("");
 
 						for (long layoutId :
 								portletDataContext.getLayoutIds()) {
 
-							Layout layout = null;
-
 							try {
-								layout = _layoutService.fetchLayout(
+								Layout layout = _layoutService.fetchLayout(
 									portletDataContext.getScopeGroupId(),
 									portletDataContext.isPrivateLayout(),
 									layoutId);
+
+								if (layout != null) {
+									externalReferenceCodes.add(
+										layout.getExternalReferenceCode());
+								}
 							}
 							catch (PortalException portalException) {
 								if (_log.isWarnEnabled()) {
 									_log.warn(portalException);
 								}
 							}
-
-							if (layout != null) {
-								layoutExternalReferenceCodes.add(
-									layout.getExternalReferenceCode());
-							}
 						}
 
-						StringBundler sb = new StringBundler(3);
-
-						sb.append("externalReferenceCode in ('");
-
-						sb.append(
-							ListUtil.toString(
-								ListUtil.fromCollection(
-									layoutExternalReferenceCodes),
-								StringPool.BLANK, "', '"));
-
-						sb.append("')");
-
-						return sb.toString();
+						return StringBundler.concat(
+							"externalReferenceCode in (",
+							StringUtil.merge(
+								transform(
+									externalReferenceCodes,
+									layoutExternalReferenceCode ->
+										"'" + layoutExternalReferenceCode +
+											"'")),
+							")");
 					}
 				).build();
 			}
@@ -229,6 +218,11 @@ public class SitePageResourceImpl
 				}
 
 				return false;
+			}
+
+			@Override
+			public boolean isHidden() {
+				return true;
 			}
 
 		};
@@ -350,7 +344,7 @@ public class SitePageResourceImpl
 				long plid = GetterUtil.getLong(
 					document.get(Field.ENTRY_CLASS_PK));
 
-				return _toSitePage(_layoutLocalService.getLayout(plid));
+				return _toSitePage(_layoutService.getLayout(plid));
 			});
 	}
 
@@ -1005,9 +999,6 @@ public class SitePageResourceImpl
 
 	@Reference
 	private InfoItemServiceRegistry _infoItemServiceRegistry;
-
-	@Reference
-	private LayoutLocalService _layoutLocalService;
 
 	@Reference
 	private LayoutPageTemplateEntryLocalService

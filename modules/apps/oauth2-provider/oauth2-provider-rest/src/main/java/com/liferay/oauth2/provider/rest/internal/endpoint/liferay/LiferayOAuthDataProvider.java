@@ -7,7 +7,7 @@ package com.liferay.oauth2.provider.rest.internal.endpoint.liferay;
 
 import com.liferay.oauth2.provider.configuration.OAuth2ProviderConfiguration;
 import com.liferay.oauth2.provider.constants.GrantType;
-import com.liferay.oauth2.provider.constants.OAuth2ProviderConstants;
+import com.liferay.oauth2.provider.constants.OAuth2AuthorizationConstants;
 import com.liferay.oauth2.provider.model.OAuth2Application;
 import com.liferay.oauth2.provider.model.OAuth2ApplicationScopeAliases;
 import com.liferay.oauth2.provider.model.OAuth2Authorization;
@@ -32,6 +32,7 @@ import com.liferay.portal.configuration.module.configuration.ConfigurationProvid
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
@@ -40,19 +41,34 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+
+import java.io.IOException;
+
+import java.net.HttpURLConnection;
+
 import java.nio.charset.StandardCharsets;
+
+import java.security.Principal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +81,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.jaxrs.utils.ExceptionUtils;
 import org.apache.cxf.jaxrs.utils.HttpUtils;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.rs.security.jose.common.JoseConstants;
 import org.apache.cxf.rs.security.jose.jwk.JwkUtils;
 import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
@@ -74,6 +92,7 @@ import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
 import org.apache.cxf.rs.security.oauth2.common.AccessTokenRegistration;
 import org.apache.cxf.rs.security.oauth2.common.Client;
+import org.apache.cxf.rs.security.oauth2.common.OAuthError;
 import org.apache.cxf.rs.security.oauth2.common.OAuthPermission;
 import org.apache.cxf.rs.security.oauth2.common.ServerAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.UserSubject;
@@ -194,7 +213,7 @@ public class LiferayOAuthDataProvider
 		}
 
 		oAuth2Authorization.setAccessTokenContent(
-			OAuth2ProviderConstants.EXPIRED_TOKEN);
+			OAuth2AuthorizationConstants.ACCESS_TOKEN_CONTENT_EXPIRED_TOKEN);
 
 		_oAuth2AuthorizationLocalService.updateOAuth2Authorization(
 			oAuth2Authorization);
@@ -217,7 +236,7 @@ public class LiferayOAuthDataProvider
 		}
 
 		oAuth2Authorization.setRefreshTokenContent(
-			OAuth2ProviderConstants.EXPIRED_TOKEN);
+			OAuth2AuthorizationConstants.ACCESS_TOKEN_CONTENT_EXPIRED_TOKEN);
 
 		_oAuth2AuthorizationLocalService.updateOAuth2Authorization(
 			oAuth2Authorization);
@@ -293,8 +312,8 @@ public class LiferayOAuthDataProvider
 			return null;
 		}
 
-		if (OAuth2ProviderConstants.EXPIRED_TOKEN.equals(
-				oAuth2Authorization.getAccessTokenContent())) {
+		if (OAuth2AuthorizationConstants.ACCESS_TOKEN_CONTENT_EXPIRED_TOKEN.
+				equals(oAuth2Authorization.getAccessTokenContent())) {
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(
@@ -452,8 +471,8 @@ public class LiferayOAuthDataProvider
 				return null;
 			}
 
-			if (OAuth2ProviderConstants.EXPIRED_TOKEN.equals(
-					oAuth2Authorization.getRefreshTokenContent())) {
+			if (OAuth2AuthorizationConstants.ACCESS_TOKEN_CONTENT_EXPIRED_TOKEN.
+					equals(oAuth2Authorization.getRefreshTokenContent())) {
 
 				if (_log.isDebugEnabled()) {
 					_log.debug(
@@ -694,7 +713,71 @@ public class LiferayOAuthDataProvider
 
 	@Override
 	public void setClient(Client client) {
-		throw new UnsupportedOperationException();
+		MessageContext messageContext = getMessageContext();
+
+		long companyId = _portal.getCompanyId(
+			messageContext.getHttpServletRequest());
+
+		OAuth2Application oAuth2Application =
+			_oAuth2ApplicationLocalService.fetchOAuth2Application(
+				companyId, client.getClientId());
+
+		if (oAuth2Application == null) {
+			try {
+				SecurityContext securityContext =
+					messageContext.getSecurityContext();
+
+				Principal userPrincipal = securityContext.getUserPrincipal();
+
+				User user = _userLocalService.fetchUser(
+					GetterUtil.getLong(userPrincipal.getName()));
+
+				Map<String, String> properties = client.getProperties();
+
+				String jwks = properties.get("jwks");
+
+				if (jwks == null) {
+					jwks = _extractJwksFromJwksUri(properties.get("jwks_uri"));
+				}
+
+				_oAuth2ApplicationLocalService.addOAuth2Application(
+					companyId, user.getUserId(),
+					user.getScreenName() + "_dynamic_registered",
+					_getAllowedGrantTypes(client.getAllowedGrantTypes()),
+					client.getTokenEndpointAuthMethod(), user.getUserId(),
+					client.getClientId(), 0, client.getClientSecret(), null,
+					null, client.getApplicationWebUri(), 0, jwks,
+					client.getApplicationName(), properties.get("tos_uri"),
+					client.getRedirectUris(), false,
+					client.getRegisteredScopes(), false, new ServiceContext());
+			}
+			catch (PortalException portalException) {
+				if (_log.isDebugEnabled()) {
+					_log.debug("error creating application", portalException);
+				}
+
+				throw new WebApplicationException(portalException);
+			}
+			catch (WebApplicationException webApplicationException) {
+				throw webApplicationException;
+			}
+			catch (Exception exception) {
+				throw new ServerErrorException(500, exception);
+			}
+		}
+		else {
+			OAuthError oAuthError = new OAuthError(
+				"invalid_client_id", "Client identifier already exists.");
+
+			throw new WebApplicationException(
+				Response.status(
+					Response.Status.CONFLICT
+				).entity(
+					oAuthError
+				).type(
+					MediaType.APPLICATION_JSON_TYPE
+				).build());
+		}
 	}
 
 	public void updateRememberDeviceContent(
@@ -902,7 +985,7 @@ public class LiferayOAuthDataProvider
 	}
 
 	@Override
-	protected void doRemoveClient(Client c) {
+	protected void doRemoveClient(Client client) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -1058,6 +1141,108 @@ public class LiferayOAuthDataProvider
 				serverAccessToken.getClient(), accessToken.getScopes()));
 		serverAccessToken.setTokenKey(accessToken.getTokenKey());
 		serverAccessToken.setTokenType(accessToken.getTokenType());
+	}
+
+	private String _extractJwksFromJwksUri(String jwksUri) throws Exception {
+		if (Validator.isBlank(jwksUri)) {
+			return null;
+		}
+
+		if (!StringUtil.startsWith(jwksUri, "https://")) {
+			OAuthError oAuthError = new OAuthError(
+				"invalid_request", "jwks_uri must use the https scheme");
+
+			Response.ResponseBuilder responseBuilder =
+				JAXRSUtils.toResponseBuilder(400);
+
+			responseBuilder.type(MediaType.APPLICATION_JSON);
+
+			throw ExceptionUtils.toBadRequestException(
+				(Throwable)null,
+				responseBuilder.entity(
+					oAuthError
+				).build());
+		}
+
+		Http.Options options = new Http.Options();
+
+		options.setLocation(jwksUri);
+
+		try {
+			String responseJSON = _http.URLtoString(options);
+
+			Http.Response response = options.getResponse();
+
+			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				if (_log.isDebugEnabled()) {
+					_log.debug("Response code " + response.getResponseCode());
+				}
+
+				throw new SystemException(
+					"Unable to retrieve JWKS from " + jwksUri);
+			}
+
+			return _jsonFactory.createJSONObject(
+				responseJSON
+			).toString();
+		}
+		catch (IOException | SystemException exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception);
+			}
+
+			OAuthError oAuthError = new OAuthError(
+				"invalid_request", "Jwks uri is unreachable");
+
+			Response.ResponseBuilder responseBuilder =
+				JAXRSUtils.toResponseBuilder(400);
+
+			responseBuilder.type(MediaType.APPLICATION_JSON);
+
+			throw ExceptionUtils.toBadRequestException(
+				(Throwable)null,
+				responseBuilder.entity(
+					oAuthError
+				).build());
+		}
+	}
+
+	private List<GrantType> _getAllowedGrantTypes(List<String> grantTypes) {
+		Set<GrantType> allowedGrantTypes = new HashSet<>();
+
+		for (String grantType : grantTypes) {
+			if (OAuthConstants.AUTHORIZATION_CODE_GRANT.equalsIgnoreCase(
+					grantType)) {
+
+				allowedGrantTypes.add(GrantType.AUTHORIZATION_CODE);
+			}
+			else if (OAuthConstants.CLIENT_CREDENTIALS_GRANT.equalsIgnoreCase(
+						grantType)) {
+
+				allowedGrantTypes.add(GrantType.CLIENT_CREDENTIALS);
+			}
+			else if (Constants.JWT_BEARER_GRANT.equalsIgnoreCase(grantType)) {
+				allowedGrantTypes.add(GrantType.JWT_BEARER);
+			}
+			else if (OAuth2ProviderRESTEndpointConstants.
+						AUTHORIZATION_CODE_PKCE_GRANT.equalsIgnoreCase(
+							grantType)) {
+
+				allowedGrantTypes.add(GrantType.AUTHORIZATION_CODE_PKCE);
+			}
+			else if (OAuthConstants.RESOURCE_OWNER_GRANT.equalsIgnoreCase(
+						grantType)) {
+
+				allowedGrantTypes.add(GrantType.RESOURCE_OWNER_PASSWORD);
+			}
+			else if (OAuthConstants.REFRESH_TOKEN_GRANT.equalsIgnoreCase(
+						grantType)) {
+
+				allowedGrantTypes.add(GrantType.REFRESH_TOKEN);
+			}
+		}
+
+		return ListUtil.fromCollection(allowedGrantTypes);
 	}
 
 	private Collection<LiferayOAuth2Scope> _getLiferayOAuth2Scopes(
@@ -1484,6 +1669,12 @@ public class LiferayOAuthDataProvider
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
+
+	@Reference
+	private Http _http;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private OAuth2ApplicationLocalService _oAuth2ApplicationLocalService;

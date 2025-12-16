@@ -3490,8 +3490,7 @@ public class ObjectEntryLocalServiceImpl
 
 			objectField.setObjectFieldSettings(
 				_objectFieldSettingLocalService.
-					getObjectFieldObjectFieldSettings(
-						objectField.getObjectFieldId()));
+					getObjectFieldObjectFieldSettings(objectField));
 
 			Object value = ObjectFieldSettingUtil.getDefaultValue(
 				_ddmExpressionFactory, objectField, (Map)values);
@@ -4763,40 +4762,34 @@ public class ObjectEntryLocalServiceImpl
 
 		Object result = null;
 
-		try {
-			if (selectExpression instanceof Alias) {
-				Alias<?> alias = (Alias<?>)selectExpression;
+		if (selectExpression instanceof Alias) {
+			Alias<?> alias = (Alias<?>)selectExpression;
 
-				result = _getValue(
-					entryValues,
-					DynamicObjectDefinitionTableUtil.getSQLType(
-						_getDBType(alias, objectDefinitionId)));
-			}
-			else if (selectExpression instanceof Column) {
-				Column<?, ?> column = (Column<?, ?>)selectExpression;
-
-				result = _getValue(entryValues, column.getSQLType());
-			}
-			else if (selectExpression instanceof ScalarDSLQueryAlias) {
-				ScalarDSLQueryAlias scalarDSLQueryAlias =
-					(ScalarDSLQueryAlias)selectExpression;
-
-				result = _getValue(
-					entryValues, scalarDSLQueryAlias.getSQLType());
-
-				if (result == null) {
-					result = "0";
-				}
-				else {
-					BigDecimal bigDecimal = new BigDecimal(result.toString());
-
-					result = String.valueOf(
-						BigDecimalUtil.stripTrailingZeros(bigDecimal));
-				}
-			}
+			result = _getValue(
+				entryValues,
+				DynamicObjectDefinitionTableUtil.getSQLType(
+					_getDBType(alias, objectDefinitionId)));
 		}
-		catch (SQLException sqlException) {
-			throw new SystemException(sqlException);
+		else if (selectExpression instanceof Column) {
+			Column<?, ?> column = (Column<?, ?>)selectExpression;
+
+			result = _getValue(entryValues, column.getSQLType());
+		}
+		else if (selectExpression instanceof ScalarDSLQueryAlias) {
+			ScalarDSLQueryAlias scalarDSLQueryAlias =
+				(ScalarDSLQueryAlias)selectExpression;
+
+			result = _getValue(entryValues, scalarDSLQueryAlias.getSQLType());
+
+			if (result == null) {
+				result = "0";
+			}
+			else {
+				BigDecimal bigDecimal = new BigDecimal(result.toString());
+
+				result = String.valueOf(
+					BigDecimalUtil.stripTrailingZeros(bigDecimal));
+			}
 		}
 
 		return result;
@@ -4903,8 +4896,7 @@ public class ObjectEntryLocalServiceImpl
 
 			List<ObjectFieldSetting> objectFieldSettings =
 				_objectFieldSettingLocalService.
-					getObjectFieldObjectFieldSettings(
-						objectField.getObjectFieldId());
+					getObjectFieldObjectFieldSettings(objectField);
 
 			for (ObjectFieldSetting objectFieldSetting : objectFieldSettings) {
 				if (StringUtil.equals(
@@ -5054,7 +5046,7 @@ public class ObjectEntryLocalServiceImpl
 	/**
 	 * @see com.liferay.portal.upgrade.util.Table#getValue
 	 */
-	private Object _getValue(Object object, int sqlType) throws SQLException {
+	private Object _getValue(Object object, int sqlType) {
 		if (sqlType == Types.BIGINT) {
 			return GetterUtil.getLong(object);
 		}
@@ -5135,19 +5127,16 @@ public class ObjectEntryLocalServiceImpl
 				String[] parts = StringUtil.split(
 					columnName, StringPool.UNDERLINE);
 
-				if (parts.length == 2) {
-					ObjectField objectField =
-						_objectFieldPersistence.fetchByODI_N(
-							objectDefinitionId, parts[1]);
+				if ((parts.length == 2) &&
+					(Objects.equals(parts[0], "classNameId") ||
+					 Objects.equals(parts[0], "classPK"))) {
 
-					if (objectField != null) {
-						_putValue(
-							javaTypeClass, parts[0], object,
-							(Map<String, Serializable>)values.computeIfAbsent(
-								objectField.getName(), key -> new HashMap<>()));
+					_putValue(
+						javaTypeClass, parts[0], object,
+						(Map<String, Serializable>)values.computeIfAbsent(
+							parts[1], key -> new HashMap<>()));
 
-						continue;
-					}
+					continue;
 				}
 
 				columnName = columnName.substring(0, columnName.length() - 1);
@@ -5526,9 +5515,9 @@ public class ObjectEntryLocalServiceImpl
 			Expression<?>[] selectExpressions)
 		throws PortalException {
 
-		List<Object[]> results = new ArrayList<>();
-
 		List<Object> entriesValues = objectEntryPersistence.dslQuery(dslQuery);
+
+		List<Object[]> results = new ArrayList<>(entriesValues.size());
 
 		for (Object entryValues : entriesValues) {
 			Object[] result = new Object[selectExpressions.length];

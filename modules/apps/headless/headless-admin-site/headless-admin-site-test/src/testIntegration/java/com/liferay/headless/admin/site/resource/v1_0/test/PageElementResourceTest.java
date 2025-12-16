@@ -62,7 +62,6 @@ import com.liferay.headless.admin.site.client.dto.v1_0.FragmentLinkValue;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentMappedValueItemContextReference;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentMappedValueItemExternalReference;
 import com.liferay.headless.admin.site.client.dto.v1_0.FragmentMappedValueItemReference;
-import com.liferay.headless.admin.site.client.dto.v1_0.FragmentViewport;
 import com.liferay.headless.admin.site.client.dto.v1_0.GridPageElementDefinition;
 import com.liferay.headless.admin.site.client.dto.v1_0.GridViewport;
 import com.liferay.headless.admin.site.client.dto.v1_0.GridViewportDefinition;
@@ -92,7 +91,10 @@ import com.liferay.headless.admin.site.client.problem.Problem;
 import com.liferay.headless.admin.site.client.serdes.v1_0.PageElementSerDes;
 import com.liferay.headless.admin.site.resource.v1_0.test.util.FragmentConfigurationTestUtil;
 import com.liferay.headless.admin.site.resource.v1_0.test.util.FragmentEditableElementTestUtil;
+import com.liferay.headless.admin.site.resource.v1_0.test.util.FragmentViewportStyleTestUtil;
+import com.liferay.headless.admin.site.resource.v1_0.test.util.FragmentViewportTestUtil;
 import com.liferay.headless.admin.site.resource.v1_0.test.util.PageElementsTestUtil;
+import com.liferay.headless.admin.site.resource.v1_0.test.util.ReferencesTestUtil;
 import com.liferay.journal.constants.JournalContentPortletKeys;
 import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
@@ -101,7 +103,6 @@ import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.page.template.test.util.DisplayPageTemplateTestUtil;
-import com.liferay.layout.responsive.ViewportSize;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.object.constants.ObjectFieldConstants;
@@ -578,6 +579,10 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		return _addFragmentEntry(
 			configuration, groupId,
 			StringBundler.concat(
+				"<div data-lfr-background-image-id=\"element-background-",
+				"image1\">", RandomTestUtil.randomString(), "</div>",
+				"<div data-lfr-background-image-id=\"element-background-",
+				"image2\">", RandomTestUtil.randomString(), "</div>",
 				"<div data-lfr-editable-id=\"element-html\" ",
 				"data-lfr-editable-type=\"html\">",
 				RandomTestUtil.randomString(), "</div>",
@@ -767,12 +772,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		ListStyleDefinition listStyleDefinition = new ListStyleDefinition();
 
-		listStyleDefinition.setAlign(ListStyleDefinition.Align.CENTER);
-		listStyleDefinition.setFlexWrap(ListStyleDefinition.FlexWrap.WRAP);
 		listStyleDefinition.setGutters(true);
-		listStyleDefinition.setJustify(
-			ListStyleDefinition.Justify.SPACE_AROUND);
-		listStyleDefinition.setNumberOfColumns(12);
 		listStyleDefinition.setVerticalAlignment(
 			ListStyleDefinition.VerticalAlignment.TOP);
 
@@ -788,8 +788,8 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			CollectionDisplayViewport[] collectionDisplayViewports,
 			CollectionReference collectionReference, Boolean displayAllItems,
 			Boolean displayAllPages,
-			Map<String, String> emptyCollectionMessages, Boolean hidden,
-			String name, Integer numberOfItems, Integer numberOfItemsPerPage,
+			Map<String, String> emptyCollectionMessages, String name,
+			Integer numberOfItems, Integer numberOfItemsPerPage,
 			Integer numberOfPages,
 			CollectionDisplayPageElementDefinition.PaginationType
 				paginationType,
@@ -829,7 +829,6 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 				return emptyCollectionConfig;
 			});
-		collectionDisplayPageElementDefinition.setHidden(() -> hidden);
 		collectionDisplayPageElementDefinition.setName(() -> name);
 		collectionDisplayPageElementDefinition.setNumberOfItems(
 			() -> numberOfItems);
@@ -854,11 +853,25 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					setCollectionDisplayViewportDefinition(
 						() -> new CollectionDisplayViewportDefinition() {
 							{
-								setAlign(Align.START);
-								setFlexWrap(FlexWrap.WRAP_REVERSE);
-								setHidden(false);
-								setJustify(Justify.CENTER);
-								setNumberOfColumns(1);
+								setAlign(Align.CENTER);
+								setFlexWrap(FlexWrap.WRAP);
+								setHidden(RandomTestUtil.randomBoolean());
+								setJustify(Justify.SPACE_AROUND);
+								setNumberOfColumns(
+									RandomTestUtil.randomInt(1, 12));
+							}
+						});
+					setId(Id.DESKTOP);
+				}
+			},
+			new CollectionDisplayViewport() {
+				{
+					setCollectionDisplayViewportDefinition(
+						() -> new CollectionDisplayViewportDefinition() {
+							{
+								setHidden(RandomTestUtil.randomBoolean());
+								setNumberOfColumns(
+									RandomTestUtil.randomInt(1, 12));
 							}
 						});
 					setId(Id.LANDSCAPE_MOBILE);
@@ -869,11 +882,9 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					setCollectionDisplayViewportDefinition(
 						() -> new CollectionDisplayViewportDefinition() {
 							{
-								setAlign(Align.CENTER);
-								setFlexWrap(FlexWrap.NO_WRAP);
-								setHidden(true);
-								setJustify(Justify.SPACE_AROUND);
-								setNumberOfColumns(4);
+								setHidden(RandomTestUtil.randomBoolean());
+								setNumberOfColumns(
+									RandomTestUtil.randomInt(1, 12));
 							}
 						});
 					setId(Id.PORTRAIT_MOBILE);
@@ -884,14 +895,30 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					setCollectionDisplayViewportDefinition(
 						() -> new CollectionDisplayViewportDefinition() {
 							{
-								setAlign(Align.STRETCH);
-								setFlexWrap(FlexWrap.WRAP);
-								setHidden(false);
-								setJustify(Justify.SPACE_BETWEEN);
+								setHidden(RandomTestUtil.randomBoolean());
 								setNumberOfColumns(12);
 							}
 						});
 					setId(Id.TABLET);
+				}
+			}
+		};
+	}
+
+	private CollectionDisplayViewport[]
+		_getCollectionDisplayViewportsDefaultValues() {
+
+		return new CollectionDisplayViewport[] {
+			new CollectionDisplayViewport() {
+				{
+					setCollectionDisplayViewportDefinition(
+						() -> new CollectionDisplayViewportDefinition() {
+							{
+								setHidden(false);
+								setNumberOfColumns(1);
+							}
+						});
+					setId(Id.DESKTOP);
 				}
 			}
 		};
@@ -945,7 +972,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 	}
 
 	private PageElement _getContainerPageElement(
-			String[] cssClasses, String customCss, String fragmentLinkClassName,
+			String[] cssClasses, String fragmentLinkClassName,
 			String fragmentLinkExternalReferenceCode,
 			String fragmentLinkFieldKey,
 			Map<String, String> fragmentLinkLocalizedValues, boolean indexed,
@@ -958,13 +985,12 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		containerPageElementDefinition.setContentVisibility(
 			ContainerPageElementDefinition.ContentVisibility.AUTO);
 		containerPageElementDefinition.setCssClasses(cssClasses);
-		containerPageElementDefinition.setCustomCSS(customCss);
 		containerPageElementDefinition.setFragmentLink(
 			() -> _getFragmentLink(
 				fragmentLinkClassName, fragmentLinkExternalReferenceCode,
 				fragmentLinkFieldKey, fragmentLinkLocalizedValues));
 		containerPageElementDefinition.setFragmentViewports(
-			_getFragmentViewports());
+			FragmentViewportTestUtil.getFragmentViewports());
 		containerPageElementDefinition.setHtmlProperties(
 			() -> new HtmlProperties() {
 				{
@@ -1051,7 +1077,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 	}
 
 	private PageElement _getFormContainerPageElement(
-			String className, String[] cssClasses, String customCss,
+			String className, String[] cssClasses,
 			boolean formContainerSubmissionResultDefaultDisplayPage,
 			String formContainerSubmissionResultType,
 			FormContainerConfig.FormContainerType formContainerType,
@@ -1064,14 +1090,13 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			new FormContainerPageElementDefinition();
 
 		formContainerPageElementDefinition.setCssClasses(cssClasses);
-		formContainerPageElementDefinition.setCustomCSS(customCss);
 		formContainerPageElementDefinition.setFormContainerConfig(
 			_getFormContainerConfig(
 				className, formContainerSubmissionResultDefaultDisplayPage,
 				formContainerSubmissionResultType, formContainerType,
 				numberOfSteps, unlocalizedFieldsState));
 		formContainerPageElementDefinition.setFragmentViewports(
-			_getFragmentViewports());
+			FragmentViewportTestUtil.getFragmentViewports());
 		formContainerPageElementDefinition.setIndexed(indexed);
 		formContainerPageElementDefinition.setLayout(
 			() -> new com.liferay.headless.admin.site.client.dto.v1_0.Layout() {
@@ -1117,10 +1142,8 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		formStepContainerPageElementDefinition.setCssClasses(
 			RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)));
-		formStepContainerPageElementDefinition.setCustomCSS(
-			RandomTestUtil.randomString());
 		formStepContainerPageElementDefinition.setFragmentViewports(
-			_getFragmentViewports());
+			FragmentViewportTestUtil.getFragmentViewports());
 		formStepContainerPageElementDefinition.setType(
 			PageElementDefinition.Type.FORM_STEP_CONTAINER);
 
@@ -1258,58 +1281,36 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			className, externalReferenceCode);
 	}
 
-	private FragmentViewport[] _getFragmentViewports() {
-		return new FragmentViewport[] {
-			new FragmentViewport() {
-				{
-					setCustomCSS(RandomTestUtil.randomString());
-					setId(ViewportSize.MOBILE_LANDSCAPE::getViewportSizeId);
-				}
-			},
-			new FragmentViewport() {
-				{
-					setCustomCSS(RandomTestUtil.randomString());
-					setId(ViewportSize.TABLET::getViewportSizeId);
-				}
-			}
-		};
-	}
-
 	private PageElement _getGridPageElement(
-			String[] cssClasses, String customCss, boolean gutters,
-			boolean indexed, Integer modulesPerRow, Integer numberOfModules,
-			GridPageElementDefinition.VerticalAlignment verticalAlignment)
+			String[] cssClasses, boolean gutters, boolean indexed,
+			Integer numberOfModules)
 		throws Exception {
 
 		String externalReferenceCode = RandomTestUtil.randomString();
 
 		return _getGridPageElement(
-			cssClasses, customCss, gutters, indexed, modulesPerRow,
-			numberOfModules, verticalAlignment, externalReferenceCode,
+			cssClasses, gutters, indexed, numberOfModules,
+			externalReferenceCode,
 			_getModulePageElements(externalReferenceCode, numberOfModules));
 	}
 
 	private PageElement _getGridPageElement(
-			String[] cssClasses, String customCss, boolean gutters,
-			boolean indexed, Integer modulesPerRow, Integer numberOfModules,
-			GridPageElementDefinition.VerticalAlignment verticalAlignment,
-			String pageElementExternalReferenceCode, PageElement[] pageElements)
+			String[] cssClasses, boolean gutters, boolean indexed,
+			Integer numberOfModules, String pageElementExternalReferenceCode,
+			PageElement[] pageElements)
 		throws Exception {
 
 		GridPageElementDefinition gridPageElementDefinition =
 			new GridPageElementDefinition();
 
 		gridPageElementDefinition.setCssClasses(cssClasses);
-		gridPageElementDefinition.setCustomCSS(customCss);
 		gridPageElementDefinition.setGridViewports(this::_getGridViewports);
 		gridPageElementDefinition.setGutters(gutters);
 		gridPageElementDefinition.setIndexed(indexed);
-		gridPageElementDefinition.setModulesPerRow(modulesPerRow);
 		gridPageElementDefinition.setName(RandomTestUtil.randomString());
 		gridPageElementDefinition.setNumberOfModules(numberOfModules);
 		gridPageElementDefinition.setReverseOrder(Boolean.FALSE);
 		gridPageElementDefinition.setType(PageElementDefinition.Type.GRID);
-		gridPageElementDefinition.setVerticalAlignment(verticalAlignment);
 
 		return _getPageElement(
 			gridPageElementDefinition, pageElementExternalReferenceCode,
@@ -1326,7 +1327,6 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					setGridViewports(_getGridViewportsDefaultValues());
 					setGutters(Boolean.TRUE);
 					setIndexed(Boolean.TRUE);
-					setModulesPerRow(1);
 					setNumberOfModules(1);
 					setReverseOrder(Boolean.FALSE);
 					setType(Type.GRID);
@@ -1339,7 +1339,6 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 						{
 							setModuleViewports(
 								_getModuleViewportsDefaultValues());
-							setSize(1);
 							setType(Type.MODULE);
 						}
 					},
@@ -1371,6 +1370,25 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			new GridViewport() {
 				{
 					setCustomCSS(RandomTestUtil.randomString());
+					setFragmentViewportStyle(
+						FragmentViewportStyleTestUtil.
+							getFragmentViewportStyle());
+					setGridViewportDefinition(
+						() -> new GridViewportDefinition() {
+							{
+								setModulesPerRow(1);
+								setVerticalAlignment(VerticalAlignment.MIDDLE);
+							}
+						});
+					setId(Id.DESKTOP);
+				}
+			},
+			new GridViewport() {
+				{
+					setCustomCSS(RandomTestUtil.randomString());
+					setFragmentViewportStyle(
+						FragmentViewportStyleTestUtil.
+							getFragmentViewportStyle());
 					setGridViewportDefinition(
 						() -> new GridViewportDefinition() {
 							{
@@ -1386,13 +1404,14 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			new GridViewport() {
 				{
 					setCustomCSS(RandomTestUtil.randomString());
+					setFragmentViewportStyle(
+						FragmentViewportStyleTestUtil.
+							getFragmentViewportStyle());
 					setGridViewportDefinition(
 						() -> new GridViewportDefinition() {
 							{
 								setModulesPerRow(2);
-								setVerticalAlignment(
-									GridViewportDefinition.VerticalAlignment.
-										TOP);
+								setVerticalAlignment(VerticalAlignment.BOTTOM);
 							}
 						});
 					setId(Id.PORTRAIT_MOBILE);
@@ -1401,13 +1420,14 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			new GridViewport() {
 				{
 					setCustomCSS(RandomTestUtil.randomString());
+					setFragmentViewportStyle(
+						FragmentViewportStyleTestUtil.
+							getFragmentViewportStyle());
 					setGridViewportDefinition(
 						() -> new GridViewportDefinition() {
 							{
 								setModulesPerRow(3);
-								setVerticalAlignment(
-									GridViewportDefinition.VerticalAlignment.
-										TOP);
+								setVerticalAlignment(VerticalAlignment.TOP);
 							}
 						});
 					setId(Id.TABLET);
@@ -1418,6 +1438,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 	private GridViewport[] _getGridViewportsDefaultValues() {
 		return new GridViewport[] {
+			_getGridViewport(GridViewport.Id.DESKTOP, 1),
 			_getGridViewport(GridViewport.Id.LANDSCAPE_MOBILE, 1),
 			_getGridViewport(GridViewport.Id.PORTRAIT_MOBILE, null),
 			_getGridViewport(GridViewport.Id.TABLET, null)
@@ -1464,15 +1485,14 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 	}
 
 	private PageElement _getModulePageElement(
-			String externalReferenceCode, int numberOfModules,
-			String parentExternalReferenceCode, int position)
+			String externalReferenceCode, String parentExternalReferenceCode,
+			int position)
 		throws Exception {
 
 		return _getPageElement(
 			new ModulePageElementDefinition() {
 				{
 					setModuleViewports(_getModuleViewports());
-					setSize(12 / numberOfModules);
 					setType(Type.MODULE);
 				}
 			},
@@ -1487,8 +1507,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		for (int i = 0; i < numberOfModules; i++) {
 			pageElements[i] = _getModulePageElement(
-				externalReferenceCode + i, numberOfModules,
-				externalReferenceCode, i);
+				externalReferenceCode + i, externalReferenceCode, i);
 		}
 
 		return pageElements;
@@ -1496,6 +1515,17 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 	private ModuleViewport[] _getModuleViewports() {
 		return new ModuleViewport[] {
+			new ModuleViewport() {
+				{
+					setId(Id.DESKTOP);
+					setModuleViewportDefinition(
+						() -> new ModuleViewportDefinition() {
+							{
+								setSize(RandomTestUtil.randomInt(1, 12));
+							}
+						});
+				}
+			},
 			new ModuleViewport() {
 				{
 					setId(Id.LANDSCAPE_MOBILE);
@@ -1534,6 +1564,17 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 	private ModuleViewport[] _getModuleViewportsDefaultValues() {
 		return new ModuleViewport[] {
+			new ModuleViewport() {
+				{
+					setId(Id.DESKTOP);
+					setModuleViewportDefinition(
+						() -> new ModuleViewportDefinition() {
+							{
+								setSize(1);
+							}
+						});
+				}
+			},
 			new ModuleViewport() {
 				{
 					setId(Id.LANDSCAPE_MOBILE);
@@ -1782,7 +1823,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 	}
 
 	private PageElement _getWidgetPageElement(
-			String[] cssClasses, String customCss,
+			String[] cssClasses,
 			String draftWidgetInstanceExternalReferenceCode, boolean indexed,
 			String name, String pageElementExternalReferenceCode,
 			Map<String, Object> widgetConfig,
@@ -1795,10 +1836,11 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				new WidgetInstancePageElementDefinition();
 
 		widgetInstancePageElementDefinition.setCssClasses(cssClasses);
-		widgetInstancePageElementDefinition.setCustomCSS(customCss);
 		widgetInstancePageElementDefinition.
 			setDraftWidgetInstanceExternalReferenceCode(
 				draftWidgetInstanceExternalReferenceCode);
+		widgetInstancePageElementDefinition.setFragmentViewports(
+			FragmentViewportTestUtil.getFragmentViewports());
 		widgetInstancePageElementDefinition.setIndexed(indexed);
 		widgetInstancePageElementDefinition.setName(name);
 		widgetInstancePageElementDefinition.setType(
@@ -1975,7 +2017,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					LocaleUtil.toBCP47LanguageId(LocaleUtil.US),
 					RandomTestUtil.randomString()
 				).build(),
-				true, RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
+				RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
 				RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
 				CollectionDisplayPageElementDefinition.PaginationType.NONE,
 				RandomTestUtil.randomString()));
@@ -1996,7 +2038,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					_getCollectionDisplayViewports(),
 					_getCollectionReference(
 						null, assetListEntry.getExternalReferenceCode()),
-					true, true, null, true, RandomTestUtil.randomString(),
+					true, true, null, RandomTestUtil.randomString(),
 					RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
 					RandomTestUtil.randomInt(),
 					CollectionDisplayPageElementDefinition.PaginationType.
@@ -2025,15 +2067,14 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
-				null, RandomTestUtil.randomString(), null, null,
-				"FileEntry_fileName", null, false,
+				null, null, null, "FileEntry_fileName", null, false,
 				RandomTestUtil.randomString()));
 
 		FileEntry fileEntry = _getFileEntry(testGroup.getGroupId());
 
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
-				null, RandomTestUtil.randomString(), FileEntry.class.getName(),
+				null, FileEntry.class.getName(),
 				fileEntry.getExternalReferenceCode(), "FileEntry_fileName",
 				null, false, RandomTestUtil.randomString()));
 
@@ -2043,8 +2084,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
-				null, RandomTestUtil.randomString(),
-				JournalArticle.class.getName(),
+				null, JournalArticle.class.getName(),
 				journalArticle.getExternalReferenceCode(),
 				"JournalArticle_title", null, false,
 				RandomTestUtil.randomString()));
@@ -2054,13 +2094,13 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				null, Layout.class.getName(), layout.getExternalReferenceCode(),
-				null, null, true, RandomTestUtil.randomString()));
+				Layout.class.getName(), layout.getExternalReferenceCode(), null,
+				null, true, RandomTestUtil.randomString()));
 
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), null, null, null,
+				null, null, null,
 				HashMapBuilder.put(
 					LocaleUtil.toBCP47LanguageId(LocaleUtil.SPAIN),
 					"https://www.liferay.es"
@@ -2086,52 +2126,49 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			_getFormContainerPageElement(
 				objectDefinition.getClassName(),
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), true, "displayPage",
+				true, "displayPage",
 				FormContainerConfig.FormContainerType.SIMPLE, true, 1,
 				RandomTestUtil.randomString(),
 				LocalizationConfig.UnlocalizedFieldsState.READ_ONLY));
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
-				objectDefinition.getClassName(), null, null, false,
-				"displayPage", FormContainerConfig.FormContainerType.SIMPLE,
-				false, 1, RandomTestUtil.randomString(), null));
+				objectDefinition.getClassName(), null, false, "displayPage",
+				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
+				RandomTestUtil.randomString(), null));
 
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				null,
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "embedded",
-				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
-				RandomTestUtil.randomString(),
+				false, "embedded", FormContainerConfig.FormContainerType.SIMPLE,
+				false, 1, RandomTestUtil.randomString(),
 				LocalizationConfig.UnlocalizedFieldsState.DISABLED));
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
-				objectDefinition.getClassName(), null, null, false, "none",
+				objectDefinition.getClassName(), null, false, "none",
 				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
 				RandomTestUtil.randomString(), null));
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				null,
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "page",
-				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
-				RandomTestUtil.randomString(),
+				false, "page", FormContainerConfig.FormContainerType.SIMPLE,
+				false, 1, RandomTestUtil.randomString(),
 				LocalizationConfig.UnlocalizedFieldsState.READ_ONLY));
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				objectDefinition.getClassName(),
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "url",
-				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
-				RandomTestUtil.randomString(),
+				false, "url", FormContainerConfig.FormContainerType.SIMPLE,
+				false, 1, RandomTestUtil.randomString(),
 				LocalizationConfig.UnlocalizedFieldsState.DISABLED));
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				objectDefinition.getClassName(),
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "url",
-				FormContainerConfig.FormContainerType.MULTISTEP, false,
-				RandomTestUtil.randomInt(2, 10), RandomTestUtil.randomString(),
+				false, "url", FormContainerConfig.FormContainerType.MULTISTEP,
+				false, RandomTestUtil.randomInt(2, 10),
+				RandomTestUtil.randomString(),
 				LocalizationConfig.UnlocalizedFieldsState.DISABLED));
 	}
 
@@ -2156,17 +2193,13 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, false, 2, 6,
-				GridPageElementDefinition.VerticalAlignment.MIDDLE));
+				false, false, 6));
 		_testPostSitePageSpecificationPageExperiencePageElement(
-			_getGridPageElement(
-				null, RandomTestUtil.randomString(), true, true, 1, 3,
-				GridPageElementDefinition.VerticalAlignment.TOP));
+			_getGridPageElement(null, true, true, 3));
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				null, false, false, 6, 12,
-				GridPageElementDefinition.VerticalAlignment.BOTTOM));
+				false, false, 12));
 	}
 
 	private void _testPostSitePageSpecificationPageExperiencePageElementWithWidgetPageElement()
@@ -2182,7 +2215,6 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPostSitePageSpecificationPageExperiencePageElement(
 			_getWidgetPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(),
 				draftWidgetInstanceExternalReferenceCode, false,
 				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 				_getWidgetConfig(), RandomTestUtil.randomString(), namespace,
@@ -2235,7 +2267,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 					LocaleUtil.toBCP47LanguageId(LocaleUtil.US),
 					RandomTestUtil.randomString()
 				).build(),
-				true, RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
+				RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
 				RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
 				CollectionDisplayPageElementDefinition.PaginationType.NONE,
 				externalReferenceCode));
@@ -2255,7 +2287,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				_getCollectionDisplayViewports(),
 				_getCollectionReference(
 					null, assetListEntry.getExternalReferenceCode()),
-				true, true, null, true, RandomTestUtil.randomString(),
+				true, true, null, RandomTestUtil.randomString(),
 				RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
 				RandomTestUtil.randomInt(),
 				CollectionDisplayPageElementDefinition.PaginationType.SIMPLE,
@@ -2266,9 +2298,10 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				_getCollectionDisplayPageElement(
 					_getCollectionDisplayListStyle(
 						null, null, ListStyle.ListStyleType.GRID, null),
-					null, null, true, true, null, true,
-					RandomTestUtil.randomString(), RandomTestUtil.randomInt(),
+					_getCollectionDisplayViewportsDefaultValues(), null, true,
+					true, null, RandomTestUtil.randomString(),
 					RandomTestUtil.randomInt(), RandomTestUtil.randomInt(),
+					RandomTestUtil.randomInt(),
 					CollectionDisplayPageElementDefinition.PaginationType.
 						SIMPLE,
 					externalReferenceCode));
@@ -2291,14 +2324,14 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
-				null, RandomTestUtil.randomString(), null, null,
-				"FileEntry_fileName", null, false, externalReferenceCode));
+				null, null, null, "FileEntry_fileName", null, false,
+				externalReferenceCode));
 
 		FileEntry fileEntry = _getFileEntry(testGroup.getGroupId());
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
-				null, RandomTestUtil.randomString(), FileEntry.class.getName(),
+				null, FileEntry.class.getName(),
 				fileEntry.getExternalReferenceCode(), "FileEntry_fileName",
 				null, false, externalReferenceCode));
 
@@ -2308,8 +2341,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
-				null, RandomTestUtil.randomString(),
-				JournalArticle.class.getName(),
+				null, JournalArticle.class.getName(),
 				journalArticle.getExternalReferenceCode(),
 				"JournalArticle_title", null, false, externalReferenceCode));
 
@@ -2318,13 +2350,13 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				null, Layout.class.getName(), layout.getExternalReferenceCode(),
-				null, null, true, externalReferenceCode));
+				Layout.class.getName(), layout.getExternalReferenceCode(), null,
+				null, true, externalReferenceCode));
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getContainerPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), null, null, null,
+				null, null, null,
 				HashMapBuilder.put(
 					LocaleUtil.toBCP47LanguageId(LocaleUtil.SPAIN),
 					"https://www.liferay.es"
@@ -2361,26 +2393,25 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			_getFormContainerPageElement(
 				objectDefinition.getClassName(),
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), true, "displayPage",
+				true, "displayPage",
 				FormContainerConfig.FormContainerType.SIMPLE, true, 1,
 				externalReferenceCode,
 				LocalizationConfig.UnlocalizedFieldsState.READ_ONLY));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
-				objectDefinition.getClassName(), null, null, false,
-				"displayPage", FormContainerConfig.FormContainerType.SIMPLE,
-				false, 1, externalReferenceCode, null));
+				objectDefinition.getClassName(), null, false, "displayPage",
+				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
+				externalReferenceCode, null));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				null,
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "embedded",
-				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
-				externalReferenceCode,
+				false, "embedded", FormContainerConfig.FormContainerType.SIMPLE,
+				false, 1, externalReferenceCode,
 				LocalizationConfig.UnlocalizedFieldsState.DISABLED));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
-				objectDefinition.getClassName(), null, null, false, "none",
+				objectDefinition.getClassName(), null, false, "none",
 				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
 				externalReferenceCode,
 				LocalizationConfig.UnlocalizedFieldsState.READ_ONLY));
@@ -2388,24 +2419,21 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			_getFormContainerPageElement(
 				null,
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "page",
-				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
-				externalReferenceCode, null));
+				false, "page", FormContainerConfig.FormContainerType.SIMPLE,
+				false, 1, externalReferenceCode, null));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				objectDefinition.getClassName(),
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "url",
-				FormContainerConfig.FormContainerType.SIMPLE, false, 1,
-				externalReferenceCode,
+				false, "url", FormContainerConfig.FormContainerType.SIMPLE,
+				false, 1, externalReferenceCode,
 				LocalizationConfig.UnlocalizedFieldsState.DISABLED));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFormContainerPageElement(
 				objectDefinition.getClassName(),
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, "url",
-				FormContainerConfig.FormContainerType.MULTISTEP, false,
-				RandomTestUtil.randomInt(2, 10), externalReferenceCode,
+				false, "url", FormContainerConfig.FormContainerType.MULTISTEP,
+				false, RandomTestUtil.randomInt(2, 10), externalReferenceCode,
 				LocalizationConfig.UnlocalizedFieldsState.DISABLED));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getPageElement(
@@ -3095,6 +3123,22 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
+			FragmentEditableElementTestUtil.
+				getBackgroundImageFragmentEditableElement(
+					FragmentEditableElementTestUtil.getDirectFragmentImageValue(
+						ReferencesTestUtil.getItemExternalReference(
+							_getFileEntry(testGroup.getGroupId()),
+							testGroup.getGroupId()),
+						RandomTestUtil.randomString()),
+					"element-background-image1"),
+			FragmentEditableElementTestUtil.
+				getBackgroundImageFragmentEditableElement(
+					FragmentEditableElementTestUtil.getDirectFragmentImageValue(
+						ReferencesTestUtil.getItemExternalReference(
+							_getFileEntry(irrelevantGroup.getGroupId()),
+							testGroup.getGroupId()),
+						null),
+					"element-background-image2"),
 			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
 				null, null, HTMLFragmentValue.Type.INLINE),
 			FragmentEditableElementTestUtil.getTextFragmentEditableElement(
@@ -3106,6 +3150,20 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				null, null, TextFragmentValue.Type.INLINE));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
+			FragmentEditableElementTestUtil.
+				getBackgroundImageFragmentEditableElement(
+					FragmentEditableElementTestUtil.getDirectFragmentImageValue(
+						null, RandomTestUtil.randomString()),
+					"element-background-image1"),
+			FragmentEditableElementTestUtil.
+				getBackgroundImageFragmentEditableElement(
+					FragmentEditableElementTestUtil.getMappedFragmentImageValue(
+						FragmentMappedValueItemContextReference.ContextSource.
+							COLLECTION_ITEM,
+						"JournalArticle_authorProfileImage",
+						FragmentMappedValueItemReference.Type.
+							CONTEXT_REFERENCE),
+					"element-background-image2"),
 			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
 				FragmentMappedValueItemContextReference.ContextSource.
 					COLLECTION_ITEM,
@@ -3121,6 +3179,15 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
+			FragmentEditableElementTestUtil.
+				getBackgroundImageFragmentEditableElement(
+					FragmentEditableElementTestUtil.getMappedFragmentImageValue(
+						FragmentMappedValueItemContextReference.ContextSource.
+							DISPLAY_PAGE_ITEM,
+						"JournalArticle_authorProfileImage",
+						FragmentMappedValueItemReference.Type.
+							CONTEXT_REFERENCE),
+					"element-background-image1"),
 			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
 				FragmentMappedValueItemContextReference.ContextSource.
 					DISPLAY_PAGE_ITEM,
@@ -3137,26 +3204,61 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				TextFragmentValue.Type.MAPPED));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
-			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
-				null,
-				FragmentMappedValueItemReference.Type.ITEM_EXTERNAL_REFERENCE,
-				HTMLFragmentValue.Type.MAPPED),
-			FragmentEditableElementTestUtil.getTextFragmentEditableElement(
-				null,
-				_getFragmentLink(
-					null, null, null,
-					HashMapBuilder.put(
-						LocaleUtil.toBCP47LanguageId(LocaleUtil.SPAIN),
-						"https://www.liferay.es"
-					).put(
-						LocaleUtil.toBCP47LanguageId(LocaleUtil.US),
-						"https://www.liferay.com"
-					).build()),
-				null,
-				FragmentMappedValueItemReference.Type.ITEM_EXTERNAL_REFERENCE,
-				TextFragmentValue.Type.MAPPED));
-		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			new FragmentEditableElement[0]);
+
+		_testMissingOptionalReference(
+			4,
+			() ->
+				_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
+					FragmentEditableElementTestUtil.
+						getBackgroundImageFragmentEditableElement(
+							FragmentEditableElementTestUtil.
+								getDirectFragmentImageValue(
+									ReferencesTestUtil.getItemExternalReference(
+										HashMapBuilder.put(
+											"className",
+											FileEntry.class.getName()
+										).put(
+											"externalReferenceCode",
+											RandomTestUtil.randomString()
+										).put(
+											"scopeExternalReferenceCode",
+											RandomTestUtil.randomString()
+										).build(),
+										testGroup.getGroupId()),
+									null),
+							"element-background-image1"),
+					FragmentEditableElementTestUtil.
+						getBackgroundImageFragmentEditableElement(
+							FragmentEditableElementTestUtil.
+								getMappedFragmentImageValue(
+									null, "FileEntry_authorProfileImage",
+									FragmentMappedValueItemReference.Type.
+										ITEM_EXTERNAL_REFERENCE),
+							"element-background-image2"),
+					FragmentEditableElementTestUtil.
+						getHTMLFragmentEditableElement(
+							null,
+							FragmentMappedValueItemReference.Type.
+								ITEM_EXTERNAL_REFERENCE,
+							HTMLFragmentValue.Type.MAPPED),
+					FragmentEditableElementTestUtil.
+						getTextFragmentEditableElement(
+							null,
+							_getFragmentLink(
+								null, null, null,
+								HashMapBuilder.put(
+									LocaleUtil.toBCP47LanguageId(
+										LocaleUtil.SPAIN),
+									"https://www.liferay.es"
+								).put(
+									LocaleUtil.toBCP47LanguageId(LocaleUtil.US),
+									"https://www.liferay.com"
+								).build()),
+							null,
+							FragmentMappedValueItemReference.Type.
+								ITEM_EXTERNAL_REFERENCE,
+							TextFragmentValue.Type.MAPPED)));
 	}
 
 	private void
@@ -3193,22 +3295,16 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), false, false, 2, 6,
-				GridPageElementDefinition.VerticalAlignment.MIDDLE,
-				externalReferenceCode,
+				false, false, 6, externalReferenceCode,
 				_getModulePageElements(externalReferenceCode, 6)));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElement(
-				null, RandomTestUtil.randomString(), true, true, 1, 3,
-				GridPageElementDefinition.VerticalAlignment.TOP,
-				externalReferenceCode,
+				null, true, true, 3, externalReferenceCode,
 				_getModulePageElements(externalReferenceCode, 3)));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				null, false, false, 6, 12,
-				GridPageElementDefinition.VerticalAlignment.BOTTOM,
-				externalReferenceCode,
+				false, false, 12, externalReferenceCode,
 				_getModulePageElements(externalReferenceCode, 12)));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getGridPageElementDefaultValues(externalReferenceCode));
@@ -3225,9 +3321,9 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getWidgetPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(), null, false,
-				RandomTestUtil.randomString(), externalReferenceCode,
-				_getWidgetConfig(), widgetInstanceExternalReferenceCode,
+				null, false, RandomTestUtil.randomString(),
+				externalReferenceCode, _getWidgetConfig(),
+				widgetInstanceExternalReferenceCode,
 				RandomTestUtil.randomString(),
 				JournalContentPortletKeys.JOURNAL_CONTENT,
 				_getWidgetPermissions()));
@@ -3242,7 +3338,6 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getWidgetPageElement(
 				RandomTestUtil.randomStrings(RandomTestUtil.randomInt(1, 10)),
-				RandomTestUtil.randomString(),
 				draftWidgetInstanceExternalReferenceCode, false,
 				RandomTestUtil.randomString(), externalReferenceCode,
 				_getWidgetConfig(), widgetInstanceExternalReferenceCode,
@@ -3250,7 +3345,7 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				_getWidgetPermissions()));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getWidgetPageElement(
-				null, null, null, false, RandomTestUtil.randomString(),
+				null, null, false, RandomTestUtil.randomString(),
 				externalReferenceCode, new HashMap<>(),
 				widgetInstanceExternalReferenceCode, namespace,
 				AssetPublisherPortletKeys.ASSET_PUBLISHER,

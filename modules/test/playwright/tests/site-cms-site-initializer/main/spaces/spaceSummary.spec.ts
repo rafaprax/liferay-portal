@@ -8,6 +8,7 @@ import {expect, mergeTests} from '@playwright/test';
 import {dataApiHelpersTest} from '../../../../fixtures/dataApiHelpersTest';
 import {featureFlagsTest} from '../../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../../fixtures/loginTest';
+import {getRandomInt} from '../../../../utils/getRandomInt';
 import getRandomString from '../../../../utils/getRandomString';
 import {cmsPagesTest} from '../fixtures/cmsPagesTest';
 
@@ -68,12 +69,46 @@ test(
 );
 
 test(
-	'Can access to View All Files page',
+	'Can access Add button',
 	{tag: '@LPD-62706'},
 	async ({page, spaceSummaryPage}) => {
 		const spaceName = 'Default';
 
 		await spaceSummaryPage.goto(spaceName);
+
+		await page.getByRole('button', {name: `Add Content`}).click();
+
+		let dropdown = page.locator('.dropdown-menu.show');
+
+		await expect(dropdown.getByText('Basic Content')).toBeVisible();
+		await expect(dropdown.getByText('Blog')).toBeVisible();
+		await expect(dropdown.getByText('Folder')).toBeVisible();
+
+		await page.getByRole('button', {name: `Add Content`}).click();
+
+		await page.getByRole('button', {name: `Add Files`}).click();
+
+		dropdown = page.locator('.dropdown-menu.show');
+
+		await expect(
+			dropdown.getByText('External Video Shortcut')
+		).toBeVisible();
+		await expect(dropdown.getByText('Folder')).toBeVisible();
+		await expect(dropdown.getByText('Multiple Files')).toBeVisible();
+		await expect(dropdown.getByText('Single File')).toBeVisible();
+	}
+);
+
+test(
+	'Can access to View All Files page if file is available',
+	{tag: '@LPD-62706'},
+	async ({page, spaceSummaryPage}) => {
+		const spaceName = 'Default';
+
+		await spaceSummaryPage.goto(spaceName);
+
+		await spaceSummaryPage.createFileFolder('Folder' + getRandomInt());
+
 		await spaceSummaryPage.viewAllFilesLink.click();
 
 		await expect(page.getByRole('link', {name: spaceName})).toBeVisible();
@@ -115,12 +150,15 @@ test(
 );
 
 test(
-	'Can access to View All Content page',
+	'Can access to View All Content page if content is available',
 	{tag: '@LPD-62706'},
 	async ({page, spaceSummaryPage}) => {
 		const spaceName = 'Default';
 
 		await spaceSummaryPage.goto(spaceName);
+
+		await spaceSummaryPage.createContentFolder('Folder' + getRandomInt());
+
 		await spaceSummaryPage.viewAllContentLink.click();
 
 		await expect(page.getByRole('link', {name: spaceName})).toBeVisible();

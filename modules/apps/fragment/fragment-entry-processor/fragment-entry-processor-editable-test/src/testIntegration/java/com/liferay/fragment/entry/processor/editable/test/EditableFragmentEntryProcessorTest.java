@@ -63,6 +63,7 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
 import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -71,7 +72,6 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutSet;
-import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.kernel.repository.RepositoryProviderUtil;
@@ -111,7 +111,6 @@ import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -172,8 +171,14 @@ public class EditableFragmentEntryProcessorTest {
 
 		LocaleThreadLocal.setThemeDisplayLocale(LocaleUtil.US);
 
-		ServiceContextThreadLocal.pushServiceContext(
-			new MockServiceContext(_layout, _getThemeDisplay(LocaleUtil.US)));
+		_serviceContext = ServiceContextTestUtil.getServiceContext(
+			_group, TestPropsValues.getUserId());
+
+		_serviceContext.setRequest(
+			ContentLayoutTestUtil.getMockHttpServletRequest(
+				_company, _group, _layout));
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
 	}
 
 	@After
@@ -382,9 +387,12 @@ public class EditableFragmentEntryProcessorTest {
 
 		LocaleThreadLocal.setThemeDisplayLocale(LocaleUtil.SPAIN);
 
-		ServiceContextThreadLocal.pushServiceContext(
-			new MockServiceContext(
-				_layout, _getThemeDisplay(LocaleUtil.SPAIN)));
+		ThemeDisplay themeDisplay = _serviceContext.getThemeDisplay();
+
+		themeDisplay.setLanguageId(LocaleUtil.toLanguageId(LocaleUtil.SPAIN));
+		themeDisplay.setLocale(LocaleUtil.SPAIN);
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
 
 		try {
 			element = _getElement(
@@ -394,6 +402,10 @@ public class EditableFragmentEntryProcessorTest {
 		finally {
 			LocaleThreadLocal.setThemeDisplayLocale(
 				_originalThemeDisplayDefaultLocale);
+
+			themeDisplay.setLanguageId(
+				LocaleUtil.toLanguageId(_originalThemeDisplayDefaultLocale));
+			themeDisplay.setLocale(_originalThemeDisplayDefaultLocale);
 
 			ServiceContextThreadLocal.popServiceContext();
 		}
@@ -434,8 +446,7 @@ public class EditableFragmentEntryProcessorTest {
 		Assert.assertEquals(
 			"page", element.attr("data-lfr-on-error-interaction"));
 		Assert.assertEquals(
-			_portal.getLayoutURL(
-				_layout, _getThemeDisplay(LocaleUtil.getSiteDefault())),
+			_portal.getLayoutURL(_layout, _serviceContext.getThemeDisplay()),
 			element.attr("data-lfr-on-error-page-url"));
 	}
 
@@ -480,9 +491,12 @@ public class EditableFragmentEntryProcessorTest {
 
 		LocaleThreadLocal.setThemeDisplayLocale(LocaleUtil.SPAIN);
 
-		ServiceContextThreadLocal.pushServiceContext(
-			new MockServiceContext(
-				_layout, _getThemeDisplay(LocaleUtil.SPAIN)));
+		ThemeDisplay themeDisplay = _serviceContext.getThemeDisplay();
+
+		themeDisplay.setLanguageId(LocaleUtil.toLanguageId(LocaleUtil.SPAIN));
+		themeDisplay.setLocale(LocaleUtil.SPAIN);
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
 
 		try {
 			element = _getElement(
@@ -492,6 +506,10 @@ public class EditableFragmentEntryProcessorTest {
 		finally {
 			LocaleThreadLocal.setThemeDisplayLocale(
 				_originalThemeDisplayDefaultLocale);
+
+			themeDisplay.setLanguageId(
+				LocaleUtil.toLanguageId(_originalThemeDisplayDefaultLocale));
+			themeDisplay.setLocale(_originalThemeDisplayDefaultLocale);
 
 			ServiceContextThreadLocal.popServiceContext();
 		}
@@ -576,9 +594,12 @@ public class EditableFragmentEntryProcessorTest {
 
 		LocaleThreadLocal.setThemeDisplayLocale(LocaleUtil.SPAIN);
 
-		ServiceContextThreadLocal.pushServiceContext(
-			new MockServiceContext(
-				_layout, _getThemeDisplay(LocaleUtil.SPAIN)));
+		ThemeDisplay themeDisplay = _serviceContext.getThemeDisplay();
+
+		themeDisplay.setLanguageId(LocaleUtil.toLanguageId(LocaleUtil.SPAIN));
+		themeDisplay.setLocale(LocaleUtil.SPAIN);
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
 
 		try {
 			element = _getElement(
@@ -588,6 +609,10 @@ public class EditableFragmentEntryProcessorTest {
 		finally {
 			LocaleThreadLocal.setThemeDisplayLocale(
 				_originalThemeDisplayDefaultLocale);
+
+			themeDisplay.setLanguageId(
+				LocaleUtil.toLanguageId(_originalThemeDisplayDefaultLocale));
+			themeDisplay.setLocale(_originalThemeDisplayDefaultLocale);
 
 			ServiceContextThreadLocal.popServiceContext();
 		}
@@ -629,8 +654,7 @@ public class EditableFragmentEntryProcessorTest {
 		Assert.assertEquals(
 			"page", element.attr("data-lfr-on-success-interaction"));
 		Assert.assertEquals(
-			_portal.getLayoutURL(
-				_layout, _getThemeDisplay(LocaleUtil.getSiteDefault())),
+			_portal.getLayoutURL(_layout, _serviceContext.getThemeDisplay()),
 			element.attr("data-lfr-on-success-page-url"));
 
 		Group group = GroupTestUtil.addGroup();
@@ -665,8 +689,7 @@ public class EditableFragmentEntryProcessorTest {
 		Assert.assertEquals(
 			"page", element.attr("data-lfr-on-success-interaction"));
 		Assert.assertEquals(
-			_portal.getLayoutURL(
-				layout, _getThemeDisplay(LocaleUtil.getSiteDefault())),
+			_portal.getLayoutURL(layout, _serviceContext.getThemeDisplay()),
 			element.attr("data-lfr-on-success-page-url"));
 	}
 
@@ -711,9 +734,12 @@ public class EditableFragmentEntryProcessorTest {
 
 		LocaleThreadLocal.setThemeDisplayLocale(LocaleUtil.SPAIN);
 
-		ServiceContextThreadLocal.pushServiceContext(
-			new MockServiceContext(
-				_layout, _getThemeDisplay(LocaleUtil.SPAIN)));
+		ThemeDisplay themeDisplay = _serviceContext.getThemeDisplay();
+
+		themeDisplay.setLanguageId(LocaleUtil.toLanguageId(LocaleUtil.SPAIN));
+		themeDisplay.setLocale(LocaleUtil.SPAIN);
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
 
 		try {
 			element = _getElement(
@@ -723,6 +749,10 @@ public class EditableFragmentEntryProcessorTest {
 		finally {
 			LocaleThreadLocal.setThemeDisplayLocale(
 				_originalThemeDisplayDefaultLocale);
+
+			themeDisplay.setLanguageId(
+				LocaleUtil.toLanguageId(_originalThemeDisplayDefaultLocale));
+			themeDisplay.setLocale(_originalThemeDisplayDefaultLocale);
 
 			ServiceContextThreadLocal.popServiceContext();
 		}
@@ -1232,10 +1262,78 @@ public class EditableFragmentEntryProcessorTest {
 	}
 
 	@Test
+	@TestInfo("LPD-73556")
+	public void testFragmentEntryProcessorEditableMappedDLImage()
+		throws Exception {
+
+		long classNameId = _portal.getClassNameId(FileEntry.class);
+		String externalReferenceCode = RandomTestUtil.randomString();
+
+		String editableValues = JSONUtil.put(
+			FragmentEntryProcessorConstants.
+				KEY_EDITABLE_FRAGMENT_ENTRY_PROCESSOR,
+			JSONUtil.put(
+				"image-square",
+				JSONUtil.put(
+					"classNameId", classNameId
+				).put(
+					"externalReferenceCode", externalReferenceCode
+				).put(
+					"fieldId", "fileURL"
+				))
+		).toString();
+
+		Element element = _getElement(
+			"data-lfr-editable-id", "image-square", editableValues,
+			"fragment_entry_image.html", LocaleUtil.getSiteDefault(),
+			FragmentEntryLinkConstants.EDIT);
+
+		Assert.assertEquals(
+			StringBundler.concat(
+				"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA",
+				"7KqwyAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1B",
+				"AACxjwv8YQUAAAAkSURBVHgB7cxBEQAACAIwtH8Pzw52kxD8OBZgNXsPQUOUw",
+				"CIgAz0DHTyygaAAAAAASUVORK5CYII="),
+			GetterUtil.getString(element.attr("src")));
+
+		FileEntry fileEntry = _addImageFileEntry(externalReferenceCode);
+
+		element = _getElement(
+			"data-lfr-editable-id", "image-square", editableValues,
+			"fragment_entry_image.html", LocaleUtil.getSiteDefault(),
+			FragmentEntryLinkConstants.EDIT);
+
+		Assert.assertEquals(
+			fileEntry.getFileEntryId(),
+			GetterUtil.getLong(element.attr("data-fileentryid")));
+
+		editableValues = _getEditableFieldValues(
+			classNameId, fileEntry.getFileEntryId(), "fileURL",
+			"fragment_entry_link_mapped_asset_field_image.json");
+
+		element = _getElement(
+			"data-lfr-editable-id", "image-square", editableValues,
+			"fragment_entry_image.html", LocaleUtil.getSiteDefault(),
+			FragmentEntryLinkConstants.EDIT);
+
+		Assert.assertEquals(
+			fileEntry.getFileEntryId(),
+			GetterUtil.getLong(element.attr("data-fileentryid")));
+
+		String src = element.attr("src");
+
+		Assert.assertFalse(src.contains("imagePreview=1"));
+		Assert.assertEquals(
+			_dlURLHelper.getPreviewURL(
+				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK),
+			src);
+	}
+
+	@Test
 	public void testFragmentEntryProcessorEditableMappedDLImageBackgroundImageFileEntryId()
 		throws Exception {
 
-		FileEntry fileEntry = _addImageFileEntry();
+		FileEntry fileEntry = _addImageFileEntry(RandomTestUtil.randomString());
 
 		String editableValues = _getEditableFieldValues(
 			_portal.getClassNameId(FileEntry.class), fileEntry.getFileEntryId(),
@@ -1256,54 +1354,10 @@ public class EditableFragmentEntryProcessorTest {
 	}
 
 	@Test
-	public void testFragmentEntryProcessorEditableMappedDLImageFileEntryId()
-		throws Exception {
-
-		FileEntry fileEntry = _addImageFileEntry();
-
-		String editableValues = _getEditableFieldValues(
-			_portal.getClassNameId(FileEntry.class), fileEntry.getFileEntryId(),
-			"fileURL", "fragment_entry_link_mapped_asset_field_image.json");
-
-		Element element = _getElement(
-			"data-lfr-editable-id", "image-square", editableValues,
-			"fragment_entry_image.html", LocaleUtil.getSiteDefault(),
-			FragmentEntryLinkConstants.EDIT);
-
-		Assert.assertEquals(
-			fileEntry.getFileEntryId(),
-			GetterUtil.getLong(element.attr("data-fileentryid")));
-	}
-
-	@Test
-	public void testFragmentEntryProcessorEditableMappedDLPreview()
-		throws Exception {
-
-		FileEntry fileEntry = _addImageFileEntry();
-
-		String editableValues = _getEditableFieldValues(
-			_portal.getClassNameId(FileEntry.class), fileEntry.getFileEntryId(),
-			"fileURL", "fragment_entry_link_mapped_asset_field_image.json");
-
-		Element element = _getElement(
-			"data-lfr-editable-id", "image-square", editableValues,
-			"fragment_entry_image.html", LocaleUtil.getSiteDefault(),
-			FragmentEntryLinkConstants.EDIT);
-
-		String src = element.attr("src");
-
-		Assert.assertFalse(src.contains("imagePreview=1"));
-		Assert.assertEquals(
-			_dlURLHelper.getPreviewURL(
-				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK),
-			src);
-	}
-
-	@Test
 	public void testFragmentEntryProcessorEditableMappedJournalArticleBackgroundImageFileEntryId()
 		throws Exception {
 
-		FileEntry fileEntry = _addImageFileEntry();
+		FileEntry fileEntry = _addImageFileEntry(RandomTestUtil.randomString());
 
 		String editableValues = _getJournalArticleEditableFieldValues(
 			"fragment_entry_link_mapped_asset_field_background_image.json",
@@ -1326,7 +1380,7 @@ public class EditableFragmentEntryProcessorTest {
 	public void testFragmentEntryProcessorEditableMappedJournalArticleImageFileEntryId()
 		throws Exception {
 
-		FileEntry fileEntry = _addImageFileEntry();
+		FileEntry fileEntry = _addImageFileEntry(RandomTestUtil.randomString());
 
 		String editableValues = _getJournalArticleEditableFieldValues(
 			"fragment_entry_link_mapped_asset_field_image.json",
@@ -1759,7 +1813,9 @@ public class EditableFragmentEntryProcessorTest {
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 	}
 
-	private FileEntry _addImageFileEntry() throws Exception {
+	private FileEntry _addImageFileEntry(String externalReferenceCode)
+		throws Exception {
+
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
@@ -1774,7 +1830,7 @@ public class EditableFragmentEntryProcessorTest {
 			RepositoryProviderUtil.getLocalRepository(_group.getGroupId());
 
 		return localRepository.addFileEntry(
-			null, TestPropsValues.getUserId(),
+			externalReferenceCode, TestPropsValues.getUserId(),
 			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			RandomTestUtil.randomString(), ContentTypes.IMAGE_JPEG,
 			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
@@ -2029,36 +2085,6 @@ public class EditableFragmentEntryProcessorTest {
 		return bodyElement.html();
 	}
 
-	private ThemeDisplay _getThemeDisplay(Locale locale) throws Exception {
-		ThemeDisplay themeDisplay = new ThemeDisplay();
-
-		themeDisplay.setCompany(_company);
-		themeDisplay.setLanguageId(LocaleUtil.toLanguageId(locale));
-		themeDisplay.setLayout(_layout);
-		themeDisplay.setLocale(locale);
-
-		LayoutSet layoutSet = _layoutSetLocalService.getLayoutSet(
-			_group.getGroupId(), false);
-
-		themeDisplay.setLayoutSet(layoutSet);
-
-		themeDisplay.setLayoutTypePortlet(
-			(LayoutTypePortlet)_layout.getLayoutType());
-		themeDisplay.setLookAndFeel(
-			_themeLocalService.getTheme(
-				_company.getCompanyId(), layoutSet.getThemeId()),
-			null);
-		themeDisplay.setPortalURL(_company.getPortalURL(_group.getGroupId()));
-		themeDisplay.setRealUser(TestPropsValues.getUser());
-		themeDisplay.setRequest(_getHttpServletRequest(locale));
-		themeDisplay.setResponse(new MockHttpServletResponse());
-		themeDisplay.setScopeGroupId(_group.getGroupId());
-		themeDisplay.setSiteGroupId(_group.getGroupId());
-		themeDisplay.setUser(TestPropsValues.getUser());
-
-		return themeDisplay;
-	}
-
 	private String _readFileToString(String fileName) throws Exception {
 		Class<?> clazz = getClass();
 
@@ -2089,7 +2115,7 @@ public class EditableFragmentEntryProcessorTest {
 		Assert.assertTrue(
 			content.contains(
 				_portal.getLayoutRelativeURL(
-					layout, _getThemeDisplay(LocaleUtil.US))));
+					layout, _serviceContext.getThemeDisplay())));
 	}
 
 	private void _testFragmentEntryProcessorEditableLinkInlineValue(
@@ -2218,41 +2244,9 @@ public class EditableFragmentEntryProcessorTest {
 	@Inject
 	private SegmentsExperienceLocalService _segmentsExperienceLocalService;
 
+	private ServiceContext _serviceContext;
+
 	@Inject
 	private ThemeLocalService _themeLocalService;
-
-	private static class MockServiceContext extends ServiceContext {
-
-		public MockServiceContext(Layout layout, ThemeDisplay themeDisplay) {
-			_layout = layout;
-			_themeDisplay = themeDisplay;
-		}
-
-		@Override
-		public HttpServletRequest getRequest() {
-			HttpServletRequest httpServletRequest =
-				new MockHttpServletRequest();
-
-			httpServletRequest.setAttribute(WebKeys.LAYOUT, _layout);
-			httpServletRequest.setAttribute(
-				WebKeys.THEME_DISPLAY, _themeDisplay);
-
-			return httpServletRequest;
-		}
-
-		@Override
-		public HttpServletResponse getResponse() {
-			return new MockHttpServletResponse();
-		}
-
-		@Override
-		public ThemeDisplay getThemeDisplay() {
-			return _themeDisplay;
-		}
-
-		private final Layout _layout;
-		private final ThemeDisplay _themeDisplay;
-
-	}
 
 }
