@@ -6,14 +6,12 @@
 package com.liferay.headless.digital.sales.room.internal.resource.v1_0;
 
 import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationSettingsMapFactory;
-import com.liferay.exportimport.kernel.configuration.constants.ExportImportConfigurationConstants;
-import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
-import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
 import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.headless.digital.sales.room.dto.v1_0.DigitalSalesRoomTemplate;
 import com.liferay.headless.digital.sales.room.dto.v1_0.FileEntry;
 import com.liferay.headless.digital.sales.room.internal.dto.v1_0.converter.DigitalSalesRoomTemplateDTOConverterContext;
+import com.liferay.headless.digital.sales.room.internal.util.v1_0.ExportImportUtil;
 import com.liferay.headless.digital.sales.room.resource.v1_0.DigitalSalesRoomTemplateResource;
 import com.liferay.layout.util.LayoutServiceContextHelper;
 import com.liferay.object.model.ObjectDefinition;
@@ -65,12 +63,12 @@ import com.liferay.site.initializer.SiteInitializerRegistry;
 import com.liferay.style.book.model.StyleBookEntry;
 import com.liferay.style.book.service.StyleBookEntryLocalService;
 
-import java.io.File;
 import java.io.Serializable;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -108,6 +106,15 @@ public class DigitalSalesRoomTemplateResourceImpl
 			objectEntry.getObjectEntryId());
 
 		_groupLocalService.deleteGroup(group.getGroupId());
+	}
+
+	@Override
+	public Page<DigitalSalesRoomTemplate>
+			getDigitalSalesRoomDigitalSalesRoomTemplatesPage(
+				Long digitalSalesRoomId)
+		throws Exception {
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -173,9 +180,9 @@ public class DigitalSalesRoomTemplateResourceImpl
 	}
 
 	@Override
-	public DigitalSalesRoomTemplate
-			postDigitalSalesRoomDigitalSalesRoomTemplate(
-				Long digitalSalesRoomId)
+	public DigitalSalesRoomTemplate patchDigitalSalesRoomTemplate(
+			Long digitalSalesRoomTemplateId,
+			DigitalSalesRoomTemplate digitalSalesRoomTemplate)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled(
@@ -184,7 +191,73 @@ public class DigitalSalesRoomTemplateResourceImpl
 			throw new UnsupportedOperationException();
 		}
 
+		Group group = _groupService.getGroup(digitalSalesRoomTemplateId);
+
+		if (Validator.isNotNull(digitalSalesRoomTemplate.getName())) {
+			group.setName(digitalSalesRoomTemplate.getName());
+		}
+
+		if (Validator.isNotNull(digitalSalesRoomTemplate.getDescription())) {
+			group.setDescription(digitalSalesRoomTemplate.getDescription());
+		}
+
+		group = _groupLocalService.updateGroup(group);
+
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		ObjectEntryManager objectEntryManager =
+			_objectEntryManagerRegistry.getObjectEntryManager(
+				objectDefinition.getCompanyId(),
+				objectDefinition.getStorageType());
+
+		DefaultDTOConverterContext defaultDTOConverterContext =
+			new DefaultDTOConverterContext(
+				contextAcceptLanguage.isAcceptAllLanguages(), null,
+				_dtoConverterRegistry, contextHttpServletRequest, null,
+				contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
+				contextUser);
+
+		defaultDTOConverterContext.setAttribute("addActions", Boolean.FALSE);
+
+		com.liferay.object.rest.dto.v1_0.ObjectEntry objectEntry =
+			objectEntryManager.partialUpdateObjectEntry(
+				objectDefinition.getCompanyId(), defaultDTOConverterContext,
+				group.getExternalReferenceCode(), objectDefinition,
+				_toObjectEntry(digitalSalesRoomTemplate, group),
+				group.getGroupKey());
+
+		_updateFrontendTokensValues(digitalSalesRoomTemplate, group);
+
+		return _toDigitalSalesRoomTemplate(
+			group,
+			_objectEntryLocalService.getObjectEntry(objectEntry.getId()));
+	}
+
+	@Override
+	public DigitalSalesRoomTemplate
+			postDigitalSalesRoomDigitalSalesRoomTemplate(
+				Long digitalSalesRoomId,
+				DigitalSalesRoomTemplate digitalSalesRoomTemplate)
+		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-66359")) {
+
+			throw new UnsupportedOperationException();
+		}
+
+		ObjectDefinition dsrRoomObjectDefinition =
+			_objectDefinitionLocalService.
+				getObjectDefinitionByExternalReferenceCode(
+					"L_DSR_ROOM", contextCompany.getCompanyId());
 		Group sourceGroup = _groupService.getGroup(digitalSalesRoomId);
+
+		if (!Objects.equals(
+				dsrRoomObjectDefinition.getClassName(),
+				sourceGroup.getClassName())) {
+
+			throw new UnsupportedOperationException();
+		}
 
 		long[] layoutIds = ListUtil.toLongArray(
 			_layoutLocalService.getLayouts(sourceGroup.getGroupId(), false),
@@ -195,8 +268,10 @@ public class DigitalSalesRoomTemplateResourceImpl
 		}
 
 		Group targetGroup = _addGroup(
-			sourceGroup.getDescription(
-				contextAcceptLanguage.getPreferredLocale()),
+			GetterUtil.getString(
+				digitalSalesRoomTemplate.getDescription(),
+				sourceGroup.getDescription(
+					contextAcceptLanguage.getPreferredLocale())),
 			"blank-site-initializer",
 			UniqueUtil.getUniqueValue(
 				"template",
@@ -210,8 +285,10 @@ public class DigitalSalesRoomTemplateResourceImpl
 
 					return false;
 				},
-				sourceGroup.getName(
-					contextAcceptLanguage.getPreferredLocale())));
+				GetterUtil.getString(
+					digitalSalesRoomTemplate.getName(),
+					sourceGroup.getName(
+						contextAcceptLanguage.getPreferredLocale()))));
 
 		ObjectDefinition objectDefinition = _getObjectDefinition();
 
@@ -230,11 +307,6 @@ public class DigitalSalesRoomTemplateResourceImpl
 				contextUser);
 
 		defaultDTOConverterContext.setAttribute("addActions", Boolean.FALSE);
-
-		ObjectDefinition dsrRoomObjectDefinition =
-			_objectDefinitionLocalService.
-				getObjectDefinitionByExternalReferenceCode(
-					"L_DSR_ROOM", contextCompany.getCompanyId());
 
 		ObjectEntry sourceObjectEntry = _objectEntryLocalService.getObjectEntry(
 			sourceGroup.getExternalReferenceCode(), sourceGroup.getGroupId(),
@@ -267,9 +339,11 @@ public class DigitalSalesRoomTemplateResourceImpl
 
 		targetGroup = _groupLocalService.updateGroup(targetGroup);
 
-		_importLarFile(
-			targetGroup.getGroupId(),
-			_generateLarFile(sourceGroup.getGroupId(), layoutIds), layoutIds);
+		ExportImportUtil.importLayouts(
+			_exportImportConfigurationLocalService,
+			_exportImportConfigurationSettingsMapFactory,
+			_exportImportLocalService, layoutIds, sourceGroup.getGroupId(),
+			targetGroup.getGroupId(), contextUser);
 
 		return _toDigitalSalesRoomTemplate(
 			targetGroup,
@@ -381,45 +455,6 @@ public class DigitalSalesRoomTemplateResourceImpl
 		}
 	}
 
-	private File _generateLarFile(long groupId, long[] layoutIds)
-		throws Exception {
-
-		Map<String, Serializable> exportLayoutSettingsMap =
-			_exportImportConfigurationSettingsMapFactory.
-				buildExportLayoutSettingsMap(
-					contextUser, groupId, false, layoutIds,
-					_getExportParameterMap());
-
-		ExportImportConfiguration exportImportConfiguration =
-			_exportImportConfigurationLocalService.
-				addDraftExportImportConfiguration(
-					contextUser.getUserId(),
-					ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT,
-					exportLayoutSettingsMap);
-
-		return _exportImportLocalService.exportLayoutsAsFile(
-			exportImportConfiguration);
-	}
-
-	private Map<String, String[]> _getExportParameterMap() {
-		return LinkedHashMapBuilder.put(
-			PortletDataHandlerKeys.PORTLET_CONFIGURATION,
-			new String[] {Boolean.TRUE.toString()}
-		).put(
-			PortletDataHandlerKeys.PORTLET_CONFIGURATION_ALL,
-			new String[] {Boolean.TRUE.toString()}
-		).put(
-			PortletDataHandlerKeys.PORTLET_DATA,
-			new String[] {Boolean.TRUE.toString()}
-		).put(
-			PortletDataHandlerKeys.PORTLET_DATA_ALL,
-			new String[] {Boolean.TRUE.toString()}
-		).put(
-			PortletDataHandlerKeys.PORTLET_SETUP_ALL,
-			new String[] {Boolean.TRUE.toString()}
-		).build();
-	}
-
 	private String _getFrontendTokensValues(
 			String frontendTokensValues, String primaryColor,
 			String secondaryColor)
@@ -525,21 +560,6 @@ public class DigitalSalesRoomTemplateResourceImpl
 		return jsonObject.toString();
 	}
 
-	private Map<String, String[]> _getImportParameterMap() {
-		return LinkedHashMapBuilder.putAll(
-			_getExportParameterMap()
-		).put(
-			PortletDataHandlerKeys.DATA_STRATEGY,
-			new String[] {PortletDataHandlerKeys.DATA_STRATEGY_MIRROR_OVERWRITE}
-		).put(
-			PortletDataHandlerKeys.LAYOUT_SET_PROTOTYPE_SETTINGS,
-			new String[] {Boolean.TRUE.toString()}
-		).put(
-			PortletDataHandlerKeys.LAYOUT_SET_SETTINGS,
-			new String[] {Boolean.TRUE.toString()}
-		).build();
-	}
-
 	private ObjectDefinition _getObjectDefinition() throws Exception {
 		return _objectDefinitionLocalService.
 			getObjectDefinitionByExternalReferenceCode(
@@ -588,13 +608,13 @@ public class DigitalSalesRoomTemplateResourceImpl
 				).build();
 			}
 		).put(
-			"clientName", digitalSalesRoomTemplate.getClientName()
+			"clientName", digitalSalesRoomTemplate::getClientName
 		).put(
 			"externalReferenceCode", group.getExternalReferenceCode()
 		).put(
-			"primaryColor", digitalSalesRoomTemplate.getPrimaryColor()
+			"primaryColor", digitalSalesRoomTemplate::getPrimaryColor
 		).put(
-			"secondaryColor", digitalSalesRoomTemplate.getSecondaryColor()
+			"secondaryColor", digitalSalesRoomTemplate::getSecondaryColor
 		).build();
 	}
 
@@ -616,26 +636,6 @@ public class DigitalSalesRoomTemplateResourceImpl
 		ServiceContextThreadLocal.pushServiceContext(serviceContext);
 
 		return serviceContext;
-	}
-
-	private void _importLarFile(long groupId, File larFile, long[] layoutIds)
-		throws Exception {
-
-		Map<String, Serializable> importLayoutSettingsMap =
-			_exportImportConfigurationSettingsMapFactory.
-				buildImportLayoutSettingsMap(
-					contextUser, groupId, false, layoutIds,
-					_getImportParameterMap());
-
-		ExportImportConfiguration exportImportConfiguration =
-			_exportImportConfigurationLocalService.
-				addDraftExportImportConfiguration(
-					contextUser.getUserId(), StringPool.BLANK,
-					ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT,
-					importLayoutSettingsMap);
-
-		_exportImportLocalService.importLayouts(
-			exportImportConfiguration, larFile);
 	}
 
 	private void _initThemeDisplay() throws Exception {

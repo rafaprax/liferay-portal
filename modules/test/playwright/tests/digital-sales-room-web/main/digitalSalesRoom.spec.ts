@@ -29,6 +29,13 @@ test.afterEach(async ({apiHelpers}) => {
 	for (const digitalSalesRoom of digitalSalesRooms.items) {
 		await apiHelpers.headlessSite.deleteSite(digitalSalesRoom.id);
 	}
+
+	const digitalSalesRoomTemplates =
+		await apiHelpers.headlessDigitalSalesRoom.getDigitalSalesRoomTemplates();
+
+	for (const digitalSalesRoomTemplate of digitalSalesRoomTemplates.items) {
+		await apiHelpers.headlessSite.deleteSite(digitalSalesRoomTemplate.id);
+	}
 });
 
 test(
@@ -151,12 +158,19 @@ test(
 			digitalSalesRoomsPage.digitalSalesRoomsTable.cell(roomName)
 		).toBeVisible();
 
-		await (
-			await digitalSalesRoomsPage.digitalSalesRoomsTable.rowActions(
-				roomName,
-				0
-			)
-		).click();
+		await expect(async () => {
+			await (
+				await digitalSalesRoomsPage.digitalSalesRoomsTable.rowActions(
+					roomName,
+					0
+				)
+			).click();
+			await expect(digitalSalesRoomsPage.deleteMenuItem).toBeVisible({
+				timeout: 200,
+			});
+		}).toPass({timeout: 1000});
+
+		await digitalSalesRoomsPage.deleteMenuItem.click();
 
 		const modal = page.getByRole('alert');
 
@@ -167,5 +181,157 @@ test(
 		await waitForAlert(page);
 
 		await expect(digitalSalesRoomsPage.noResultsFoundMessage).toBeVisible();
+	}
+);
+
+test(
+	'Save a digital sales room as template',
+	{tag: '@LPD-73189'},
+	async ({
+		digitalSalesRoomSaveAsTemplatePage,
+		digitalSalesRoomTemplatesPage,
+		digitalSalesRoomsPage,
+		editDigitalSalesRoomPage,
+	}) => {
+		const roomName = `A${getRandomInt()}`;
+
+		await digitalSalesRoomsPage.goto();
+		await digitalSalesRoomsPage.digitalSalesRoomsTable.newButton.click();
+
+		await editDigitalSalesRoomPage.addDigitalSalesRoom({
+			banner: path.join(__dirname, '/dependencies/liferay.png'),
+			roomName,
+		});
+
+		await digitalSalesRoomsPage.goto();
+
+		await expect(
+			digitalSalesRoomsPage.digitalSalesRoomsTable.cell(roomName)
+		).toBeVisible();
+
+		await expect(async () => {
+			await (
+				await digitalSalesRoomsPage.digitalSalesRoomsTable.rowActions(
+					roomName,
+					0
+				)
+			).click();
+			await expect(
+				digitalSalesRoomsPage.saveAsTemplateMenuItem
+			).toBeVisible({timeout: 200});
+		}).toPass({timeout: 1000});
+
+		await digitalSalesRoomsPage.saveAsTemplateMenuItem.click();
+
+		const template = {
+			description: `Description ${getRandomInt()}`,
+			roomName: `T${getRandomInt()}`,
+		};
+
+		await digitalSalesRoomSaveAsTemplatePage.saveAsTemplate(template);
+
+		await digitalSalesRoomTemplatesPage.goto();
+
+		await expect(
+			digitalSalesRoomTemplatesPage.digitalSalesRoomTemplatesTable.cell(
+				template.roomName,
+				false
+			)
+		).toBeVisible();
+		await expect(
+			digitalSalesRoomTemplatesPage.digitalSalesRoomTemplatesTable.cell(
+				template.description,
+				false
+			)
+		).toBeVisible();
+	}
+);
+
+test(
+	'Create a digital sales room from template',
+	{tag: '@LPD-73189'},
+	async ({
+		digitalSalesRoomTemplatesPage,
+		digitalSalesRoomsPage,
+		editDigitalSalesRoomPage,
+		editDigitalSalesRoomTemplatePage,
+		page,
+	}) => {
+		const name = `A${getRandomInt()}`;
+
+		await digitalSalesRoomsPage.goto();
+		await digitalSalesRoomsPage.templateLink.click();
+
+		await expect(async () => {
+			await digitalSalesRoomTemplatesPage.newDigitalSalesRoomTemplateButton.click();
+
+			await expect(
+				editDigitalSalesRoomTemplatePage.nameInput
+			).toBeVisible({timeout: 500});
+		}).toPass({timeout: 5000});
+
+		await editDigitalSalesRoomTemplatePage.addDigitalSalesRoomTemplate({
+			name,
+			primaryColor: 'red',
+		});
+
+		const roomName = `A${getRandomInt()}`;
+
+		await digitalSalesRoomsPage.goto();
+
+		await expect(
+			digitalSalesRoomsPage.digitalSalesRoomsTable.searchInput
+		).toBeVisible();
+
+		await expect(async () => {
+			await digitalSalesRoomsPage.digitalSalesRoomsTable.newButton.click();
+
+			await expect(
+				digitalSalesRoomsPage.startFromScratchButton
+			).toBeVisible({timeout: 200});
+		}).toPass({timeout: 2000});
+
+		await digitalSalesRoomsPage.startFromScratchButton.click();
+
+		await expect(editDigitalSalesRoomPage.clientNameInput).toBeVisible();
+
+		await editDigitalSalesRoomPage.cancelButton.click();
+
+		await expect(async () => {
+			await digitalSalesRoomsPage.digitalSalesRoomsTable.newButton.click();
+
+			await expect(
+				digitalSalesRoomsPage.startFromTemplateButton
+			).toBeVisible({timeout: 200});
+		}).toPass({timeout: 2000});
+
+		await digitalSalesRoomsPage.startFromTemplateButton.click();
+
+		await page.getByText(name).click();
+
+		await expect(
+			editDigitalSalesRoomPage.templatePreviewFrame.getByRole(
+				'menuitem',
+				{name: 'Onboarding'}
+			)
+		).toBeVisible();
+
+		await editDigitalSalesRoomPage.nextButton.click();
+
+		await expect(editDigitalSalesRoomPage.clientNameInput).toBeVisible();
+		await expect(editDigitalSalesRoomPage.primaryColorInput).toHaveValue(
+			'red'
+		);
+
+		await editDigitalSalesRoomPage.addDigitalSalesRoom({
+			primaryColor: 'red',
+			roomName,
+		});
+
+		await digitalSalesRoomsPage.goto();
+
+		await expect(
+			digitalSalesRoomsPage.digitalSalesRoomsTable.cell(roomName)
+		).toBeVisible();
 	}
 );

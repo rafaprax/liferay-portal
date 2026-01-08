@@ -39,10 +39,21 @@ components:
             type: object
         TaskDefinition:
             properties:
+                description:
+                    type: string
                 name:
                     type: string
                 version:
                     type: integer
+            type: object
+        Token:
+            properties:
+                accessToken:
+                    readOnly: true
+                    type: string
+                scope:
+                    readOnly: true
+                    type: string
             type: object
 info:
     description:
@@ -173,3 +184,16 @@ paths:
                     content:
                         text/event-stream: {}
             tags: ["Task"]
+    "/tokens":
+        post:
+            operationId: postToken
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Token"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Token"
+            tags: ["Token"]

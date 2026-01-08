@@ -21,6 +21,7 @@ import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSpecification;
 import com.liferay.headless.admin.site.dto.v1_0.WidgetPageWidgetInstance;
 import com.liferay.headless.admin.site.internal.dto.v1_0.util.ItemScopeUtil;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.LayoutUtil;
+import com.liferay.layout.admin.kernel.model.LayoutTypePortletConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
@@ -46,6 +47,7 @@ import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.segments.service.SegmentsExperienceService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
@@ -322,18 +324,28 @@ public class PageSpecificationDTOConverter
 
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
+		List<String> nestedColumnIds = StringUtil.split(
+			layout.getTypeSettingsProperty(
+				LayoutTypePortletConstants.NESTED_COLUMN_IDS));
 
 		return TransformUtil.transformToArray(
 			layoutTypePortlet.getColumns(),
-			column -> new WidgetPageSection() {
-				{
-					setCustomizable(
-						() -> layoutTypePortlet.isColumnCustomizable(column));
-					setId(() -> column);
-					setWidgetPageWidgetInstances(
-						() -> _getWidgetPageWidgetInstances(
-							column, dtoConverterContext, layout));
+			column -> {
+				if (nestedColumnIds.contains(column)) {
+					return null;
 				}
+
+				return new WidgetPageSection() {
+					{
+						setCustomizable(
+							() -> layoutTypePortlet.isColumnCustomizable(
+								column));
+						setId(() -> column);
+						setWidgetPageWidgetInstances(
+							() -> _getWidgetPageWidgetInstances(
+								column, dtoConverterContext, layout));
+					}
+				};
 			},
 			WidgetPageSection.class);
 	}

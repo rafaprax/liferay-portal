@@ -8,6 +8,8 @@ package com.liferay.data.cleanup.internal.verify;
 import com.liferay.data.cleanup.internal.verify.util.PostUpgradeDataCleanupProcessUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.petra.string.StringUtil;
+import com.liferay.portal.kernel.dao.db.BaseDBProcess;
 import com.liferay.portal.kernel.dao.db.DBInspector;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -22,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,16 +37,14 @@ import org.osgi.framework.BundleContext;
  * @author Luis Ortiz
  */
 public class ClassNamePostUpgradeDataCleanupProcess
-	implements PostUpgradeDataCleanupProcess {
+	extends BaseDBProcess implements PostUpgradeDataCleanupProcess {
 
 	public ClassNamePostUpgradeDataCleanupProcess(
 		ClassNameLocalService classNameLocalService, Connection connection) {
 
 		_classNameLocalService = classNameLocalService;
 
-		_connection = connection;
-
-		_dbInspector = new DBInspector(_connection);
+		this.connection = connection;
 	}
 
 	@Override
@@ -64,103 +65,110 @@ public class ClassNamePostUpgradeDataCleanupProcess
 		BundleContext bundleContext = SystemBundleUtil.getBundleContext();
 		List<ClassName> classNames = _classNameLocalService.getClassNames(
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-		DBInspector dbInspector = new DBInspector(_connection);
+		DBInspector dbInspector = new DBInspector(connection);
 		Set<String> models = new HashSet<>(ModelHintsUtil.getModels());
 
-		for (ClassName className : classNames) {
-			String value = className.getValue();
+		List<String> tableNames = new ArrayList<>();
 
-			if (!value.startsWith("com.liferay.")) {
+		for (String tableName : dbInspector.getTableNames(null)) {
+			if (!dbInspector.hasColumn(tableName, "classNameId") ||
+				StringUtil.equalsIgnoreCase(tableName, "ClassName_")) {
+
 				continue;
 			}
 
-			int dashIndex = value.indexOf(StringPool.DASH);
-			int poundIndex = value.indexOf(StringPool.POUND);
+			tableNames.add(tableName);
+		}
 
-			if (dashIndex != -1) {
-				value = value.substring(0, dashIndex);
-			}
+		processConcurrently(
+			classNames.toArray(new ClassName[0]),
+			className -> {
+				String value = className.getValue();
 
-			if (poundIndex != -1) {
-				value = value.substring(0, poundIndex);
-			}
-
-			if (models.contains(value)) {
-				continue;
-			}
-
-			Class<?> clazz = null;
-
-			for (Bundle bundle : bundleContext.getBundles()) {
-				try {
-					clazz = bundle.loadClass(value);
-
-					break;
+				if (!value.startsWith("com.liferay.")) {
+					return;
 				}
-				catch (ClassNotFoundException classNotFoundException) {
-					if (_log.isDebugEnabled()) {
-						_log.debug(classNotFoundException);
+
+				int dashIndex = value.indexOf(StringPool.DASH);
+				int poundIndex = value.indexOf(StringPool.POUND);
+
+				if (dashIndex != -1) {
+					value = value.substring(0, dashIndex);
+				}
+
+				if (poundIndex != -1) {
+					value = value.substring(0, poundIndex);
+				}
+
+				if (models.contains(value)) {
+					return;
+				}
+
+				Class<?> clazz = null;
+
+				for (Bundle bundle : bundleContext.getBundles()) {
+					try {
+						clazz = bundle.loadClass(value);
+
+						break;
 					}
-				}
-			}
-
-			if (clazz != null) {
-				continue;
-			}
-
-			List<String> tableNames = dbInspector.getTableNames(null);
-			Set<String> usedTableNames = new HashSet<>();
-
-			tableNames.remove(dbInspector.normalizeName("ClassName_"));
-
-			for (String tableName : tableNames) {
-				if (!dbInspector.hasColumn(tableName, "classNameId")) {
-					continue;
-				}
-
-				try (PreparedStatement preparedStatement =
-						_connection.prepareStatement(
-							"select 1 from " + tableName +
-								" where classNameId = ?")) {
-
-					preparedStatement.setLong(1, className.getClassNameId());
-
-					try (ResultSet resultSet =
-							preparedStatement.executeQuery()) {
-
-						if (resultSet.next()) {
-							usedTableNames.add(tableName);
+					catch (ClassNotFoundException classNotFoundException) {
+						if (_log.isDebugEnabled()) {
+							_log.debug(classNotFoundException);
 						}
 					}
 				}
-			}
 
-			if (usedTableNames.isEmpty()) {
-				_classNameLocalService.deleteClassName(className);
+				if (clazz != null) {
+					return;
+				}
 
-				DataCleanupLoggingUtil.logDelete(
-					_log, 1, _dbInspector.normalizeName("ClassName_"),
-					StringBundler.concat(
-						"\"", value,
-						"\" is not defined in any deployed module and is not ",
-						"in use"));
-			}
-			else if (_log.isWarnEnabled()) {
-				_log.warn(
-					StringBundler.concat(
-						"Class name ", value,
-						" is not defined in any deployed module but is ",
-						"referenced in the next tables: ",
-						String.join(", ", new TreeSet<>(usedTableNames))));
-			}
-		}
+				Set<String> usedTableNames = new HashSet<>();
+
+				for (String tableName : tableNames) {
+					try (PreparedStatement preparedStatement =
+							connection.prepareStatement(
+								"select 1 from " + tableName +
+									" where classNameId = ?")) {
+
+						preparedStatement.setLong(
+							1, className.getClassNameId());
+
+						try (ResultSet resultSet =
+								preparedStatement.executeQuery()) {
+
+							if (resultSet.next()) {
+								usedTableNames.add(tableName);
+							}
+						}
+					}
+				}
+
+				if (usedTableNames.isEmpty()) {
+					_classNameLocalService.deleteClassName(className);
+
+					DataCleanupLoggingUtil.logDelete(
+						_log, 1, dbInspector.normalizeName("ClassName_"),
+						StringBundler.concat(
+							"\"", value,
+							"\" is not defined in any deployed module and is ",
+							"not in use"));
+				}
+				else if (_log.isWarnEnabled()) {
+					_log.warn(
+						StringBundler.concat(
+							"Class name ", value,
+							" is not defined in any deployed module but is ",
+							"referenced in the next tables: ",
+							String.join(", ", new TreeSet<>(usedTableNames))));
+				}
+			},
+			null);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ClassNamePostUpgradeDataCleanupProcess.class);
 
 	private final ClassNameLocalService _classNameLocalService;
-	private final Connection _connection;
-	private final DBInspector _dbInspector;
 
 }

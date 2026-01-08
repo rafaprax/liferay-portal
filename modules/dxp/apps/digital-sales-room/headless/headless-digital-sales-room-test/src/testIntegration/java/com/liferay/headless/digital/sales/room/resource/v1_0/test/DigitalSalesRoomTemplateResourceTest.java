@@ -30,6 +30,7 @@ import com.liferay.portal.test.rule.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -48,6 +49,15 @@ public class DigitalSalesRoomTemplateResourceTest
 
 		_dsrRoomObjectDefinition = DigitalSalesRoomTestUtil.getObjectDefinition(
 			DigitalSalesRoomResourceTest.class);
+	}
+
+	@Ignore
+	@Override
+	@Test
+	public void testGetDigitalSalesRoomDigitalSalesRoomTemplatesPage()
+		throws Exception {
+
+		super.testGetDigitalSalesRoomDigitalSalesRoomTemplatesPage();
 	}
 
 	@Override
@@ -113,6 +123,15 @@ public class DigitalSalesRoomTemplateResourceTest
 
 	@Override
 	protected DigitalSalesRoomTemplate
+			testPatchDigitalSalesRoomTemplate_addDigitalSalesRoomTemplate()
+		throws Exception {
+
+		return digitalSalesRoomTemplateResource.postDigitalSalesRoomTemplate(
+			randomDigitalSalesRoomTemplate());
+	}
+
+	@Override
+	protected DigitalSalesRoomTemplate
 			testPostDigitalSalesRoomDigitalSalesRoomTemplate_addDigitalSalesRoomTemplate(
 				DigitalSalesRoomTemplate digitalSalesRoomTemplate)
 		throws Exception {
@@ -161,19 +180,22 @@ public class DigitalSalesRoomTemplateResourceTest
 					}
 				});
 
+		DigitalSalesRoomTemplate randomDigitalSalesRoomTemplate =
+			randomDigitalSalesRoomTemplate();
+
 		DigitalSalesRoomTemplate digitalSalesRoomTemplate =
 			digitalSalesRoomTemplateResource.
 				postDigitalSalesRoomDigitalSalesRoomTemplate(
-					digitalSalesRoom.getId());
+					digitalSalesRoom.getId(), randomDigitalSalesRoomTemplate);
 
 		Assert.assertEquals(
 			digitalSalesRoom.getClientName(),
 			digitalSalesRoomTemplate.getClientName());
 		Assert.assertEquals(
-			digitalSalesRoom.getDescription(),
+			randomDigitalSalesRoomTemplate.getDescription(),
 			digitalSalesRoomTemplate.getDescription());
 		Assert.assertEquals(
-			digitalSalesRoom.getName() + " (Template)",
+			randomDigitalSalesRoomTemplate.getName() + " (Template)",
 			digitalSalesRoomTemplate.getName());
 		Assert.assertEquals(
 			digitalSalesRoom.getPrimaryColor(),

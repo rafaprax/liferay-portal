@@ -6,11 +6,8 @@
 package com.liferay.osb.faro.web.internal.controller.contacts;
 
 import com.liferay.osb.faro.contacts.model.constants.JSONConstants;
-import com.liferay.osb.faro.engine.client.constants.FieldMappingConstants;
 import com.liferay.osb.faro.engine.client.model.Account;
 import com.liferay.osb.faro.engine.client.model.Field;
-import com.liferay.osb.faro.engine.client.model.FieldMapping;
-import com.liferay.osb.faro.engine.client.model.FieldMappingMap;
 import com.liferay.osb.faro.engine.client.model.Results;
 import com.liferay.osb.faro.engine.client.util.OrderByField;
 import com.liferay.osb.faro.web.internal.constants.FaroConstants;
@@ -85,7 +82,7 @@ public class AccountController extends BaseFaroController {
 			@PathParam("groupId") long groupId,
 			@QueryParam("channelId") String channelId,
 			@QueryParam("fieldMappingFieldName") String fieldMappingFieldName,
-			@QueryParam("filter") String filter,
+			@QueryParam("filter") String filterString,
 			@QueryParam("individualSegmentId") String individualSegmentId,
 			@QueryParam("count") int count,
 			@QueryParam("numberOfBins") int numberOfBins,
@@ -96,8 +93,9 @@ public class AccountController extends BaseFaroController {
 		return new FaroResultsDisplay(
 			contactsEngineClient.getAccountsDistribution(
 				faroProjectLocalService.getFaroProjectByGroupId(groupId),
-				channelId, fieldMappingFieldName, filter, individualSegmentId,
-				count, numberOfBins, orderByFieldsFaroParam.getValue()));
+				channelId, fieldMappingFieldName, filterString,
+				individualSegmentId, count, numberOfBins,
+				orderByFieldsFaroParam.getValue()));
 	}
 
 	@Override
@@ -123,7 +121,7 @@ public class AccountController extends BaseFaroController {
 			@QueryParam("channelId") String channelId,
 			@QueryParam("dataSourceId") String dataSourceId,
 			@QueryParam("individualSegmentId") String individualSegmentId,
-			@QueryParam("filter") String filter,
+			@QueryParam("filter") String filterString,
 			@QueryParam("query") String query,
 			@DefaultValue(JSONConstants.NULL_JSON_ARRAY)
 			@QueryParam("includePropertyNames")
@@ -135,7 +133,7 @@ public class AccountController extends BaseFaroController {
 		throws Exception {
 
 		return search(
-			groupId, channelId, dataSourceId, individualSegmentId, filter,
+			groupId, channelId, dataSourceId, individualSegmentId, filterString,
 			query, includePropertyNamesFaroParam.getValue(), cur, delta,
 			orderByFieldsFaroParam.getValue());
 	}
@@ -148,7 +146,7 @@ public class AccountController extends BaseFaroController {
 			@FormParam("channelId") String channelId,
 			@FormParam("dataSourceId") String dataSourceId,
 			@FormParam("individualSegmentId") String individualSegmentId,
-			@FormParam("filter") String filter,
+			@FormParam("filter") String filterString,
 			@FormParam("query") String query,
 			@DefaultValue(JSONConstants.NULL_JSON_ARRAY)
 			@FormParam("includePropertyNames")
@@ -160,7 +158,7 @@ public class AccountController extends BaseFaroController {
 		throws Exception {
 
 		return search(
-			groupId, channelId, dataSourceId, individualSegmentId, filter,
+			groupId, channelId, dataSourceId, individualSegmentId, filterString,
 			query, includePropertyNamesFaroParam.getValue(), cur, delta,
 			orderByFieldsFaroParam.getValue());
 	}
@@ -177,26 +175,6 @@ public class AccountController extends BaseFaroController {
 			@QueryParam("delta") int delta)
 		throws Exception {
 
-		for (FieldMappingMap fieldMappingMap :
-				FieldMappingConstants.getAccountFieldMappingMaps()) {
-
-			if (fieldMappingFieldName.equals(fieldMappingMap.getName())) {
-				FieldMapping fieldMapping = new FieldMapping();
-
-				fieldMapping.setDisplayName(
-					FieldMappingConstants.getAccountFieldMappingLanguageKey(
-						fieldMappingMap.getName()));
-				fieldMapping.setDisplayType("input-field");
-				fieldMapping.setFieldName(fieldMappingMap.getName());
-				fieldMapping.setFieldType(fieldMappingMap.getType());
-				fieldMapping.setOwnerType(
-					FieldMappingConstants.OWNER_TYPE_ACCOUNT);
-
-				return new FaroResultsDisplay(
-					new Results<>(Collections.singletonList(fieldMapping), 1));
-			}
-		}
-
 		return new FaroResultsDisplay(
 			contactsEngineClient.getAccountFieldValues(
 				faroProjectLocalService.getFaroProjectByGroupId(groupId),
@@ -206,14 +184,14 @@ public class AccountController extends BaseFaroController {
 	@SuppressWarnings("unchecked")
 	protected FaroResultsDisplay search(
 			long groupId, String channelId, String dataSourceId,
-			String individualSegmentId, String filter, String query,
+			String individualSegmentId, String filterString, String query,
 			List<String> includePropertyNames, int cur, int delta,
 			List<OrderByField> orderByFields)
 		throws Exception {
 
 		Results<Account> results = contactsEngineClient.getAccounts(
 			faroProjectLocalService.getFaroProjectByGroupId(groupId), channelId,
-			dataSourceId, individualSegmentId, filter, query,
+			dataSourceId, individualSegmentId, filterString, query,
 			Collections.singletonList("accountName"), cur, delta,
 			orderByFields);
 

@@ -4,7 +4,6 @@
  */
 
 import ClayButton from '@clayui/button';
-import {openModal} from 'frontend-js-components-web';
 import {navigate, sub} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
@@ -13,6 +12,7 @@ import VerticalNavLayout from '../../../common/components/VerticalNavLayout';
 import {IPermissionItem} from '../../../common/components/forms/PermissionsTable';
 import CategorizationPermissionService from '../../../common/services/CategorizationPermissionService';
 import CategoryService from '../../../common/services/CategoryService';
+import {openCMSModal} from '../../../common/utils/openCMSModal';
 import {
 	displayCreateSuccessToast,
 	displayEditSuccessToast,
@@ -192,7 +192,7 @@ const EditCategoryPage = ({
 			displayCreateSuccessToast(category.name);
 		}
 		else {
-			openModal({
+			openCMSModal({
 				bodyHTML: Liferay.Language.get('edit-category-confirmation'),
 				buttons: [
 					{
@@ -204,7 +204,11 @@ const EditCategoryPage = ({
 					{
 						displayType: 'primary',
 						label: Liferay.Language.get('save'),
-						onClick: async ({processClose}) => {
+						onClick: async ({
+							processClose,
+						}: {
+							processClose: () => void;
+						}) => {
 							processClose();
 
 							const {error} =

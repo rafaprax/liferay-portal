@@ -5,6 +5,7 @@
 
 package com.liferay.learn;
 
+import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 
 import com.liferay.client.extension.util.spring.boot3.BaseRestController;
@@ -278,10 +279,9 @@ public class LearnRestController extends BaseRestController {
 
 		googleCredentials.refresh();
 
-		String accessTokenValue = googleCredentials.getAccessToken(
-		).getTokenValue();
+		AccessToken accessToken = googleCredentials.getAccessToken();
 
-		return "Bearer " + accessTokenValue;
+		return "Bearer " + accessToken.getTokenValue();
 	}
 
 	private int _getQuizQuestionScore(

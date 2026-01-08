@@ -5,15 +5,22 @@
 
 import {test} from '@playwright/test';
 
+import {DigitalSalesRoomSaveAsTemplatePage} from '../pages/digital-sales-room-web/DigitalSalesRoomSaveAsTemplatePage';
 import {DigitalSalesRoomTemplatesPage} from '../pages/digital-sales-room-web/DigitalSalesRoomTemplatesPage';
 import {DigitalSalesRoomsPage} from '../pages/digital-sales-room-web/DigitalSalesRoomsPage';
 import {EditDigitalSalesRoomPage} from '../pages/digital-sales-room-web/EditDigitalSalesRoomPage';
+import {EditDigitalSalesRoomTemplatePage} from '../pages/digital-sales-room-web/EditDigitalSalesRoomTemplatePage';
 
 const digitalSalesRoomPagesTest = test.extend<{
+	digitalSalesRoomSaveAsTemplatePage: DigitalSalesRoomSaveAsTemplatePage;
 	digitalSalesRoomTemplatesPage: DigitalSalesRoomTemplatesPage;
 	digitalSalesRoomsPage: DigitalSalesRoomsPage;
 	editDigitalSalesRoomPage: EditDigitalSalesRoomPage;
+	editDigitalSalesRoomTemplatePage: EditDigitalSalesRoomTemplatePage;
 }>({
+	digitalSalesRoomSaveAsTemplatePage: async ({page}, use) => {
+		await use(new DigitalSalesRoomSaveAsTemplatePage(page));
+	},
 	digitalSalesRoomTemplatesPage: async ({page}, use) => {
 		await use(new DigitalSalesRoomTemplatesPage(page));
 	},
@@ -22,6 +29,9 @@ const digitalSalesRoomPagesTest = test.extend<{
 	},
 	editDigitalSalesRoomPage: async ({page}, use) => {
 		await use(new EditDigitalSalesRoomPage(page));
+	},
+	editDigitalSalesRoomTemplatePage: async ({page}, use) => {
+		await use(new EditDigitalSalesRoomTemplatePage(page));
 	},
 });
 

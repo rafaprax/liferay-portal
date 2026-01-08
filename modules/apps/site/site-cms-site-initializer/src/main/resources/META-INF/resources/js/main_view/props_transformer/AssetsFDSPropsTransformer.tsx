@@ -8,7 +8,6 @@ import {
 	IView,
 	replaceTokens,
 } from '@liferay/frontend-data-set-web';
-import {openModal} from 'frontend-js-components-web';
 import React from 'react';
 
 import StatusLabel from '../../common/components/StatusLabel';
@@ -17,6 +16,7 @@ import {AssetLibrary} from '../../common/types/AssetLibrary';
 import {ISearchAssetObjectEntry} from '../../common/types/AssetType';
 import {OBJECT_ENTRY_FOLDER_CLASS_NAME} from '../../common/utils/constants';
 import {getScopeExternalReferenceCode} from '../../common/utils/getScopeExternalReferenceCode';
+import {openCMSModal} from '../../common/utils/openCMSModal';
 import CategoriesAndTagsModalContent from '../categorization/modal/CategoriesAndTagsModalContent';
 import {defaultPermissionsBulkAction} from '../default_permission/BulkDefaultPermissionModalContent';
 import {permissionsBulkAction} from '../default_permission/BulkPermissionModalContent';
@@ -259,10 +259,7 @@ export default function AssetsFDSPropsTransformer({
 				action?.data?.id === 'default-permissions' ||
 				action?.data?.id === 'edit-and-propagate-default-permissions'
 			) {
-				openModal({
-					containerProps: {
-						className: '',
-					},
+				openCMSModal({
 					contentComponent: ({
 						closeModal,
 					}: {
@@ -303,7 +300,7 @@ export default function AssetsFDSPropsTransformer({
 			else if (action?.data?.id === 'export-for-translation') {
 				event?.preventDefault();
 
-				openModal({
+				openCMSModal({
 					contentComponent: ({
 						closeModal,
 					}: {
@@ -334,7 +331,7 @@ export default function AssetsFDSPropsTransformer({
 			else if (action?.data?.id === 'import-translation') {
 				event?.preventDefault();
 
-				openModal({
+				openCMSModal({
 					size: 'full-screen',
 					title: action.label,
 					url: replaceTokens(action.href, itemData),
@@ -376,10 +373,7 @@ export default function AssetsFDSPropsTransformer({
 					(item: any) => item.embedded.id === itemData.embedded.id
 				);
 
-				openModal({
-					containerProps: {
-						className: '',
-					},
+				openCMSModal({
 					contentComponent: () =>
 						AssetNavigationModalContent({
 							additionalProps,
@@ -399,7 +393,7 @@ export default function AssetsFDSPropsTransformer({
 			selectedData: any;
 		}) => {
 			if (action?.data?.id === 'categoriesAndTags') {
-				openModal({
+				openCMSModal({
 					center: true,
 					containerProps: {
 						className: 'modal-height-lg',

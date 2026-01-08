@@ -12,7 +12,6 @@ import {
 	FrontendDataSet,
 	IInternalRenderer,
 } from '@liferay/frontend-data-set-web';
-import {openModal} from 'frontend-js-components-web';
 import {sub} from 'frontend-js-web';
 import React, {useCallback, useEffect, useState} from 'react';
 
@@ -26,6 +25,7 @@ import {
 	getWorkflowTasksAssignedToMyRoles,
 } from '../../common/services/WorkflowService';
 import {WorkflowTask} from '../../common/types/WorkflowTask';
+import {openCMSModal} from '../../common/utils/openCMSModal';
 import WorkflowTaskRenderer from '../props_transformer/cell_renderers/WorkflowTaskRenderer';
 
 export default function ViewWorkflowTasks({
@@ -153,7 +153,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('approve'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {
@@ -175,7 +175,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('reject'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {
@@ -197,7 +197,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('assign-to'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {
@@ -219,7 +219,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('update-due-date'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {
@@ -243,7 +243,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('assign-to-me'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {
@@ -265,7 +265,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('assign-to-...'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {
@@ -287,7 +287,7 @@ export default function ViewWorkflowTasks({
 							},
 							label: Liferay.Language.get('update-due-date'),
 							onClick: ({itemData}: any) => {
-								openModal({
+								openCMSModal({
 									contentComponent: ({
 										closeModal,
 									}: {

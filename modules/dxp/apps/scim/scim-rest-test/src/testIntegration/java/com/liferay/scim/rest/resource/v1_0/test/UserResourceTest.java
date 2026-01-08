@@ -112,13 +112,18 @@ public class UserResourceTest extends BaseUserResourceTestCase {
 			204, userResource.deleteV2UserHttpResponse(user.getId()));
 
 		assertHttpResponseStatusCode(
-			404, userResource.getV2UserByIdHttpResponse(user.getId()));
+			200, userResource.getV2UserByIdHttpResponse(user.getId()));
 
 		com.liferay.portal.kernel.model.User portalUser =
 			_userLocalService.getUserByExternalReferenceCode(
 				user.getExternalId(), TestPropsValues.getCompanyId());
 
 		Assert.assertFalse(portalUser.isActive());
+
+		_userLocalService.deleteUser(portalUser);
+
+		assertHttpResponseStatusCode(
+			404, userResource.getV2UserByIdHttpResponse(user.getId()));
 
 		// Delete an existing user with no SCIM client ID
 
@@ -159,6 +164,14 @@ public class UserResourceTest extends BaseUserResourceTestCase {
 
 		assertHttpResponseStatusCode(200, httpResponse);
 		assertValid(User.toDTO(httpResponse.getContent()));
+
+		_userLocalService.updateStatus(
+			GetterUtil.getLong(user.getId()), WorkflowConstants.STATUS_INACTIVE,
+			new ServiceContext());
+
+		user = _getUser(user.getId());
+
+		Assert.assertFalse(user.getActive());
 
 		ConfigurationTestUtil.deleteConfiguration(_pid);
 

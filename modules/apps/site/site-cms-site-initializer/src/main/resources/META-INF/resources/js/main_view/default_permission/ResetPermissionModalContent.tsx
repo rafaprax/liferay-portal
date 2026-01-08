@@ -4,6 +4,7 @@
  */
 
 import CMSAssetPermissionService from '../../common/services/CMSAssetPermissionService';
+import {openCMSModal} from '../../common/utils/openCMSModal';
 
 export default function openResetAssetPermissionModal({
 	className,
@@ -14,7 +15,7 @@ export default function openResetAssetPermissionModal({
 	classPK?: number;
 	loadData: () => void;
 }) {
-	Liferay.Util.openModal({
+	openCMSModal({
 		bodyHTML: `<p>${Liferay.Language.get(
 			'are-you-sure-you-want-to-reset-the-permissions-to-the-default-values'
 		)}</p>`,

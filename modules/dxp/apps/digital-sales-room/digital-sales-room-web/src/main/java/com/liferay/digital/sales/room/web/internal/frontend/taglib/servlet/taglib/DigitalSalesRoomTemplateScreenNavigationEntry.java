@@ -11,6 +11,7 @@ import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationEntry;
 import com.liferay.frontend.taglib.servlet.taglib.util.JSPRenderer;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,7 +69,7 @@ public class DigitalSalesRoomTemplateScreenNavigationEntry
 		ViewDigitalSalesRoomTemplateListDisplayContext
 			viewDigitalSalesRoomTemplateListDisplayContext =
 				new ViewDigitalSalesRoomTemplateListDisplayContext(
-					httpServletRequest);
+					httpServletRequest, _portal);
 
 		httpServletRequest.setAttribute(
 			WebKeys.PORTLET_DISPLAY_CONTEXT,
@@ -83,5 +84,8 @@ public class DigitalSalesRoomTemplateScreenNavigationEntry
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private Portal _portal;
 
 }

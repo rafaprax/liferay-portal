@@ -26,6 +26,9 @@ import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -150,7 +153,7 @@ public class BaseConfigurationFactoryTest {
 		properties.put("userAccountScreenName", "test");
 
 		List<User> users = _userLocalService.getUsersByRoleName(
-			companyId, RoleConstants.ADMINISTRATOR, 0, 1);
+			companyId, RoleConstants.ADMINISTRATOR, 0, 2);
 
 		_testGetFactoryConfiguration(
 			OAuth2ProviderApplicationHeadlessServerConfiguration.class.
@@ -217,22 +220,28 @@ public class BaseConfigurationFactoryTest {
 			Dictionary<String, Object> properties, User user)
 		throws Exception {
 
-		Configuration configuration = _createFactoryConfiguration(
-			className, properties);
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				className, LoggerTestUtil.INFO)) {
 
-		try {
-			OAuth2Application oAuth2Application = _fetchOAuthApplication(
-				companyId);
+			Configuration configuration = _createFactoryConfiguration(
+				className, properties);
 
-			Assert.assertNotNull(oAuth2Application);
-			Assert.assertEquals(
-				user.getUserId(),
-				oAuth2Application.getClientCredentialUserId());
-			Assert.assertEquals(
-				_EXTERNAL_REFERENCE_CODE, oAuth2Application.getName());
-		}
-		finally {
-			ConfigurationTestUtil.deleteConfiguration(configuration);
+			Assert.assertTrue(ListUtil.isEmpty(logCapture.getLogEntries()));
+
+			try {
+				OAuth2Application oAuth2Application = _fetchOAuthApplication(
+					companyId);
+
+				Assert.assertNotNull(oAuth2Application);
+				Assert.assertEquals(
+					user.getUserId(),
+					oAuth2Application.getClientCredentialUserId());
+				Assert.assertEquals(
+					_EXTERNAL_REFERENCE_CODE, oAuth2Application.getName());
+			}
+			finally {
+				ConfigurationTestUtil.deleteConfiguration(configuration);
+			}
 		}
 
 		Thread.sleep(200);

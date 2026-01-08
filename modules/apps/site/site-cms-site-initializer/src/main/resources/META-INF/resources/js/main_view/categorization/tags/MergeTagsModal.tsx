@@ -10,13 +10,13 @@ import ClayModal from '@clayui/modal';
 import ClayMultiSelect from '@clayui/multi-select';
 import {FrontendDataSet} from '@liferay/frontend-data-set-web';
 import {useFormik} from 'formik';
-import {openModal} from 'frontend-js-components-web';
 import {sub} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
 import SpaceSticker from '../../../common/components/SpaceSticker';
 import ApiHelper from '../../../common/services/ApiHelper';
 import {LogoColor} from '../../../common/types/Space';
+import {openCMSModal} from '../../../common/utils/openCMSModal';
 import {executeAsyncItemAction} from '../../props_transformer/utils/executeAsyncItemAction';
 
 type Tag = {
@@ -130,7 +130,7 @@ export default function MergeTagsModalContent({
 			mergeModel?.setAttribute('hidden', 'true');
 
 			if (selectedTags.length < 2) {
-				openModal({
+				openCMSModal({
 					bodyHTML: sub(
 						Liferay.Language.get('please-choose-at-least-x-tags'),
 						2
@@ -153,7 +153,7 @@ export default function MergeTagsModalContent({
 				return;
 			}
 
-			openModal({
+			openCMSModal({
 				bodyHTML: _getConfirmationMessage(),
 				buttons: [
 					{
@@ -330,7 +330,7 @@ export default function MergeTagsModalContent({
 	};
 
 	const handleSelectButtonClick = () => {
-		openModal({
+		openCMSModal({
 			contentComponent: ({closeModal}: {closeModal: () => void}) => (
 				<SelectTagsDataSetModalContent closeModal={closeModal} />
 			),

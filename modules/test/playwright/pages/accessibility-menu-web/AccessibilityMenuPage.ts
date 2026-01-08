@@ -42,6 +42,16 @@ export class AccessibilityMenuPage {
 		}
 	}
 
+	async disableAccessibilityMenu() {
+		if (await this.enableAccessibilityMenuCheckbox.isChecked()) {
+			await this.enableAccessibilityMenuCheckbox.uncheck();
+
+			await this.saveButton.click();
+
+			await waitForAlert(this.page);
+		}
+	}
+
 	async isAccessibilityMenuAttached() {
 		return (await this.openAccessibilityMenuButton.count()) === 1;
 	}
@@ -55,7 +65,9 @@ export class AccessibilityMenuPage {
 
 		await this.page.keyboard.press('Enter');
 
-		await expect(this.page.getByLabel('Accessibility Menu')).toBeVisible();
+		await expect(
+			this.page.locator('.modal').getByLabel('Accessibility Menu')
+		).toBeVisible();
 	}
 
 	async toggleUnderlinedLinks(check: boolean) {

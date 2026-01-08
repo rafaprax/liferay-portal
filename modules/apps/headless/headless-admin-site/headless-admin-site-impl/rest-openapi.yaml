@@ -87,6 +87,13 @@ components:
                 justify:
                     enum: [Center, End, None, SpaceAround, SpaceBetween, Start]
                     type: string
+        BasicWidgetPageWidgetInstance:
+            allOf:
+                -   $ref: "#/components/schemas/WidgetPageWidgetInstance"
+            # @review
+            description:
+                A basic (non nested applications) widget instance in a widget page.
+            type: object
         CategoryFragmentConfigurationFieldValue:
             allOf:
                 -   $ref: "#/components/schemas/FragmentConfigurationFieldValue"
@@ -200,17 +207,7 @@ components:
                                 $ref: "#/components/schemas/CollectionDisplayViewport"
                             type: array
                         collectionSettings:
-                            properties:
-                                collectionConfig:
-                                    additionalProperties:
-                                        type: object
-                                    # @review
-                                    description:
-                                        The configuration keys and values of the collection.
-                                    type: object
-                                collectionReference:
-                                    $ref: "#/components/schemas/CollectionReference"
-                            type: object
+                            $ref: "#/components/schemas/CollectionSettings"
                         displayAllItems:
                             # @review
                             description:
@@ -347,6 +344,18 @@ components:
                         The collection's type (Collection, CollectionProvider).
                     enum: [Collection, CollectionProvider]
                     type: string
+            type: object
+        CollectionSettings:
+            properties:
+                collectionConfig:
+                    additionalProperties:
+                        type: object
+                    # @review
+                    description:
+                        The configuration keys and values of the collection.
+                    type: object
+                collectionReference:
+                    $ref: "#/components/schemas/CollectionReference"
             type: object
         ColorPaletteFragmentConfigurationFieldValue:
             allOf:
@@ -2437,6 +2446,37 @@ components:
                     enum: [SpecificFrame, NewTab]
                     type: string
             type: object
+        NestedApplicationsWidgetPageWidgetInstance:
+            allOf:
+                -   $ref: "#/components/schemas/WidgetPageWidgetInstance"
+                -   properties:
+                        nestedWidgetSections:
+                            # @review
+                            description:
+                                The sections of a nested applications widget instance.
+                            items:
+                                $ref: "#/components/schemas/NestedWidgetSection"
+                            type: array
+            # @review
+            description:
+                A nested applications widget instance in a widget page.
+            type: object
+        NestedWidgetSection:
+            # @review
+            description:
+                A section within a Nested Applications widget instance.
+            properties:
+                id:
+                    description:
+                        The nested widget section's id.
+                    type: string
+                widgetPageWidgetInstances:
+                    # @review
+                    description:
+                        A list of the widget instances within this nested widget section.
+                    items:
+                        $ref: "#/components/schemas/WidgetPageWidgetInstance"
+                    type: array
         NoneActionExecutionResult:
             # @review
             description:
@@ -4343,7 +4383,7 @@ components:
                         A list of the widget instances within this page section.
                     items:
                         $ref: "#/components/schemas/WidgetPageWidgetInstance"
-                    type: array                    
+                    type: array
         WidgetPageSettings:
             allOf:
                 -   $ref: "#/components/schemas/PageSettings"
@@ -4478,6 +4518,11 @@ components:
                                 the widget instance will be added at the last valid position.
                             minimum: 0
                             type: integer
+                        type:
+                            enum:
+                                -   BasicWidgetPageWidgetInstance
+                                -   NestedApplicationsWidgetPageWidgetInstance
+                            type: string
                         widgetLookAndFeelConfig:
                             $ref: "#/components/schemas/WidgetLookAndFeelConfig"
                             # @review
@@ -4486,6 +4531,11 @@ components:
             # @review
             description:
                 A widget instance in a widget page.
+            discriminator:
+                mapping:
+                    BasicWidgetPageWidgetInstance: "#/components/schemas/BasicWidgetPageWidgetInstance"
+                    NestedApplicationsWidgetPageWidgetInstance: "#/components/schemas/NestedApplicationsWidgetPageWidgetInstance"
+                propertyName: type
             type: object
 info:
     description:

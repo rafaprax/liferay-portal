@@ -26,7 +26,7 @@ import {DSRContext} from './DSRInitializer';
 import {TDSRContext, TDSRRoomDetailsStepProps} from './DSRTypes';
 import FieldErrorMessage from './FieldErrorMessage';
 
-function getBase64(file: File): Promise<string> {
+export function getBase64(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 
@@ -37,13 +37,14 @@ function getBase64(file: File): Promise<string> {
 	});
 }
 
-function getImage(name: string): string {
+export function getImage(name: string): string {
 	return `${Liferay.ThemeDisplay.getPortalURL()}${Liferay.ThemeDisplay.getPathContext()}/o/digital-sales-room-web/images/${name}`;
 }
 
 function DSRRoomDetailsStep({
 	numberOfSteps,
 	setHandleStepSubmit,
+	step = 1,
 }: TDSRRoomDetailsStepProps) {
 	const {dataContext, setDataContext} = useContext<TDSRContext>(DSRContext);
 	const clientLogoInputFileRef = useRef(null);
@@ -248,7 +249,11 @@ function DSRRoomDetailsStep({
 		<>
 			<div>
 				<div className="mb-1 text-secondary" data-qa-id="stepLocator">
-					{sub(Liferay.Language.get('step-x-of-x'), 1, numberOfSteps)}
+					{sub(
+						Liferay.Language.get('step-x-of-x'),
+						step,
+						numberOfSteps
+					)}
 				</div>
 
 				<div
@@ -536,7 +541,6 @@ function DSRRoomDetailsStep({
 						id="dsr-friendly-url"
 						name="friendlyURL"
 						onChange={handleFieldChange}
-						required={true}
 						type="text"
 						value={dataContext.friendlyURL || ''}
 					/>

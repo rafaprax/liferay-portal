@@ -135,6 +135,7 @@
 				}
 			},
 			"Comment": {
+				"description": "Optional field with the comments associated with this object entry, can be embedded with nestedFields",
 				"properties": {
 					"actions": {
 						"additionalProperties": {
@@ -180,6 +181,10 @@
 						"readOnly": true,
 						"type": "integer"
 					},
+					"parentCommentExternalReferenceCode": {
+						"description": "The parent comment's external reference code.",
+						"type": "string"
+					},
 					"parentCommentId": {
 						"description": "The ID of the comment's parent, if it exists.",
 						"format": "int64",
@@ -212,6 +217,7 @@
 				}
 			},
 			"Creator": {
+				"description": "The comment's author.",
 				"properties": {
 					"additionalName": {
 						"description": "The author's additional name (e.g., middle name).",
@@ -330,6 +336,13 @@
 						"readOnly": true,
 						"type": "array",
 						"x-batch-unsupported-formats": "CSV"
+					},
+					"comments": {
+						"description": "Optional field with the comments associated with this object entry, can be embedded with nestedFields",
+						"items": {
+							"$ref": "#/components/schemas/Comment"
+						},
+						"type": "array"
 					},
 					"creator": {
 						"readOnly": true,
@@ -2777,213 +2790,6 @@
 				]
 			}
 		},
-		"/{object9Id}/by-version/{version}": {
-			"delete": {
-				"operationId": "deleteObject9ByVersion",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "object9Id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "version",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"default": {
-						"content": {
-							"application/json": {
-							},
-							"application/xml": {
-							}
-						},
-						"description": "default response"
-					}
-				},
-				"tags": [
-					"Object9"
-				]
-			},
-			"get": {
-				"operationId": "getObject9ByVersion",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "object9Id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "version",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"default": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							}
-						},
-						"description": "default response"
-					}
-				},
-				"tags": [
-					"Object9"
-				]
-			}
-		},
-		"/{object9Id}/by-version/{version}/copy": {
-			"post": {
-				"operationId": "postObject9ByVersionCopy",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "object9Id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "version",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"default": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							}
-						},
-						"description": "default response"
-					}
-				},
-				"tags": [
-					"Object9"
-				]
-			}
-		},
-		"/{object9Id}/by-version/{version}/expire": {
-			"post": {
-				"operationId": "postObject9ByVersionExpire",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "object9Id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "version",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"default": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							}
-						},
-						"description": "default response"
-					}
-				},
-				"tags": [
-					"Object9"
-				]
-			}
-		},
-		"/{object9Id}/by-version/{version}/restore": {
-			"put": {
-				"operationId": "putObject9ByVersionRestore",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "object9Id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "version",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"default": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/Object9"
-								}
-							}
-						},
-						"description": "default response"
-					}
-				},
-				"tags": [
-					"Object9"
-				]
-			}
-		},
 		"/{object9Id}/collaborators": {
 			"get": {
 				"description": "Retrieves the collaborators of an object entry.",
@@ -3489,9 +3295,9 @@
 				]
 			}
 		},
-		"/{object9Id}/versions": {
+		"/{object9Id}/translations": {
 			"get": {
-				"operationId": "getObject9sVersionsPage",
+				"operationId": "getObject9Translation",
 				"parameters": [
 					{
 						"in": "path",
@@ -3503,28 +3309,21 @@
 					},
 					{
 						"in": "query",
-						"name": "nestedFields",
+						"name": "sourceLanguageId",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
 						"in": "query",
-						"name": "page",
+						"name": "targetLanguageIds",
 						"schema": {
 							"type": "string"
 						}
 					},
 					{
 						"in": "query",
-						"name": "pageSize",
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "sort",
+						"name": "version",
 						"schema": {
 							"type": "string"
 						}
@@ -3533,15 +3332,51 @@
 				"responses": {
 					"default": {
 						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/PageObject9"
-								}
+							"application/zip": {
+							}
+						},
+						"description": "default response"
+					}
+				},
+				"tags": [
+					"Object9"
+				]
+			}
+		},
+		"/{object9Id}/translations/{languageId}": {
+			"get": {
+				"operationId": "getObject9TranslationLanguage",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "object9Id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "languageId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "targetLanguageId",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"default": {
+						"content": {
+							"application/x-xliff+xml": {
 							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/PageObject9"
-								}
+							"application/xliff+xml": {
 							}
 						},
 						"description": "default response"

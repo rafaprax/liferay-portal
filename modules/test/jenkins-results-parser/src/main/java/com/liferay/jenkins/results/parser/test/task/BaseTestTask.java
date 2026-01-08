@@ -6,6 +6,7 @@
 package com.liferay.jenkins.results.parser.test.task;
 
 import com.liferay.jenkins.results.parser.test.clazz.TestClass;
+import com.liferay.jenkins.results.parser.test.clazz.group.TestClassGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +48,35 @@ public class BaseTestTask implements TestTask {
 	}
 
 	@Override
+	public long getAverageOverheadDuration() {
+		if (_testClasses.isEmpty()) {
+			throw new RuntimeException("Missing associated test classes");
+		}
+
+		TestClass testClass = _testClasses.get(0);
+
+		return testClass.getAverageOverheadDuration();
+	}
+
+	@Override
+	public long getAverageTotalDuration() {
+		return _averageTotalDuration;
+	}
+
+	@Override
 	public JSONObject getJSONObject() {
 		JSONObject jsonObject = new JSONObject();
 
 		jsonObject.put(
 			"average_duration", getAverageDuration()
+		).put(
+			"average_overhead_duration", getAverageOverheadDuration()
+		).put(
+			"average_total_duration", getAverageTotalDuration()
+		).put(
+			"grouping_strategy", String.valueOf(_groupingStrategy)
+		).put(
+			"longest_duration", getLongestDuration()
 		).put(
 			"name", getName()
 		);
@@ -68,13 +93,62 @@ public class BaseTestTask implements TestTask {
 	}
 
 	@Override
+	public long getLongestDuration() {
+		return _longestDuration;
+	}
+
+	@Override
 	public String getName() {
 		return _name;
 	}
 
 	@Override
+	public long getOverheadWeight() {
+		return getAverageOverheadDuration();
+	}
+
+	@Override
+	public long getSharedWeight() {
+		return 0L;
+	}
+
+	@Override
+	public String getSharedWeightName() {
+		return null;
+	}
+
+	@Override
 	public List<TestClass> getTestClasses() {
 		return _testClasses;
+	}
+
+	@Override
+	public long getWeight() {
+		long weight = 0;
+
+		if (_groupingStrategy ==
+				TestClassGroup.GroupingStrategy.TEST_TASK_AVERAGE_DURATION) {
+
+			weight = getAverageDuration();
+		}
+		else if (_groupingStrategy ==
+					TestClassGroup.GroupingStrategy.
+						TEST_TASK_AVERAGE_TOTAL_DURATION) {
+
+			weight = getAverageTotalDuration();
+		}
+		else if (_groupingStrategy ==
+					TestClassGroup.GroupingStrategy.
+						TEST_TASK_LONGEST_DURATION) {
+
+			weight = getLongestDuration();
+		}
+
+		if (weight <= 0) {
+			return Long.MAX_VALUE;
+		}
+
+		return weight;
 	}
 
 	@Override
@@ -84,12 +158,22 @@ public class BaseTestTask implements TestTask {
 		return name.hashCode();
 	}
 
-	protected BaseTestTask(long averageDuration, String name) {
+	protected BaseTestTask(
+		long averageDuration, long averageTotalDuration,
+		TestClassGroup.GroupingStrategy groupingStrategy, long longestDuration,
+		String name) {
+
 		_averageDuration = averageDuration;
+		_averageTotalDuration = averageTotalDuration;
+		_groupingStrategy = groupingStrategy;
+		_longestDuration = longestDuration;
 		_name = name;
 	}
 
 	private final long _averageDuration;
+	private final long _averageTotalDuration;
+	private final TestClassGroup.GroupingStrategy _groupingStrategy;
+	private final long _longestDuration;
 	private final String _name;
 	private final List<TestClass> _testClasses = new ArrayList<>();
 

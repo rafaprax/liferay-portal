@@ -60,6 +60,7 @@ import com.liferay.headless.delivery.client.resource.v1_0.SitePageResource;
 import com.liferay.headless.delivery.client.serdes.v1_0.SitePageSerDes;
 import com.liferay.layout.admin.kernel.model.LayoutTypePortletConstants;
 import com.liferay.layout.test.util.ContentLayoutTestUtil;
+import com.liferay.layout.test.util.LayoutFriendlyURLRandomizerBumper;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.oauth2.provider.scope.ScopeChecker;
 import com.liferay.petra.function.transform.TransformUtil;
@@ -68,6 +69,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -83,6 +85,7 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
@@ -92,6 +95,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.permission.LayoutPermission;
 import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -99,8 +103,11 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PrefsPropsUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -122,6 +129,8 @@ import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.segments.test.util.SegmentsTestUtil;
+
+import jakarta.portlet.PortletPreferences;
 
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -200,7 +209,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 	@Override
 	@Test
-	@TestInfo("LPD-67244")
+	@TestInfo({"LPD-67244", "LPD-75168", "LPD-75364"})
 	public void testGetSiteSitePage() throws Exception {
 		Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
 
@@ -223,8 +232,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			Assert.assertNotNull(problemException);
 		}
 
-		_testVulcanCRUDItemDelegateGetItem();
-
+		_testGetSiteSitePageWithLocalization();
 		_testGetSiteSitePageWithoutPermissions();
 	}
 
@@ -328,6 +336,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 	@Override
 	@Test
+	@TestInfo("LPD-35928")
 	public void testGetSiteSitePagesPage() throws Exception {
 		Page<SitePage> sitePagePage = sitePageResource.getSiteSitePagesPage(
 			testGroup.getGroupId(), null, null, null, null, null);
@@ -335,36 +344,8 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		Assert.assertEquals(
 			_layoutLocalService.getLayoutsCount(testGroup.getGroupId(), false),
 			sitePagePage.getTotalCount());
-	}
 
-	@Test
-	@TestInfo("LPD-35928")
-	public void testGetSiteSitePagesPageSet() throws Exception {
-		LayoutTestUtil.addTypeContentLayout(testGroup);
-
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(
-				testGroup.getGroupId(), TestPropsValues.getUserId());
-
-		Layout layout = _layoutLocalService.addLayout(
-			null, serviceContext.getUserId(), testGroup.getGroupId(), false,
-			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID,
-			RandomTestUtil.randomString(), StringPool.BLANK, StringPool.BLANK,
-			LayoutConstants.TYPE_NODE, false, StringPool.BLANK, serviceContext);
-
-		_layoutLocalService.addLayout(
-			null, serviceContext.getUserId(), testGroup.getGroupId(), false,
-			layout.getLayoutId(), RandomTestUtil.randomString(),
-			StringPool.BLANK, StringPool.BLANK, LayoutConstants.TYPE_PORTLET,
-			false, StringPool.BLANK, serviceContext);
-
-		Page<SitePage> sitePagePage = sitePageResource.getSiteSitePagesPage(
-			testGroup.getGroupId(), null, null, null, null, null);
-
-		List<String> pageTypes = TransformUtil.transform(
-			sitePagePage.getItems(), SitePage::getPageType);
-
-		Assert.assertTrue(pageTypes.contains("Page Set"));
+		_testGetSiteSitePagesPagePageSet();
 	}
 
 	@Ignore
@@ -443,6 +424,57 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		_testPostSiteSitePageSuccessTaxonomyCategoryBriefNonsitePage();
 	}
 
+	@Test
+	@TestInfo("LPD-57341")
+	public void testVulcanCRUDItemDelegateGetItem() throws Exception {
+
+		// Default locale
+
+		SitePage postSitePage = testPostSiteSitePage_addSitePage(
+			randomSitePage());
+
+		VulcanCRUDItemDelegate vulcanCRUDItemDelegate =
+			_getVulcanCRUDItemDelegate(LocaleUtil.getDefault());
+
+		assertEquals(
+			sitePageResource.getSiteSitePage(
+				testGroup.getGroupId(), postSitePage.getFriendlyUrlPath()),
+			SitePageSerDes.toDTO(
+				String.valueOf(
+					vulcanCRUDItemDelegate.getItem(postSitePage.getId()))));
+
+		// Different locale
+
+		SitePage randomSitePage = randomSitePage();
+
+		randomSitePage.setFriendlyUrlPath_i18n(
+			HashMapBuilder.put(
+				"en-US", randomSitePage.getFriendlyUrlPath()
+			).put(
+				"es-ES", _getRandomFriendlyURL()
+			).build());
+
+		postSitePage = testPostSiteSitePage_addSitePage(randomSitePage);
+
+		SitePageResource spainSitePageResource = SitePageResource.builder(
+		).authentication(
+			"test@liferay.com", PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).locale(
+			LocaleUtil.SPAIN
+		).build();
+
+		vulcanCRUDItemDelegate = _getVulcanCRUDItemDelegate(LocaleUtil.SPAIN);
+
+		assertEquals(
+			spainSitePageResource.getSiteSitePage(
+				testGroup.getGroupId(), postSitePage.getFriendlyUrlPath()),
+			SitePageSerDes.toDTO(
+				String.valueOf(
+					vulcanCRUDItemDelegate.getItem(postSitePage.getId()))));
+	}
+
 	@Override
 	protected String[] getAdditionalAssertFieldNames() {
 		return new String[] {"friendlyUrlPath", "title"};
@@ -460,9 +492,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
 				datePublished = RandomTestUtil.nextDate();
-				friendlyUrlPath =
-					StringPool.FORWARD_SLASH +
-						StringUtil.toLowerCase(RandomTestUtil.randomString());
+				friendlyUrlPath = _getRandomFriendlyURL();
 				id = RandomTestUtil.randomLong();
 				pageType = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
@@ -525,6 +555,14 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 					" does not contain " + taxonomyCategoryBrief1,
 				contains);
 		}
+	}
+
+	private String _getRandomFriendlyURL() {
+		String urlTitle = StringUtil.toLowerCase(
+			RandomTestUtil.randomString(
+				LayoutFriendlyURLRandomizerBumper.INSTANCE));
+
+		return StringPool.FORWARD_SLASH + urlTitle;
 	}
 
 	private VulcanCRUDItemDelegate _getVulcanCRUDItemDelegate(Locale locale)
@@ -690,6 +728,140 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		).user(
 			UserTestUtil.getAdminUser(testCompany.getCompanyId())
 		).build();
+	}
+
+	private void _testGetSiteSitePagesPagePageSet() throws Exception {
+		LayoutTestUtil.addTypeContentLayout(testGroup);
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				testGroup.getGroupId(), TestPropsValues.getUserId());
+
+		Layout layout = _layoutLocalService.addLayout(
+			null, serviceContext.getUserId(), testGroup.getGroupId(), false,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID,
+			RandomTestUtil.randomString(), StringPool.BLANK, StringPool.BLANK,
+			LayoutConstants.TYPE_NODE, false, StringPool.BLANK, serviceContext);
+
+		_layoutLocalService.addLayout(
+			null, serviceContext.getUserId(), testGroup.getGroupId(), false,
+			layout.getLayoutId(), RandomTestUtil.randomString(),
+			StringPool.BLANK, StringPool.BLANK, LayoutConstants.TYPE_PORTLET,
+			false, StringPool.BLANK, serviceContext);
+
+		Page<SitePage> sitePagePage = sitePageResource.getSiteSitePagesPage(
+			testGroup.getGroupId(), null, null, null, null, null);
+
+		List<String> pageTypes = TransformUtil.transform(
+			sitePagePage.getItems(), SitePage::getPageType);
+
+		Assert.assertTrue(pageTypes.contains("Page Set"));
+	}
+
+	private void _testGetSiteSitePageWithLocalization() throws Exception {
+		User user = testCompany.getGuestUser();
+
+		String originalLanguageId = user.getLanguageId();
+
+		PortletPreferences portletPreferences = PrefsPropsUtil.getPreferences(
+			testCompany.getCompanyId());
+
+		String originalLanguageIds = portletPreferences.getValue(
+			PropsKeys.LOCALES,
+			StringUtil.merge(
+				LocaleUtil.toLanguageIds(
+					LanguageUtil.getCompanyAvailableLocales(
+						testCompany.getCompanyId())),
+				StringPool.COMMA));
+
+		Locale originalDefaultLocale = LocaleUtil.getDefault();
+		Locale originalSiteDefaultLocale =
+			LocaleThreadLocal.getSiteDefaultLocale();
+
+		try {
+			_companyLocalService.updateDisplay(
+				testCompany.getCompanyId(),
+				LocaleUtil.toLanguageId(LocaleUtil.SPAIN),
+				user.getTimeZoneId());
+			_companyLocalService.updatePreferences(
+				testCompany.getCompanyId(),
+				UnicodePropertiesBuilder.put(
+					PropsKeys.LOCALES,
+					StringUtil.merge(
+						LocaleUtil.toLanguageIds(
+							new Locale[] {
+								LocaleUtil.SPAIN, LocaleUtil.UK, LocaleUtil.US
+							}),
+						StringPool.COMMA)
+				).build());
+
+			LocaleUtil.setDefault(
+				LocaleUtil.SPAIN.getLanguage(), LocaleUtil.SPAIN.getCountry(),
+				LocaleUtil.SPAIN.getVariant());
+
+			testGroup = GroupTestUtil.updateDisplaySettings(
+				testGroup.getGroupId(),
+				ListUtil.fromArray(
+					LocaleUtil.SPAIN, LocaleUtil.UK, LocaleUtil.US),
+				LocaleUtil.US);
+
+			LocaleThreadLocal.setSiteDefaultLocale(LocaleUtil.US);
+
+			Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
+
+			String esFriendlyURL = _getRandomFriendlyURL();
+			String usFriendlyURL = _getRandomFriendlyURL();
+
+			LayoutTestUtil.updateFriendlyURL(
+				layout,
+				HashMapBuilder.put(
+					LocaleUtil.SPAIN, esFriendlyURL
+				).put(
+					LocaleUtil.US, usFriendlyURL
+				).build());
+
+			_testGetSiteSitePageWithLocalization(
+				esFriendlyURL, layout.getPlid(), LocaleUtil.SPAIN);
+			_testGetSiteSitePageWithLocalization(
+				usFriendlyURL, layout.getPlid(), LocaleUtil.UK);
+			_testGetSiteSitePageWithLocalization(
+				usFriendlyURL, layout.getPlid(), LocaleUtil.US);
+		}
+		finally {
+			_companyLocalService.updateDisplay(
+				testCompany.getCompanyId(), originalLanguageId,
+				user.getTimeZoneId());
+			_companyLocalService.updatePreferences(
+				testCompany.getCompanyId(),
+				UnicodePropertiesBuilder.put(
+					PropsKeys.LOCALES, originalLanguageIds
+				).build());
+			LocaleUtil.setDefault(
+				originalDefaultLocale.getLanguage(),
+				originalDefaultLocale.getCountry(),
+				originalDefaultLocale.getVariant());
+			LocaleThreadLocal.setSiteDefaultLocale(originalSiteDefaultLocale);
+		}
+	}
+
+	private void _testGetSiteSitePageWithLocalization(
+			String friendlyUrlPath, Long id, Locale locale)
+		throws Exception {
+
+		SitePageResource sitePageResource = SitePageResource.builder(
+		).authentication(
+			"test@liferay.com", PropsValues.DEFAULT_ADMIN_PASSWORD
+		).header(
+			"X-Liferay-Accept-All-Languages", "true"
+		).locale(
+			locale
+		).build();
+
+		SitePage sitePage = sitePageResource.getSiteSitePage(
+			testGroup.getGroupId(), friendlyUrlPath);
+
+		Assert.assertEquals(friendlyUrlPath, sitePage.getFriendlyUrlPath());
+		Assert.assertEquals(id, sitePage.getId());
 	}
 
 	private void _testGetSiteSitePageWithoutPermissions() throws Exception {
@@ -2103,57 +2275,6 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			expectedTaxonomyCategoryBriefs, inputTaxonomyCategoryBriefs);
 	}
 
-	private void _testVulcanCRUDItemDelegateGetItem() throws Exception {
-
-		// Default locale
-
-		SitePage postSitePage = testPostSiteSitePage_addSitePage(
-			randomSitePage());
-
-		VulcanCRUDItemDelegate vulcanCRUDItemDelegate =
-			_getVulcanCRUDItemDelegate(LocaleUtil.getDefault());
-
-		assertEquals(
-			sitePageResource.getSiteSitePage(
-				testGroup.getGroupId(), postSitePage.getFriendlyUrlPath()),
-			SitePageSerDes.toDTO(
-				String.valueOf(
-					vulcanCRUDItemDelegate.getItem(postSitePage.getId()))));
-
-		// Different locale
-
-		SitePage randomSitePage = randomSitePage();
-
-		randomSitePage.setFriendlyUrlPath_i18n(
-			HashMapBuilder.put(
-				"en-US", randomSitePage.getFriendlyUrlPath()
-			).put(
-				"es-ES",
-				StringPool.FORWARD_SLASH +
-					StringUtil.toLowerCase(RandomTestUtil.randomString())
-			).build());
-
-		postSitePage = testPostSiteSitePage_addSitePage(randomSitePage);
-
-		SitePageResource spainSitePageResource = SitePageResource.builder(
-		).authentication(
-			"test@liferay.com", PropsValues.DEFAULT_ADMIN_PASSWORD
-		).endpoint(
-			testCompany.getVirtualHostname(), 8080, "http"
-		).locale(
-			LocaleUtil.SPAIN
-		).build();
-
-		vulcanCRUDItemDelegate = _getVulcanCRUDItemDelegate(LocaleUtil.SPAIN);
-
-		assertEquals(
-			spainSitePageResource.getSiteSitePage(
-				testGroup.getGroupId(), postSitePage.getFriendlyUrlPath()),
-			SitePageSerDes.toDTO(
-				String.valueOf(
-					vulcanCRUDItemDelegate.getItem(postSitePage.getId()))));
-	}
-
 	private static final String _CLASS_NAME_EXCEPTION_MAPPER =
 		"com.liferay.headless.delivery.internal.resource.v1_0." +
 			"SitePageResourceImpl";
@@ -2178,12 +2299,6 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		};
 
 	@Inject
-	private static ExpandoColumnLocalService _expandoColumnLocalService;
-
-	@Inject
-	private static ExpandoTableLocalService _expandoTableLocalService;
-
-	@Inject
 	private AssetCategoryLocalService _assetCategoryLocalService;
 
 	@Inject
@@ -2205,6 +2320,15 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 	@Inject
 	private ClientExtensionEntryRelLocalService
 		_clientExtensionEntryRelLocalService;
+
+	@Inject
+	private CompanyLocalService _companyLocalService;
+
+	@Inject
+	private ExpandoColumnLocalService _expandoColumnLocalService;
+
+	@Inject
+	private ExpandoTableLocalService _expandoTableLocalService;
 
 	@Inject
 	private FragmentCollectionLocalService _fragmentCollectionLocalService;

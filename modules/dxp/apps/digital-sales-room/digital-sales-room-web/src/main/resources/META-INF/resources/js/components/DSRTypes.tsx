@@ -19,6 +19,7 @@ export type TDSRDataContext = {
 		base64?: string;
 	};
 	clientName: string;
+	description?: string;
 	errors: {
 		accountId?: null | string;
 		banner?: null | string;
@@ -26,6 +27,7 @@ export type TDSRDataContext = {
 		channelName?: null | string;
 		clientLogo?: null | string;
 		clientName?: null | string;
+		description?: null | string;
 		friendlyURL?: null | string;
 		primaryColor?: null | string;
 		roomName?: null | string;
@@ -40,6 +42,7 @@ export type TDSRDataContext = {
 		emailAddresses: Array<string>;
 		roleKey?: string;
 	};
+	templateId?: number;
 };
 
 export type TDSRContext = {
@@ -52,9 +55,16 @@ export type TDSRRoomDetailsStepProps = {
 		callback: SetStateAction<(event: Event) => Promise<boolean>>
 	): void;
 	numberOfSteps: number;
+	showHeader?: boolean;
+	step?: number;
 };
 
 export type TDSRInitializerProps = {
 	closeModal: () => void;
 	numberOfSteps: number;
+};
+
+export type TDSRRoomSaveAsTemplateProps = {
+	closeModal: () => void;
+	digitalSalesRoomId: number;
 };

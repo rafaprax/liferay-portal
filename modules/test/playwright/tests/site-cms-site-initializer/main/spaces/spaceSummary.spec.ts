@@ -69,7 +69,7 @@ test(
 );
 
 test(
-	'Can access Add button',
+	'Can access Add button when there are no items',
 	{tag: '@LPD-62706'},
 	async ({page, spaceSummaryPage}) => {
 		const spaceName = 'Default';
@@ -80,9 +80,11 @@ test(
 
 		let dropdown = page.locator('.dropdown-menu.show');
 
-		await expect(dropdown.getByText('Basic Content')).toBeVisible();
-		await expect(dropdown.getByText('Blog')).toBeVisible();
-		await expect(dropdown.getByText('Folder')).toBeVisible();
+		await Promise.all([
+			expect(dropdown.getByText('Basic Web Content')).toBeVisible(),
+			expect(dropdown.getByText('Blog')).toBeVisible(),
+			expect(dropdown.getByText('Folder')).toBeVisible(),
+		]);
 
 		await page.getByRole('button', {name: `Add Content`}).click();
 
@@ -90,12 +92,12 @@ test(
 
 		dropdown = page.locator('.dropdown-menu.show');
 
-		await expect(
-			dropdown.getByText('External Video Shortcut')
-		).toBeVisible();
-		await expect(dropdown.getByText('Folder')).toBeVisible();
-		await expect(dropdown.getByText('Multiple Files')).toBeVisible();
-		await expect(dropdown.getByText('Single File')).toBeVisible();
+		await Promise.all([
+			expect(dropdown.getByText('External Video')).toBeVisible(),
+			expect(dropdown.getByText('Folder')).toBeVisible(),
+			expect(dropdown.getByText('Multiple Files')).toBeVisible(),
+			expect(dropdown.getByText('Single File')).toBeVisible(),
+		]);
 	}
 );
 
