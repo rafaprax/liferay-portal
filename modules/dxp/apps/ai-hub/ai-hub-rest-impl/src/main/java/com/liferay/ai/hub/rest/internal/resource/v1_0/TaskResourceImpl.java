@@ -12,8 +12,10 @@ import com.liferay.ai.hub.rest.resource.v1_0.TaskResource;
 import com.liferay.ai.hub.rest.resource.v1_0.util.SseUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.service.GroupService;
+import com.liferay.portal.kernel.workflow.WorkflowDefinition;
 import com.liferay.portal.kernel.workflow.WorkflowInstance;
 import com.liferay.portal.kernel.workflow.WorkflowInstanceManager;
+import com.liferay.portal.workflow.manager.WorkflowDefinitionManager;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.sse.Sse;
@@ -55,12 +57,19 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
+		WorkflowDefinition workflowDefinition =
+			_workflowDefinitionManager.getLatestWorkflowDefinition(
+				contextCompany.getCompanyId(), task.getType());
+
 		Map<String, Serializable> workflowContext =
 			WorkflowContextUtil.toWorkflowContext(
-				task.getContext(), contextHttpServletRequest, _sse,
+				task.getContext(), contextHttpServletRequest,
 				task.getSseEventSinkKey());
 
 		workflowContext.put("outBoundEventName", task.getType());
+		workflowContext.put(
+			"userToken",
+			contextHttpServletRequest.getHeader("Liferay-AI-Hub-On-Behalf-Of"));
 
 		WorkflowInstance workflowInstance =
 			_workflowInstanceManager.startWorkflowInstance(
@@ -68,8 +77,8 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 				GroupUtil.getGroupId(
 					contextCompany.getCompanyId(), _groupService,
 					task.getScope()),
-				contextUser.getUserId(), task.getType(), 1, null,
-				workflowContext);
+				contextUser.getUserId(), task.getType(),
+				workflowDefinition.getVersion(), null, workflowContext);
 
 		return new Task() {
 			{
@@ -87,6 +96,9 @@ public class TaskResourceImpl extends BaseTaskResourceImpl {
 
 	@Context
 	private Sse _sse;
+
+	@Reference
+	private WorkflowDefinitionManager _workflowDefinitionManager;
 
 	@Reference
 	private WorkflowInstanceManager _workflowInstanceManager;

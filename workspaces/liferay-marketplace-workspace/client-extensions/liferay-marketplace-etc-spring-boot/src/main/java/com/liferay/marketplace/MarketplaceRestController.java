@@ -50,12 +50,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -393,14 +393,7 @@ public class MarketplaceRestController extends BaseRestController {
 						modelCPDefinitionJSONObject.getLong("CProductId"))
 				).toString()
 			).put(
-				"[%CPDEFINITION_CREATEDATE%]",
-				ZonedDateTime.ofInstant(
-					product.getCreateDate(
-					).toInstant(),
-					ZoneOffset.UTC
-				).format(
-					DateTimeFormatter.ofPattern("MMMM d, yyyy")
-				)
+				"[%CPDEFINITION_CREATEDATE%]", _format(product.getCreateDate())
 			).put(
 				"[%CPDEFINITION_ID%]",
 				String.valueOf(
@@ -530,6 +523,23 @@ public class MarketplaceRestController extends BaseRestController {
 					productId,
 				exception);
 		}
+	}
+
+	private String _format(Date date) {
+		return _format(date, "Not Applicable");
+	}
+
+	private String _format(Date date, String defaultValue) {
+		if (date == null) {
+			return defaultValue;
+		}
+
+		return date.toInstant(
+		).atZone(
+			ZoneId.of("UTC")
+		).format(
+			DateTimeFormatter.ofPattern("MMMM d, yyyy")
+		);
 	}
 
 	private Long _getAccountAdministratorRoleId(long accountId)
@@ -740,14 +750,7 @@ public class MarketplaceRestController extends BaseRestController {
 			).put(
 				"[%NET_PRICE_FORMATTED%]", order.getSubtotalFormatted()
 			).put(
-				"[%ORDER_DATE%]",
-				ZonedDateTime.ofInstant(
-					order.getCreateDate(
-					).toInstant(),
-					ZoneOffset.UTC
-				).format(
-					DateTimeFormatter.ofPattern("MMMM d, yyyy")
-				)
+				"[%ORDER_DATE%]", _format(order.getCreateDate())
 			).put(
 				"[%ORDER_ID%]", String.valueOf(order.getId())
 			).put(
@@ -769,6 +772,18 @@ public class MarketplaceRestController extends BaseRestController {
 				).replaceAll(
 					"(?<=accounts/)-?\\d+(?=/images)", "-1"
 				)
+			).put(
+				"[%SUBSCRIPTION_EXPIRATION_DATE%]",
+				_format(
+					MarketplaceUtil.getOrderPurchaseEndDate(
+						productSpecificationsMap.get("license-type"),
+						MarketplaceUtil.getSkuOptionValue(
+							"license-usage-type", orderItem.getOptions())))
+			).put(
+				"[%SUBSCRIPTION_STARTING_DATE%]", _format(order.getCreateDate())
+			).put(
+				"[%SUBSCRIPTION_TYPE%]",
+				productSpecificationsMap.get("license-type")
 			).put(
 				"[%TOTAL_FORMATTED%]", order.getTotalFormatted()
 			).put(

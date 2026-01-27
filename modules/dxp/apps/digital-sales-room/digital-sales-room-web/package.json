@@ -3,6 +3,7 @@
 		"@clayui/autocomplete": "*",
 		"@clayui/button": "*",
 		"@clayui/color-picker": "*",
+		"@clayui/core": "*",
 		"@clayui/drop-down": "*",
 		"@clayui/form": "*",
 		"@clayui/icon": "*",
@@ -41,5 +42,5 @@
 		"format": "node-scripts format",
 		"test": "node-scripts test"
 	},
-	"version": "1.0.2"
+	"version": "1.0.3"
 }

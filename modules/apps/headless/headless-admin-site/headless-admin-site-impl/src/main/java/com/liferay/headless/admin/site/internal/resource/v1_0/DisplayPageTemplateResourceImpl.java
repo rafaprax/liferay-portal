@@ -128,7 +128,8 @@ public class DisplayPageTemplateResourceImpl
 
 			@Override
 			public List<String> getNestedFields() {
-				return List.of("friendlyUrlHistory", "pageSpecifications");
+				return List.of(
+					"friendlyUrlHistory", "pageSpecifications", "thumbnail");
 			}
 
 			@Override
@@ -415,7 +416,9 @@ public class DisplayPageTemplateResourceImpl
 		}
 
 		long previewFileEntryId = FileEntryUtil.getPreviewFileEntryId(
-			groupId, displayPageTemplate.getThumbnail());
+			groupId, getResourceName(),
+			_getServiceContext(displayPageTemplate, groupId),
+			displayPageTemplate.getThumbnailURLReference());
 
 		if (previewFileEntryId !=
 				layoutPageTemplateEntry.getPreviewFileEntryId()) {
@@ -522,9 +525,9 @@ public class DisplayPageTemplateResourceImpl
 				displayPageTemplate::getParentFolder);
 		}
 
-		if (displayPageTemplate.getThumbnail() != null) {
-			existingDisplayPageTemplate.setThumbnail(
-				displayPageTemplate::getThumbnail);
+		if (displayPageTemplate.getThumbnailURLReference() != null) {
+			existingDisplayPageTemplate.setThumbnailURLReference(
+				displayPageTemplate::getThumbnailURLReference);
 		}
 	}
 
@@ -577,7 +580,9 @@ public class DisplayPageTemplateResourceImpl
 				displayPageTemplate.getName(),
 				LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE,
 				FileEntryUtil.getPreviewFileEntryId(
-					groupId, displayPageTemplate.getThumbnail()),
+					groupId, getResourceName(),
+					_getServiceContext(displayPageTemplate, groupId),
+					displayPageTemplate.getThumbnailURLReference()),
 				GetterUtil.getBoolean(displayPageTemplate.getMarkedAsDefault()),
 				0L, layout.getPlid(), 0L,
 				PageSpecificationUtil.getPublishedStatus(

@@ -858,11 +858,26 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		throws E {
 
 		if (CompanyThreadLocal.isLocked()) {
-			unsafeConsumer.accept(
-				companyLocalService.fetchCompanyById(
-					CompanyThreadLocal.getCompanyId()));
+			long[] companyIds = ListUtil.toLongArray(
+				companies, Company::getCompanyId);
 
-			return;
+			if (ListUtil.isEmpty(companies) ||
+				Arrays.equals(
+					new long[] {CompanyThreadLocal.getCompanyId()},
+					companyIds)) {
+
+				unsafeConsumer.accept(
+					companyLocalService.fetchCompanyById(
+						CompanyThreadLocal.getCompanyId()));
+
+				return;
+			}
+
+			throw new UnsupportedOperationException(
+				StringBundler.concat(
+					"Unable to iterate over the following company IDs ",
+					Arrays.toString(companyIds), " because company ID ",
+					CompanyThreadLocal.getCompanyId(), " is locked"));
 		}
 
 		for (Company company : companies) {
@@ -884,8 +899,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		long[] companyIds = null;
 
 		if (!CompanyThreadLocal.isLocked()) {
-			companyIds = ListUtil.toLongArray(
-				companyLocalService.getCompanies(), Company::getCompanyId);
+			companyIds = PortalInstancePool.getCompanyIds();
 		}
 
 		forEachCompanyId(unsafeConsumer, companyIds);
@@ -898,9 +912,21 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		throws E {
 
 		if (CompanyThreadLocal.isLocked()) {
-			unsafeConsumer.accept(CompanyThreadLocal.getCompanyId());
+			if (ArrayUtil.isEmpty(companyIds) ||
+				Arrays.equals(
+					new long[] {CompanyThreadLocal.getCompanyId()},
+					companyIds)) {
 
-			return;
+				unsafeConsumer.accept(CompanyThreadLocal.getCompanyId());
+
+				return;
+			}
+
+			throw new UnsupportedOperationException(
+				StringBundler.concat(
+					"Unable to iterate over the following company IDs ",
+					Arrays.toString(companyIds), " because company ID ",
+					CompanyThreadLocal.getCompanyId(), " is locked"));
 		}
 
 		for (long companyId : companyIds) {

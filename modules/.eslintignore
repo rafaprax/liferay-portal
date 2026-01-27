@@ -94,6 +94,6 @@
     **/copyright.js
 
     #
-    # Temporary Ignore Until Merged
+    # Ignore the Clay Docs Site for Now
     #
-    apps/frontend-js/frontend-js-clay-web/clay
+    apps/frontend-js/frontend-js-clay-web/clay/www/**

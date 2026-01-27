@@ -1042,13 +1042,6 @@ public interface LayoutLocalService
 			int start, int end, OrderByComparator<Layout> orderByComparator)
 		throws PortalException;
 
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<Layout> getLayoutsByLayoutPrototypeUuid(
-		String layoutPrototypeUuid);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getLayoutsByLayoutPrototypeUuidCount(String layoutPrototypeUuid);
-
 	/**
 	 * Returns all the layouts matching the UUID and company.
 	 *
@@ -1252,6 +1245,10 @@ public interface LayoutLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasLayouts(
 		long groupId, boolean privateLayout, long parentLayoutId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public boolean hasLayouts(
+		long groupId, String portletLayoutPageTemplateEntryERC);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasLayouts(User user, boolean privateLayout)

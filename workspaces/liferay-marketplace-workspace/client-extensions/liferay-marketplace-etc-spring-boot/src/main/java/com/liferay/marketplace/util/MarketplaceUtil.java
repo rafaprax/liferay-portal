@@ -10,6 +10,8 @@ import com.liferay.headless.commerce.admin.catalog.client.dto.v1_0.SkuOption;
 import com.liferay.headless.commerce.admin.order.client.dto.v1_0.OrderItem;
 import com.liferay.headless.commerce.admin.order.client.pagination.Page;
 import com.liferay.marketplace.model.PublisherAssetLink;
+import com.liferay.osb.koroneiki.phloem.rest.client.dto.v1_0.ExternalLink;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -21,7 +23,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Objects;
@@ -61,6 +67,35 @@ public class MarketplaceUtil {
 		}
 
 		return path.toFile();
+	}
+
+	public static ExternalLink[] appendExternalLink(
+		ExternalLink[] externalLinks, String domain, String entityId,
+		String entityName) {
+
+		if (ArrayUtil.isEmpty(externalLinks)) {
+			externalLinks = new ExternalLink[0];
+		}
+
+		for (ExternalLink externalLink : externalLinks) {
+			if (Objects.equals(externalLink.getDomain(), domain) &&
+				Objects.equals(externalLink.getEntityName(), entityName)) {
+
+				if (_log.isInfoEnabled()) {
+					_log.info("External link already exists for " + domain);
+				}
+
+				return externalLinks;
+			}
+		}
+
+		ExternalLink externalLink = new ExternalLink();
+
+		externalLink.setDomain(domain);
+		externalLink.setEntityId(entityId);
+		externalLink.setEntityName(entityName);
+
+		return ArrayUtil.append(externalLinks, externalLink);
 	}
 
 	public static JSONArray createCloudProvisioningJSONArray(
@@ -231,6 +266,28 @@ public class MarketplaceUtil {
 
 	public static String getDefaultLocale(Map<String, String> localeMap) {
 		return localeMap.get("en_US");
+	}
+
+	public static Date getOrderPurchaseEndDate(
+		String licenseType, String licenseUsageType) {
+
+		ZonedDateTime zonedDateTime = ZonedDateTime.now();
+
+		if (Objects.equals(licenseType, "Subscription")) {
+			Instant instant = zonedDateTime.plusYears(
+				1
+			).toInstant();
+
+			return Date.from(instant);
+		}
+		else if (Objects.equals(licenseUsageType, "trial")) {
+			return Date.from(
+				zonedDateTime.plusMonths(
+					1
+				).toInstant());
+		}
+
+		return null;
 	}
 
 	public static String getSkuOptionValue(String key, SkuOption[] skuOptions) {

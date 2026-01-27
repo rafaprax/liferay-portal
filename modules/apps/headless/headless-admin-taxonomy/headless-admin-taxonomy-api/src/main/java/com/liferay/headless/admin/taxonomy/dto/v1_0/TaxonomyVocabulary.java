@@ -1432,7 +1432,7 @@ public class TaxonomyVocabulary implements Serializable {
 	@GraphQLName("VisibilityType")
 	public static enum VisibilityType {
 
-		PUBLIC("PUBLIC"), INTERNAL("INTERNAL");
+		EMPTY("EMPTY"), INTERNAL("INTERNAL"), PUBLIC("PUBLIC");
 
 		@JsonCreator
 		public static VisibilityType create(String value) {

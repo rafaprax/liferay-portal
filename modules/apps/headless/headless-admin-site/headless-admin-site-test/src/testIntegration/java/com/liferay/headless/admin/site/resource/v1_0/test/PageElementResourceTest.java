@@ -595,6 +595,9 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				"<img data-lfr-editable-id=\"element-image3\" ",
 				"data-lfr-editable-type=\"image\">",
 				RandomTestUtil.randomString(), "</div>",
+				"<a data-lfr-editable-id=\"element-link\" ",
+				"data-lfr-editable-type=\"link\"  href=\"\">",
+				RandomTestUtil.randomString(), "</a>",
 				"<div data-lfr-editable-id=\"element-rich-text\" ",
 				"data-lfr-editable-type=\"rich-text\">",
 				RandomTestUtil.randomString(), "</div>",
@@ -1190,9 +1193,9 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 	}
 
 	private PageElement _getFragmentInstancePageElement(
-			String externalReferenceCode,
 			BasicFragmentInstancePageElementDefinition
-				basicFragmentInstancePageElementDefinition)
+				basicFragmentInstancePageElementDefinition,
+			String externalReferenceCode)
 		throws Exception {
 
 		PageElement pageElement = super.randomPageElement();
@@ -2483,51 +2486,51 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(), "BASIC_COMPONENT-button",
-						testGroup.getGroupId())));
+						testGroup.getGroupId()),
+				externalReferenceCode));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(),
 						"com.liferay.fragment.internal.renderer." +
 							"ContentObjectFragmentRenderer",
-						testGroup.getGroupId())));
+						testGroup.getGroupId()),
+				externalReferenceCode));
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(testGroup.getGroupId());
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(), new FragmentEditableElement[0],
 						_addFragmentEntry(
 							null, irrelevantGroup.getGroupId(), serviceContext),
-						testGroup.getGroupId())));
+						testGroup.getGroupId()),
+				externalReferenceCode));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(), new FragmentEditableElement[0],
 						_addFragmentEntry(
 							null, testGroup.getGroupId(), serviceContext),
-						testGroup.getGroupId())));
+						testGroup.getGroupId()),
+				externalReferenceCode));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(), new FragmentEditableElement[0],
 						_addFragmentEntry(
 							null, testGroup.getGroupId(), serviceContext),
-						testGroup.getGroupId())));
+						testGroup.getGroupId()),
+				externalReferenceCode));
 
 		externalReferenceCode = RandomTestUtil.randomString();
 
@@ -2542,7 +2545,6 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(), new FragmentEditableElement[0],
@@ -2553,10 +2555,10 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 								_getWidgetConfig(), namespace,
 								JournalContentPortletKeys.JOURNAL_CONTENT,
 								_getWidgetPermissions())
-						})));
+						}),
+				externalReferenceCode));
 		_testPutSitePageSpecificationPageExperiencePageElement(
 			_getFragmentInstancePageElement(
-				externalReferenceCode,
 				PageElementsTestUtil.
 					getBasicFragmentInstancePageElementDefinition(
 						Collections.emptyMap(), new FragmentEditableElement[0],
@@ -2567,7 +2569,8 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 								new HashMap<>(), namespace,
 								JournalContentPortletKeys.JOURNAL_CONTENT,
 								new WidgetPermission[0])
-						})));
+						}),
+				externalReferenceCode));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithConfiguration();
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements();
@@ -2596,12 +2599,12 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			1,
 			() -> _testPutSitePageSpecificationPageExperiencePageElement(
 				_getFragmentInstancePageElement(
-					externalReferenceCode,
 					PageElementsTestUtil.
 						getBasicFragmentInstancePageElementDefinition(
 							Collections.emptyMap(),
 							new FragmentEditableElement[0], fragmentEntry,
-							testGroup.getGroupId()))));
+							testGroup.getGroupId()),
+					externalReferenceCode)));
 	}
 
 	private void
@@ -2613,12 +2616,12 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 			1,
 			() -> _testPutSitePageSpecificationPageExperiencePageElement(
 				_getFragmentInstancePageElement(
-					externalReferenceCode,
 					PageElementsTestUtil.
 						getBasicFragmentInstancePageElementDefinition(
 							Collections.emptyMap(),
 							new FragmentEditableElement[0], fragmentRenderer,
-							testGroup.getGroupId()))));
+							testGroup.getGroupId()),
+					externalReferenceCode)));
 	}
 
 	private void _testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithConfiguration()
@@ -3139,12 +3142,12 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 
 			_testPutSitePageSpecificationPageExperiencePageElement(
 				_getFragmentInstancePageElement(
-					externalReferenceCode,
 					PageElementsTestUtil.
 						getBasicFragmentInstancePageElementDefinition(
 							configurationValuesMap,
 							new FragmentEditableElement[0], fragmentEntry,
-							testGroup.getGroupId())));
+							testGroup.getGroupId()),
+					externalReferenceCode));
 		}
 	}
 
@@ -3236,16 +3239,26 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 						"tablet", "auto"
 					).build()),
 				"element-image3"),
-			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
-				null, FragmentEditableElementValue.Type.RICH_TEXT, null,
-				HTMLFragmentValue.Type.INLINE, "element-rich-text"),
-			FragmentEditableElementTestUtil.getTextFragmentEditableElement(
-				FragmentEditableElementValueFragmentLink.Prefix.EMAIL,
+			FragmentEditableElementTestUtil.getLinkFragmentEditableElement(
+				null,
 				_getFragmentLink(
 					JournalArticle.class.getName(),
 					journalArticle.getExternalReferenceCode(),
 					"JournalArticle_title", null),
-				null, null, TextFragmentValue.Type.INLINE));
+				null, "element-link",
+				FragmentEditableElementValueFragmentLink.Prefix.EMAIL,
+				TextFragmentValue.Type.INLINE),
+			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
+				null, FragmentEditableElementValue.Type.RICH_TEXT, null,
+				HTMLFragmentValue.Type.INLINE, "element-rich-text"),
+			FragmentEditableElementTestUtil.getTextFragmentEditableElement(
+				null,
+				_getFragmentLink(
+					JournalArticle.class.getName(),
+					journalArticle.getExternalReferenceCode(),
+					"JournalArticle_title", null),
+				null, FragmentEditableElementValueFragmentLink.Prefix.EMAIL,
+				TextFragmentValue.Type.INLINE));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			FragmentEditableElementTestUtil.
@@ -3325,6 +3338,11 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 						"tablet", "auto"
 					).build()),
 				"element-image3"),
+			FragmentEditableElementTestUtil.getLinkFragmentEditableElement(
+				FragmentMappedValueItemContextReference.ContextSource.
+					COLLECTION_ITEM,
+				null, FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
+				"element-link", null, TextFragmentValue.Type.MAPPED),
 			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
 				FragmentMappedValueItemContextReference.ContextSource.
 					COLLECTION_ITEM,
@@ -3332,11 +3350,10 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
 				HTMLFragmentValue.Type.MAPPED, "element-rich-text"),
 			FragmentEditableElementTestUtil.getTextFragmentEditableElement(
-				null, null,
 				FragmentMappedValueItemContextReference.ContextSource.
 					COLLECTION_ITEM,
-				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
-				TextFragmentValue.Type.MAPPED));
+				null, FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
+				null, TextFragmentValue.Type.MAPPED));
 
 		Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
 
@@ -3374,6 +3391,16 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 						"tablet", "auto"
 					).build()),
 				"element-image1"),
+			FragmentEditableElementTestUtil.getLinkFragmentEditableElement(
+				FragmentMappedValueItemContextReference.ContextSource.
+					DISPLAY_PAGE_ITEM,
+				_getFragmentLink(
+					Layout.class.getName(), layout.getExternalReferenceCode(),
+					null, null),
+				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
+				"element-link",
+				FragmentEditableElementValueFragmentLink.Prefix.PHONE,
+				TextFragmentValue.Type.MAPPED),
 			FragmentEditableElementTestUtil.getHTMLFragmentEditableElement(
 				FragmentMappedValueItemContextReference.ContextSource.
 					DISPLAY_PAGE_ITEM,
@@ -3381,20 +3408,20 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
 				HTMLFragmentValue.Type.MAPPED, "element-rich-text"),
 			FragmentEditableElementTestUtil.getTextFragmentEditableElement(
-				FragmentEditableElementValueFragmentLink.Prefix.PHONE,
+				FragmentMappedValueItemContextReference.ContextSource.
+					DISPLAY_PAGE_ITEM,
 				_getFragmentLink(
 					Layout.class.getName(), layout.getExternalReferenceCode(),
 					null, null),
-				FragmentMappedValueItemContextReference.ContextSource.
-					DISPLAY_PAGE_ITEM,
 				FragmentMappedValueItemReference.Type.CONTEXT_REFERENCE,
+				FragmentEditableElementValueFragmentLink.Prefix.PHONE,
 				TextFragmentValue.Type.MAPPED));
 
 		_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 			new FragmentEditableElement[0]);
 
 		_testMissingOptionalReference(
-			7,
+			8,
 			() ->
 				_testPutSitePageSpecificationPageExperiencePageElementWithFragmentPageElementWithFragmentEditableElements(
 					FragmentEditableElementTestUtil.
@@ -3452,6 +3479,23 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 								).build()),
 							"element-image2"),
 					FragmentEditableElementTestUtil.
+						getLinkFragmentEditableElement(
+							null,
+							_getFragmentLink(
+								null, null, null,
+								HashMapBuilder.put(
+									LocaleUtil.toBCP47LanguageId(
+										LocaleUtil.SPAIN),
+									RandomTestUtil.randomString()
+								).put(
+									LocaleUtil.toBCP47LanguageId(LocaleUtil.US),
+									RandomTestUtil.randomString()
+								).build()),
+							FragmentMappedValueItemReference.Type.
+								ITEM_EXTERNAL_REFERENCE,
+							"element-link", null,
+							TextFragmentValue.Type.MAPPED),
+					FragmentEditableElementTestUtil.
 						getHTMLFragmentEditableElement(
 							null, FragmentEditableElementValue.Type.RICH_TEXT,
 							FragmentMappedValueItemReference.Type.
@@ -3470,10 +3514,9 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 									LocaleUtil.toBCP47LanguageId(LocaleUtil.US),
 									"https://www.liferay.com"
 								).build()),
-							null,
 							FragmentMappedValueItemReference.Type.
 								ITEM_EXTERNAL_REFERENCE,
-							TextFragmentValue.Type.MAPPED)));
+							null, TextFragmentValue.Type.MAPPED)));
 	}
 
 	private void
@@ -3490,16 +3533,17 @@ public class PageElementResourceTest extends BasePageElementResourceTestCase {
 		PageElement pageElement =
 			_testPutSitePageSpecificationPageExperiencePageElement(
 				_getFragmentInstancePageElement(
-					externalReferenceCode,
 					PageElementsTestUtil.
 						getBasicFragmentInstancePageElementDefinition(
 							null, fragmentEditableElements, fragmentEntry,
-							testGroup.getGroupId())));
+							testGroup.getGroupId()),
+					externalReferenceCode));
 
 		_assertDefaultValues(
 			(BasicFragmentInstancePageElementDefinition)
 				pageElement.getPageElementDefinition(),
-			"element-html", "element-text");
+			"element-html", "element-link", "element-rich-text",
+			"element-text");
 	}
 
 	private void _testPutSitePageSpecificationPageExperiencePageElementWithGridPageElement()

@@ -26,57 +26,29 @@ public class TextFragmentEditableElementValue
 		return TextFragmentEditableElementValueSerDes.toDTO(json);
 	}
 
-	public FragmentEditableElementValueFragmentLink
-		getFragmentEditableElementValueFragmentLink() {
-
-		return fragmentEditableElementValueFragmentLink;
+	public FragmentLinkTextValue getFragmentLinkTextValue() {
+		return fragmentLinkTextValue;
 	}
 
-	public void setFragmentEditableElementValueFragmentLink(
-		FragmentEditableElementValueFragmentLink
-			fragmentEditableElementValueFragmentLink) {
+	public void setFragmentLinkTextValue(
+		FragmentLinkTextValue fragmentLinkTextValue) {
 
-		this.fragmentEditableElementValueFragmentLink =
-			fragmentEditableElementValueFragmentLink;
+		this.fragmentLinkTextValue = fragmentLinkTextValue;
 	}
 
-	public void setFragmentEditableElementValueFragmentLink(
-		UnsafeSupplier<FragmentEditableElementValueFragmentLink, Exception>
-			fragmentEditableElementValueFragmentLinkUnsafeSupplier) {
+	public void setFragmentLinkTextValue(
+		UnsafeSupplier<FragmentLinkTextValue, Exception>
+			fragmentLinkTextValueUnsafeSupplier) {
 
 		try {
-			fragmentEditableElementValueFragmentLink =
-				fragmentEditableElementValueFragmentLinkUnsafeSupplier.get();
+			fragmentLinkTextValue = fragmentLinkTextValueUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected FragmentEditableElementValueFragmentLink
-		fragmentEditableElementValueFragmentLink;
-
-	public TextFragmentValue getTextFragmentValue() {
-		return textFragmentValue;
-	}
-
-	public void setTextFragmentValue(TextFragmentValue textFragmentValue) {
-		this.textFragmentValue = textFragmentValue;
-	}
-
-	public void setTextFragmentValue(
-		UnsafeSupplier<TextFragmentValue, Exception>
-			textFragmentValueUnsafeSupplier) {
-
-		try {
-			textFragmentValue = textFragmentValueUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected TextFragmentValue textFragmentValue;
+	protected FragmentLinkTextValue fragmentLinkTextValue;
 
 	@Override
 	public TextFragmentEditableElementValue clone()

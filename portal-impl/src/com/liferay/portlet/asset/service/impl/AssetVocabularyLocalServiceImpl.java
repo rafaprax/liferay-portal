@@ -8,6 +8,7 @@ package com.liferay.portlet.asset.service.impl;
 import com.liferay.asset.kernel.exception.DuplicateVocabularyException;
 import com.liferay.asset.kernel.exception.DuplicateVocabularyExternalReferenceCodeException;
 import com.liferay.asset.kernel.exception.VocabularyNameException;
+import com.liferay.asset.kernel.exception.VocabularyVisibilityTypeException;
 import com.liferay.asset.kernel.model.AssetCategoryConstants;
 import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.model.AssetVocabularyConstants;
@@ -44,6 +45,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -181,6 +183,8 @@ public class AssetVocabularyLocalServiceImpl
 
 		validate(groupId, name);
 
+		_validateVisibilityType(visibilityType);
+
 		long vocabularyId = counterLocalService.increment();
 
 		_validateExternalReferenceCode(externalReferenceCode, groupId);
@@ -207,7 +211,10 @@ public class AssetVocabularyLocalServiceImpl
 		vocabulary.setSettings(settings);
 		vocabulary.setVisibilityType(visibilityType);
 
-		if (EmptyModelManagerUtil.isEmptyModel()) {
+		if (EmptyModelManagerUtil.isEmptyModel() ||
+			(visibilityType ==
+				AssetVocabularyConstants.VISIBILITY_TYPE_EMPTY)) {
+
 			vocabulary.setStatus(WorkflowConstants.STATUS_EMPTY);
 		}
 		else {
@@ -415,7 +422,8 @@ public class AssetVocabularyLocalServiceImpl
 				new ServiceContext()),
 			externalReferenceCode,
 			this::fetchAssetVocabularyByExternalReferenceCode,
-			this::getAssetVocabularyByExternalReferenceCode, groupId);
+			this::getAssetVocabularyByExternalReferenceCode, groupId,
+			"vocabulary");
 	}
 
 	@Override
@@ -503,6 +511,8 @@ public class AssetVocabularyLocalServiceImpl
 			String settings, int visibilityType)
 		throws PortalException {
 
+		_validateVisibilityType(visibilityType);
+
 		AssetVocabulary vocabulary =
 			assetVocabularyPersistence.findByPrimaryKey(vocabularyId);
 
@@ -532,6 +542,8 @@ public class AssetVocabularyLocalServiceImpl
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String settings, int visibilityType, ServiceContext serviceContext)
 		throws PortalException {
+
+		_validateVisibilityType(visibilityType);
 
 		AssetVocabulary vocabulary =
 			assetVocabularyPersistence.findByPrimaryKey(vocabularyId);
@@ -699,6 +711,20 @@ public class AssetVocabularyLocalServiceImpl
 					externalReferenceCode, " in group ", groupId));
 		}
 	}
+
+	private void _validateVisibilityType(int visibilityType)
+		throws PortalException {
+
+		if (!ArrayUtil.contains(_VISIBILITY_TYPES, visibilityType)) {
+			throw new VocabularyVisibilityTypeException();
+		}
+	}
+
+	private static final int[] _VISIBILITY_TYPES = {
+		AssetVocabularyConstants.VISIBILITY_TYPE_EMPTY,
+		AssetVocabularyConstants.VISIBILITY_TYPE_INTERNAL,
+		AssetVocabularyConstants.VISIBILITY_TYPE_PUBLIC
+	};
 
 	@BeanReference(type = AssetCategoryLocalService.class)
 	private AssetCategoryLocalService _assetCategoryLocalService;

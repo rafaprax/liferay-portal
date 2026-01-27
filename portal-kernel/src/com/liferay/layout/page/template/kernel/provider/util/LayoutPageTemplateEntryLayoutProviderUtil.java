@@ -7,6 +7,7 @@ package com.liferay.layout.page.template.kernel.provider.util;
 
 import com.liferay.layout.page.template.kernel.provider.LayoutPageTemplateEntryLayoutProvider;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutPrototype;
 import com.liferay.portal.kernel.module.service.Snapshot;
 
 /**
@@ -24,6 +25,20 @@ public class LayoutPageTemplateEntryLayoutProviderUtil {
 		return layoutPageTemplateEntryLayoutProviderUtil.
 			getLayoutPageTemplateEntryLayout(
 				groupId, externalReferenceCode, plid);
+	}
+
+	public static LayoutPrototype getLayoutPageTemplateEntryLayoutPrototype(
+		long companyId, String externalReferenceCode,
+		String layoutPageTemplateEntryScopeERC, long scopeGroupId) {
+
+		LayoutPageTemplateEntryLayoutProvider
+			layoutPageTemplateEntryLayoutProvider =
+				_layoutPageTemplateEntryLayoutProviderSnapshot.get();
+
+		return layoutPageTemplateEntryLayoutProvider.
+			getLayoutPageTemplateEntryLayoutPrototype(
+				companyId, externalReferenceCode,
+				layoutPageTemplateEntryScopeERC, scopeGroupId);
 	}
 
 	private static final Snapshot<LayoutPageTemplateEntryLayoutProvider>

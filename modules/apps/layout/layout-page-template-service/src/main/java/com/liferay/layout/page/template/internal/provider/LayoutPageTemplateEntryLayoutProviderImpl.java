@@ -9,7 +9,10 @@ import com.liferay.layout.page.template.kernel.provider.LayoutPageTemplateEntryL
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutPrototype;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
+import com.liferay.portal.kernel.util.ScopeUtil;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -56,11 +59,38 @@ public class LayoutPageTemplateEntryLayoutProviderImpl
 			layoutPageTemplateEntry.getPlid());
 	}
 
+	public LayoutPrototype getLayoutPageTemplateEntryLayoutPrototype(
+		long companyId, String externalReferenceCode,
+		String layoutPageTemplateEntryScopeERC, long scopeGroupId) {
+
+		Long itemGroupId = ScopeUtil.getItemGroupId(
+			companyId, layoutPageTemplateEntryScopeERC, scopeGroupId);
+
+		if (itemGroupId == null) {
+			return null;
+		}
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_layoutPageTemplateEntryLocalService.
+				fetchLayoutPageTemplateEntryByExternalReferenceCode(
+					externalReferenceCode, itemGroupId);
+
+		if (layoutPageTemplateEntry != null) {
+			return _layoutPrototypeLocalService.fetchLayoutPrototype(
+				layoutPageTemplateEntry.getLayoutPrototypeId());
+		}
+
+		return null;
+	}
+
 	@Reference
 	private LayoutLocalService _layoutLocalService;
 
 	@Reference
 	private LayoutPageTemplateEntryLocalService
 		_layoutPageTemplateEntryLocalService;
+
+	@Reference
+	private LayoutPrototypeLocalService _layoutPrototypeLocalService;
 
 }

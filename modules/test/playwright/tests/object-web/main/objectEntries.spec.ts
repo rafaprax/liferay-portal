@@ -80,6 +80,7 @@ const assigneeTest = test;
 const cmsTest = mergeTests(
 	test,
 	featureFlagsTest({
+		'LPD-11235': {enabled: true},
 		'LPD-17564': {enabled: true},
 		'LPD-34594': {enabled: true},
 	})
@@ -3377,10 +3378,12 @@ cmsTest.describe('Manage attachment ObjectField download permission', () => {
 				const objectField = objectFields[0];
 
 				const objectFieldActionCheckbox = iframeLocator.locator(
-					'#guest_ACTION_download_' + objectField.name
+					'#guest_ACTION_DOWNLOAD_' + objectField.name.toUpperCase()
 				);
 
-				await objectFieldActionCheckbox.click();
+				await page.waitForTimeout(500);
+
+				await objectFieldActionCheckbox.check();
 
 				await expect(objectFieldActionCheckbox).toBeChecked();
 

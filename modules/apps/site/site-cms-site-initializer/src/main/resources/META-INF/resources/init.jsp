@@ -12,11 +12,13 @@ taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
 taglib uri="http://liferay.com/tld/frontend-data-set" prefix="frontend-data-set" %><%@
 taglib uri="http://liferay.com/tld/react" prefix="react" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.site.cms.site.initializer.internal.constants.CMSSiteInitializerFDSNames" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.EditCategoryDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.EditVocabularyDisplayContext" %><%@
+page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewAllRelatedAssetsSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewAllSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewAllSpacesDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewBulkActionTaskReportDisplayContext" %><%@
@@ -33,6 +35,7 @@ page import="com.liferay.site.cms.site.initializer.internal.display.context.View
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewHomeSearchBarDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewHomeWorkflowTasksDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewRecycleBinSectionDisplayContext" %><%@
+page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewRelatedAssetsSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewSharedWithMeSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewSpaceContentsSummarySectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ViewSpaceFilesSummarySectionDisplayContext" %><%@

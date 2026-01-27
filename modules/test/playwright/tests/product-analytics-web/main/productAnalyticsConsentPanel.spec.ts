@@ -46,7 +46,46 @@ export const test = mergeTests(
 	usersAndOrganizationsPagesTest
 );
 
-test.afterEach(async ({page}) => {
+test.afterEach(async ({page, systemSettingsPage}) => {
+	const productAnalyticsHeading = await page.getByRole('heading', {
+		name: 'Product Analytics',
+	});
+
+	await test.step('Reset Product Analytics System Settings if needed', async () => {
+		await systemSettingsPage.goToSystemSetting('Privacy', 'Cookie Manager');
+
+		if (!(await page.getByText('Product Analytics').isVisible())) {
+			return;
+		}
+
+		await systemSettingsPage.goToSystemSetting(
+			'Privacy',
+			'Product Analytics'
+		);
+
+		await productAnalyticsHeading.waitFor();
+
+		if (
+			await systemSettingsPage.page
+				.getByRole('button', {name: 'Actions'})
+				.isVisible()
+		) {
+			page.once('dialog', async (dialogWindow) => {
+				await dialogWindow.accept();
+			});
+
+			await clickAndExpectToBeVisible({
+				autoClick: true,
+				target: systemSettingsPage.page.getByRole('menuitem', {
+					name: 'Reset Default Values',
+				}),
+				trigger: systemSettingsPage.page.getByRole('button', {
+					name: 'Actions',
+				}),
+			});
+		}
+	});
+
 	await test.step('Clear Product Analytics cookies if present', async () => {
 		await clearProductAnalyticsCookies(page);
 	});
@@ -76,10 +115,14 @@ test.beforeEach(async ({page, systemSettingsPage}) => {
 		await enabledButton.setChecked(true);
 
 		if (await page.getByRole('button', {name: 'Save'}).isVisible()) {
-			await page.getByRole('button', {name: 'Save'}).click();
+			await page
+				.getByRole('button', {name: 'Save'})
+				.dispatchEvent('click');
 		}
 		else {
-			await page.getByRole('button', {name: 'Update'}).click();
+			await page
+				.getByRole('button', {name: 'Update'})
+				.dispatchEvent('click');
 		}
 
 		await page.waitForTimeout(1000);

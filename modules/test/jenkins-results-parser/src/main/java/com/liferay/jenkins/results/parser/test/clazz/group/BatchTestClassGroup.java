@@ -7,7 +7,6 @@ package com.liferay.jenkins.results.parser.test.clazz.group;
 
 import com.google.common.collect.Lists;
 
-import com.liferay.jenkins.results.parser.BatchHistory;
 import com.liferay.jenkins.results.parser.BuildDatabase;
 import com.liferay.jenkins.results.parser.BuildDatabaseUtil;
 import com.liferay.jenkins.results.parser.BuildReportFactory;
@@ -17,17 +16,18 @@ import com.liferay.jenkins.results.parser.GitWorkingDirectory;
 import com.liferay.jenkins.results.parser.JenkinsMaster;
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
 import com.liferay.jenkins.results.parser.Job;
-import com.liferay.jenkins.results.parser.JobHistory;
 import com.liferay.jenkins.results.parser.PortalGitWorkingDirectory;
 import com.liferay.jenkins.results.parser.PortalTestClassJob;
 import com.liferay.jenkins.results.parser.RootCauseAnalysisToolJob;
 import com.liferay.jenkins.results.parser.TestClassReport;
-import com.liferay.jenkins.results.parser.TestHistory;
 import com.liferay.jenkins.results.parser.TestReport;
 import com.liferay.jenkins.results.parser.TestSuiteJob;
-import com.liferay.jenkins.results.parser.TestTaskHistory;
 import com.liferay.jenkins.results.parser.Workspace;
 import com.liferay.jenkins.results.parser.WorkspaceGitRepository;
+import com.liferay.jenkins.results.parser.history.BatchHistory;
+import com.liferay.jenkins.results.parser.history.JobHistory;
+import com.liferay.jenkins.results.parser.history.TestClassHistory;
+import com.liferay.jenkins.results.parser.history.TestTaskHistory;
 import com.liferay.jenkins.results.parser.job.property.GlobJobProperty;
 import com.liferay.jenkins.results.parser.job.property.JobProperty;
 import com.liferay.jenkins.results.parser.job.property.JobPropertyFactory;
@@ -86,10 +86,11 @@ public abstract class BatchTestClassGroup extends BaseTestClassGroup {
 		BatchHistory batchHistory = getBatchHistory();
 
 		if (batchHistory != null) {
-			TestHistory testHistory = batchHistory.getTestHistory(testName);
+			TestClassHistory testClassHistory =
+				batchHistory.getTestClassHistory(testName);
 
-			if (testHistory != null) {
-				averageTestDuration = testHistory.getAverageDuration();
+			if (testClassHistory != null) {
+				averageTestDuration = testClassHistory.getAverageDuration();
 			}
 		}
 
@@ -108,11 +109,12 @@ public abstract class BatchTestClassGroup extends BaseTestClassGroup {
 		BatchHistory batchHistory = getBatchHistory();
 
 		if (batchHistory != null) {
-			TestHistory testHistory = batchHistory.getTestHistory(testName);
+			TestClassHistory testClassHistory =
+				batchHistory.getTestClassHistory(testName);
 
-			if (testHistory != null) {
+			if (testClassHistory != null) {
 				averageTestOverheadDuration =
-					testHistory.getAverageOverheadDuration();
+					testClassHistory.getAverageOverheadDuration();
 			}
 		}
 
@@ -1512,13 +1514,14 @@ public abstract class BatchTestClassGroup extends BaseTestClassGroup {
 			return null;
 		}
 
-		TestHistory testHistory = batchHistory.getTestHistory(testName);
+		TestClassHistory testClassHistory = batchHistory.getTestClassHistory(
+			testName);
 
-		if (testHistory == null) {
+		if (testClassHistory == null) {
 			return null;
 		}
 
-		_testTaskHistories.put(testName, testHistory.getTestTaskHistory());
+		_testTaskHistories.put(testName, testClassHistory.getTestTaskHistory());
 
 		return _testTaskHistories.get(testName);
 	}
@@ -1589,6 +1592,10 @@ public abstract class BatchTestClassGroup extends BaseTestClassGroup {
 					BuildReportFactory.newDownstreamBuildReport(
 						getBatchName(), new JSONObject(buildReportFileContent),
 						null);
+
+				if (downstreamBuildReport == null) {
+					continue;
+				}
 
 				List<DownstreamBuildReport> cachedDownstreamBuildReports =
 					_cachedDownstreamBuildReportsMap.computeIfAbsent(

@@ -26,6 +26,7 @@ import com.liferay.segments.constants.SegmentsExperienceConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.service.SegmentsEntryLocalServiceUtil;
+import com.liferay.segments.service.SegmentsExperienceLocalServiceUtil;
 import com.liferay.segments.service.SegmentsExperienceServiceUtil;
 
 import java.util.Objects;
@@ -38,7 +39,7 @@ public class SegmentsExperienceUtil {
 	public static SegmentsExperience addSegmentsExperience(
 			FragmentEntryProcessorRegistry fragmentEntryProcessorRegistry,
 			InfoItemServiceRegistry infoItemServiceRegistry, Layout layout,
-			PageExperience pageExperience, int priority,
+			PageExperience pageExperience, Integer priority,
 			ServiceContext serviceContext)
 		throws Exception {
 
@@ -50,11 +51,14 @@ public class SegmentsExperienceUtil {
 					pageExperience.getSegmentItemExternalReference()),
 				pageExperience.getKey(), layout.getPlid(),
 				LocalizedMapUtil.getLocalizedMap(pageExperience.getName_i18n()),
-				priority, true,
+				getPriority(pageExperience.getKey(), layout, priority), true,
 				UnicodePropertiesBuilder.create(
 					true
 				).build(),
-				new ServiceContext());
+				ServiceContextUtil.createServiceContext(
+					serviceContext.getScopeGroupId(),
+					serviceContext.getRequest(), serviceContext.getUserId(),
+					pageExperience.getUuid()));
 
 		LayoutLocalServiceUtil.updateLayoutContent(
 			_getData(
@@ -66,29 +70,26 @@ public class SegmentsExperienceUtil {
 		return segmentsExperience;
 	}
 
-	public static String getDefaultSegmentsExperienceExternalReferenceCode(
-		PageExperience[] pageExperiences) {
-
-		if (ArrayUtil.isEmpty(pageExperiences)) {
-			throw new UnsupportedOperationException();
+	public static int getPriority(String key, Layout layout, Integer priority) {
+		if (Objects.equals(key, SegmentsExperienceConstants.KEY_DEFAULT)) {
+			return 0;
 		}
 
-		for (PageExperience pageExperience : pageExperiences) {
-			if (Objects.equals(
-					pageExperience.getKey(),
-					SegmentsExperienceConstants.KEY_DEFAULT)) {
-
-				return pageExperience.getExternalReferenceCode();
-			}
+		if (priority != null) {
+			return priority;
 		}
 
-		throw new UnsupportedOperationException();
+		int lowestPriority =
+			SegmentsExperienceLocalServiceUtil.getLowestPriority(
+				layout.getGroupId(), layout.getPlid());
+
+		return lowestPriority - 1;
 	}
 
 	public static SegmentsExperience updateSegmentsExperience(
 			FragmentEntryProcessorRegistry fragmentEntryProcessorRegistry,
 			InfoItemServiceRegistry infoItemServiceRegistry, Layout layout,
-			PageExperience pageExperience, int priority,
+			PageExperience pageExperience, Integer priority,
 			SegmentsExperience segmentsExperience,
 			ServiceContext serviceContext)
 		throws Exception {
@@ -100,10 +101,14 @@ public class SegmentsExperienceUtil {
 				serviceContext),
 			layout, segmentsExperience.getSegmentsExperienceId());
 
-		if (priority != segmentsExperience.getPriority()) {
+		int segmentsExperiencePriority = getPriority(
+			pageExperience.getKey(), layout, priority);
+
+		if (segmentsExperiencePriority != segmentsExperience.getPriority()) {
 			segmentsExperience =
 				SegmentsExperienceServiceUtil.updateSegmentsExperiencePriority(
-					segmentsExperience.getSegmentsExperienceId(), priority);
+					segmentsExperience.getSegmentsExperienceId(),
+					segmentsExperiencePriority);
 		}
 
 		return SegmentsExperienceServiceUtil.updateSegmentsExperience(

@@ -1213,20 +1213,6 @@ public class LayoutLocalServiceUtil {
 			groupId, keywords, types, statuses, start, end, orderByComparator);
 	}
 
-	public static List<Layout> getLayoutsByLayoutPrototypeUuid(
-		String layoutPrototypeUuid) {
-
-		return getService().getLayoutsByLayoutPrototypeUuid(
-			layoutPrototypeUuid);
-	}
-
-	public static int getLayoutsByLayoutPrototypeUuidCount(
-		String layoutPrototypeUuid) {
-
-		return getService().getLayoutsByLayoutPrototypeUuidCount(
-			layoutPrototypeUuid);
-	}
-
 	/**
 	 * Returns all the layouts matching the UUID and company.
 	 *
@@ -1513,6 +1499,13 @@ public class LayoutLocalServiceUtil {
 		long groupId, boolean privateLayout, long parentLayoutId) {
 
 		return getService().hasLayouts(groupId, privateLayout, parentLayoutId);
+	}
+
+	public static boolean hasLayouts(
+		long groupId, String portletLayoutPageTemplateEntryERC) {
+
+		return getService().hasLayouts(
+			groupId, portletLayoutPageTemplateEntryERC);
 	}
 
 	public static boolean hasLayouts(

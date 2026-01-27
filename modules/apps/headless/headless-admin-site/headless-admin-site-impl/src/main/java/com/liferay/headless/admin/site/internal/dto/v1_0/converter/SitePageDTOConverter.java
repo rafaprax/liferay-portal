@@ -9,6 +9,8 @@ import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.headless.admin.site.dto.v1_0.ContentPageSettings;
 import com.liferay.headless.admin.site.dto.v1_0.CustomMetaTag;
 import com.liferay.headless.admin.site.dto.v1_0.ItemExternalReference;
+import com.liferay.headless.admin.site.dto.v1_0.LinkToURLPageSettings;
+import com.liferay.headless.admin.site.dto.v1_0.PageSetPageSettings;
 import com.liferay.headless.admin.site.dto.v1_0.PageSettings;
 import com.liferay.headless.admin.site.dto.v1_0.SitePage;
 import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSettings;
@@ -19,23 +21,20 @@ import com.liferay.headless.admin.site.internal.resource.v1_0.util.NavigationSet
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.OpenGraphSettingsUtil;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.SEOSettingsUtil;
 import com.liferay.headless.admin.user.dto.v1_0.Creator;
-import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
-import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
 import com.liferay.layout.seo.model.LayoutSEOEntry;
 import com.liferay.layout.seo.model.LayoutSEOEntryCustomMetaTag;
 import com.liferay.layout.seo.service.LayoutSEOEntryLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.model.LayoutPrototype;
 import com.liferay.portal.kernel.model.LayoutTypePortletConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.LayoutLocalService;
-import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
@@ -190,9 +189,27 @@ public class SitePageDTOConverter implements DTOConverter<Layout, SitePage> {
 		SitePage.Type type = SitePageTypeUtil.toExternalType(layout.getType());
 
 		if (type == SitePage.Type.CONTENT_PAGE) {
-			return new ContentPageSettings() {
+			return _toContentPageSettings(layout);
+		}
+		else if (type == SitePage.Type.LINK_TO_URL_PAGE) {
+			return new LinkToURLPageSettings() {
 				{
-					setType(() -> Type.CONTENT_PAGE_SETTINGS);
+					setPageURL(
+						() -> {
+							UnicodeProperties typeSettingsUnicodeProperties =
+								layout.getTypeSettingsProperties();
+
+							return typeSettingsUnicodeProperties.getProperty(
+								"url", StringPool.BLANK);
+						});
+					setType(() -> Type.LINK_TO_URL_PAGE_SETTINGS);
+				}
+			};
+		}
+		else if (type == SitePage.Type.PAGE_SET_PAGE) {
+			return new PageSetPageSettings() {
+				{
+					setType(() -> Type.PAGE_SET_PAGE_SETTINGS);
 				}
 			};
 		}
@@ -200,27 +217,36 @@ public class SitePageDTOConverter implements DTOConverter<Layout, SitePage> {
 		return _toWidgetPageSettings(layout);
 	}
 
-	private PageSettings _toPageSettings(Layout layout) {
-		PageSettings pageSettings = _getPageSettings(layout);
+	private ContentPageSettings _toContentPageSettings(Layout layout) {
+		ContentPageSettings contentPageSettings = new ContentPageSettings();
 
 		LayoutSEOEntry layoutSEOEntry =
 			_layoutSEOEntryLocalService.fetchLayoutSEOEntry(
 				layout.getGroupId(), layout.isPrivateLayout(),
 				layout.getLayoutId());
 
-		pageSettings.setCustomMetaTags(
+		contentPageSettings.setCustomMetaTags(
 			() -> _getCustomMetaTags(layoutSEOEntry));
+		contentPageSettings.setOpenGraphSettings(
+			() -> OpenGraphSettingsUtil.getOpenGraphSettings(
+				_dlAppService, layoutSEOEntry));
+		contentPageSettings.setSeoSettings(
+			() -> SEOSettingsUtil.getSeoSettings(layout, layoutSEOEntry));
+
+		contentPageSettings.setType(
+			() -> PageSettings.Type.CONTENT_PAGE_SETTINGS);
+
+		return contentPageSettings;
+	}
+
+	private PageSettings _toPageSettings(Layout layout) {
+		PageSettings pageSettings = _getPageSettings(layout);
 
 		pageSettings.setHiddenFromNavigation(layout::isHidden);
 		pageSettings.setNavigationSettings(
 			() -> NavigationSettingsUtil.toSitePageNavigationSettings(
 				layout.getTypeSettingsProperties()));
-		pageSettings.setOpenGraphSettings(
-			() -> OpenGraphSettingsUtil.getOpenGraphSettings(
-				_dlAppService, layoutSEOEntry));
 		pageSettings.setPriority(layout::getPriority);
-		pageSettings.setSeoSettings(
-			() -> SEOSettingsUtil.getSeoSettings(layout, layoutSEOEntry));
 
 		return pageSettings;
 	}
@@ -253,46 +279,52 @@ public class SitePageDTOConverter implements DTOConverter<Layout, SitePage> {
 
 				return sortedCustomizableSectionIds.toArray(new String[0]);
 			});
+
+		LayoutSEOEntry layoutSEOEntry =
+			_layoutSEOEntryLocalService.fetchLayoutSEOEntry(
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId());
+
+		widgetPageSettings.setCustomMetaTags(
+			() -> _getCustomMetaTags(layoutSEOEntry));
+
+		widgetPageSettings.setInheritChanges(
+			() -> {
+				if (Validator.isNull(
+						layout.getPortletLayoutPageTemplateEntryERC())) {
+
+					return null;
+				}
+
+				return layout.isPortletLayoutPageTemplateEntryLinkEnabled();
+			});
 		widgetPageSettings.setLayoutTemplateId(
 			() -> layout.getTypeSettingsProperty(
 				LayoutTypePortletConstants.LAYOUT_TEMPLATE_ID));
+		widgetPageSettings.setOpenGraphSettings(
+			() -> OpenGraphSettingsUtil.getOpenGraphSettings(
+				_dlAppService, layoutSEOEntry));
+		widgetPageSettings.setSeoSettings(
+			() -> SEOSettingsUtil.getSeoSettings(layout, layoutSEOEntry));
 		widgetPageSettings.setType(
 			() -> PageSettings.Type.WIDGET_PAGE_SETTINGS);
 		widgetPageSettings.setWidgetPageTemplateReference(
 			() -> {
-				if (layout.getLayoutPrototypeUuid() == null) {
+				if (Validator.isNull(
+						layout.getPortletLayoutPageTemplateEntryERC())) {
+
 					return null;
 				}
-
-				LayoutPrototype layoutPrototype =
-					_layoutPrototypeLocalService.
-						fetchLayoutPrototypeByUuidAndCompanyId(
-							layout.getLayoutPrototypeUuid(),
-							layout.getCompanyId());
-
-				if (layoutPrototype == null) {
-					return null;
-				}
-
-				LayoutPageTemplateEntry layoutPageTemplateEntry =
-					_layoutPageTemplateEntryLocalService.
-						fetchFirstLayoutPageTemplateEntry(
-							layoutPrototype.getLayoutPrototypeId());
-
-				if (layoutPageTemplateEntry == null) {
-					return null;
-				}
-
-				widgetPageSettings.setInheritChanges(
-					layout::isLayoutPrototypeLinkEnabled);
 
 				return new ItemExternalReference() {
 					{
 						setExternalReferenceCode(
-							layoutPageTemplateEntry::getExternalReferenceCode);
+							layout::getPortletLayoutPageTemplateEntryERC);
 						setScope(
 							() -> ItemScopeUtil.getItemScope(
-								layoutPageTemplateEntry.getGroupId(),
+								layout.getCompanyId(),
+								layout.
+									getPortletLayoutPageTemplateEntryScopeERC(),
 								layout.getGroupId()));
 					}
 				};
@@ -306,13 +338,6 @@ public class SitePageDTOConverter implements DTOConverter<Layout, SitePage> {
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
-
-	@Reference
-	private LayoutPageTemplateEntryLocalService
-		_layoutPageTemplateEntryLocalService;
-
-	@Reference
-	private LayoutPrototypeLocalService _layoutPrototypeLocalService;
 
 	@Reference
 	private LayoutSEOEntryLocalService _layoutSEOEntryLocalService;

@@ -41,6 +41,8 @@ components:
             type: object
         TaskDefinition:
             properties:
+                active:
+                    type: boolean
                 description:
                     type: string
                 name:
@@ -54,6 +56,9 @@ components:
                     readOnly: true
                     type: string
                 scope:
+                    readOnly: true
+                    type: string
+                userToken:
                     readOnly: true
                     type: string
             type: object

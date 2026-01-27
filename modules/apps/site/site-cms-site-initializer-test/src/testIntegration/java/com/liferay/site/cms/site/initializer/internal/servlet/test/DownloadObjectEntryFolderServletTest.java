@@ -22,7 +22,6 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryFolderLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -60,8 +59,10 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,6 +85,25 @@ public class DownloadObjectEntryFolderServletTest {
 	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
 
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		_originalPermissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		PermissionThreadLocal.setPermissionChecker(
+			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser()));
+
+		_originalName = PrincipalThreadLocal.getName();
+
+		PrincipalThreadLocal.setName(TestPropsValues.getUserId());
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+		PermissionThreadLocal.setPermissionChecker(_originalPermissionChecker);
+		PrincipalThreadLocal.setName(_originalName);
+	}
+
 	@Before
 	public void setUp() throws Exception {
 		_group = CMSTestUtil.getOrAddGroup(
@@ -92,7 +112,7 @@ public class DownloadObjectEntryFolderServletTest {
 		_depotEntry = _depotEntryLocalService.addDepotEntry(
 			Collections.singletonMap(
 				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
-			null, DepotConstants.TYPE_ASSET_LIBRARY,
+			null, DepotConstants.TYPE_SPACE,
 			new ServiceContext() {
 				{
 					setCompanyId(_group.getCompanyId());
@@ -109,14 +129,6 @@ public class DownloadObjectEntryFolderServletTest {
 
 	@Test
 	public void testDownloadFolder() throws Exception {
-		PermissionChecker originalPermissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
-		String originalName = PrincipalThreadLocal.getName();
-
-		PermissionThreadLocal.setPermissionChecker(
-			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser()));
-		PrincipalThreadLocal.setName(TestPropsValues.getUserId());
-
 		ObjectEntryFolder objectEntryFolder = _addObjectEntryFolder(
 			ObjectEntryFolderConstants.PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT);
 
@@ -135,24 +147,19 @@ public class DownloadObjectEntryFolderServletTest {
 			mockHttpServletResponse.getContentType());
 		Assert.assertEquals(
 			HttpServletResponse.SC_OK, mockHttpServletResponse.getStatus());
-
-		PermissionThreadLocal.setPermissionChecker(originalPermissionChecker);
-		PrincipalThreadLocal.setName(originalName);
 	}
 
 	private long _addFileEntry() throws Exception {
 		DLFolder dlFolder = DLTestUtil.addDLFolder(_depotEntry.getGroupId());
-		byte[] bytes = TestDataConstants.TEST_BYTE_ARRAY;
 
 		DLFileEntry dlFileEntry = _dlFileEntryLocalService.addFileEntry(
 			null, TestPropsValues.getUserId(), dlFolder.getGroupId(),
 			dlFolder.getRepositoryId(), dlFolder.getFolderId(),
-			RandomTestUtil.randomString() + ".pdf",
-			ContentTypes.APPLICATION_PDF, RandomTestUtil.randomString(),
-			StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+			RandomTestUtil.randomString(), null, RandomTestUtil.randomString(),
+			RandomTestUtil.randomString(), null, null,
 			DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT, null,
-			null, new ByteArrayInputStream(bytes), bytes.length, null, null,
-			null,
+			null, new ByteArrayInputStream(TestDataConstants.TEST_BYTE_ARRAY),
+			TestDataConstants.TEST_BYTE_ARRAY.length, null, null, null,
 			ServiceContextTestUtil.getServiceContext(dlFolder.getGroupId()));
 
 		return dlFileEntry.getFileEntryId();
@@ -236,14 +243,6 @@ public class DownloadObjectEntryFolderServletTest {
 	}
 
 	private void _testDownloadBulkActionWithBulkActionItems() throws Exception {
-		PermissionChecker originalPermissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
-		String originalName = PrincipalThreadLocal.getName();
-
-		PermissionThreadLocal.setPermissionChecker(
-			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser()));
-		PrincipalThreadLocal.setName(TestPropsValues.getUserId());
-
 		ObjectDefinition objectDefinition =
 			_objectDefinitionLocalService.
 				getObjectDefinitionByExternalReferenceCode(
@@ -297,20 +296,9 @@ public class DownloadObjectEntryFolderServletTest {
 			mockHttpServletResponse.getContentType());
 		Assert.assertEquals(
 			HttpServletResponse.SC_OK, mockHttpServletResponse.getStatus());
-
-		PermissionThreadLocal.setPermissionChecker(originalPermissionChecker);
-		PrincipalThreadLocal.setName(originalName);
 	}
 
 	private void _testDownloadBulkActionWithSelectAll() throws Exception {
-		PermissionChecker originalPermissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
-		String originalName = PrincipalThreadLocal.getName();
-
-		PermissionThreadLocal.setPermissionChecker(
-			PermissionCheckerFactoryUtil.create(TestPropsValues.getUser()));
-		PrincipalThreadLocal.setName(TestPropsValues.getUserId());
-
 		ObjectDefinition objectDefinition =
 			_objectDefinitionLocalService.
 				getObjectDefinitionByExternalReferenceCode(
@@ -371,10 +359,10 @@ public class DownloadObjectEntryFolderServletTest {
 			mockHttpServletResponse.getContentType());
 		Assert.assertEquals(
 			HttpServletResponse.SC_OK, mockHttpServletResponse.getStatus());
-
-		PermissionThreadLocal.setPermissionChecker(originalPermissionChecker);
-		PrincipalThreadLocal.setName(originalName);
 	}
+
+	private static String _originalName;
+	private static PermissionChecker _originalPermissionChecker;
 
 	@Inject
 	private CompanyLocalService _companyLocalService;

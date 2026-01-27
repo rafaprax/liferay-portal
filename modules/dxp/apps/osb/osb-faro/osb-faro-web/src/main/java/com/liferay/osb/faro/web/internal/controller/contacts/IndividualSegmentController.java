@@ -11,6 +11,7 @@ import com.liferay.osb.faro.engine.client.model.IndividualSegmentMembership;
 import com.liferay.osb.faro.engine.client.model.IndividualSegmentMembershipChange;
 import com.liferay.osb.faro.engine.client.model.IndividualSegmentMembershipChangeAggregation;
 import com.liferay.osb.faro.engine.client.model.IndividualSegmentRealTimeMembership;
+import com.liferay.osb.faro.engine.client.model.RealTimeMembershipMetric;
 import com.liferay.osb.faro.engine.client.model.Results;
 import com.liferay.osb.faro.engine.client.util.OrderByField;
 import com.liferay.osb.faro.model.FaroProject;
@@ -225,6 +226,17 @@ public class IndividualSegmentController extends BaseFaroController {
 				cur, delta, orderByFieldsFaroParam.getValue());
 
 		return new FaroResultsDisplay(results);
+	}
+
+	@GET
+	@Path("/{id}/real-time-membership-metric")
+	@RolesAllowed(RoleConstants.SITE_MEMBER)
+	public RealTimeMembershipMetric getRealTimeMembershipMetric(
+			@PathParam("groupId") long groupId, @PathParam("id") String id)
+		throws Exception {
+
+		return contactsEngineClient.getRealTimeMembershipMetric(
+			faroProjectLocalService.getFaroProjectByGroupId(groupId), id);
 	}
 
 	@GET

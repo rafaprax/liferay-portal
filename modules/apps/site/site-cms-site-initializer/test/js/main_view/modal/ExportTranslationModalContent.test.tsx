@@ -173,9 +173,11 @@ describe('ExportTranslationModalContent', () => {
 
 		await waitFor(() => {
 			expect(mockedFetch).toHaveBeenCalledWith(
-				expect.stringContaining('123/translations'),
+				'/o/cms/basic-web-contents/123/translations?sourceLanguageId=en_US&targetLanguageIds=es_ES%2Cfr_FR&version=2.0',
 				expect.objectContaining({
-					method: 'POST',
+					headers: expect.objectContaining({
+						Accept: 'application/zip',
+					}),
 				})
 			);
 		});

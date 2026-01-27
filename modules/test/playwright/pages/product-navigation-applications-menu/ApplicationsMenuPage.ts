@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
@@ -72,6 +72,7 @@ export class ApplicationsMenuPage {
 	private readonly systemSettingsItem: Locator;
 	private readonly userGroupsItem: Locator;
 	private readonly usersAndOrganizationsItem: Locator;
+	readonly viewAllLink: Locator;
 	private readonly virtualInstancesItem: Locator;
 
 	constructor(page: Page) {
@@ -324,6 +325,7 @@ export class ApplicationsMenuPage {
 			exact: true,
 			name: 'Users and Organizations',
 		});
+		this.viewAllLink = page.getByRole('button', {name: 'View All'});
 		this.virtualInstancesItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Virtual Instances',

@@ -980,23 +980,7 @@ public class AssetCategoriesDisplayContext {
 		return _showSelectAssetDisplayPage;
 	}
 
-	public boolean isVisibilityTypeChecked(int visibilityType)
-		throws PortalException {
-
-		AssetVocabulary vocabulary = getVocabulary();
-
-		if ((vocabulary != null) &&
-			(vocabulary.getVisibilityType() == visibilityType)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
-	public boolean isVisibilityTypeDisabled() throws PortalException {
-		AssetVocabulary vocabulary = getVocabulary();
-
+	public boolean isVisibilityTypeDisabled(AssetVocabulary vocabulary) {
 		if ((vocabulary == null) ||
 			(vocabulary.getVisibilityType() ==
 				AssetVocabularyConstants.VISIBILITY_TYPE_EMPTY)) {
@@ -1005,6 +989,28 @@ public class AssetCategoriesDisplayContext {
 		}
 
 		return true;
+	}
+
+	public boolean isVisibilityTypeInternalChecked(AssetVocabulary vocabulary) {
+		if ((vocabulary != null) &&
+			(vocabulary.getVisibilityType() ==
+				AssetVocabularyConstants.VISIBILITY_TYPE_INTERNAL)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isVisibilityTypePublicChecked(AssetVocabulary vocabulary) {
+		if ((vocabulary == null) ||
+			(vocabulary.getVisibilityType() ==
+				AssetVocabularyConstants.VISIBILITY_TYPE_PUBLIC)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private long _getDefaultVocabularyId() throws PortalException {

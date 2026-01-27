@@ -6,6 +6,7 @@
 package com.liferay.layout.page.template.kernel.provider;
 
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutPrototype;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -17,5 +18,9 @@ public interface LayoutPageTemplateEntryLayoutProvider {
 
 	public Layout getLayoutPageTemplateEntryLayout(
 		long groupId, String externalReferenceCode, long plid);
+
+	public LayoutPrototype getLayoutPageTemplateEntryLayoutPrototype(
+		long companyId, String externalReferenceCode,
+		String layoutPageTemplateEntryScopeERC, long scopeGroupId);
 
 }

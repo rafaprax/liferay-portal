@@ -12,6 +12,7 @@ type TSite = {
 	active?: boolean;
 	externalReferenceCode?: string;
 	id?: number;
+	key?: string;
 	membershipType?: string;
 	name: string;
 	parentSiteKey?: string;
@@ -54,6 +55,12 @@ export class HeadlessSiteApiHelper {
 					site: JSON.stringify(site),
 				},
 			}
+		);
+	}
+
+	async getSite(siteId: string): Promise<Site> {
+		return this.apiHelpers.get(
+			`${this.apiHelpers.baseUrl}${this.basePath}/sites/${siteId}`
 		);
 	}
 

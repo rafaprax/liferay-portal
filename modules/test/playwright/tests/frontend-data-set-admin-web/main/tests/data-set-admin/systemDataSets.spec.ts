@@ -516,8 +516,6 @@ test(
 					dataSetLabel,
 				});
 
-				let i = 0;
-
 				for (const section of sections) {
 					await filtersPage.assertTableCellContent({
 						filterData: {
@@ -528,7 +526,7 @@ test(
 							type: section[2],
 						},
 						page: filtersPage.page,
-						rowIndex: i++,
+						rowIndex: null,
 					});
 				}
 
@@ -536,8 +534,13 @@ test(
 			};
 
 			await assertFilterEntries('Advanced Sample', [
-				['Client Extension', 'id', 'Client Extension Filter', true],
 				['Invalid', 'invalid', 'Client Extension Filter', true],
+				[
+					'Client Extension',
+					'clientExtension',
+					'Client Extension Filter',
+					true,
+				],
 				['Date Range', 'date', 'Date Filter', true],
 				['Color', 'color', 'System Filter', false],
 				['Size', 'size', 'System Filter', false],

@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -238,15 +239,14 @@ public class FragmentInstancePageElementDefinitionDTOConverter
 				setCss(fragmentEntryLink::getCss);
 				setCssClasses(
 					() -> {
-						if (SetUtil.isEmpty(
-								fragmentStyledLayoutStructureItem.
-									getCssClasses())) {
+						Set<String> cssClasses =
+							fragmentStyledLayoutStructureItem.getCssClasses();
 
+						if (SetUtil.isEmpty(cssClasses)) {
 							return null;
 						}
 
-						return ArrayUtil.toStringArray(
-							fragmentStyledLayoutStructureItem.getCssClasses());
+						return ArrayUtil.toStringArray(cssClasses);
 					});
 				setDatePropagated(fragmentEntryLink::getLastPropagationDate);
 				setDraftFragmentInstanceExternalReferenceCode(

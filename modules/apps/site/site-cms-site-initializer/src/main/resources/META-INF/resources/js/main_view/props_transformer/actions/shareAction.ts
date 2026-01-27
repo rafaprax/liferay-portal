@@ -15,6 +15,7 @@ export default async function shareAction({
 	autocompleteURL,
 	collaboratorURL,
 	creator,
+	entryClassName,
 	itemId,
 	title,
 }: {
@@ -26,6 +27,7 @@ export default async function shareAction({
 		image?: string;
 		name: string;
 	};
+	entryClassName: string;
 	itemId: number;
 	title: string;
 }) {
@@ -58,6 +60,7 @@ export default async function shareAction({
 					closeModal,
 					collaboratorURL,
 					creator: {...creator, id: creator.id.toString()},
+					entryClassName,
 					initialCollaborators,
 					itemId,
 					title,

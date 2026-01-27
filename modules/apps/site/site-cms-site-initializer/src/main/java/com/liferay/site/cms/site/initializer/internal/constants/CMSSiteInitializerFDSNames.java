@@ -10,6 +10,10 @@ package com.liferay.site.cms.site.initializer.internal.constants;
  */
 public class CMSSiteInitializerFDSNames {
 
+	public static final String ALL_RELATED_ASSETS_SECTION =
+		CMSSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME +
+			"-allRelatedAssetsSection";
+
 	public static final String ALL_SECTION =
 		CMSSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME + "-allSection";
 
@@ -59,6 +63,10 @@ public class CMSSiteInitializerFDSNames {
 
 	public static final String RECYCLE_BIN_SECTION =
 		CMSSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME + "-recycleBinSection";
+
+	public static final String RELATED_ASSETS_SECTION =
+		CMSSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME +
+			"-relatedAssetsSection";
 
 	public static final String SHARED_WITH_ME =
 		CMSSiteInitializerConstants.BUNDLE_SYMBOLIC_NAME + "-sharedWithMe";

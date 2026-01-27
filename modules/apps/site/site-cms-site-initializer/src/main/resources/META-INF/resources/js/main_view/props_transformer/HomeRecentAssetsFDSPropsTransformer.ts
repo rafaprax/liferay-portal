@@ -198,6 +198,7 @@ export default function HomeRecentAssetsFDSPropsTransformer({
 					autocompleteURL,
 					collaboratorURL: collaboratorURLs[itemData.entryClassName],
 					creator: itemData.embedded.creator,
+					entryClassName: itemData.entryClassName,
 					itemId: itemData.embedded.id,
 					title: itemData.embedded?.title,
 				});

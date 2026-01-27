@@ -39,6 +39,30 @@ export type TChannelsDTO = {
 	totalCount: number;
 };
 
+export type TCommentDTO = {
+	category: string;
+	creator: {
+		id: string;
+		image: string;
+		name: string;
+	};
+	dateCreated: string;
+	dateModified: string;
+	externalReferenceCode: string;
+	id: number;
+	numberOfComments: number;
+	parentCommentId: number;
+	text: string;
+};
+
+export type TCommentsDTO = {
+	items: Array<TCommentDTO>;
+	lastPage: number;
+	page: number;
+	pageSize: number;
+	totalCount: number;
+};
+
 export type TDSRDTO = {
 	accountId: number;
 	accountName?: string;
@@ -174,6 +198,21 @@ async function getChannels(channelName = ''): Promise<TChannelsDTO> {
 	throw new Error(error);
 }
 
+async function getDigitalSalesRoomComments(
+	digitalSalesRoomId: number,
+	page: number = 1
+): Promise<TCommentsDTO> {
+	const {data, error} = await ApiHelper.get(
+		`${PATH}/${digitalSalesRoomId}/comments?page=${page}&sort=dateCreated:desc`
+	);
+
+	if (data) {
+		return data as TCommentsDTO;
+	}
+
+	throw new Error(error);
+}
+
 async function getDigitalSalesRoom(
 	digitalSalesRoomId: number
 ): Promise<TDSRDTO> {
@@ -283,6 +322,24 @@ async function patchDigitalSalesRoomTemplate(
 
 	if (data) {
 		return data as TDSRTemplateDTO;
+	}
+
+	throw new Error(error);
+}
+
+async function postDigitalSalesRoomComment(
+	digitalSalesRoomId: number,
+	text: string
+): Promise<TCommentDTO> {
+	const {data, error} = await ApiHelper.post(
+		`${PATH}/${digitalSalesRoomId}/comments`,
+		{
+			text,
+		}
+	);
+
+	if (data) {
+		return data as TCommentDTO;
 	}
 
 	throw new Error(error);
@@ -411,18 +468,36 @@ async function postDigitalSalesRoomTemplateDigitalSalesRoom(
 	throw new Error(error);
 }
 
+async function postDigitalSalesRoomTemplateDigitalSalesRoomTemplate(
+	digitalSalesRoomTemplateId: number
+): Promise<TDSRDTO> {
+	const {data, error} = await ApiHelper.post(
+		`${TEMPLATE_PATH}/${digitalSalesRoomTemplateId}/digital-sales-room-templates`,
+		{}
+	);
+
+	if (data) {
+		return data as TDSRDTO;
+	}
+
+	throw new Error(error);
+}
+
 export default {
 	deleteDigitalSalesRoom,
 	deleteDigitalSalesRoomTemplate,
 	getAccounts,
 	getChannels,
+	getComments: getDigitalSalesRoomComments,
 	getDigitalSalesRoom,
 	getDigitalSalesRoomTemplate,
 	getDigitalSalesRoomTemplates,
 	patchDigitalSalesRoom,
 	patchDigitalSalesRoomTemplate,
 	postDigitalSalesRoom,
+	postDigitalSalesRoomComment,
 	postDigitalSalesRoomDigitalSalesRoomTemplate,
 	postDigitalSalesRoomTemplate,
 	postDigitalSalesRoomTemplateDigitalSalesRoom,
+	postDigitalSalesRoomTemplateDigitalSalesRoomTemplate,
 };

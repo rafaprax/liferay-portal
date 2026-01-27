@@ -16,9 +16,11 @@ import com.liferay.headless.admin.site.client.custom.field.CustomValue;
 import com.liferay.headless.admin.site.client.dto.v1_0.BasicWidgetPageWidgetInstance;
 import com.liferay.headless.admin.site.client.dto.v1_0.ContentPageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.GeneralConfig;
+import com.liferay.headless.admin.site.client.dto.v1_0.LinkToURLPageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.NestedApplicationsWidgetPageWidgetInstance;
 import com.liferay.headless.admin.site.client.dto.v1_0.NestedWidgetSection;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageExperience;
+import com.liferay.headless.admin.site.client.dto.v1_0.PageSetPageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.Settings;
 import com.liferay.headless.admin.site.client.dto.v1_0.SitePage;
@@ -35,6 +37,7 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServ
 import com.liferay.layout.test.util.ContentLayoutTestUtil;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.petra.function.UnsafeRunnable;
+import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Layout;
@@ -303,6 +306,21 @@ public class PageSpecificationsTestUtil {
 			pageSpecifications[1], draftLayout.getPlid());
 	}
 
+	public static void assertPageSpecifications(
+		PageSpecification[] actualPageSpecifications,
+		PageSpecification[] expectedPageSpecifications) {
+
+		Assert.assertEquals(
+			actualPageSpecifications.toString(),
+			expectedPageSpecifications.length, actualPageSpecifications.length);
+		Assert.assertEquals(
+			actualPageSpecifications.toString(), 1,
+			actualPageSpecifications.length);
+
+		Assert.assertEquals(
+			expectedPageSpecifications[0], actualPageSpecifications[0]);
+	}
+
 	public static void assertWidgetPageSpecification(
 		WidgetPageSpecification expectedWidgetPageSpecification,
 		WidgetPageSpecification actualWidgetPageSpecification) {
@@ -415,6 +433,28 @@ public class PageSpecificationsTestUtil {
 		throws Exception {
 
 		return new ExpandoTableAutocloseable();
+	}
+
+	public static PageSpecification[] getLinkToURLPageSpecifications(
+			String externalReferenceCode)
+		throws Exception {
+
+		return new PageSpecification[] {
+			_getPageSpecification(
+				externalReferenceCode, LinkToURLPageSpecification::new,
+				PageSpecification.Type.LINK_TO_URL_PAGE_SPECIFICATION)
+		};
+	}
+
+	public static PageSpecification[] getPageSetPageSpecifications(
+			String externalReferenceCode)
+		throws Exception {
+
+		return new PageSpecification[] {
+			_getPageSpecification(
+				externalReferenceCode, PageSetPageSpecification::new,
+				PageSpecification.Type.PAGE_SET_PAGE_SPECIFICATION)
+		};
 	}
 
 	public static PageSpecification[] getPageSpecifications(
@@ -999,6 +1039,24 @@ public class PageSpecificationsTestUtil {
 				}
 			},
 			NestedWidgetSection.class);
+	}
+
+	private static PageSpecification _getPageSpecification(
+			String externalReferenceCode,
+			UnsafeSupplier<PageSpecification, Exception>
+				pageSpecificationUnsafeSupplier,
+			PageSpecification.Type type)
+		throws Exception {
+
+		PageSpecification pageSpecification =
+			pageSpecificationUnsafeSupplier.get();
+
+		pageSpecification.setCustomFields(new CustomField[0]);
+		pageSpecification.setExternalReferenceCode(externalReferenceCode);
+		pageSpecification.setStatus(PageSpecification.Status.APPROVED);
+		pageSpecification.setType(type);
+
+		return pageSpecification;
 	}
 
 	private static GeneralConfig.ApplicationDecorator

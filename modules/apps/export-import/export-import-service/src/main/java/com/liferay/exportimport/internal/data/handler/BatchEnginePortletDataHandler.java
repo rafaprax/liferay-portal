@@ -59,8 +59,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -133,13 +135,47 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 	}
 
 	@Override
+	public String getDescription(Locale locale) {
+		return _getSoleProperty(
+			exportImportDescriptor -> exportImportDescriptor.getDescription(
+				locale));
+	}
+
+	@Override
 	public String getName() {
 		return getPortletId();
 	}
 
 	@Override
+	public int getRank() {
+		if (_registrations.isEmpty()) {
+			return super.getRank();
+		}
+
+		int rank = Integer.MAX_VALUE;
+
+		for (Registration registration : _registrations) {
+			ExportImportVulcanBatchEngineTaskItemDelegate.ExportImportDescriptor
+				exportImportDescriptor =
+					registration.getExportImportDescriptor();
+
+			if (exportImportDescriptor.getRank() < rank) {
+				rank = exportImportDescriptor.getRank();
+			}
+		}
+
+		return rank;
+	}
+
+	@Override
 	public String getSchemaVersion() {
 		return SCHEMA_VERSION;
+	}
+
+	@Override
+	public String getTag(Locale locale) {
+		return _getSoleProperty(
+			exportImportDescriptor -> exportImportDescriptor.getTag(locale));
 	}
 
 	@Override
@@ -167,16 +203,10 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 
 	@Override
 	public boolean isHidden() {
-		if (_registrations.size() != 1) {
-			return false;
-		}
-
-		Registration registration = _registrations.get(0);
-
-		ExportImportVulcanBatchEngineTaskItemDelegate.ExportImportDescriptor
-			exportImportDescriptor = registration.getExportImportDescriptor();
-
-		return exportImportDescriptor.isHidden();
+		return Boolean.TRUE.equals(
+			_getSoleProperty(
+				ExportImportVulcanBatchEngineTaskItemDelegate.
+					ExportImportDescriptor::isHidden));
 	}
 
 	@Override
@@ -619,10 +649,23 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 
 		return new PortletDataHandlerBoolean(
 			getPortletId(), exportImportDescriptor.getResourceClassName(),
-			exportImportDescriptor.getLabelLanguageKey(),
-			exportImportDescriptor.getSubtitleLanguageKeys(),
-			exportImportDescriptor.getTagLanguageKey(), true, false, null,
+			exportImportDescriptor.getLabelLanguageKey(), true, false, null,
 			exportImportDescriptor.getResourceClassName(), null);
+	}
+
+	private <T> T _getSoleProperty(
+		Function
+			<ExportImportVulcanBatchEngineTaskItemDelegate.
+				ExportImportDescriptor,
+			 T> function) {
+
+		if (_registrations.size() != 1) {
+			return null;
+		}
+
+		Registration registration = _registrations.get(0);
+
+		return function.apply(registration.getExportImportDescriptor());
 	}
 
 	private long _getUserId() {
@@ -664,14 +707,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		}
 		else {
 			setEmptyControlsAllowed(true);
-
-			if (_registrations.size() == 1) {
-				setExportPortletDataHandlerControls(
-					_getPortletDataHandlerControl(_registrations.get(0)));
-			}
-			else {
-				setExportPortletDataHandlerControls();
-			}
+			setExportPortletDataHandlerControls();
 		}
 	}
 

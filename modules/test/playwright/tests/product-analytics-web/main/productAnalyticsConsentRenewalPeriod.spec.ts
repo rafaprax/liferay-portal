@@ -25,7 +25,6 @@ const cookieKeys = [
 export const test = mergeTests(
 	featureFlagsTest({
 		'LPD-51356': {enabled: true},
-		'LPD-65277': {enabled: true},
 	}),
 	loginTest(),
 	productAnalyticsPagesTest,
@@ -81,10 +80,14 @@ test.beforeEach(
 			await enabledButton.setChecked(true);
 
 			if (await page.getByRole('button', {name: 'Save'}).isVisible()) {
-				await page.getByRole('button', {name: 'Save'}).click();
+				await page
+					.getByRole('button', {name: 'Save'})
+					.dispatchEvent('click');
 			}
 			else {
-				await page.getByRole('button', {name: 'Update'}).click();
+				await page
+					.getByRole('button', {name: 'Update'})
+					.dispatchEvent('click');
 			}
 
 			await page.waitForTimeout(1000);

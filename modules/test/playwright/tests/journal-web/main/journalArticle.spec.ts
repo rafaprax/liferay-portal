@@ -387,17 +387,15 @@ baseTest(
 
 		await journalEditArticlePage.defaultTemplateButton.click();
 
-		await page
-			.locator(
-				'[id="_com_liferay_journal_web_portlet_JournalPortlet_previewWithTemplate"]'
-			)
-			.waitFor();
+		const previewButton = page.locator(
+			'[id="_com_liferay_journal_web_portlet_JournalPortlet_previewWithTemplate"]'
+		);
 
-		await page
-			.locator(
-				'[id="_com_liferay_journal_web_portlet_JournalPortlet_previewWithTemplate"]'
-			)
-			.click();
+		await previewButton.waitFor({state: 'attached'});
+
+		await previewButton.scrollIntoViewIfNeeded();
+
+		await previewButton.click({force: true});
 
 		const dialog = page.getByRole('dialog');
 
@@ -2630,5 +2628,162 @@ baseTest(
 
 		await expect(page.getByText(title1)).not.toBeVisible();
 		await expect(page.getByText(title2)).not.toBeVisible();
+	}
+);
+
+baseTest(
+	'Publish button is not disabled when validating custom structures required fields',
+	{
+		tag: '@LPD-75537',
+	},
+	async ({apiHelpers, journalEditArticlePage, page, site}) => {
+		const structureName = 'Structure 1';
+		const title = getRandomString();
+
+		const dataDefinition = getDataStructureDefinition({
+			defaultLanguageId: 'en_US',
+			fields: [
+				{name: 'Text'},
+				{
+					name: 'TextRequired',
+					required: true,
+				},
+			],
+			name: structureName,
+		});
+
+		await apiHelpers.dataEngine.createStructure(site.id, dataDefinition);
+
+		await journalEditArticlePage.goto({
+			siteUrl: site.friendlyUrlPath,
+			structureName,
+		});
+
+		await journalEditArticlePage.fillTitle(title);
+
+		await journalEditArticlePage.publishArticle(true);
+
+		await expect(journalEditArticlePage.publishButton).not.toBeDisabled();
+
+		await expect(page.getByText('This field is required.')).toBeVisible();
+	}
+);
+
+baseTest(
+	'Cannot Publish, Schedule or Save as Draft a web content if title for default language is not set',
+	{
+		tag: '@LPD-76463',
+	},
+	async ({journalEditArticlePage, journalPage, page, site}) => {
+		await journalPage.goto();
+
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		baseTest.step(
+			'Change language without filling title for default language',
+			async () => {
+				await journalEditArticlePage.fillTitle('');
+
+				const translationButton = page.getByRole('combobox', {
+					name: 'Select a language',
+				});
+
+				await clickAndExpectToBeVisible({
+					autoClick: true,
+					target: page.getByRole('option', {
+						name: 'Catalan Language: Not',
+					}),
+					trigger: translationButton,
+				});
+
+				await expect(
+					page.getByLabel('Translation Options')
+				).toBeVisible();
+
+				await journalEditArticlePage.fillTitle(getRandomString());
+			}
+		);
+
+		baseTest.step('Cannot Publish With Permissions', async () => {
+			await clickAndExpectToBeVisible({
+				autoClick: true,
+				target: page.getByRole('menuitem', {
+					name: 'Publish With Permissions',
+				}),
+				trigger: journalEditArticlePage.publishDropdown,
+			});
+
+			await page
+				.locator('.alert-danger', {
+					hasText:
+						'Please enter a valid title for the default language',
+				})
+				.waitFor();
+
+			await expect(page.locator('.modal-dialog')).not.toBeVisible();
+
+			await page.getByLabel('Close').click();
+		});
+
+		baseTest.step('Cannot Schedule Publication', async () => {
+			await clickAndExpectToBeVisible({
+				autoClick: true,
+				target: page.getByRole('menuitem', {
+					name: 'Schedule Publication',
+				}),
+				trigger: journalEditArticlePage.publishDropdown,
+			});
+
+			await page
+				.locator('.alert-danger', {
+					hasText:
+						'Please enter a valid title for the default language',
+				})
+				.waitFor();
+
+			await expect(page.locator('.modal-dialog')).not.toBeVisible();
+			await page.getByLabel('Close').click();
+		});
+
+		baseTest.step('Cannot Save as Draft', async () => {
+			await page.getByRole('button', {name: 'Save as Draft'}).click();
+
+			await expect(page.locator('.modal-dialog')).not.toBeVisible();
+		});
+
+		baseTest.step(
+			'Can Save as Draft if default language title is filled',
+			async () => {
+				const translationButton = page.getByRole('combobox', {
+					name: 'Select a language',
+				});
+
+				await clickAndExpectToBeVisible({
+					autoClick: true,
+					target: page.getByRole('option', {
+						name: 'English Language: Default',
+					}),
+					trigger: translationButton,
+				});
+
+				await journalEditArticlePage.fillTitle(getRandomString());
+
+				await clickAndExpectToBeVisible({
+					autoClick: true,
+					target: page.getByRole('option', {
+						name: 'Catalan Language: Translating 1/',
+					}),
+					trigger: translationButton,
+				});
+
+				await expect(page.locator('.modal-dialog')).toBeVisible();
+
+				await expect(async () => {
+					page.getByRole('heading', {
+						name: 'Save as Draft With Permissions',
+					});
+				}).toPass();
+			}
+		);
 	}
 );

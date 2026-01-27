@@ -904,7 +904,11 @@ AUI.add(
 							.byId('PORTLET_DATA_' + portletId)
 							.attr('checked')
 					) {
-						if (selectedContent.length) {
+						if (
+							!instance
+								.byId('PORTLET_DATA_' + portletId)
+								.ancestor('[data-portlet-type="batch"]')
+						) {
 							instance
 								.byId('PORTLET_DATA_' + portletId)
 								.attr('checked', false);

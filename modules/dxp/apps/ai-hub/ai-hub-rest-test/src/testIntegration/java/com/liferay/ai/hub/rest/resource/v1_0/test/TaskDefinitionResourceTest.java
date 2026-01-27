@@ -9,13 +9,11 @@ import com.liferay.ai.hub.rest.client.dto.v1_0.TaskDefinition;
 import com.liferay.ai.hub.rest.client.pagination.Page;
 import com.liferay.ai.hub.rest.client.pagination.Pagination;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
-import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.FeatureFlag;
@@ -74,25 +72,25 @@ public class TaskDefinitionResourceTest
 
 	@Test
 	public void testGetTaskDefinitionsPage() throws Exception {
-		Page<TaskDefinition> page =
-			taskDefinitionResource.getTaskDefinitionsPage(
-				null, null, Pagination.of(1, 10), null);
-
-		AssertUtils.assertEquals(
-			List.of(
-				WorkflowDefinitionConstants.NAME_CHANGE_TONE,
-				WorkflowDefinitionConstants.NAME_CHAT_MESSAGE_PIPELINE,
-				WorkflowDefinitionConstants.NAME_FIX_SPELLING_AND_GRAMMAR,
-				WorkflowDefinitionConstants.NAME_IMPROVE_WRITING,
-				WorkflowDefinitionConstants.NAME_MAKE_LONGER,
-				WorkflowDefinitionConstants.NAME_MAKE_SHORTER),
-			TransformUtil.transform(page.getItems(), TaskDefinition::getName));
+		_testGetTaskDefinitionsPage();
+		_testGetTaskDefinitionsPageWithFilter();
 	}
 
 	@Ignore
 	@Override
 	@Test
 	public void testGetTaskDefinitionsPageWithPagination() {
+	}
+
+	@Ignore
+	@Override
+	@Test
+	public void testGetTaskDefinitionsPageWithSortInteger() throws Exception {
+	}
+
+	@Override
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[] {"active", "name", "version"};
 	}
 
 	@Override
@@ -102,10 +100,83 @@ public class TaskDefinitionResourceTest
 		return taskDefinition;
 	}
 
+	private void _testGetTaskDefinitionsPage() throws Exception {
+		Page<TaskDefinition> page =
+			taskDefinitionResource.getTaskDefinitionsPage(
+				null, null, Pagination.of(1, 10), null);
+
+		assertEquals(
+			_systemTaskDefinitions, (List<TaskDefinition>)page.getItems());
+	}
+
+	private void _testGetTaskDefinitionsPageWithFilter() throws Exception {
+
+		// Active as 0
+
+		Page<TaskDefinition> page =
+			taskDefinitionResource.getTaskDefinitionsPage(
+				null, "(active eq 0)", Pagination.of(1, 10), null);
+
+		assertEquals(List.of(), (List<TaskDefinition>)page.getItems());
+
+		// Active as 1
+
+		page = taskDefinitionResource.getTaskDefinitionsPage(
+			null, "(active eq 1)", Pagination.of(1, 10), null);
+
+		assertEquals(
+			_systemTaskDefinitions, (List<TaskDefinition>)page.getItems());
+	}
+
 	private static String _originalName;
 	private static PermissionChecker _originalPermissionChecker;
 
 	@Inject
 	private static SiteInitializerRegistry _siteInitializerRegistry;
+
+	private static final List<TaskDefinition> _systemTaskDefinitions = List.of(
+		new TaskDefinition() {
+			{
+				active = true;
+				name = WorkflowDefinitionConstants.NAME_CHANGE_TONE;
+				version = 1;
+			}
+		},
+		new TaskDefinition() {
+			{
+				active = true;
+				name = WorkflowDefinitionConstants.NAME_LIFERAY_SEARCH;
+				version = 1;
+			}
+		},
+		new TaskDefinition() {
+			{
+				active = true;
+				name =
+					WorkflowDefinitionConstants.NAME_FIX_SPELLING_AND_GRAMMAR;
+				version = 1;
+			}
+		},
+		new TaskDefinition() {
+			{
+				active = true;
+				name = WorkflowDefinitionConstants.NAME_IMPROVE_WRITING;
+				version = 1;
+			}
+		},
+		new TaskDefinition() {
+			{
+				active = true;
+				name = WorkflowDefinitionConstants.NAME_MAKE_LONGER;
+				version = 1;
+			}
+		},
+		new TaskDefinition() {
+			{
+				active = true;
+				name = WorkflowDefinitionConstants.NAME_MAKE_SHORTER;
+				version = 1;
+			}
+		});
 
 }

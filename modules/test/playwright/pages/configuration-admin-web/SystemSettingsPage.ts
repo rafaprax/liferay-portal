@@ -72,15 +72,11 @@ export class SystemSettingsPage {
 	}
 
 	async clickOnAction(actionName: string) {
-		const trigger = this.page.getByRole('button', {name: 'Actions'});
-
-		if (await trigger.isVisible()) {
-			await clickAndExpectToBeVisible({
-				autoClick: true,
-				target: this.page.getByRole('menuitem', {name: actionName}),
-				trigger,
-			});
-		}
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: this.page.getByRole('menuitem', {name: actionName}),
+			trigger: this.page.getByRole('button', {name: 'Actions'}),
+		});
 	}
 
 	async resetToDefaultValues() {

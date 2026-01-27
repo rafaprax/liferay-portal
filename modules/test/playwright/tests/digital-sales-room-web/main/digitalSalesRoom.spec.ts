@@ -11,6 +11,7 @@ import {digitalSalesRoomPagesTest} from '../../../fixtures/digitalSalesRoomPages
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {getRandomInt} from '../../../utils/getRandomInt';
+import getRandomString from '../../../utils/getRandomString';
 import {waitForAlert} from '../../../utils/waitForAlert';
 
 export const test = mergeTests(
@@ -338,8 +339,8 @@ test(
 
 test(
 	'Test edit menuitem for digital sales room',
-	{tag: '@LPD-76329'},
-	async ({digitalSalesRoomsPage, editDigitalSalesRoomPage}) => {
+	{tag: ['@LPD-69570', '@LPD-76329']},
+	async ({digitalSalesRoomsPage, editDigitalSalesRoomPage, page}) => {
 		const roomName = `A${getRandomInt()}`;
 
 		await digitalSalesRoomsPage.goto();
@@ -376,6 +377,13 @@ test(
 		await digitalSalesRoomsPage.editMenuItem.click();
 
 		await expect(editDigitalSalesRoomPage.onboardingMenuItem).toBeVisible();
+
+		test.step('verify welcome block', async () => {
+			await expect(
+				page.getByRole('heading', {name: 'WELCOME'})
+			).toBeVisible();
+			await expect(page.getByText('Andry Ford')).toBeVisible();
+		});
 	}
 );
 
@@ -462,5 +470,70 @@ test(
 		await expect(
 			digitalSalesRoomSettingsPage.selectAccountInput
 		).toHaveValue(account.name);
+	}
+);
+
+test(
+	'Add comment',
+	{tag: '@LPD-76076'},
+	async ({digitalSalesRoomsPage, editDigitalSalesRoomPage, page}) => {
+		const roomName = `A${getRandomInt()}`;
+
+		await digitalSalesRoomsPage.goto();
+
+		await expect(
+			digitalSalesRoomsPage.digitalSalesRoomsTable.searchInput
+		).toBeVisible();
+
+		await digitalSalesRoomsPage.digitalSalesRoomsTable.newButton.click();
+
+		await editDigitalSalesRoomPage.addDigitalSalesRoom({
+			banner: path.join(__dirname, '/dependencies/liferay.png'),
+			roomName,
+		});
+
+		await digitalSalesRoomsPage.goto();
+
+		await expect(
+			digitalSalesRoomsPage.digitalSalesRoomsTable.cell(roomName)
+		).toBeVisible();
+		await expect(async () => {
+			await (
+				await digitalSalesRoomsPage.digitalSalesRoomsTable.rowActions(
+					roomName,
+					0
+				)
+			).click();
+			await expect(digitalSalesRoomsPage.editMenuItem).toBeVisible({
+				timeout: 200,
+			});
+		}).toPass({timeout: 1000});
+
+		await digitalSalesRoomsPage.editMenuItem.click();
+
+		await expect(editDigitalSalesRoomPage.onboardingMenuItem).toBeVisible();
+
+		await editDigitalSalesRoomPage.commentsButton.click();
+
+		await expect(editDigitalSalesRoomPage.roomCommentsText).toBeVisible();
+		await expect(editDigitalSalesRoomPage.commentSaveButton).toBeDisabled();
+
+		const comment = getRandomString();
+
+		await editDigitalSalesRoomPage.commentTextAreaPlaceholder.fill(comment);
+
+		await expect(
+			editDigitalSalesRoomPage.commentSaveButton
+		).not.toBeDisabled();
+
+		await editDigitalSalesRoomPage.commentSaveButton.click();
+
+		await waitForAlert(page);
+
+		await expect(
+			editDigitalSalesRoomPage.commentTextAreaPlaceholder
+		).toBeVisible();
+		await expect(page.getByText('Test Test')).toBeVisible();
+		await expect(page.getByText(comment)).toBeVisible();
 	}
 );

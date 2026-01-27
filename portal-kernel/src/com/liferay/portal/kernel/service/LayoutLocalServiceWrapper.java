@@ -1307,22 +1307,6 @@ public class LayoutLocalServiceWrapper
 			groupId, keywords, types, statuses, start, end, orderByComparator);
 	}
 
-	@Override
-	public java.util.List<Layout> getLayoutsByLayoutPrototypeUuid(
-		String layoutPrototypeUuid) {
-
-		return _layoutLocalService.getLayoutsByLayoutPrototypeUuid(
-			layoutPrototypeUuid);
-	}
-
-	@Override
-	public int getLayoutsByLayoutPrototypeUuidCount(
-		String layoutPrototypeUuid) {
-
-		return _layoutLocalService.getLayoutsByLayoutPrototypeUuidCount(
-			layoutPrototypeUuid);
-	}
-
 	/**
 	 * Returns all the layouts matching the UUID and company.
 	 *
@@ -1650,6 +1634,14 @@ public class LayoutLocalServiceWrapper
 
 		return _layoutLocalService.hasLayouts(
 			groupId, privateLayout, parentLayoutId);
+	}
+
+	@Override
+	public boolean hasLayouts(
+		long groupId, String portletLayoutPageTemplateEntryERC) {
+
+		return _layoutLocalService.hasLayouts(
+			groupId, portletLayoutPageTemplateEntryERC);
 	}
 
 	@Override

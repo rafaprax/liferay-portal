@@ -5,6 +5,8 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.liferay.jenkins.results.parser.history.HistoryFactory;
+import com.liferay.jenkins.results.parser.history.JobHistory;
 import com.liferay.jenkins.results.parser.job.property.GlobJobProperty;
 import com.liferay.jenkins.results.parser.job.property.JobProperty;
 import com.liferay.jenkins.results.parser.job.property.JobPropertyFactory;
@@ -473,7 +475,13 @@ public abstract class BaseJob implements Job {
 			return _jobHistory;
 		}
 
-		_jobHistory = HistoryUtil.getJobHistory(this);
+		String portalUpstreamBranchName = _getPortalUpstreamBranchName();
+
+		if (portalUpstreamBranchName == null) {
+			return null;
+		}
+
+		_jobHistory = HistoryFactory.newJobHistory(portalUpstreamBranchName);
 
 		return _jobHistory;
 	}
@@ -1620,6 +1628,23 @@ public abstract class BaseJob implements Job {
 		}
 
 		return jUnitIncludePathMatchers;
+	}
+
+	private String _getPortalUpstreamBranchName() {
+		if (!(this instanceof PortalTestClassJob)) {
+			return null;
+		}
+
+		PortalTestClassJob portalTestClassJob = (PortalTestClassJob)this;
+
+		PortalGitWorkingDirectory portalGitWorkingDirectory =
+			portalTestClassJob.getPortalGitWorkingDirectory();
+
+		if (portalGitWorkingDirectory == null) {
+			return null;
+		}
+
+		return portalGitWorkingDirectory.getUpstreamBranchName();
 	}
 
 	private int _getSlaveRAMMinimumDefault() {

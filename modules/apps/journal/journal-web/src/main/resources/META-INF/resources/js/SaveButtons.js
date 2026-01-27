@@ -12,6 +12,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import initializeLock from './initializeLock';
 import PublishModal from './modals/PublishModal';
 import removeAlert from './removeAlert';
+import showAlert from './showAlert';
 
 const ACTION_PUBLISH = 'publish';
 const ACTION_DRAFT = 'draft';
@@ -95,28 +96,56 @@ export default function SaveButtons({
 		);
 	}, [portletNamespace]);
 
-	const onClick = async (action, directSubmit = false) => {
+	const validateDefaultLanguageTitle = () => {
 		const titleInputComponent = Liferay.component(
 			`${portletNamespace}titleMapAsXML`
 		);
 
 		if (!titleInputComponent?.getValue(defaultLanguageId)) {
-			await validateRequiredFields(formId);
+			showAlert(
+				sub(
+					Liferay.Language.get(
+						'please-enter-a-valid-title-for-the-default-language-x'
+					),
+					defaultLanguageId.replaceAll('_', '-')
+				)
+			);
 
+			return false;
+		}
+
+		return true;
+	};
+
+	const onClick = async (action, directSubmit = false) => {
+		if (!(await validateRequiredFields(formId))) {
+			return;
+		}
+
+		if (!validateDefaultLanguageTitle()) {
 			return;
 		}
 
 		if (directSubmit || (articleId && !showPublishModal)) {
 			handleButtonClick(action);
 
-			await validateRequiredFields(formId);
-
 			return;
 		}
 
+		setPublishModalState({
+			publishModalAction: action,
+			publishModalVisible: true,
+		});
+	};
+
+	const onScheduleButtonClick = async () => {
 		if (await validateRequiredFields(formId)) {
+			if (!validateDefaultLanguageTitle()) {
+				return;
+			}
+
 			setPublishModalState({
-				publishModalAction: action,
+				publishModalAction: ACTION_SCHEDULE,
 				publishModalVisible: true,
 			});
 		}
@@ -209,7 +238,9 @@ export default function SaveButtons({
 			`${portletNamespace}dataEngineLayoutRenderer`
 		);
 
-		return renderer.reactComponentRef.current.validate();
+		const fields = await renderer.reactComponentRef.current.getFields();
+
+		return fields.every((field) => field.valid === true);
 	};
 
 	useEffect(() => {
@@ -296,15 +327,9 @@ export default function SaveButtons({
 					)}
 
 					<ClayDropDown.Item
-						onClick={async () => {
-							if (await validateRequiredFields(formId)) {
-								setPublishModalState({
-									publishModalAction: ACTION_SCHEDULE,
-									publishModalVisible: true,
-								});
-							}
-						}}
+						onClick={onScheduleButtonClick}
 						symbolLeft="date-time"
+						type="button"
 					>
 						{workflowEnabled
 							? Liferay.Language.get(

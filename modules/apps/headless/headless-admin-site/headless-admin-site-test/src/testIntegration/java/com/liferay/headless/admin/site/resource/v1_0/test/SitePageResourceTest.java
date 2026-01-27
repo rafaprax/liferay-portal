@@ -25,9 +25,11 @@ import com.liferay.headless.admin.site.client.dto.v1_0.CustomMetaTag;
 import com.liferay.headless.admin.site.client.dto.v1_0.FavIcon;
 import com.liferay.headless.admin.site.client.dto.v1_0.FriendlyUrlHistory;
 import com.liferay.headless.admin.site.client.dto.v1_0.ItemExternalReference;
+import com.liferay.headless.admin.site.client.dto.v1_0.LinkToURLPageSettings;
 import com.liferay.headless.admin.site.client.dto.v1_0.OpenGraphSettings;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageElement;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageExperience;
+import com.liferay.headless.admin.site.client.dto.v1_0.PageSetPageSettings;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageSettings;
 import com.liferay.headless.admin.site.client.dto.v1_0.PageSpecification;
 import com.liferay.headless.admin.site.client.dto.v1_0.SEOSettings;
@@ -135,6 +137,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -390,6 +393,8 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				testGroup.getGroupId(), TestPropsValues.getUserId());
 
 		_testPutSiteSitePage(serviceContext, SitePage.Type.CONTENT_PAGE);
+		_testPutSiteSitePage(serviceContext, SitePage.Type.LINK_TO_URL_PAGE);
+		_testPutSiteSitePage(serviceContext, SitePage.Type.PAGE_SET_PAGE);
 		_testPutSiteSitePage(serviceContext, SitePage.Type.WIDGET_PAGE);
 
 		_testPutSiteSitePageWithExportedSitePage();
@@ -705,6 +710,12 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		}
 	}
 
+	private void _assertLinkToURLSitePage(SitePage sitePage) {
+		Assert.assertTrue(
+			sitePage.getPageSettings() instanceof LinkToURLPageSettings);
+		Assert.assertEquals(SitePage.Type.LINK_TO_URL_PAGE, sitePage.getType());
+	}
+
 	private void _assertMapEquals(
 		Map<String, String> expectedMap, Map<String, String> map) {
 
@@ -744,6 +755,13 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 					expectedPageElements, pageExperience.getPageElements());
 			}
 		}
+	}
+
+	private void _assertPageSetSitePage(SitePage sitePage) {
+		Assert.assertTrue(
+			sitePage.getPageSettings() instanceof PageSetPageSettings);
+
+		Assert.assertEquals(SitePage.Type.PAGE_SET_PAGE, sitePage.getType());
 	}
 
 	private void _assertPageSpecifications(
@@ -905,6 +923,12 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		if (Objects.equals(layout.getType(), LayoutConstants.TYPE_CONTENT)) {
 			_assertContentSitePage(sitePage);
 		}
+		else if (Objects.equals(layout.getType(), LayoutConstants.TYPE_URL)) {
+			_assertLinkToURLSitePage(sitePage);
+		}
+		else if (Objects.equals(layout.getType(), LayoutConstants.TYPE_NODE)) {
+			_assertPageSetSitePage(sitePage);
+		}
 		else {
 			_assertWidgetSitePage(layout, sitePage);
 		}
@@ -947,6 +971,33 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		objectFieldSetting.setValue(value);
 
 		return objectFieldSetting;
+	}
+
+	private CustomMetaTag[] _getCustomMetaTags() {
+		return new CustomMetaTag[] {
+			new CustomMetaTag() {
+				{
+					setKey(RandomTestUtil::randomString);
+					setValue_i18n(
+						() -> HashMapBuilder.put(
+							"en-US", RandomTestUtil.randomString()
+						).put(
+							"es-ES", RandomTestUtil.randomString()
+						).build());
+				}
+			},
+			new CustomMetaTag() {
+				{
+					setKey(RandomTestUtil::randomString);
+					setValue_i18n(
+						() -> HashMapBuilder.put(
+							"en-US", RandomTestUtil.randomString()
+						).put(
+							"es-ES", RandomTestUtil.randomString()
+						).build());
+				}
+			}
+		};
 	}
 
 	private int _getExpectedPriority(
@@ -1115,6 +1166,61 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				RandomTestUtil.randomString(), "text"));
 	}
 
+	private OpenGraphSettings _getOpenGraphSettings() {
+		return new OpenGraphSettings() {
+			{
+				setDescription_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setImage(
+					() -> new ItemExternalReference() {
+						{
+							setClassName(FileEntry.class::getName);
+							setExternalReferenceCode(
+								() -> {
+									Company company =
+										CompanyLocalServiceUtil.getCompany(
+											TestPropsValues.getCompanyId());
+
+									DLFolder dlFolder = DLTestUtil.addDLFolder(
+										company.getGroupId());
+
+									DLFileEntry dlFileEntry =
+										DLTestUtil.addDLFileEntry(
+											dlFolder.getFolderId());
+
+									return dlFileEntry.
+										getExternalReferenceCode();
+								});
+							setScope(
+								() -> new Scope() {
+									{
+										setExternalReferenceCode(
+											() -> "L_GLOBAL");
+										setType(() -> Type.SITE);
+									}
+								});
+						}
+					});
+				setImageAlt_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setTitle_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+			}
+		};
+	}
+
 	private PageSettings _getPageSettings(
 			String parentSitePageExternalReferenceCode, SitePage.Type type)
 		throws Exception {
@@ -1124,7 +1230,26 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		if (type == SitePage.Type.CONTENT_PAGE) {
 			pageSettings = new ContentPageSettings() {
 				{
+					setCustomMetaTags(() -> _getCustomMetaTags());
+					setOpenGraphSettings(() -> _getOpenGraphSettings());
+					setSeoSettings(() -> _getSeoSettings());
 					setType(Type.CONTENT_PAGE_SETTINGS);
+				}
+			};
+		}
+		else if (type == SitePage.Type.LINK_TO_URL_PAGE) {
+			pageSettings = new LinkToURLPageSettings() {
+				{
+					setPageURL(
+						"http://www." + RandomTestUtil.randomString() + ".com");
+					setType(Type.LINK_TO_URL_PAGE_SETTINGS);
+				}
+			};
+		}
+		else if (type == SitePage.Type.PAGE_SET_PAGE) {
+			pageSettings = new PageSetPageSettings() {
+				{
+					setType(Type.PAGE_SET_PAGE_SETTINGS);
 				}
 			};
 		}
@@ -1133,37 +1258,15 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				{
 					setCustomizable(false);
 					setCustomizableSectionIds(new String[0]);
+					setCustomMetaTags(() -> _getCustomMetaTags());
 					setLayoutTemplateId("1_column");
+					setOpenGraphSettings(() -> _getOpenGraphSettings());
+					setSeoSettings(() -> _getSeoSettings());
 					setType(Type.WIDGET_PAGE_SETTINGS);
 				}
 			};
 		}
 
-		pageSettings.setCustomMetaTags(
-			() -> new CustomMetaTag[] {
-				new CustomMetaTag() {
-					{
-						setKey(RandomTestUtil::randomString);
-						setValue_i18n(
-							() -> HashMapBuilder.put(
-								"en-US", RandomTestUtil.randomString()
-							).put(
-								"es-ES", RandomTestUtil.randomString()
-							).build());
-					}
-				},
-				new CustomMetaTag() {
-					{
-						setKey(RandomTestUtil::randomString);
-						setValue_i18n(
-							() -> HashMapBuilder.put(
-								"en-US", RandomTestUtil.randomString()
-							).put(
-								"es-ES", RandomTestUtil.randomString()
-							).build());
-					}
-				}
-			});
 		pageSettings.setHiddenFromNavigation(RandomTestUtil::randomBoolean);
 		pageSettings.setNavigationSettings(
 			() -> new SitePageNavigationSettings() {
@@ -1175,111 +1278,10 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 							SitePageNavigationSettings.TargetType.class));
 				}
 			});
-		pageSettings.setOpenGraphSettings(
-			() -> new OpenGraphSettings() {
-				{
-					setDescription_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setImage(
-						() -> new ItemExternalReference() {
-							{
-								setClassName(FileEntry.class::getName);
-								setExternalReferenceCode(
-									() -> {
-										Company company =
-											CompanyLocalServiceUtil.getCompany(
-												TestPropsValues.getCompanyId());
-
-										DLFolder dlFolder =
-											DLTestUtil.addDLFolder(
-												company.getGroupId());
-
-										DLFileEntry dlFileEntry =
-											DLTestUtil.addDLFileEntry(
-												dlFolder.getFolderId());
-
-										return dlFileEntry.
-											getExternalReferenceCode();
-									});
-								setScope(
-									() -> new Scope() {
-										{
-											setExternalReferenceCode(
-												() -> "L_GLOBAL");
-											setType(() -> Type.SITE);
-										}
-									});
-							}
-						});
-					setImageAlt_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setTitle_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-				}
-			});
 		pageSettings.setPriority(
 			_priorities.merge(
 				parentSitePageExternalReferenceCode, 0,
 				(oldPriority, defaultPriority) -> oldPriority + 1));
-		pageSettings.setSeoSettings(
-			() -> new SEOSettings() {
-				{
-					setCustomCanonicalURL_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setDescription_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setHtmlTitle_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setRobots_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setSeoKeywords_i18n(
-						() -> HashMapBuilder.put(
-							"en-US", RandomTestUtil.randomString()
-						).put(
-							"es-ES", RandomTestUtil.randomString()
-						).build());
-					setSitemapSettings(
-						() -> new SitemapSettings() {
-							{
-								setChangeFrequency(
-									() -> RandomTestUtil.randomEnum(
-										SitemapSettings.ChangeFrequency.class));
-								setInclude(RandomTestUtil::randomBoolean);
-								setIncludeChildSitePages(
-									RandomTestUtil::randomBoolean);
-								setPagePriority(RandomTestUtil::randomDouble);
-							}
-						});
-				}
-			});
 
 		return pageSettings;
 	}
@@ -1400,6 +1402,55 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 	private SitePage.Type _getRandomType(List<SitePage.Type> types) {
 		return types.get(RandomTestUtil.randomInt(0, types.size() - 1));
+	}
+
+	private SEOSettings _getSeoSettings() {
+		return new SEOSettings() {
+			{
+				setCustomCanonicalURL_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setDescription_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setHtmlTitle_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setRobots_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setSeoKeywords_i18n(
+					() -> HashMapBuilder.put(
+						"en-US", RandomTestUtil.randomString()
+					).put(
+						"es-ES", RandomTestUtil.randomString()
+					).build());
+				setSitemapSettings(
+					() -> new SitemapSettings() {
+						{
+							setChangeFrequency(
+								() -> RandomTestUtil.randomEnum(
+									ChangeFrequency.class));
+							setInclude(RandomTestUtil::randomBoolean);
+							setIncludeChildSitePages(
+								RandomTestUtil::randomBoolean);
+							setPagePriority(RandomTestUtil::randomDouble);
+						}
+					});
+			}
+		};
 	}
 
 	private SitePageResource _getSitePageResource(String nestedFields)
@@ -2092,9 +2143,24 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				type);
 
 		for (PageSpecification pageSpecification : pageSpecifications) {
-			pageSpecification.setSettings(
-				SettingsTestUtil.getSettings(
-					favIconType, optionalMasterPageReference, serviceContext));
+			if (type == SitePage.Type.CONTENT_PAGE) {
+				ContentPageSpecification contentPageSpecification =
+					(ContentPageSpecification)pageSpecification;
+
+				contentPageSpecification.setSettings(
+					SettingsTestUtil.getSettings(
+						favIconType, optionalMasterPageReference,
+						serviceContext));
+			}
+			else {
+				WidgetPageSpecification widgetPageSpecification =
+					(WidgetPageSpecification)pageSpecification;
+
+				widgetPageSpecification.setSettings(
+					SettingsTestUtil.getSettings(
+						favIconType, optionalMasterPageReference,
+						serviceContext));
+			}
 
 			favIconType = FavIcon.FavIconType.CLIENT_EXTENSION;
 			optionalMasterPageReference = true;
@@ -2359,6 +2425,37 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		widgetPageSettings.setInheritChanges(false);
 
 		_testPostSiteSitePage(sitePageWithWidgetPageTemplate);
+
+		sitePageWithWidgetPageTemplate =
+			_getRandomSitePageWithWidgetPageTemplate(false);
+
+		widgetPageSettings =
+			(WidgetPageSettings)
+				sitePageWithWidgetPageTemplate.getPageSettings();
+
+		widgetPageSettings.setWidgetPageTemplateReference(
+			() -> new ItemExternalReference() {
+				{
+					setExternalReferenceCode(RandomTestUtil::randomString);
+				}
+			});
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.headless.admin.site.internal.util.LogUtil",
+				LoggerTestUtil.WARN)) {
+
+			_testPostSiteSitePage(sitePageWithWidgetPageTemplate);
+
+			List<LogEntry> logEntries = logCapture.getLogEntries();
+
+			Assert.assertEquals(logEntries.toString(), 1, logEntries.size());
+
+			LogEntry logEntry = logEntries.get(0);
+
+			String message = logEntry.getMessage();
+
+			Assert.assertTrue(message.contains("LayoutPageTemplateEntry"));
+		}
 
 		_testPostSiteSitePage(_getRandomSitePageWithWidgetPageTemplate(true));
 	}
@@ -2686,10 +2783,46 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 		_testPutSiteSitePageWithPageExperiences(
 			pageExperiences, putSitePage, sitePageResource);
+
+		PageExperience[] putPageExperiences = ArrayUtil.append(
+			PageExperiencesTestUtil.getPageExperiences(
+				testCompany.getGroupId(), testGroup.getGroupId(),
+				contentPageSpecification.getExternalReferenceCode()),
+			defaultPageExperience);
+
+		Arrays.sort(putPageExperiences, comparator);
+
+		putPageExperiences = TransformUtil.transform(
+			putPageExperiences,
+			pageExperience -> {
+				pageExperience.setPriority(() -> null);
+
+				return pageExperience;
+			},
+			PageExperience.class);
+
+		PageExperience[] expectedPageExperiences = Arrays.copyOf(
+			putPageExperiences, putPageExperiences.length);
+
+		AtomicInteger priority = new AtomicInteger();
+
+		expectedPageExperiences = TransformUtil.transform(
+			expectedPageExperiences,
+			pageExperience -> {
+				pageExperience.setPriority(priority::getAndDecrement);
+
+				return pageExperience;
+			},
+			PageExperience.class);
+
+		_testPutSiteSitePageWithPageExperiences(
+			expectedPageExperiences, putPageExperiences, putSitePage,
+			sitePageResource);
 	}
 
 	private SitePage _testPutSiteSitePageWithPageExperiences(
-			PageExperience[] pageExperiences, SitePage sitePage,
+			PageExperience[] expectedPageExperiences,
+			PageExperience[] putPageExperiences, SitePage sitePage,
 			SitePageResource sitePageResource)
 		throws Exception {
 
@@ -2699,7 +2832,7 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		ContentPageSpecification contentPageSpecification =
 			(ContentPageSpecification)pageSpecifications[0];
 
-		contentPageSpecification.setPageExperiences(pageExperiences);
+		contentPageSpecification.setPageExperiences(putPageExperiences);
 
 		SitePage putSitePage = sitePageResource.putSiteSitePage(
 			testGroup.getExternalReferenceCode(),
@@ -2711,9 +2844,19 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			(ContentPageSpecification)pageSpecifications[0];
 
 		Assert.assertArrayEquals(
-			pageExperiences, contentPageSpecification.getPageExperiences());
+			expectedPageExperiences,
+			contentPageSpecification.getPageExperiences());
 
 		return putSitePage;
+	}
+
+	private SitePage _testPutSiteSitePageWithPageExperiences(
+			PageExperience[] pageExperiences, SitePage sitePage,
+			SitePageResource sitePageResource)
+		throws Exception {
+
+		return _testPutSiteSitePageWithPageExperiences(
+			pageExperiences, pageExperiences, sitePage, sitePageResource);
 	}
 
 	private void _testPutSiteSitePageWithPageSpecifications() throws Exception {
@@ -2733,6 +2876,8 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			PageSpecification.Status.DRAFT, PageSpecification.Status.DRAFT,
 			PageSpecification.Status.APPROVED, PageSpecification.Status.DRAFT);
 		_testPutSiteSitePageWithPageSpecificationsWithCustomFields();
+		_testPutSiteSitePageWithPageSpecificationsWithLinkToURLPageSpecification();
+		_testPutSiteSitePageWithPageSpecificationsWithPageSetPageSpecification();
 		_testPutSiteSitePageWithPageSpecificationsWithWidgetPageSpecification(
 			"1_column", "1_2_1_columns_i");
 		_testPutSiteSitePageWithPageSpecificationsWithWidgetPageSpecification(
@@ -2833,6 +2978,92 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 				pageSpecification -> pageSpecification.getCustomFields(),
 				CustomField[].class),
 			testGroup.getGroupId(), updateSitePage.getPageSpecifications());
+	}
+
+	private void _testPutSiteSitePageWithPageSpecificationsWithLinkToURLPageSpecification()
+		throws Exception {
+
+		SitePageResource sitePageResource = _getSitePageResource(
+			"pageSpecifications");
+
+		SitePage randomWidgetPage = _getRandomSitePage(
+			SitePage.Type.WIDGET_PAGE);
+
+		randomWidgetPage.setPageSpecifications(
+			PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "1_column", randomWidgetPage.getExternalReferenceCode()));
+
+		sitePageResource.postSiteSitePage(
+			testGroup.getExternalReferenceCode(), randomWidgetPage);
+
+		SitePage randomSitePage = _getRandomSitePage(
+			SitePage.Type.LINK_TO_URL_PAGE);
+
+		randomSitePage.setPageSpecifications(
+			PageSpecificationsTestUtil.getLinkToURLPageSpecifications(
+				randomSitePage.getExternalReferenceCode()));
+
+		SitePage sitePage = sitePageResource.postSiteSitePage(
+			testGroup.getExternalReferenceCode(), randomSitePage);
+
+		sitePage.setPageSpecifications(
+			() -> PageSpecificationsTestUtil.getLinkToURLPageSpecifications(
+				sitePage.getExternalReferenceCode()));
+
+		SitePage putSitePage = sitePageResource.putSiteSitePage(
+			testGroup.getExternalReferenceCode(),
+			sitePage.getExternalReferenceCode(), sitePage);
+
+		PageSpecificationsTestUtil.assertPageSpecifications(
+			putSitePage.getPageSpecifications(),
+			sitePage.getPageSpecifications());
+
+		sitePageResource.deleteSiteSitePage(
+			testGroup.getExternalReferenceCode(),
+			putSitePage.getExternalReferenceCode());
+	}
+
+	private void _testPutSiteSitePageWithPageSpecificationsWithPageSetPageSpecification()
+		throws Exception {
+
+		SitePageResource sitePageResource = _getSitePageResource(
+			"pageSpecifications");
+
+		SitePage randomWidgetPage = _getRandomSitePage(
+			SitePage.Type.WIDGET_PAGE);
+
+		randomWidgetPage.setPageSpecifications(
+			PageSpecificationsTestUtil.getWidgetPageSpecifications(
+				null, "1_column", randomWidgetPage.getExternalReferenceCode()));
+
+		sitePageResource.postSiteSitePage(
+			testGroup.getExternalReferenceCode(), randomWidgetPage);
+
+		SitePage randomSitePage = _getRandomSitePage(
+			SitePage.Type.PAGE_SET_PAGE);
+
+		randomSitePage.setPageSpecifications(
+			PageSpecificationsTestUtil.getPageSetPageSpecifications(
+				randomSitePage.getExternalReferenceCode()));
+
+		SitePage sitePage = sitePageResource.postSiteSitePage(
+			testGroup.getExternalReferenceCode(), randomSitePage);
+
+		sitePage.setPageSpecifications(
+			() -> PageSpecificationsTestUtil.getPageSetPageSpecifications(
+				sitePage.getExternalReferenceCode()));
+
+		SitePage putSitePage = sitePageResource.putSiteSitePage(
+			testGroup.getExternalReferenceCode(),
+			sitePage.getExternalReferenceCode(), sitePage);
+
+		PageSpecificationsTestUtil.assertPageSpecifications(
+			putSitePage.getPageSpecifications(),
+			sitePage.getPageSpecifications());
+
+		sitePageResource.deleteSiteSitePage(
+			testGroup.getExternalReferenceCode(),
+			putSitePage.getExternalReferenceCode());
 	}
 
 	private void

@@ -6,6 +6,8 @@
 package com.liferay.layout.test.util;
 
 import com.liferay.layout.constants.LayoutTypeSettingsConstants;
+import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
+import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServiceUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.log.Log;
@@ -504,10 +506,23 @@ public class LayoutTestUtil {
 			ServiceContextTestUtil.getServiceContext(group, user.getUserId());
 
 		if (layoutPrototype != null) {
+			LayoutPageTemplateEntry layoutPageTemplateEntry =
+				LayoutPageTemplateEntryLocalServiceUtil.
+					getFirstLayoutPageTemplateEntry(
+						layoutPrototype.getLayoutPrototypeId());
+
+			layoutPageTemplateEntry.setGroupId(group.getGroupId());
+
+			layoutPageTemplateEntry =
+				LayoutPageTemplateEntryLocalServiceUtil.
+					updateLayoutPageTemplateEntry(layoutPageTemplateEntry);
+
 			serviceContext.setAttribute(
-				"layoutPrototypeLinkEnabled", linkEnabled);
+				"portletLayoutPageTemplateEntryERC",
+				layoutPageTemplateEntry.getExternalReferenceCode());
+
 			serviceContext.setAttribute(
-				"layoutPrototypeUuid", layoutPrototype.getUuid());
+				"portletLayoutPageTemplateEntryLinkEnabled", linkEnabled);
 		}
 
 		return LayoutLocalServiceUtil.addLayout(

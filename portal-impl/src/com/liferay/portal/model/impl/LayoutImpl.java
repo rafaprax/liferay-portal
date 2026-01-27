@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutFriendlyURL;
+import com.liferay.portal.kernel.model.LayoutPrototype;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.LayoutType;
@@ -68,6 +69,7 @@ import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.PropsValues;
+import com.liferay.portal.kernel.util.ScopeUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -554,18 +556,14 @@ public class LayoutImpl extends LayoutBaseImpl {
 	}
 
 	public long getFaviconFileEntryGroupId() {
-		if (Validator.isNull(getFaviconFileEntryScopeERC())) {
-			return getGroupId();
-		}
+		Long groupId = ScopeUtil.getItemGroupId(
+			getCompanyId(), getFaviconFileEntryScopeERC(), getGroupId());
 
-		Group group = GroupLocalServiceUtil.fetchGroupByExternalReferenceCode(
-			getFaviconFileEntryScopeERC(), getCompanyId());
-
-		if (group == null) {
+		if (groupId == null) {
 			return 0;
 		}
 
-		return group.getGroupId();
+		return groupId;
 	}
 
 	@Override
@@ -772,6 +770,21 @@ public class LayoutImpl extends LayoutBaseImpl {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String getLayoutPrototypeUuid() {
+		LayoutPrototype layoutPrototype =
+			LayoutPageTemplateEntryLayoutProviderUtil.
+				getLayoutPageTemplateEntryLayoutPrototype(
+					getCompanyId(), getPortletLayoutPageTemplateEntryERC(),
+					getPortletLayoutPageTemplateEntryScopeERC(), getGroupId());
+
+		if (layoutPrototype == null) {
+			return null;
+		}
+
+		return layoutPrototype.getUuid();
 	}
 
 	/**
@@ -1280,13 +1293,7 @@ public class LayoutImpl extends LayoutBaseImpl {
 	 */
 	@Override
 	public boolean isLayoutPrototypeLinkActive() {
-		if (isLayoutPrototypeLinkEnabled() &&
-			Validator.isNotNull(getLayoutPrototypeUuid())) {
-
-			return true;
-		}
-
-		return false;
+		return isPortletLayoutPageTemplateEntryLinkActive();
 	}
 
 	@Override
@@ -1297,7 +1304,7 @@ public class LayoutImpl extends LayoutBaseImpl {
 	@Override
 	public boolean isLayoutUpdateable() {
 		try {
-			if (Validator.isNull(getLayoutPrototypeUuid()) &&
+			if (Validator.isNull(getPortletLayoutPageTemplateEntryERC()) &&
 				Validator.isNull(getLayoutSetPrototypeLayoutERC())) {
 
 				return true;
@@ -1387,6 +1394,17 @@ public class LayoutImpl extends LayoutBaseImpl {
 		}
 
 		return true;
+	}
+
+	@Override
+	public boolean isPortletLayoutPageTemplateEntryLinkActive() {
+		if (isPortletLayoutPageTemplateEntryLinkEnabled() &&
+			Validator.isNotNull(getPortletLayoutPageTemplateEntryERC())) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

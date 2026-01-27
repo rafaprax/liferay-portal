@@ -55,41 +55,35 @@ public class TextFragmentEditableElementValue
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The fragment link of a text fragment editable element value."
+		description = "The link text value for the text fragment editable element value."
 	)
 	@Valid
-	public FragmentEditableElementValueFragmentLink
-		getFragmentEditableElementValueFragmentLink() {
+	public FragmentLinkTextValue getFragmentLinkTextValue() {
+		if (_fragmentLinkTextValueSupplier != null) {
+			fragmentLinkTextValue = _fragmentLinkTextValueSupplier.get();
 
-		if (_fragmentEditableElementValueFragmentLinkSupplier != null) {
-			fragmentEditableElementValueFragmentLink =
-				_fragmentEditableElementValueFragmentLinkSupplier.get();
-
-			_fragmentEditableElementValueFragmentLinkSupplier = null;
+			_fragmentLinkTextValueSupplier = null;
 		}
 
-		return fragmentEditableElementValueFragmentLink;
+		return fragmentLinkTextValue;
 	}
 
-	public void setFragmentEditableElementValueFragmentLink(
-		FragmentEditableElementValueFragmentLink
-			fragmentEditableElementValueFragmentLink) {
+	public void setFragmentLinkTextValue(
+		FragmentLinkTextValue fragmentLinkTextValue) {
 
-		this.fragmentEditableElementValueFragmentLink =
-			fragmentEditableElementValueFragmentLink;
+		this.fragmentLinkTextValue = fragmentLinkTextValue;
 
-		_fragmentEditableElementValueFragmentLinkSupplier = null;
+		_fragmentLinkTextValueSupplier = null;
 	}
 
 	@JsonIgnore
-	public void setFragmentEditableElementValueFragmentLink(
-		UnsafeSupplier<FragmentEditableElementValueFragmentLink, Exception>
-			fragmentEditableElementValueFragmentLinkUnsafeSupplier) {
+	public void setFragmentLinkTextValue(
+		UnsafeSupplier<FragmentLinkTextValue, Exception>
+			fragmentLinkTextValueUnsafeSupplier) {
 
-		_fragmentEditableElementValueFragmentLinkSupplier = () -> {
+		_fragmentLinkTextValueSupplier = () -> {
 			try {
-				return fragmentEditableElementValueFragmentLinkUnsafeSupplier.
-					get();
+				return fragmentLinkTextValueUnsafeSupplier.get();
 			}
 			catch (RuntimeException runtimeException) {
 				throw runtimeException;
@@ -101,60 +95,13 @@ public class TextFragmentEditableElementValue
 	}
 
 	@GraphQLField(
-		description = "The fragment link of a text fragment editable element value."
+		description = "The link text value for the text fragment editable element value."
 	)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected FragmentEditableElementValueFragmentLink
-		fragmentEditableElementValueFragmentLink;
+	protected FragmentLinkTextValue fragmentLinkTextValue;
 
 	@JsonIgnore
-	private Supplier<FragmentEditableElementValueFragmentLink>
-		_fragmentEditableElementValueFragmentLinkSupplier;
-
-	@io.swagger.v3.oas.annotations.media.Schema(
-		description = "The fragment editable element's text."
-	)
-	@Valid
-	public TextFragmentValue getTextFragmentValue() {
-		if (_textFragmentValueSupplier != null) {
-			textFragmentValue = _textFragmentValueSupplier.get();
-
-			_textFragmentValueSupplier = null;
-		}
-
-		return textFragmentValue;
-	}
-
-	public void setTextFragmentValue(TextFragmentValue textFragmentValue) {
-		this.textFragmentValue = textFragmentValue;
-
-		_textFragmentValueSupplier = null;
-	}
-
-	@JsonIgnore
-	public void setTextFragmentValue(
-		UnsafeSupplier<TextFragmentValue, Exception>
-			textFragmentValueUnsafeSupplier) {
-
-		_textFragmentValueSupplier = () -> {
-			try {
-				return textFragmentValueUnsafeSupplier.get();
-			}
-			catch (RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			catch (Exception exception) {
-				throw new RuntimeException(exception);
-			}
-		};
-	}
-
-	@GraphQLField(description = "The fragment editable element's text.")
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected TextFragmentValue textFragmentValue;
-
-	@JsonIgnore
-	private Supplier<TextFragmentValue> _textFragmentValueSupplier;
+	private Supplier<FragmentLinkTextValue> _fragmentLinkTextValueSupplier;
 
 	@Override
 	public boolean equals(Object object) {
@@ -185,30 +132,17 @@ public class TextFragmentEditableElementValue
 
 		sb.append("{");
 
-		FragmentEditableElementValueFragmentLink
-			fragmentEditableElementValueFragmentLink =
-				getFragmentEditableElementValueFragmentLink();
+		FragmentLinkTextValue fragmentLinkTextValue =
+			getFragmentLinkTextValue();
 
-		if (fragmentEditableElementValueFragmentLink != null) {
+		if (fragmentLinkTextValue != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"fragmentEditableElementValueFragmentLink\": ");
+			sb.append("\"fragmentLinkTextValue\": ");
 
-			sb.append(String.valueOf(fragmentEditableElementValueFragmentLink));
-		}
-
-		TextFragmentValue textFragmentValue = getTextFragmentValue();
-
-		if (textFragmentValue != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"textFragmentValue\": ");
-
-			sb.append(String.valueOf(textFragmentValue));
+			sb.append(String.valueOf(fragmentLinkTextValue));
 		}
 
 		Type type = getType();

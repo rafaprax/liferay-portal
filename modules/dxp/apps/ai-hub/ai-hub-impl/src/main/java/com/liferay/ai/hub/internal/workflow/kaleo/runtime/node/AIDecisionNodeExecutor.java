@@ -9,14 +9,15 @@ import com.liferay.ai.hub.internal.assistant.handler.AssistantHandlerContext;
 import com.liferay.ai.hub.internal.assistant.handler.AssistantHandlerUtil;
 import com.liferay.ai.hub.internal.mcp.tool.provider.MCPToolProviderUtil;
 import com.liferay.ai.hub.internal.workflow.kaleo.runtime.node.util.ContentRetrieverUtil;
-import com.liferay.ai.hub.internal.workflow.kaleo.runtime.node.util.InputVariablesUtil;
 import com.liferay.ai.hub.internal.workflow.kaleo.runtime.node.util.ToolsUtil;
+import com.liferay.ai.hub.internal.workflow.kaleo.runtime.node.util.VariablesUtil;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowNodeManager;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
@@ -132,11 +133,15 @@ public class AIDecisionNodeExecutor extends BaseNodeExecutor {
 				"gemini-2.5-flash-lite"
 			).build();
 
+		Map<String, Serializable> workflowContext =
+			executionContext.getWorkflowContext();
+
 		AssistantHandlerUtil.handle(
 			AssistantHandlerContext.builder(
 			).contentRetriever(
 				ContentRetrieverUtil.createContentRetriever(
-					kaleoNodeSettingValues)
+					kaleoNodeSettingValues,
+					GetterUtil.getString(workflowContext.get("userToken")))
 			).invocationParameters(
 				InvocationParameters.from(
 					Map.of(
@@ -148,7 +153,7 @@ public class AIDecisionNodeExecutor extends BaseNodeExecutor {
 			).onError(
 				throwable -> vertexAiGeminiStreamingChatModel.close()
 			).systemMessageProvider(
-				object -> InputVariablesUtil.applyInputVariables(
+				object -> VariablesUtil.applyInputVariables(
 					executionContext, "prompt", kaleoNodeSettingValues)
 			).tools(
 				new Tools()
@@ -160,7 +165,7 @@ public class AIDecisionNodeExecutor extends BaseNodeExecutor {
 						_jsonFactory, kaleoNodeSettingValues),
 					_objectEntryManager, serviceContext.getUserId())
 			).userMessage(
-				InputVariablesUtil.applyInputVariables(
+				VariablesUtil.applyInputVariables(
 					executionContext, "userMessage", kaleoNodeSettingValues)
 			).vertexAiGeminiStreamingChatModel(
 				vertexAiGeminiStreamingChatModel

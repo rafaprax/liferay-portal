@@ -31,6 +31,8 @@ import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
+import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
+import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.layout.util.structure.LayoutStructure;
@@ -254,6 +256,17 @@ public class ExportImportPerformanceTest {
 			LayoutPrototype layoutPrototype = LayoutTestUtil.addLayoutPrototype(
 				RandomTestUtil.randomString());
 
+			LayoutPageTemplateEntry layoutPageTemplateEntry =
+				_layoutPageTemplateEntryLocalService.
+					getFirstLayoutPageTemplateEntry(
+						layoutPrototype.getLayoutPrototypeId());
+
+			layoutPageTemplateEntry.setGroupId(_group.getGroupId());
+
+			layoutPageTemplateEntry =
+				_layoutPageTemplateEntryLocalService.
+					updateLayoutPageTemplateEntry(layoutPageTemplateEntry);
+
 			Layout layoutPrototypeLayout = layoutPrototype.getLayout();
 
 			layoutPrototypeLayout.setType(layout.getType());
@@ -264,8 +277,10 @@ public class ExportImportPerformanceTest {
 			_layoutLocalService.copyLayoutContent(
 				layout, layoutPrototypeLayout);
 
-			layout.setLayoutPrototypeUuid(layoutPrototype.getUuid());
-			layout.setLayoutPrototypeLinkEnabled(true);
+			layout.setPortletLayoutPageTemplateEntryERC(
+				layoutPageTemplateEntry.getExternalReferenceCode());
+
+			layout.setPortletLayoutPageTemplateEntryLinkEnabled(true);
 
 			_layoutLocalService.updateLayout(layout);
 		}
@@ -588,6 +603,10 @@ public class ExportImportPerformanceTest {
 
 	@Inject
 	private LayoutLocalService _layoutLocalService;
+
+	@Inject
+	private LayoutPageTemplateEntryLocalService
+		_layoutPageTemplateEntryLocalService;
 
 	@Inject
 	private LayoutPageTemplateStructureLocalService

@@ -21,6 +21,7 @@
 		"@clayui/table": "*",
 		"@clayui/tooltip": "*",
 		"@liferay/frontend-js-react-web": "*",
+		"@liferay/frontend-js-state-web": "*",
 		"@liferay/js-api": "0.6.2",
 		"classnames": "2.3.1",
 		"frontend-js-components-web": "*",
@@ -51,5 +52,5 @@
 		"format": "node-scripts format",
 		"test": "node-scripts test"
 	},
-	"version": "1.0.133"
+	"version": "1.0.134"
 }

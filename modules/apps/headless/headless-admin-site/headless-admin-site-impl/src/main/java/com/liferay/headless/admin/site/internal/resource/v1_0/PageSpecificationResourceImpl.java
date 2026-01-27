@@ -12,10 +12,13 @@ import com.liferay.headless.admin.site.dto.v1_0.DisplayPageTemplate;
 import com.liferay.headless.admin.site.dto.v1_0.MasterPage;
 import com.liferay.headless.admin.site.dto.v1_0.PageSpecification;
 import com.liferay.headless.admin.site.dto.v1_0.PageTemplate;
+import com.liferay.headless.admin.site.dto.v1_0.Settings;
 import com.liferay.headless.admin.site.dto.v1_0.SitePage;
 import com.liferay.headless.admin.site.dto.v1_0.UtilityPage;
+import com.liferay.headless.admin.site.dto.v1_0.WidgetPageSpecification;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.GroupUtil;
 import com.liferay.headless.admin.site.internal.resource.v1_0.util.LayoutUtil;
+import com.liferay.headless.admin.site.internal.resource.v1_0.util.SettingsUtil;
 import com.liferay.headless.admin.site.resource.v1_0.PageSpecificationResource;
 import com.liferay.headless.common.spi.service.context.ServiceContextBuilder;
 import com.liferay.info.item.InfoItemServiceRegistry;
@@ -29,6 +32,7 @@ import com.liferay.layout.utility.page.service.LayoutUtilityPageEntryService;
 import com.liferay.portal.kernel.exception.LockedLayoutException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -348,9 +352,22 @@ public class PageSpecificationResourceImpl
 		PageSpecification pageSpecification,
 		PageSpecification existingPageSpecification) {
 
-		if (pageSpecification.getSettings() != null) {
-			existingPageSpecification.setSettings(
-				pageSpecification::getSettings);
+		Settings settings = SettingsUtil.getSettings(pageSpecification);
+
+		if (settings != null) {
+			if (pageSpecification instanceof ContentPageSpecification) {
+				ContentPageSpecification existingContentPageSpecification =
+					(ContentPageSpecification)existingPageSpecification;
+
+				existingContentPageSpecification.setSettings(() -> settings);
+			}
+
+			if (pageSpecification instanceof WidgetPageSpecification) {
+				WidgetPageSpecification existingWidgetPageSpecification =
+					(WidgetPageSpecification)existingPageSpecification;
+
+				existingWidgetPageSpecification.setSettings(() -> settings);
+			}
 		}
 
 		if (!Objects.equals(
@@ -432,7 +449,10 @@ public class PageSpecificationResourceImpl
 		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout == null) {
-			if (!layout.isTypePortlet()) {
+			if (!layout.isTypePortlet() &&
+				!Objects.equals(layout.getType(), LayoutConstants.TYPE_NODE) &&
+				!Objects.equals(layout.getType(), LayoutConstants.TYPE_URL)) {
+
 				throw new UnsupportedOperationException();
 			}
 

@@ -19,6 +19,7 @@ type Args = {
 	inputElement?: HTMLInputElement;
 	inputName: string;
 	localizationInputsContainer: HTMLElement;
+	localizedTextContainer: HTMLElement;
 	namespace: string;
 	onAutoTranslate?: ({
 		languageId,
@@ -47,6 +48,7 @@ export function registerLocalizedInput({
 	inputElement,
 	inputName,
 	localizationInputsContainer,
+	localizedTextContainer,
 	namespace,
 	onAutoTranslate,
 	onLocaleChange,
@@ -216,6 +218,10 @@ export function registerLocalizedInput({
 			formId?: string;
 			languageId: Liferay.Language.Locale;
 		}) => {
+			localizedTextContainer?.classList.toggle(
+				'd-none',
+				languageId === defaultLanguageId
+			);
 
 			// Return if event is sent from a different form
 
@@ -407,6 +413,30 @@ export function registerLocalizedInput({
 	Liferay.fire(EVENT_INPUT_REGISTERED);
 
 	return {
+		onBlur: (value = null) => {
+			if (
+				localizedTextContainer &&
+				currentLanguageId === defaultLanguageId
+			) {
+				const hasValue = Boolean(value);
+
+				localizedTextContainer.innerText =
+					value ||
+					Liferay.Language.get(
+						'there-is-no-default-value-to-localize'
+					);
+
+				localizedTextContainer.classList.toggle('text-info', !hasValue);
+				localizedTextContainer.classList.toggle(
+					'text-italic',
+					hasValue
+				);
+				localizedTextContainer.classList.toggle(
+					'text-secondary',
+					hasValue
+				);
+			}
+		},
 		onChange: (value = null) => {
 			if (value !== null) {
 				setTranslationInputsValue(currentLanguageId, value);

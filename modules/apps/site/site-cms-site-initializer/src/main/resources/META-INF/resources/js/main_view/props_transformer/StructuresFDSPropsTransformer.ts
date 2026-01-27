@@ -7,6 +7,8 @@ import {IInternalRenderer} from '@liferay/frontend-data-set-web';
 
 import {ObjectDefinition} from '../../common/types/ObjectDefinition';
 import getLocalizedValue from '../../common/utils/getLocalizedValue';
+import {StructureWorkflowItem} from '../modal/AssignDefaultWorkflowModalContent';
+import defaultWorkflowStructureAction from './actions/defaultWorkflowStructureAction';
 import deleteStructureAction from './actions/deleteStructureAction';
 import importStructureAction from './actions/importStructureAction';
 import AuthorRenderer from './cell_renderers/AuthorRenderer';
@@ -51,7 +53,10 @@ export default function StructuresFDSPropsTransformer({
 			itemData,
 			loadData,
 		}: {
-			action: {data: {id: string}; href?: string};
+			action: {
+				data: {id: string; structureId?: string; workflow?: string};
+				href?: string;
+			};
 			event: Event;
 			itemData: {
 				actions: {
@@ -62,11 +67,13 @@ export default function StructuresFDSPropsTransformer({
 				objectFolderExternalReferenceCode: string;
 				objectRelationships: ObjectDefinition['objectRelationships'];
 				status: {code: number};
+				workflowDefinitionLinks: ObjectDefinition['workflowDefinitionLinks'];
 			};
 			loadData: () => {};
 		}) {
 			if (action.data.id === 'import') {
 				event.preventDefault();
+
 				const target = event.target as HTMLAnchorElement;
 
 				importStructureAction(
@@ -91,6 +98,40 @@ export default function StructuresFDSPropsTransformer({
 					status: itemData.status.code,
 					structureId: itemData.id,
 				});
+			}
+			else if (action.data.id === 'assign-default-workflow') {
+				const item = {
+					id: String(itemData.id),
+					name: getLocalizedValue(itemData.label),
+					workflow: itemData.workflowDefinitionLinks?.[0]
+						? itemData.workflowDefinitionLinks[0]
+								.workflowDefinitionName
+						: '',
+				} as StructureWorkflowItem;
+
+				defaultWorkflowStructureAction([item]);
+			}
+		},
+		onBulkActionItemClick: ({
+			action,
+			selectedData,
+		}: {
+			action: {data?: {id?: string}};
+			selectedData: {items: Array<ItemData>};
+		}) => {
+			if (action?.data?.id === 'assign-default-workflow') {
+				const structureWorkflows = selectedData.items.map(
+					(itemData: any): StructureWorkflowItem => ({
+						id: String(itemData.id),
+						name: getLocalizedValue(itemData.label),
+						workflow: itemData.workflowDefinitionLinks?.[0]
+							? itemData.workflowDefinitionLinks[0]
+									.workflowDefinitionName
+							: '',
+					})
+				);
+
+				defaultWorkflowStructureAction(structureWorkflows);
 			}
 		},
 	};

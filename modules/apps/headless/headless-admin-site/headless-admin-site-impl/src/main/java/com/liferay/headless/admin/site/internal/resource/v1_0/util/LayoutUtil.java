@@ -226,25 +226,39 @@ public class LayoutUtil {
 			}
 		}
 
+		PageExperience defaultPageExperience =
+			PageExperienceUtil.getDefaultPageExperience(
+				publishedContentPageSpecification.getPageExperiences());
+
 		serviceContext.setAttribute(
 			"defaultSegmentsExperienceExternalReferenceCode",
-			SegmentsExperienceUtil.
-				getDefaultSegmentsExperienceExternalReferenceCode(
-					publishedContentPageSpecification.getPageExperiences()));
+			defaultPageExperience.getExternalReferenceCode());
+		serviceContext.setAttribute(
+			"defaultSegmentsExperienceUuid", defaultPageExperience.getUuid());
+
+		defaultPageExperience = PageExperienceUtil.getDefaultPageExperience(
+			draftContentPageSpecification.getPageExperiences());
+
 		serviceContext.setAttribute(
 			"draftLayoutDefaultSegmentsExperienceExternalReferenceCode",
-			SegmentsExperienceUtil.
-				getDefaultSegmentsExperienceExternalReferenceCode(
-					draftContentPageSpecification.getPageExperiences()));
+			defaultPageExperience.getExternalReferenceCode());
+		serviceContext.setAttribute(
+			"draftLayoutDefaultSegmentsExperienceUuid",
+			defaultPageExperience.getUuid());
+
 		serviceContext.setAttribute(
 			"draftLayoutExternalReferenceCode",
 			draftContentPageSpecification.getExternalReferenceCode());
 
 		ServiceContextUtil.setLayoutSetPrototypeLayoutERC(
-			groupId, publishedContentPageSpecification, serviceContext);
+			groupId, publishedContentPageSpecification, serviceContext,
+			publishedContentPageSpecification.
+				getSiteTemplatePageSpecificationExternalReferenceCode());
 
 		ServiceContextUtil.setLayoutSetPrototypeLayoutERC(
-			groupId, draftContentPageSpecification, serviceContext);
+			groupId, draftContentPageSpecification, serviceContext,
+			draftContentPageSpecification.
+				getSiteTemplatePageSpecificationExternalReferenceCode());
 
 		if (Objects.equals(
 				publishedContentPageSpecification.getStatus(),
@@ -329,6 +343,28 @@ public class LayoutUtil {
 			draftLayout.getRobotsMap(), draftLayout.getFriendlyURLMap(),
 			contentPageSpecification, WorkflowConstants.STATUS_DRAFT,
 			serviceContext);
+	}
+
+	public static Layout addLayout(
+			String externalReferenceCode, long groupId, long parentLayoutId,
+			Map<Locale, String> nameMap, String type,
+			UnicodeProperties typeSettingsUnicodeProperties,
+			boolean hiddenFromNavigation, Map<Locale, String> friendlyURLMap,
+			PageSpecification pageSpecification, ServiceContext serviceContext)
+		throws Exception {
+
+		String typeSettings = null;
+
+		if (typeSettingsUnicodeProperties != null) {
+			typeSettings = typeSettingsUnicodeProperties.toString();
+		}
+
+		_setExpandoBridgeAttributes(pageSpecification, serviceContext);
+
+		return LayoutServiceUtil.addLayout(
+			externalReferenceCode, groupId, false, parentLayoutId, nameMap,
+			null, null, null, null, type, typeSettings, hiddenFromNavigation,
+			friendlyURLMap, null, serviceContext);
 	}
 
 	public static Layout addPortletLayout(
@@ -560,6 +596,30 @@ public class LayoutUtil {
 		return LayoutLocalServiceUtil.updateStatus(
 			serviceContext.getUserId(), layout.getPlid(), status,
 			serviceContext);
+	}
+
+	public static Layout updateLayout(
+			Layout layout, Map<Locale, String> nameMap,
+			Map<Locale, String> friendlyURLMap,
+			PageSpecification pageSpecification,
+			UnicodeProperties typeSettingsUnicodeProperties,
+			ServiceContext serviceContext)
+		throws Exception {
+
+		_setExpandoBridgeAttributes(pageSpecification, serviceContext);
+
+		if (!Objects.equals(
+				typeSettingsUnicodeProperties,
+				layout.getTypeSettingsProperties())) {
+
+			layout = LayoutServiceUtil.updateTypeSettings(
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), typeSettingsUnicodeProperties.toString());
+		}
+
+		return _updateLayout(
+			layout, nameMap, null, null, null, null, null, null, null, null,
+			friendlyURLMap, serviceContext);
 	}
 
 	public static Layout updatePortletLayout(
@@ -1012,11 +1072,7 @@ public class LayoutUtil {
 			PageSpecification pageSpecification, ServiceContext serviceContext)
 		throws Exception {
 
-		Settings settings = null;
-
-		if (pageSpecification != null) {
-			settings = pageSpecification.getSettings();
-		}
+		Settings settings = SettingsUtil.getSettings(pageSpecification);
 
 		_updateClientExtensions(cetManager, layout, settings, serviceContext);
 
@@ -1221,7 +1277,9 @@ public class LayoutUtil {
 
 				SegmentsExperienceServiceUtil.updateSegmentsExperiencePriority(
 					actualSegmentsExperience.getSegmentsExperienceId(),
-					GetterUtil.getInteger(pageExperience.getPriority()));
+					SegmentsExperienceUtil.getPriority(
+						pageExperience.getKey(), layout,
+						pageExperience.getPriority()));
 			}
 		}
 	}

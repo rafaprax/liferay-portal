@@ -12,7 +12,6 @@ import com.liferay.portal.kernel.dao.db.DBInspector;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.instance.PortalInstancePool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
@@ -61,11 +60,10 @@ public class PreupgradeVerifyDatabaseCharacterSet
 				}
 				catch (PortalException portalException) {
 					_log.error(
-						"Failed to get table names for company " + companyId,
+						"Unable to get table names for company " + companyId,
 						portalException);
 				}
-			},
-			PortalInstancePool.getCompanyIds());
+			});
 
 		String sql = StringBundler.concat(
 			"select distinct character_set_name, collation_name, table_name, ",

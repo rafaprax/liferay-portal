@@ -374,7 +374,7 @@ public class LayoutServiceImpl extends LayoutServiceBaseImpl {
 
 		PermissionChecker permissionChecker = getPermissionChecker();
 
-		Layout sourceLayout = layoutLocalService.getLayout(sourcePlid);
+		Layout sourceLayout = getLayout(sourcePlid);
 
 		long parentLayoutId = sourceLayout.getParentLayoutId();
 
@@ -391,6 +391,36 @@ public class LayoutServiceImpl extends LayoutServiceBaseImpl {
 		return layoutLocalService.copyLayout(
 			getUserId(), groupId, privateLayout, localeNamesMap, hidden, system,
 			copyPermissions, sourcePlid, serviceContext);
+	}
+
+	@Override
+	public Layout copyLayoutContent(Layout sourceLayout, Layout targetLayout)
+		throws Exception {
+
+		LayoutPermissionUtil.check(
+			getPermissionChecker(), sourceLayout, ActionKeys.VIEW);
+
+		LayoutPermissionUtil.checkLayoutUpdatePermission(
+			getPermissionChecker(), targetLayout);
+
+		return layoutLocalService.copyLayoutContent(sourceLayout, targetLayout);
+	}
+
+	@Override
+	public Layout copyLayoutContent(
+			long sourceSegmentsExperienceId, Layout sourceLayout,
+			long targetSegmentsExperienceId, Layout targetLayout)
+		throws Exception {
+
+		LayoutPermissionUtil.check(
+			getPermissionChecker(), sourceLayout, ActionKeys.VIEW);
+
+		LayoutPermissionUtil.checkLayoutUpdatePermission(
+			getPermissionChecker(), targetLayout);
+
+		return layoutLocalService.copyLayoutContent(
+			sourceSegmentsExperienceId, sourceLayout,
+			targetSegmentsExperienceId, targetLayout);
 	}
 
 	/**

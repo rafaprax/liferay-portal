@@ -32,7 +32,6 @@ import {
 	getLocalizedValue,
 } from '../../utils/getLocalizedValue';
 import {getInputRendererById} from '../../utils/renderer';
-import {saveViewSettings} from '../../utils/saveViewSettings';
 import {
 	IItemsActions,
 	ITableSchema,
@@ -754,13 +753,10 @@ const Table = ({
 	schema: ITableSchema;
 }) => {
 	const {
-		appURL,
-		id,
 		inlineAddingSettings,
 		itemsChanges,
 		nestedItemsKey,
 		nestedItemsReferenceKey,
-		portletId,
 		selectable,
 		selectionType,
 		updateActiveSorts,
@@ -863,23 +859,24 @@ const Table = ({
 					const visibleFieldNames: VisibleFieldNames = {};
 
 					schema.fields.forEach(({fieldName}) => {
+						if (String(fieldName).includes('.')) {
+							fieldName = String(fieldName).replaceAll('.', ',');
+						}
+
 						visibleFieldNames[String(fieldName)] = false;
 					});
 
 					visibleColumns.forEach((value: any, key: any) => {
+						if (key.includes('.')) {
+							key = key.replaceAll('.', ',');
+						}
+
 						if (visibleFieldNames[key] !== undefined) {
 							visibleFieldNames[key] = true;
 						}
 					});
 
 					viewsDispatch(updateVisibleFields(visibleFieldNames));
-
-					saveViewSettings({
-						appURL,
-						id,
-						portletId,
-						settings: {visibleFieldNames},
-					});
 				}}
 				sort={getSorting()}
 				visibleColumns={getVisibleFieldsMap(

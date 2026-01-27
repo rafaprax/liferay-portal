@@ -797,6 +797,14 @@ public class SiteResourceImpl extends BaseSiteResourceImpl {
 			"directoryIndexingEnabled",
 			String.valueOf(site.getDirectoryIndexingEnabled()));
 
+		if (site.getLocales() != null) {
+			unicodeProperties.put(
+				"locales",
+				StringUtil.merge(
+					LocaleUtil.fromLanguageIds(site.getLocales()),
+					StringPool.COMMA));
+		}
+
 		if (site.getInheritLocales() == null) {
 			unicodeProperties.put(
 				GroupConstants.TYPE_SETTINGS_KEY_INHERIT_LOCALES,
@@ -807,14 +815,6 @@ public class SiteResourceImpl extends BaseSiteResourceImpl {
 			unicodeProperties.put(
 				GroupConstants.TYPE_SETTINGS_KEY_INHERIT_LOCALES,
 				String.valueOf(site.getInheritLocales()));
-		}
-
-		if (site.getLocales() != null) {
-			unicodeProperties.put(
-				"locales",
-				StringUtil.merge(
-					LocaleUtil.fromLanguageIds(site.getLocales()),
-					StringPool.COMMA));
 		}
 
 		unicodeProperties.put(
@@ -988,8 +988,17 @@ public class SiteResourceImpl extends BaseSiteResourceImpl {
 				setFriendlyUrlPath(group::getFriendlyURL);
 				setId(group::getGroupId);
 				setInheritLocales(
-					() -> Boolean.parseBoolean(
-						group.getTypeSettingsProperty("inheritLocales")));
+					() -> {
+						if (group.getTypeSettingsProperty("inheritLocales") !=
+								null) {
+
+							return Boolean.parseBoolean(
+								group.getTypeSettingsProperty(
+									"inheritLocales"));
+						}
+
+						return true;
+					});
 				setKey(group::getGroupKey);
 				setLocales(
 					() -> LocaleUtil.toW3cLanguageIds(
