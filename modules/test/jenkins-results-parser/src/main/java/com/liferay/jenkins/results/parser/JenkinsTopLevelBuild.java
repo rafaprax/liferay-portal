@@ -48,12 +48,12 @@ public class JenkinsTopLevelBuild
 			return jenkinsGitHubURL;
 		}
 
+		String baseGitRepositoryName = getBaseGitRepositoryName();
+
 		String jenkinsGithubBranchName = getParameterValue(
 			"JENKINS_GITHUB_BRANCH_NAME");
 		String jenkinsGithubBranchUsername = getParameterValue(
 			"JENKINS_GITHUB_BRANCH_USERNAME");
-
-		String baseGitRepositoryName = getBaseGitRepositoryName();
 
 		if (!JenkinsResultsParserUtil.isNullOrEmpty(jenkinsGithubBranchName) &&
 			!JenkinsResultsParserUtil.isNullOrEmpty(
