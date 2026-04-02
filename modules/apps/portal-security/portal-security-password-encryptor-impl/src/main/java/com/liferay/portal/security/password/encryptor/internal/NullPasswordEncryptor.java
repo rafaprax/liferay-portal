@@ -5,7 +5,6 @@
 
 package com.liferay.portal.security.password.encryptor.internal;
 
-import com.liferay.portal.kernel.exception.PwdEncryptorException;
 import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
 
@@ -24,11 +23,10 @@ public class NullPasswordEncryptor implements PasswordEncryptor {
 	@Override
 	public String encrypt(
 			String algorithm, String plainTextPassword,
-			String encryptedPassword, boolean upgradeHashSecurity)
-		throws PwdEncryptorException {
+			String encryptedPassword, boolean upgradeHashSecurity) {
 
 		if (FIPSModeUtil.isFIPSModeEnabled()) {
-			throw new PwdEncryptorException(
+			throw new UnsupportedOperationException(
 				"Plaintext password storage is not available in FIPS mode. " +
 					"Use PBKDF2WithHmacSHA256 instead.");
 		}
