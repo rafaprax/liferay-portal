@@ -164,12 +164,20 @@ public class FileUtil {
 		return _file;
 	}
 
+	/**
+	 * @deprecated As of 7.4.x, replaced by {@link #getSHA256Checksum(File)}
+	 */
+	@Deprecated
 	public static String getMD5Checksum(File file) throws IOException {
 		return _file.getMD5Checksum(file);
 	}
 
 	public static String getPath(String fullFileName) {
 		return _file.getPath(fullFileName);
+	}
+
+	public static String getSHA256Checksum(File file) throws IOException {
+		return _file.getSHA256Checksum(file);
 	}
 
 	public static String getShortFileName(String fullFileName) {

@@ -86,9 +86,19 @@ public interface File {
 
 	public String getExtension(String fileName);
 
+	/**
+	 * @deprecated As of 7.4.x, replaced by {@link #getSHA256Checksum(java.io.File)}
+	 */
+	@Deprecated
 	public String getMD5Checksum(java.io.File file) throws IOException;
 
 	public String getPath(String fullFileName);
+
+	public default String getSHA256Checksum(java.io.File file)
+		throws IOException {
+
+		return getMD5Checksum(file);
+	}
 
 	public String getShortFileName(String fullFileName);
 

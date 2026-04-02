@@ -244,7 +244,8 @@ public class CTCollectionTemplateLocalServiceImpl
 				Instant now = Instant.now();
 
 				return DigesterUtil.digestHex(
-					DigesterUtil.MD5, String.valueOf(ctCollectionTemplateId),
+					DigesterUtil.SHA_256,
+					String.valueOf(ctCollectionTemplateId),
 					String.valueOf(now.getEpochSecond()));
 			}
 		).put(

@@ -380,7 +380,7 @@ public class OAuthClientASLocalMetadataLocalServiceImpl
 			URI issuerURI = URI.create(issuer);
 
 			if (wellKnownURISuffix.equals("openid-configuration")) {
-				MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
 
 				return StringBundler.concat(
 					issuerURI.getScheme(), "://", issuerURI.getAuthority(),
