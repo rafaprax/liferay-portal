@@ -2074,7 +2074,7 @@ public class ServicePreAction extends Action {
 		httpServletResponse.setHeader(
 			"X-Liferay-Request-User",
 			DigesterUtil.digestHex(
-				DigesterUtil.MD5, String.valueOf(user.getUserId())));
+				DigesterUtil.SHA_256, String.valueOf(user.getUserId())));
 	}
 
 	private void _updateUserLayouts(User user) throws Exception {

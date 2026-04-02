@@ -36,10 +36,10 @@ Date date = new Date();
 	<dd class="property-list">
 		<dl>
 			<dt>
-				MD5
+				SHA-256
 			</dt>
 			<dd>
-				<%= HtmlUtil.escape(certificateTool.getFingerprint("MD5", x509Certificate)) %>
+				<%= HtmlUtil.escape(certificateTool.getFingerprint("SHA-256", x509Certificate)) %>
 			</dd>
 			<dt>
 				SHA1

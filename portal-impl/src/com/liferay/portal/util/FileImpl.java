@@ -402,10 +402,16 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 		return StringPool.BLANK;
 	}
 
+	@Deprecated
 	@Override
 	public String getMD5Checksum(File file) throws IOException {
+		return getSHA256Checksum(file);
+	}
+
+	@Override
+	public String getSHA256Checksum(File file) throws IOException {
 		try (FileInputStream fileInputStream = new FileInputStream(file)) {
-			return DigesterUtil.digestHex(DigesterUtil.MD5, fileInputStream);
+			return DigesterUtil.digestHex(DigesterUtil.SHA_256, fileInputStream);
 		}
 	}
 

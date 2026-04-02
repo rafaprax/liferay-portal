@@ -10,6 +10,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +21,10 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Brian Wing Shun Chan
@@ -29,7 +33,7 @@ import java.util.Objects;
  */
 public class DigesterUtil {
 
-	public static final String DEFAULT_ALGORITHM = "SHA";
+	public static final String DEFAULT_ALGORITHM = "SHA-256";
 
 	public static final String ENCODING = StringPool.UTF8;
 
@@ -148,6 +152,8 @@ public class DigesterUtil {
 	}
 
 	public static byte[] digestRaw(String algorithm, ByteBuffer byteBuffer) {
+		_validateFIPSAlgorithm(algorithm);
+
 		MessageDigest messageDigest = null;
 
 		try {
@@ -163,6 +169,8 @@ public class DigesterUtil {
 	}
 
 	public static byte[] digestRaw(String algorithm, InputStream inputStream1) {
+		_validateFIPSAlgorithm(algorithm);
+
 		MessageDigest messageDigest = null;
 
 		try (InputStream inputStream2 = inputStream1) {
@@ -189,6 +197,8 @@ public class DigesterUtil {
 	}
 
 	public static byte[] digestRaw(String algorithm, String... text) {
+		_validateFIPSAlgorithm(algorithm);
+
 		MessageDigest messageDigest = null;
 
 		try {
@@ -218,8 +228,30 @@ public class DigesterUtil {
 		return messageDigest.digest();
 	}
 
+	private static void _validateFIPSAlgorithm(String algorithm) {
+		if (!FIPSModeUtil.isFIPSModeEnabled()) {
+			return;
+		}
+
+		String upperAlgorithm = algorithm.toUpperCase();
+
+		if (!_FIPS_APPROVED_DIGEST_ALGORITHMS.contains(upperAlgorithm)) {
+			throw new SecurityException(
+				"Digest algorithm " + algorithm +
+					" is not approved under FIPS 140-3. Use one of: " +
+						_FIPS_APPROVED_DIGEST_ALGORITHMS);
+		}
+	}
+
 	private static final boolean _BASE_64 = Objects.equals(
 		PropsUtil.get(PropsKeys.PASSWORDS_DIGEST_ENCODING), "base64");
+
+	private static final Set<String> _FIPS_APPROVED_DIGEST_ALGORITHMS =
+		new HashSet<>(
+			Arrays.asList(
+				"SHA-224", "SHA-256", "SHA-384", "SHA-512", "SHA-512/224",
+				"SHA-512/256", "SHA3-224", "SHA3-256", "SHA3-384",
+				"SHA3-512"));
 
 	private static final Log _log = LogFactoryUtil.getLog(DigesterUtil.class);
 

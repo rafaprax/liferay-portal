@@ -77,7 +77,7 @@ public class LanguageFilter extends BasePortalFilter {
 		content = translateResponse(httpServletRequest, content);
 
 		String eTag =
-			StringPool.QUOTE + DigesterUtil.digest("SHA-1", content) +
+			StringPool.QUOTE + DigesterUtil.digest("SHA-256", content) +
 				StringPool.QUOTE;
 
 		httpServletResponse.setHeader(HttpHeaders.ETAG, eTag);
