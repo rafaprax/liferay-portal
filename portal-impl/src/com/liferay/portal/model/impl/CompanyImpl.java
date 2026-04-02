@@ -11,6 +11,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.encryptor.EncryptorUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.security.fips.CompanyKeyStoreUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.CompanyInfo;
@@ -158,7 +159,12 @@ public class CompanyImpl extends CompanyBaseImpl {
 			String key = getKey();
 
 			if (Validator.isNotNull(key)) {
-				_keyObj = EncryptorUtil.deserializeKey(key);
+				if (CompanyKeyStoreUtil.isKeyStoreAlias(key)) {
+					_keyObj = CompanyKeyStoreUtil.getKey(key);
+				}
+				else {
+					_keyObj = EncryptorUtil.deserializeKey(key);
+				}
 			}
 		}
 

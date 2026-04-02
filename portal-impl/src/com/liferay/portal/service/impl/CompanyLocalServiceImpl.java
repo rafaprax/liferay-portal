@@ -81,6 +81,8 @@ import com.liferay.portal.kernel.search.facet.faceted.searcher.FacetedSearcherMa
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.EmailAddressValidator;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.security.fips.CompanyKeyStoreUtil;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -141,6 +143,8 @@ import jakarta.portlet.PortletPreferences;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.security.Key;
 
 import java.net.IDN;
 import java.net.Inet6Address;
@@ -275,9 +279,21 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 					// Company info
 
 					try {
-						updatedCompany.setKey(
-							EncryptorUtil.serializeKey(
-								EncryptorUtil.generateKey()));
+						Key generatedKey = EncryptorUtil.generateKey();
+
+						if (FIPSModeUtil.isFIPSModeEnabled()) {
+							String alias =
+								CompanyKeyStoreUtil.generateAlias(
+									updatedCompany.getCompanyId());
+
+							CompanyKeyStoreUtil.setKey(alias, generatedKey);
+
+							updatedCompany.setKey(alias);
+						}
+						else {
+							updatedCompany.setKey(
+								EncryptorUtil.serializeKey(generatedKey));
+						}
 					}
 					catch (EncryptorException encryptorException) {
 						throw new SystemException(encryptorException);
@@ -583,8 +599,21 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		}
 
 		try {
-			company.setKey(
-				EncryptorUtil.serializeKey(EncryptorUtil.generateKey()));
+			Key generatedKey = EncryptorUtil.generateKey();
+
+				if (FIPSModeUtil.isFIPSModeEnabled()) {
+					String alias =
+						CompanyKeyStoreUtil.generateAlias(
+							company.getCompanyId());
+
+					CompanyKeyStoreUtil.setKey(alias, generatedKey);
+
+					company.setKey(alias);
+				}
+				else {
+					company.setKey(
+						EncryptorUtil.serializeKey(generatedKey));
+				}
 		}
 		catch (EncryptorException encryptorException) {
 			throw new SystemException(encryptorException);
