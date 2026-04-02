@@ -114,7 +114,7 @@ public class PBKDF2PasswordEncryptor implements PasswordEncryptor {
 		}
 	}
 
-	private static final int _KEY_SIZE = 160;
+	private static final int _KEY_SIZE = 256;
 
 	private static final int _ROUNDS = 1300000;
 
@@ -194,7 +194,7 @@ public class PBKDF2PasswordEncryptor implements PasswordEncryptor {
 			return _saltBytes;
 		}
 
-		private Digest _digest = DigestFactory.getDigest("SHA1");
+		private Digest _digest = DigestFactory.getDigest("SHA-256");
 		private int _keySize = _KEY_SIZE;
 		private int _rounds = _ROUNDS;
 		private byte[] _saltBytes;

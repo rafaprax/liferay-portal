@@ -6,7 +6,10 @@
 package com.liferay.portal.security.password.encryptor.internal;
 
 import com.liferay.portal.kernel.exception.PwdEncryptorException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.SecureRandom;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DigesterUtil;
@@ -35,6 +38,12 @@ public class CryptPasswordEncryptor implements PasswordEncryptor {
 			String algorithm, String plainTextPassword,
 			String encryptedPassword, boolean upgradeHashSecurity)
 		throws PwdEncryptorException {
+
+		if (FIPSModeUtil.isFIPSModeEnabled() && _log.isWarnEnabled()) {
+			_log.warn(
+				"Verifying legacy UFC-CRYPT hash in FIPS mode. Password " +
+					"will be upgraded to PBKDF2 on next successful login.");
+		}
 
 		if (upgradeHashSecurity) {
 			encryptedPassword = null;
@@ -84,6 +93,9 @@ public class CryptPasswordEncryptor implements PasswordEncryptor {
 
 		return saltBytes;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		CryptPasswordEncryptor.class);
 
 	private static final String[] _SALT = ArrayUtil.toStringArray(
 		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./".
