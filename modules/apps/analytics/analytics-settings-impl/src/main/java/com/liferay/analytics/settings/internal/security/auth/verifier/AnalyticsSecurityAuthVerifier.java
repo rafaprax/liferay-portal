@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.AccessControlContext;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.security.auth.AuthException;
 import com.liferay.portal.kernel.security.auth.verifier.AuthVerifier;
 import com.liferay.portal.kernel.security.auth.verifier.AuthVerifierResult;
@@ -166,9 +167,37 @@ public class AnalyticsSecurityAuthVerifier implements AuthVerifier {
 			String signatureString, String timestamp)
 		throws Exception {
 
-		Signature signature = Signature.getInstance("DSA");
+		try {
+			return _validateSignatureWithAlgorithm(
+				httpServletRequest, publicKey, signatureString, timestamp,
+				"SHA256withRSA", "RSA");
+		}
+		catch (Exception exception) {
+			if (FIPSModeUtil.isFIPSModeEnabled()) {
+				throw exception;
+			}
 
-		KeyFactory keyFactory = KeyFactory.getInstance("DSA");
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"RSA signature verification failed, trying DSA fallback",
+					exception);
+			}
+
+			return _validateSignatureWithAlgorithm(
+				httpServletRequest, publicKey, signatureString, timestamp,
+				"DSA", "DSA");
+		}
+	}
+
+	private boolean _validateSignatureWithAlgorithm(
+			HttpServletRequest httpServletRequest, String publicKey,
+			String signatureString, String timestamp,
+			String signatureAlgorithm, String keyAlgorithm)
+		throws Exception {
+
+		Signature signature = Signature.getInstance(signatureAlgorithm);
+
+		KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
 
 		signature.initVerify(
 			keyFactory.generatePublic(

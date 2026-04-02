@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.model.Website;
 import com.liferay.portal.kernel.model.cache.CacheField;
 import com.liferay.portal.kernel.security.auth.EmailAddressGenerator;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.security.auth.FullNameGenerator;
 import com.liferay.portal.kernel.security.auth.FullNameGeneratorFactory;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
@@ -196,8 +197,11 @@ public class UserImpl extends UserBaseImpl {
 	@Deprecated
 	@Override
 	public String getDigest(String password) {
+		String algorithm = FIPSModeUtil.isFIPSModeEnabled() ?
+			DigesterUtil.SHA_256 : DigesterUtil.MD5;
+
 		return DigesterUtil.digestHex(
-			DigesterUtil.MD5, String.valueOf(getUserId()), Portal.PORTAL_REALM,
+			algorithm, String.valueOf(getUserId()), Portal.PORTAL_REALM,
 			password);
 	}
 
