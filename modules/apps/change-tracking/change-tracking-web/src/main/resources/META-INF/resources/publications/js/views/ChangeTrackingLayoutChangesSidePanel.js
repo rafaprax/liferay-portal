@@ -177,7 +177,7 @@ export default function ChangeTrackingLayoutChangesSidePanel({
 					description=""
 					small
 					title={Liferay.Language.get(
-						'no-content-changes-found-on-this-page'
+						'no-content-changes-were-found-on-this-page'
 					)}
 				/>
 			);

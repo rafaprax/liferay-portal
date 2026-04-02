@@ -616,6 +616,8 @@ public class ViewChangesDisplayContext {
 					return null;
 				}
 
+				ResourceURL dataURL = _renderResponse.createResourceURL();
+
 				long ctEntryId = ParamUtil.getLong(_renderRequest, "ctEntryId");
 
 				if (ctEntryId == 0) {
@@ -630,9 +632,8 @@ public class ViewChangesDisplayContext {
 					ctEntryId = ctEntry.getCtEntryId();
 				}
 
-				ResourceURL dataURL = _renderResponse.createResourceURL();
-
 				dataURL.setParameter("ctEntryId", String.valueOf(ctEntryId));
+
 				dataURL.setResourceID(
 					"/change_tracking/get_layout_content_changes");
 
