@@ -18,6 +18,7 @@ import java.security.Provider;
 import java.security.Security;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -245,43 +246,72 @@ public class CryptoStartupAction extends SimpleAction {
 			"com/liferay/portal/kernel/util/DigesterUtil.class"
 		};
 
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+		Properties expectedDigests = new Properties();
 
-			for (String classPath : criticalClasses) {
-				try (InputStream inputStream =
-						ClassLoader.getSystemResourceAsStream(classPath)) {
+		try (InputStream manifestInputStream =
+				ClassLoader.getSystemResourceAsStream(
+					_FIPS_INTEGRITY_MANIFEST)) {
 
-					if (inputStream == null) {
-						_log.warn(
-							"FIPS integrity check: unable to locate " +
-								classPath + " on classpath");
-
-						continue;
-					}
-
-					byte[] buffer = new byte[4096];
-
-					int bytesRead;
-
-					while ((bytesRead = inputStream.read(buffer)) != -1) {
-						messageDigest.update(buffer, 0, bytesRead);
-					}
-				}
+			if (manifestInputStream != null) {
+				expectedDigests.load(manifestInputStream);
 			}
+		}
+		catch (Exception exception) {
+			_log.warn(
+				"FIPS integrity check: unable to load manifest " +
+					_FIPS_INTEGRITY_MANIFEST,
+				exception);
+		}
 
-			byte[] digest = messageDigest.digest();
+		boolean manifestAvailable = !expectedDigests.isEmpty();
 
-			if (_log.isInfoEnabled()) {
-				StringBuilder sb = new StringBuilder();
+		if (!manifestAvailable) {
+			_log.warn(
+				"FIPS integrity check: manifest " +
+					_FIPS_INTEGRITY_MANIFEST + " is missing or empty. " +
+						"Run generate-fips-integrity.sh after building to " +
+							"enable tamper detection.");
+		}
 
-				for (byte b : digest) {
-					sb.append(String.format("%02x", b));
+		StringBuilder failures = new StringBuilder();
+
+		try {
+			for (String classPath : criticalClasses) {
+				String actualDigest = _computeClassDigest(classPath);
+
+				if (actualDigest == null) {
+					_log.warn(
+						"FIPS integrity check: unable to locate " +
+							classPath + " on classpath");
+
+					continue;
 				}
 
-				_log.info(
-					"FIPS software integrity digest (SHA-256): " +
-						sb.toString());
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"FIPS integrity digest for " + classPath + ": " +
+							actualDigest);
+				}
+
+				if (manifestAvailable) {
+					String expectedDigest = expectedDigests.getProperty(
+						classPath);
+
+					if (expectedDigest == null) {
+						failures.append(
+							"No expected digest in manifest for: " +
+								classPath + ". ");
+					}
+					else if (!MessageDigest.isEqual(
+								expectedDigest.getBytes(),
+								actualDigest.getBytes())) {
+
+						failures.append(
+							"Integrity mismatch for " + classPath +
+								": expected=" + expectedDigest + ", actual=" +
+									actualDigest + ". ");
+					}
+				}
 			}
 		}
 		catch (Exception exception) {
@@ -290,7 +320,62 @@ public class CryptoStartupAction extends SimpleAction {
 					"Unable to compute integrity digest for crypto modules.",
 				exception);
 		}
+
+		if (failures.length() > 0) {
+			throw new RuntimeException(
+				"FIPS 140-3 software integrity verification failed " +
+					"(Section 10.2.1.1): " + failures.toString() +
+						"The cryptographic module bytecode does not match " +
+							"the build manifest. This may indicate " +
+								"unauthorized modification.");
+		}
+
+		if (manifestAvailable && _log.isInfoEnabled()) {
+			_log.info(
+				"FIPS software integrity verification passed: all " +
+					"critical class digests match the build manifest");
+		}
 	}
+
+	private String _computeClassDigest(String classPath) {
+		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+
+			try (InputStream inputStream =
+					ClassLoader.getSystemResourceAsStream(classPath)) {
+
+				if (inputStream == null) {
+					return null;
+				}
+
+				byte[] buffer = new byte[4096];
+
+				int bytesRead;
+
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					messageDigest.update(buffer, 0, bytesRead);
+				}
+			}
+
+			byte[] digest = messageDigest.digest();
+
+			StringBuilder sb = new StringBuilder();
+
+			for (byte b : digest) {
+				sb.append(String.format("%02x", b));
+			}
+
+			return sb.toString();
+		}
+		catch (Exception exception) {
+			throw new RuntimeException(
+				"Unable to compute SHA-256 digest for " + classPath,
+				exception);
+		}
+	}
+
+	private static final String _FIPS_INTEGRITY_MANIFEST =
+		"META-INF/fips-integrity.properties";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CryptoStartupAction.class);
