@@ -10,9 +10,11 @@ import com.liferay.portal.kernel.events.SimpleAction;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
+import com.liferay.portal.kernel.security.fips.SecureCredentialProviderFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +48,7 @@ public class FIPSComplianceValidator extends SimpleAction {
 		_validateCompanyEncryptionAlgorithm(violations);
 		_validateCompanyEncryptionKeySize(violations);
 		_validateCompanyKeyStore(violations);
+		_validateJDBCCredentials(violations);
 		_validatePasswordEncryptionAlgorithm(violations);
 		_validateAuthMacAlgorithm(violations);
 		_validateSamlKeyStoreType(violations);
@@ -120,6 +123,48 @@ public class FIPSComplianceValidator extends SimpleAction {
 				"company.encryption.key.size=" + keySize +
 					" is not FIPS-approved. Use one of: " +
 						_FIPS_APPROVED_KEY_SIZES);
+		}
+	}
+
+	private void _validateJDBCCredentials(List<String> violations) {
+		String[] prefixes = {"jdbc.default.", "jdbc.read.", "jdbc.write."};
+
+		for (String prefix : prefixes) {
+			String jndiName = GetterUtil.getString(
+				PropsUtil.get(prefix + "jndi.name"));
+
+			if (Validator.isNotNull(jndiName)) {
+				continue;
+			}
+
+			String password = GetterUtil.getString(
+				PropsUtil.get(prefix + "password"));
+
+			if (Validator.isNull(password)) {
+				continue;
+			}
+
+			if (password.startsWith("secure-credential://")) {
+				if (SecureCredentialProviderFactory.getProvider() == null) {
+					violations.add(
+						prefix + "password uses a secure-credential:// " +
+							"reference but no SecureCredentialProvider is " +
+								"available. Deploy a provider implementation " +
+									"(e.g., Vault, AWS Secrets Manager) or " +
+										"use JNDI.");
+				}
+
+				continue;
+			}
+
+			violations.add(
+				prefix + "password is configured as plaintext. In FIPS " +
+					"mode, database credentials must be provided via one " +
+						"of: (1) JNDI datasource (" + prefix +
+							"jndi.name), (2) secure credential provider " +
+								"(secure-credential://key), or (3) " +
+									"environment variable injected by a " +
+										"secrets manager.");
 		}
 	}
 

@@ -13,6 +13,11 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jndi.JNDIUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
+import com.liferay.portal.kernel.security.fips.SecureCredentialException;
+import com.liferay.portal.kernel.security.fips.SecureCredentialProviderFactory;
+
+import java.util.Arrays;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.JavaDetector;
@@ -87,6 +92,16 @@ public class DataSourceFactoryUtil {
 	public static DataSource initDataSource(Properties properties)
 		throws Exception {
 
+		if (_log.isDebugEnabled()) {
+			_log.debug("Data source properties:\n");
+
+			_log.debug(PropertiesUtil.toString(properties));
+		}
+
+		if (FIPSModeUtil.isFIPSModeEnabled()) {
+			_resolveSecureCredentials(properties);
+		}
+
 		String jndiName = properties.getProperty("jndi.name");
 		String driverClassName = properties.getProperty("driverClassName");
 
@@ -144,13 +159,16 @@ public class DataSourceFactoryUtil {
 			_waitForJDBCConnection(properties);
 		}
 
-		if (_log.isDebugEnabled()) {
-			_log.debug("Data source properties:\n");
-
-			_log.debug(PropertiesUtil.toString(properties));
-		}
-
 		DataSource dataSource = initDataSourceHikariCP(properties);
+
+		if (FIPSModeUtil.isFIPSModeEnabled()) {
+
+			// Remove the plaintext password from the Properties object now
+			// that HikariCP has consumed it. This limits the lifetime of
+			// the password String in memory (FIPS 140-3 §7.7.3).
+
+			properties.remove("password");
+		}
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Created data source " + dataSource.getClass());
@@ -591,8 +609,68 @@ public class DataSourceFactoryUtil {
 		}
 	}
 
+	private static void _resolveSecureCredentials(Properties properties)
+		throws Exception {
+
+		String password = properties.getProperty("password");
+
+		if (Validator.isNull(password)) {
+			return;
+		}
+
+		if (!password.startsWith(_SECURE_CREDENTIAL_PREFIX)) {
+			return;
+		}
+
+		String credentialKey = password.substring(
+			_SECURE_CREDENTIAL_PREFIX.length());
+
+		char[] resolvedPassword = null;
+
+		try {
+			resolvedPassword =
+				SecureCredentialProviderFactory.resolveCredential(credentialKey);
+
+			if (resolvedPassword != null) {
+
+				// Convert char[] to String only at the boundary where
+				// Properties requires it. The char[] is zeroed immediately
+				// after.
+
+				properties.setProperty(
+					"password", new String(resolvedPassword));
+
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"JDBC password resolved from secure credential " +
+							"provider for key: " + credentialKey);
+				}
+			}
+			else {
+				throw new SecureCredentialException(
+					"No secure credential provider could resolve key: " +
+						credentialKey + ". Ensure a SecureCredentialProvider " +
+							"implementation is available on the classpath.");
+			}
+		}
+		catch (SecureCredentialException secureCredentialException) {
+			throw new Exception(
+				"FIPS mode: unable to resolve JDBC password from secure " +
+					"credential provider for key: " + credentialKey,
+				secureCredentialException);
+		}
+		finally {
+			if (resolvedPassword != null) {
+				Arrays.fill(resolvedPassword, '\0');
+			}
+		}
+	}
+
 	private static final String _MALFORMED_PARAMETER_PLACE_HOLDER =
 		"_MALFORMED_PARAMETER_PLACE_HOLDER";
+
+	private static final String _SECURE_CREDENTIAL_PREFIX =
+		"secure-credential://";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DataSourceFactoryUtil.class);
