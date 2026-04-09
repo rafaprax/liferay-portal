@@ -7,7 +7,10 @@ package com.liferay.portal.security.password.encryptor.internal;
 
 import com.liferay.petra.io.BigEndianCodec;
 import com.liferay.portal.kernel.exception.PwdEncryptorException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.SecureRandomUtil;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Base64;
@@ -36,6 +39,12 @@ public class SSHAPasswordEncryptor implements PasswordEncryptor {
 			String algorithm, String plainTextPassword,
 			String encryptedPassword, boolean upgradeHashSecurity)
 		throws PwdEncryptorException {
+
+		if (FIPSModeUtil.isFIPSModeEnabled() && _log.isWarnEnabled()) {
+			_log.warn(
+				"Verifying legacy SSHA hash in FIPS mode. Password will " +
+					"be upgraded to PBKDF2 on next successful login.");
+		}
 
 		if (upgradeHashSecurity) {
 			encryptedPassword = null;
@@ -66,6 +75,9 @@ public class SSHAPasswordEncryptor implements PasswordEncryptor {
 				unsupportedEncodingException);
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SSHAPasswordEncryptor.class);
 
 	protected byte[] getSaltBytes(String encryptedPassword)
 		throws PwdEncryptorException {

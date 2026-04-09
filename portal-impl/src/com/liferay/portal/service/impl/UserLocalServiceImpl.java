@@ -114,6 +114,7 @@ import com.liferay.portal.kernel.security.auth.FullNameValidator;
 import com.liferay.portal.kernel.security.auth.PasswordModificationThreadLocal;
 import com.liferay.portal.kernel.security.auth.ScreenNameGenerator;
 import com.liferay.portal.kernel.security.auth.ScreenNameValidator;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.security.ldap.LDAPSettingsUtil;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -1782,11 +1783,15 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		String[] digestArray = StringUtil.split(user.getDigest());
 
+		String digestAlgorithm = FIPSModeUtil.isFIPSModeEnabled() ?
+			DigesterUtil.SHA_256 : DigesterUtil.MD5;
+
 		for (String ha1 : digestArray) {
-			String ha2 = DigesterUtil.digestHex(DigesterUtil.MD5, method, uri);
+			String ha2 = DigesterUtil.digestHex(
+				digestAlgorithm, method, uri);
 
 			String curResponse = DigesterUtil.digestHex(
-				DigesterUtil.MD5, ha1, nonce, ha2);
+				digestAlgorithm, ha1, nonce, ha2);
 
 			if (response.equals(curResponse)) {
 				resetFailedLoginAttempts(user);

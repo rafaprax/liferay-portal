@@ -127,7 +127,7 @@ public class CacheHelper {
 		}
 
 		try (InputStream inputStream = url.openStream()) {
-			digest = DigesterUtil.digestBase64("SHA-1", inputStream);
+			digest = DigesterUtil.digestBase64("SHA-256", inputStream);
 
 			digests.put(cacheKey, digest);
 

@@ -248,7 +248,7 @@ public class HelpCenterUtil {
 	}
 
 	protected static String getMD5Checksum(InputStream fileInputStream) {
-		return DigesterUtil.digestHex(DigesterUtil.MD5, fileInputStream);
+		return DigesterUtil.digestHex(DigesterUtil.SHA_256, fileInputStream);
 	}
 
 	protected static void uploadAttachment(

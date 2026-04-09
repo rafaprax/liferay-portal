@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.AuthException;
 import com.liferay.portal.kernel.security.auth.http.HttpAuthorizationHeader;
+import com.liferay.portal.kernel.security.fips.FIPSModeUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.util.Base64;
@@ -218,6 +219,12 @@ public class HttpAuthManagerUtil {
 
 		httpAuthorizationHeader.setAuthParameter(
 			HttpAuthorizationHeader.AUTH_PARAMETER_NAME_NONCE, nonce);
+
+		if (FIPSModeUtil.isFIPSModeEnabled()) {
+			httpAuthorizationHeader.setAuthParameter(
+				HttpAuthorizationHeader.AUTH_PARAMETER_NAME_ALGORITHM,
+				"SHA-256");
+		}
 
 		httpServletResponse.setHeader(
 			HttpHeaders.WWW_AUTHENTICATE, httpAuthorizationHeader.toString());

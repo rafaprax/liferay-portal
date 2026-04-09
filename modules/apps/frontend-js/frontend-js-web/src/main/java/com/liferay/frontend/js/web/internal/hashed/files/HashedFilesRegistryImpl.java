@@ -336,7 +336,7 @@ public class HashedFilesRegistryImpl implements HashedFilesRegistry {
 
 		String hashesString = StringUtil.merge(hashesList, StringPool.PIPE);
 
-		byte[] hash = DigesterUtil.digestRaw(DigesterUtil.MD5, hashesString);
+		byte[] hash = DigesterUtil.digestRaw(DigesterUtil.SHA_256, hashesString);
 
 		byte[] truncatedHash = new byte[8];
 

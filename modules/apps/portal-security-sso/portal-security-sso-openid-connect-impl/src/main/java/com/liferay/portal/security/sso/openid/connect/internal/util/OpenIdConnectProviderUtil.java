@@ -36,7 +36,7 @@ public class OpenIdConnectProviderUtil {
 			String issuer, String tokenEndpoint)
 		throws Exception {
 
-		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
 		URI issuerURI = URI.create(issuer);
 
 		return StringBundler.concat(
