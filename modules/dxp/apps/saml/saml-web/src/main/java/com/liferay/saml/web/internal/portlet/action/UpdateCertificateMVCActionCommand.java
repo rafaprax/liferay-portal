@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PropertiesParamUtil;
+import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
@@ -48,6 +49,9 @@ import java.security.UnrecoverableEntryException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.DSAKey;
+import java.security.interfaces.ECKey;
+import java.security.interfaces.RSAKey;
 
 import java.util.Calendar;
 
@@ -144,6 +148,72 @@ public class UpdateCertificateMVCActionCommand extends BaseMVCActionCommand {
 		_localEntityManager.deleteLocalEntityCertificate(
 			LocalEntityManager.CertificateUsage.valueOf(
 				ParamUtil.getString(actionRequest, "certificateUsage")));
+	}
+
+	private boolean _isFIPSCompliantCertificate(X509Certificate x509Certificate) {
+		java.security.PublicKey publicKey = x509Certificate.getPublicKey();
+
+		if (publicKey instanceof DSAKey) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"DSA certificates are not FIPS 140-3 compliant for " +
+						"SAML and cannot be imported");
+			}
+
+			return false;
+		}
+
+		if (publicKey instanceof RSAKey) {
+			int bitLength = ((RSAKey)publicKey).getModulus().bitLength();
+
+			if (bitLength < _MINIMUM_RSA_KEY_SIZE) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"RSA key size " + bitLength +
+							" bits is below the minimum " +
+								_MINIMUM_RSA_KEY_SIZE +
+									" bits required for FIPS 140-3 " +
+										"compliance");
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
+		if (publicKey instanceof ECKey) {
+			int fieldSize =
+				((ECKey)publicKey).getParams().getOrder().bitLength();
+
+			if (fieldSize < _MINIMUM_EC_KEY_SIZE) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"EC key size " + fieldSize +
+							" bits is below the minimum " +
+								_MINIMUM_EC_KEY_SIZE +
+									" bits required for FIPS 140-3 " +
+										"compliance");
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Unrecognized key algorithm " +
+					publicKey.getAlgorithm() +
+						" cannot be validated for FIPS 140-3 compliance");
+		}
+
+		return false;
+	}
+
+	private boolean _isFIPSModeEnabled() {
+		return PropsValues.PORTAL_SECURITY_FIPS_MODE_ENABLED;
 	}
 
 	private String _getCertificateUsagePropertyKey(
@@ -253,6 +323,15 @@ public class UpdateCertificateMVCActionCommand extends BaseMVCActionCommand {
 
 		X509Certificate x509Certificate =
 			(X509Certificate)privateKeyEntry.getCertificate();
+
+		if (_isFIPSModeEnabled() &&
+			!_isFIPSCompliantCertificate(x509Certificate)) {
+
+			SessionErrors.add(actionRequest, "weakCertificateAlgorithm");
+
+			return;
+		}
+
 		LocalEntityManager.CertificateUsage certificateUsage =
 			LocalEntityManager.CertificateUsage.valueOf(
 				ParamUtil.getString(actionRequest, "certificateUsage"));
@@ -346,6 +425,10 @@ public class UpdateCertificateMVCActionCommand extends BaseMVCActionCommand {
 			SamlWebKeys.SAML_X509_CERTIFICATE, x509Certificate);
 		actionResponse.setWindowState(LiferayWindowState.EXCLUSIVE);
 	}
+
+	private static final int _MINIMUM_EC_KEY_SIZE = 256;
+
+	private static final int _MINIMUM_RSA_KEY_SIZE = 2048;
 
 	private static final String _SHA256_PREFIX = "SHA256with";
 
