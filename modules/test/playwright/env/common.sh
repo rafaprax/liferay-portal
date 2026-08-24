@@ -609,24 +609,30 @@ function start_client_extension_spring_boot_application {
 
 		cd ${client_extension_dir}
 
-		# The portal's Kubernetes agent owns the home's routes directory and
-		# rewrites its files from the company virtual host, which does not
-		# resolve the portal from here. The application reads the files once
-		# at boot through paths the workspace plugin derives from the home
-		# directory, so boot it against a private home whose routes only this
-		# script writes, and only after the portal's JWKS endpoint answers at
-		# the routed address.
+		#
+		# The portal's Kubernetes agent rewrites the routes in its home
+		# directory to the company virtual host, which does not resolve from
+		# here. The application reads its routes once at boot, so give it a
+		# private home that only this script writes.
+		#
 
 		local routes_home=$(mktemp -d)
 
-		write_client_extension_dxp_routes "${routes_home}"
+		write_client_extension_dxp_routes ${routes_home}
 
-		if ! curl --fail --output /dev/null --retry 12 --retry-all-errors --retry-delay 5 --silent "$(cat ${routes_home}/routes/default/dxp/com.liferay.lxc.dxp.server.protocol)://$(cat ${routes_home}/routes/default/dxp/com.liferay.lxc.dxp.mainDomain)/o/oauth2/jwks"
+		if ! curl --fail --output /dev/null --retry 12 --retry-all-errors --retry-delay 5 --silent ${LIFERAY_PORTAL_URL}/o/oauth2/jwks
 		then
-			echo "The portal's JWKS endpoint does not answer at the routed address."
+			echo "The portal's JWKS endpoint does not answer at ${LIFERAY_PORTAL_URL}."
 
 			exit 1
 		fi
+
+		#
+		# Run "classes" first so the readiness wait below does not spend its
+		# budget on a cold wrapper downloading Gradle and starting a daemon.
+		#
+
+		$(get_gradlew) classes -Pliferay.workspace.home.dir=${routes_home}
 
 		$(get_gradlew) bootRun -Pliferay.workspace.home.dir=${routes_home} &
 
