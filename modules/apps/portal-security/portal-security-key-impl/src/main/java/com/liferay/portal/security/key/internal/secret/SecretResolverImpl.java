@@ -70,7 +70,7 @@ public class SecretResolverImpl implements SecretResolver {
 
 			long scopeCompanyId = _getScopeCompanyId(
 				companyId, keyReference.getIdentifier(), "resolve",
-				_getSecretIdentifierMap(secretContext));
+				_getScopeCompanyIds(secretContext));
 
 			String key = getKey(scopeCompanyId, value);
 
@@ -162,25 +162,25 @@ public class SecretResolverImpl implements SecretResolver {
 		}
 
 		try {
-			SequencedMap<String, Long> secretIdentifierMap =
-				_getSecretIdentifierMap(secretContext);
+			SequencedMap<String, Long> scopeCompanyIds = _getScopeCompanyIds(
+				secretContext);
 
 			if (KeyReferenceUtil.isKeyReference(value)) {
 				KeyReference keyReference = _getKeyReference(value);
 
 				_getScopeCompanyId(
 					companyId, keyReference.getIdentifier(), "store",
-					secretIdentifierMap);
+					scopeCompanyIds);
 
 				return value;
 			}
 
-			Map.Entry<String, Long> entry = secretIdentifierMap.firstEntry();
+			Map.Entry<String, Long> entry = scopeCompanyIds.firstEntry();
 
 			String identifier = entry.getKey();
 
 			long scopeCompanyId = _getScopeCompanyId(
-				companyId, identifier, "store", secretIdentifierMap);
+				companyId, identifier, "store", scopeCompanyIds);
 
 			try (Secret secret = new Secret(
 					new KeyReference(
@@ -278,10 +278,10 @@ public class SecretResolverImpl implements SecretResolver {
 
 	private long _getScopeCompanyId(
 			long companyId, String identifier, String operation,
-			Map<String, Long> secretIdentifierMap)
+			Map<String, Long> scopeCompanyIds)
 		throws SecretException {
 
-		Long scopeCompanyId = secretIdentifierMap.get(identifier);
+		Long scopeCompanyId = scopeCompanyIds.get(identifier);
 
 		if ((scopeCompanyId != null) &&
 			((scopeCompanyId == CompanyConstants.SYSTEM) ||
@@ -301,14 +301,14 @@ public class SecretResolverImpl implements SecretResolver {
 
 		throw new SecretException(
 			StringBundler.concat(
-				"Unable to ", operation, " the key reference \"", identifier,
+				"Unable to ", operation, " the secret reference \"", identifier,
 				"\" in this secret context"));
 	}
 
-	private SequencedMap<String, Long> _getSecretIdentifierMap(
+	private SequencedMap<String, Long> _getScopeCompanyIds(
 		SecretContext secretContext) {
 
-		SequencedMap<String, Long> secretIdentifierMap = new LinkedHashMap<>();
+		SequencedMap<String, Long> scopeCompanyIds = new LinkedHashMap<>();
 
 		SecretContext.Type type = secretContext.getType();
 
@@ -319,13 +319,13 @@ public class SecretResolverImpl implements SecretResolver {
 			String pid = GetterUtil.getString(
 				properties.get(Constants.SERVICE_PID));
 
-			secretIdentifierMap.put(
+			scopeCompanyIds.put(
 				SecretIdentifierUtil.getSecretIdentifier(
 					secretContext.getKey(), pid, properties),
 				SecretIdentifierUtil.getConfigurationCompanyId(properties));
 		}
 
-		return secretIdentifierMap;
+		return scopeCompanyIds;
 	}
 
 	private String _putSecret(long scopeCompanyId, Secret secret)
